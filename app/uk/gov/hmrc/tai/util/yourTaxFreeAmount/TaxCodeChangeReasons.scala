@@ -26,8 +26,10 @@ class TaxCodeChangeReasons @Inject()() {
   def reasons(taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
 
     val taxCodePairs = TaxCodePairs(taxCodeChange)
-    primaryEmploymentsChanged(taxCodePairs.primaryPairs) ++
+    val employmentReasons = primaryEmploymentsChanged(taxCodePairs.primaryPairs) ++
       secondaryEmploymentsChanged(taxCodePairs.unMatchedPreviousCodes, taxCodePairs.unMatchedCurrentCodes)
+
+    employmentReasons ++ incomeSourceCountReason(employmentReasons, taxCodeChange)
   }
 
   private def secondaryEmploymentsChanged(unMatchedPreviousCodes: Seq[TaxCodePair],
@@ -108,5 +110,43 @@ class TaxCodeChangeReasons @Inject()() {
 
   private def genericMessage(implicit messages: Messages): Seq[String] = {
     Seq(messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+  }
+
+  private def filterOutGenericMessage(reasons: Seq[String])(implicit messages: Messages): Seq[String] = {
+    reasons.filterNot(_ == genericMessage.head)
+  }
+
+  private def incomeSourceCountReason(reasons: Seq[String], taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
+    if (filterOutGenericMessage(reasons).nonEmpty) {
+      Seq(incomeSourceCountMessage(taxCodeChange))
+    } else {
+      Seq.empty[String]
+    }
+  }
+
+  private def incomeSourceCountMessage(taxCodeChange: TaxCodeChange)(implicit messages: Messages): String = {
+
+    val employmentMessage = {
+      if (taxCodeChange.currentEmploymentCount > 1) {
+        messages("tai.taxCodeComparison.employments.count", taxCodeChange.currentEmploymentCount)
+      } else {
+        messages("tai.taxCodeComparison.employment.count", taxCodeChange.currentEmploymentCount)
+      }
+    }
+
+    val pensionMessage = {
+      if (taxCodeChange.currentPensionCount > 1) {
+        messages("tai.taxCodeComparison.pensions.count", taxCodeChange.currentPensionCount)
+      } else {
+        messages("tai.taxCodeComparison.pension.count", taxCodeChange.currentPensionCount)
+      }
+    }
+
+    (taxCodeChange.currentEmploymentCount > 0, taxCodeChange.currentPensionCount > 0) match {
+      case(true, true) => messages("tai.taxCodeComparison.incomeSources.count",
+        taxCodeChange.currentEmploymentCount + taxCodeChange.currentPensionCount)
+      case(true, false) => employmentMessage
+      case(false, true) => pensionMessage
+    }
   }
 }

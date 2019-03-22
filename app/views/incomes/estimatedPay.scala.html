@@ -39,7 +39,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
-        preHeadingText = messages("tai.estimatedPay.preHeading", viewModel.employerName)
+        preHeadingText = messages("tai.estimatedPay.preHeading", <span class="carry-over">{viewModel.employerName}</span>)
     )
 }
 
@@ -81,7 +81,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     </div>
 
     <div class ="panel panel-border-narrow">
-        <p>@messages("tai.estimatedPay.taxCodeChange.explanation")</p>
+        <p>@messages("tai.estimatedPay.taxCodeChange.explanation.para1")</p>
+        <p>@messages("tai.estimatedPay.taxCodeChange.explanation.para2")</p>
     </div>
 
     <div class="section">

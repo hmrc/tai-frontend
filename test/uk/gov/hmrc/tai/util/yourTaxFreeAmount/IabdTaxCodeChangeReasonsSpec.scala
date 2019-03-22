@@ -22,6 +22,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.CodingComponentPair
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 
 class IabdTaxCodeChangeReasonsSpec extends PlaySpec
   with MockitoSugar
@@ -34,7 +35,12 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
   val jobExpensesIncrease = CodingComponentPair(JobExpenses, Some(2), Some(50), Some(100))
   val carBenefitIncrease = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(2000))
   val taxCodeChange = mock[TaxCodeChange]
-  val iabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons
+
+  val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
+  val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
+  val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
+
+  val iabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons(totalTax)
 
   "iabdReasons method" must {
     "have no reasons" when {
@@ -84,7 +90,7 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
       val pairs = AllowancesAndDeductionPairs(Seq(newBenefit), Seq.empty)
 
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
-      reasons mustBe Seq("You have underpaid £123 from a previous year")
+      reasons mustBe Seq("You have underpaid £24 from a previous year")
     }
 
     "give a reason with the amount for estimated tax owed this year" in {
@@ -92,7 +98,7 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
       val pairs = AllowancesAndDeductionPairs(Seq(newBenefit), Seq.empty)
 
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
-      reasons mustBe Seq("We estimate you have underpaid £123 tax this year")
+      reasons mustBe Seq("We estimate you have underpaid £24 tax this year")
     }
   }
 

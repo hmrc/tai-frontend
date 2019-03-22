@@ -33,7 +33,7 @@
         formForErrorSummary = Some(payrollNumberForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.addPensionProvider.pensionNumber.title", pensionNumberViewModel.pensionProviderName),
+        mainHeadingText = Messages("tai.addPensionProvider.pensionNumber.title", <span class="carry-over">{pensionNumberViewModel.pensionProviderName}</span>),
         preHeadingText = Messages("add.missing.pension"))}
 
 @main(
@@ -71,5 +71,5 @@
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing pension"))
     }
 
-    @cancelLink(routes.TaxAccountSummaryController.onPageLoad(), gaEventAction = Some(gaEventActionString))
+    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel(), gaEventAction = Some(gaEventActionString))
 }

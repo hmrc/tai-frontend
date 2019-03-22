@@ -33,7 +33,6 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, BonusPaymentsForm}
@@ -45,22 +44,24 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
-import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.constants.{EditIncomePayPeriodConstants, _}
 import views.html.incomes.{bonusPaymentAmount, bonusPayments}
 
 import scala.concurrent.Future
 import scala.util.Random
 
 class IncomeUpdateCalculatorControllerSpec
-  extends PlaySpec
+    extends PlaySpec
     with FakeTaiPlayApplication
     with MockitoSugar
     with JourneyCacheConstants
     with EditIncomeIrregularPayConstants
     with FormValuesConstants
-    with ControllerViewTestHelper {
+    with ControllerViewTestHelper
+    with EditIncomePayPeriodConstants {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+  val employerId = 1
 
   "estimatedPayLandingPage" must {
     "display the estimatedPayLandingPage view" in {
@@ -289,12 +290,21 @@ class IncomeUpdateCalculatorControllerSpec
     "display payslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
         val testController = createTestIncomeUpdateCalculatorController
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(None))
+
+        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+          Future.successful(
+            (
+              Seq[String](employerId.toString, "employer name"),
+              Seq[Option[String]](Some(MONTHLY), None)
+            )
+          )
+        )
+
         val result = testController.payslipAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.payslip.title"))
+        doc.title() must include(messages("tai.payslip.title.month"))
       }
     }
   }
@@ -313,12 +323,14 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect user back to how to payslip page" when {
       "user input has error" in {
         val testController = createTestIncomeUpdateCalculatorController
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(None))
+
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(Some(MONTHLY)))
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_OtherInDaysKey))(any())).thenReturn(Future.successful(None))
         val result = testController.handlePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("" -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.payslip.title"))
+        doc.title() must include(messages("tai.payslip.title.month"))
       }
     }
   }
@@ -327,12 +339,24 @@ class IncomeUpdateCalculatorControllerSpec
     "display taxablePayslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
         val testController = createTestIncomeUpdateCalculatorController
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(None))
+
+        val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
+        val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
+
+        when(journeyCacheService.collectedValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any())).thenReturn(
+          Future.successful(
+            (
+              Seq[String](employerId.toString, "employer name"),
+              Seq[Option[String]](Some(MONTHLY), None)
+            )
+          )
+        )
+
         val result = testController.taxablePayslipAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.taxablePayslip.title"))
+        doc.title() must include(messages("tai.taxablePayslip.title.month"))
       }
     }
   }
@@ -341,9 +365,9 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect the user to bonusPaymentsPage page" when {
       "user entered valid taxable pay" in {
         val testController = createTestIncomeUpdateCalculatorController
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TotalSalaryKey))(any())).thenReturn(Future.successful(None))
-        when(journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_TaxablePayKey -> "£3,000")))(any())).thenReturn(Future.successful(Map("" -> "")))
-        val result = testController.handleTaxablePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("taxablePay" -> "£3,000"))
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TotalSalaryKey))(any())).thenReturn(Future.successful(Some("4000")))
+        when(journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_TaxablePayKey -> "3000")))(any())).thenReturn(Future.successful(Map("" -> "")))
+        val result = testController.handleTaxablePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("taxablePay" -> "3000"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url)
       }
@@ -352,13 +376,25 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect user back to how to taxablePayslip page" when {
       "user input has error" in {
         val testController = createTestIncomeUpdateCalculatorController
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TotalSalaryKey))(any())).thenReturn(Future.successful(None))
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(None))
+
+        val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
+        val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
+
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TotalSalaryKey))(any())).thenReturn(Future.successful(Some("4000")))
+        when(journeyCacheService.collectedValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any())).thenReturn(
+          Future.successful(
+            (
+              Seq[String](employerId.toString, "employer name"),
+              Seq[Option[String]](Some(MONTHLY), None)
+            )
+          )
+        )
+
         val result = testController.handleTaxablePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("" -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.taxablePayslip.title"))
+        doc.title() must include(messages("tai.taxablePayslip.title.month"))
       }
     }
   }
@@ -415,9 +451,8 @@ class IncomeUpdateCalculatorControllerSpec
   "bonusPaymentsPage" must {
     "display bonusPayments" in {
       val testController = createTestIncomeUpdateCalculatorController
-      val employerId = 1
       val employerName = "employer1"
-      val errorMessage = "error"
+
       implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
 
       when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(
@@ -456,9 +491,8 @@ class IncomeUpdateCalculatorControllerSpec
 
     "redirect user back to how to bonusPayments page" when {
       "user input has error" in {
-
-        val employerId = 1
         val employerName = "employer1"
+
         implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("" -> "")
 
         val testController = createTestIncomeUpdateCalculatorController
@@ -478,7 +512,6 @@ class IncomeUpdateCalculatorControllerSpec
 
       val testController = createTestIncomeUpdateCalculatorController
       implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
-      val employerId = 1
       val employerName = "employer1"
 
       when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(
@@ -501,7 +534,6 @@ class IncomeUpdateCalculatorControllerSpec
 
     "redirect the user to bonusPaymentAmount page" when {
       "user input has error" in {
-        val employerId = 1
         val employerName = "employer1"
         implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("amount" -> "")
 
@@ -525,11 +557,12 @@ class IncomeUpdateCalculatorControllerSpec
       val bonusPayments = "yes"
       val taxablePay = "8000"
       val bonusAmount = "1000"
+      val payPeriodInDays = "3"
 
       when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
         Future.successful((
           Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments),
-          Seq[Option[String]](Some(taxablePay), Some(bonusAmount))
+          Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
         ))
       )
       val result = testController.checkYourAnswersPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -540,7 +573,7 @@ class IncomeUpdateCalculatorControllerSpec
   }
 
   "estimatedPayPage" must {
-    def createTestController(currentCache: Map[String, String]):  TestIncomeUpdateCalculatorController = {
+    def createTestController(currentCache: Map[String, String]): TestIncomeUpdateCalculatorController = {
       val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
       val payment = Payment(new LocalDate(), 200, 50, 25, 100, 50, 25, Monthly)
 
@@ -600,7 +633,7 @@ class IncomeUpdateCalculatorControllerSpec
         val result = testController.estimatedPayPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
       }
     }
   }
@@ -635,15 +668,17 @@ class IncomeUpdateCalculatorControllerSpec
         doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
 
-      "journey cache does not returns net amount" in {
+      "redirects to the same amount entered page" ignore {
         val testController = createTestIncomeUpdateCalculatorController
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
 
         when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NewAmountKey))(any())).thenReturn(Future.successful(None))
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NewAmountKey))(any())).thenReturn(Future.successful(Some("1")))
 
         val result = testController.handleCalculationResult()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
@@ -681,7 +716,7 @@ class IncomeUpdateCalculatorControllerSpec
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(messages("tai.irregular.title"))
+      doc.title() must include(messages("tai.irregular.heading"))
     }
 
     "respond with INTERNAL_SERVER_ERROR" when {
@@ -773,7 +808,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.title"))
+        doc.title() must include(messages("tai.irregular.heading"))
 
         doc.body().text must include(messages("tai.irregular.error.error.incorrectTaxableIncome", payToDate, payDate, employerName))
       }
@@ -811,7 +846,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.title"))
+        doc.title() must include(messages("tai.irregular.heading"))
 
         doc.body().text must include(messages("tai.irregular.instruction.wholePounds"))
 
@@ -848,7 +883,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.title"))
+        doc.title() must include(messages("tai.irregular.heading"))
         doc.body().text must include(messages("error.tai.updateDataEmployment.blankValue"))
 
       }
@@ -886,7 +921,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.title"))
+        doc.title() must include(messages("tai.irregular.heading"))
         doc.body().text must include(messages("error.tai.updateDataEmployment.maxLength"))
 
       }
@@ -899,13 +934,13 @@ class IncomeUpdateCalculatorControllerSpec
 
       val employerName = "name"
       val payToDate = 123
-      val newAmount = 123
+      val newAmount = 1235
       val confirmedNewAmount = 1234
 
       when(
         journeyCacheService.collectedValues(any(), any())(any()))
         .thenReturn(Future.successful(
-          Seq(EmployerName, newAmount.toString), Seq(Some(confirmedNewAmount.toString))))
+          Seq(EmployerName, newAmount.toString, payToDate.toString), Seq(Some(confirmedNewAmount.toString))))
 
 
       val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
@@ -934,21 +969,48 @@ class IncomeUpdateCalculatorControllerSpec
         val testController = createTestIncomeUpdateCalculatorController
         val newAmount = 123
         val confirmednewAmount = 123
+        val paymentToDate = 100
 
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(EmployerName, newAmount.toString), Seq(Some(confirmednewAmount.toString))))
+        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+          Future.successful(
+            Seq(EmployerName, newAmount.toString, paymentToDate.toString),
+            Seq(Some(confirmednewAmount.toString))
+          )
+        )
 
         val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
           RequestBuilder.buildFakeRequestWithOnlySession("GET")
         )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
+      }
+    }
+
+    "redirect to IrregularSameEstimatedPayPage" when {
+      "the same amount of payment to date has been entered" in {
+        val testController = createTestIncomeUpdateCalculatorController
+        val newAmount = 123
+        val paymentToDate = 123
+
+        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+          Future.successful(
+            Seq(EmployerName, newAmount.toString, paymentToDate.toString),
+            Seq(None)
+          )
+        )
+
+        val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
+          RequestBuilder.buildFakeRequestWithOnlySession("GET")
+        )
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
       }
     }
   }
 
   "submitIncomeIrregularHours" must {
-
     "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
       val testController = createTestIncomeUpdateCalculatorController
 
@@ -970,14 +1032,12 @@ class IncomeUpdateCalculatorControllerSpec
       val testController = createTestIncomeUpdateCalculatorController
 
       val employerName = "name"
-      val payToDate = 123
       val newAmount = 123
-      val employerId = "1"
 
       when(
         journeyCacheService.mandatoryValues(any())(any())
       ).thenReturn(
-        Future.successful(Seq(employerName, newAmount.toString, employerId))
+        Future.successful(Seq(employerName, newAmount.toString, employerId.toString))
       )
 
       when(

@@ -39,7 +39,7 @@
 
 @header = @{
     ptaHeader(
-        mainHeadingText = messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse("")),
+        mainHeadingText = messages("tai.income.calculation.TaxableIncomeDetails", <span class="carry-over">{historicIncomeCalculationViewModel.employerName.getOrElse("")}</span>),
         preHeadingText = messages("tai.yourIncome.preHeading"),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),

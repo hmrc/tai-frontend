@@ -16,18 +16,17 @@
 
 package controllers
 
-import java.util.NoSuchElementException
-
 import com.google.inject.Inject
 import com.google.inject.name.Named
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
-import play.api.Logger
 import play.api.Play.current
+import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
@@ -48,7 +47,6 @@ import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
 import scala.Function.tupled
 import scala.concurrent.Future
-import scala.util.control.NonFatal
 
 class IncomeController @Inject()(personService: PersonService,
                                  @Named("Update Income") journeyCacheService: JourneyCacheService,
@@ -88,18 +86,38 @@ class IncomeController @Inject()(personService: PersonService,
         }
   }
 
-  def sameEstimatedPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+  def sameEstimatedPayInCache(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           for {
             cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_ConfirmedNewAmountKey)
           } yield {
-            val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt)
+            val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt, false)
             Ok(views.html.incomes.sameEstimatedPay(model))
           }
         }
   }
+
+  def sameAnnualEstimatedPay(): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            val cachedDataFuture = journeyCacheService.mandatoryValues(UpdateIncome_NameKey)
+            val idFuture = journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+
+            for {
+              cachedData <- cachedDataFuture
+              id <- idFuture
+              income <- incomeService.employmentAmount(Nino(user.getNino), id)
+            } yield {
+              val model = SameEstimatedPayViewModel(cachedData(0), income.oldAmount, income.isOccupationalPension)
+              Ok(views.html.incomes.sameEstimatedPay(model))
+            }
+          }
+  }
+
 
   def editRegularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
@@ -110,32 +128,30 @@ class IncomeController @Inject()(personService: PersonService,
           journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
             (mandatorySeq, optionalSeq) => {
               val date = optionalSeq.head.map(date => LocalDate.parse(date))
-              EditIncomeForm.bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date).fold(
-                formWithErrors => {
+              val employerName = mandatorySeq(2)
+              val payToDate = BigDecimal(mandatorySeq.head)
+
+              EditIncomeForm.bind(employerName, payToDate, date).fold(
+                (formWithErrors: Form[EditIncomeForm]) => {
                   val webChat = true
                   Future.successful(BadRequest(views.html.incomes.editIncome(formWithErrors,
                     false,
                     mandatorySeq(1).toInt,
                     mandatorySeq.head, webChat = webChat)))
                 },
-                income => {
-                  for {
-                    currentCache <- journeyCacheService.currentCache
-                  } yield {
-                    val newAmount = income.newAmount.getOrElse("0")
-
-                    if (FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), Some(newAmount))) {
-                      Redirect(routes.IncomeController.sameEstimatedPay())
-                    } else {
-                      journeyCacheService.cache(UpdateIncome_NewAmountKey, newAmount)
-                      Redirect(routes.IncomeController.confirmRegularIncome())
-                    }
-                  }
-                }
+                (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome)
               )
             }
           }
         }
+  }
+
+  private def isCachedIncomeTheSame(currentCache: Map[String, String], newAmount: Option[String]): Boolean = {
+    FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), newAmount)
+  }
+
+  private def isIncomeTheSame(income: EditIncomeForm): Boolean = {
+    FormHelper.areEqual(Some(income.oldAmount.toString), income.newAmount)
   }
 
   def confirmRegularIncome(): Action[AnyContent] = authorisedForTai(personService).async {
@@ -173,47 +189,47 @@ class IncomeController @Inject()(personService: PersonService,
       implicit person => {
         implicit request => {
 
-        def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)
-                              (implicit user: TaiUser, request: Request[AnyContent]): Result = {
-          journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newAmount)
-          incomeType match {
-            case TaiConstants.IncomeTypePension =>
-              if (confirmedAPIEnabled) {
-                Ok(views.html.incomes.editPensionSuccess(employerName, employerId))
-              } else {
-                Ok(views.html.incomes.oldEditPensionSuccess(employerName, employerId))
-              }
-            case _ =>
-              if (confirmedAPIEnabled) {
-                Ok(views.html.incomes.editSuccess(employerName, employerId))
-              } else {
-                Ok(views.html.incomes.oldEditSuccess(employerName, employerId))
-              }
+          def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)
+                                (implicit user: TaiUser, request: Request[AnyContent]): Result = {
+            journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newAmount)
+            incomeType match {
+              case TaiConstants.IncomeTypePension =>
+                if (confirmedAPIEnabled) {
+                  Ok(views.html.incomes.editPensionSuccess(employerName, employerId))
+                } else {
+                  Ok(views.html.incomes.oldEditPensionSuccess(employerName, employerId))
+                }
+              case _ =>
+                if (confirmedAPIEnabled) {
+                  Ok(views.html.incomes.editSuccess(employerName, employerId))
+                } else {
+                  Ok(views.html.incomes.oldEditSuccess(employerName, employerId))
+                }
+            }
+          }
+
+          val updateJourneyCompletion: String => Future[Map[String, String]] = (incomeId: String) => {
+            estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
+          }
+
+          ServiceCheckLite.personDetailsCheck {
+            journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
+              .flatMap(cache => {
+
+                val incomeName :: newAmount :: incomeId :: incomeType :: Nil = cache.toList
+
+                taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), incomeId.toInt) flatMap {
+                  case TaiSuccessResponse => {
+                    updateJourneyCompletion(incomeId) map { _ =>
+                      respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
+                    }
+                  }
+                  case _ => throw new RuntimeException("Failed to update estimated income")
+                }
+              })
           }
         }
-
-        val updateJourneyCompletion: String => Future[Map[String, String]] = (incomeId: String) => {
-          estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
-        }
-
-        ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
-            .flatMap(cache => {
-
-              val incomeName :: newAmount :: incomeId :: incomeType :: Nil = cache.toList
-
-              taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), incomeId.toInt) flatMap {
-                case TaiSuccessResponse => {
-                  updateJourneyCompletion(incomeId) map { _ =>
-                    respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
-                  }
-                }
-                case _ => throw new RuntimeException("Failed to update estimated income")
-              }
-          })
-        }
       }
-    }
   }
 
   def pensionIncome(): Action[AnyContent] = authorisedForTai(personService).async {
@@ -235,6 +251,22 @@ class IncomeController @Inject()(personService: PersonService,
           }
   }
 
+  private def determineEditRedirect(income: EditIncomeForm, confirmationCallback: Call)(implicit hc: HeaderCarrier): Future[Result] = {
+    for {
+      currentCache <- journeyCacheService.currentCache
+    } yield {
+      if (isCachedIncomeTheSame(currentCache, income.newAmount)) {
+        Redirect(routes.IncomeController.sameEstimatedPayInCache())
+      }
+      else if (isIncomeTheSame(income)) {
+        Redirect(routes.IncomeController.sameAnnualEstimatedPay())
+      } else {
+        journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0"))
+        Redirect(confirmationCallback)
+      }
+    }
+  }
+
   def editPensionIncome(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
@@ -253,11 +285,7 @@ class IncomeController @Inject()(personService: PersonService,
                       mandatorySeq(1).toInt,
                       mandatorySeq.head, webChat = webChat)))
                   },
-                  income => {
-                    journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0")).map {
-                      x => Redirect(routes.IncomeController.confirmPensionIncome())
-                    }
-                  }
+                  (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome)
                 )
               }
             }

@@ -64,12 +64,19 @@ class EndEmploymentController @Inject()(auditService: AuditService,
   with IrregularPayConstants
   with AuditConstants {
 
+  def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      journeyCacheService.flush() map { _ =>
+        Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+      }
+  }
+
   private def telephoneNumberViewModel(employmentId: Int)(implicit messages: Messages) = CanWeContactByPhoneViewModel(
     messages("tai.endEmployment.preHeadingText"),
     messages("tai.canWeContactByPhone.title"),
     controllers.employments.routes.EndEmploymentController.endEmploymentPage().url,
     controllers.employments.routes.EndEmploymentController.submitTelephoneNumber().url,
-    controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url)
+    controllers.employments.routes.EndEmploymentController.cancel(employmentId).url)
 
   private def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) => textContent match {
@@ -290,7 +297,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
           mandatorySeq(1), mandatorySeq(2), optionalSeq(0),
           controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
           controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
-          controllers.routes.IncomeSourceSummaryController.onPageLoad(mandatorySeq(0).toInt).url)
+          controllers.employments.routes.EndEmploymentController.cancel(mandatorySeq.head.toInt).url)
         Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
       }
   }

@@ -30,7 +30,7 @@
         formForErrorSummary = Some(updateEmploymentDetailsForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", viewmodel.employerName),
+        mainHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", <span class="carry-over">{viewmodel.employerName}</span>),
         preHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")
     )
 }
@@ -55,5 +55,5 @@
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")))
     }
 
-@cancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(viewmodel.empId), gaEventAction = Some(gaEventActionString))
+@cancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(viewmodel.empId), gaEventAction = Some(gaEventActionString))
 }

@@ -19,13 +19,16 @@ package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 import com.google.inject.Inject
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.TaxCodeChange
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, TaxCodeChangeReasons, IabdTaxCodeChangeReasons}
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, IabdTaxCodeChangeReasons, TaxCodeChangeReasons}
 
-class TaxCodeChangeReasonsService @Inject()(iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons,
-                                            employmentTaxCodeChangeReasons: TaxCodeChangeReasons) {
-  def combineTaxCodeChangeReasons(iabdPairs: AllowancesAndDeductionPairs, taxCodeChange: TaxCodeChange)
+class TaxCodeChangeReasonsService @Inject()(employmentTaxCodeChangeReasons: TaxCodeChangeReasons) {
+
+  def combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons, iabdPairs: AllowancesAndDeductionPairs, taxCodeChange: TaxCodeChange)
                                  (implicit messages: Messages): Seq[String] = {
+
     val employmentReasons = employmentTaxCodeChangeReasons.reasons(taxCodeChange)
+
     val benefitReasons = iabdTaxCodeChangeReasons.reasons(iabdPairs)
 
     val combinedReasons = employmentReasons ++ benefitReasons

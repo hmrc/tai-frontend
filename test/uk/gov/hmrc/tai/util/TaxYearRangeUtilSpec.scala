@@ -95,10 +95,10 @@ class TaxYearRangeUtilSpec extends PlaySpec with FakeTaiPlayApplication {
     "futureTaxYearRangeHtmlNonBreak" when {
       "returns a future date" in {
         val thisYear = TaxYear().next
+        val message= s"${Dates.formatDate(thisYear.start)} to ${Dates.formatDate(thisYear.end)}"
+        val nonBrokenDateRange = s"${HtmlFormatter.htmlNonBroken(message)}"
 
-        TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1) mustBe messages("tai.taxYear",
-                                                                           HtmlFormatter.htmlNonBroken(Dates.formatDate(thisYear.start)),
-                                                                           HtmlFormatter.htmlNonBroken(Dates.formatDate(thisYear.end)))
+        TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1) mustBe nonBrokenDateRange
       }
     }
   }

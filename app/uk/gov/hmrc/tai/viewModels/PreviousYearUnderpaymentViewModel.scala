@@ -22,6 +22,7 @@ import uk.gov.hmrc.tai.model.domain.tax.{NonSavingsIncomeCategory, TotalTax}
 import uk.gov.hmrc.tai.model.domain.{Employment, UnderPaymentFromPreviousYear}
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.BandTypesConstants
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxAmountDueFromUnderpayment
 
 case class PreviousYearUnderpaymentViewModel(
                                               shouldHavePaid: BigDecimal,
@@ -50,7 +51,7 @@ object PreviousYearUnderpaymentViewModel extends ViewModelHelper with BandTypesC
     val taxRate: BigDecimal = totalTax.incomeCategories.filter(_.incomeCategoryType == NonSavingsIncomeCategory)
       .flatMap(_.taxBands).find(_.bandType == BasicRate).map(_.rate / 100).get
 
-    val amountDue = allowanceReducedBy * taxRate
+    val amountDue = TaxAmountDueFromUnderpayment.amountDue(allowanceReducedBy, totalTax)
 
     val shouldHavePaid = actuallyPaid + amountDue
 
