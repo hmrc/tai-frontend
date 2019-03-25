@@ -53,6 +53,12 @@
 
     <div class="grid-row">
         <div class="column-two-thirds">
+            @if(incomeTaxComparisonViewModel.isEstimatedCYPlusOneJourneyCompleted){
+                <div class="tai-progress-panel" id="estimatedPayCompletionBanner">
+                    <h2 class="heading-small flush-bottom flush--top" id="incomeSummary-banner-heading">@messages("tai.incomeTaxComparison.taxCodes.banner")</h2>
+                </div>
+            }
+
             <section class="section" id="incomeTax" aria-labelledby="incomeTaxHeading">
                 @IncomeTax(incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel)
             </section>

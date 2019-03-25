@@ -27,6 +27,7 @@ import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
 import scala.util.control.NonFatal
 
@@ -53,7 +54,9 @@ class TrackingService @Inject()(trackingConnector: TrackingConnector,
       successfulJournies: Map[String, String] <- successfulJourneyCacheService.currentCache
     } yield {
 
-      val filteredJournies = successfulJournies.keySet.filterNot(_.contains(TrackSuccessfulJourney_EstimatedPayKey))
+      val filteredJournies = successfulJournies.keySet.filterNot(
+        key => key.contains(TrackSuccessfulJourney_EstimatedPayKey) || key.contains(UpdateNextYearsIncomeConstants.SUCCESSFUL)
+      )
 
       (haveAnyShortProcesses, haveAnyLongProcesses, filteredJournies.isEmpty, isA3WeeksJourney(successfulJournies)) match {
         case(true, false, _, _) | (_ , _, false, false) => SevenDays

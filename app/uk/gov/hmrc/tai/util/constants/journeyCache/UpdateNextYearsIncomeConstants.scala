@@ -25,5 +25,5 @@ object UpdateNextYearsIncomeConstants {
   val IS_PENSION = "update-next-years-pension-indicator"
   val CURRENT_AMOUNT = "update-next-years-current-amount"
   val NEW_AMOUNT = "update-next-years-new-amount"
-
+  val SUCCESSFUL = "update-next-years-successful"
 }

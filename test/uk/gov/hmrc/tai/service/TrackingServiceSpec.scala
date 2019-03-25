@@ -27,6 +27,7 @@ import uk.gov.hmrc.tai.connectors.TrackingConnector
 import uk.gov.hmrc.tai.model.domain.tracking._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -145,6 +146,17 @@ class TrackingServiceSpec extends PlaySpec
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
         when(successfulJourneyCacheService.currentCache(any())).
           thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId" -> "true")))
+
+        val result = controller.isAnyIFormInProgress(nino)
+        Await.result(result, 5 seconds) mustBe NoTimeToProcess
+      }
+
+      "An Update Estimated key for CY+1 exists in the success journey cache" in {
+        val controller = sut
+        val incomeId = 1
+        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
+        when(successfulJourneyCacheService.currentCache(any())).
+          thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true")))
 
         val result = controller.isAnyIFormInProgress(nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
