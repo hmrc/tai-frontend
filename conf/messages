@@ -1411,6 +1411,7 @@ tai.taxCodeComparison.add.pension=You have a new private pension with {0}
 tai.taxCodeComparison.removeEmployer=Your employment {0} has ended
 tai.taxCodeComparison.title=We changed this because:
 tai.taxCodeComparison.iabd.updated=There has been an update to your {0}
+tai.taxCodeComparison.iabd.added=You now get {0} worth {1}
 tai.taxCodeComparison.iabd.you.have.claimed.expenses=You have claimed expenses for previous years
 tai.taxCodeComparison.iabd.you.have.underpaid=You have underpaid {0} from a previous year
 tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid=We estimate you have underpaid {0} tax this year
