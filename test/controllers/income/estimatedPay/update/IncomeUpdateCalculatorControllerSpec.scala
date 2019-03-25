@@ -313,23 +313,30 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect the user to payslipDeductionsPage page" when {
       "user entered valid pay" in {
         val testController = createTestIncomeUpdateCalculatorController
+
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(Some(MONTHLY)))
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_OtherInDaysKey))(any())).thenReturn(Future.successful(None))
         when(journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_TotalSalaryKey -> "£3,000")))(any())).thenReturn(Future.successful(Map("" -> "")))
+
         val result = testController.handlePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("totalSalary" -> "£3,000"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipDeductionsPage().url)
       }
     }
 
-    "redirect user back to how to payslip page" when {
+    "redirect user back to how to payslip page with an error form" when {
       "user input has error" in {
         val testController = createTestIncomeUpdateCalculatorController
 
         when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(Some(MONTHLY)))
         when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_OtherInDaysKey))(any())).thenReturn(Future.successful(None))
+
         val result = testController.handlePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("" -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
+        doc.body().text must include(messages("tai.income.error.form.summary"))
+        doc.body().text must include(messages("tai.payslip.title.month"))
         doc.title() must include(messages("tai.payslip.title.month"))
       }
     }

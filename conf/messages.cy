@@ -648,6 +648,7 @@ tai.incomeTaxComparison.sidebar.subHeading=Ewch i''r flwyddyn dreth bresennol
 tai.incomeTaxComparison.taxCodes.description=Defnyddir eich codau treth i gyfrifo faint o Dreth Incwm i''w chymryd o''ch cyflog neu''ch pensiwn.
 tai.incomeTaxComparison.taxCodes.scottishInfo=Bydd eich cod treth ar gyfer y flwyddyn nesaf yn dechrau gydag ''S'' oherwydd y byddwch yn drethdalwr yn yr Alban. {0}
 tai.incomeTaxComparison.taxCodes.subHeading=Codau treth
+tai.incomeTaxComparison.taxCodes.banner=Dangosir diweddariad o''ch manylion incwm a threth amcangyfrifedig ar gyfer y flwyddyn dreth nesaf yma ymhen 48 awr
 
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Enw''r cyflogwr
 tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Enw''r pensiwn
@@ -1411,7 +1412,12 @@ tai.taxCodeComparison.add.employer=Mae gennych gyflogaeth newydd gyda {0}
 tai.taxCodeComparison.add.pension=Mae gennych bensiwn preiffat newydd gyda {0}
 tai.taxCodeComparison.removeEmployer=Mae’ch cyflogaeth {0} wedi dod i ben
 tai.taxCodeComparison.title=Gwnaethom newid hyn oherwydd y canlynol:
-tai.taxCodeComparison.iabd.updated=Bu ddiweddaraf am eich {0}
+
+tai.taxCodeComparison.iabd.increased=gynyddu
+tai.taxCodeComparison.iabd.reduced=gostwng
+tai.taxCodeComparison.iabd.ammended=Mae’ch {0} wedi’u {1} o {2} i {3}
+
+tai.taxCodeComparison.iabd.added=Rydych nawr yn cael {0} gwerth {1}
 tai.taxCodeComparison.iabd.you.have.claimed.expenses=Rydych wedi hawlio treuliau ar gyfer blynyddoedd blaenorol
 tai.taxCodeComparison.iabd.you.have.underpaid=Rydych wedi tandalu {0} o flwyddyn flaenorol
 tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid=Rydym yn amcangyfrif eich bod wedi tandalu {0} o dreth y flwyddyn hon

@@ -26,66 +26,61 @@ class IabdTaxCodeChangeReasons(totalTax: TotalTax)  {
 
   def reasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
 
-    allowanceReasons(iabdPairs) ++ deductionReasons(iabdPairs)
-    
+    val combinedBenefits = iabdPairs.allowances ++ iabdPairs.deductions
+
+    val whatsChangedPairs = combinedBenefits.filter(pair => pair.previous.isDefined && pair.current.isDefined)
+    val whatsNewPairs = combinedBenefits.filter(pair => pair.previous.isEmpty && pair.current.isDefined)
+
+    whatsNewPairs.flatMap(translateNewBenefits(_)) ++ whatsChangedPairs.flatMap(translateChangedBenefits(_))
   }
 
-  private def allowanceReasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
-    val whatsChangedPairs = iabdPairs.allowances.filter(pair => pair.previous.isDefined && pair.current.isDefined)
-    val whatsNewPairs = iabdPairs.allowances.filter(pair => pair.previous.isEmpty && pair.current.isDefined)
+  private def translateNewBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
 
-    whatsNewPairs.map(translateNewBenefits(_)) ++
-      whatsChangedPairs.flatMap(translateChangedBenefits(_))
-  }
+    val createNewBenefitsMessage: (TaxComponentType, BigDecimal) => String = (taxComponentType: TaxComponentType, currentAmount: BigDecimal) => {
+      val createYouHaveMessage: String => String = (text: String) => {
+        val amountDue = TaxAmountDueFromUnderpayment.amountDue(currentAmount, totalTax)
+        messages(text, MonetaryUtil.withPoundPrefix(amountDue.toInt))
+      }
 
-  private def deductionReasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
-    val whatsChangedPairs = iabdPairs.deductions.filter(pair => pair.previous.isDefined && pair.current.isDefined)
-    val whatsNewPairs = iabdPairs.deductions.filter(pair => pair.previous.isEmpty && pair.current.isDefined)
-    val whatsNewUnderpaymentPairs = whatsNewPairs.filter(pair => pair.componentType == UnderPaymentFromPreviousYear || pair.componentType == EstimatedTaxYouOweThisYear || pair.componentType == EarlyYearsAdjustment)
-    val whatsNewOtherPairs = whatsNewPairs.filterNot(pair => pair.componentType == UnderPaymentFromPreviousYear || pair.componentType == EstimatedTaxYouOweThisYear || pair.componentType == EarlyYearsAdjustment)
-
-    whatsNewOtherPairs.map(translateNewBenefits(_)) ++
-      whatsChangedPairs.flatMap(translateChangedBenefits(_)) ++
-      whatsNewUnderpaymentPairs.map(translateNewBenefits(_))
-  }
-
-  private def translateNewBenefits(pair: CodingComponentPair)(implicit  messages: Messages): String = {
-    def createYouHaveMessage(text: String): String = {
-      pair.current match {
-        case Some(value) => {
-          val amountDue = TaxAmountDueFromUnderpayment.amountDue(value, totalTax)
-          messages(text, MonetaryUtil.withPoundPrefix(amountDue.toInt))
-        }
-        case None => genericBenefitMessage
+      taxComponentType match {
+        case EarlyYearsAdjustment => messages("tai.taxCodeComparison.iabd.you.have.claimed.expenses")
+        case UnderPaymentFromPreviousYear => createYouHaveMessage("tai.taxCodeComparison.iabd.you.have.underpaid")
+        case EstimatedTaxYouOweThisYear => createYouHaveMessage("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid")
+        case _ => messages(
+          "tai.taxCodeComparison.iabd.added",
+          taxComponentType.toMessage(),
+          MonetaryUtil.withPoundPrefix(currentAmount.toInt)
+        )
       }
     }
 
-    pair.componentType match {
-      case EarlyYearsAdjustment => messages("tai.taxCodeComparison.iabd.you.have.claimed.expenses")
-      case UnderPaymentFromPreviousYear => createYouHaveMessage("tai.taxCodeComparison.iabd.you.have.underpaid")
-      case EstimatedTaxYouOweThisYear => createYouHaveMessage("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid")
-      case _ => messageWithComponentType(pair)
-    }
+    pair.current map (currentAmount => createNewBenefitsMessage(pair.componentType, currentAmount))
   }
 
   private def translateChangedBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
-    val hasAnythingChanged: Boolean = pair match {
-      case CodingComponentPair(_, _, previousAmount: Some[BigDecimal], currentAmount: Some[BigDecimal]) =>
-        currentAmount.x != previousAmount.x
-      case _ => false
+
+    val createAmmendmentMessage: (BigDecimal, BigDecimal) => String = (previousAmount: BigDecimal, currentAmount: BigDecimal) => {
+      val adjustmentMessage: String = {
+        if (previousAmount < currentAmount) {
+          messages("tai.taxCodeComparison.iabd.increased")
+        } else {
+          messages("tai.taxCodeComparison.iabd.reduced")
+        }
+      }
+
+      messages(
+        "tai.taxCodeComparison.iabd.ammended",
+        pair.componentType.toMessage(),
+        adjustmentMessage,
+        MonetaryUtil.withPoundPrefix(previousAmount.toInt),
+        MonetaryUtil.withPoundPrefix(currentAmount.toInt)
+      )
     }
 
-    (hasAnythingChanged) match {
-      case true => Some(messageWithComponentType(pair))
-      case false => None
+    (pair.previous, pair.current) match {
+      case (Some(previousAmount), Some(currentAmount)) if(previousAmount != currentAmount) =>
+        Some(createAmmendmentMessage(previousAmount, currentAmount))
+      case _ => None
     }
-  }
-
-  private def messageWithComponentType(pair: CodingComponentPair)(implicit messages: Messages) = {
-    messages("tai.taxCodeComparison.iabd.updated", pair.componentType.toMessage())
-  }
-
-  private def genericBenefitMessage(implicit messages: Messages): String = {
-    messages("taxCode.change.yourTaxCodeChanged.paragraph")
   }
 }
