@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @(employmentName: String, isPension: Boolean)(
     implicit request: Request[_],
     messages: Messages,
@@ -25,7 +26,7 @@
 @gaEventActionString = @{"Your estimated pay for next year success"}
 
 @main(
-    title = messages("tai.updateIncome.CYPlus1.success.confirmedApi.title"),
+    title = messages("tai.updateIncome.CYPlus1.success.confirmedApi.title", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)),
     articleClasses = Some("full-width"),
     authedUser = Some(user),
     employerName = Some(employmentName)
