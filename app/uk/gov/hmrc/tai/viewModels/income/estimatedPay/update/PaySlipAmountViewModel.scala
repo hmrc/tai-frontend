@@ -30,14 +30,7 @@ object PaySlipAmountViewModel extends EditIncomePayPeriodConstants with DynamicP
             payPeriodInDays: Option[String],
             id: Int,
             employerName: String)(implicit message: Messages): PaySlipAmountViewModel = {
-
-    val messages = Map(MONTHLY -> "tai.payslip.title.month",
-                       WEEKLY -> "tai.payslip.title.week",
-                       FORTNIGHTLY -> "tai.payslip.title.2week",
-                       OTHER -> "tai.payslip.title.days")
-
-    val title = dynamicTitle(payPeriod, payPeriodInDays, messages)
-
+    val title = CommonPayPeriodTitle.title(payPeriod, payPeriodInDays)
     PaySlipAmountViewModel(payslipForm, title, id, employerName)
   }
 
