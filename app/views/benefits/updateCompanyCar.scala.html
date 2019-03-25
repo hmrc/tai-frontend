@@ -29,7 +29,7 @@
         formForErrorSummary = Some(wdywtdForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.changeCompanyCar.heading", viewModel.carModel, viewModel.carProvider),
+        mainHeadingText = Messages("tai.changeCompanyCar.heading", <span class="carry-over">{viewModel.carModel}</span>, <span class="carry-over">{viewModel.carProvider}</span>),
         preHeadingText = Messages("tai.changeCompanyCar.sub.heading")) }
 
 @main(

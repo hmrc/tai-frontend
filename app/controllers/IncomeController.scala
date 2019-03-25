@@ -93,7 +93,7 @@ class IncomeController @Inject()(personService: PersonService,
           for {
             cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_ConfirmedNewAmountKey)
           } yield {
-            val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt)
+            val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt, false)
             Ok(views.html.incomes.sameEstimatedPay(model))
           }
         }
@@ -112,7 +112,7 @@ class IncomeController @Inject()(personService: PersonService,
               id <- idFuture
               income <- incomeService.employmentAmount(Nino(user.getNino), id)
             } yield {
-              val model = SameEstimatedPayViewModel(cachedData(0), income.oldAmount)
+              val model = SameEstimatedPayViewModel(cachedData(0), income.oldAmount, income.isOccupationalPension)
               Ok(views.html.incomes.sameEstimatedPay(model))
             }
           }
@@ -285,7 +285,7 @@ class IncomeController @Inject()(personService: PersonService,
                       mandatorySeq(1).toInt,
                       mandatorySeq.head, webChat = webChat)))
                   },
-                  income => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome)
+                  (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome)
                 )
               }
             }

@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.util.MonetaryUtil
 
-class IabdTaxCodeChangeReasons(totalTax: TotalTax) {
+class IabdTaxCodeChangeReasons(totalTax: TotalTax)  {
 
   def reasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
 

@@ -313,23 +313,30 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect the user to payslipDeductionsPage page" when {
       "user entered valid pay" in {
         val testController = createTestIncomeUpdateCalculatorController
+
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(Some(MONTHLY)))
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_OtherInDaysKey))(any())).thenReturn(Future.successful(None))
         when(journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_TotalSalaryKey -> "£3,000")))(any())).thenReturn(Future.successful(Map("" -> "")))
+
         val result = testController.handlePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("totalSalary" -> "£3,000"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipDeductionsPage().url)
       }
     }
 
-    "redirect user back to how to payslip page" when {
+    "redirect user back to how to payslip page with an error form" when {
       "user input has error" in {
         val testController = createTestIncomeUpdateCalculatorController
 
         when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(Some(MONTHLY)))
         when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_OtherInDaysKey))(any())).thenReturn(Future.successful(None))
+
         val result = testController.handlePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("" -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
+        doc.body().text must include(messages("tai.income.error.form.summary"))
+        doc.body().text must include(messages("tai.payslip.title.month"))
         doc.title() must include(messages("tai.payslip.title.month"))
       }
     }
@@ -340,11 +347,14 @@ class IncomeUpdateCalculatorControllerSpec
       "journey cache returns employment name, id and payPeriod" in {
         val testController = createTestIncomeUpdateCalculatorController
 
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
+        val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
+
+        when(journeyCacheService.collectedValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any())).thenReturn(
           Future.successful(
             (
               Seq[String](employerId.toString, "employer name"),
-              Seq[Option[String]](None, None)
+              Seq[Option[String]](Some(MONTHLY), None)
             )
           )
         )
@@ -353,7 +363,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.taxablePayslip.title"))
+        doc.title() must include(messages("tai.taxablePayslip.title.month"))
       }
     }
   }
@@ -362,9 +372,9 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect the user to bonusPaymentsPage page" when {
       "user entered valid taxable pay" in {
         val testController = createTestIncomeUpdateCalculatorController
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TotalSalaryKey))(any())).thenReturn(Future.successful(None))
-        when(journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_TaxablePayKey -> "£3,000")))(any())).thenReturn(Future.successful(Map("" -> "")))
-        val result = testController.handleTaxablePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("taxablePay" -> "£3,000"))
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TotalSalaryKey))(any())).thenReturn(Future.successful(Some("4000")))
+        when(journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_TaxablePayKey -> "3000")))(any())).thenReturn(Future.successful(Map("" -> "")))
+        val result = testController.handleTaxablePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("taxablePay" -> "3000"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url)
       }
@@ -373,13 +383,25 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect user back to how to taxablePayslip page" when {
       "user input has error" in {
         val testController = createTestIncomeUpdateCalculatorController
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TotalSalaryKey))(any())).thenReturn(Future.successful(None))
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(None))
+
+        val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
+        val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
+
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TotalSalaryKey))(any())).thenReturn(Future.successful(Some("4000")))
+        when(journeyCacheService.collectedValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any())).thenReturn(
+          Future.successful(
+            (
+              Seq[String](employerId.toString, "employer name"),
+              Seq[Option[String]](Some(MONTHLY), None)
+            )
+          )
+        )
+
         val result = testController.handleTaxablePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("" -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.taxablePayslip.title"))
+        doc.title() must include(messages("tai.taxablePayslip.title.month"))
       }
     }
   }
@@ -542,11 +564,12 @@ class IncomeUpdateCalculatorControllerSpec
       val bonusPayments = "yes"
       val taxablePay = "8000"
       val bonusAmount = "1000"
+      val payPeriodInDays = "3"
 
       when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
         Future.successful((
           Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments),
-          Seq[Option[String]](Some(taxablePay), Some(bonusAmount))
+          Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
         ))
       )
       val result = testController.checkYourAnswersPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))

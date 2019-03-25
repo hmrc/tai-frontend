@@ -16,6 +16,7 @@
 
 package views.html.incomeTaxComparison
 
+import org.jsoup.Jsoup
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -82,9 +83,6 @@ class MainSpec extends TaiViewSpec {
       doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description",startOfNextTaxYear))
     }
 
-
-
-
     "have the tell us about a change links" in {
       doc(view) must haveLinkElement(id = "companyBenefitsLink",
         href = ApplicationConfig.companyBenefitsLinkUrl,
@@ -105,17 +103,28 @@ class MainSpec extends TaiViewSpec {
       doc must haveLinkWithText(messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
     }
 
+    "does not show the hypothetical banner" in {
+      doc(view) must not(haveH2HeadingWithText(messages("tai.incomeTaxComparison.taxCodes.banner")))
+    }
 
+    "show the hypothetical banner" in {
+      val estimatedJourneyCompleted = IncomeTaxComparisonViewModel("USERNAME", estimatedIncomeTaxComparisonViewModel,
+        TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil),IncomeSourceComparisonViewModel(Nil,Nil), true)
 
+      def journeyCompletedView: Html = views.html.incomeTaxComparison.Main(estimatedJourneyCompleted, true)
+
+      doc(journeyCompletedView) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.taxCodes.banner"))
+    }
   }
 
   private lazy val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
   private lazy val startOfNextTaxYear = Dates.formatDate(TaxYear().next.start)
   private lazy val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 200)
   private lazy val estimatedIncomeTaxComparisonViewModel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
+  val isEstimatedJourneyComplete = false
 
   private lazy val incomeTaxComparisonViewModel = IncomeTaxComparisonViewModel("USERNAME", estimatedIncomeTaxComparisonViewModel,
-    TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil),IncomeSourceComparisonViewModel(Nil,Nil))
+    TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil),IncomeSourceComparisonViewModel(Nil,Nil), isEstimatedJourneyComplete)
 
   override def view: Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModel, true)
 }

@@ -30,7 +30,7 @@
         formForErrorSummary = Some(updateEmploymentDetailsForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", viewmodel.employerName),
+        mainHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", <span class="carry-over">{viewmodel.employerName}</span>),
         preHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")
     )
 }

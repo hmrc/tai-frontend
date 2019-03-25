@@ -62,7 +62,7 @@
                 <div class="subsection">
                 @Link.toInternalPage(
                     id=Some("returnToEmploymentDetails"),
-                    value=Some(messages("tai.updateEmployment.incomeSame.return.link")),
+                    value=Some(model.returnLink),
                     url = routes.TaxAccountSummaryController.onPageLoad.url,
                     cssClasses=Some("button")
                 ).toHtml

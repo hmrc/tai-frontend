@@ -48,10 +48,9 @@ class SameEstimatedPaySpec extends TaiViewSpec with MockitoSugar{
     "display return to employment details link" in {
       doc must haveLinkElement("returnToEmploymentDetails",
         routes.TaxAccountSummaryController.onPageLoad().url,
-        messages("tai.updateEmployment.incomeSame.return.link"))
+        messages("tai.updateEmployment.incomeSame.employment.return.link"))
     }
   }
-
 
   override def view: Html = views.html.incomes.sameEstimatedPay(createViewModel())
 
@@ -59,6 +58,6 @@ class SameEstimatedPaySpec extends TaiViewSpec with MockitoSugar{
 
     val employerName = "Employer"
     val amount = 20000
-    SameEstimatedPayViewModel(employerName,amount)
+    SameEstimatedPayViewModel(employerName,amount, false)
   }
 }

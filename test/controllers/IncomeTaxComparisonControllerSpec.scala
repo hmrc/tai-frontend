@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
-import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.Future
@@ -191,12 +191,14 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
   val codingComponentService = mock[CodingComponentService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
+  val updateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
 
   class TestController() extends IncomeTaxComparisonController(
     mock[AuditConnector],
     taxAccountService,
     employmentService,
     codingComponentService,
+    updateNextYearsIncomeService,
     FakeAuthAction,
     FakeValidatePerson,
     mock[FormPartialRetriever],
@@ -211,7 +213,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
       Future.successful(Seq.empty[CodingComponent]))
     when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(
       Future.successful(Seq(employment)))
-
+    when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any())).thenReturn(Future.successful(false))
   }
 
 }

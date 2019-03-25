@@ -30,17 +30,17 @@
 
 @mainHeading = @{
     if(model.isPension){
-        messages("tai.pension.income.details.mainHeading", model.empOrPensionName, TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+        messages("tai.pension.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRangeSingleLine)
     } else {
-        messages("tai.employment.income.details.mainHeading", model.empOrPensionName, TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+        messages("tai.employment.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRangeSingleLine)
     }
 }
 
 @mainTitle = @{
     if(model.isPension){
-        messages("tai.pension.income.details.mainHeading", model.empOrPensionName, TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+        messages("tai.pension.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRangeSingleLine)
     } else {
-        messages("tai.employment.income.details.mainHeading", model.empOrPensionName, TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+        messages("tai.employment.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRangeSingleLine)
     }
 }
 
@@ -134,7 +134,7 @@
                 <p class="visuallyhidden">
                     @Link.toInternalPage(
                         id=Some("updateIncomeScreenReader"),
-                        url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
+                        url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayLandingPage(model.empId).url,
                         value=Some(messages("tai.income.details.updateTaxableIncome.screenReader"))).toHtml
                 </p>
         </div>

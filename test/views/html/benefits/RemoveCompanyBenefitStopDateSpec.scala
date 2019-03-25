@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 
-class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec{
+class  RemoveCompanyBenefitStopDateSpec extends TaiViewSpec{
 
   "stop date" should {
 

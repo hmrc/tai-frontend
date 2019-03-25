@@ -87,13 +87,20 @@ hr {
     font-size: 36px;
     margin: 0;
 
+    $tablet: 955px;
     $mobile: 768px;
     $mobile-small: 641px;
+    @media (max-width: $tablet) {
+      font-size: 28px;
+    }
     @media (max-width: $mobile) {
       font-size: 22px;
     }
     @media (max-width: $mobile-small) {
       font-size: 19px;
+    }
+    @media(max-width: 355px){
+      font-size: 17px
     }
   }
 }

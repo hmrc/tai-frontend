@@ -37,7 +37,6 @@ class CheckYourAnswersSpec extends TaiViewSpec {
     "display journey confirmation lines" in {
 
       val monthlyPaymentFrequency = "Monthly"
-      val monthLabel = "month"
       val totalPay = "£10,000"
 
       doc must haveCheckYourAnswersSummaryLine(1, messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"))
@@ -46,12 +45,10 @@ class CheckYourAnswersSpec extends TaiViewSpec {
         controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payPeriodPage().url)
 
 
-      doc must haveCheckYourAnswersSummaryLine(2, messages("tai.estimatedPay.update.checkYourAnswers.totalPay", monthLabel))
+      doc must haveCheckYourAnswersSummaryLine(2, messages("tai.estimatedPay.update.checkYourAnswers.grossPay.month"))
       doc must haveCheckYourAnswersSummaryLineAnswer(2, totalPay)
       doc must haveCheckYourAnswersSummaryLineChangeLink(2,
         controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipAmountPage().url)
-
-
 
     }
 
@@ -65,16 +62,17 @@ class CheckYourAnswersSpec extends TaiViewSpec {
   }
 
   override def view = views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel,employerName)
-  def viewModel = CheckYourAnswersViewModel(paymentFrequency,totalPay, hasDeductions, Some(taxablePay),
-    hasBonusOrOvertime, Some(totalBonusOrOvertime))
+  def viewModel = CheckYourAnswersViewModel(paymentFrequency, payPeriodInDays, totalPay, hasDeductions, taxablePay,
+    hasBonusOrOvertime, totalBonusOrOvertime)
 
 
   val paymentFrequency = "monthly"
   val totalPay = "10000"
   val hasDeductions = "Yes"
-  val taxablePay = "1800"
+  val taxablePay = Some("1800")
   val hasBonusOrOvertime = "Yes"
   val hasExtraBonusOrOvertime = "Yes"
-  val totalBonusOrOvertime = "3000"
+  val totalBonusOrOvertime = Some("3000")
+  val payPeriodInDays = Some("3")
 
 }
