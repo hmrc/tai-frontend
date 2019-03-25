@@ -30,9 +30,12 @@ class IabdTaxCodeChangeReasons(totalTax: TotalTax)  {
 
     val whatsChangedPairs = combinedBenefits.filter(pair => pair.previous.isDefined && pair.current.isDefined)
     val whatsNewPairs = combinedBenefits.filter(pair => pair.previous.isEmpty && pair.current.isDefined)
+    val whatsNewUnderpaymentPairs = whatsNewPairs.filter(pair => pair.componentType == UnderPaymentFromPreviousYear || pair.componentType == EstimatedTaxYouOweThisYear)
+    val whatsNewOtherPairs = whatsNewPairs.filterNot(pair => pair.componentType == UnderPaymentFromPreviousYear || pair.componentType == EstimatedTaxYouOweThisYear)
 
-    whatsNewPairs.map(translateNewBenefits(_)) ++
-    whatsChangedPairs.flatMap(translateChangedBenefits(_))
+    whatsNewOtherPairs.map(translateNewBenefits(_)) ++
+      whatsChangedPairs.flatMap(translateChangedBenefits(_)) ++
+      whatsNewUnderpaymentPairs.map(translateNewBenefits(_))
   }
 
   private def translateNewBenefits(pair: CodingComponentPair)(implicit  messages: Messages): String = {

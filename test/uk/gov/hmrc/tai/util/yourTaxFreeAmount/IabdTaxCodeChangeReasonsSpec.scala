@@ -77,6 +77,21 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
       )
     }
 
+    "return all new allowances/deductions in the correct order when you have multiple new allowances/deductions" in {
+      val newDebt = CodingComponentPair(EstimatedTaxYouOweThisYear, None, None, Some(123))
+      val newAllowance = CodingComponentPair(JobExpenses, None, None, Some(123))
+      val newDeduction = CodingComponentPair(CarBenefit, None, None, Some(123))
+
+      val pairs = AllowancesAndDeductionPairs(Seq(newAllowance), Seq(newDebt, newDeduction))
+
+      val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
+
+      reasons mustBe Seq(
+        "There has been an update to your Job expenses",
+        "There has been an update to your Car benefit",
+        "We estimate you have underpaid £24 tax this year")
+    }
+
     "give a reason for an earlier year's adjustment" in {
       val newBenefit = CodingComponentPair(EarlyYearsAdjustment, None, None, Some(123))
       val pairs = AllowancesAndDeductionPairs(Seq(newBenefit), Seq.empty)

@@ -24,8 +24,8 @@ case class TaxCodeChange(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecor
 
   require(current.length > 0, "No current records for Tax Code Change. Current date cannot be determined.")
 
-  val currentPensionCount = current.count(_.pensionIndicator == true)
-  val currentEmploymentCount = current.count(_.pensionIndicator == false)
+  val currentPensionCount: Int = current.count(_.pensionIndicator == true)
+  val currentEmploymentCount: Int = current.count(_.pensionIndicator == false)
   val mostRecentTaxCodeChangeDate: LocalDate = DateHelper.mostRecentDate(current.map(_.startDate))
   val mostRecentPreviousTaxCodeChangeDate: LocalDate = DateHelper.mostRecentDate(previous.map(_.startDate))
 
