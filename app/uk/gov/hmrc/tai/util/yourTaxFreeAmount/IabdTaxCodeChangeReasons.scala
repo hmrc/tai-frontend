@@ -26,13 +26,33 @@ class IabdTaxCodeChangeReasons(totalTax: TotalTax)  {
 
   def reasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
 
-    val combinedBenefits = iabdPairs.allowances ++ iabdPairs.deductions
+  allowanceReasons(iabdPairs) ++ deductionReasons(iabdPairs)
 
-    val whatsChangedPairs = combinedBenefits.filter(pair => pair.previous.isDefined && pair.current.isDefined)
-    val whatsNewPairs = combinedBenefits.filter(pair => pair.previous.isEmpty && pair.current.isDefined)
+}
 
-    whatsNewPairs.flatMap(translateNewBenefits(_)) ++ whatsChangedPairs.flatMap(translateChangedBenefits(_))
-  }
+private def allowanceReasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
+  val whatsChangedPairs = iabdPairs.allowances.filter(pair => pair.previous.isDefined && pair.current.isDefined)
+  val whatsNewPairs = iabdPairs.allowances.filter(pair => pair.previous.isEmpty && pair.current.isDefined)
+
+  whatsNewPairs.flatMap(translateNewBenefits(_)) ++
+    whatsChangedPairs.flatMap(translateChangedBenefits(_))
+}
+
+  private def deductionReasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
+  val whatsChangedPairs = iabdPairs.deductions.filter(pair => pair.previous.isDefined && pair.current.isDefined)
+  val whatsNewPairs = iabdPairs.deductions.filter(pair => pair.previous.isEmpty && pair.current.isDefined)
+  val whatsNewUnderpaymentPairs = whatsNewPairs.filter(pair => pair.componentType == UnderPaymentFromPreviousYear || pair.componentType == EstimatedTaxYouOweThisYear || pair.componentType == EarlyYearsAdjustment)
+  val whatsNewOtherPairs = whatsNewPairs.filterNot(pair => pair.componentType == UnderPaymentFromPreviousYear || pair.componentType == EstimatedTaxYouOweThisYear || pair.componentType == EarlyYearsAdjustment)
+
+  whatsNewOtherPairs.flatMap(translateNewBenefits(_)) ++
+    whatsChangedPairs.flatMap(translateChangedBenefits(_)) ++
+    whatsNewUnderpaymentPairs.flatMap(translateNewBenefits(_))
+}
+
+
+
+
+
 
   private def translateNewBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
 

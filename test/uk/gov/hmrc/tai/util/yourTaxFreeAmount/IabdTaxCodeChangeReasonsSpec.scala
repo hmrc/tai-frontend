@@ -87,8 +87,8 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
       reasons mustBe Seq(
-        "There has been an update to your Job expenses",
-        "There has been an update to your Car benefit",
+        "You now get Job expenses worth £123",
+        "You now get Car benefit worth £123",
         "We estimate you have underpaid £24 tax this year")
     }
 
