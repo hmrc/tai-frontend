@@ -1412,11 +1412,11 @@ tai.taxCodeComparison.add.employer=Mae gennych gyflogaeth newydd gyda {0}
 tai.taxCodeComparison.add.pension=Mae gennych bensiwn preiffat newydd gyda {0}
 tai.taxCodeComparison.removeEmployer=Mae’ch cyflogaeth {0} wedi dod i ben
 tai.taxCodeComparison.title=Gwnaethom newid hyn oherwydd y canlynol:
-tai.taxCodeComparison.iabd.updated=Bu ddiweddaraf am eich {0}
+
 tai.taxCodeComparison.iabd.increased=increased
 tai.taxCodeComparison.iabd.decreased=decreased
 tai.taxCodeComparison.iabd.ammended=Your {0} has been {1} from {2} to {3}
-tai.taxCodeComparison.iabd.added=Rydych nawr yn cael {1} gwerth {1}
+tai.taxCodeComparison.iabd.added=Rydych nawr yn cael {0} gwerth {1}
 tai.taxCodeComparison.iabd.you.have.claimed.expenses=Rydych wedi hawlio treuliau ar gyfer blynyddoedd blaenorol
 tai.taxCodeComparison.iabd.you.have.underpaid=Rydych wedi tandalu {0} o flwyddyn flaenorol
 tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid=Rydym yn amcangyfrif eich bod wedi tandalu {0} o dreth y flwyddyn hon
