@@ -1413,9 +1413,10 @@ tai.taxCodeComparison.add.pension=Mae gennych bensiwn preiffat newydd gyda {0}
 tai.taxCodeComparison.removeEmployer=Mae’ch cyflogaeth {0} wedi dod i ben
 tai.taxCodeComparison.title=Gwnaethom newid hyn oherwydd y canlynol:
 
-tai.taxCodeComparison.iabd.increased=increased
-tai.taxCodeComparison.iabd.decreased=decreased
-tai.taxCodeComparison.iabd.ammended=Your {0} has been {1} from {2} to {3}
+tai.taxCodeComparison.iabd.increased=gynyddu
+tai.taxCodeComparison.iabd.reduced=gostwng
+tai.taxCodeComparison.iabd.ammended=Mae’ch {0} wedi’u {1} o {2} i {3}
+
 tai.taxCodeComparison.iabd.added=Rydych nawr yn cael {0} gwerth {1}
 tai.taxCodeComparison.iabd.you.have.claimed.expenses=Rydych wedi hawlio treuliau ar gyfer blynyddoedd blaenorol
 tai.taxCodeComparison.iabd.you.have.underpaid=Rydych wedi tandalu {0} o flwyddyn flaenorol

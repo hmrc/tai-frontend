@@ -64,7 +64,7 @@ class IabdTaxCodeChangeReasons(totalTax: TotalTax)  {
         if (previousAmount < currentAmount) {
           messages("tai.taxCodeComparison.iabd.increased")
         } else {
-          messages("tai.taxCodeComparison.iabd.decreased")
+          messages("tai.taxCodeComparison.iabd.reduced")
         }
       }
 
