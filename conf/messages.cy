@@ -771,6 +771,7 @@ tai.incomes.updated.pension.seeChanges.text=Mae’n bosibl y bydd y incwm amcang
 tai.incomes.updated.pension.seeChanges.text.old=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich datganiad pensiwn nesaf oddi wrth {0}.
 tai.incomes.workNumber=Rhif y cyflogai:
 
+tai.irregular.title=Diweddarwch eich incwm trethadwy amcangyfrifedig gydag oriau gwaith afreolaidd
 tai.irregular.heading=Ni allwn amcangyfrif eich incwm blynyddol oherwydd bod gennych oriau gwaith afreolaidd.
 tai.irregular.introduction=Nodwch eich amcangyfrif eich hun ar gyfer {0}
 tai.irregular.introduction.p1=Defnyddiwch eich oriau gwaith cyfartalog i amcangyfrif eich incwm ar gyfer {0}.
@@ -1405,7 +1406,7 @@ tai.updateIncome.CYPlus1.success.pension.paragraph2=Mae’n bosibl y bydd y cyfr
 
 tai.updateIncome.CYPlus1.success.confirmedApi.heading.p1=Mae’ch diweddariad wedi dod i law.
 tai.updateIncome.CYPlus1.success.confirmedApi.heading.p2=Bydd eich cyfrif yn cael ei ddiweddaru cyn pen 48 awr.
-tai.updateIncome.CYPlus1.success.confirmedApi.title=Your taxable income for next year has been updated
+tai.updateIncome.CYPlus1.success.confirmedApi.title=Eich incwm amcangyfrifedig wedi''i ddiweddaru ar gyfer {0}
 tai.updateIncome.CYPlus1.success.confirmedApi.p1=Gallwch wirio''ch cyfrif ar ôl yr amser hwn i weld eich manylion cyflog newydd amcangyfrifedig ar gyfer y flwyddyn dreth nesaf.
 tai.updateIncome.CYPlus1.success.confirmedApi.pension.p2=Gall yr incwm amcangyfrifedig hwn newid pan fyddwn yn cael eich datganiad pensiwn terfynol ar gyfer y flwyddyn gyfredol {0}.
 tai.updateIncome.CYPlus1.success.confirmedApi.employment.p2=Gall yr incwm amcangyfrifedig hwn newid pan gawn ni eich diweddariad cyflogres terfynol ar gyfer y flwyddyn dreth gyfredol gan {0}.

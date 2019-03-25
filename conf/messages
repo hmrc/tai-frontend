@@ -770,6 +770,7 @@ tai.incomes.updated.pension.seeChanges.text=This estimated pay may change when w
 tai.incomes.updated.pension.seeChanges.text.old=This calculation may change when we get your next pension statement from {0}.
 tai.incomes.workNumber=Employee no:
 
+tai.irregular.title=Update your estimated taxable income with irregular working hours
 tai.irregular.heading=We cannot calculate your annual income as you have irregular working hours
 tai.irregular.introduction=You will need to enter your own estimate for {0}
 tai.irregular.introduction.p1=Use your average working hours to estimate your income for {0}.
@@ -1402,7 +1403,7 @@ tai.updateIncome.CYPlus1.success.pension.paragraph2=This calculation may change 
 
 tai.updateIncome.CYPlus1.success.confirmedApi.heading.p1=Your update has been received.
 tai.updateIncome.CYPlus1.success.confirmedApi.heading.p2=Your account will be updated within 48 hours.
-tai.updateIncome.CYPlus1.success.confirmedApi.title=Your taxable income for next year has been updated
+tai.updateIncome.CYPlus1.success.confirmedApi.title=Your updated estimated income for {0}
 tai.updateIncome.CYPlus1.success.confirmedApi.p1=You can check your account after this time to see your new estimated pay details for next tax year.
 tai.updateIncome.CYPlus1.success.confirmedApi.pension.p2=This estimated income may change when we get your final pension statement for the current year from {0}.
 tai.updateIncome.CYPlus1.success.confirmedApi.employment.p2=This estimated income may change when we get your final payroll update for the current tax year from {0}.
