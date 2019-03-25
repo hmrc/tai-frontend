@@ -118,7 +118,7 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
 
       reasons mustBe Seq(
         "Your Job expenses has been increased from £50 to £100",
-        "Your Car benefit has been decreased from £5,555 to £2,345"
+        "Your Car benefit has been reduced from £5,555 to £2,345"
       )
     }
   }
