@@ -1399,6 +1399,14 @@ tai.updateIncome.CYPlus1.success.paragraph1=You can see your update by
 tai.updateIncome.CYPlus1.success.link=viewing your income tax comparison for current tax year and next tax year.
 tai.updateIncome.CYPlus1.success.paragraph2=This calculation may change when we get your final payroll update for the current tax year from {0}.
 tai.updateIncome.CYPlus1.success.pension.paragraph2=This calculation may change when we get your final pension statement for the current tax year from {0}.
+
+tai.updateIncome.CYPlus1.success.confirmedApi.heading.p1=Your update has been received.
+tai.updateIncome.CYPlus1.success.confirmedApi.heading.p2=Your account will be updated within 48 hours.
+tai.updateIncome.CYPlus1.success.confirmedApi.title=Your taxable income for next year has been updated
+tai.updateIncome.CYPlus1.success.confirmedApi.p1=You can check your account after this time to see your new estimated pay details for next tax year.
+tai.updateIncome.CYPlus1.success.confirmedApi.pension.p2=This estimated income may change when we get your final pension statement for the current year from {0}.
+tai.updateIncome.CYPlus1.success.confirmedApi.employment.p2=This estimated income may change when we get your final payroll update for the current tax year from {0}.
+
 tai.updateIncome.CYPlus1.same.heading=Your estimated taxable income for {0}
 tai.updateIncome.CYPlus1.same.title=Update your estimated income
 tai.updateIncome.CYPlus1.same.paragraph1=You have entered {0}
