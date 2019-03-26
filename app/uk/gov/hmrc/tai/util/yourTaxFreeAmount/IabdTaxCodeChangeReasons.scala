@@ -25,13 +25,38 @@ import uk.gov.hmrc.tai.util.MonetaryUtil
 class IabdTaxCodeChangeReasons(totalTax: TotalTax)  {
 
   def reasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
+  allowanceReasons(iabdPairs) ++ deductionReasons(iabdPairs)
+  }
 
-    val combinedBenefits = iabdPairs.allowances ++ iabdPairs.deductions
+private def allowanceReasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
+  val whatsChangedPairs = iabdPairs.allowances.filter(isChangedAmount)
+  val whatsNewPairs = iabdPairs.allowances.filter(isNewAmount)
 
-    val whatsChangedPairs = combinedBenefits.filter(pair => pair.previous.isDefined && pair.current.isDefined)
-    val whatsNewPairs = combinedBenefits.filter(pair => pair.previous.isEmpty && pair.current.isDefined)
+  whatsNewPairs.flatMap(translateNewBenefits(_)) ++
+    whatsChangedPairs.flatMap(translateChangedBenefits(_))
+  }
 
-    whatsNewPairs.flatMap(translateNewBenefits(_)) ++ whatsChangedPairs.flatMap(translateChangedBenefits(_))
+  private def deductionReasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
+  val whatsChangedPairs = iabdPairs.deductions.filter(isChangedAmount)
+  val whatsNewPairs = iabdPairs.deductions.filter(isNewAmount)
+  val whatsNewUnderpaymentPairs = whatsNewPairs.filter(reasonIsDebt)
+  val whatsNewOtherPairs = whatsNewPairs.filterNot(reasonIsDebt)
+
+  whatsNewOtherPairs.flatMap(translateNewBenefits(_)) ++
+    whatsChangedPairs.flatMap(translateChangedBenefits(_)) ++
+    whatsNewUnderpaymentPairs.flatMap(translateNewBenefits(_))
+  }
+
+  private def reasonIsDebt(pair: CodingComponentPair): Boolean = {
+    pair.componentType == UnderPaymentFromPreviousYear || pair.componentType == EstimatedTaxYouOweThisYear || pair.componentType == EarlyYearsAdjustment
+  }
+
+  private def isNewAmount(pair: CodingComponentPair): Boolean = {
+    pair.previous.isEmpty && pair.current.isDefined
+  }
+
+  private def isChangedAmount(pair: CodingComponentPair): Boolean = {
+    pair.previous.isDefined && pair.current.isDefined
   }
 
   private def translateNewBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {

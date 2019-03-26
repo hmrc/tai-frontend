@@ -77,6 +77,25 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
       )
     }
 
+    "return all new allowances/deductions in the correct order when you have multiple new allowances/deductions" in {
+      val newDebt = CodingComponentPair(EstimatedTaxYouOweThisYear, None, None, Some(123))
+      val newAllowance = CodingComponentPair(JobExpenses, None, None, Some(123))
+      val changedAllowance = CodingComponentPair(VehicleExpenses, None, Some(100), Some(123))
+      val newDeduction = CodingComponentPair(CarBenefit, None, None, Some(123))
+      val changedDeduction = CodingComponentPair(MedicalInsurance, None, Some(200), Some(123))
+
+      val pairs = AllowancesAndDeductionPairs(Seq(changedAllowance, newAllowance), Seq(changedDeduction, newDebt, newDeduction))
+
+      val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
+
+      reasons mustBe Seq(
+        messagesApi("tai.taxCodeComparison.iabd.added", "Job expenses", "£123"),
+        messagesApi("tai.taxCodeComparison.iabd.ammended", "Vehicle expenses", messagesApi("tai.taxCodeComparison.iabd.increased"), "£100", "£123"),
+        messagesApi("tai.taxCodeComparison.iabd.added", "Car benefit", "£123"),
+        messagesApi("tai.taxCodeComparison.iabd.ammended", "Medical insurance", messagesApi("tai.taxCodeComparison.iabd.reduced"), "£200", "£123"),
+        messagesApi("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid", "£24"))
+    }
+
     "give a reason for an earlier year's adjustment" in {
       val newBenefit = CodingComponentPair(EarlyYearsAdjustment, None, None, Some(123))
       val pairs = AllowancesAndDeductionPairs(Seq(newBenefit), Seq.empty)
