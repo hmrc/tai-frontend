@@ -98,7 +98,8 @@
             @Link.toInternalPage(
                 id=Some("updateEmployer"),
                 url=controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url,
-                value=Some(messages("tai.employment.income.details.updateLinkText"))).toHtml
+                value=Some(messages("tai.employment.income.details.updateLinkText")),
+                dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.employment.income.details.updateLinkText")}"))).toHtml
         </p>
         <p class="visuallyhidden">
         @Link.toInternalPage(
@@ -129,7 +130,8 @@
                     @Link.toInternalPage(
                         id=Some("updateIncome"),
                         url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayLandingPage(model.empId).url,
-                        value=Some(messages("tai.income.details.updateTaxableIncome.update"))).toHtml
+                        value=Some(messages("tai.income.details.updateTaxableIncome.update")),
+                        dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.income.details.updateTaxableIncome.update")}"))).toHtml
                 </p>
                 <p class="visuallyhidden">
                     @Link.toInternalPage(
@@ -148,7 +150,8 @@
                 @Link.toInternalPage(
                     id=Some("viewIncomeReceivedToDate"),
                     url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
-                    value=Some(messages("tai.income.details.checkPaymentsReceived"))).toHtml
+                    value=Some(messages("tai.income.details.checkPaymentsReceived")),
+                    dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.income.details.checkPaymentsReceived")}"))).toHtml
             </p>
             <p class="visuallyhidden">
                 @Link.toInternalPage(
@@ -168,7 +171,8 @@
                 @Link.toInternalPage(
                     id=Some("understandTaxCode"),
                     url=routes.YourTaxCodeController.taxCodes.toString,
-                    value=Some(messages("tai.income.details.taxCode.linkText"))).toHtml
+                    value=Some(messages("tai.income.details.taxCode.linkText")),
+                    dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.income.details.taxCode.linkText")}"))).toHtml
             </p>
         </div>
 
