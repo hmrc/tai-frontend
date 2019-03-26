@@ -89,7 +89,7 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
 
     auditNumberOfTaxCodesReturned(nino)
 
-    trackingService.isAnyIFormInProgress(nino.nino) flatMap { trackingResponse =>
+    trackingService.isAnyIFormInProgress(nino.nino) flatMap { trackingResponse: TimeToProcess =>
 
       if (cyPlusOneEnabled) {
 
@@ -104,11 +104,18 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
             case TaiSuccessResponseWithPayload(_) => {
               val model = WhatDoYouWantToDoViewModel(
                 trackingResponse, cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch, isConfirmedAPIEnabled = confirmedAPIEnabled)
+
+              Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
+
               Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
             }
             case _ => {
-              Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(
-                trackingResponse, isCyPlusOneEnabled = false, isConfirmedAPIEnabled = confirmedAPIEnabled)))
+              val model = WhatDoYouWantToDoViewModel(
+                trackingResponse, isCyPlusOneEnabled = false, isConfirmedAPIEnabled = confirmedAPIEnabled)
+
+              Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
+
+              Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
 
             }
           }
@@ -118,6 +125,9 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
         taxCodeChangeService.hasTaxCodeChanged(nino).map(hasTaxCodeChanged => {
           val model = WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch,
             isConfirmedAPIEnabled = confirmedAPIEnabled)
+
+          Logger.debug(s"wdywtdViewModelCYDisabled $model")
+
           Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
         }
         )
