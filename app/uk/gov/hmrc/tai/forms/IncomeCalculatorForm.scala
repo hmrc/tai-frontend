@@ -148,10 +148,10 @@ case class TaxablePayslipForm(taxablePay: Option[String] = None)
 object TaxablePayslipForm{
   implicit val formats = Json.format[TaxablePayslipForm]
 
-  def createForm(netSalary: Option[String] = None)(implicit messages: Messages): Form[TaxablePayslipForm] = {
+  def createForm(netSalary: Option[String] = None, errorText: String)(implicit messages: Messages): Form[TaxablePayslipForm] = {
     Form[TaxablePayslipForm](
       mapping("taxablePay" -> TaiValidator.validateNewAmounts(
-        messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory"),
+        messages(errorText),
         messages("tai.taxablePayslip.error.form.incomes.input.invalid"),
         messages("error.tai.updateDataEmployment.maxLength"),
         netSalary

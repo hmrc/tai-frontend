@@ -39,15 +39,30 @@ trait DynamicPayPeriodTitle extends EditIncomePayPeriodConstants {
   }
 }
 
-object CommonPayPeriodTitle extends DynamicPayPeriodTitle {
+object GrossPayPeriodTitle extends DynamicPayPeriodTitle {
   def title(payPeriod: Option[String], payPeriodInDays: Option[String])
            (implicit message: Messages): String= {
 
-    val messages = Map(MONTHLY -> "tai.payslip.title.month",
+    val messages = Map(
+      MONTHLY -> "tai.payslip.title.month",
       WEEKLY -> "tai.payslip.title.week",
       FORTNIGHTLY -> "tai.payslip.title.2week",
       OTHER -> "tai.payslip.title.days")
 
     dynamicTitle(payPeriod, payPeriodInDays, messages)
+  }
+}
+
+object TaxablePayPeriod extends DynamicPayPeriodTitle {
+  def title(payPeriod: Option[String], payPeriodInDays: Option[String])
+           (implicit message: Messages): String= {
+
+    val taxableMessages = Map(
+      MONTHLY -> "tai.taxablePayslip.title.month",
+      WEEKLY -> "tai.taxablePayslip.title.week",
+      FORTNIGHTLY -> "tai.taxablePayslip.title.2week",
+      OTHER -> "tai.taxablePayslip.title.days")
+
+    dynamicTitle(payPeriod, payPeriodInDays, taxableMessages)
   }
 }

@@ -25,22 +25,47 @@ class DynamicPayPeriodTitleSpec extends PlaySpec with FakeTaiPlayApplication wit
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  "CommonPayPeriodTitle" must {
-    "be a monthly title" in {
-      CommonPayPeriodTitle.title(Some(MONTHLY), None) mustBe messagesApi("tai.payslip.title.month")
+  "DynamicPayPeriodTitle" must {
+
+    "show gross pay messages" when {
+
+      "gross pay period is monthly" in {
+        GrossPayPeriodTitle.title(Some(MONTHLY), None) mustBe messagesApi("tai.payslip.title.month")
+      }
+
+      "gross pay period is weekly" in {
+        GrossPayPeriodTitle.title(Some(WEEKLY), None) mustBe messagesApi("tai.payslip.title.week")
+      }
+
+      "gross pay period is fortnightly" in {
+        GrossPayPeriodTitle.title(Some(FORTNIGHTLY), None) mustBe messagesApi("tai.payslip.title.2week")
+      }
+
+      "gross pay period is a number of days" in {
+        val numberOfDays = "123"
+        GrossPayPeriodTitle.title(Some(OTHER), Some(numberOfDays)) mustBe messagesApi("tai.payslip.title.days", numberOfDays)
+      }
+
     }
 
-    "be a weekly title" in {
-      CommonPayPeriodTitle.title(Some(WEEKLY), None) mustBe messagesApi("tai.payslip.title.week")
-    }
+    "Display taxable pay messages" when {
 
-    "be a 2 week title" in {
-      CommonPayPeriodTitle.title(Some(FORTNIGHTLY), None) mustBe messagesApi("tai.payslip.title.2week")
-    }
+      "taxable pay period is monthly" in {
+        TaxablePayPeriod.title(Some(MONTHLY), None) mustBe messagesApi("tai.taxablePayslip.title.month")
+      }
 
-    "be a x-day title" in {
-      val numberOfDays = "123"
-      CommonPayPeriodTitle.title(Some(OTHER), Some(numberOfDays)) mustBe messagesApi("tai.payslip.title.days", numberOfDays)
+      "taxable pay period is weekly" in{
+        TaxablePayPeriod.title(Some(WEEKLY), None) mustBe messagesApi("tai.taxablePayslip.title.week")
+      }
+
+      "taxable pay period is fortnightly" in{
+        TaxablePayPeriod.title(Some(FORTNIGHTLY), None) mustBe messagesApi("tai.taxablePayslip.title.2week")
+      }
+
+      "taxable pay period is a number of days" in {
+        val numberOfDays = "123"
+        TaxablePayPeriod.title(Some(OTHER), Some(numberOfDays)) mustBe messagesApi("tai.taxablePayslip.title.days", numberOfDays)
+      }
     }
   }
 }

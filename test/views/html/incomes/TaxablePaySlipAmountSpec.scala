@@ -26,8 +26,10 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmoun
 
 class TaxablePaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIncomePayPeriodConstants {
 
+
   val id = 1
   val employerName = "Employer"
+  val errorMessage = messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory")
   val taxablePayslipViewModel = createViewModel()
 
   "Taxable Pay slip amount view" should {
@@ -45,7 +47,7 @@ class TaxablePaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIn
 
   "display error message" when {
     "the taxable pay has not been entered" in {
-      val formWithErrors = TaxablePayslipForm.createForm().bind(Map("taxablePay" -> ""))
+      val formWithErrors = TaxablePayslipForm.createForm(None, errorMessage).bind(Map("taxablePay" -> ""))
       val viewModelError = createViewModel(formWithErrors)
       val errorView = views.html.incomes.taxablePayslipAmount(viewModelError)
       doc(errorView) must haveErrorLinkWithText(messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory"))
@@ -53,7 +55,7 @@ class TaxablePaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIn
 
   }
 
-  def createViewModel(form: Form[TaxablePayslipForm] = TaxablePayslipForm.createForm()) =
+  def createViewModel(form: Form[TaxablePayslipForm] = TaxablePayslipForm.createForm(None, errorMessage)) =
     TaxablePaySlipAmountViewModel(form, Some(MONTHLY), None, id, employerName)
 
   override def view: Html = views.html.incomes.taxablePayslipAmount(taxablePayslipViewModel)

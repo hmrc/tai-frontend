@@ -30,7 +30,7 @@ object PaySlipAmountViewModel extends EditIncomePayPeriodConstants with DynamicP
             payPeriodInDays: Option[String],
             id: Int,
             employerName: String)(implicit message: Messages): PaySlipAmountViewModel = {
-    val title = CommonPayPeriodTitle.title(payPeriod, payPeriodInDays)
+    val title = GrossPayPeriodTitle.title(payPeriod, payPeriodInDays)
     PaySlipAmountViewModel(payslipForm, title, id, employerName)
   }
 
