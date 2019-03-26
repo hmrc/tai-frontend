@@ -53,11 +53,14 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
                     legendHint=None,
                     ('_groupDivClass, "form-group" ),
                     ('_legendSpanClass, "visually-hidden"),
+                    ('_radioOption1Attributes, Html(s"""data-journey-click="radio - select:${gaEventActionString}:${Messages("tai.howToUpdate.incomeCalculator")}"""") ),
+                    ('_radioOption2Attributes, Html(s"""data-journey-click="radio - select:${gaEventActionString}:${Messages("tai.howToUpdate.enterAnnual")}"""") ),
                     ('_fieldsetAttributes, "id=howToUpdate" )
                 )}
-            <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+            <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'
+                      data-journey-click='button - click:@gaEventActionString:@messages("tai.continue")'/></p>
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url), Some(gaEventActionString))
         }
     </div>
 
