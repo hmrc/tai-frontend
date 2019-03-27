@@ -772,7 +772,7 @@ tai.incomes.updated.pension.seeChanges.text=Mae’n bosibl y bydd y incwm amcang
 tai.incomes.updated.pension.seeChanges.text.old=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich datganiad pensiwn nesaf oddi wrth {0}.
 tai.incomes.workNumber=Rhif y cyflogai:
 
-tai.irregular.heading=Ni allwn amcangyfrif eich incwm blynyddol oherwydd bod gennych oriau gwaith afreolaidd.
+tai.irregular.heading=Ni allwn amcangyfrif eich incwm blynyddol oherwydd bod gennych oriau gwaith afreolaidd
 tai.irregular.introduction=Nodwch eich amcangyfrif eich hun ar gyfer {0}
 tai.irregular.introduction.p1=Defnyddiwch eich oriau gwaith cyfartalog i amcangyfrif eich incwm ar gyfer {0}.
 tai.irregular.option1=cysylltwch â {0} yn y lle cyntaf
