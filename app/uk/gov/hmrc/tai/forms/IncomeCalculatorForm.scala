@@ -24,6 +24,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, EditIncomePayPeriodConstants}
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePayPeriod
 
 case class HowToUpdateForm(howToUpdate: Option[String])
 
@@ -148,10 +149,17 @@ case class TaxablePayslipForm(taxablePay: Option[String] = None)
 object TaxablePayslipForm{
   implicit val formats = Json.format[TaxablePayslipForm]
 
-  def createForm(netSalary: Option[String] = None, errorText: String)(implicit messages: Messages): Form[TaxablePayslipForm] = {
+  def createForm(netSalary: Option[String] = None, payPeriod:Option[String] = None, payPeriodInDays: Option[String] = None)
+                (implicit messages: Messages): Form[TaxablePayslipForm] = {
+
+    val validateErrorMessage = netSalary match {
+      case salary => TaxablePayPeriod.errorMessage(payPeriod, payPeriodInDays)
+      case _ => messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory")
+    }
+
     Form[TaxablePayslipForm](
       mapping("taxablePay" -> TaiValidator.validateNewAmounts(
-        messages(errorText),
+        validateErrorMessage,
         messages("tai.taxablePayslip.error.form.incomes.input.invalid"),
         messages("error.tai.updateDataEmployment.maxLength"),
         netSalary

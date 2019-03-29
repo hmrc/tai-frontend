@@ -51,20 +51,20 @@ class DynamicPayPeriodTitleSpec extends PlaySpec with FakeTaiPlayApplication wit
     "Display taxable pay messages" when {
 
       "taxable pay period is monthly" in {
-        TaxablePayPeriod.title(Some(MONTHLY), None) mustBe messagesApi("tai.taxablePayslip.title.month")
+        TaxablePayPeriod.errorMessage(Some(MONTHLY), None) mustBe messagesApi("tai.taxablePayslip.title.month")
       }
 
       "taxable pay period is weekly" in{
-        TaxablePayPeriod.title(Some(WEEKLY), None) mustBe messagesApi("tai.taxablePayslip.title.week")
+        TaxablePayPeriod.errorMessage(Some(WEEKLY), None) mustBe messagesApi("tai.taxablePayslip.title.week")
       }
 
       "taxable pay period is fortnightly" in{
-        TaxablePayPeriod.title(Some(FORTNIGHTLY), None) mustBe messagesApi("tai.taxablePayslip.title.2week")
+        TaxablePayPeriod.errorMessage(Some(FORTNIGHTLY), None) mustBe messagesApi("tai.taxablePayslip.title.2week")
       }
 
       "taxable pay period is a number of days" in {
         val numberOfDays = "123"
-        TaxablePayPeriod.title(Some(OTHER), Some(numberOfDays)) mustBe messagesApi("tai.taxablePayslip.title.days", numberOfDays)
+        TaxablePayPeriod.errorMessage(Some(OTHER), Some(numberOfDays)) mustBe messagesApi("tai.taxablePayslip.title.days", numberOfDays)
       }
     }
   }

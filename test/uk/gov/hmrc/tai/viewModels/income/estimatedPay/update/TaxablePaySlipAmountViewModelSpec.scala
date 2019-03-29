@@ -30,7 +30,7 @@ class TaxablePaySlipAmountViewModelSpec extends PlaySpec
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val errorMessage = messagesApi("tai.taxablePayslip.error.form.incomes.radioButton.mandatory")
-  val form = TaxablePayslipForm.createForm(None,errorMessage)
+  val form = TaxablePayslipForm.createForm()
   val employerId = 1
   val employerName = "employer name"
 

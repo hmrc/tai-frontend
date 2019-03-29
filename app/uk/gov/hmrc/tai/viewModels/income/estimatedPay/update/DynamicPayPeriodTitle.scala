@@ -54,7 +54,7 @@ object GrossPayPeriodTitle extends DynamicPayPeriodTitle {
 }
 
 object TaxablePayPeriod extends DynamicPayPeriodTitle {
-  def title(payPeriod: Option[String], payPeriodInDays: Option[String])
+  def errorMessage(payPeriod: Option[String], payPeriodInDays: Option[String])
            (implicit message: Messages): String= {
 
     val taxableMessages = Map(
