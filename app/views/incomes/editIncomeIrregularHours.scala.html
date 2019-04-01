@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
 @import includes.compareValueInput
 @import includes.ptaHeader
+@import includes.cancelLink
 @import includes.forms.input
 @import includes.forms.submit
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
@@ -31,10 +32,12 @@
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
+@gaEventActionString = @{"Update your estimated taxable income for current tax year with irregular working hours"}
+
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = None,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.heading,
         preHeadingText = viewModel.preHeading,
         formForErrorSummary=Some(incomeUpdateForm)
@@ -69,12 +72,13 @@
             )
         </div>
 
-        <div class=" form-group">
+        <div class=" form-group" data-journey-click='button - click:@gaEventActionString:@messages("tai.continue")'>
             @submit(Some(messages("tai.submit")))
         </div>
 
     }
 
-    <p><a href="@routes.IncomeSourceSummaryController.onPageLoad(viewModel.employmentId)">@messages("tai.cancel")</a></p>
+    <p>@cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employmentId).url), Some(gaEventActionString))</p>
+
 }
 

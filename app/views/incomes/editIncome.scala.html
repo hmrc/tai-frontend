@@ -100,9 +100,10 @@
             </div>
 
             <div class="form-field-group">
-                <p><input type="submit" class="button" value='@messages("tai.continue")'/></p>
+                <p><input type="submit" class="button" value='@messages("tai.continue")'
+                          data-journey-click='button - click:@gaEventActionString:@messages("tai.continue")'/></p>
 
-                @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url))
+                @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url), Some(gaEventActionString))
             </div>
         }
     </div>
