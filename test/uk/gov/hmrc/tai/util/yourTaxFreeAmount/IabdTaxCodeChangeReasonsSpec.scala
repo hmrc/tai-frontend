@@ -33,7 +33,7 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
 
   val taxFreeInfo = TaxFreeInfo("12-12-2015", 2000, 1000)
   val jobExpensesIncrease = CodingComponentPair(JobExpenses, Some(2), Some(50), Some(100))
-  val carBenefitIncrease = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(2000))
+  val carBenefitDecrease = CodingComponentPair(CarBenefit, Some(1), Some(5555), Some(2345))
   val taxCodeChange = mock[TaxCodeChange]
 
   val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
@@ -64,17 +64,36 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
 
   "starting a new benefit" must {
     "give multiple reasons when you have multiple new benefits" in {
-      val newBenefit1 = CodingComponentPair(JobExpenses, None, None, Some(123))
-      val newBenefit2 = CodingComponentPair(CarBenefit, None, None, Some(123))
+      val newBenefit1 = CodingComponentPair(JobExpenses, None, None, Some(12345))
+      val newBenefit2 = CodingComponentPair(CarBenefit, None, None, Some(98765))
 
       val pairs = AllowancesAndDeductionPairs(Seq(newBenefit1), Seq(newBenefit2))
 
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
       reasons mustBe Seq(
-        "There has been an update to your Job expenses",
-        "There has been an update to your Car benefit"
+        messagesApi("tai.taxCodeComparison.iabd.added", "Job expenses", "£12,345"),
+        messagesApi("tai.taxCodeComparison.iabd.added", "Car benefit", "£98,765")
       )
+    }
+
+    "return all new allowances/deductions in the correct order when you have multiple new allowances/deductions" in {
+      val newDebt = CodingComponentPair(EstimatedTaxYouOweThisYear, None, None, Some(123))
+      val newAllowance = CodingComponentPair(JobExpenses, None, None, Some(123))
+      val changedAllowance = CodingComponentPair(VehicleExpenses, None, Some(100), Some(123))
+      val newDeduction = CodingComponentPair(CarBenefit, None, None, Some(123))
+      val changedDeduction = CodingComponentPair(MedicalInsurance, None, Some(200), Some(123))
+
+      val pairs = AllowancesAndDeductionPairs(Seq(changedAllowance, newAllowance), Seq(changedDeduction, newDebt, newDeduction))
+
+      val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
+
+      reasons mustBe Seq(
+        messagesApi("tai.taxCodeComparison.iabd.added", "Job expenses", "£123"),
+        messagesApi("tai.taxCodeComparison.iabd.ammended", "Vehicle expenses", messagesApi("tai.taxCodeComparison.iabd.increased"), "£100", "£123"),
+        messagesApi("tai.taxCodeComparison.iabd.added", "Car benefit", "£123"),
+        messagesApi("tai.taxCodeComparison.iabd.ammended", "Medical insurance", messagesApi("tai.taxCodeComparison.iabd.reduced"), "£200", "£123"),
+        messagesApi("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid", "£24"))
     }
 
     "give a reason for an earlier year's adjustment" in {
@@ -90,7 +109,7 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
       val pairs = AllowancesAndDeductionPairs(Seq(newBenefit), Seq.empty)
 
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
-      reasons mustBe Seq("You have underpaid £24 from a previous year")
+      reasons mustBe Seq(messagesApi("tai.taxCodeComparison.iabd.you.have.underpaid", "£24"))
     }
 
     "give a reason with the amount for estimated tax owed this year" in {
@@ -98,7 +117,7 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
       val pairs = AllowancesAndDeductionPairs(Seq(newBenefit), Seq.empty)
 
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
-      reasons mustBe Seq("We estimate you have underpaid £24 tax this year")
+      reasons mustBe Seq(messagesApi("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid", "£24"))
     }
   }
 
@@ -113,12 +132,12 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
     }
 
     "give multiple reasons for a tax code change" in {
-      val pairs = AllowancesAndDeductionPairs(Seq(jobExpensesIncrease), Seq(carBenefitIncrease))
+      val pairs = AllowancesAndDeductionPairs(Seq(jobExpensesIncrease), Seq(carBenefitDecrease))
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
       reasons mustBe Seq(
-        "There has been an update to your Job expenses",
-        "There has been an update to your Car benefit"
+        "Your Job expenses has been increased from £50 to £100",
+        "Your Car benefit has been reduced from £5,555 to £2,345"
       )
     }
   }
