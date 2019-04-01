@@ -56,7 +56,7 @@
                     <span class="table-heading" aria-hidden="true" id="employerName">
                     @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
                     </span>
-                    @taxCodeDetail.name
+                    <span class="carry-over">@taxCodeDetail.name</span>
                 </td>
                 @tableRow(taxCodeDetail)
             </tr>
@@ -67,7 +67,8 @@
                     <span class="table-heading" aria-hidden="true" id="employerName">
                     @messages("tai.incomeTaxComparison.taxCodes.table.pensionsReaderText")
                     </span>
-                    @taxCodeDetail.name
+                    <span class="carry-over">@taxCodeDetail.name</span>
+
                 </td>
                 @tableRow(taxCodeDetail)
             </tr>
