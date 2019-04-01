@@ -26,9 +26,10 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, Ta
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
-import uk.gov.hmrc.tai.model.domain.income.{Incomes, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Incomes, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.model.domain.{IncomeSource, TaxAccountSummary, UpdateTaxCodeIncomeRequest}
+import uk.gov.hmrc.tai.model.domain.{IncomeSource, TaxAccountSummary, TaxCodeIncomeComponentType, UpdateTaxCodeIncomeRequest}
+import scala.util.control.NonFatal
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -53,16 +54,14 @@ class TaxAccountConnector @Inject() (httpHandler: HttpHandler) extends CodingCom
 
   def totalTaxUrl(nino: String, year: TaxYear): String = s"$serviceUrl/tai/$nino/tax-account/${year.year}/total-tax"
 
-  def incomeSources(nino: Nino, year: TaxYear, incomeType: String, status: String)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-    httpHandler.getFromApi(incomeSourceUrl(nino.nino, year, incomeType, status)).map (
-      json =>
-        TaiSuccessResponseWithPayload((json \ "data").as[Seq[IncomeSource]])
-      ) recover {
-      case e: Exception =>
-        Logger.warn(s"Couldn't retrieve $status $incomeType income sources for $nino with exception:${e.getMessage}",e)
-
-        TaiTaxAccountFailureResponse(e.getMessage)
-    }
+  def incomeSources(nino: Nino, year: TaxYear, incomeType: TaxCodeIncomeComponentType, status: TaxCodeIncomeSourceStatus)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+    httpHandler.getFromApi(incomeSourceUrl(nino = nino.nino, year = year, incomeType = incomeType.toString, status = status.toString)).map (
+    json =>
+      TaiSuccessResponseWithPayload((json \ "data").as[Seq[IncomeSource]])
+    ) recover {
+    case NonFatal(e) =>
+      Logger.warn(s"Couldn't retrieve $status $incomeType income sources for $nino with exception:${e.getMessage}",e)
+      TaiTaxAccountFailureResponse(e.getMessage)
   }
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
@@ -103,7 +102,7 @@ class TaxAccountConnector @Inject() (httpHandler: HttpHandler) extends CodingCom
       json =>
         TaiSuccessResponseWithPayload((json \ "data").as[TaxAccountSummary])
       ) recover {
-      case e: Exception =>
+      case NonFatal(e) =>
         Logger.warn(s"Couldn't retrieve tax summary for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }

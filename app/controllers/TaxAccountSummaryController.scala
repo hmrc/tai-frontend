@@ -32,17 +32,16 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{Employment, IncomeSource, TaxAccountSummary}
-import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
-import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 
 import scala.concurrent.Future
 
 class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                                             employmentService: EmploymentService,
                                             taxAccountService: TaxAccountService,
+                                            taxAccountSummaryService: TaxAccountSummaryService,
                                             auditService: AuditService,
                                             personService: PersonService,
                                             val auditConnector: AuditConnector,
@@ -68,39 +67,11 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                 message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
                 Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
               case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
-                taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
+                taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
                   Ok(views.html.incomeTaxSummary(vm))
                 }
               case _ => throw new RuntimeException("Failed to fetch tax account summary details")
             }
           }
   }
-
-  private def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)
-                                        (implicit hc: HeaderCarrier, messages: Messages): Future[TaxAccountSummaryViewModel] =
-    for {
-      livePensionIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "PensionIncome", "Live")
-      liveEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "EmploymentIncome", "Live")
-      ceasedEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "EmploymentIncome", "Ceased")
-      nonMatchingCeasedEmployments <- employmentService.ceasedEmployments(nino, TaxYear())
-      nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
-      isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
-    } yield {
-      (livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources, nonMatchingCeasedEmployments, nonTaxCodeIncome) match {
-        case (TaiSuccessResponseWithPayload(livePensionIncomeSources: Seq[IncomeSource]),
-        TaiSuccessResponseWithPayload(liveEmploymentIncomeSources: Seq[IncomeSource]),
-        TaiSuccessResponseWithPayload(ceasedEmploymentIncomeSources: Seq[IncomeSource]),
-        nonMatchingCeasedEmployments: Seq[Employment],
-        TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
-          TaxAccountSummaryViewModel(taxAccountSummary,
-            isAnyFormInProgress,
-            nonTaxCodeIncome,
-            livePensionIncomeSources,
-            liveEmploymentIncomeSources,
-            ceasedEmploymentIncomeSources,
-            nonMatchingCeasedEmployments)(messages)
-        case _ => throw new RuntimeException("Failed to fetch income details")
-      }
-    }
-
 }

@@ -355,6 +355,15 @@ class EmploymentsConnectorSpec extends PlaySpec
        |   }
        |}""".stripMargin
 
+  private val zeroCeasedEmployments =
+    """|{
+       |   "data":[
+       |
+       |      ]
+       |
+       |}""".stripMargin
+
+
   private val anEmployment =
     """{
           "data" : {
@@ -422,32 +431,6 @@ class EmploymentsConnectorSpec extends PlaySpec
  |            "receivingOccupationalPension" : true
  |          }]}
         }""".stripMargin
-
-
-  private val zeroCeasedEmployments =
-    """|{
-       |   "data":[
-       |
-       |      ]
-       |
-       |}""".stripMargin
-
-  private val aCeasedEmployment =
-    """{
-          "data" : [{
-            "name": "company name",
-            "payrollNumber": "123",
-            "startDate": "2016-05-26",
-            "endDate": "2016-05-26",
-            "annualAccounts": [],
-            "taxDistrictNumber": "123",
-            "payeNumber": "321",
-            "sequenceNumber": 2,
-            "isPrimary": true,
-            "hasPayrolledBenefit" : false,
-            "receivingOccupationalPension": false
-          }]
-        }"""
 
   private val oneCeasedEmployment =
     """{

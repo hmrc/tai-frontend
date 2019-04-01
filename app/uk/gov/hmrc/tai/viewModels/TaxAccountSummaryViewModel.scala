@@ -25,7 +25,6 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service.TimeToProcess
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
-import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 
 
 case class TaxAccountSummaryViewModel(header: String,
@@ -41,27 +40,27 @@ case class TaxAccountSummaryViewModel(header: String,
                                       otherIncomeSources: Seq[IncomeSourceViewModel]
                                      )
 
+case class IncomesSources(livePensionIncomeSources: Seq[IncomeSource], liveEmploymentIncomeSources: Seq[IncomeSource], ceasedEmploymentIncomeSources: Seq[IncomeSource])
+
 object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter {
 
   def apply(taxAccountSummary: TaxAccountSummary,
             isAnyFormInProgress: TimeToProcess,
             nonTaxCodeIncome: NonTaxCodeIncome,
-            livePensionIncomeSources: Seq[IncomeSource],
-            liveEmploymentIncomeSources: Seq[IncomeSource],
-            ceasedEmploymentIncomeSources: Seq[IncomeSource],
+            incomesSources: IncomesSources,
             nonMatchingCeasedEmployments: Seq[Employment])(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
-    val header = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
-    val title = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+    val header: String = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+    val title: String = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
 
     val taxFreeAmount: String = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
     val estimatedIncomeTaxAmount: String = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
 
-    val employmentViewModels: Seq[IncomeSourceViewModel] = liveEmploymentIncomeSources.map(IncomeSourceViewModel(_))
+    val employmentViewModels: Seq[IncomeSourceViewModel] = incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel(_))
 
-    val pensionsViewModels: Seq[IncomeSourceViewModel] = livePensionIncomeSources.map(IncomeSourceViewModel(_))
+    val pensionsViewModels: Seq[IncomeSourceViewModel] = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel(_))
 
-    val ceasedEmploymentViewModels: Seq[IncomeSourceViewModel] = ceasedEmploymentIncomeSources.map(IncomeSourceViewModel(_)) ++
+    val ceasedEmploymentViewModels: Seq[IncomeSourceViewModel] = incomesSources.ceasedEmploymentIncomeSources.map(IncomeSourceViewModel(_)) ++
       nonMatchingCeasedEmployments.map(IncomeSourceViewModel(_))
 
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
@@ -78,163 +77,5 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter 
       displayIyaBanner = taxAccountSummary.totalInYearAdjustmentIntoCY > 0,
       isAnyFormInProgress = isAnyFormInProgress,
       otherIncomeSources = IncomeSourceViewModel(nonTaxCodeIncome))
-  }
-
-}
-
-case class IncomeSourceViewModel(name: String,
-                                 amount: String,
-                                 taxCode: String,
-                                 displayTaxCode: Boolean,
-                                 payrollNumber: String,
-                                 displayPayrollNumber: Boolean,
-                                 endDate: String,
-                                 displayEndDate: Boolean,
-                                 detailsLinkLabel: String,
-                                 detailsLinkUrl: String,
-                                 displayDetailsLink: Boolean = true
-                                )
-
-object IncomeSourceViewModel extends ViewModelHelper {
-
-  def apply(employment: Employment)(implicit messages: Messages): IncomeSourceViewModel = {
-
-    val amountNumeric: BigDecimal = (
-      for {
-        latestAccount <- employment.latestAnnualAccount
-        latestPayment <- latestAccount.latestPayment
-      } yield latestPayment.amountYearToDate
-      ).getOrElse(0)
-
-    val amountString = if (amountNumeric != BigDecimal(0)) withPoundPrefixAndSign(MoneyPounds(amountNumeric, 0)) else ""
-
-    val endDate: Option[String] = employment.endDate.map(Dates.formatDate(_))
-
-    IncomeSourceViewModel(
-      employment.name,
-      amountString,
-      "",
-      displayTaxCode = false,
-      employment.payrollNumber.getOrElse(""),
-      displayPayrollNumber = employment.payrollNumber.isDefined,
-      endDate.getOrElse(""),
-      displayEndDate = endDate.isDefined,
-      messages("tai.incomeTaxSummary.employment.link"),
-      controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url
-    )
-  }
-
-  def apply(incomeSource: IncomeSource)(implicit messages: Messages): IncomeSourceViewModel = {
-
-    val endDate: Option[String] = incomeSource.employment.endDate.map(Dates.formatDate(_))
-    val detailsLinkLabel = incomeSource.taxCodeIncome.componentType match {
-      case EmploymentIncome if incomeSource.taxCodeIncome.status == Live => messages("tai.incomeTaxSummary.employmentAndBenefits.link")
-      case EmploymentIncome if incomeSource.taxCodeIncome.status != Live => messages("tai.incomeTaxSummary.employment.link")
-      case PensionIncome => messages("tai.incomeTaxSummary.pension.link")
-      case _ => messages("tai.incomeTaxSummary.income.link")
-    }
-
-    val incomeSourceSummaryUrl =
-      if (incomeSource.taxCodeIncome.componentType == EmploymentIncome && incomeSource.taxCodeIncome.status != Live)
-        {
-          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(incomeSource.employment.sequenceNumber).url
-        }
-      else
-        {
-          controllers.routes.IncomeSourceSummaryController.onPageLoad(incomeSource.employment.sequenceNumber).url
-        }
-
-    IncomeSourceViewModel(
-      incomeSource.employment.name,
-      withPoundPrefixAndSign(MoneyPounds(incomeSource.taxCodeIncome.amount, 0)),
-      incomeSource.taxCodeIncome.taxCodeWithEmergencySuffix,
-      incomeSource.taxCodeIncome.status == Live,
-      incomeSource.employment.payrollNumber.getOrElse(""),
-      incomeSource.employment.payrollNumber.isDefined,
-      endDate.getOrElse(""),
-      incomeSource.taxCodeIncome.status != Live && endDate.isDefined,
-      detailsLinkLabel,
-      incomeSourceSummaryUrl)
-  }
-
-  def apply(taxCodeIncome: TaxCodeIncome,
-            employment: Employment)(implicit messages: Messages): IncomeSourceViewModel = {
-
-    val endDate: Option[String] = employment.endDate.map( Dates.formatDate(_) )
-    val detailsLinkLabel = taxCodeIncome.componentType match {
-      case EmploymentIncome if taxCodeIncome.status == Live => messages("tai.incomeTaxSummary.employmentAndBenefits.link")
-      case EmploymentIncome if taxCodeIncome.status != Live => messages("tai.incomeTaxSummary.employment.link")
-      case PensionIncome => messages("tai.incomeTaxSummary.pension.link")
-      case _ => messages("tai.incomeTaxSummary.income.link")
-    }
-
-    val incomeSourceSummaryUrl =
-      if(taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status != Live)
-        {
-          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url
-        }
-      else
-        {
-          controllers.routes.IncomeSourceSummaryController.onPageLoad(employment.sequenceNumber).url
-        }
-
-    IncomeSourceViewModel(
-      employment.name,
-      withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0)),
-      taxCodeIncome.taxCodeWithEmergencySuffix,
-      taxCodeIncome.status == Live,
-      employment.payrollNumber.getOrElse(""),
-      employment.payrollNumber.isDefined,
-      endDate.getOrElse(""),
-      taxCodeIncome.status != Live && endDate.isDefined,
-      detailsLinkLabel,
-      incomeSourceSummaryUrl)
-  }
-
-  def apply(nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): Seq[IncomeSourceViewModel] = {
-
-    val untaxedInterest = nonTaxCodeIncome.untaxedInterest.map(u =>
-      IncomeSourceViewModel(
-        messages("tai.typeDecodes." + u.incomeComponentType.toString),
-        withPoundPrefixAndSign(MoneyPounds(u.amount, 0)),
-        "",
-        displayTaxCode = false,
-        "",
-        displayPayrollNumber = false,
-        "",
-        displayEndDate = false,
-        messages("tai.bbsi.viewDetails"),
-        controllers.income.bbsi.routes.BbsiController.untaxedInterestDetails().url,
-        displayDetailsLink = u.bankAccounts.nonEmpty
-      )
-    )
-
-    val otherIncomeSources = nonTaxCodeIncome.otherNonTaxCodeIncomes.withFilter(
-      _.incomeComponentType != BankOrBuildingSocietyInterest
-    ).map(otherNonTaxCodeIncome => {
-
-      val model = IncomeSourceViewModel(
-        messages("tai.typeDecodes." + otherNonTaxCodeIncome.incomeComponentType.toString),
-        withPoundPrefixAndSign(MoneyPounds(otherNonTaxCodeIncome.amount, 0)),
-        "",
-        displayTaxCode = false,
-        "",
-        displayPayrollNumber = false,
-        "",
-        displayEndDate = false,
-        messages("tai.updateOrRemove"),
-        ""
-      )
-      otherNonTaxCodeIncome.incomeComponentType match {
-        case _: OtherIncomes => model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url)
-        case _: TaxableStateBenefits => model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(StateBenefitsIform).url)
-        case _: EmploymentPensions => model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url)
-        case _: SavingAndInvestments => model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(InvestIncomeIform).url)
-        case _ => model.copy(displayDetailsLink = false)
-      }
-    }
-    )
-
-    otherIncomeSources
   }
 }
