@@ -57,7 +57,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 
             @submit(gaEventAction = Some(gaEventActionString))
-            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+            @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(id).url))
         }
     </div>
 }

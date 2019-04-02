@@ -582,9 +582,14 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def bonusOvertimeAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
-          mandatoryValues =>
-            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), mandatoryValues(0).toInt, mandatoryValues(1)))
+
+        for {
+          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+          bonusOvertimeAmount <- journeyCacheService.currentValue(UpdateIncome_BonusOvertimeAmountKey)
+        } yield {
+          val form = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
+          Ok(views.html.incomes.bonusPaymentAmount(form, id, employerName))
         }
   }
 
@@ -704,9 +709,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         }
   }
 
-  private def incomeTypeIdentifier(isPension: Boolean): String
-
-  = {
+  private def incomeTypeIdentifier(isPension: Boolean): String = {
     if (isPension) {
       TaiConstants.IncomeTypePension
     } else {

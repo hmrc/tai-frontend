@@ -547,17 +547,19 @@ class IncomeUpdateCalculatorControllerSpec
 
   "bonusOvertimeAmountPage" must {
     "display bonusPaymentAmount" in {
-
       val testController = createTestIncomeUpdateCalculatorController
-      implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
-      val employerName = "employer1"
+      val prepopulatedAmount = "313321"
 
-      when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(
-        Future.successful(Seq(employerId.toString, employerName)))
+      when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_BonusOvertimeAmountKey))(any()))
+        .thenReturn(Future.successful(Some(prepopulatedAmount)))
+
+      implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
 
       val result: Future[Result] = testController.bonusOvertimeAmountPage()(fakeRequest)
       status(result) mustBe OK
-      result rendersTheSameViewAs bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), employerId, employerName)
+
+      val expectedForm = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(Some(prepopulatedAmount)))
+      result rendersTheSameViewAs bonusPaymentAmount(expectedForm, employerId, EmployerName)
     }
   }
 
