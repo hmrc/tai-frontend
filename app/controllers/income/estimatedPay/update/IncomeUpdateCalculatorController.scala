@@ -365,7 +365,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           sendActingAttorneyAuditEvent("getPayslipAmountPage")
 
           val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
-          val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
+          val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TotalSalaryKey)
 
           journeyCacheService.collectedValues(mandatoryKeys, optionalKeys) map
             tupled {
@@ -376,8 +376,13 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
                   val payPeriod = optionalSeq(0)
                   val payPeriodInDays = optionalSeq(1)
+                  val totalSalary = optionalSeq(2)
+
                   val errorMessage = "tai.payslip.error.form.totalPay.input.mandatory"
-                  PaySlipAmountViewModel(PayslipForm.createForm(errorMessage), payPeriod, payPeriodInDays, id, employerName)
+
+                  val paySlipForm = PayslipForm.createForm(errorMessage).fill(PayslipForm(totalSalary))
+
+                  PaySlipAmountViewModel(paySlipForm, payPeriod, payPeriodInDays, id, employerName)
                 }
 
                 Ok(views.html.incomes.payslipAmount(viewModel))
@@ -396,7 +401,9 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
           payPeriodInDays <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
         } yield {
+
           val errorMessage = CommonPayPeriodTitle.title(payPeriod, payPeriodInDays)
+
           PayslipForm.createForm(errorMessage).bindFromRequest().fold(
             formWithErrors => {
               val viewModel = PaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, id, employerName)

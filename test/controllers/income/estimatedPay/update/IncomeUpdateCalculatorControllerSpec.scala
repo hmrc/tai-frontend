@@ -299,7 +299,7 @@ class IncomeUpdateCalculatorControllerSpec
           Future.successful(
             (
               Seq[String](employerId.toString, "employer name"),
-              Seq[Option[String]](Some(MONTHLY), None)
+              Seq[Option[String]](Some(MONTHLY), None, None)
             )
           )
         )
@@ -309,6 +309,26 @@ class IncomeUpdateCalculatorControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.payslip.title.month"))
+      }
+
+      "journey cache returns a prepopulated pay slip amount" in {
+        val testController = createTestIncomeUpdateCalculatorController
+        val prepopulatedAmount = "998787"
+
+        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+          Future.successful(
+            (
+              Seq[String](employerId.toString, "employer name"),
+              Seq[Option[String]](Some(MONTHLY), None, Some(prepopulatedAmount))
+            )
+          )
+        )
+
+        val result = testController.payslipAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.body().toString must include(prepopulatedAmount)
       }
     }
   }
