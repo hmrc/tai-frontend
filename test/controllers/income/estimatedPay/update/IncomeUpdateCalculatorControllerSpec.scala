@@ -35,7 +35,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, BonusPaymentsForm}
+import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, BonusPaymentsForm, YesNoForm}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
@@ -488,17 +488,18 @@ class IncomeUpdateCalculatorControllerSpec
   "bonusPaymentsPage" must {
     "display bonusPayments" in {
       val testController = createTestIncomeUpdateCalculatorController
-      val employerName = "employer1"
-
+      val cachedAmount = "1231231"
       implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-      when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(
-        Future.successful(Seq(employerId.toString, employerName)))
+      when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_BonusPaymentsKey))(any())).thenReturn(Future.successful(Some(cachedAmount)))
 
       val result: Future[Result] = testController.bonusPaymentsPage()(fakeRequest)
       status(result) mustBe OK
-      result rendersTheSameViewAs bonusPayments(BonusPaymentsForm.createForm, employerId, employerName)
 
+      val expectedForm = BonusPaymentsForm.createForm.fill(YesNoForm(Some(cachedAmount)))
+      val expectedView = bonusPayments(expectedForm, employerId, EmployerName)
+
+      result rendersTheSameViewAs expectedView
     }
   }
 

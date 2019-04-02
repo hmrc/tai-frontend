@@ -412,16 +412,16 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             formData => {
               formData match {
                 case PayslipForm(Some(value)) =>
-                   journeyCache(UpdateIncome_TotalSalaryKey, Map(UpdateIncome_TotalSalaryKey -> value)) map { _ =>
-                     Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage())
-                   }
+                  journeyCache(UpdateIncome_TotalSalaryKey, Map(UpdateIncome_TotalSalaryKey -> value)) map { _ =>
+                    Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage())
+                  }
                 case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage()))
               }
             }
           )
         }
 
-    result.flatMap(identity)
+        result.flatMap(identity)
   }
 
   def taxablePayslipAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -541,9 +541,14 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit person =>
       implicit request =>
         sendActingAttorneyAuditEvent("getBonusPaymentsPage")
-        journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
-          mandatoryValues =>
-            Ok(views.html.incomes.bonusPayments(BonusPaymentsForm.createForm, mandatoryValues(0).toInt, mandatoryValues(1)))
+
+        for {
+          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+          bonusPayment <- journeyCacheService.currentValue(UpdateIncome_BonusPaymentsKey)
+        } yield {
+          val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
+          Ok(views.html.incomes.bonusPayments(form, id, employerName))
         }
   }
 
@@ -691,7 +696,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
           val employmentAmount = income.copy(newAmount = convertedNetAmount)
 
-          if(employmentAmount.newAmount == income.oldAmount) {
+          if (employmentAmount.newAmount == income.oldAmount) {
             Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
           } else {
             Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = employmentAmount).get))

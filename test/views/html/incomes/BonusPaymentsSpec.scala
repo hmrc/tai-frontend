@@ -36,7 +36,7 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesCon
 
   "Bonus payments view" should {
     behave like pageWithBackLink
-    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(Id).url))
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(Id).url))
     behave like pageWithCombinedHeader(
       messages("tai.bonusPayments.preHeading", employerName),
       messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited))
