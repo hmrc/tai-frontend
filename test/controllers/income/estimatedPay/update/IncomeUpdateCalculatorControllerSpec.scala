@@ -254,6 +254,10 @@ class IncomeUpdateCalculatorControllerSpec
     "display payPeriod page" when {
       "journey cache returns employment name and id" in {
         val testController = createTestIncomeUpdateCalculatorController
+
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(Some(MONTHLY)))
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_OtherInDaysKey))(any())).thenReturn(Future.successful(None))
+
         val result = testController.payPeriodPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 

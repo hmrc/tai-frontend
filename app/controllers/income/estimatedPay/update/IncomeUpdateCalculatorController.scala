@@ -23,6 +23,7 @@ import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
 import play.api.Play.current
+import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
@@ -320,8 +321,11 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+          payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
+          payPeriodInDays <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
         } yield {
-          Ok(views.html.incomes.payPeriod(PayPeriodForm.createForm(None), id, employerName))
+          val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
+          Ok(views.html.incomes.payPeriod(form, id, employerName))
         }
   }
 
