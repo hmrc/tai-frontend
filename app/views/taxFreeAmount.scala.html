@@ -105,7 +105,7 @@
 
         <div class="grid grid-1-3">
             <div class="inner-block">
-                <nav class="section">
+                <nav class="section">paye-income-tax-estimate
                     <h2 class="heading-section">@Messages("tai.taxCode.sideBar.heading")</h2>
 
                     <div class="link-list">
@@ -117,11 +117,18 @@
                             dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("check.your.tax.free.amount")}"))).toHtml
 
                         @Link.toInternalPage(
+                            id=Some("incomeTaxEstimateLink"),
+                            url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+                            value=Some(Messages("check.your.income.tax.estimate")),
+                            cssClasses=Some("link-list__item"),
+                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("check.your.income.tax.estimate")}"))).toHtml
+
+                        @Link.toInternalPage(
                             id=Some("taxableIncomeLink"),
                             url=routes.TaxAccountSummaryController.onPageLoad.url,
-                            value=Some(Messages("tai.incomeTaxSummary.link")),
+                            value=Some(Messages("return.to.your.income.tax.summary")),
                             cssClasses=Some("link-list__item"),
-                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxCode.taxableIncome.link")}"))).toHtml
+                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("return.to.your.income.tax.summary")}"))).toHtml
                     </div>
                 </nav>
             </div>
