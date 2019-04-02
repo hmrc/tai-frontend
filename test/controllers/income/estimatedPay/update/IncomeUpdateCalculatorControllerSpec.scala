@@ -35,7 +35,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, BonusPaymentsForm, YesNoForm}
+import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
@@ -43,9 +43,9 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.constants.{EditIncomePayPeriodConstants, _}
-import views.html.incomes.{bonusPaymentAmount, bonusPayments}
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
+import views.html.incomes.{bonusPaymentAmount, bonusPayments, payslipAmount, taxablePayslipAmount}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -313,22 +313,28 @@ class IncomeUpdateCalculatorControllerSpec
 
       "journey cache returns a prepopulated pay slip amount" in {
         val testController = createTestIncomeUpdateCalculatorController
-        val prepopulatedAmount = "998787"
+        val cachedAmount = Some("998787")
+        val payPeriod = Some(MONTHLY)
 
         when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
-              Seq[String](employerId.toString, "employer name"),
-              Seq[Option[String]](Some(MONTHLY), None, Some(prepopulatedAmount))
-            )
+            (Seq[String](employerId.toString, EmployerName),
+              Seq[Option[String]](payPeriod, None, cachedAmount))
           )
         )
 
-        val result = testController.payslipAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
+        val result = testController.payslipAmountPage()(fakeRequest)
         status(result) mustBe OK
 
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.body().toString must include(prepopulatedAmount)
+        val expectedForm = PayslipForm
+                                            .createForm(messages("tai.payslip.error.form.totalPay.input.mandatory"))
+                                            .fill(PayslipForm(cachedAmount))
+
+        val expectedViewModel = PaySlipAmountViewModel(expectedForm, payPeriod, None, employerId, EmployerName)
+        val expectedView = payslipAmount(expectedViewModel)
+
+        result rendersTheSameViewAs expectedView
       }
     }
   }
@@ -370,27 +376,27 @@ class IncomeUpdateCalculatorControllerSpec
     "display taxablePayslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
         val testController = createTestIncomeUpdateCalculatorController
-        val prepopulatedAmount = "9888787"
+        val cachedAmount = Some("9888787")
+        val payPeriod = Some(MONTHLY)
 
         val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
         val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TaxablePayKey)
 
-
         when(journeyCacheService.collectedValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any())).thenReturn(
           Future.successful(
-            (
-              Seq[String](employerId.toString, "employer name"),
-              Seq[Option[String]](Some(MONTHLY), None, Some(prepopulatedAmount))
-            )
+            (Seq[String](employerId.toString, EmployerName),
+              Seq[Option[String]](payPeriod, None, cachedAmount))
           )
         )
 
-        val result = testController.taxablePayslipAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+        val result = testController.taxablePayslipAmountPage()(fakeRequest)
         status(result) mustBe OK
 
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.taxablePayslip.title.month"))
-        doc.body().toString must include(prepopulatedAmount)
+        val expectedForm = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(cachedAmount))
+        val expectedViewModel = TaxablePaySlipAmountViewModel(expectedForm, payPeriod, None, employerId, EmployerName)
+        result rendersTheSameViewAs taxablePayslipAmount(expectedViewModel)
       }
     }
   }
@@ -548,17 +554,17 @@ class IncomeUpdateCalculatorControllerSpec
   "bonusOvertimeAmountPage" must {
     "display bonusPaymentAmount" in {
       val testController = createTestIncomeUpdateCalculatorController
-      val prepopulatedAmount = "313321"
+      val cachedAmount = "313321"
 
       when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_BonusOvertimeAmountKey))(any()))
-        .thenReturn(Future.successful(Some(prepopulatedAmount)))
+        .thenReturn(Future.successful(Some(cachedAmount)))
 
       implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
 
       val result: Future[Result] = testController.bonusOvertimeAmountPage()(fakeRequest)
       status(result) mustBe OK
 
-      val expectedForm = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(Some(prepopulatedAmount)))
+      val expectedForm = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(Some(cachedAmount)))
       result rendersTheSameViewAs bonusPaymentAmount(expectedForm, employerId, EmployerName)
     }
   }
