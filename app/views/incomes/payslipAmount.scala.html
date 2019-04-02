@@ -58,6 +58,6 @@
         <input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/>
     }
 
-    @cancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.id).url))
+    @cancelLink(Call("GET", controllers.routes.IncomeController.cancel(viewModel.id).url))
 
 }
