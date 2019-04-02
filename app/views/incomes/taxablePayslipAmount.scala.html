@@ -59,7 +59,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
             )
 
             @submit()
-            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.id).url))
+            @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.id).url))
 
         }
     </div>

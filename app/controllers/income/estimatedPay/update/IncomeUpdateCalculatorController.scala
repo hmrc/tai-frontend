@@ -430,7 +430,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         sendActingAttorneyAuditEvent("getTaxablePayslipAmountPage")
 
         val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
-        val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
+        val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TaxablePayKey)
 
         journeyCacheService.collectedValues(mandatoryKeys, optionalKeys) map
           tupled {
@@ -441,7 +441,10 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
                 val payPeriod = optionalSeq(0)
                 val payPeriodInDays = optionalSeq(1)
-                TaxablePaySlipAmountViewModel(TaxablePayslipForm.createForm(), payPeriod, payPeriodInDays, id, employerName)
+                val taxablePayKey = optionalSeq(2)
+
+                val form = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(taxablePayKey))
+                TaxablePaySlipAmountViewModel(form, payPeriod, payPeriodInDays, id, employerName)
               }
               Ok(views.html.incomes.taxablePayslipAmount(viewModel))
             }

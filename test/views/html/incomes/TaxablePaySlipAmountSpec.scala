@@ -34,7 +34,7 @@ class TaxablePaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIn
     behave like pageWithTitle(messages("tai.taxablePayslip.title.month", MONTHLY))
     behave like pageWithCombinedHeader(messages("tai.howToUpdate.preHeading", employerName), messages("tai.taxablePayslip.title.month", MONTHLY))
     behave like pageWithBackLink
-    behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(taxablePayslipViewModel.id))
+    behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(taxablePayslipViewModel.id))
     behave like pageWithButtonForm("/check-income-tax/update-income/taxable-payslip-amount", messages("tai.submit"))
   }
 

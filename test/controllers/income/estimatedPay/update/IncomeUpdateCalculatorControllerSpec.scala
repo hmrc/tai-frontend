@@ -51,7 +51,7 @@ import scala.concurrent.Future
 import scala.util.Random
 
 class IncomeUpdateCalculatorControllerSpec
-    extends PlaySpec
+  extends PlaySpec
     with FakeTaiPlayApplication
     with MockitoSugar
     with JourneyCacheConstants
@@ -370,15 +370,17 @@ class IncomeUpdateCalculatorControllerSpec
     "display taxablePayslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
         val testController = createTestIncomeUpdateCalculatorController
+        val prepopulatedAmount = "9888787"
 
         val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
-        val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
+        val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TaxablePayKey)
+
 
         when(journeyCacheService.collectedValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any())).thenReturn(
           Future.successful(
             (
               Seq[String](employerId.toString, "employer name"),
-              Seq[Option[String]](Some(MONTHLY), None)
+              Seq[Option[String]](Some(MONTHLY), None, Some(prepopulatedAmount))
             )
           )
         )
@@ -388,6 +390,7 @@ class IncomeUpdateCalculatorControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.taxablePayslip.title.month"))
+        doc.body().toString must include(prepopulatedAmount)
       }
     }
   }
@@ -1109,7 +1112,7 @@ class IncomeUpdateCalculatorControllerSpec
   val journeyCacheService = mock[JourneyCacheService]
   val estimatedPayJourneyCompletionService = mock[EstimatedPayJourneyCompletionService]
 
-  private class TestIncomeUpdateCalculatorController extends IncomeUpdateCalculatorController (
+  private class TestIncomeUpdateCalculatorController extends IncomeUpdateCalculatorController(
     incomeService,
     employmentService,
     taxAccountService,
