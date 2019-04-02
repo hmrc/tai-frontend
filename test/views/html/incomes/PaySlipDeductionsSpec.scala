@@ -32,7 +32,7 @@ class PaySlipDeductionsSpec extends TaiViewSpec with MockitoSugar {
 
   "Pay slip deductions view" should {
     behave like pageWithBackLink
-    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.payslipDeductions.preHeading", employerName),
       messages("tai.payslipDeductions.heading"))

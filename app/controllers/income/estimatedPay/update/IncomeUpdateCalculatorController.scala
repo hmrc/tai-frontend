@@ -495,8 +495,10 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+          payslipDeductions <- journeyCacheService.currentValue(UpdateIncome_PayslipDeductionsKey)
         } yield {
-          Ok(views.html.incomes.payslipDeductions(PayslipDeductionsForm.createForm(), id, employerName))
+          val form = PayslipDeductionsForm.createForm().fill(PayslipDeductionsForm(payslipDeductions))
+          Ok(views.html.incomes.payslipDeductions(form, id, employerName))
         }
   }
 

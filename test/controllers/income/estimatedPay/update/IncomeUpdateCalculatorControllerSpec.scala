@@ -434,6 +434,9 @@ class IncomeUpdateCalculatorControllerSpec
     "display payslipDeductions" when {
       "journey cache returns employment name and id" in {
         val testController = createTestIncomeUpdateCalculatorController
+
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayslipDeductionsKey))(any())).thenReturn(Future.successful(Some("Yes")))
+
         val result = testController.payslipDeductionsPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -1106,7 +1109,7 @@ class IncomeUpdateCalculatorControllerSpec
   val journeyCacheService = mock[JourneyCacheService]
   val estimatedPayJourneyCompletionService = mock[EstimatedPayJourneyCompletionService]
 
-  private class TestIncomeUpdateCalculatorController extends IncomeUpdateCalculatorController(
+  private class TestIncomeUpdateCalculatorController extends IncomeUpdateCalculatorController (
     incomeService,
     employmentService,
     taxAccountService,

@@ -61,7 +61,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
             <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
         }
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+        @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(id).url))
     </div>
 
 }
