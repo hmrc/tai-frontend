@@ -292,3 +292,4 @@ GET         /update-income/next-year/income/:empId/confirmed                    
 GET         /update-income/next-year/income/:empId/confirm                             @controllers.income.UpdateIncomeNextYearController.confirm(empId: Int)
 GET         /update-income/next-year/income/:empId/success                             @controllers.income.UpdateIncomeNextYearController.success(empId: Int)
 
+GET         /webchat-poc                                                               @controllers.WebchatController.get
