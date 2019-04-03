@@ -87,14 +87,14 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
           val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
           val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true), 1)
           doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
-          doc(view) mustNot haveH2HeadingWithText(messages("tai.incomeTaxSummary.pension.section.heading"))
+          doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
         }
 
       "when you have a pension" in {
         val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true, Some("payrollNumber"))
         val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true, true), 1)
         doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
-        doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxSummary.pension.section.heading"))
+        doc(view) must haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
 
       "when you have a pension and employment" in {
@@ -102,7 +102,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true, Some("payrollNumber"))
         val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Seq(employment), true, true), 1)
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
-        doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxSummary.pension.section.heading"))
+        doc(view) must haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
     }
 
