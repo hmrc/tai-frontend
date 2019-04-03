@@ -78,7 +78,7 @@ class IncomeControllerSpec extends PlaySpec
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
 
-      verify(journeyCacheService.flush, times(1))
+      verify(journeyCacheService, times(1)).flush()(any())
     }
   }
 
