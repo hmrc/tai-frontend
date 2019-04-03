@@ -21,7 +21,8 @@ import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito._
+import org.scalatest.mockito.MockitoSugar
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -63,6 +64,22 @@ class IncomeControllerSpec extends PlaySpec
 
   override def beforeEach: Unit = {
     Mockito.reset(incomeService)
+  }
+
+  "cancel" must {
+    "flush the journey cache and redirect to the employer id's income details page" in {
+      val testController = createTestIncomeController()
+      val employerId = 1
+
+      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+
+      val result = testController.cancel(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
+
+      verify(journeyCacheService.flush, times(1))
+    }
   }
 
   "regularIncome" must {
