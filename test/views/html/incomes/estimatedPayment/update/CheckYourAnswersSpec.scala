@@ -16,12 +16,13 @@
 
 package views.html.incomes.estimatedPayment.update
 
+import uk.gov.hmrc.tai.model.domain.income.Employer
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 
 class CheckYourAnswersSpec extends TaiViewSpec {
 
-  val employerName = "employer1"
+  val employer = Employer(id = 1, name = "employer1")  
   val paymentFrequency = "monthly"
   val totalPay = "10000"
   val hasDeductions = "Yes"
@@ -30,17 +31,17 @@ class CheckYourAnswersSpec extends TaiViewSpec {
   val hasExtraBonusOrOvertime = "Yes"
   val totalBonusOrOvertime = Some("3000")
   val payPeriodInDays = Some("3")
-  val employerId = 1
 
-  override def view = views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel,employerName)
+  override def view = views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel)
+  
   def viewModel = CheckYourAnswersViewModel(paymentFrequency, payPeriodInDays, totalPay, hasDeductions, taxablePay,
-    hasBonusOrOvertime, totalBonusOrOvertime, employerId)
+    hasBonusOrOvertime, totalBonusOrOvertime, employer)
 
   "checkYourAnswers" should {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
-    behave like pageWithCombinedHeader(messages("tai.incomes.edit.preHeading",employerName), messages("tai.checkYourAnswers.heading"))
-    behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(employerId))
+    behave like pageWithCombinedHeader(messages("tai.incomes.edit.preHeading",employer.name), messages("tai.checkYourAnswers.heading"))
+    behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(employer.id))
     behave like pageWithBackLink
 
     "display confirmation static text" in{

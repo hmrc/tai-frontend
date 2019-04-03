@@ -23,20 +23,20 @@ import play.api.data.{Field, Form}
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.PayslipForm
+import uk.gov.hmrc.tai.model.domain.income.Employer
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.PaySlipAmountViewModel
 
 class PaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIncomePayPeriodConstants {
 
-  val id = 1
-  val employerName = "Employer"
+  val employer = Employer(id = 1, name = "Employer")
 
   "Pay slip amount view" should {
     behave like pageWithBackLink
-    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(id).url))
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeader(
-      messages("tai.payslip.preHeading", employerName),
+      messages("tai.payslip.preHeading", employer.name),
       messages("tai.payslip.title.month"))
   }
 
@@ -51,7 +51,7 @@ class PaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIncomePay
   when(payslipForm.hasErrors).thenReturn(false)
 
 
-  val payslipViewModel = PaySlipAmountViewModel(payslipForm, Some(MONTHLY), None, id, employerName)
+  val payslipViewModel = PaySlipAmountViewModel(payslipForm, Some(MONTHLY), None, employer)
 
   override def view: Html = views.html.incomes.payslipAmount(payslipViewModel)
 }

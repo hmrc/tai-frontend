@@ -23,18 +23,18 @@ import play.api.data.{Field, Form}
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.PayslipDeductionsForm
+import uk.gov.hmrc.tai.model.domain.income.Employer
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class PaySlipDeductionsSpec extends TaiViewSpec with MockitoSugar {
 
-  val id = 1
-  val employerName = "Employer"
+  val employer = Employer(id = 1, name = "Employer")
 
   "Pay slip deductions view" should {
     behave like pageWithBackLink
-    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(id).url))
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeader(
-      messages("tai.payslipDeductions.preHeading", employerName),
+      messages("tai.payslipDeductions.preHeading", employer.name),
       messages("tai.payslipDeductions.heading"))
   }
 
@@ -49,5 +49,5 @@ class PaySlipDeductionsSpec extends TaiViewSpec with MockitoSugar {
   when(payslipDeductionsForm.errors(anyString())).thenReturn(Nil)
   when(payslipDeductionsForm.hasErrors).thenReturn(false)
 
-  override def view: Html = views.html.incomes.payslipDeductions(payslipDeductionsForm,id,employerName)
+  override def view: Html = views.html.incomes.payslipDeductions(payslipDeductionsForm, employer)
 }

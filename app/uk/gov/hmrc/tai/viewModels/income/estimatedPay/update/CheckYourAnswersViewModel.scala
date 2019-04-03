@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.model.domain.income.Employer
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
@@ -29,7 +30,7 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
                                      taxablePay: Option[String],
                                      hasBonusOrOvertime: String,
                                      totalBonusOrOvertime: Option[String],
-                                     employerId: Int) extends ViewModelHelper with DynamicPayPeriodTitle {
+                                     employer: Employer) extends ViewModelHelper with DynamicPayPeriodTitle {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
     val isMonetaryValue = true

@@ -20,22 +20,27 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.TaxablePayslipForm
+import uk.gov.hmrc.tai.model.domain.income.Employer
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmountViewModel
 
 class TaxablePaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIncomePayPeriodConstants {
 
-
-  val id = 1
   val employerName = "Employer"
+  val employer = Employer(id = 1, employerName)
   val taxablePayslipViewModel = createViewModel()
+
+  def createViewModel(form: Form[TaxablePayslipForm] = TaxablePayslipForm.createForm(None, Some(MONTHLY), None)) =
+    TaxablePaySlipAmountViewModel(form, Some(MONTHLY), None, employer)
+
+  override def view: Html = views.html.incomes.taxablePayslipAmount(taxablePayslipViewModel)
 
   "Taxable Pay slip amount view" should {
     behave like pageWithTitle(messages("tai.taxablePayslip.title.month", MONTHLY))
     behave like pageWithCombinedHeader(messages("tai.howToUpdate.preHeading", employerName), messages("tai.taxablePayslip.title.month", MONTHLY))
     behave like pageWithBackLink
-    behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(taxablePayslipViewModel.id))
+    behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(taxablePayslipViewModel.employer.id))
     behave like pageWithButtonForm("/check-income-tax/update-income/taxable-payslip-amount", messages("tai.submit"))
   }
 
@@ -53,9 +58,4 @@ class TaxablePaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIn
     }
 
   }
-
-  def createViewModel(form: Form[TaxablePayslipForm] = TaxablePayslipForm.createForm(None, Some(MONTHLY), None)) =
-    TaxablePaySlipAmountViewModel(form, Some(MONTHLY), None, id, employerName)
-
-  override def view: Html = views.html.incomes.taxablePayslipAmount(taxablePayslipViewModel)
 }

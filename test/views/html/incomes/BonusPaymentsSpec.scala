@@ -21,24 +21,27 @@ import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, YesNoForm}
+import uk.gov.hmrc.tai.model.domain.income.Employer
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesConstants {
 
-  private val Id = 1
-  private val employerName = "Employer"
-  private val emptySelectionErrorMessage = messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
+  val employer = Employer(id = 1, name = "Employer")
+
+  val emptySelectionErrorMessage = messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
     TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
-  private val bonusPaymentsForm = BonusPaymentsForm.createForm
-  private val choice = YesNoForm.YesNoChoice
+  val bonusPaymentsForm = BonusPaymentsForm.createForm
+  val choice = YesNoForm.YesNoChoice
+
+  override def view: Html = views.html.incomes.bonusPayments(bonusPaymentsForm, employer)
 
   "Bonus payments view" should {
     behave like pageWithBackLink
-    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(Id).url))
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeader(
-      messages("tai.bonusPayments.preHeading", employerName),
+      messages("tai.bonusPayments.preHeading", employer.name),
       messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited))
     behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
     behave like pageWithContinueButtonForm("/check-income-tax/update-income/bonus-payments")
@@ -63,12 +66,10 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesCon
       val invalidChoice = Json.obj(choice -> "")
       val invalidatedForm = bonusPaymentsForm.bind(invalidChoice)
 
-      val errorView = views.html.incomes.bonusPayments(invalidatedForm,Id, employerName)
+      val errorView = views.html.incomes.bonusPayments(invalidatedForm, employer)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage),"error-message")
     }
 
   }
-
-  override def view: Html = views.html.incomes.bonusPayments(bonusPaymentsForm,Id, employerName)
 }

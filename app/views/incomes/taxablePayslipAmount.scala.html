@@ -33,7 +33,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages(viewModel.title),
-        preHeadingText = Messages("tai.howToUpdate.preHeading", viewModel.employerName)
+        preHeadingText = Messages("tai.howToUpdate.preHeading", viewModel.employer.name)
     )
 }
 
@@ -42,7 +42,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(viewModel.employerName)
+    employerName = Some(viewModel.employer.name)
 ){
     <div>
         <p>@messages("tai.taxablePayslip.taxablePay.explanation")</p>
@@ -59,7 +59,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
             )
 
             @submit()
-            @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.id).url))
+            @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
 
         }
     </div>
