@@ -100,7 +100,7 @@ class ApplicationConfig extends DefaultServicesConfig {
 object ApplicationConfig extends ApplicationConfig
 
 trait FeatureTogglesConfig extends DefaultServicesConfig {
-  val cyPlusOneEnabled = true
+  val cyPlusOneEnabled = configuration.getBoolean("tai.cyPlusOne.enabled").getOrElse(false)
   val welshLanguageEnabled =  configuration.getBoolean("tai.feature.welshLanguage.enabled").getOrElse(false)
   val companyCarForceRedirectEnabled = configuration.getBoolean("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
   val cyPlus1EstimatedPayEnabled = configuration.getBoolean("tai.cyPlusOne.enabled").getOrElse(false)
