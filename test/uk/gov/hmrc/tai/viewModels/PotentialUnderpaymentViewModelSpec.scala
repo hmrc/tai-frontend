@@ -42,14 +42,7 @@ class PotentialUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         val referalPath = "http://somelocation/someOtherResourceName"
         val resourceName = "someOtherResourceName"
         PotentialUnderpaymentViewModel(tas, Nil, referalPath, resourceName).returnLink mustBe
-          Link.toInternalPage(referalPath,Some(messagesApi("tai.label.back"))).toHtml
-      }
-
-      "given a referer and resourceName from the underpayment-estimate page" in {
-        val referalPath = "http://somelocation/underpayment-estimate"
-        val resourceName = "underpayment-estimate"
-        PotentialUnderpaymentViewModel(tas, Nil, referalPath, resourceName).returnLink mustBe
-          Link.toInternalPage(routes.TaxAccountSummaryController.onPageLoad.toString,Some(messagesApi("tai.label.back"))).toHtml
+          Link.toInternalPage(routes.TaxAccountSummaryController.onPageLoad.url,Some(messagesApi("return.to.your.income.tax.summary"))).toHtml
       }
     }
 
