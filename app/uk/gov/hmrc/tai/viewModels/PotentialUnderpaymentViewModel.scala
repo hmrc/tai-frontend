@@ -71,8 +71,8 @@ object PotentialUnderpaymentViewModel extends ViewModelHelper {
       case "tax-free-allowance"           => createLink(messages("tai.iya.tax.free.amount.return.link"))
       case "detailed-income-tax-estimate" => createLink(messages("tai.iya.detailed.paye.return.link"))
       case "your-tax-free-amount"         => createLink(messages("tai.iya.tax.code.change.return.link"))
-      case "underpayment-estimate"        => createLink(messages("tai.label.back"), routes.TaxAccountSummaryController.onPageLoad.toString)
-      case _                              => createLink(messages("tai.label.back"))
+      case _                              => createLink(messages("return.to.your.income.tax.summary"), routes.TaxAccountSummaryController.onPageLoad.url)
+
     }
   }
 
