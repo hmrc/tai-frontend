@@ -22,12 +22,25 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersVie
 class CheckYourAnswersSpec extends TaiViewSpec {
 
   val employerName = "employer1"
+  val paymentFrequency = "monthly"
+  val totalPay = "10000"
+  val hasDeductions = "Yes"
+  val taxablePay = Some("1800")
+  val hasBonusOrOvertime = "Yes"
+  val hasExtraBonusOrOvertime = "Yes"
+  val totalBonusOrOvertime = Some("3000")
+  val payPeriodInDays = Some("3")
+  val employerId = 1
+
+  override def view = views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel,employerName)
+  def viewModel = CheckYourAnswersViewModel(paymentFrequency, payPeriodInDays, totalPay, hasDeductions, taxablePay,
+    hasBonusOrOvertime, totalBonusOrOvertime, employerId)
 
   "checkYourAnswers" should {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
     behave like pageWithCombinedHeader(messages("tai.incomes.edit.preHeading",employerName), messages("tai.checkYourAnswers.heading"))
-    behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
+    behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(employerId))
     behave like pageWithBackLink
 
     "display confirmation static text" in{
@@ -60,19 +73,4 @@ class CheckYourAnswersSpec extends TaiViewSpec {
 
 
   }
-
-  override def view = views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel,employerName)
-  def viewModel = CheckYourAnswersViewModel(paymentFrequency, payPeriodInDays, totalPay, hasDeductions, taxablePay,
-    hasBonusOrOvertime, totalBonusOrOvertime)
-
-
-  val paymentFrequency = "monthly"
-  val totalPay = "10000"
-  val hasDeductions = "Yes"
-  val taxablePay = Some("1800")
-  val hasBonusOrOvertime = "Yes"
-  val hasExtraBonusOrOvertime = "Yes"
-  val totalBonusOrOvertime = Some("3000")
-  val payPeriodInDays = Some("3")
-
 }

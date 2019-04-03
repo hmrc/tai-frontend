@@ -180,7 +180,8 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
       hasDeductions,
       taxablePay,
       hasBonusOrOvertime,
-      totalBonusOrOvertime
+      totalBonusOrOvertime,
+      employerId = 1
     )
   }
 
@@ -189,5 +190,4 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
   val taxablePay = "1800"
   val hasBonusOrOvertime = "Yes"
   val totalBonusOrOvertime = "3000"
-
 }

@@ -604,10 +604,11 @@ class IncomeUpdateCalculatorControllerSpec
       val taxablePay = "8000"
       val bonusAmount = "1000"
       val payPeriodInDays = "3"
+      val employerId = "1"
 
       when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
         Future.successful((
-          Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments),
+          Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
           Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
         ))
       )

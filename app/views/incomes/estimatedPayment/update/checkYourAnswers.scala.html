@@ -56,6 +56,6 @@
     cssClasses=Some("button")
 ).toHtml
 
-@cancelLink(Call("GET",controllers.routes.TaxAccountSummaryController.onPageLoad.url))
+@cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employerId).url))
 
 }

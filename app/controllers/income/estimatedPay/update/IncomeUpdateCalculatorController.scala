@@ -622,23 +622,26 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
       implicit request =>
         journeyCacheService.collectedValues(
           Seq(UpdateIncome_NameKey, UpdateIncome_PayPeriodKey, UpdateIncome_TotalSalaryKey, UpdateIncome_PayslipDeductionsKey,
-            UpdateIncome_BonusPaymentsKey),
+            UpdateIncome_BonusPaymentsKey, UpdateIncome_IdKey),
           Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey, UpdateIncome_OtherInDaysKey)
         ) map tupled { (mandatorySeq, optionalSeq) => {
 
-          val incomeId = mandatorySeq(0)
+          val employerName = mandatorySeq(0)
           val payPeriodFrequency = mandatorySeq(1)
           val totalSalaryAmount = mandatorySeq(2)
           val hasPayslipDeductions = mandatorySeq(3)
-          val taxablePay = optionalSeq(0)
           val hasBonusPayments = mandatorySeq(4)
+          val employerId = mandatorySeq(5)
+
+          val taxablePay = optionalSeq(0)
           val bonusPaymentAmount = optionalSeq(1)
           val payPeriodInDays = optionalSeq(2)
 
-          val viewModel = CheckYourAnswersViewModel(payPeriodFrequency, payPeriodInDays, totalSalaryAmount, hasPayslipDeductions,
-            taxablePay, hasBonusPayments, bonusPaymentAmount)
+          val viewModel = CheckYourAnswersViewModel(
+            payPeriodFrequency, payPeriodInDays, totalSalaryAmount, hasPayslipDeductions,
+            taxablePay, hasBonusPayments, bonusPaymentAmount, employerId.toInt)
 
-          Ok(views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel, incomeId))
+          Ok(views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel, employerName))
         }
         }
   }

@@ -28,7 +28,8 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
                                      hasDeductions: String,
                                      taxablePay: Option[String],
                                      hasBonusOrOvertime: String,
-                                     totalBonusOrOvertime: Option[String]) extends ViewModelHelper with DynamicPayPeriodTitle {
+                                     totalBonusOrOvertime: Option[String],
+                                     employerId: Int) extends ViewModelHelper with DynamicPayPeriodTitle {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
     val isMonetaryValue = true
