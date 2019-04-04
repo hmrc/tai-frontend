@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.model
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.TaxComponentType
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.viewModels.TaxSummaryLabel
 
 case class CodingComponentPair(componentType: TaxComponentType, employmentId: Option[Int], previous: Option[BigDecimal], current: Option[BigDecimal])
@@ -32,12 +33,13 @@ object CodingComponentPairModel {
 
   def apply(codingComponentPair: CodingComponentPair,
             employmentIds: Map[Int, String],
-            companyCarBenefits: Seq[CompanyCarBenefit])
+            companyCarBenefits: Seq[CompanyCarBenefit],
+            totalTax: TotalTax)
            (implicit messages: Messages): CodingComponentPairModel = {
 
-    val label = TaxSummaryLabel(codingComponentPair.componentType, codingComponentPair.employmentId, companyCarBenefits, employmentIds)
     val previousAmount: BigDecimal = codingComponentPair.previous.getOrElse(0)
     val currentAmount: BigDecimal = codingComponentPair.current.getOrElse(0)
+    val label = TaxSummaryLabel(codingComponentPair.componentType, codingComponentPair.employmentId, companyCarBenefits, employmentIds, currentAmount, totalTax)
 
     CodingComponentPairModel(label, previousAmount, currentAmount)
   }

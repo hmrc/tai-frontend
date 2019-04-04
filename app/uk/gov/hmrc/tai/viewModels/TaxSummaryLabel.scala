@@ -18,8 +18,10 @@ package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, EstimatedTaxYouOweThisYear, TaxComponentType, UnderPaymentFromPreviousYear}
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.CompanyCarMakeModel
+import uk.gov.hmrc.tai.util.MonetaryUtil
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CompanyCarMakeModel, TaxAmountDueFromUnderpayment}
 
 
 case class TaxSummaryLabel(value: String, link: Option[HelpLink] = None)
@@ -28,29 +30,33 @@ case class HelpLink(value: String, href: String, id: String)
 
 
 object TaxSummaryLabel {
-  def apply(taxComponentType: TaxComponentType, employmentId: Option[Int], companyCarBenefits: Seq[CompanyCarBenefit], employmentIdNameMap: Map[Int, String])(implicit messages: Messages): TaxSummaryLabel = {
+  def apply(taxComponentType: TaxComponentType, employmentId: Option[Int], companyCarBenefits: Seq[CompanyCarBenefit], employmentIdNameMap: Map[Int, String], amount: BigDecimal, totalTax: TotalTax)(implicit messages: Messages): TaxSummaryLabel = {
 
     val labelString = describe(taxComponentType,
       employmentId,
       companyCarBenefits,
       employmentIdNameMap)
 
-    val labelLink = createLabelLink(taxComponentType)
+    val labelLink = createLabelLink(taxComponentType, amount, totalTax)
 
     TaxSummaryLabel(labelString, labelLink)
   }
 
-  private def createLabelLink(taxComponentType: TaxComponentType)(implicit messages: Messages): Option[HelpLink] = {
+
+  private def createLabelLink(taxComponentType: TaxComponentType, amount: BigDecimal, totalTax: TotalTax)(implicit messages: Messages): Option[HelpLink] = {
+
+    val underpaymentAmount = TaxAmountDueFromUnderpayment.amountDue(amount, totalTax)
+
     taxComponentType match {
       case UnderPaymentFromPreviousYear =>
         val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
         val id = "underPaymentFromPreviousYear"
-        Some(HelpLink(Messages("what.does.this.mean"), href, id))
+        Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromPreviousYear.link", MonetaryUtil.withPoundPrefix(underpaymentAmount.toInt)), href, id))
 
       case EstimatedTaxYouOweThisYear =>
         val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
         val id = "estimatedTaxOwedLink"
-        Some(HelpLink(Messages("what.does.this.mean"), href, id))
+        Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", MonetaryUtil.withPoundPrefix(underpaymentAmount.toInt)), href, id))
 
       case _ =>
         None

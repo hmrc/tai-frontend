@@ -20,10 +20,12 @@ import com.google.inject.Inject
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.{CodingComponentPairModel, TaxYear}
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{EmploymentService, YourTaxFreeAmountComparison, YourTaxFreeAmountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService, YourTaxFreeAmountComparison, YourTaxFreeAmountService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
@@ -32,7 +34,8 @@ import scala.concurrent.Future
 
 class DescribedYourTaxFreeAmountService @Inject()(yourTaxFreeAmountService: YourTaxFreeAmountService,
                                                   companyCarService: CompanyCarService,
-                                                  employmentService: EmploymentService) {
+                                                  employmentService: EmploymentService,
+                                                  taxAccountService: TaxAccountService) {
 
   def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier, messages: Messages): Future[YourTaxFreeAmountViewModel] = {
     taxFreeAmount(nino, yourTaxFreeAmountService.taxFreeAmountComparison)
@@ -43,21 +46,24 @@ class DescribedYourTaxFreeAmountService @Inject()(yourTaxFreeAmountService: Your
     val taxFreeAmountComparisonFuture: Future[YourTaxFreeAmountComparison] = getTaxFreeAmount(nino)
     val companyCarFuture = companyCarService.companyCars(nino)
     val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
-
+    val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
     for {
       employmentNames <- employmentNameFuture
       taxFreeAmountComparison <- taxFreeAmountComparisonFuture
       companyCarBenefit <- companyCarFuture
+      totalTax <- totalTaxFuture
     } yield {
+      totalTax match {
+        case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
+          val describedPairs = describeIabdPairs(taxFreeAmountComparison.iabdPairs, companyCarBenefit, employmentNames, totalTax)
 
-      val describedPairs = describeIabdPairs(taxFreeAmountComparison.iabdPairs, companyCarBenefit, employmentNames)
-
-      YourTaxFreeAmountViewModel(
-        taxFreeAmountComparison.previousTaxFreeInfo,
-        taxFreeAmountComparison.currentTaxFreeInfo,
-        describedPairs.allowances,
-        describedPairs.deductions
-      )
+          YourTaxFreeAmountViewModel(
+            taxFreeAmountComparison.previousTaxFreeInfo,
+            taxFreeAmountComparison.currentTaxFreeInfo,
+            describedPairs.allowances,
+            describedPairs.deductions
+          )
+      }
     }
   }
 
@@ -65,16 +71,17 @@ class DescribedYourTaxFreeAmountService @Inject()(yourTaxFreeAmountService: Your
 
   private def describeIabdPairs(allowancesAndDeductions: AllowancesAndDeductionPairs,
                                 companyCarBenefit: Seq[CompanyCarBenefit],
-                                employmentIds: Map[Int, String])
+                                employmentIds: Map[Int, String],
+                                totalTax: TotalTax)
                                (implicit hc: HeaderCarrier, messages: Messages) = {
 
     val allowancesDescription = for (
       allowance <- allowancesAndDeductions.allowances
-    ) yield CodingComponentPairModel(allowance, employmentIds, companyCarBenefit)
+    ) yield CodingComponentPairModel(allowance, employmentIds, companyCarBenefit, totalTax)
 
     val deductionsDescription = for (
       deduction <- allowancesAndDeductions.deductions
-    ) yield CodingComponentPairModel(deduction, employmentIds, companyCarBenefit)
+    ) yield CodingComponentPairModel(deduction, employmentIds, companyCarBenefit, totalTax)
 
     describedIabdPairs(allowancesDescription, deductionsDescription)
   }

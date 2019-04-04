@@ -26,10 +26,12 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.{CodingComponentPair, CodingComponentPairModel, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{EmploymentService, YourTaxFreeAmountComparison, YourTaxFreeAmountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService, YourTaxFreeAmountComparison, YourTaxFreeAmountService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
@@ -55,6 +57,8 @@ class DescribedYourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar w
         .thenReturn(Future.successful(Map.empty[Int, String]))
       when(companyCarService.companyCars(Matchers.eq(nino))(any()))
         .thenReturn(Future.successful(Seq.empty))
+      when(taxAccountService.totalTax(any(), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
 
       val expectedModel: YourTaxFreeAmountViewModel =
         YourTaxFreeAmountViewModel(
@@ -84,6 +88,8 @@ class DescribedYourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar w
         .thenReturn(Future.successful(Map.empty[Int, String]))
       when(companyCarService.companyCars(Matchers.eq(nino))(any()))
         .thenReturn(Future.successful(Seq.empty))
+      when(taxAccountService.totalTax(any(), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
 
       val expectedModel: YourTaxFreeAmountViewModel =
         YourTaxFreeAmountViewModel(
@@ -101,6 +107,10 @@ class DescribedYourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar w
     }
   }
 
+  private val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
+  private val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
+  private val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
+
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private val nino: Nino = new Generator(new Random).nextNino
   private def createTestService = new TestService
@@ -108,6 +118,7 @@ class DescribedYourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar w
   private val yourTaxFreeAmountService: YourTaxFreeAmountService = mock[YourTaxFreeAmountService]
   private val companyCarService: CompanyCarService = mock[CompanyCarService]
   private val employmentService: EmploymentService = mock[EmploymentService]
+  private val taxAccountService = mock[TaxAccountService]
 
   private val deductionPair = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(1000))
   private val describedDeductionPair = CodingComponentPairModel("Car benefit", 1000, 1000)
@@ -120,6 +131,7 @@ class DescribedYourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar w
   private class TestService extends DescribedYourTaxFreeAmountService(
     yourTaxFreeAmountService: YourTaxFreeAmountService,
     companyCarService: CompanyCarService,
-    employmentService: EmploymentService
+    employmentService: EmploymentService,
+    taxAccountService: TaxAccountService
   )
 }
