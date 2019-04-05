@@ -21,7 +21,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.model.{CodingComponentPairModel, TaxYear}
+import uk.gov.hmrc.tai.model.{CodingComponentPairModel, TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
@@ -63,6 +63,7 @@ class DescribedYourTaxFreeAmountService @Inject()(yourTaxFreeAmountService: Your
             describedPairs.allowances,
             describedPairs.deductions
           )
+        case _ => throw new RuntimeException("Failed to fetch total tax details")
       }
     }
   }
@@ -77,11 +78,11 @@ class DescribedYourTaxFreeAmountService @Inject()(yourTaxFreeAmountService: Your
 
     val allowancesDescription = for (
       allowance <- allowancesAndDeductions.allowances
-    ) yield CodingComponentPairModel(allowance, employmentIds, companyCarBenefit, totalTax)
+    ) yield CodingComponentPairModel(allowance, TaxFreeAmountDetails(employmentIds, companyCarBenefit, totalTax))
 
     val deductionsDescription = for (
       deduction <- allowancesAndDeductions.deductions
-    ) yield CodingComponentPairModel(deduction, employmentIds, companyCarBenefit, totalTax)
+    ) yield CodingComponentPairModel(deduction, TaxFreeAmountDetails(employmentIds, companyCarBenefit, totalTax))
 
     describedIabdPairs(allowancesDescription, deductionsDescription)
   }

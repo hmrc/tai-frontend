@@ -26,7 +26,6 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -37,7 +36,6 @@ import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAc
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 import scala.concurrent.Future
-import scala.util.Random
 
 class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

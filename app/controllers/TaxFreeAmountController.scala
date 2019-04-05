@@ -18,24 +18,17 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.actions.ValidatePerson
-import controllers.audit.Auditable
-import controllers.auth.{AuthAction, TaiUser, WithAuthorisedForTaiLite}
+import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
+import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 
 import scala.util.control.NonFatal
@@ -62,10 +55,11 @@ class TaxFreeAmountController @Inject()(codingComponentService: CodingComponentS
       } yield {
         totalTax match {
           case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
-        val viewModel = TaxFreeAmountViewModel(codingComponents, employmentNames, companyCarBenefits, totalTax)
-        implicit val user = request.taiUser
-        Ok(views.html.taxFreeAmount(viewModel))
-      }}) recover {
+            val viewModel = TaxFreeAmountViewModel(codingComponents, TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax))
+            implicit val user = request.taiUser
+            Ok(views.html.taxFreeAmount(viewModel))
+          case _ => throw new RuntimeException("Failed to fetch total tax details")
+          }}) recover {
         case NonFatal(e) => internalServerError(s"Could not get tax free amount", Some(e))
       }
 

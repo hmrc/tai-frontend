@@ -20,7 +20,7 @@ import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -38,7 +38,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
     "return a view model" which {
 
       "has header relating to current tax year" in {
-        val sut = TaxFreeAmountViewModel(codingComponents, employmentNames, companyCarBenefits, totalTax)
+        val sut = TaxFreeAmountViewModel(codingComponents, taxFreeAmountDetails)
         sut.header mustBe expectedHeader
       }
 
@@ -49,7 +49,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(EmployerProvidedServices, Some(12), 1000, "Benefit"),
             CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
             CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
 
           sut.annualTaxFreeAmount mustBe "£10,000"
         }
@@ -60,7 +60,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(EmployerProvidedServices, Some(12), 1000, "Benefit"),
             CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
             CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
 
           sut.annualTaxFreeAmount mustBe "£11,000"
         }
@@ -72,7 +72,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(EmployerProvidedServices, Some(12), 1000, "Benefit"),
             CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
             CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
 
           sut.annualTaxFreeAmount mustBe "£13,000"
         }
@@ -85,7 +85,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(EmployerProvidedServices, Some(12), 100, "Benefit"),
             CodingComponent(ForeignDividendIncome, Some(12), 1000, "Income"),
             CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
 
           sut.annualTaxFreeAmount mustBe s"${encodedMinusSign}£1,200"
         }
@@ -95,7 +95,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
         "there is no tax coding" in {
           val taxComponents = emptyCodingComponents
 
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
           sut mustBe TaxFreeAmountViewModel(
             expectedHeader,
             expectedTitle,
@@ -122,7 +122,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
               ChangeLinkViewModel(isDisplayed = false)
             ))
 
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
           val additionRows = sut.taxFreeAmountSummary.summaryItems(1).rows
           additionRows mustBe result
         }
@@ -132,7 +132,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
         "there is only personal allowance" in {
           val taxComponents = Seq(CodingComponent(PersonalAllowancePA, Some(234), 11500, "Personal Allowance"))
 
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
           sut mustBe TaxFreeAmountViewModel(
             expectedHeader,
             expectedTitle,
@@ -167,7 +167,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(GiftsSharesCharity, Some(234), 200, "GiftsSharesCharity"),
             CodingComponent(PersonalPensionPayments, Some(234), 1000, "PersonalPensionPayments"))
 
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
           sut mustBe TaxFreeAmountViewModel(
             expectedHeader,
             expectedTitle,
@@ -224,7 +224,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(ChildBenefit, None, 1000, "ChildBenefit"),
             CodingComponent(OtherEarnings, Some(234), 5000, "OtherEarnings"))
 
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
           sut mustBe TaxFreeAmountViewModel(
             expectedHeader,
             expectedTitle,
@@ -279,7 +279,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(OtherEarnings, Some(234), 4000, "OtherEarnings")
           )
 
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
           sut.taxFreeAmountSummary.summaryItems.last mustBe
             TaxFreeAmountSummaryCategoryViewModel(
               Messages("tai.taxFreeAmount.table.columnOneHeader"),
@@ -307,7 +307,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(OtherEarnings, Some(234), 4000, "OtherEarnings")
           )
 
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
           sut.taxFreeAmountSummary.summaryItems.last mustBe
             TaxFreeAmountSummaryCategoryViewModel(
               Messages("tai.taxFreeAmount.table.columnOneHeader"),
@@ -335,7 +335,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(OtherEarnings, Some(234), 512, "OtherEarnings")
           )
 
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
           sut.taxFreeAmountSummary.summaryItems.last mustBe
             TaxFreeAmountSummaryCategoryViewModel(
               Messages("tai.taxFreeAmount.table.columnOneHeader"),
@@ -366,7 +366,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(OtherEarnings, Some(234), 512, "OtherEarnings")
           )
 
-          val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits, totalTax)
+          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
 
           val expectedPersonalAllowanceItem = TaxFreeAmountSummaryCategoryViewModel(
             Messages("tai.taxFreeAmount.table.columnOneHeader"),
@@ -537,5 +537,6 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
   val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
   val employmentNames = Map.empty[Int, String]
   val companyCarBenefits = Seq.empty[CompanyCarBenefit]
+  val taxFreeAmountDetails = TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax)
 }
 

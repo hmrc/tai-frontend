@@ -18,9 +18,8 @@ package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
+import uk.gov.hmrc.tai.model.TaxFreeAmountDetails
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.util.{TaxAccountCalculator, TaxAccountCalculatorImpl, ViewModelHelper}
 
 case class TaxFreeAmountViewModel(header: String,
@@ -30,10 +29,7 @@ case class TaxFreeAmountViewModel(header: String,
 
 object TaxFreeAmountViewModel extends ViewModelHelper {
 
-  def apply(codingComponents: Seq[CodingComponent],
-            employmentName: Map[Int, String],
-            companyCarBenefits: Seq[CompanyCarBenefit],
-            totalTax: TotalTax)
+  def apply(codingComponents: Seq[CodingComponent],taxFreeAmountDetails: TaxFreeAmountDetails)
            (implicit messages: Messages): TaxFreeAmountViewModel = {
 
     val taxFreeAmountMsg = Messages("tai.taxFreeAmount.heading.pt1")
@@ -45,7 +41,12 @@ object TaxFreeAmountViewModel extends ViewModelHelper {
 
     val taxFreeAmountTotal: BigDecimal = taxAccountCalculator.taxFreeAmount(codingComponents)
 
-    val taxFreeAmountSummary  = TaxFreeAmountSummaryViewModel(codingComponents, employmentName, companyCarBenefits, taxFreeAmountTotal, totalTax)
+    val taxFreeAmountSummary  = TaxFreeAmountSummaryViewModel(
+      codingComponents,
+      taxFreeAmountDetails.employmentIds,
+      taxFreeAmountDetails.companyCarBenefits,
+      taxFreeAmountTotal,
+      taxFreeAmountDetails.totalTax)
 
     TaxFreeAmountViewModel(headerWithAdditionalMarkup, title, withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0)), taxFreeAmountSummary)
   }
