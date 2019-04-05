@@ -1,0 +1,47 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+
+@main(
+    title = "Webchat POC",
+    articleClasses = Some("full-width"),
+    authedUser = Some(user),
+    gaCustomTitle = None
+){
+
+    <header class="page-header">
+        <h1 id="deceased-header" class="flush--bottom">WEBCHAT POC</h1>
+    </header>
+
+    </br>
+
+    <div id="Nuance-chat-fixed">
+      <img src="@ApplicationConfig.webchatIconUrl" onclick="inqFrame.Inq.C2CM.agrty(0); return false;" onmouseover="this.style.cursor='pointer'" alt="Click To Chat" tabindex="0" style="cursor: pointer;">
+    </div>
+
+    <div id="Nuance-chat-anchored" style="position: fixed; bottom:1;right:0;z-index:9999">
+      <div onclick="inqFrame.Inq.C2CM.agrty(0); return false;" onmouseover="this.style.cursor='pointer'" style="cursor: pointer;"><style></style>
+        <button class="nuan-chat-button" aria-label="Live Chat">LIVE CHAT</button>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="@ApplicationConfig.webchatJsUrl"></script>
+
+}

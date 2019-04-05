@@ -84,7 +84,6 @@ class TrackingServiceSpec extends PlaySpec
       Seq(
         Map(TrackSuccessfulJourney_AddEmploymentKey -> "true"),
         Map(TrackSuccessfulJourney_UpdatePensionKey -> "true"),
-        Map(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey -> "true"),
         Map(TrackSuccessfulJourney_AddPensionProviderKey -> "true")
       ) foreach { case entry =>
         s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
@@ -153,10 +152,19 @@ class TrackingServiceSpec extends PlaySpec
 
       "An Update Estimated key for CY+1 exists in the success journey cache" in {
         val controller = sut
-        val incomeId = 1
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
         when(successfulJourneyCacheService.currentCache(any())).
           thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true")))
+
+        val result = controller.isAnyIFormInProgress(nino)
+        Await.result(result, 5 seconds) mustBe NoTimeToProcess
+      }
+
+      "An Update Estimated key for CY-1 exists in the success journey cache" in {
+        val controller = sut
+        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
+        when(successfulJourneyCacheService.currentCache(any())).
+          thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey -> true.toString)))
 
         val result = controller.isAnyIFormInProgress(nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess

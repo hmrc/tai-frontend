@@ -49,7 +49,7 @@
                     dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${typeLabel}${idx}TaxCodeLink"))).toHtml
                 }
                 @if(incomeSource.displayPayrollNumber){
-                <span id="@{typeLabel}@{idx}PayrollNumber" class="display-block">@Messages("tai.incomeTaxSummary.payrollNumber.prefix", incomeSource.payrollNumber)</span>
+                <span id="@{typeLabel}@{idx}PayrollNumber" class="carry-over display-block">@Messages("tai.incomeTaxSummary.payrollNumber.prefix", incomeSource.payrollNumber)</span>
                 }
                 @if(incomeSource.displayEndDate){
                 <span id="@{typeLabel}@{idx}EndDate" class="display-block">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</span>

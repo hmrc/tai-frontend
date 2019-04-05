@@ -109,7 +109,8 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
     "display navigational links to other pages in the service" in {
       doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
       doc must haveLinkElement("taxCodesLink", controllers.routes.YourTaxCodeController.taxCodes.url, messages("check.your.tax.codes"))
-      doc must haveLinkElement("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("tai.incomeTaxSummary.link"))
+      doc must haveLinkElement("incomeTaxEstimateLink", controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url, messages("check.your.income.tax.estimate"))
+      doc must haveLinkElement("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("return.to.your.income.tax.summary"))
     }
 
     "display navigational link to 'Estimated tax you owe' page if EstimatedTaxYouOweThisYear is present" in {
