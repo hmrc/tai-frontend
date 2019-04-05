@@ -43,10 +43,8 @@ object TaxFreeAmountViewModel extends ViewModelHelper {
 
     val taxFreeAmountSummary  = TaxFreeAmountSummaryViewModel(
       codingComponents,
-      taxFreeAmountDetails.employmentIds,
-      taxFreeAmountDetails.companyCarBenefits,
-      taxFreeAmountTotal,
-      taxFreeAmountDetails.totalTax)
+      taxFreeAmountDetails,
+      taxFreeAmountTotal)
 
     TaxFreeAmountViewModel(headerWithAdditionalMarkup, title, withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0)), taxFreeAmountSummary)
   }

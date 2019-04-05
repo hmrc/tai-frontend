@@ -34,7 +34,7 @@ class CodingComponentPairModelSpec extends PlaySpec with FakeTaiPlayApplication 
         val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
       val codingComponentPair = CodingComponentPair(GiftAidPayments, None, Some(previousAmount), Some(currentAmount))
-      val actual = CodingComponentPairModel(codingComponentPair, TaxFreeAmountDetails(employmentIds = Map.empty, companyCarBenefits = Seq.empty, totalTax = totalTax))
+      val actual = CodingComponentPairModel(codingComponentPair, TaxFreeAmountDetails(employmentIdNameMap = Map.empty, companyCarBenefits = Seq.empty, totalTax = totalTax))
 
       actual mustBe CodingComponentPairModel("Gift Aid Payments", previousAmount, currentAmount)
     }

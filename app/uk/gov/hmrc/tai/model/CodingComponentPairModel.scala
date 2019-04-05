@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.viewModels.TaxSummaryLabel
 
-case class TaxFreeAmountDetails(employmentIds: Map[Int, String],
+case class TaxFreeAmountDetails(employmentIdNameMap: Map[Int, String],
                                 companyCarBenefits: Seq[CompanyCarBenefit],
                                 totalTax: TotalTax)
 
@@ -44,10 +44,8 @@ object CodingComponentPairModel {
     val label = TaxSummaryLabel(
       codingComponentPair.componentType,
       codingComponentPair.employmentId,
-      taxFreeAmountDetails.companyCarBenefits,
-      taxFreeAmountDetails.employmentIds,
-      currentAmount,
-      taxFreeAmountDetails.totalTax
+      taxFreeAmountDetails,
+      currentAmount
     )
 
     CodingComponentPairModel(label, previousAmount, currentAmount)

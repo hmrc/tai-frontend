@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.viewModels
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model.TaxFreeAmountDetails
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, EstimatedTaxYouOweThisYear, GiftAidPayments, UnderPaymentFromPreviousYear}
@@ -29,10 +30,10 @@ class TaxSummaryLabelSpec extends PlaySpec with FakeTaiPlayApplication {
   val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
   val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
   val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
-
+  val taxFreeAmountDetails = TaxFreeAmountDetails(Map.empty, Seq.empty, totalTax)
     "#TaxSummaryLabel" should {
       "return a human readable coding component and pass through the current and previous amounts" in {
-        val actual = TaxSummaryLabel(GiftAidPayments, employmentId = None, companyCarBenefits = Seq.empty, employmentIdNameMap = Map.empty, amount = 1000, totalTax)
+        val actual = TaxSummaryLabel(GiftAidPayments, employmentId = None, taxFreeAmountDetails, amount = 1000)
         actual mustBe TaxSummaryLabel("Gift Aid Payments", None)
       }
 
@@ -40,8 +41,8 @@ class TaxSummaryLabelSpec extends PlaySpec with FakeTaiPlayApplication {
         "employment id is found in the employment names map" in {
           val id = 123
           val employmentIds = Map(id -> "Employer")
-
-          val actual = TaxSummaryLabel(GiftAidPayments, Some(id), companyCarBenefits = Seq.empty, employmentIds, amount = 1000, totalTax)
+          val taxFreeAmountDetails = TaxFreeAmountDetails(employmentIds, Seq.empty, totalTax)
+          val actual = TaxSummaryLabel(GiftAidPayments, Some(id), taxFreeAmountDetails, amount = 1000)
 
           actual mustBe TaxSummaryLabel("Gift Aid Payments from Employer", None)
         }
@@ -49,10 +50,11 @@ class TaxSummaryLabelSpec extends PlaySpec with FakeTaiPlayApplication {
         "there is a car benefit" should {
           "display a generic car benefit message when there is no ID" in {
             val companyCarBenefits = Seq(CompanyCarBenefit(456, 123, Seq.empty))
+            val taxFreeAmountDetails = TaxFreeAmountDetails(Map.empty, companyCarBenefits, totalTax)
 
             val actual = {
               val unmatchedEmploymentId = None
-              TaxSummaryLabel(CarBenefit, unmatchedEmploymentId, companyCarBenefits, Map.empty, amount = 1000, totalTax)
+              TaxSummaryLabel(CarBenefit, unmatchedEmploymentId, taxFreeAmountDetails, amount = 1000)
             }
 
             actual mustBe TaxSummaryLabel("Car benefit", None)
@@ -60,10 +62,11 @@ class TaxSummaryLabelSpec extends PlaySpec with FakeTaiPlayApplication {
 
           "display a generic car benefit message when there is no matching ID" in {
             val companyCarBenefits = Seq(CompanyCarBenefit(456, 123, Seq.empty))
+            val taxFreeAmountDetails = TaxFreeAmountDetails(Map.empty, companyCarBenefits, totalTax)
 
             val actual = {
               val unmatchedEmploymentId = Some(999)
-              TaxSummaryLabel(CarBenefit, unmatchedEmploymentId, companyCarBenefits, Map.empty, amount = 1000, totalTax)
+              TaxSummaryLabel(CarBenefit, unmatchedEmploymentId, taxFreeAmountDetails, amount = 1000)
             }
 
             actual mustBe TaxSummaryLabel("Car benefit", None)
@@ -76,9 +79,11 @@ class TaxSummaryLabelSpec extends PlaySpec with FakeTaiPlayApplication {
               val companyCar = CompanyCar(98, "Make Model", false, None, None, None)
               Seq(CompanyCarBenefit(id, 45678, Seq(companyCar)))
             }
-
             val employmentIds = Map(id -> "Employer Name")
-            val actual = TaxSummaryLabel(CarBenefit, Some(id), companyCarBenefits, employmentIds, amount = 1000, totalTax)
+
+            val taxFreeAmountDetails = TaxFreeAmountDetails(employmentIds, companyCarBenefits, totalTax)
+
+            val actual = TaxSummaryLabel(CarBenefit, Some(id), taxFreeAmountDetails, amount = 1000)
 
             actual mustBe TaxSummaryLabel("Make Model from Employer Name", None)
           }
@@ -91,7 +96,7 @@ class TaxSummaryLabelSpec extends PlaySpec with FakeTaiPlayApplication {
           val id = "underPaymentFromPreviousYear"
           val link = Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromPreviousYear.link", "£200"), href, id))
 
-          val actual = TaxSummaryLabel(UnderPaymentFromPreviousYear, employmentId = None, companyCarBenefits = Seq.empty, employmentIdNameMap = Map.empty, amount = 1000, totalTax = totalTax)
+          val actual = TaxSummaryLabel(UnderPaymentFromPreviousYear, employmentId = None, taxFreeAmountDetails, amount = 1000)
           actual mustBe TaxSummaryLabel("Underpayment from previous year", link)
         }
 
@@ -100,7 +105,7 @@ class TaxSummaryLabelSpec extends PlaySpec with FakeTaiPlayApplication {
           val id = "estimatedTaxOwedLink"
           val link = Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", "£200"), href, id))
 
-          val actual = TaxSummaryLabel(EstimatedTaxYouOweThisYear, employmentId = None, companyCarBenefits = Seq.empty, employmentIdNameMap = Map.empty, amount = 1000, totalTax = totalTax)
+          val actual = TaxSummaryLabel(EstimatedTaxYouOweThisYear, employmentId = None, taxFreeAmountDetails, amount = 1000)
           actual mustBe TaxSummaryLabel("Estimated tax you owe this year", link)
         }
       }

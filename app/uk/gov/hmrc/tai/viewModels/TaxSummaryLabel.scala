@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model.TaxFreeAmountDetails
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, EstimatedTaxYouOweThisYear, TaxComponentType, UnderPaymentFromPreviousYear}
@@ -30,14 +31,14 @@ case class HelpLink(value: String, href: String, id: String)
 
 
 object TaxSummaryLabel {
-  def apply(taxComponentType: TaxComponentType, employmentId: Option[Int], companyCarBenefits: Seq[CompanyCarBenefit], employmentIdNameMap: Map[Int, String], amount: BigDecimal, totalTax: TotalTax)(implicit messages: Messages): TaxSummaryLabel = {
+  def apply(taxComponentType: TaxComponentType, employmentId: Option[Int], taxFreeAmountDetails: TaxFreeAmountDetails, amount: BigDecimal)(implicit messages: Messages): TaxSummaryLabel = {
 
     val labelString = describe(taxComponentType,
       employmentId,
-      companyCarBenefits,
-      employmentIdNameMap)
+      taxFreeAmountDetails.companyCarBenefits,
+      taxFreeAmountDetails.employmentIdNameMap)
 
-    val labelLink = createLabelLink(taxComponentType, amount, totalTax)
+    val labelLink = createLabelLink(taxComponentType, amount, taxFreeAmountDetails.totalTax)
 
     TaxSummaryLabel(labelString, labelLink)
   }
