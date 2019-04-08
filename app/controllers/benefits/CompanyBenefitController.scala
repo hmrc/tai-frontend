@@ -34,7 +34,6 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
-import scala.concurrent.Future
 import scala.util.control.NonFatal
 
 class CompanyBenefitController @Inject()(employmentService: EmploymentService,
@@ -75,11 +74,17 @@ class CompanyBenefitController @Inject()(employmentService: EmploymentService,
               case None => request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
             }
 
+            val form = {
+              val decision = currentCache.get(DecisionChoice)
+              UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
+            }
+
             val viewModel = CompanyBenefitDecisionViewModel(
               currentCache(EndCompanyBenefit_BenefitTypeKey),
               employment.name,
-              UpdateOrRemoveCompanyBenefitDecisionForm.form
+              form
             )
+
             val cache = Map(EndCompanyBenefit_EmploymentNameKey -> employment.name,
               EndCompanyBenefit_BenefitNameKey -> viewModel.benefitName,
               EndCompanyBenefit_RefererKey -> referer)
@@ -113,9 +118,13 @@ class CompanyBenefitController @Inject()(employmentService: EmploymentService,
         success => {
           success match {
             case Some(NoIDontGetThisBenefit) =>
-              Future.successful(Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate()))
+              journeyCacheService.cache(DecisionChoice, NoIDontGetThisBenefit) map { _ =>
+                Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
+              }
             case Some(YesIGetThisBenefit) =>
-              Future.successful(Redirect(controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url))
+              journeyCacheService.cache(DecisionChoice, YesIGetThisBenefit) map { _ =>
+                Redirect(controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url)
+              }
           }
         }
       )
