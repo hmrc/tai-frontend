@@ -36,7 +36,7 @@ class AddPensionStartDateSpec extends TaiViewSpec {
   override def view: Html = views.html.pensions.addPensionStartDate(pensionStartDateForm, pensionName)
 
   "Add pension start date form" should {
-    behave like pageWithTitle(messages("tai.addPensionProvider.startDateForm.title", pensionName))
+    behave like pageWithTitle(messages("tai.addPensionProvider.startDateForm.pagetitle"))
     behave like pageWithCombinedHeader(
       messages("add.missing.pension"),
       messages("tai.addPensionProvider.startDateForm.title", pensionName))

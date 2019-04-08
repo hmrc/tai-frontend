@@ -36,7 +36,7 @@ class AddEmploymentStartDateFormSpec extends TaiViewSpec {
   override def view: Html = views.html.employments.add_employment_start_date_form(employmentStartDateForm, employmentName)
 
   "Add employment start date form" should {
-    behave like pageWithTitle(messages("tai.addEmployment.startDateForm.title", employmentName))
+    behave like pageWithTitle(messages("tai.addEmployment.startDateForm.pagetitle"))
     behave like pageWithCombinedHeader(
       messages("add.missing.employment"),
       messages("tai.addEmployment.startDateForm.title", employmentName))

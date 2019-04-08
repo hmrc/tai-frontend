@@ -31,7 +31,7 @@ class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
   override def view: Html = views.html.pensions.addPensionNumber(pensionNumberForm, pensionNumberViewModel)
 
   "Add payroll number form page" must {
-    behave like pageWithTitle(messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
+    behave like pageWithTitle(messages("tai.addPensionProvider.pensionNumber.pagetitle"))
     behave like pageWithCombinedHeader(
       messages("add.missing.pension"),
       messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
