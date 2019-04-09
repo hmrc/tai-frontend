@@ -91,9 +91,9 @@ class IncomeController @Inject()(personService: PersonService,
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           for {
-            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_ConfirmedNewAmountKey)
+            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey)
           } yield {
-            val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt, false)
+            val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt, cachedData(2).toInt, false)
             Ok(views.html.incomes.sameEstimatedPay(model))
           }
         }
@@ -112,7 +112,7 @@ class IncomeController @Inject()(personService: PersonService,
               id <- idFuture
               income <- incomeService.employmentAmount(Nino(user.getNino), id)
             } yield {
-              val model = SameEstimatedPayViewModel(cachedData(0), income.oldAmount, income.isOccupationalPension)
+              val model = SameEstimatedPayViewModel(cachedData(0), id, income.oldAmount, income.isOccupationalPension)
               Ok(views.html.incomes.sameEstimatedPay(model))
             }
           }

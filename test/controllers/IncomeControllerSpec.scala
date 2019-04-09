@@ -700,7 +700,7 @@ class IncomeControllerSpec extends PlaySpec
 
         val currentCache: Map[String, String] = Map(UpdateIncome_ConfirmedNewAmountKey -> "12345", UpdateIncome_NameKey -> "Employer Name")
 
-        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("Employer Name", "987")))
+        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("Employer Name", "1", "987")))
 
         val result = testController.sameEstimatedPayInCache()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
