@@ -64,11 +64,14 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
       implicit val user = request.taiUser
 
       journeyCacheService.currentCache map { currentCache =>
+
+        val form = RemoveCompanyBenefitStopDateForm.form.fill(currentCache.get(EndCompanyBenefit_BenefitStopDateKey))
+
         Ok(views.html.benefits.removeCompanyBenefitStopDate(
-          RemoveCompanyBenefitStopDateForm.form,
+          form,
           currentCache(EndCompanyBenefit_BenefitNameKey),
           currentCache(EndCompanyBenefit_EmploymentNameKey)))
-    }
+      }
   }
 
   def submitStopDate: Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -76,43 +79,44 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
 
       implicit val user = request.taiUser
 
-      val startOfTaxYear = Dates.formatDate(TaxYear().start)
-
       RemoveCompanyBenefitStopDateForm.form.bindFromRequest.fold(
         formWithErrors => {
           journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey, EndCompanyBenefit_EmploymentNameKey) map {
             mandatoryValues =>
               BadRequest(views.html.benefits.removeCompanyBenefitStopDate(formWithErrors, mandatoryValues(0), mandatoryValues(1)))
           }
-
         },
         {
           case Some(BeforeTaxYearEnd) =>
-            journeyCacheService.cache(Map(EndCompanyBenefit_BenefitStopDateKey ->
-              Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear))) map { _ =>
+            journeyCacheService.cache(EndCompanyBenefit_BenefitStopDateKey, BeforeTaxYearEnd) map { _ =>
               Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber())
             }
           case Some(OnOrAfterTaxYearEnd) =>
-            journeyCacheService.cache(Map(EndCompanyBenefit_BenefitStopDateKey ->
-              Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear))) map { _ =>
+            journeyCacheService.cache(EndCompanyBenefit_BenefitStopDateKey, OnOrAfterTaxYearEnd) map { _ =>
               Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit())
             }
         }
       )
   }
 
-
   def totalValueOfBenefit(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
 
       implicit val user = request.taiUser
 
-      journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap {
-        mandatoryValues =>
-          Future.successful(Ok(views.html.benefits.
-            removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), CompanyBenefitTotalValueForm.form)
-          ))
-      }
+      val mandatoryKeys = Seq(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey)
+      val optionalKeys = Seq(EndCompanyBenefit_BenefitValueKey)
+
+      journeyCacheService.collectedValues(mandatoryKeys, optionalKeys) flatMap
+        tupled {
+          (mandatoryValues, optionalValues) => {
+            val form = CompanyBenefitTotalValueForm.form.fill((optionalValues(0)).getOrElse(""))
+
+            Future.successful(Ok(views.html.benefits.
+              removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), form)
+            ))
+          }
+        }
   }
 
   def submitBenefitValue(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -193,15 +197,26 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
           EndCompanyBenefit_BenefitValueKey,
           EndCompanyBenefit_TelephoneNumberKey
         )) map tupled { (mandatorySeq, optionalSeq) => {
+
+
+        val stopDate = {
+          val startOfTaxYear = Dates.formatDate(TaxYear().start)
+
+          mandatorySeq(2) match {
+            case BeforeTaxYearEnd => Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
+            case OnOrAfterTaxYearEnd => Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
+          }
+        }
+
         Ok(removeCompanyBenefitCheckYourAnswers(
           RemoveCompanyBenefitCheckYourAnswersViewModel(
             mandatorySeq(0),
             mandatorySeq(1),
-            mandatorySeq(2),
+            stopDate,
             optionalSeq(0),
             mandatorySeq(3),
             optionalSeq(1))))
-        }
+      }
       }
   }
 
