@@ -1444,3 +1444,5 @@ tai.urbanner.text=Cymerwch ran yn ein harolwg byr (yn agor ffenestr neu dab newy
 tai.urbanner.reject=Dim diolch
 
 checkProgress.link=Gwiriwch gynnydd eich diweddariad
+
+tai.information = Gwybodaeth
