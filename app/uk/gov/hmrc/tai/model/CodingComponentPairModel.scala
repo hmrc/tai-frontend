@@ -19,7 +19,12 @@ package uk.gov.hmrc.tai.model
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.TaxComponentType
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.viewModels.TaxSummaryLabel
+
+case class TaxFreeAmountDetails(employmentIdNameMap: Map[Int, String],
+                                companyCarBenefits: Seq[CompanyCarBenefit],
+                                totalTax: TotalTax)
 
 case class CodingComponentPair(componentType: TaxComponentType, employmentId: Option[Int], previous: Option[BigDecimal], current: Option[BigDecimal])
 
@@ -30,14 +35,18 @@ object CodingComponentPairModel {
     CodingComponentPairModel(TaxSummaryLabel(labelText) ,previousAmount, currentAmount)
   }
 
-  def apply(codingComponentPair: CodingComponentPair,
-            employmentIds: Map[Int, String],
-            companyCarBenefits: Seq[CompanyCarBenefit])
+  def apply(codingComponentPair: CodingComponentPair, taxFreeAmountDetails: TaxFreeAmountDetails)
            (implicit messages: Messages): CodingComponentPairModel = {
 
-    val label = TaxSummaryLabel(codingComponentPair.componentType, codingComponentPair.employmentId, companyCarBenefits, employmentIds)
     val previousAmount: BigDecimal = codingComponentPair.previous.getOrElse(0)
     val currentAmount: BigDecimal = codingComponentPair.current.getOrElse(0)
+
+    val label = TaxSummaryLabel(
+      codingComponentPair.componentType,
+      codingComponentPair.employmentId,
+      taxFreeAmountDetails,
+      currentAmount
+    )
 
     CodingComponentPairModel(label, previousAmount, currentAmount)
   }
