@@ -50,21 +50,22 @@ object TaxSummaryLabel {
 
     lazy val underpaymentAmount = TaxAmountDueFromUnderpayment.amountDue(amount, totalTax)
 
-    taxComponentType match {
-      case UnderPaymentFromPreviousYear =>
-        val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
-        val id = "underPaymentFromPreviousYear"
-        Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromPreviousYear.link", MonetaryUtil.withPoundPrefix(underpaymentAmount.toInt)), href, id))
+    Try{
+      taxComponentType match {
+        case UnderPaymentFromPreviousYear =>
+          val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
+          val id = "underPaymentFromPreviousYear"
+          Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromPreviousYear.link", MonetaryUtil.withPoundPrefix(underpaymentAmount.toInt)), href, id))
 
-      case EstimatedTaxYouOweThisYear =>
-        val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
-        val id = "estimatedTaxOwedLink"
-        Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", MonetaryUtil.withPoundPrefix(underpaymentAmount.toInt)), href, id))
+        case EstimatedTaxYouOweThisYear =>
+          val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
+          val id = "estimatedTaxOwedLink"
+          Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", MonetaryUtil.withPoundPrefix(underpaymentAmount.toInt)), href, id))
 
-      case _ =>
-        None
-    }
-
+        case _ =>
+          None
+      }
+    }.getOrElse(None)
   }
 
   private def describe(componentType: TaxComponentType, employmentId: Option[Int], companyCarBenefits: Seq[CompanyCarBenefit], employmentIdNameMap: Map[Int, String])
