@@ -148,7 +148,11 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
 
       journeyCacheService.currentCache map { currentCache =>
         val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
-        Ok(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel, YesNoTextEntryForm.form()))
+        val form = YesNoTextEntryForm.form().fill(
+          YesNoTextEntryForm(currentCache.get(EndCompanyBenefit_TelephoneQuestionKey), currentCache.get(EndCompanyBenefit_TelephoneNumberKey))
+        )
+
+        Ok(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel, form))
       }
   }
 
@@ -170,10 +174,12 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
         },
         form => {
           val mandatoryData = Map(EndCompanyBenefit_TelephoneQuestionKey -> form.yesNoChoice.getOrElse(NoValue))
+
           val dataForCache = form.yesNoChoice match {
             case Some(YesValue) => mandatoryData ++ Map(EndCompanyBenefit_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
             case _ => mandatoryData ++ Map(EndCompanyBenefit_TelephoneNumberKey -> "")
           }
+
           journeyCacheService.cache(dataForCache) map { _ =>
             Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers())
           }
@@ -203,8 +209,8 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
           val startOfTaxYear = Dates.formatDate(TaxYear().start)
 
           mandatorySeq(2) match {
-            case BeforeTaxYearEnd => Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
-            case OnOrAfterTaxYearEnd => Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
+            case OnOrAfterTaxYearEnd => Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
+            case BeforeTaxYearEnd=> Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
           }
         }
 

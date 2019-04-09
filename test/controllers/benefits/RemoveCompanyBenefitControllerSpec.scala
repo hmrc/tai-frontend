@@ -44,8 +44,8 @@ import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.tai.viewModels.benefit.BenefitViewModel
-import views.html.benefits.removeBenefitTotalValue
+import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
+import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYourAnswers}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -308,6 +308,30 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         doc must haveBackLink
         doc.getElementById("cancelLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
       }
+
+      "has the yes field and telephone number prepopulated from the cache" in {
+        val SUT = createSUT
+
+        val telephoneNumber = "85256651"
+
+        val cache = Map(
+          EndCompanyBenefit_EmploymentIdKey -> "1",
+          EndCompanyBenefit_EmploymentNameKey -> employment.name,
+          EndCompanyBenefit_BenefitTypeKey -> "amazing",
+          EndCompanyBenefit_BenefitStopDateKey -> "before6April2017",
+          EndCompanyBenefit_RefererKey -> "Test",
+          EndCompanyBenefit_TelephoneQuestionKey -> YesValue,
+          EndCompanyBenefit_TelephoneNumberKey -> telephoneNumber
+        )
+
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val result = SUT.telephoneNumber()(fakeRequest)
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.getElementById("telephoneNumberEntry-container").text() must contain(telephoneNumber)
+      }
     }
 
     "show the contact by telephone page" when {
@@ -398,14 +422,18 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       val SUT = createSUT
       when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
         Future.successful((
-          Seq[String]("TestCompany", "AwesomeType", BeforeTaxYearEnd, "Yes", "Url"),
+          Seq[String]("AwesomeType", "TestCompany", BeforeTaxYearEnd, "Yes", "Url"),
           Seq[Option[String]](Some("10000"), Some("123456789"))
         ))
       )
-      val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-      status(result) mustBe OK
-      val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.checkYourAnswers.title"))
+
+      implicit val request = fakeRequest
+      val result = SUT.checkYourAnswers()(request)
+
+      val stopDate = Messages("tai.remove.company.benefit.beforeTaxYearEnd", Dates.formatDate(TaxYear().start))
+      val expectedViewModel = RemoveCompanyBenefitCheckYourAnswersViewModel("AwesomeType", "TestCompany", stopDate, Some("10000"), "Yes", Some("123456789"))
+
+      result rendersTheSameViewAs removeCompanyBenefitCheckYourAnswers(expectedViewModel)
     }
   }
 
