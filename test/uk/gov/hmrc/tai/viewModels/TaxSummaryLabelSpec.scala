@@ -109,15 +109,5 @@ class TaxSummaryLabelSpec extends PlaySpec with FakeTaiPlayApplication {
           actual mustBe TaxSummaryLabel("Estimated tax you owe this year", link)
         }
       }
-
-      "do not show the underpayment explanation link" when {
-        "there are missing incomeCatergories" in {
-          val totalTax : TotalTax = TotalTax(1000, Seq.empty, None, None, None)
-          val taxFreeAmountDetails = TaxFreeAmountDetails(Map.empty, Seq.empty, totalTax)
-
-          val actual = TaxSummaryLabel(UnderPaymentFromPreviousYear, employmentId = None, taxFreeAmountDetails, amount = 1000)
-          actual mustBe TaxSummaryLabel("Underpayment from previous year", None)
-        }
-      }
     }
 }
