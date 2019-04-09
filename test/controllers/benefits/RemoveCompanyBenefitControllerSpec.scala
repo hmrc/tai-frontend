@@ -156,7 +156,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
   "totalValueOfBenefit" must {
 
-    val employmentName = "HMRC"
+    val employmentName = "Employment Name"
     val benefitName = "Employer Provided Services"
     val referer = "Url"
 
@@ -250,7 +250,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     "return Bad Request" when {
       "the form submission is having blank value" in {
         val SUT = createSUT
-        val employmentName = "HMRC"
+        val employmentName = "Employment Name"
         val benefitName = "Employer Provided Services"
         val referer = "Url"
 
@@ -269,7 +269,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     "return Bad Request" when {
       "the form submission is invalid" in {
         val SUT = createSUT
-        val employmentName = "HMRC"
+        val employmentName = "Employment Name"
         val benefitName = "Employer Provided Services"
         val referer = "Url"
 
@@ -330,7 +330,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.getElementById("telephoneNumberEntry-container").text() must contain(telephoneNumber)
+        doc.getElementById("telephoneNumberEntry-container").getElementsByAttribute("value").toString must include(telephoneNumber)
       }
     }
 
