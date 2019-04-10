@@ -63,22 +63,47 @@ class IncomeUpdateCalculatorControllerSpec
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
   val employerId = 1
 
-  "estimatedPayLandingPage" must {
-    "display the estimatedPayLandingPage view" in {
-      val employerName = "Test Employment Name"
-      val testController = createTestIncomeUpdateCalculatorController
-      val taxCodeIncome1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
-      val employment = Employment(employerName, Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1, None, false, false)
+  "onPageLoad" must {
+    "redirect to the duplicateSubmissionWarning url" when {
+      "an income update has already been performed" in {
 
-      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome1))))
-      val result = testController.estimatedPayLandingPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-      status(result) mustBe OK
+        val testController = createTestIncomeUpdateCalculatorController
 
-      val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(messages("tai.incomes.landing.title"))
+        val employerName = "Test Employment Name"
+        val incomeId = 1
+        val taxCodeIncome1 = TaxCodeIncome(EmploymentIncome, Some(incomeId), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
+        val employment = Employment(employerName, Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1, None, false, false)
+
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome1))))
+        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(incomeId.toString))(any())).thenReturn(Future.successful(true))
+
+
+        val result = testController.onPageLoad(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result).get mustBe controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage().url
+      }
     }
   }
+
+
+//  "estimatedPayLandingPage" must {
+//    "display the estimatedPayLandingPage view" in {
+//      val employerName = "Test Employment Name"
+//      val testController = createTestIncomeUpdateCalculatorController
+//      val taxCodeIncome1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
+//      val employment = Employment(employerName, Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1, None, false, false)
+//
+//      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+//      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome1))))
+//      val result = testController.estimatedPayLandingPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+//      status(result) mustBe OK
+//
+//      val doc = Jsoup.parse(contentAsString(result))
+//      doc.title() must include(messages("tai.incomes.landing.title"))
+//    }
+//  }
 
   "howToUpdatePage" must {
     "render the right response to the user" in {
