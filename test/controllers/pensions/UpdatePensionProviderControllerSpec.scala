@@ -74,7 +74,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.updatePension.decision.heading", pensionName))
+      doc.title() must include(Messages("tai.updatePension.decision.pagetitle"))
     }
   }
 
@@ -136,7 +136,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", pensionName))
+        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.pagetitle"))
       }
       "we have pension details in the cache" in {
 
@@ -149,7 +149,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", pensionName))
+        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.pagetitle"))
       }
     }
   }

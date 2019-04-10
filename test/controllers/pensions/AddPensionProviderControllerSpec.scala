@@ -151,7 +151,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
+        doc.title() must include(Messages("tai.addPensionProvider.firstPay.pagetitle"))
       }
 
       "the request has an authorised session and a previous value of 'No' is held in the cache" in {
@@ -163,7 +163,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
+        doc.title() must include(Messages("tai.addPensionProvider.firstPay.pagetitle"))
         doc.select("input[id=firstPayChoice-no][checked=checked]").size() mustBe 1
       }
       "the request has an authorised session and a previous value of 'Yes' is held in the cache" in {
@@ -175,7 +175,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
+        doc.title() must include(Messages("tai.addPensionProvider.firstPay.pagetitle"))
         doc.select("input[id=firstPayChoice-yes][checked=checked]").size() mustBe 1
       }
     }
@@ -223,7 +223,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
+        doc.title() must include(Messages("tai.addPensionProvider.firstPay.pagetitle"))
       }
     }
     "raise an audit event" when {
@@ -252,7 +252,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.startDateForm.title", pensionProviderName))
+        doc.title() must include(Messages("tai.addPensionProvider.startDateForm.pagetitle"))
         doc.toString must not include ("2037")
       }
 
@@ -265,7 +265,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.startDateForm.title", pensionProviderName))
+        doc.title() must include(Messages("tai.addPensionProvider.startDateForm.pagetitle"))
         doc.toString must include("2037")
       }
     }
@@ -349,7 +349,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
+        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
       }
 
       "the request has an authorised session and previously cached pension number choice is 'No', and no payroll number is held in cache" in {
@@ -366,7 +366,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
+        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
         doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe ""
 
@@ -387,7 +387,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
+        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
         doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe ""
 
@@ -406,7 +406,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
+        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
         doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe ""
       }
@@ -425,7 +425,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
+        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
         doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe "123456789"
       }
@@ -515,7 +515,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionName))
+        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
       }
     }
   }

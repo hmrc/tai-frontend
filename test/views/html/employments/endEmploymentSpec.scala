@@ -46,7 +46,7 @@ class endEmploymentSpec extends TaiViewSpec {
 
   "Tell us about your employments page" should {
 
-    behave like pageWithTitle(messages("tai.endEmployment.endDateForm.title", employmentName))
+    behave like pageWithTitle(messages("tai.endEmployment.endDateForm.pagetitle"))
 
     behave like pageWithCombinedHeader(
       messages("tai.endEmployment.preHeadingText"),
