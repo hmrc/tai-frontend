@@ -268,7 +268,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
               Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
             } else {
-              val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
+              val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, paymentToDate.toInt, newIrregularPay.toInt)
               Ok(views.html.incomes.confirmAmountEntered(vm))
             }
           }
