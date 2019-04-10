@@ -710,6 +710,20 @@ tai.incomeTaxSummary.pension.section.heading=Eich pensiynau preifat presennol
 tai.incomeTaxSummary.taxCode.prefix=Cod treth: {0}
 tai.incomeTaxSummary.view.income.source.details=Gweld manylion {0}
 tai.incomes.monetaryAmount.format.valid=Nodwch y swm mewn punnoedd cyfan – anwybyddwch y ceiniogau.
+
+tai.incomes.warning.preHeading=
+tai.incomes.warning.employment.heading=
+tai.incomes.warning.customGaTitle=
+tai.incomes.warning.employment.text1=
+tai.incomes.warning.text2=
+tai.incomes.warning.text3=
+tai.incomes.warning.employment.radio1=
+tai.incomes.warning.employment.radio2=
+tai.incomes.warning.pension.heading=
+tai.incomes.warning.pension.text1=
+tai.incomes.warning.pension.radio1=
+tai.incomes.warning.pension.radio2=
+
 tai.incomes.landing.Heading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
 tai.incomes.landing.title=Diweddarwch eich incwm amcangyfrifedig
 tai.incomes.landing.intro=Dylech ddiweddaru’ch incwm amcangyfrifedig os bu newid diweddar i’ch incwm ac rydych yn meddwl y bydd yn effeithio ar eich haen dreth bresennol.
