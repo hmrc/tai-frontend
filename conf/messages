@@ -709,6 +709,20 @@ tai.incomeTaxSummary.pension.section.heading=Your current private pensions
 tai.incomeTaxSummary.taxCode.prefix=Tax code: {0}
 tai.incomeTaxSummary.view.income.source.details=View {0} details
 tai.incomes.monetaryAmount.format.valid= Enter the amount in whole pounds – ignore the pence.
+
+tai.incomes.warning.preHeading=Update received
+tai.incomes.warning.employment.heading=You have already sent a new estimated income for your employment with {0}
+tai.incomes.warning.customGaTitle=You have already sent a new estimated income
+tai.incomes.warning.employment.text1=We have received your new estimated income of {0} for your employment with {1}.
+tai.incomes.warning.text2=Your records will be updated in 48 hours.
+tai.incomes.warning.text3=If your tax band changes you will receive confirmation of your new tax code and pay a different amount of tax.
+tai.incomes.warning.employment.radio1=I want to send another estimated income for my employment with {0} (only do this if your previous estimate was wrong)
+tai.incomes.warning.employment.radio2=I want to return to my employment details
+tai.incomes.warning.pension.heading=You have already sent a new estimated income for your pension from {0}
+tai.incomes.warning.pension.text1=We have received your new estimated income of {0} for your pension from {1}.
+tai.incomes.warning.pension.radio1=I want to send another estimated income for my pension from {0} (only do this if your previous estimate was wrong)
+tai.incomes.warning.pension.radio2=I want to return to my pension details
+
 tai.incomes.landing.Heading=Update your estimated income from {0}
 tai.incomes.landing.title=Update your estimated income
 tai.incomes.landing.intro=You should update your estimated income if there has been a recent change to your income and you think it will affect your current tax band.

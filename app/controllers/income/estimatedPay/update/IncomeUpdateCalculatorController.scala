@@ -36,12 +36,13 @@ import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCach
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
+import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{Employment, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.FormHelper
+import uk.gov.hmrc.tai.util.{FormHelper, MonetaryUtil}
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
@@ -111,15 +112,42 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit person =>
       implicit request =>
 
-        journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
-          val incomeName :: incomeId :: incomeType :: Nil = mandatoryValues.toList
-          Ok(views.html.incomes.estimatedPayLandingPage(
-            incomeName,
-            incomeId.toInt,
-            incomeType == TaiConstants.IncomeTypePension
-          )
+      journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey, UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
+        val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryValues.toList
+
+        val vm = if (incomeType == TaiConstants.IncomeTypePension) {
+          DuplicateSubmissionPensionViewModel(incomeName, newAmount.toInt)
+        } else {
+          DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
+        }
+          Ok(views.html.incomes.duplicateSubmissionWarning(
+            DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt)
           )
         }
+  }
+
+  def submitDuplicateSubmissionWarning: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+      implicit request =>
+
+      journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey) flatMap { mandatoryValues =>
+        val incomeName :: incomeId :: newAmount :: Nil = mandatoryValues.toList
+
+        DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
+          formWithErrors => {
+            val vm = DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
+            Future.successful(BadRequest(views.html.incomes.
+              duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
+          },
+          success => {
+            success.yesNoChoice match {
+              case Some(YesValue) => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.estimatedPayLandingPage()))
+              case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
+                onPageLoad(incomeId.toInt)))
+            }
+          }
+        )
+      }
   }
 
   def estimatedPayLandingPage(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
