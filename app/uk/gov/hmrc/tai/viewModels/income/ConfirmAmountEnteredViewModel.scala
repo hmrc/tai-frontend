@@ -28,6 +28,7 @@ case class ConfirmAmountEnteredViewModel(yearRange: String,
                                          mainText: String,
                                          onConfirm: String,
                                          onCancel: String,
+                                         estimatedIncome: Int,
                                          gaSettings: GoogleAnalyticsSettings)
 
 object ConfirmAmountEnteredViewModel {
@@ -46,6 +47,7 @@ object ConfirmAmountEnteredViewModel {
       mainText = mainParagraphText,
       onConfirm = confirmUrl,
       onCancel = onCancelUrl,
+      estimatedIncome = estimatedIncome,
       gaSettings = GoogleAnalyticsSettings()
     )
   }
@@ -59,9 +61,10 @@ object ConfirmAmountEnteredViewModel {
     ConfirmAmountEnteredViewModel(
       employerName = employerName,
       yearRange = nextYearRange,
-      mainText = mainParagraphText,
+      mainText = "",
       onConfirm = confirmUrl,
       onCancel = onCancelUrl,
+      estimatedIncome = estimatedIncome,
       gaSettings = gaSettings(currentAmount, estimatedIncome)
     )
   }

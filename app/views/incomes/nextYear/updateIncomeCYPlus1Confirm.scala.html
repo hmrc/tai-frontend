@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
+@import uk.gov.hmrc.tai.util.MonetaryUtil
 @(viewModel: ConfirmAmountEnteredViewModel
 )(implicit request: Request[_],
   messages: Messages,
@@ -39,11 +40,20 @@
     gaSettings = viewModel.gaSettings
 ){
 
-    <p>@viewModel.mainText</p>
+    <section class="section flush--bottom soft--ends">
 
-    <div class="panel panel-border-narrow margin-bottom-large">
-        <p>@messages("tai.irregular.confirm.effectOfChange")</p>
-    </div>
+        <p>
+            @messages("tai.updateIncome.CYPlus1.confirm.paragraph")
+            <span class="tai-detail-large">
+            @MonetaryUtil.withPoundPrefix(viewModel.estimatedIncome)
+            </span>
+        </p>
+        <div class="panel panel-border-narrow">
+            <p>@messages("tai.updateIncome.CYPlus1.confirm.details.p1")</p>
+            <p>@messages("tai.updateIncome.CYPlus1.confirm.details.p2")</p>
+        </div>
+
+    </section>
 
     <div class="margin-bottom-large">
         <p>
