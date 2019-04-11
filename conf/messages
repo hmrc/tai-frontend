@@ -1423,7 +1423,7 @@ tai.updateIncome.CYPlus1.success.confirmedApi.p1=You can check your account afte
 tai.updateIncome.CYPlus1.success.confirmedApi.pension.p2=This estimated income may change when we get your final pension statement for the current year from {0}.
 tai.updateIncome.CYPlus1.success.confirmedApi.employment.p2=This estimated income may change when we get your final payroll update for the current tax year from {0}.
 
-tai.updateIncome.CYPlus1.same.heading=Your estimated taxable income for {0}
+tai.updateIncome.CYPlus1.same.heading=Your estimated income for {0}
 tai.updateIncome.CYPlus1.same.title=Update your estimated income
 tai.updateIncome.CYPlus1.same.paragraph1=You have entered {0}
 tai.updateIncome.CYPlus1.same.paragraph2=This is the same as the amount already estimated for {0} for next year, so you do not need to update your income.

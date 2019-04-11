@@ -29,6 +29,8 @@ class updateIncomeCYPlus1SameSpec extends TaiViewSpec {
   val employmentID = 1
   val newAmount = 1234
 
+  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Same(employerName, employmentID, newAmount)
+
   "CYPlus1 Same Page" should {
     behave like pageWithBackLink
     behave like pageWithCancelLink(Call("GET",controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
@@ -37,11 +39,10 @@ class updateIncomeCYPlus1SameSpec extends TaiViewSpec {
       messages("tai.updateIncome.CYPlus1.same.heading", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)))
 
     "contain the correct content when new estimated pay equals current estimated pay" in {
-      doc(view).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.same.paragraph1", withPoundPrefixAndSign(MoneyPounds(newAmount, 0))))
-      doc(view).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.same.paragraph2", employerName))
+      val document = doc(view)
+
+      document.getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.confirm.paragraph"))
+      document.getElementsByTag("p").text must include(messages("tai.updateEmployment.incomeSame.description", employerName, TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)))
     }
-
   }
-
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Same(employerName, employmentID, newAmount)
 }

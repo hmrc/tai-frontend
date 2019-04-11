@@ -1426,7 +1426,7 @@ tai.updateIncome.CYPlus1.success.confirmedApi.p1=Gallwch wirio''ch cyfrif ar ôl
 tai.updateIncome.CYPlus1.success.confirmedApi.pension.p2=Gall yr incwm amcangyfrifedig hwn newid pan fyddwn yn cael eich datganiad pensiwn terfynol ar gyfer y flwyddyn gyfredol {0}.
 tai.updateIncome.CYPlus1.success.confirmedApi.employment.p2=Gall yr incwm amcangyfrifedig hwn newid pan gawn ni eich diweddariad cyflogres terfynol ar gyfer y flwyddyn dreth gyfredol gan {0}.
 
-tai.updateIncome.CYPlus1.same.heading=Amcangyfrif o’ch incwm trethadwy ar gyfer {0}
+tai.updateIncome.CYPlus1.same.heading=Eich incwm amcangyfrifedig ar gyfer {0}
 tai.updateIncome.CYPlus1.same.title=Diweddarwch eich incwm amcangyfrifedig
 tai.updateIncome.CYPlus1.same.paragraph1=Rydych wedi nodi {0}
 tai.updateIncome.CYPlus1.same.paragraph2=Mae hyn yr un peth â’r swm sydd gennym eisoes ar gyfer {0} ar gyfer y flwyddyn nesaf, felly does dim angen i chi ddiweddaru’ch incwm.
