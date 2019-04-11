@@ -36,8 +36,8 @@
         formForErrorSummary = None,
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(taxCodeChangeViewModel.changeDate))),
-        preHeadingText = Messages("taxCode.change.journey.preHeading")
+        mainHeadingText = messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(taxCodeChangeViewModel.changeDate))),
+        preHeadingText = messages("taxCode.change.journey.preHeading")
     )
 }
 
@@ -59,9 +59,9 @@
             @Link.toInternalPage(
             id=Some("check-your-tax-button"),
             url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
-            value=Some(Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
+            value=Some(messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
             cssClasses=Some("button"),
-            dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
+            dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
         </div>
     </div>
 }
@@ -77,21 +77,14 @@
 @displayTaxCodeReasons(taxCodeReasons: Seq[String]) = {
     @if(taxCodeChangeViewModel.isAGenericReason) {
         <div class="notice">
-            <i class="icon icon-information">
-                <span class="visually-hidden">Information</span>
-            </i>
-            <strong class="tax-code-reason bold-small">
+            <strong class="tax-code-reason small">
             @Messages("taxCode.change.yourTaxCodeChanged.paragraph")
             </strong>
         </div>
     } else {
         <div class="notice">
-            <i class="icon icon-information">
-                <span class="visually-hidden">Information</span>
-            </i>
-            <strong class="bold-small">
-            @Messages("tai.taxCodeComparison.title")
-            </strong>
+            <h2 class="heading-large"> @messages("taxCode.change.yourTaxCodeChanged.h2")</h2>
+            <p class="small">@messages("tai.taxCodeComparison.title")</p>
         </div>
         <div class ="tax-code-change">
             <ul class="list-bullet">
@@ -107,14 +100,14 @@
 
 @taxCodePairs(taxCodePairs: TaxCodePairs) = {
     <div class="column-half tax-code-change__previous">
-        <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
+        <h2 class="heading-medium section-title">@messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
         @for((pair) <- taxCodePairs.combinedTaxCodePairs) {
             @taxCodeRecordPod(pair.previous, "previous")
         }
     </div>
 
     <div class="column-half tax-code-change__current">
-        <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
+        <h2 class="heading-medium section-title">@messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
         @for((pair) <- taxCodePairs.combinedTaxCodePairs) {
             @taxCodeRecordPod(pair.current, "current")
         }
