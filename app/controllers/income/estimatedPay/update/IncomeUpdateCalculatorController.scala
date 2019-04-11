@@ -77,19 +77,15 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit person =>
       implicit request =>
 
-        val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
         val employmentFuture = employmentService.employment(Nino(user.getNino), id)
         val estimatedPayCompletionFuture = estimatedPayJourneyCompletionService.hasJourneyCompleted(id.toString)
 
         for {
-          taxCodeIncomeDetails <- taxCodeIncomesFuture
           employmentDetails <- employmentFuture
           estimatedPayCompletion <- estimatedPayCompletionFuture
         } yield {
-          (taxCodeIncomeDetails, employmentDetails) match {
-            case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-              val taxCodeIncomeSource = taxCodeIncomes.find(_.employmentId.contains(id)).
-                getOrElse(throw new RuntimeException(s"Income details not found for employment id $id"))
+          employmentDetails match {
+            case Some(employment) =>
 
               val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
 
@@ -179,13 +175,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             for {
               incomeToEdit: EmploymentAmount <- incomeToEditFuture
               taxCodeIncomeDetails <- taxCodeIncomeDetailsFuture
-              _ <- {
-                journeyCache(cacheMap = Map(
-                  UpdateIncome_NameKey -> employment.name,
-                  UpdateIncome_IdKey -> id.toString,
-                  UpdateIncome_IncomeTypeKey -> incomeType)
-                )
-              }
             } yield {
               processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
             }

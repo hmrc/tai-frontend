@@ -45,6 +45,7 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.constants.{EditIncomePayPeriodConstants, _}
+import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import views.html.incomes.{bonusPaymentAmount, bonusPayments}
 
 import scala.concurrent.Future
@@ -54,6 +55,7 @@ class IncomeUpdateCalculatorControllerSpec
     extends PlaySpec
     with FakeTaiPlayApplication
     with MockitoSugar
+      with JsoupMatchers
     with JourneyCacheConstants
     with EditIncomeIrregularPayConstants
     with FormValuesConstants
@@ -113,19 +115,6 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
-      "income details are not found" in {
-
-        val testController = createTestIncomeUpdateCalculatorController
-
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty)))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(incomeId.toString))(any())).thenReturn(Future.successful(false))
-
-        val result = testController.onPageLoad(incomeId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe INTERNAL_SERVER_ERROR
-
-      }
-
     }
 
   }
@@ -148,19 +137,51 @@ class IncomeUpdateCalculatorControllerSpec
   "duplicateSubmissionWarning" must {
     "show employment duplicateSubmissionWarning view" in {
       val testController = createTestIncomeUpdateCalculatorController
+      val newAmount = "123456"
 
       when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any())).thenReturn(
-        Future.successful(Seq(employerName, incomeId.toString, TaiConstants.IncomeTypeEmployment)))
+        Future.successful(Seq(employerName, incomeId.toString, newAmount, TaiConstants.IncomeTypeEmployment)))
 
+      val result = testController.duplicateSubmissionWarningPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.getElementById() must include(messages("tai.incomes.landing.title"))
+      doc must haveHeadingWithText(messages("tai.incomes.warning.employment.heading", employerName))
 
     }
-
   }
 
+  "submitDuplicateSubmissionWarning" must {
+    "redirect to the estimatedPayLandingPage url when yes is selected" in {
+      val testController = createTestIncomeUpdateCalculatorController
+      val newAmount = "123456"
+
+      when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any())).thenReturn(
+        Future.successful(Seq(employerName, incomeId.toString, newAmount)))
+
+      val result = testController.submitDuplicateSubmissionWarning()(RequestBuilder
+        .buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(YesNoChoice -> YesValue))
+
+      status(result) mustBe SEE_OTHER
+
+      redirectLocation(result).get mustBe controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayLandingPage().url
+    }
+
+    "redirect to the IncomeSourceSummaryPage url when no is selected" in {
+      val testController = createTestIncomeUpdateCalculatorController
+      val newAmount = "123456"
+
+      when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any())).thenReturn(
+        Future.successful(Seq(employerName, incomeId.toString, newAmount)))
+
+      val result = testController.submitDuplicateSubmissionWarning()(RequestBuilder
+        .buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(YesNoChoice -> NoValue))
+
+      status(result) mustBe SEE_OTHER
+
+      redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(incomeId).url
+    }
+  }
 
   "howToUpdatePage" must {
     "render the right response to the user" in {
