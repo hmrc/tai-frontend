@@ -290,7 +290,7 @@ class EndEmploymentControllerSpec
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
-      doc.title() must include(Messages("tai.endEmployment.endDateForm.title", employerName))
+      doc.title() must include(Messages("tai.endEmployment.endDateForm.pagetitle"))
     }
   }
 

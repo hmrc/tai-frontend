@@ -31,7 +31,7 @@ class AddEmploymentPayrollNumberSpec extends TaiViewSpec with FormValuesConstant
   override def view: Html = views.html.employments.add_employment_payroll_number_form(employmentPayrollForm, payrollNumberViewModel)
 
   "Add payroll number form page" must {
-    behave like pageWithTitle(messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
+    behave like pageWithTitle(messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
     behave like pageWithCombinedHeader(
       messages("add.missing.employment"),
       messages("tai.addEmployment.employmentPayrollNumber.title", employerName))

@@ -130,9 +130,10 @@ class AddEmploymentControllerSpec extends PlaySpec
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addEmployment.startDateForm.title", employmentName))
+        doc.title() must include(Messages("tai.addEmployment.startDateForm.pagetitle"))
         doc.select("#tellUsStartDateForm_year").get(0).attributes.get("value") mustBe ""
       }
+
       "the request has an authorised session and a previously supplied start date is present in cache" in {
         val sut = createSUT
         val employmentName = "TEST"
@@ -142,7 +143,7 @@ class AddEmploymentControllerSpec extends PlaySpec
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addEmployment.startDateForm.title", employmentName))
+        doc.title() must include(Messages("tai.addEmployment.startDateForm.pagetitle"))
         doc.select("#tellUsStartDateForm_year").get(0).attributes.get("value") mustBe "2017"
       }
     }
@@ -343,7 +344,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
+        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
         doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 0
         doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 0
         doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe ""
@@ -363,7 +364,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
+        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
         doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 0
         doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe ""
@@ -383,7 +384,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
+        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
         doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 1
         doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 0
         doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe "should be displayed"
@@ -474,7 +475,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
+        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
       }
     }
   }
