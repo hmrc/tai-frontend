@@ -66,10 +66,6 @@
         <div class="grid">
             <div class="inner-block">
 
-                @if(!model.isConfirmedAPIEnabled){
-                    @includes.iFormInProgressBanner(IFormInProgressBannerViewModel(model.isAnyIFormInProgress))
-                }
-
                 <div class="flex-container grid-row">
                 @if(model.showTaxCodeChangeTile()){
                   @card(

@@ -26,10 +26,7 @@ class IncomeTaxComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
-  val confirmedApiEnabled = true
-  val confirmedApiDisabled = !confirmedApiEnabled
-
-  def createIncomeTaxComparisonViewModel(confirmedApiEnabled: Boolean, isEstimatedCYPlusOneJourneyCompleted: Boolean):
+  def createIncomeTaxComparisonViewModel(isEstimatedCYPlusOneJourneyCompleted: Boolean):
   IncomeTaxComparisonViewModel = {
     val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
     val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 200)
@@ -41,33 +38,21 @@ class IncomeTaxComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
       TaxCodeComparisonViewModel(Nil),
       TaxFreeAmountComparisonViewModel(Nil, Nil),
       IncomeSourceComparisonViewModel(Nil, Nil),
-      confirmedApiEnabled,
       isEstimatedCYPlusOneJourneyCompleted)
   }
 
   "IncomeTaxComparisonViewModel" when {
-    "confirmedApi is off" must {
-      "not show the banner when journey is incomplete" in {
-        val model = createIncomeTaxComparisonViewModel(confirmedApiDisabled, isEstimatedCYPlusOneJourneyCompleted = false)
-        model.isEstimatedCYPlusOneJourneyCompleted mustBe false
-      }
 
-      "not show the banner when journey is complete" in {
-        val model = createIncomeTaxComparisonViewModel(confirmedApiDisabled, isEstimatedCYPlusOneJourneyCompleted = true)
-        model.isEstimatedCYPlusOneJourneyCompleted mustBe false
-      }
-
-      "confirmedApi is on" must {
-        "not show the banner when journey is incomplete" in {
-          val model = createIncomeTaxComparisonViewModel(confirmedApiEnabled, isEstimatedCYPlusOneJourneyCompleted = false)
-          model.isEstimatedCYPlusOneJourneyCompleted mustBe false
-        }
-
-        "not show the banner when journey is complete" in {
-          val model = createIncomeTaxComparisonViewModel(confirmedApiEnabled, isEstimatedCYPlusOneJourneyCompleted = true)
-          model.isEstimatedCYPlusOneJourneyCompleted mustBe true
-        }
-      }
+    "not show the banner when journey is incomplete" in {
+      val model = createIncomeTaxComparisonViewModel(isEstimatedCYPlusOneJourneyCompleted = false)
+      model.isEstimatedCYPlusOneJourneyCompleted mustBe false
     }
+
+    "not show the banner when journey is complete" in {
+      val model = createIncomeTaxComparisonViewModel(isEstimatedCYPlusOneJourneyCompleted = true)
+      model.isEstimatedCYPlusOneJourneyCompleted mustBe true
+    }
+
+
   }
 }

@@ -286,14 +286,8 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
           val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) => {
             journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newPay) map { _ =>
-              if (confirmedAPIEnabled) {
-
-                Ok(views.html.incomes.editSuccess(incomeName, incomeId.toInt))
-              } else {
-                Ok(views.html.incomes.oldEditSuccess(incomeName, incomeId.toInt))
-              }
+              Ok(views.html.incomes.editSuccess(incomeName, incomeId.toInt))
             }
-
           }
 
           journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap(cache => {
