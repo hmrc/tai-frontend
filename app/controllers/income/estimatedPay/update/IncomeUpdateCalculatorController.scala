@@ -171,7 +171,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
         employmentService.employment(Nino(user.getNino), id) flatMap {
           case Some(employment: Employment) =>
-            
+
             val incomeToEditFuture = incomeService.employmentAmount(Nino(user.getNino), id)
             val taxCodeIncomeDetailsFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
 
