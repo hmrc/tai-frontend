@@ -16,36 +16,34 @@
 
 package views.html.incomes.nextYear
 
-
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class updateIncomeCYPlus1SuccessSpec extends TaiViewSpec {
 
-  private val employerName = "Employer Name"
-  private val isPension = false
-  "CYPlus1 Success Page" should {
-    "contain the success heading" in {
-      doc(view).getElementsByTag("h1").text must include(messages("tai.updateIncome.CYPlus1.success.heading", employerName))
-    }
+  val employerName = "Employer Name"
+  val isPension = false
+  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Success(employerName, isPension)
 
-    "contain the success paragraph and link" in {
-      doc(view).getElementsByTag("p").text must include(
-        s"${messages("tai.updateIncome.CYPlus1.success.paragraph1")} ${messages("tai.updateIncome.CYPlus1.success.link")}"
+  "CYPlus1 Success Page with ConfirmedApi enabled" should {
+    "contain the success heading" in {
+      doc(view).getElementsByTag("h1").text must include(
+        s"${messages("tai.updateIncome.CYPlus1.success.confirmedApi.heading.p1")} ${messages("tai.updateIncome.CYPlus1.success.confirmedApi.heading.p2")}"
       )
     }
 
+    "contain the success paragraph" in {
+      doc(view).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.success.confirmedApi.p1"))
+    }
+
     "contain the may change paragraph when income is from employment" in {
-      doc(view).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.success.paragraph2", employerName))
+      doc(view).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.success.confirmedApi.employment.p2", employerName))
     }
 
     "contain the may change paragraph when income is from pension" in {
       val isPension = true
       val pensionView: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Success(employerName, isPension)
-      doc(pensionView).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.success.pension.paragraph2", employerName))
-      doc(pensionView).getElementsByTag("p").text mustNot include(messages("tai.updateIncome.CYPlus1.success.paragraph2", employerName))
+      doc(pensionView).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.success.confirmedApi.pension.p2", employerName))
     }
   }
-
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Success(employerName, isPension)
 }
