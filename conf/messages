@@ -728,6 +728,9 @@ tai.incomes.warning.pension.heading=You have already sent a new estimated income
 tai.incomes.warning.pension.text1=We have received your new estimated income of {0} for your pension from {1}.
 tai.incomes.warning.pension.radio1=I want to send another estimated income for my pension from {0}
 tai.incomes.warning.pension.radio2=I want to return to my pension details
+tai.incomes.warning.cyPlus1.heading=You have already sent a new estimated income from {0} for next tax year
+tai.incomes.warning.cyPlus1.text1=We have received your new estimated income of {0} for {1}.
+tai.incomes.warning.cyPlus1.radio2=I want to return to my Income Tax comparison
 
 tai.incomes.landing.Heading=Update your estimated income from {0}
 tai.incomes.landing.title=Update your estimated income

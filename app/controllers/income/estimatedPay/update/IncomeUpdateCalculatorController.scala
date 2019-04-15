@@ -126,12 +126,16 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit person =>
       implicit request =>
 
-      journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey) flatMap { mandatoryValues =>
-        val incomeName :: incomeId :: newAmount :: Nil = mandatoryValues.toList
+      journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey,  UpdateIncome_IncomeTypeKey) flatMap { mandatoryValues =>
+        val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryValues.toList
 
         DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
           formWithErrors => {
-            val vm = DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
+            val vm = if (incomeType == TaiConstants.IncomeTypePension) {
+              DuplicateSubmissionPensionViewModel(incomeName, newAmount.toInt)
+            } else {
+              DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
+            }
             Future.successful(BadRequest(views.html.incomes.
               duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
           },

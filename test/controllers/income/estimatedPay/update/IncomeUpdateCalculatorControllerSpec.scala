@@ -157,7 +157,7 @@ class IncomeUpdateCalculatorControllerSpec
       val newAmount = "123456"
 
       when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any())).thenReturn(
-        Future.successful(Seq(employerName, incomeId.toString, newAmount)))
+        Future.successful(Seq(employerName, incomeId.toString, newAmount, TaiConstants.IncomeTypeEmployment)))
 
       val result = testController.submitDuplicateSubmissionWarning()(RequestBuilder
         .buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(YesNoChoice -> YesValue))
@@ -172,7 +172,7 @@ class IncomeUpdateCalculatorControllerSpec
       val newAmount = "123456"
 
       when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any())).thenReturn(
-        Future.successful(Seq(employerName, incomeId.toString, newAmount)))
+        Future.successful(Seq(employerName, incomeId.toString, newAmount, TaiConstants.IncomeTypeEmployment)))
 
       val result = testController.submitDuplicateSubmissionWarning()(RequestBuilder
         .buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(YesNoChoice -> NoValue))

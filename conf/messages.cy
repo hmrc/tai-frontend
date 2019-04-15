@@ -729,6 +729,9 @@ tai.incomes.warning.pension.heading=
 tai.incomes.warning.pension.text1=
 tai.incomes.warning.pension.radio1=
 tai.incomes.warning.pension.radio2=Hoffwn ddychwelyd i’m manylion pensiwn
+tai.incomes.warning.cyPlus1.heading=
+tai.incomes.warning.cyPlus1.text1=
+tai.incomes.warning.cyPlus1.radio2=
 
 tai.incomes.landing.Heading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
 tai.incomes.landing.title=Diweddarwch eich incwm amcangyfrifedig
