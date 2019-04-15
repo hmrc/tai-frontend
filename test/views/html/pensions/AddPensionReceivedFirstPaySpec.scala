@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class AddPensionReceivedFirstPaySpec extends TaiViewSpec with FormValuesConstants {
 
   "Add first pay form page" must {
-    behave like pageWithTitle(messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
+    behave like pageWithTitle(messages("tai.addPensionProvider.firstPay.pagetitle"))
     behave like pageWithCombinedHeader(
       messages("add.missing.pension"),
       messages("tai.addPensionProvider.firstPay.title", pensionProviderName))

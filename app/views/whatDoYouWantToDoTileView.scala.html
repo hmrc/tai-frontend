@@ -71,14 +71,14 @@
                 }
 
                 <div class="flex-container grid-row">
-                    @if(model.showTaxCodeChangeTile()){
-                      @card(
-                        id = "hasTaxCodeChanged",
-                        heading = messages("check.tax.hasChanged.header"),
-                        cardActionUrl = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
-                        cardActionText = Some(messages("check.tax.hasChanged.action")),
-                        gaAction = Some(gaEventActionString),
-                        gaLabel = Some(messages("check.tax.hasChanged.action"))
+                @if(model.showTaxCodeChangeTile()){
+                  @card(
+                    url = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
+                    id = "hasTaxCodeChanged",
+                    heading = messages("check.tax.hasChanged.header"),
+                    bodyContent = Some(messages("check.tax.hasChanged.action")),
+                    gaAction = Some(gaEventActionString),
+                    gaLabel = Some(messages("check.tax.hasChanged.action"))
                       )
                     }
                 </div>

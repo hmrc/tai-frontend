@@ -16,34 +16,35 @@
 
 package controllers.benefits
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
+import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment}
+import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
+import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
+import views.html.benefits.updateOrRemoveCompanyBenefitDecision
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 
@@ -55,7 +56,8 @@ class CompanyBenefitControllerSpec extends PlaySpec
   with UpdateOrRemoveCompanyBenefitDecisionConstants
   with JourneyCacheConstants
   with JsoupMatchers
-  with BeforeAndAfterEach {
+  with BeforeAndAfterEach
+  with ControllerViewTestHelper {
 
   override def beforeEach: Unit = {
     Mockito.reset(journeyCacheService)
@@ -96,7 +98,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
-        val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -110,6 +112,29 @@ class CompanyBenefitControllerSpec extends PlaySpec
             EndCompanyBenefit_RefererKey -> referer)))(any())
       }
 
+      "prepopulate the decision selection" in {
+        val empName = "company name"
+        val benefitType = "Expenses"
+        val referer = "/check-income-tax/income-summary"
+
+        val SUT = createSUT
+        val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",
+          EndCompanyBenefit_BenefitTypeKey -> benefitType,
+          EndCompanyBenefit_RefererKey -> referer,
+          DecisionChoice -> YesIGetThisBenefit)
+
+        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+
+        val expectedForm: Form[Option[String]] = UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(YesIGetThisBenefit))
+        val expectedViewModel = CompanyBenefitDecisionViewModel(benefitType, empName, expectedForm)
+
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+        val result = SUT.decision()(request)
+
+        result rendersTheSameViewAs updateOrRemoveCompanyBenefitDecision(expectedViewModel)
+      }
     }
 
     "throw exception" when {
@@ -181,6 +206,32 @@ class CompanyBenefitControllerSpec extends PlaySpec
 
       }
     }
+
+    "cache the DecisionChoice value" when {
+      "it is a NoIDontGetThisBenefit" in {
+        val SUT = createSUT
+
+        val result = SUT.submitDecision(RequestBuilder.buildFakeRequestWithAuth("POST").
+          withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+
+        Await.result(result, 5.seconds)
+
+        verify(journeyCacheService, times(1)).
+          cache(Matchers.eq(DecisionChoice), Matchers.eq(NoIDontGetThisBenefit))(any())
+      }
+
+      "it is a YesIGetThisBenefit" in {
+        val SUT = createSUT
+
+        val result = SUT.submitDecision(RequestBuilder.buildFakeRequestWithAuth("POST").
+          withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
+
+        Await.result(result, 5.seconds)
+
+        verify(journeyCacheService, times(1)).
+          cache(Matchers.eq(DecisionChoice), Matchers.eq(YesIGetThisBenefit))(any())
+      }
+    }
   }
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -201,5 +252,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
     FakeAuthAction,
     FakeValidatePerson,
     MockTemplateRenderer,
-    mock[FormPartialRetriever])
+    mock[FormPartialRetriever]) {
+    when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+  }
 }

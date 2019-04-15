@@ -24,13 +24,20 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
-class SameEstimatedPaySpec extends TaiViewSpec with MockitoSugar{
+class SameEstimatedPaySpec extends TaiViewSpec with MockitoSugar {
 
 
   val employerName = "Employer"
   val amount = "£20,000"
+  val employerId = 1
 
-  "Same estimated pay page" must{
+  override def view: Html = views.html.incomes.sameEstimatedPay(createViewModel())
+
+  def createViewModel(employmentStartDate: Option[LocalDate] = None) = {
+    SameEstimatedPayViewModel(employerName, employerId, amount = 20000, false)
+  }
+
+  "Same estimated pay page" must {
     behave like pageWithBackLink
     behave like pageWithTitle(messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
     behave like pageWithHeader(messages("tai.updateEmployemnt.incomeSame.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
@@ -42,22 +49,13 @@ class SameEstimatedPaySpec extends TaiViewSpec with MockitoSugar{
 
     "display a paragraph" in {
 
-      doc must haveParagraphWithText(messages("tai.updateEmployment.incomeSame.description", employerName,TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      doc must haveParagraphWithText(messages("tai.updateEmployment.incomeSame.description", employerName, TaxYearRangeUtil.currentTaxYearRangeSingleLine))
     }
 
     "display return to employment details link" in {
       doc must haveLinkElement("returnToEmploymentDetails",
-        routes.TaxAccountSummaryController.onPageLoad().url,
+        routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString,
         messages("tai.updateEmployment.incomeSame.employment.return.link"))
     }
-  }
-
-  override def view: Html = views.html.incomes.sameEstimatedPay(createViewModel())
-
-  def createViewModel(employmentStartDate:Option[LocalDate] = None) = {
-
-    val employerName = "Employer"
-    val amount = 20000
-    SameEstimatedPayViewModel(employerName,amount, false)
   }
 }
