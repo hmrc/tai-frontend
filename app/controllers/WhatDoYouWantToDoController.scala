@@ -103,15 +103,14 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
           taxAccountSummary match {
             case TaiSuccessResponseWithPayload(_) => {
               val model = WhatDoYouWantToDoViewModel(
-                trackingResponse, cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch, isConfirmedAPIEnabled = confirmedAPIEnabled)
+                trackingResponse, cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch)
 
               Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
 
               Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
             }
             case _ => {
-              val model = WhatDoYouWantToDoViewModel(
-                trackingResponse, isCyPlusOneEnabled = false, isConfirmedAPIEnabled = confirmedAPIEnabled)
+              val model = WhatDoYouWantToDoViewModel(trackingResponse, isCyPlusOneEnabled = false)
 
               Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
 
@@ -123,8 +122,7 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
       }
       else {
         taxCodeChangeService.hasTaxCodeChanged(nino).map(hasTaxCodeChanged => {
-          val model = WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch,
-            isConfirmedAPIEnabled = confirmedAPIEnabled)
+          val model = WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch)
 
           Logger.debug(s"wdywtdViewModelCYDisabled $model")
 
