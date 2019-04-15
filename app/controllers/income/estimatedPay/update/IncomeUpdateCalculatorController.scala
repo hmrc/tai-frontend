@@ -40,12 +40,13 @@ import uk.gov.hmrc.tai.model.domain.{Employment, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.FormHelper
+import uk.gov.hmrc.tai.util.{FormHelper, MapForGoogleAnalytics, MonetaryUtil}
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel}
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
+import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.GrossPayPeriodTitle
 
 import scala.Function.tupled
@@ -611,9 +612,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         }
   }
 
-  private def isCachedAmountSameAsEnteredAmount(cache: Map[String, String], newAmount: Option[BigDecimal]): Boolean
-
-  = {
+  private def isCachedAmountSameAsEnteredAmount(cache: Map[String, String], newAmount: Option[BigDecimal]): Boolean = {
     FormHelper.areEqual(cache.get(UpdateIncome_ConfirmedNewAmountKey), newAmount map (_.toString()))
   }
 
@@ -672,14 +671,16 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           if(employmentAmount.newAmount == income.oldAmount) {
             Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
           } else {
-            Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = employmentAmount).get))
+
+            val form = EditIncomeForm.create(preFillData = employmentAmount).get
+            val gaSetting = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, form.oldAmount, form.newAmount)
+
+            Ok(views.html.incomes.confirm_save_Income(form, gaSetting))
           }
         }
   }
 
-  private def incomeTypeIdentifier(isPension: Boolean): String
-
-  = {
+  private def incomeTypeIdentifier(isPension: Boolean): String = {
     if (isPension) {
       TaiConstants.IncomeTypePension
     } else {

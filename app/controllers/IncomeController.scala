@@ -42,8 +42,8 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util._
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
-import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
+import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, SameEstimatedPayViewModel}
 
 import scala.Function.tupled
 import scala.concurrent.Future
@@ -175,13 +175,25 @@ class IncomeController @Inject()(personService: PersonService,
                       val (_, date) = retrieveAmountAndDate(employment)
                       val form = EditIncomeForm(employmentAmount, cachedData(1), date.map(_.toString()))
 
-                      Ok(views.html.incomes.confirm_save_Income(form))
+                      val gaSetting  = gaSettings(GoogleAnalyticsConstants.taiCYEstimatedIncome, form.oldAmount, form.newAmount)
+                      Ok(views.html.incomes.confirm_save_Income(form, gaSetting))
+
                     case _ => throw new RuntimeException(s"Not able to found employment with id $id")
                   }
                 case _ => throw new RuntimeException("Exception while reading employment and tax code details")
               }
             }
           }
+  }
+
+  private def gaSettings(gaKey: String, currentAmount: Int, newAmount: Option[String]): GoogleAnalyticsSettings = {
+    val poundedCurrentAmount = MonetaryUtil.withPoundPrefix(currentAmount)
+    val poundedNewAmount = MonetaryUtil.withPoundPrefix(FormHelper.stripNumber(newAmount).getOrElse("0").toInt)
+
+    val amounts = Map("currentAmount" -> poundedCurrentAmount, "newAmount" -> poundedNewAmount)
+
+    val dimensions: Option[Map[String, String]] = Some(Map(gaKey -> MapForGoogleAnalytics.format(amounts)))
+    GoogleAnalyticsSettings(dimensions = dimensions)
   }
 
   def updateEstimatedIncome(): Action[AnyContent] = authorisedForTai(personService).async {
@@ -312,7 +324,10 @@ class IncomeController @Inject()(personService: PersonService,
                       val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
                       val (_, date) = retrieveAmountAndDate(employment)
                       val form = EditIncomeForm(employmentAmount, cachedData(1), date.map(_.toString()))
-                      Ok(views.html.incomes.confirm_save_Income(form))
+
+                      val gaSetting = gaSettings(GoogleAnalyticsConstants.taiCYEstimatedIncome, form.oldAmount, form.newAmount)
+
+                      Ok(views.html.incomes.confirm_save_Income(form, gaSetting))
                     case _ => throw new RuntimeException(s"Not able to found employment with id $id")
                   }
                 case _ => throw new RuntimeException("Exception while reading employment and tax code details")

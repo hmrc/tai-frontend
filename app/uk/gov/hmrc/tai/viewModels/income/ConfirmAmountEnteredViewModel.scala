@@ -46,7 +46,7 @@ object ConfirmAmountEnteredViewModel {
       mainText = mainParagraphText,
       onConfirm = confirmUrl,
       onCancel = onCancelUrl,
-      gaSettings = gaSettings(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome, currentAmount, estimatedIncome)
+      gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estimatedIncome)
     )
   }
 
@@ -62,17 +62,8 @@ object ConfirmAmountEnteredViewModel {
       mainText = mainParagraphText,
       onConfirm = confirmUrl,
       onCancel = onCancelUrl,
-      gaSettings = gaSettings(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome , currentAmount, estimatedIncome)
+      gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome , currentAmount, estimatedIncome)
     )
   }
 
-  private def gaSettings(gaKey: String, currentAmount: Int, newAmount: Int): GoogleAnalyticsSettings = {
-    val poundedCurrentAmount = MonetaryUtil.withPoundPrefix(currentAmount)
-    val poundedNewAmount = MonetaryUtil.withPoundPrefix(newAmount)
-
-    val amounts = Map("currentAmount" -> poundedCurrentAmount, "newAmount" -> poundedNewAmount)
-
-    val dimensions: Option[Map[String, String]] = Some(Map(gaKey -> MapForGoogleAnalytics.format(amounts)))
-    GoogleAnalyticsSettings(dimensions = dimensions)
-  }
 }
