@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
+@import uk.gov.hmrc.tai.util.MonetaryUtil
 @(viewModel: ConfirmAmountEnteredViewModel
 )(implicit request: Request[_],
   messages: Messages,
@@ -39,7 +40,13 @@
     gaSettings = viewModel.gaSettings
 ){
 
-    <p>@viewModel.mainText</p>
+    <p>
+        @viewModel.mainText
+        <span class="tai-detail-large">
+        @MonetaryUtil.withPoundPrefix(viewModel.estimatedIncome)
+        </span>
+
+    </p>
 
     <div class="panel panel-border-narrow margin-bottom-large">
         <p>@messages("tai.irregular.confirm.effectOfChange")</p>
