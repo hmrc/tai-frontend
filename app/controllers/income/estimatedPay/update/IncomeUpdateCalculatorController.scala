@@ -108,14 +108,14 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit person =>
       implicit request =>
 
-      journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey, UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
-        val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryValues.toList
+        journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey, UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
+          val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryValues.toList
 
-        val vm = if (incomeType == TaiConstants.IncomeTypePension) {
-          DuplicateSubmissionPensionViewModel(incomeName, newAmount.toInt)
-        } else {
-          DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
-        }
+          val vm = if (incomeType == TaiConstants.IncomeTypePension) {
+            DuplicateSubmissionPensionViewModel(incomeName, newAmount.toInt)
+          } else {
+            DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
+          }
           Ok(views.html.incomes.duplicateSubmissionWarning(
             DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt)
           )
@@ -126,24 +126,28 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit person =>
       implicit request =>
 
-      journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey) flatMap { mandatoryValues =>
-        val incomeName :: incomeId :: newAmount :: Nil = mandatoryValues.toList
+        journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey,  UpdateIncome_IncomeTypeKey) flatMap { mandatoryValues =>
+          val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryValues.toList
 
-        DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
-          formWithErrors => {
-            val vm = DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
-            Future.successful(BadRequest(views.html.incomes.
-              duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
-          },
-          success => {
-            success.yesNoChoice match {
-              case Some(YesValue) => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.estimatedPayLandingPage()))
-              case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
-                onPageLoad(incomeId.toInt)))
+          DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
+            formWithErrors => {
+              val vm = if (incomeType == TaiConstants.IncomeTypePension) {
+                DuplicateSubmissionPensionViewModel(incomeName, newAmount.toInt)
+              } else {
+                DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
+              }
+              Future.successful(BadRequest(views.html.incomes.
+                duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
+            },
+            success => {
+              success.yesNoChoice match {
+                case Some(YesValue) => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.estimatedPayLandingPage()))
+                case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
+                  onPageLoad(incomeId.toInt)))
+              }
             }
-          }
-        )
-      }
+          )
+        }
   }
 
   def estimatedPayLandingPage(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -152,12 +156,12 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
         journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
           val incomeName :: incomeId :: incomeType :: Nil = mandatoryValues.toList
-              Ok(views.html.incomes.estimatedPayLandingPage(
-                incomeName,
-                incomeId.toInt,
-                incomeType == TaiConstants.IncomeTypePension
-              )
-              )
+          Ok(views.html.incomes.estimatedPayLandingPage(
+            incomeName,
+            incomeId.toInt,
+            incomeType == TaiConstants.IncomeTypePension
+          )
+          )
         }
   }
 
@@ -168,7 +172,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         employmentService.employment(Nino(user.getNino), id) flatMap {
           case Some(employment: Employment) =>
 
-            val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
             val incomeToEditFuture = incomeService.employmentAmount(Nino(user.getNino), id)
             val taxCodeIncomeDetailsFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
 
@@ -460,16 +463,16 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             formData => {
               formData match {
                 case PayslipForm(Some(value)) =>
-                   journeyCache(UpdateIncome_TotalSalaryKey, Map(UpdateIncome_TotalSalaryKey -> value)) map { _ =>
-                     Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage())
-                   }
+                  journeyCache(UpdateIncome_TotalSalaryKey, Map(UpdateIncome_TotalSalaryKey -> value)) map { _ =>
+                    Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage())
+                  }
                 case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage()))
               }
             }
           )
         }
 
-    result.flatMap(identity)
+        result.flatMap(identity)
   }
 
   def taxablePayslipAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
