@@ -72,7 +72,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val result = testController.onPageLoad(employmentID)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result).get mustBe routes.UpdateIncomeNextYearController.DuplicateWarning(employmentID).url
+        redirectLocation(result).get mustBe routes.UpdateIncomeNextYearController.duplicateWarning(employmentID).url
       }
     }
 
@@ -100,7 +100,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
-      val result: Future[Result] = testController.DuplicateWarning(employmentID)(fakeRequest)
+      val result: Future[Result] = testController.duplicateWarning(employmentID)(fakeRequest)
 
       status(result) mustBe OK
       result rendersTheSameViewAs updateIncomeCYPlus1Warning(DuplicateSubmissionWarningForm.createForm, vm, employmentID)
