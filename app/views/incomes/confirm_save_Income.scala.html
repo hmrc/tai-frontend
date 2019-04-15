@@ -25,7 +25,9 @@
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 @import uk.gov.hmrc.tai.util.MonetaryUtil
-@(income: uk.gov.hmrc.tai.forms.EditIncomeForm)(implicit
+@import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
+
+@(income: uk.gov.hmrc.tai.forms.EditIncomeForm, gaSettings: GoogleAnalyticsSettings)(implicit
         request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
@@ -42,7 +44,8 @@
     pageHeader = Some(header),
     user = Some(user),
     employerName = Some(income.name),
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    gaSettings = gaSettings
 ){
     <div class="grid-row">
         <div class="grid grid-2-3">
