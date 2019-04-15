@@ -252,7 +252,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           val result: Future[Result] = testController.success(employmentID)(fakeRequest)
 
           status(result) mustBe OK
-          result rendersTheSameViewAs updateIncomeCYPlus1SuccessWithConfirmedApiEnabled(employerName, isPension)
+          result rendersTheSameViewAs updateIncomeCYPlus1Success(employerName, isPension)
         }
       }
 

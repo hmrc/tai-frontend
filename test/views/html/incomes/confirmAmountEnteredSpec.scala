@@ -24,9 +24,13 @@ import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 
 class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
 
-  private val employerName = "employerName"
-  private val estimatedAmount = 1000
-  private val employmentId = 1
+  val employerName = "employerName"
+  val currentAmount = 1234
+  val estimatedAmount = 1000
+  val employmentId = 1
+
+  val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, employerName, currentAmount, estimatedAmount)
+  override lazy val view: Html = views.html.incomes.confirmAmountEntered(vm)
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink
@@ -53,10 +57,7 @@ class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
 
     "display a cancel link" in {
       doc(view) must haveLinkWithText(messages("tai.cancel.noSave"))
-      
     }
   }
 
-  val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, employerName, estimatedAmount)
-  override lazy val view: Html = views.html.incomes.confirmAmountEntered(vm)
 }

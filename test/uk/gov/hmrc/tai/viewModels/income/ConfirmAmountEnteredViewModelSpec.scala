@@ -24,18 +24,30 @@ import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 class ConfirmAmountEnteredViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
+  val employmentId = 1000
+  val employerName = "name"
+  val currentAmount = 123
+  val estimatedIncome = 456
+
   "nextYearEstimatedPay" should {
-    "produce a Google Analytics settings" in {
-      val employmentId = 1000
-      val employerName = "name"
-      val currentAmount = 123
-      val estimatedIncome = 456
-      val viewModel = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, employerName, currentAmount, estimatedIncome)
+    "produce a Google Analytics settings" when {
+      "CY" in {
+        val viewModel = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, employerName, currentAmount, estimatedIncome)
 
-      val expectedDimensions = Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
-      val expectedSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(expectedDimensions)
+        val expectedDimensions = Some(Map(GoogleAnalyticsConstants.taiCYEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
+        val expectedSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(expectedDimensions)
 
-      viewModel.gaSettings mustBe expectedSettings
+        viewModel.gaSettings mustBe expectedSettings
+      }
+
+      "CY+1" in {
+        val viewModel = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, employerName, currentAmount, estimatedIncome)
+
+        val expectedDimensions = Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
+        val expectedSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(expectedDimensions)
+
+        viewModel.gaSettings mustBe expectedSettings
+      }
     }
   }
 }
