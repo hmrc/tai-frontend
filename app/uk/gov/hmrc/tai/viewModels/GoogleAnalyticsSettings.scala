@@ -16,7 +16,28 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import uk.gov.hmrc.tai.util.{FormHelper, MapForGoogleAnalytics, MonetaryUtil}
+
 case class GoogleAnalyticsSettings(dimensions: Option[Map[String, String]] = None,
                                    customClientIdRequired: Boolean = false,
                                    customSessionIdRequired: Boolean = false,
                                    customHitStampRequired: Boolean = false)
+
+object GoogleAnalyticsSettings {
+
+  def createForAnnualIncome(gaKey: String, currentAmount: Int, newAmount: Option[String]): GoogleAnalyticsSettings = {
+    val poundedCurrentAmount = MonetaryUtil.withPoundPrefix(currentAmount)
+    val poundedNewAmount = MonetaryUtil.withPoundPrefix(FormHelper.stripNumber(newAmount).getOrElse("0").toInt)
+
+    val amounts = Map("currentAmount" -> poundedCurrentAmount, "newAmount" -> poundedNewAmount)
+
+    val dimensions: Option[Map[String, String]] = Some(Map(gaKey -> MapForGoogleAnalytics.format(amounts)))
+    GoogleAnalyticsSettings(dimensions = dimensions)
+  }
+
+  def createForAnnualIncome(gaKey: String, currentAmount: Int, newAmount: Int): GoogleAnalyticsSettings = {
+    val poundedNewAmount = MonetaryUtil.withPoundPrefix(newAmount)
+    createForAnnualIncome(gaKey, currentAmount, Some(poundedNewAmount))
+  }
+
+}
