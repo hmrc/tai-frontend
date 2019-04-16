@@ -24,7 +24,7 @@
 @(viewModel: TaxAccountSummaryViewModel
 )(implicit request: Request[_],
   messages: Messages,
-  user: controllers.auth.AuthedUser,
+  user: controllers.auth.TaiUser,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -47,14 +47,14 @@
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.header,
-        preHeadingText = user.getDisplayName,
+        preHeadingText = s"${user.person.firstName} ${user.person.surname}",
         preHeadingAccessibleAnnouncement = "This section is the income tax summary for",
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
 @main(
     title = viewModel.title,
-    authedUser = Some(user),
+    user = Some(user),
     pageHeader = Some(header),
     articleClasses = Some("full-width")){
 
