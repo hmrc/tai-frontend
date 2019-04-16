@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.connectors
 
 import com.google.inject.Inject
 import play.Logger
+import play.api.http.Status
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Writes}
 import uk.gov.hmrc.http._
@@ -25,41 +26,48 @@ import uk.gov.hmrc.tai.config.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.{Failure, Success, Try}
 
 
 class HttpHandler @Inject()(val http: WSHttp) {
 
   def getFromApi(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
 
-    val futureResponse = http.GET[HttpResponse](url)
 
-    futureResponse.flatMap {
-      httpResponse =>
-        httpResponse.status match {
-
-          case OK =>
-            Future.successful(httpResponse.json)
-
-          case NOT_FOUND =>
-            Logger.warn(s"HttpHandler - No data can be found")
-            Future.failed(new NotFoundException(httpResponse.body))
-
-          case INTERNAL_SERVER_ERROR =>
-            Logger.warn(s"HttpHandler - Internal Server Error received")
-            Future.failed(new InternalServerException(httpResponse.body))
-
-          case BAD_REQUEST =>
-            Logger.warn(s"HttpHandler - Bad Request received")
-            Future.failed(new BadRequestException(httpResponse.body))
-
-          case LOCKED =>
+    implicit val responseHandler = new HttpReads[HttpResponse] {
+      override def read(method: String, url: String, response: HttpResponse): HttpResponse = {
+        response.status match {
+          case Status.OK => Try(response) match {
+            case Success(data) => data
+            case Failure(e) => throw new RuntimeException("Unable to parse response")
+          }
+          case Status.NOT_FOUND => {
+            Logger.warn(s"HttpHandler - No DATA Found")
+            throw new NotFoundException(response.body)
+          }
+          case Status.INTERNAL_SERVER_ERROR => {
+            Logger.warn(s"HttpHandler - Internal Server error")
+            throw new InternalServerException(response.body)
+          }
+          case Status.BAD_REQUEST => {
+            Logger.warn(s"HttpHandler - Bad request exception")
+            throw new BadRequestException(response.body)
+          }
+          case Status.LOCKED => {
             Logger.warn(s"HttpHandler - Locked received")
-            Future.failed(new LockedException(httpResponse.body))
-
-          case _ =>
+            throw new LockedException(response.body)
+          }
+          case _ => {
             Logger.warn(s"HttpHandler - Server error received")
-            Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+            throw new HttpException(response.body, response.status)
+          }
         }
+      }
+    }
+
+
+    http.GET[HttpResponse](url) map { httpResponse =>
+      httpResponse.json
     }
   }
 
