@@ -26,7 +26,6 @@ import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 case class ConfirmAmountEnteredViewModel(yearRange: String,
                                          employerName: String,
                                          mainText: String,
-                                         estimatedIncome:Int,
                                          onConfirm: String,
                                          onCancel: String,
                                          estimatedIncome: Int,
@@ -46,7 +45,6 @@ object ConfirmAmountEnteredViewModel {
       employerName = employerName,
       yearRange = currentYear,
       mainText = mainParagraphText,
-      
       onConfirm = confirmUrl,
       onCancel = onCancelUrl,
       estimatedIncome = estimatedIncome,
@@ -64,7 +62,6 @@ object ConfirmAmountEnteredViewModel {
       employerName = employerName,
       yearRange = nextYearRange,
       mainText = "",
-      estimatedIncome=estimatedIncome,
       onConfirm = confirmUrl,
       onCancel = onCancelUrl,
       estimatedIncome = estimatedIncome,

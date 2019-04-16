@@ -43,9 +43,7 @@ class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
       messages("tai.irregular.confirm.mainHeading.pension", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
 
     "display the users current estimated income" in {
-      val mainText = messages("tai.irregular.confirm.estimatedIncome")
-      val amount = MonetaryUtil.withPoundPrefix(estimatedAmount)
-      doc(view) must haveParagraphWithText(s"$mainText $amount")
+      doc(view) must haveParagraphWithText(messages("tai.updateIncome.CYPlus1.confirm.paragraph") + " £1,000")
     }
 
     "display a message explaining the results of changing the estimated pay" in {
