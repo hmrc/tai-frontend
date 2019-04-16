@@ -19,23 +19,8 @@
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@main(
-    title = "Webchat POC",
-    articleClasses = Some("full-width"),
-    authedUser = Some(user),
-    gaCustomTitle = None
-){
+<div id="Nuance-chat-fixed">testststststststststs</div>
+<div id="Nuance-chat-anchored"></div>
+<script type="text/javascript" src="@ApplicationConfig.webchatJsUrl"></script>
 
-    <header class="page-header">
-        <h1 id="deceased-header" class="flush--bottom">WEBCHAT POC</h1>
-    </header>
 
-    </br>
-
-    <div id="Nuance-chat-fixed"></div>
-
-    <div id="Nuance-chat-anchored"></div>
-
-    <script type="text/javascript" src="@ApplicationConfig.webchatJsUrl"></script>
-
-}
