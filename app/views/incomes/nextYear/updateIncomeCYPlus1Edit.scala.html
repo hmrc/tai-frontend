@@ -15,8 +15,8 @@
  *@
 
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.tai.util.TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak
 @import includes.compareValueInput
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 @(employmentName: String, employmentId: Int, isPension: Boolean, currentValue: Int, incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
     implicit request: Request[_],
@@ -33,28 +33,31 @@
     form = Some(incomeForm),
     gaEventAction = gaEventActionString,
     title = messages("tai.updateIncome.CYPlus1.edit.title"),
-    heading = messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRangeHtmlNonBreak(yearsFromNow = 1)),
+    heading = messages("tai.updateIncome.CYPlus1.edit.heading", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(yearsFromNow = 1)),
     cancelText = Some("Cancel")
 ){
 
     @if(!isPension) {
         <div>
-            <p>@messages("tai.updateIncome.CYPlus1.edit.paragraph1")</p>
-            <p>@messages("tai.updateIncome.CYPlus1.edit.paragraph2")</p>
-            <ul class="bullets">
-                <li>@messages("tai.updateIncome.CYPlus1.edit.contribution")</li>
-                <li>@messages("tai.updateIncome.CYPlus1.edit.charity")</li>
-                <li>@messages("tai.updateIncome.CYPlus1.edit.expenses")</li>
+            <p>@messages("tai.incomes.edit.average.hours", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(yearsFromNow = 1))</p>
+        </div>
+        <div class="panel panel-border-narrow">
+            <h2 class="heading-small">@messages("tai.incomes.edit.what.should.you.include")</h2>
+            <p>@messages("tai.incomes.edit.what.should.you.include.payments")</p>
+            <h2 class="heading-small">@messages("tai.incomes.edit.what.should.you.deduct")</h2>
+            <p>@messages("tai.incomes.edit.what.should.you.deduct.payments")</p>
             </ul>
         </div>
     }
+
     <div>
-        <h2 class="heading-medium">@messages("tai.updateIncome.CYPlus1.edit.subheading", employmentName)</h2>
+        <br/>
+        <h2>@messages("tai.updateIncome.CYPlus1.edit.subheading", employmentName)</h2>
         <p>@messages("tai.updateIncome.CYPlus1.edit.wholePounds")</p>
     </div>
 
     @form(action = controllers.income.routes.UpdateIncomeNextYearController.update(employmentId)){
-<div class="form-field-group @if(incomeForm.hasErrors) {form-group-error}">
+    <div class="form-field-group @if(incomeForm.hasErrors) {form-group-error}">
     @incomeForm.errors(incomeForm("income").name).map{ error =>
     <span class="error-notification error-message">@messages(error.message)</span>
     }

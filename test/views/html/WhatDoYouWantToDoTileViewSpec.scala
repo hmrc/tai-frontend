@@ -37,44 +37,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))
     behave like pageWithHeader(messages("your.paye.income.tax.overview"))
 
-    "when confirmedAPIEnabled is set to false" should {
-      "display iForms status message with three weeks when an iForm has not been fully processed" in {
-
-        val threeWeekDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1))
-        threeWeekDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
-        threeWeekDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2"))
-        threeWeekDoc must haveLinkElement("checkProgressLink", ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
-      }
-
-
-      "display iForms status message with seven days when an iForm has not been fully processed" in {
-
-        val modelWithiFormNoCyPlus1ForSevenDays = createViewModel(SevenDays, false)
-
-        val sevenDaysDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1ForSevenDays))
-        sevenDaysDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
-        sevenDaysDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2"))
-        sevenDaysDoc must haveLinkElement("checkProgressLink", ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
-
-      }
-
-      "not display iForms status message when no iForms are in progress" in {
-        doc(view).select(".tai-progress-panel").size() mustBe 0
-      }
-    }
-
-    "when confirmedAPIEnabled is set to true" should {
-      "not display iForms status message" in {
-
-        val threeWeeksViewModel = createViewModel(ThreeWeeks, false, isConfirmedAPI = true)
-        val confirmedAPIEnabledDoc = doc(views.html.whatDoYouWantToDoTileView(form, threeWeeksViewModel))
-
-        confirmedAPIEnabledDoc must not(haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1")))
-        confirmedAPIEnabledDoc must not(haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2")))
-        confirmedAPIEnabledDoc.select("#checkProgressLink").size() mustBe 0
-
-      }
-    }
 
     "display cards correctly" when {
       "CY+1 is not enabled" in {
@@ -150,9 +112,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   def createViewModel(isAnyIFormInProgress: TimeToProcess,
                       isCyPlusOneEnabled: Boolean,
                       hasTaxCodeChanged: Boolean = false,
-                      taxCodeMismatch: Option[TaxCodeMismatch] = None,
-                      isConfirmedAPI: Boolean = false): WhatDoYouWantToDoViewModel = {
-    WhatDoYouWantToDoViewModel(isAnyIFormInProgress, isCyPlusOneEnabled, hasTaxCodeChanged, taxCodeMismatch, isConfirmedAPI)
+                      taxCodeMismatch: Option[TaxCodeMismatch] = None): WhatDoYouWantToDoViewModel = {
+    WhatDoYouWantToDoViewModel(isAnyIFormInProgress, isCyPlusOneEnabled, hasTaxCodeChanged, taxCodeMismatch)
   }
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))

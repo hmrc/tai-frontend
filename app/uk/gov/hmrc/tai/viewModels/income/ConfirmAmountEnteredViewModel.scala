@@ -35,7 +35,7 @@ object ConfirmAmountEnteredViewModel {
 
   private implicit def toMoneyPounds(amount: Int): MoneyPounds = MoneyPounds(amount, 0)
 
-  def irregularPayCurrentYear(employmentId: Int, employerName: String, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
+  def irregularPayCurrentYear(employmentId: Int, employerName: String, currentAmount: Int, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
     val currentYear = TaxYearRangeUtil.currentTaxYearRangeSingleLine
     val mainParagraphText = messages("tai.irregular.confirm.estimatedIncome", withPoundPrefix(estimatedIncome))
     val confirmUrl = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString
@@ -48,7 +48,7 @@ object ConfirmAmountEnteredViewModel {
       onConfirm = confirmUrl,
       onCancel = onCancelUrl,
       estimatedIncome = estimatedIncome,
-      gaSettings = GoogleAnalyticsSettings()
+      gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estimatedIncome)
     )
   }
 
@@ -65,17 +65,8 @@ object ConfirmAmountEnteredViewModel {
       onConfirm = confirmUrl,
       onCancel = onCancelUrl,
       estimatedIncome = estimatedIncome,
-      gaSettings = gaSettings(currentAmount, estimatedIncome)
+      gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome , currentAmount, estimatedIncome)
     )
   }
 
-  private def gaSettings(currentAmount: Int, newAmount: Int): GoogleAnalyticsSettings = {
-    val poundedCurrentAmount = MonetaryUtil.withPoundPrefix(currentAmount)
-    val poundedNewAmount = MonetaryUtil.withPoundPrefix(newAmount)
-
-    val amounts = Map("currentAmount" -> poundedCurrentAmount, "newAmount" -> poundedNewAmount)
-
-    val dimensions: Option[Map[String, String]] = Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> MapForGoogleAnalytics.format(amounts)))
-    GoogleAnalyticsSettings(dimensions = dimensions)
-  }
 }
