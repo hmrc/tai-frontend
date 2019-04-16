@@ -40,17 +40,20 @@
     gaSettings = viewModel.gaSettings
 ){
 
-    <p>
-        @viewModel.mainText
-        <span class="tai-detail-large">
-        @MonetaryUtil.withPoundPrefix(viewModel.estimatedIncome)
-        </span>
+    <section class="section flush--bottom soft--ends">
 
-    </p>
+        <p>
+            @messages("tai.updateIncome.CYPlus1.confirm.paragraph")
+            <span class="tai-detail-large">
+            @MonetaryUtil.withPoundPrefix(viewModel.estimatedIncome)
+            </span>
+        </p>
+        <div class="panel panel-border-narrow">
+            <p>@messages("tai.updateIncome.CYPlus1.confirm.details.p1")</p>
+            <p>@messages("tai.updateIncome.CYPlus1.confirm.details.p2")</p>
+        </div>
 
-    <div class="panel panel-border-narrow margin-bottom-large">
-        <p>@messages("tai.irregular.confirm.effectOfChange")</p>
-    </div>
+    </section>
 
     <div class="margin-bottom-large">
         <p>

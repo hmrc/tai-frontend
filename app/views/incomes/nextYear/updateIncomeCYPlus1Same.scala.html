@@ -37,10 +37,16 @@
     heading = messages("tai.updateIncome.CYPlus1.same.heading", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
 ){
     <div>
-        <p>@messages("tai.updateIncome.CYPlus1.same.paragraph1", withPoundPrefix(MoneyPounds(value, 0)))</p>
+
+        <p>
+            @messages("tai.updateIncome.CYPlus1.confirm.paragraph")
+            <span class="tai-detail-large">
+                @withPoundPrefix(MoneyPounds(value, 0))
+            </span>
+        </p>
 
         <div class="panel panel-border-narrow">
-            <p>@messages("tai.updateIncome.CYPlus1.same.paragraph2", employmentName)</p>
+            <p>@messages("tai.updateEmployment.incomeSame.description", employmentName, TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))</p>
         </div>
     </div>
 }

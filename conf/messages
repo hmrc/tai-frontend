@@ -1398,6 +1398,8 @@ tai.updateIncome.CYPlus1.start.button=Update your estimated income
 tai.updateIncome.CYPlus1.start.paragraph1=You should update your estimated income if you know there will be a change to your income from {0} next year and you think it will affect your tax rate band.
 tai.updateIncome.CYPlus1.start.paragraph2=If your employment with {0} will be ending next year, you can tell us after it has ended.
 tai.updateIncome.CYPlus1.confirm.paragraph=You have entered
+tai.updateIncome.CYPlus1.confirm.details.p1=Updating your income may change which tax band you are in.
+tai.updateIncome.CYPlus1.confirm.details.p2=If your tax band changes you will get a new tax code, and pay a different amount of tax.
 tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom=Your income estimates for next year will be applied to your account from {0}.
 tai.updateIncome.CYPlus1.start.pension.paragraph2=If your pension from {0} will be ending next year, you can tell us after it has ended.
 tai.updateIncome.CYPlus1.edit.heading=Update your estimated taxable pay for {0}
@@ -1417,7 +1419,7 @@ tai.updateIncome.CYPlus1.success.p1=You can check your account after this time t
 tai.updateIncome.CYPlus1.success.pension.p2=This estimated income may change when we get your final pension statement for the current year from {0}.
 tai.updateIncome.CYPlus1.success.employment.p2=This estimated income may change when we get your final payroll update for the current tax year from {0}.
 
-tai.updateIncome.CYPlus1.same.heading=Your estimated taxable income for {0}
+tai.updateIncome.CYPlus1.same.heading=Your estimated income for {0}
 tai.updateIncome.CYPlus1.same.title=Update your estimated income
 tai.updateIncome.CYPlus1.same.paragraph1=You have entered {0}
 tai.updateIncome.CYPlus1.same.paragraph2=This is the same as the amount already estimated for {0} for next year, so you do not need to update your income.
