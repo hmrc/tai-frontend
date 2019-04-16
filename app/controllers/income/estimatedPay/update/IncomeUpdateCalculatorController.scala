@@ -27,6 +27,7 @@ import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
@@ -78,31 +79,32 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit person =>
       implicit request =>
 
-        val employmentFuture = employmentService.employment(Nino(user.getNino), id)
         val estimatedPayCompletionFuture = estimatedPayJourneyCompletionService.hasJourneyCompleted(id.toString)
+        val cacheEmploymentDetailsFuture = cacheEmploymentDetails(id, employmentService.employment(Nino(user.getNino), id))
 
         for {
-          employmentDetails <- employmentFuture
           estimatedPayCompletion <- estimatedPayCompletionFuture
+          _ <- cacheEmploymentDetailsFuture
         } yield {
-          employmentDetails match {
-            case Some(employment) =>
 
-              val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
-
-              journeyCache(cacheMap = Map(
-                UpdateIncome_NameKey -> employment.name,
-                UpdateIncome_IdKey -> id.toString,
-                UpdateIncome_IncomeTypeKey -> incomeType))
-
-              if (estimatedPayCompletion) {
-                Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage())
-              } else {
-                Redirect(routes.IncomeUpdateCalculatorController.estimatedPayLandingPage())
-              }
-            case _ => throw new RuntimeException("Not able to find employment")
+                if (estimatedPayCompletion) {
+                  Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage())
+                } else {
+                  Redirect(routes.IncomeUpdateCalculatorController.estimatedPayLandingPage())
+                }
           }
         }
+
+  private def cacheEmploymentDetails(id: Int, employmentFuture: Future[Option[Employment]])(implicit hc: HeaderCarrier): Future[Map[String, String]] = {
+    employmentFuture flatMap {
+      case Some(employment) =>
+        val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
+        journeyCache(cacheMap = Map(
+          UpdateIncome_NameKey -> employment.name,
+          UpdateIncome_IdKey -> id.toString,
+          UpdateIncome_IncomeTypeKey -> incomeType))
+      case _ => throw new RuntimeException("Not able to find employment")
+    }
   }
 
   private def determineViewModel(incomeType: String, employmentName: String, newValue: Int): DuplicateSubmissionEstimatedPay = {

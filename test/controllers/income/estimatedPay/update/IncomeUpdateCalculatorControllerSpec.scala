@@ -75,8 +75,8 @@ class IncomeUpdateCalculatorControllerSpec
         val testController = createTestIncomeUpdateCalculatorController
 
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome))))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(incomeId.toString))(any())).thenReturn(Future.successful(true))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = testController.onPageLoad(incomeId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
@@ -91,8 +91,8 @@ class IncomeUpdateCalculatorControllerSpec
         val testController = createTestIncomeUpdateCalculatorController
 
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome))))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(incomeId.toString))(any())).thenReturn(Future.successful(false))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = testController.onPageLoad(incomeId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
@@ -110,6 +110,7 @@ class IncomeUpdateCalculatorControllerSpec
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome))))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(incomeId.toString))(any())).thenReturn(Future.successful(false))
+
 
         val result = testController.onPageLoad(incomeId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
