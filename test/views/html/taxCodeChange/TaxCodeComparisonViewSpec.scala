@@ -39,7 +39,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
   override def view = views.html.taxCodeChange.taxCodeComparison(viewModel)
 
   def testTaxCodeRecordFormat(record: TaxCodeRecord) = {
-    doc must haveHeadingH3WithText(record.employerName)
+    doc must haveParagraphWithText(record.employerName)
     doc must haveClassWithText(Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)), "tax-code-change__date")
     doc(view).toString must include(record.taxCode)
 

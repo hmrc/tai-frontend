@@ -76,18 +76,17 @@
 
 @displayTaxCodeReasons(taxCodeReasons: Seq[String]) = {
     @if(taxCodeChangeViewModel.isAGenericReason) {
-        <div class="notice">
-            <strong class="tax-code-reason small">
+            <p class="tax-code-reason small">
             @Messages("taxCode.change.yourTaxCodeChanged.paragraph")
-            </strong>
-        </div>
+            </p>
+
     } else {
-        <div class="notice">
             <h2 class="heading-large"> @messages("taxCode.change.yourTaxCodeChanged.h2")</h2>
-            <p class="small">@messages("tai.taxCodeComparison.title")</p>
-        </div>
+            <p aria-hidden="true">@messages("tai.taxCodeComparison.title")</p>
+
         <div class ="tax-code-change">
-            <ul class="list-bullet">
+            <label for="taxCodeReasons" class="visuallyhidden">@messages("tai.taxCodeComparison.title")</label>
+            <ul class="list-bullet" name="taxCodeReasons" id="taxCodeReasons">
             @for((reason) <- taxCodeReasons) {
                 <li class="tax-code-reason">
                 @reason
