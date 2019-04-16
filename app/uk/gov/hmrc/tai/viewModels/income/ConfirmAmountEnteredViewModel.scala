@@ -54,7 +54,6 @@ object ConfirmAmountEnteredViewModel {
 
   def nextYearEstimatedPay(employmentId: Int, employerName: String, currentAmount: Int, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
     val nextYearRange: String = TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)
-    val mainParagraphText = messages("tai.updateIncome.CYPlus1.confirm.paragraph")
     val confirmUrl = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url
     val onCancelUrl = controllers.routes.IncomeTaxComparisonController.onPageLoad.url
 
