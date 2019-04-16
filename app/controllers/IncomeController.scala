@@ -93,7 +93,7 @@ class IncomeController @Inject()(personService: PersonService,
           for {
             cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey)
           } yield {
-            val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt, cachedData(2).toInt, false)
+            val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt, cachedData(2).replaceAll("""\D""", "").toInt, false)
             Ok(views.html.incomes.sameEstimatedPay(model))
           }
         }
