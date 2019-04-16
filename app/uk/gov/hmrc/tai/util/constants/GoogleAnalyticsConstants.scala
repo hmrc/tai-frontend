@@ -37,4 +37,5 @@ object GoogleAnalyticsConstants {
   val taiLandingPageMismatchValue = "mismatch"
 
   val taiCYPlusOneEstimatedIncome = "taiCYPlusOneEstimatedIncome"
+  val taiCYEstimatedIncome = "taiCYEstimatedIncome"
 }

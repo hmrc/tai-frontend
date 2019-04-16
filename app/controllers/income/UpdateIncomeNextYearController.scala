@@ -96,11 +96,7 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
 
         updateNextYearsIncomeService.reset flatMap { _ =>
           updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-            if (confirmedAPIEnabled) {
-              Ok(views.html.incomes.nextYear.updateIncomeCYPlus1SuccessWithConfirmedApiEnabled(model.employmentName, model.isPension))
-            } else {
-              Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName, model.isPension))
-            }
+            Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName, model.isPension))
           }
         }
       }

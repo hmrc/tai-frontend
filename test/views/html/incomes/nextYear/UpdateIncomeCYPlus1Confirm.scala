@@ -20,26 +20,32 @@ import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
 
-  private val employerName = "employerName"
-  private val estimatedAmount = 1000
-  private val employmentId = 1
+  val employerName = "employerName"
+  val currentAmount = 1234
+  val estimatedAmount = 1000
+  val employmentId = 1
+
+  val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, employerName, currentAmount, estimatedAmount)
+  override lazy val view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm)
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink
     behave like pageWithTitle(messages("tai.irregular.title"))
     behave like pageWithCombinedHeader(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.irregular.confirm.mainHeading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      messages("tai.irregular.confirm.mainHeading.pension", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
 
     "display the users current estimated income" in {
-      doc(view) must haveParagraphWithText(messages("tai.updateIncome.CYPlus1.confirm.paragraph") + " £1,000")
+      val mainText = messages("tai.irregular.confirm.estimatedIncome")
+      val amount = MonetaryUtil.withPoundPrefix(estimatedAmount)
+      doc(view) must haveParagraphWithText(s"$mainText $amount")
     }
 
     "display a message explaining the results of changing the estimated pay" in {
@@ -68,6 +74,4 @@ class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
     }
   }
 
-  val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, employerName, estimatedAmount)
-  override lazy val view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm)
 }

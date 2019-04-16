@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @(employmentName: String, isPension: Boolean)(
     implicit request: Request[_],
     messages: Messages,
@@ -25,7 +26,7 @@
 @gaEventActionString = @{"Your estimated pay for next year success"}
 
 @main(
-    title = messages("tai.updateIncome.CYPlus1.success.title"),
+    title = messages("tai.updateIncome.CYPlus1.success.title", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)),
     articleClasses = Some("full-width"),
     authedUser = Some(user),
     employerName = Some(employmentName)
@@ -33,24 +34,30 @@
 <div class="column-two-thirds">
     <header class="grid-row margin-bottom-large">
         <div class="govuk-box-highlight">
-            <h1 class="heading-large" id="currentYearTitle">@messages("tai.updateIncome.CYPlus1.success.heading", employmentName)</h1>
+            <h1 class="heading-large" id="currentYearTitle">
+                @messages("tai.updateIncome.CYPlus1.success.heading.p1")
+                <br/>
+                @messages("tai.updateIncome.CYPlus1.success.heading.p2")
+            </h1>
         </div>
     </header>
 
     <div class="grid-row">
-        <p>
-            @messages("tai.updateIncome.CYPlus1.success.paragraph1")
-            @includes.link(
-                copy = messages("tai.updateIncome.CYPlus1.success.link"),
-                url = controllers.routes.IncomeTaxComparisonController.onPageLoad.url.toString,
-                attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.updateIncome.CYPlus1.success.link")}"))
-            )
-        </p>
+       <p>@messages("tai.updateIncome.CYPlus1.success.p1")</p>
         @if(isPension) {
-            <p>@messages("tai.updateIncome.CYPlus1.success.pension.paragraph2", employmentName)</p>
+            <p>@messages("tai.updateIncome.CYPlus1.success.pension.p2", employmentName)</p>
         } else {
-            <p>@messages("tai.updateIncome.CYPlus1.success.paragraph2", employmentName)</p>
+            <p>@messages("tai.updateIncome.CYPlus1.success.employment.p2", employmentName)</p>
         }
+
+        <p>
+        @includes.link(
+            copy=messages("tai.returnToIncomeTaxSummary"),
+            url = controllers.routes.IncomeTaxComparisonController.onPageLoad.url.toString,
+            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.returnToIncomeTaxSummary")}")),
+            isButton=true
+        )
+        </p>
     </div>
 </div>
 }

@@ -64,7 +64,7 @@ class IncomeSourceSummaryController @Inject()(val auditConnector: AuditConnector
         (taxCodeIncomeDetails, employmentDetails) match {
           case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
             val incomeDetailsViewModel = IncomeSourceSummaryViewModel(empId, request.taiUser.getDisplayName, taxCodeIncomes,
-              employment, benefitsDetails, estimatedPayCompletion, confirmedAPIEnabled)
+              employment, benefitsDetails, estimatedPayCompletion)
             implicit val user = request.taiUser
             Ok(views.html.IncomeSourceSummary(incomeDetailsViewModel))
           case _ => throw new RuntimeException("Error while fetching income summary details")

@@ -18,15 +18,19 @@ package views.html.incomes
 
 import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 
 class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
 
-  private val employerName = "employerName"
-  private val estimatedAmount = 1000
-  private val employmentId = 1
+  val employerName = "employerName"
+  val currentAmount = 1234
+  val estimatedAmount = 1000
+  val employmentId = 1
+
+  val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, employerName, currentAmount, estimatedAmount)
+  override lazy val view: Html = views.html.incomes.confirmAmountEntered(vm)
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink
@@ -36,7 +40,9 @@ class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
       messages("tai.irregular.confirm.mainHeading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
 
     "display the users current estimated income" in {
-      doc(view) must haveParagraphWithText(messages("tai.irregular.confirm.estimatedIncome", "£1,000"))
+      val mainText = messages("tai.irregular.confirm.estimatedIncome")
+      val amount = MonetaryUtil.withPoundPrefix(estimatedAmount)
+      doc(view) must haveParagraphWithText( s"$mainText $amount")
     }
 
     "display a message explaining the results of changing the estimated pay" in {
@@ -53,10 +59,7 @@ class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
 
     "display a cancel link" in {
       doc(view) must haveLinkWithText(messages("tai.cancel.noSave"))
-      
     }
   }
 
-  val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, employerName, estimatedAmount)
-  override lazy val view: Html = views.html.incomes.confirmAmountEntered(vm)
 }

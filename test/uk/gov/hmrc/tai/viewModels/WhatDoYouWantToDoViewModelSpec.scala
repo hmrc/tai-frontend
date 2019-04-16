@@ -31,9 +31,8 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
   def createViewModel(isAnyIFormInProgress: TimeToProcess,
                       isCyPlusOneEnabled: Boolean,
                       hasTaxCodeChanged: Boolean = false,
-                      taxCodeMismatch: Option[TaxCodeMismatch] = None,
-                      isConfirmedAPI: Boolean = false): WhatDoYouWantToDoViewModel = {
-    WhatDoYouWantToDoViewModel(isAnyIFormInProgress, isCyPlusOneEnabled, hasTaxCodeChanged, taxCodeMismatch, isConfirmedAPI)
+                      taxCodeMismatch: Option[TaxCodeMismatch] = None): WhatDoYouWantToDoViewModel = {
+    WhatDoYouWantToDoViewModel(isAnyIFormInProgress, isCyPlusOneEnabled, hasTaxCodeChanged, taxCodeMismatch)
   }
 
   val mismatchedTaxCode = TaxCodeMismatchFactory.mismatchedTaxCodeComplex

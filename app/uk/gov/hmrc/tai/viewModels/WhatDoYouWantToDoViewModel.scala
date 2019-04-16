@@ -26,8 +26,7 @@ import scala.collection.immutable.ListMap
 case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: TimeToProcess,
                                       isCyPlusOneEnabled: Boolean,
                                       hasTaxCodeChanged: Boolean = false,
-                                      taxCodeMismatch: Option[TaxCodeMismatch] = None,
-                                      isConfirmedAPIEnabled: Boolean){
+                                      taxCodeMismatch: Option[TaxCodeMismatch] = None){
 
   def showTaxCodeChangeTile(): Boolean = {
     (hasTaxCodeChanged, taxCodeMismatch) match {
