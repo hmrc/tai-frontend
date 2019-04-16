@@ -43,7 +43,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     }
 
     "not display iForms status message when no iForms are in progress" in{
-      val vm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Seq(activeEmployment), Seq(pensionIncome), Seq(endedEmployment),
+      val vm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017",
+        Seq(activeEmployment), Seq(pensionIncome), Seq(endedEmployment),
         false, NoTimeToProcess, Seq(otherIncomeSourceViewModel))
       def view: Html = views.html.incomeTaxSummary(vm)
       doc(view) must not(haveElementWithId("isAnyFormInProgressBanner"))

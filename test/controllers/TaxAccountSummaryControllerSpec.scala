@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -206,7 +207,8 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
     employmentService,
     taxAccountService,
     auditService,
-    personService,
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
