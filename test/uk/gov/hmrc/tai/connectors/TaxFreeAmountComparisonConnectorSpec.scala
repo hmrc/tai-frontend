@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock.{badRequest, get, ok, urlEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock._
 import controllers.FakeTaiPlayApplication
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
@@ -97,12 +98,13 @@ class TaxFreeAmountComparisonConnectorSpec extends PlaySpec with MockitoSugar wi
         val nino = new Generator(new Random).nextNino
 
         val taxFreeAmountUrl = s"/tai/${nino.nino}/tax-account/tax-free-amount-comparison"
+        val errorMessage = "bad request"
 
         server.stubFor(
-          get(urlEqualTo(taxFreeAmountUrl)).willReturn(badRequest)
+          get(urlEqualTo(taxFreeAmountUrl)).willReturn(aResponse().withStatus(Status.BAD_REQUEST).withBody(errorMessage))
         )
 
-        val expected = TaiTaxAccountFailureResponse(s"GET of '${testConnector.serviceUrl}/tai/$nino/tax-account/tax-free-amount-comparison' returned 400 (Bad Request). Response body ''")
+        val expected = TaiTaxAccountFailureResponse(errorMessage)
 
         val result = testConnector.taxFreeAmountComparison(nino)
 
