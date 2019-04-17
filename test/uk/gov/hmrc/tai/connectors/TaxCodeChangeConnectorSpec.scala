@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, serverError, urlEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock._
 import controllers.FakeTaiPlayApplication
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.http.Status
 import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -28,7 +29,6 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
-
 import utils.WireMockHelper
 import utils.factories.TaxCodeMismatchFactory
 
@@ -108,15 +108,15 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
           val nino = generateNino
 
           val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
+          val errorMessage = "internal server error"
 
           server.stubFor(
-            get(urlEqualTo(taxCodeChangeUrl)).willReturn(serverError())
+            get(urlEqualTo(taxCodeChangeUrl)).willReturn(aResponse().withStatus(Status.INTERNAL_SERVER_ERROR).withBody(errorMessage))
           )
 
-          val expectedMessage = s"GET of '${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change' returned 500. Response body: ''"
           val result = Await.result(testConnector.taxCodeChange(nino), 5.seconds)
 
-          result mustBe TaiTaxAccountFailureResponse(expectedMessage)
+          result mustBe TaiTaxAccountFailureResponse(errorMessage)
         }
       }
     }
