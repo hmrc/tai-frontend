@@ -19,13 +19,14 @@ package uk.gov.hmrc.tai.connectors
 import java.net.URL
 
 import controllers.FakeTaiPlayApplication
-import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, urlEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, ok, urlEqualTo}
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.http.Status
 import play.api.http.Status._
 import play.api.libs.json.{Format, JsString, Json}
 import uk.gov.hmrc.domain.Generator
@@ -60,10 +61,92 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplica
         getResponse mustBe Json.toJson(json)
 
       }
-
     }
 
+    "result in a BadRequest exception" when {
 
+      "when a BadRequest http response is received from the http get call" in {
+
+        val errorMessage = "bad request"
+
+        server.stubFor(
+          get(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.BAD_REQUEST).withBody(errorMessage))
+        )
+
+        val thrown = the[BadRequestException] thrownBy getResponse
+
+        thrown.getMessage mustEqual errorMessage
+
+      }
+    }
+
+    "result in a NotFound exception" when {
+
+      "when a NotFound http response is received from the http get call" in {
+
+        val errorMessage = "not found"
+
+        server.stubFor(
+          get(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody(errorMessage))
+        )
+
+        val thrown = the[NotFoundException] thrownBy getResponse
+
+        thrown.getMessage mustEqual errorMessage
+
+      }
+    }
+
+    "result in a InternalServerError exception" when {
+
+      "when a InternalServerError http response is received from the http get call" in {
+
+        val errorMessage = "internal server error"
+
+        server.stubFor(
+          get(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.INTERNAL_SERVER_ERROR).withBody(errorMessage))
+        )
+
+        val thrown = the[InternalServerException] thrownBy getResponse
+
+        thrown.getMessage mustEqual errorMessage
+      }
+    }
+
+    "result in a Locked exception" when {
+
+      "when a Locked response is received from the http get call" in {
+
+        val errorMessage = "locked"
+
+        server.stubFor(
+          get(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.LOCKED).withBody(errorMessage))
+        )
+
+        val thrown = the[LockedException] thrownBy getResponse
+
+        thrown.getMessage mustEqual errorMessage
+
+      }
+    }
+
+    "result in an HttpException" when {
+
+      "when a unknown error http response is received from the http get call" in {
+
+        val errorMessage = "unknown response"
+        val unknownStatus = 418
+
+        server.stubFor(
+          get(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(unknownStatus).withBody(errorMessage))
+        )
+
+        val thrown = the[HttpException] thrownBy getResponse
+
+        thrown.getMessage mustEqual errorMessage
+
+      }
+    }
   }
 
 //    "return valid json" when {
