@@ -107,11 +107,11 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     }
   }
 
-  private def determineViewModel(incomeType: String, employmentName: String, newValue: Int): DuplicateSubmissionEstimatedPay = {
+  private def determineViewModel(incomeType: String, employmentName: String, previouslyUpdatedAmount: Int): DuplicateSubmissionEstimatedPay = {
     if (incomeType == TaiConstants.IncomeTypePension) {
-      DuplicateSubmissionPensionViewModel(employmentName, newValue)
+      DuplicateSubmissionPensionViewModel(employmentName, previouslyUpdatedAmount)
     } else {
-      DuplicateSubmissionEmploymentViewModel(employmentName, newValue)
+      DuplicateSubmissionEmploymentViewModel(employmentName, previouslyUpdatedAmount)
     }
   }
 
@@ -120,9 +120,9 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
       implicit request =>
 
       journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey, UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
-        val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryValues.toList
+        val incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil = mandatoryValues.toList
 
-        val vm = determineViewModel(incomeType, incomeName, newAmount.toInt)
+        val vm = determineViewModel(incomeType, incomeName, previouslyUpdatedAmount.toInt)
         Ok(views.html.incomes.duplicateSubmissionWarning(
           DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt)
           )
