@@ -9,7 +9,6 @@
 window.dataLayer = window.dataLayer || []
 window.dataLayer.push(
     {
-        'Session id (cd67)': '@request.session.get("sessionId")',
-        'Timestamp (cd68)': (new Date()).getTime()
+        'Session id (cd67)': '@request.session.get("sessionId")'
     }
 );
