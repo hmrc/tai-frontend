@@ -70,7 +70,7 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
       val endedCompanyBenefit = EndedCompanyBenefit("Accommodation",Messages("tai.noLongerGetBenefit"),"Before 6th April",Some("1000000"),"Yes",Some("0123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(httpHandler.postToApi(Matchers.eq(s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"), Matchers.eq(endedCompanyBenefit))
-      (any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      (any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)
 

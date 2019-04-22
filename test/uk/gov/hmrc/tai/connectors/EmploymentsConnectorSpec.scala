@@ -228,7 +228,7 @@ class EmploymentsConnectorSpec extends PlaySpec
       val sut = createSUT()
       val addEmployment = AddEmployment(employerName = "testEmployment", payrollNumber = "12345", startDate = new LocalDate(2017, 6, 6), telephoneContactAllowed = "Yes", telephoneNumber=Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(httpHandler.postToApi(Matchers.eq(sut.addEmploymentServiceUrl(nino)), Matchers.eq(addEmployment))(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      when(httpHandler.postToApi(Matchers.eq(sut.addEmploymentServiceUrl(nino)), Matchers.eq(addEmployment))(any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.addEmployment(nino, addEmployment), 5.seconds)
 
@@ -242,7 +242,7 @@ class EmploymentsConnectorSpec extends PlaySpec
       val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(httpHandler.postToApi(Matchers.eq(s"/tai/$nino/employments/1/reason"), Matchers.eq(model))
-      (any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      (any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
 

@@ -45,7 +45,7 @@ class PreviousYearsIncomeConnectorSpec extends PlaySpec
       val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(httpHandler.postToApi(Matchers.eq(s"/tai/$nino/employments/years/2016/update"), Matchers.eq(model))
-      (any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      (any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)
 

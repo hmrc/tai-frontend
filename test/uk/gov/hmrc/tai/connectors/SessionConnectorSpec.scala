@@ -50,7 +50,7 @@ class SessionConnectorSpec extends PlaySpec
     "call the proper url to invalidate the cache" in {
       val sut = createSUT
       Await.result(sut.invalidateCache(), 5.seconds)
-      verify(httpHandler, times(1)).deleteFromApi(Matchers.eq("localhost/tai/session-cache"))(any(), any())
+      verify(httpHandler, times(1)).deleteFromApi(Matchers.eq("localhost/tai/session-cache"))(any())
     }
   }
 
@@ -62,8 +62,7 @@ class SessionConnectorSpec extends PlaySpec
   class SUT extends SessionConnector(httpHandler) {
     override lazy val baseURL: String = "localhost"
 
-  when(httpHandler.deleteFromApi(any())(any(), any()))
-    .thenReturn(Future.successful(HttpResponse(200)))
+  when(httpHandler.deleteFromApi(any())(any())).thenReturn(Future.successful(HttpResponse(200)))
   }
 
 }

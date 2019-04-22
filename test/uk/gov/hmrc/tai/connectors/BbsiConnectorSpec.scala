@@ -254,7 +254,7 @@ class BbsiConnectorSpec extends PlaySpec
       "json is  invalid" in {
         val sut = createSut()
         val json = Json.obj("test"-> "123-456-789")
-        when(httpHandler.deleteFromApi(any())(any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        when(httpHandler.deleteFromApi(any())(any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
         val result = Await.result(sut.removeBankAccount(nino, 1), 5.seconds)
 

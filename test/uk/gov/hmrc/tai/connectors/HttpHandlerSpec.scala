@@ -157,7 +157,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplica
     "return Http exception" when{
       "http response is NOT_FOUND"in {
 
-        server.stubFor(post(urlEqualTo(url.getPath)).willReturn(aResponse(json.toString()).withStatus(Status.NOT_FOUND)
+        server.stubFor(post(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.NOT_FOUND)
           .withBody("")))
 
         val thrown = the[HttpException] thrownBy postResponse
@@ -165,7 +165,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplica
       }
 
       "http response is GATEWAY_TIMEOUT" in {
-        server.stubFor(post(urlEqualTo(url.getPath)).willReturn(aResponse(json.toString()).withStatus(Status.GATEWAY_TIMEOUT)))
+        server.stubFor(post(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.GATEWAY_TIMEOUT)))
 
         val thrown = the[HttpException] thrownBy postResponse
         thrown.responseCode mustBe Status.GATEWAY_TIMEOUT
@@ -175,33 +175,61 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplica
 
 
   "putToApi" should {
-    "return OK" in {
-
-      server.stubFor(put(urlEqualTo(url.getPath)).willReturn(ok(json.toString())))
-      putResponse.json mustBe Json.toJson(json)
-
-    }
-
-    "return Not Found exception" in {
-      val errorMessage = "not found"
-
-      server.stubFor(
-        put(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody(errorMessage))
-      )
+    "return OK" when {
+      "a successful put request is made" in {
+        server.stubFor(put(urlEqualTo(url.getPath)).willReturn(ok(json.toString())))
+        putResponse.json mustBe Json.toJson(json)
+      }
 
     }
 
-    "return Internal Server exception" in {
+    "return Not Found exception" when {
+      "a Not Found response is received from the http put call" in {
+        val errorMessage = "not found"
 
+        server.stubFor(
+          put(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody(errorMessage))
+        )
+
+        val thrown = the[NotFoundException] thrownBy putResponse
+
+        thrown.getMessage mustEqual errorMessage
+      }
     }
 
-    "return Bad Request exception" in {
+    "return Internal Server exception" when {
+      "an Internal Server Response is received from the http put call" in {
 
+        val errorMessage = "internal server error"
+
+        server.stubFor(
+          put(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.INTERNAL_SERVER_ERROR).withBody(errorMessage))
+        )
+
+        val thrown = the[InternalServerException] thrownBy putResponse
+
+        thrown.getMessage mustEqual errorMessage
+      }
     }
 
-    "return Http exception" in {
+    "return Bad Request exception" when {
+      "a Bad Request response is received from the http put call" in {
 
+        val errorMessage = "bad request"
+
+        server.stubFor(
+          put(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.BAD_REQUEST).withBody(errorMessage))
+        )
+
+        val thrown = the[BadRequestException] thrownBy putResponse
+
+        thrown.getMessage mustEqual errorMessage
+      }
     }
+
+//    "return Http exception" in {
+//
+//    }
   }
 
 //
