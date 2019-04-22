@@ -20,6 +20,7 @@ import com.google.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.audit.Auditable
 import controllers.auth.AuthAction
+import play.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
@@ -51,6 +52,7 @@ class NoCYIncomeTaxErrorController @Inject()(employmentService: EmploymentServic
         emp <- previousYearEmployments(request.taiUser.nino)
       } yield {
         implicit val user = request.taiUser
+        Logger.info(s"No CY Income Tax for user with Nino: ${user.getNino}")
         Ok(views.html.noCYIncomeTaxErrorPage(NoCYIncomeTaxErrorViewModel(emp)))
       }
     }

@@ -30,21 +30,29 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.tai.config.WSHttp
 import utils.WireMockHelper
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.Random
 
-class HttpHandlerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with WireMockHelper{
+class HttpHandlerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with WireMockHelper {
 
+  implicit val hc: HeaderCarrier = HeaderCarrier()
   lazy val handler: HttpHandler = new HttpHandler(WSHttp)
   val nino = new Generator(new Random).nextNino
   val json = Json.obj()
 
   def serviceUrl: String = s"http://localhost:${server.port()}"
+
   def url = new URL(s"${serviceUrl}/tai/${nino.nino}/tax-account/tax-free-amount-comparison")
+
   def getResponse = Await.result(handler.getFromApi(url.toString), 5 seconds)
+
   def putResponse = Await.result(handler.putToApi(url.toString, "put input"), 5 seconds)
+
   def postResponse = Await.result(handler.postToApi(url.toString, "post input"), 5 seconds)
+
+  def deleteResponse = Await.result(handler.deleteFromApi(url.toString), 5 seconds)
 
   "getFromAPI" should {
 
@@ -148,14 +156,20 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplica
   }
 
   "postToApi" should {
-    "return json which is coming from http post call" in {
+    "return valid json for an OK response" in {
 
       server.stubFor(post(urlEqualTo(url.getPath)).willReturn(ok(json.toString())))
       postResponse.json mustBe Json.toJson(json)
     }
 
-    "return Http exception" when{
-      "http response is NOT_FOUND"in {
+    "return valid json for a Created response" in {
+      server.stubFor(post(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.CREATED).withBody(json.toString())))
+
+      postResponse.json mustBe Json.toJson(json)
+    }
+
+    "return Http exception" when {
+      "http response is NOT_FOUND" in {
 
         server.stubFor(post(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.NOT_FOUND)
           .withBody("")))
@@ -227,72 +241,53 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplica
       }
     }
 
-//    "return Http exception" in {
-//
-//    }
+    "return Http exception" when {
+
+      "an error occurs" in {
+
+        val errorMessage = "unknown response"
+        val unknownStatus = 418
+
+        server.stubFor(
+          put(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(unknownStatus).withBody(errorMessage))
+        )
+
+        val thrown = the[HttpException] thrownBy putResponse
+
+        thrown.getMessage mustEqual errorMessage
+
+      }
+
+    }
   }
 
-//
-//  "deleteFromApi" must {
-//    "post request to DELETE and return the http response" when {
-//      "http DELETE returns OK" in {
-//
-//        val sut = createSUT
-//        when(http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(OK)))
-//        val result = Await.result(sut.deleteFromApi(mockUrl), 5 seconds)
-//        result.status mustBe OK
-//      }
-//
-//      "http DELETE returns NO_CONTENT" in {
-//
-//        val sut = createSUT
-//        when(http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
-//        val result = Await.result(sut.deleteFromApi(mockUrl), 5 seconds)
-//        result.status mustBe NO_CONTENT
-//      }
-//
-//      "http DELETE returns ACCEPTED" in {
-//        val sut = createSUT
-//        when(http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(ACCEPTED)))
-//        val result = Await.result(sut.deleteFromApi(mockUrl), 5.seconds)
-//        result.status mustBe ACCEPTED
-//      }
-//
-//    }
-//    "return Http exception" when {
-//      "http response is NOT OK" in {
-//        val sut = createSUT
-//        when(http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(GATEWAY_TIMEOUT)))
-//
-//        val result = the[HttpException] thrownBy Await.result(sut.deleteFromApi(mockUrl), 5 seconds)
-//
-//        result.responseCode mustBe GATEWAY_TIMEOUT
-//      }
-//    }
 
+  "deleteFromApi" must {
+    "post request to DELETE and return the http response" when {
+      "http DELETE returns OK" in {
+        server.stubFor(delete(urlEqualTo(url.getPath)).willReturn(ok(json.toString())))
+        deleteResponse.json mustBe Json.toJson(json)
+      }
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-  private val mockUrl = "mockUrl"
+      "http DELETE returns NO_CONTENT" in {
+        server.stubFor(delete(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.NO_CONTENT)))
+        deleteResponse.status mustBe Status.NO_CONTENT
 
-  private case class ResponseObject(name: String, age: Int)
-  private implicit val responseObjectFormat = Json.format[ResponseObject]
-  private val responseBodyObject = ResponseObject("Name", 24)
+      }
 
-  private val SuccesfulGetResponseWithObject: HttpResponse = HttpResponse(OK, Some(Json.toJson(responseBodyObject)), Map("ETag" -> Seq("34")))
-  private val BadRequestHttpResponse = HttpResponse(BAD_REQUEST, Some(JsString("bad request")), Map("ETag" -> Seq("34")))
-  private val NotFoundHttpResponse: HttpResponse = HttpResponse(NOT_FOUND, Some(JsString("not found")), Map("ETag" -> Seq("34")))
-  private val LockedHttpResponse: HttpResponse = HttpResponse(LOCKED, Some(JsString("locked")), Map("ETag" -> Seq("34")))
-  private val InternalServerErrorHttpResponse: HttpResponse = HttpResponse(INTERNAL_SERVER_ERROR, Some(JsString("internal server error")), Map("ETag" -> Seq("34")))
-  private val UnknownErrorHttpResponse: HttpResponse = HttpResponse(418, Some(JsString("unknown response")), Map("ETag" -> Seq("34")))
+      "http DELETE returns ACCEPTED" in {
+        server.stubFor(delete(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.ACCEPTED).withBody(json.toString())))
+        deleteResponse.json mustBe Json.toJson(json)
+      }
 
-  private def createSUT = new HttpHandlerTest()
-  val http = mock[WSHttp]
-  
-  private class HttpHandlerTest() extends HttpHandler(http)
-}
+    }
+    "return Http exception" when {
+      "http response is NOT OK" in {
+        server.stubFor(delete(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.GATEWAY_TIMEOUT)))
 
-case class DateRequest(date: LocalDate)
-
-object DateRequest {
-  implicit val formatDateRequest: Format[DateRequest] = Json.format[DateRequest]
+        val thrown = the[HttpException] thrownBy deleteResponse
+        thrown.responseCode mustBe Status.GATEWAY_TIMEOUT
+      }
+    }
+  }
 }

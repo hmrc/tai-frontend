@@ -36,7 +36,7 @@ class HttpHandler @Inject()(val http: WSHttp) {
         response.status match {
           case Status.OK => Try(response) match {
             case Success(data) => data
-            case Failure(e) => throw new RuntimeException("Unable to parse response")
+            case Failure(exception) => throw new RuntimeException(s"Unable to parse response: $exception")
           }
           case Status.NOT_FOUND => {
             Logger.warn(s"HttpHandler - No DATA Found")
