@@ -23,18 +23,15 @@ import play.api.http.Status._
 import play.api.libs.json.{JsValue, Writes}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.tai.config.WSHttp
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
-
 
 class HttpHandler @Inject()(val http: WSHttp) {
 
   def getFromApi(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
 
-
-    implicit val responseHandler = new HttpReads[HttpResponse] {
+    implicit val reads = new HttpReads[HttpResponse] {
       override def read(method: String, url: String, response: HttpResponse): HttpResponse = {
         response.status match {
           case Status.OK => Try(response) match {
@@ -65,62 +62,68 @@ class HttpHandler @Inject()(val http: WSHttp) {
       }
     }
 
+    http.GET[HttpResponse](url) map(_.json)
 
-    http.GET[HttpResponse](url) map { httpResponse =>
-      httpResponse.json
-    }
   }
 
   def putToApi[I](url: String, data: I)(implicit hc: HeaderCarrier, rds: HttpReads[I], writes: Writes[I]): Future[HttpResponse] = {
-    http.PUT[I, HttpResponse](url, data).flatMap { httpResponse =>
-      httpResponse.status match {
 
-        case OK =>
-          Future.successful(httpResponse)
+    implicit val reads = new HttpReads[HttpResponse] {
+      override def read(method: String, url: String, response: HttpResponse): HttpResponse = {
+        response.status match {
+          case OK => response
+          case NOT_FOUND =>
+            Logger.warn(s"HttpHandler - No data can be found")
+            throw new NotFoundException(response.body)
 
-        case NOT_FOUND =>
-          Logger.warn(s"HttpHandler - No data can be found")
-          Future.failed(new NotFoundException(httpResponse.body))
+          case INTERNAL_SERVER_ERROR =>
+            Logger.warn(s"HttpHandler - Internal Server Error received")
+            throw new InternalServerException(response.body)
 
-        case INTERNAL_SERVER_ERROR =>
-          Logger.warn(s"HttpHandler - Internal Server Error received")
-          Future.failed(new InternalServerException(httpResponse.body))
+          case BAD_REQUEST =>
+            Logger.warn(s"HttpHandler - Bad Request received")
+            throw new BadRequestException(response.body)
 
-        case BAD_REQUEST =>
-          Logger.warn(s"HttpHandler - Bad Request received")
-          Future.failed(new BadRequestException(httpResponse.body))
-
-        case _ =>
-          Logger.warn(s"HttpHandler - Server error received")
-          Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+          case _ =>
+            Logger.warn(s"HttpHandler - Server error received")
+            throw new HttpException(response.body, response.status)
+        }
       }
     }
+
+    http.PUT[I, HttpResponse](url, data)
   }
 
-  def postToApi[I](url: String, data: I)(implicit hc: HeaderCarrier, rds: HttpReads[I], writes: Writes[I]): Future[HttpResponse] = {
-    http.POST[I, HttpResponse](url, data) flatMap { httpResponse =>
-      httpResponse status match {
-        case OK | CREATED =>
-          Future.successful(httpResponse)
+  def postToApi[I](url: String, data: I)(implicit hc: HeaderCarrier, writes: Writes[I]): Future[HttpResponse] = {
 
-        case _ =>
-          Logger.warn(s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}")
-          Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+    implicit val rawHttpReads: HttpReads[HttpResponse] = new HttpReads[HttpResponse] {
+      override def read(method: String, url: String, response: HttpResponse): HttpResponse = {
+        response.status match {
+          case OK | CREATED => response
+          case _ =>
+            Logger.warn(s"HttpHandler - Error received with status: ${response.status} and body: ${response.body}")
+            throw new HttpException(response.body, response.status)
+        }
       }
     }
+
+    http.POST[I, HttpResponse](url, data)
   }
 
-  def deleteFromApi(url: String)(implicit hc: HeaderCarrier, rds: HttpReads[HttpResponse]): Future[HttpResponse] = {
-    http.DELETE[HttpResponse](url) flatMap { httpResponse =>
-      httpResponse status match {
-        case OK | NO_CONTENT | ACCEPTED =>
-          Future.successful(httpResponse)
+  def deleteFromApi(url: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
 
-        case _ =>
-          Logger.warn(s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}")
-          Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+    implicit val rawHttpReads: HttpReads[HttpResponse] = new HttpReads[HttpResponse] {
+      override def read(method: String, url: String, response: HttpResponse): HttpResponse = {
+        response.status match {
+          case OK | NO_CONTENT | ACCEPTED => response
+          case _ =>
+            Logger.warn(s"HttpHandler - Error received with status: ${response.status} and body: ${response.body}")
+            throw new HttpException(response.body, response.status)
+        }
       }
-    }
-  }
 
+
+    }
+    http.DELETE[HttpResponse](url)
+  }
 }

@@ -18,24 +18,20 @@ package uk.gov.hmrc.tai.connectors
 
 import java.net.URL
 
+import com.github.tomakehurst.wiremock.client.WireMock.{any => _, _}
 import controllers.FakeTaiPlayApplication
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, ok, urlEqualTo}
 import org.joda.time.LocalDate
-import org.mockito.Matchers
-import org.mockito.Matchers._
-import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status
 import play.api.http.Status._
 import play.api.libs.json.{Format, JsString, Json}
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.{controllers, _}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.tai.config.WSHttp
 import utils.WireMockHelper
-
+import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 class HttpHandlerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with WireMockHelper{
@@ -47,6 +43,8 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplica
   def serviceUrl: String = s"http://localhost:${server.port()}"
   def url = new URL(s"${serviceUrl}/tai/${nino.nino}/tax-account/tax-free-amount-comparison")
   def getResponse = Await.result(handler.getFromApi(url.toString), 5 seconds)
+  def putResponse = Await.result(handler.putToApi(url.toString, "put input"), 5 seconds)
+  def postResponse = Await.result(handler.postToApi(url.toString, "post input"), 5 seconds)
 
   "getFromAPI" should {
 
@@ -149,203 +147,63 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplica
     }
   }
 
-//    "return valid json" when {
-//
-//      "data is successfully received from the http get call" in {
-//
-//        val testUrl = "testUrl"
-//
-//        val SUT = createSUT
-//
-//        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(SuccesfulGetResponseWithObject))
-//
-//        val responseFuture = SUT.getFromApi(testUrl)
-//
-//        val response = Await.result(responseFuture, 5 seconds)
-//
-//        response mustBe Json.toJson(responseBodyObject)
-//
-//        verify(http, times(1)).GET(Matchers.eq(testUrl))(any(), any(), any())
-//      }
-//    }
-//
-//    "result in a BadRequest exception" when {
-//
-//      "when a BadRequest http response is received from the http get call" in {
-//
-//        val SUT = createSUT
-//
-//        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(BadRequestHttpResponse))
-//
-//        val responseFuture = SUT.getFromApi("")
-//
-//        val ex = the[BadRequestException] thrownBy Await.result(responseFuture, 5 seconds)
-//
-//        ex.message mustBe "\"bad request\""
-//      }
-//    }
-//
-//    "result in a NotFound exception" when {
-//
-//      "when a NotFound http response is received from the http get call" in {
-//
-//        val SUT = createSUT
-//
-//        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(NotFoundHttpResponse))
-//
-//        val responseFuture = SUT.getFromApi("")
-//
-//        val ex = the[NotFoundException] thrownBy Await.result(responseFuture, 5 seconds)
-//
-//        ex.message mustBe "\"not found\""
-//      }
-//    }
-//
-//    "result in a InternalServerError exception" when {
-//
-//      "when a InternalServerError http response is received from the http get call" in {
-//
-//        val SUT = createSUT
-//
-//        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(InternalServerErrorHttpResponse))
-//
-//        val responseFuture = SUT.getFromApi("")
-//
-//        val ex = the[InternalServerException] thrownBy Await.result(responseFuture, 5 seconds)
-//
-//        ex.message mustBe "\"internal server error\""
-//      }
-//    }
-//
-//    "result in a Locked exception" when {
-//
-//      "when a Locked response is received from the http get call" in {
-//
-//        val SUT = createSUT
-//
-//        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(LockedHttpResponse))
-//
-//        val responseFuture = SUT.getFromApi("")
-//
-//        val ex = the[LockedException] thrownBy Await.result(responseFuture, 5 seconds)
-//
-//        ex.message mustBe "\"locked\""
-//      }
-//    }
-//
-//    "result in an HttpException" when {
-//
-//      "when a unknown error http response is received from the http get call" in {
-//
-//        val SUT = createSUT
-//
-//        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(UnknownErrorHttpResponse))
-//
-//        val responseFuture = SUT.getFromApi("")
-//
-//        val ex = the[HttpException] thrownBy Await.result(responseFuture, 5 seconds)
-//
-//        ex.message mustBe "\"unknown response\""
-//      }
-//    }
-//
-//  }
-//
-//  "putToApi" should {
-//    "return OK" in {
-//      val sut = createSUT
-//      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
-//        thenReturn(Future.successful(HttpResponse(OK)))
-//
-//      val result = Await.result(sut.putToApi[DateRequest]("", DateRequest(LocalDate.now())), 5.seconds)
-//
-//      result.status mustBe OK
-//
-//    }
-//
-//    "return Not Found exception" in {
-//      val sut = createSUT
-//      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
-//        thenReturn(Future.successful(HttpResponse(NOT_FOUND)))
-//
-//      val result = the[NotFoundException] thrownBy Await.result(sut.putToApi[DateRequest]("", DateRequest(LocalDate.now())), 5.seconds)
-//
-//      result.responseCode mustBe NOT_FOUND
-//    }
-//
-//    "return Internal Server exception" in {
-//      val sut = createSUT
-//      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
-//        thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
-//
-//      val result = the[InternalServerException] thrownBy Await.result(sut.putToApi[DateRequest]("", DateRequest(LocalDate.now())), 5.seconds)
-//
-//      result.responseCode mustBe INTERNAL_SERVER_ERROR
-//    }
-//
-//    "return Bad Request exception" in {
-//      val sut = createSUT
-//      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
-//        thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
-//
-//      val result = the[BadRequestException] thrownBy Await.result(sut.putToApi[DateRequest]("", DateRequest(LocalDate.now())), 5.seconds)
-//
-//      result.responseCode mustBe BAD_REQUEST
-//    }
-//
-//    "return Http exception" in {
-//      val sut = createSUT
-//      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
-//        thenReturn(Future.successful(HttpResponse(GATEWAY_TIMEOUT)))
-//
-//      val result = the[HttpException] thrownBy Await.result(sut.putToApi[DateRequest]("", DateRequest(LocalDate.now())), 5.seconds)
-//
-//      result.responseCode mustBe GATEWAY_TIMEOUT
-//    }
-//  }
-//
-//  "postToApi" should {
-//    val userInput = "userInput"
-//
-//    "return json which is coming from http post call" in {
-//      val sut = createSUT
-//
-//      when(http.POST[String, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
-//        .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(userInput)))))
-//        .thenReturn(Future.successful(HttpResponse(CREATED, Some(Json.toJson(userInput)))))
-//
-//      val okResponse = Await.result(sut.postToApi[String](mockUrl, userInput), 5 seconds)
-//      val createdResponse = Await.result(sut.postToApi[String](mockUrl, userInput), 5 seconds)
-//
-//      okResponse.status mustBe OK
-//      okResponse.json mustBe Json.toJson(userInput)
-//
-//      createdResponse.status mustBe CREATED
-//      createdResponse.json mustBe Json.toJson(userInput)
-//    }
-//
-//    "return Http exception" when{
-//      "http response is NOT_FOUND"in {
-//        val sut = createSUT
-//        when(http.POST[String, HttpResponse](any(), any(), any())(any(), any(), any(), any())).
-//          thenReturn(Future.successful(HttpResponse(NOT_FOUND)))
-//
-//        val result = the[HttpException] thrownBy Await.result(sut.postToApi[String](mockUrl, userInput), 5 seconds)
-//
-//        result.responseCode mustBe NOT_FOUND
-//      }
-//
-//      "http response is GATEWAY_TIMEOUT" in {
-//        val sut = createSUT
-//        when(http.POST[String, HttpResponse](any(), any(), any())(any(), any(), any(), any())).
-//          thenReturn(Future.successful(HttpResponse(GATEWAY_TIMEOUT)))
-//
-//        val result = the[HttpException] thrownBy Await.result(sut.postToApi[String](mockUrl, userInput), 5 seconds)
-//
-//        result.responseCode mustBe GATEWAY_TIMEOUT
-//      }
-//    }
-//  }
+  "postToApi" should {
+    "return json which is coming from http post call" in {
+
+      server.stubFor(post(urlEqualTo(url.getPath)).willReturn(ok(json.toString())))
+      postResponse.json mustBe Json.toJson(json)
+    }
+
+    "return Http exception" when{
+      "http response is NOT_FOUND"in {
+
+        server.stubFor(post(urlEqualTo(url.getPath)).willReturn(aResponse(json.toString()).withStatus(Status.NOT_FOUND)
+          .withBody("")))
+
+        val thrown = the[HttpException] thrownBy postResponse
+        thrown.responseCode mustBe Status.NOT_FOUND
+      }
+
+      "http response is GATEWAY_TIMEOUT" in {
+        server.stubFor(post(urlEqualTo(url.getPath)).willReturn(aResponse(json.toString()).withStatus(Status.GATEWAY_TIMEOUT)))
+
+        val thrown = the[HttpException] thrownBy postResponse
+        thrown.responseCode mustBe Status.GATEWAY_TIMEOUT
+      }
+    }
+  }
+
+
+  "putToApi" should {
+    "return OK" in {
+
+      server.stubFor(put(urlEqualTo(url.getPath)).willReturn(ok(json.toString())))
+      putResponse.json mustBe Json.toJson(json)
+
+    }
+
+    "return Not Found exception" in {
+      val errorMessage = "not found"
+
+      server.stubFor(
+        put(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody(errorMessage))
+      )
+
+    }
+
+    "return Internal Server exception" in {
+
+    }
+
+    "return Bad Request exception" in {
+
+    }
+
+    "return Http exception" in {
+
+    }
+  }
+
 //
 //  "deleteFromApi" must {
 //    "post request to DELETE and return the http response" when {
