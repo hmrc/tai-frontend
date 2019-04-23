@@ -643,8 +643,6 @@ class IncomeControllerSpec extends PlaySpec
       "handle formatted numbers" in {
         val testController = createTestIncomeController()
 
-        val currentCache: Map[String, String] = Map(UpdateIncome_ConfirmedNewAmountKey -> "12345", UpdateIncome_NameKey -> "Employer Name")
-
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("Employer Name", "1", "10,087")))
 
         val result = testController.sameEstimatedPayInCache()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -654,9 +652,7 @@ class IncomeControllerSpec extends PlaySpec
 
       "contain the employer name and current pay " in {
         val testController = createTestIncomeController()
-
-        val currentCache: Map[String, String] = Map(UpdateIncome_ConfirmedNewAmountKey -> "12345", UpdateIncome_NameKey -> "Employer Name")
-
+        
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("Employer Name", "1", "987")))
 
         val result = testController.sameEstimatedPayInCache()(RequestBuilder.buildFakeRequestWithAuth("GET"))
