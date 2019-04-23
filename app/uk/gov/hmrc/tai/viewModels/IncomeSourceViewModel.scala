@@ -65,7 +65,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
     )
   }
 
-  def apply(incomeSource: IncomeSource)(implicit messages: Messages): IncomeSourceViewModel = {
+  def apply(incomeSource: TaxedIncome)(implicit messages: Messages): IncomeSourceViewModel = {
     val endDate: Option[String] = incomeSource.employment.endDate.map(Dates.formatDate(_))
     val detailsLinkLabel = incomeSource.taxCodeIncome.componentType match {
       case EmploymentIncome if incomeSource.taxCodeIncome.status == Live => messages("tai.incomeTaxSummary.employmentAndBenefits.link")

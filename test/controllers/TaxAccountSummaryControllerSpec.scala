@@ -221,19 +221,19 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
   val empEmployment10 = Employment("Employer name4", Some("10ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST10", "PAYE10", 10, None, false, false)
 
 
-  val livePensionIncomeSources: Seq[IncomeSource] = Seq(
-    IncomeSource(livePension3, pensionEmployment3),
-    IncomeSource(livePension4, pensionEmployment4)
+  val livePensionIncomeSources: Seq[TaxedIncome] = Seq(
+    TaxedIncome(livePension3, pensionEmployment3),
+    TaxedIncome(livePension4, pensionEmployment4)
   )
 
-  val liveEmploymentIncomeSources: Seq[IncomeSource] = Seq(
-    IncomeSource(liveEmployment1, empEmployment1),
-    IncomeSource(liveEmployment2, empEmployment2)
+  val liveEmploymentIncomeSources: Seq[TaxedIncome] = Seq(
+    TaxedIncome(liveEmployment1, empEmployment1),
+    TaxedIncome(liveEmployment2, empEmployment2)
   )
 
-  val ceasedEmploymentIncomeSources: Seq[IncomeSource] = Seq(
-    IncomeSource(potentiallyCeasedEmployment9, empEmployment9),
-    IncomeSource(ceasedEmployment10, empEmployment10)
+  val ceasedEmploymentIncomeSources: Seq[TaxedIncome] = Seq(
+    TaxedIncome(potentiallyCeasedEmployment9, empEmployment9),
+    TaxedIncome(ceasedEmployment10, empEmployment10)
   )
   val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
   val taxCodeIncomeCeased = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Ceased)

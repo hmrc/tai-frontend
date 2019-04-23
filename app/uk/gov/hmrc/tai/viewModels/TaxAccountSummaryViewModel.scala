@@ -40,7 +40,7 @@ case class TaxAccountSummaryViewModel(header: String,
                                       otherIncomeSources: Seq[IncomeSourceViewModel]
                                      )
 
-case class IncomesSources(livePensionIncomeSources: Seq[IncomeSource], liveEmploymentIncomeSources: Seq[IncomeSource], ceasedEmploymentIncomeSources: Seq[IncomeSource])
+case class IncomesSources(livePensionIncomeSources: Seq[TaxedIncome], liveEmploymentIncomeSources: Seq[TaxedIncome], ceasedEmploymentIncomeSources: Seq[TaxedIncome])
 
 object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter {
 

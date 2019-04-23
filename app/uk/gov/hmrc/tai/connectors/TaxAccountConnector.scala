@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
 import uk.gov.hmrc.tai.model.domain.income.{Incomes, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.model.domain.{IncomeSource, TaxAccountSummary, TaxCodeIncomeComponentType, UpdateTaxCodeIncomeRequest}
+import uk.gov.hmrc.tai.model.domain.{TaxedIncome, TaxAccountSummary, TaxCodeIncomeComponentType, UpdateTaxCodeIncomeRequest}
 import scala.util.control.NonFatal
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -57,7 +57,7 @@ class TaxAccountConnector @Inject() (httpHandler: HttpHandler) extends CodingCom
   def incomeSources(nino: Nino, year: TaxYear, incomeType: TaxCodeIncomeComponentType, status: TaxCodeIncomeSourceStatus)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApi(incomeSourceUrl(nino = nino.nino, year = year, incomeType = incomeType.toString, status = status.toString)).map (
     json =>
-      TaiSuccessResponseWithPayload((json \ "data").as[Seq[IncomeSource]])
+      TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxedIncome]])
     ) recover {
     case NonFatal(e) =>
       Logger.warn(s"Couldn't retrieve $status $incomeType income sources for $nino with exception:${e.getMessage}",e)

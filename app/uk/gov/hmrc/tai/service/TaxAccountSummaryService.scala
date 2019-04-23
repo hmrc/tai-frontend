@@ -49,9 +49,9 @@ class TaxAccountSummaryService @Inject()(trackingService: TrackingService,
       isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
     }  yield {
       (livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources, nonMatchingCeasedEmployments, nonTaxCodeIncome) match {
-        case (TaiSuccessResponseWithPayload(livePensionIncomeSources: Seq[IncomeSource]),
-        TaiSuccessResponseWithPayload(liveEmploymentIncomeSources: Seq[IncomeSource]),
-        TaiSuccessResponseWithPayload(ceasedEmploymentIncomeSources: Seq[IncomeSource]),
+        case (TaiSuccessResponseWithPayload(livePensionIncomeSources: Seq[TaxedIncome]),
+        TaiSuccessResponseWithPayload(liveEmploymentIncomeSources: Seq[TaxedIncome]),
+        TaiSuccessResponseWithPayload(ceasedEmploymentIncomeSources: Seq[TaxedIncome]),
         nonMatchingCeasedEmployments: Seq[Employment],
         TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
           TaxAccountSummaryViewModel(taxAccountSummary,
