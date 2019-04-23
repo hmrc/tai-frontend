@@ -155,8 +155,6 @@ POST        /update-income/how-to-update-income                                 
 GET         /update-income/working-hours                                               @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.workingHoursPage
 POST        /update-income/working-hours                                               @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleWorkingHours
 
-GET         /update-income/pay-period                                                  @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payPeriodPage
-POST        /update-income/pay-period                                                  @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayPeriod
 GET         /update-income/edit-income-irregular-hours/:employmentId                   @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.editIncomeIrregularHours(employmentId: Int)
 POST        /update-income/edit-income-irregular-hours/:employmentId                   @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleIncomeIrregularHours(employmentId: Int)
 GET         /update-income/edit-income-irregular-hours/:employmentId/confirm           @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId: Int)
@@ -187,6 +185,7 @@ GET         /update-income/estimated-pay                                        
 GET         /update-income/confirm-estimated-pay                                       @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleCalculationResult
 
 ## Regular Income URIs
+GET         /update-income/cancel/:id                                                  @controllers.IncomeController.cancel(id: Int)
 GET         /update-income/select-taxable-pay                                          @controllers.IncomeController.viewIncomeForEdit
 
 GET         /update-income/edit-taxable-pay                                            @controllers.IncomeController.regularIncome
@@ -202,7 +201,6 @@ GET         /update-income/income/same-estimated-pay                            
 GET         /update-income/income/same-annual-estimated-pay                            @controllers.IncomeController.sameAnnualEstimatedPay
 
 GET         /update-income/pension/check-save                                          @controllers.IncomeController.confirmPensionIncome
-
 
 POST        /update-income/success-page                                                @controllers.IncomeController.updateEstimatedIncome
 
@@ -292,5 +290,3 @@ GET         /update-income/next-year/income/:empId/no-change                    
 GET         /update-income/next-year/income/:empId/confirmed                           @controllers.income.UpdateIncomeNextYearController.handleConfirm(empId: Int)
 GET         /update-income/next-year/income/:empId/confirm                             @controllers.income.UpdateIncomeNextYearController.confirm(empId: Int)
 GET         /update-income/next-year/income/:empId/success                             @controllers.income.UpdateIncomeNextYearController.success(empId: Int)
-
-GET         /webchat-poc                                                               @controllers.WebchatController.get

@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], id: Int, employerName: String)(implicit request: Request[_],
+@import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+@(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], employer: IncomeSource)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
@@ -31,7 +32,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.payslipDeductions.heading"),
-        preHeadingText = messages("tai.payslipDeductions.preHeading", employerName)
+        preHeadingText = messages("tai.payslipDeductions.preHeading", employer.name)
     )
 }
 
@@ -40,7 +41,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     articleClasses = Some("full-width text"),
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName)
+    employerName = Some(employer.name)
 ){
 
     <div>
@@ -61,7 +62,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
             <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
         }
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+        @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(employer.id).url))
     </div>
 
 }

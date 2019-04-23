@@ -21,6 +21,7 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
@@ -28,14 +29,22 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewMod
 
 class EstimatedPaySpec extends TaiViewSpec with MockitoSugar{
 
-  val id = 1
-  val employerName = "Employer"
+  override def view: Html = views.html.incomes.estimatedPay(createViewModel())
+
+  val employer = IncomeSource(id = 1, name = "Employer")
+
+  def createViewModel(employmentStartDate:Option[LocalDate] = None) = {
+
+    val grossAnnualPay = Some(BigDecimal(20000))
+    val netAnnualPay = Some(BigDecimal(20000))
+    EstimatedPayViewModel(grossAnnualPay, netAnnualPay, false, Some(20000), employmentStartDate, employer)
+  }
 
   "Estimated Pay" must {
     behave like pageWithBackLink
-    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url))
     behave like pageWithCombinedHeader(
-      messages("tai.estimatedPay.preHeading", employerName),
+      messages("tai.estimatedPay.preHeading", employer.name),
       messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
     behave like pageWithTitle(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
 
@@ -90,12 +99,4 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar{
     }
   }
 
-  override def view: Html = views.html.incomes.estimatedPay(createViewModel())
-
-  def createViewModel(employmentStartDate:Option[LocalDate] = None) = {
-
-    val grossAnnualPay = Some(BigDecimal(20000))
-    val netAnnualPay = Some(BigDecimal(20000))
-    EstimatedPayViewModel(grossAnnualPay, netAnnualPay, id, false, Some(20000), employmentStartDate, employerName)
-  }
 }
