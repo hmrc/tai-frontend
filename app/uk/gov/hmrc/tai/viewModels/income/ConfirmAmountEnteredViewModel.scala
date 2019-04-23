@@ -52,6 +52,23 @@ object ConfirmAmountEnteredViewModel {
     )
   }
 
+  def annualPayCurrentYear(employmentId: Int, employerName: String, currentAmount: Int, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
+    val currentYear = TaxYearRangeUtil.currentTaxYearRangeSingleLine
+    val mainParagraphText = messages("tai.incomes.confirm.save.message")
+    val confirmUrl = controllers.routes.IncomeController.updateEstimatedIncome().url
+    val onCancelUrl = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
+
+    ConfirmAmountEnteredViewModel(
+      employerName = employerName,
+      yearRange = currentYear,
+      mainText = mainParagraphText,
+      onConfirm = confirmUrl,
+      onCancel = onCancelUrl,
+      estimatedIncome = estimatedIncome,
+      gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estimatedIncome)
+    )
+  }
+
   def nextYearEstimatedPay(employmentId: Int, employerName: String, currentAmount: Int, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
     val nextYearRange: String = TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)
     val confirmUrl = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url

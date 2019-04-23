@@ -43,6 +43,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, SameEstimatedPayViewModel}
 
 import scala.Function.tupled
@@ -172,11 +173,9 @@ class IncomeController @Inject()(personService: PersonService,
                   taxCodeIncomes.find(_.employmentId.contains(cachedData.head.toInt)) match {
                     case Some(taxCodeIncome) =>
                       val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
-                      val (_, date) = retrieveAmountAndDate(employment)
-                      val form = EditIncomeForm(employmentAmount, cachedData(1), date.map(_.toString()))
 
-                      val gaSetting  = gaSettings(GoogleAnalyticsConstants.taiCYEstimatedIncome, form.oldAmount, form.newAmount)
-                      Ok(views.html.incomes.confirm_save_Income(form, gaSetting))
+                      val vm = ConfirmAmountEnteredViewModel.annualPayCurrentYear(id, employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
+                      Ok(views.html.incomes.confirmAmountEntered(vm))
 
                     case _ => throw new RuntimeException(s"Not able to found employment with id $id")
                   }
@@ -312,12 +311,9 @@ class IncomeController @Inject()(personService: PersonService,
                   taxCodeIncomes.find(_.employmentId.contains(cachedData.head.toInt)) match {
                     case Some(taxCodeIncome) =>
                       val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
-                      val (_, date) = retrieveAmountAndDate(employment)
-                      val form = EditIncomeForm(employmentAmount, cachedData(1), date.map(_.toString()))
 
-                      val gaSetting = gaSettings(GoogleAnalyticsConstants.taiCYEstimatedIncome, form.oldAmount, form.newAmount)
-
-                      Ok(views.html.incomes.confirm_save_Income(form, gaSetting))
+                      val vm = ConfirmAmountEnteredViewModel.annualPayCurrentYear(id, employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
+                      Ok(views.html.incomes.confirmAmountEntered(vm))
                     case _ => throw new RuntimeException(s"Not able to found employment with id $id")
                   }
                 case _ => throw new RuntimeException("Exception while reading employment and tax code details")
