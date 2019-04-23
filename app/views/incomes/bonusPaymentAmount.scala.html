@@ -20,7 +20,8 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], id: Int, employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
+@import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Bonus or overtime payments"}
@@ -31,7 +32,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited),
-        preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading", employerName)
+        preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading", employer.name)
     )
 }
 
@@ -40,7 +41,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName),
+    employerName = Some(employer.name),
     gaCustomTitle = None
     ){
 
@@ -57,7 +58,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 
             @submit(gaEventAction = Some(gaEventActionString))
-            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+            @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(employer.id).url))
         }
     </div>
 }

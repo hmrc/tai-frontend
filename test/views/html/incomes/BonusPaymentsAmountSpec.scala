@@ -22,21 +22,24 @@ import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
 
-  val id = 1
-  val employerName = "Employer"
+  val employer = IncomeSource(id = 1, name = "Employer")
   val bonusPaymentsAmountForm = BonusOvertimeAmountForm.createForm()
+
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  override def view: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm, employer)
 
   "Bonus payments amount view" should {
     behave like pageWithBackLink
-    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeader(
-      messages("tai.bonusPaymentsAmount.preHeading", employerName),
+      messages("tai.bonusPaymentsAmount.preHeading", employer.name),
       messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited))
     behave like pageWithTitle(messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
     behave like pageWithContinueButtonForm("/check-income-tax/update-income/bonus-overtime-amount")
@@ -67,7 +70,7 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
         val invalidRequest = Json.obj("amount" -> "")
         val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 
-        val errorView = views.html.incomes.bonusPaymentAmount(invalidatedForm, id, employerName)
+        val errorView = views.html.incomes.bonusPaymentAmount(invalidatedForm, employer)
         doc(errorView) must haveErrorLinkWithText(emptySelectionErrorMessage)
         doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
       }
@@ -77,7 +80,7 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
         val invalidRequest = Json.obj("amount" -> "£10,0")
         val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 
-        val errorView = views.html.incomes.bonusPaymentAmount(invalidatedForm, id, employerName)
+        val errorView = views.html.incomes.bonusPaymentAmount(invalidatedForm, employer)
         doc(errorView) must haveErrorLinkWithText(invalidAmountErrorMessage)
         doc(errorView) must haveClassWithText(messages(invalidAmountErrorMessage), "error-message")
       }
@@ -85,5 +88,4 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
 
   }
 
-  override def view: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm,id, employerName)
 }
