@@ -20,7 +20,7 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.TaxablePayslipForm
-import uk.gov.hmrc.tai.model.domain.income.Employer
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmountViewModel
@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmoun
 class TaxablePaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIncomePayPeriodConstants {
 
   val employerName = "Employer"
-  val employer = Employer(id = 1, employerName)
+  val employer = IncomeSource(id = 1, employerName)
   val taxablePayslipViewModel = createViewModel()
 
   def createViewModel(form: Form[TaxablePayslipForm] = TaxablePayslipForm.createForm(None, Some(MONTHLY), None)) =

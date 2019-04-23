@@ -14,8 +14,8 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.tai.model.domain.income.Employer
-@(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], employer: Employer)(implicit request: Request[_],
+@import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+@(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], employer: IncomeSource)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader

@@ -21,14 +21,14 @@ import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, YesNoForm}
-import uk.gov.hmrc.tai.model.domain.income.Employer
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesConstants {
 
-  val employer = Employer(id = 1, name = "Employer")
+  val employer = IncomeSource(id = 1, name = "Employer")
 
   val emptySelectionErrorMessage = messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
     TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)

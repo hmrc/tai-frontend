@@ -17,14 +17,14 @@
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import org.joda.time.LocalDate
-import uk.gov.hmrc.tai.model.domain.income.Employer
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 
 case class EstimatedPayViewModel(grossAnnualPay: Option[BigDecimal],
                                  netAnnualPay: Option[BigDecimal],
                                  bonusOrOvertime: Boolean,
                                  annualAmount: Option[BigDecimal],
                                  incomeStartDate: Option[LocalDate],
-                                 employer: Employer) {
+                                 employer: IncomeSource) {
 
   def isGrossPayEqualsNetPay: Boolean = grossAnnualPay == netAnnualPay
 

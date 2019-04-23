@@ -18,12 +18,12 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.income.Employer
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 
 
 class EstimatedPayViewModelSpec extends PlaySpec {
 
-  val employer = Employer(1, "employer1")
+  val employer = IncomeSource(1, "employer1")
 
   "Estimated Pay View Model " must {
 

@@ -16,13 +16,13 @@
 
 package views.html.incomes.estimatedPayment.update
 
-import uk.gov.hmrc.tai.model.domain.income.Employer
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 
 class CheckYourAnswersSpec extends TaiViewSpec {
 
-  val employer = Employer(id = 1, name = "employer1")  
+  val employer = IncomeSource(id = 1, name = "employer1")
   val paymentFrequency = "monthly"
   val totalPay = "10000"
   val hasDeductions = "Yes"

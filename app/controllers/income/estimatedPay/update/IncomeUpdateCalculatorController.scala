@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCach
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
-import uk.gov.hmrc.tai.model.domain.income.{Employer, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
@@ -147,7 +147,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         sendActingAttorneyAuditEvent("processChooseHowToUpdate")
         HowToUpdateForm.createForm().bindFromRequest().fold(
           formWithErrors => {
-            val employerFuture = Employer.create(journeyCacheService)
+            val employerFuture = IncomeSource.create(journeyCacheService)
             for {
               employer <- employerFuture
             } yield {
@@ -167,7 +167,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit person =>
       implicit request =>
         sendActingAttorneyAuditEvent("getWorkingHours")
-        val employerFuture = Employer.create(journeyCacheService)
+        val employerFuture = IncomeSource.create(journeyCacheService)
         for {
           employer <- employerFuture
         } yield {
@@ -181,7 +181,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         sendActingAttorneyAuditEvent("processWorkedHours")
         HoursWorkedForm.createForm().bindFromRequest().fold(
           formWithErrors => {
-            val employerFuture = Employer.create(journeyCacheService)
+            val employerFuture = IncomeSource.create(journeyCacheService)
             for {
               employer <- employerFuture
             } yield {
@@ -317,7 +317,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit person =>
       implicit request =>
         sendActingAttorneyAuditEvent("getPayPeriodPage")
-        val employerFuture = Employer.create(journeyCacheService)
+        val employerFuture = IncomeSource.create(journeyCacheService)
 
         for {
           employer <- employerFuture
@@ -337,7 +337,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
         PayPeriodForm.createForm(None, payPeriod).bindFromRequest().fold(
           formWithErrors => {
-            val employerFuture = Employer.create(journeyCacheService)
+            val employerFuture = IncomeSource.create(journeyCacheService)
             for {
               employer <- employerFuture
             } yield {
@@ -371,7 +371,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             tupled {
               (mandatorySeq, optionalSeq) => {
                 val viewModel = {
-                  val employer = Employer(mandatorySeq(0).toInt, mandatorySeq(1))
+                  val employer = IncomeSource(mandatorySeq(0).toInt, mandatorySeq(1))
 
                   val payPeriod = optionalSeq(0)
                   val payPeriodInDays = optionalSeq(1)
@@ -394,7 +394,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
       implicit request =>
         sendActingAttorneyAuditEvent("processPayslipAmount")
 
-        val employerFuture = Employer.create(journeyCacheService)
+        val employerFuture = IncomeSource.create(journeyCacheService)
 
         val result: Future[Future[Result]] = for {
           employer <- employerFuture
@@ -434,7 +434,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           tupled {
             (mandatorySeq, optionalSeq) => {
               val viewModel = {
-                val employer = Employer(id = mandatorySeq(0).toInt, name = mandatorySeq(1))
+                val employer = IncomeSource(id = mandatorySeq(0).toInt, name = mandatorySeq(1))
                 val payPeriod = optionalSeq(0)
                 val payPeriodInDays = optionalSeq(1)
                 val taxablePayKey = optionalSeq(2)
@@ -452,7 +452,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
       implicit request =>
         sendActingAttorneyAuditEvent("processTaxablePayslipAmount")
 
-        val employerFuture = Employer.create(journeyCacheService)
+        val employerFuture = IncomeSource.create(journeyCacheService)
 
         val futurePayPeriod = journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
         val futurePayPeriodInDays = journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
@@ -486,7 +486,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
       implicit request =>
         sendActingAttorneyAuditEvent("getPayslipDeductionsPage")
 
-        val employerFuture = Employer.create(journeyCacheService)
+        val employerFuture = IncomeSource.create(journeyCacheService)
 
         for {
           employer <- employerFuture
@@ -504,7 +504,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
         PayslipDeductionsForm.createForm().bindFromRequest().fold(
           formWithErrors => {
-            val employerFuture = Employer.create(journeyCacheService)
+            val employerFuture = IncomeSource.create(journeyCacheService)
 
             for {
               employer <- employerFuture
@@ -535,7 +535,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
       implicit request =>
         sendActingAttorneyAuditEvent("getBonusPaymentsPage")
 
-        val employerFuture = Employer.create(journeyCacheService)
+        val employerFuture = IncomeSource.create(journeyCacheService)
 
         for {
           employer <- employerFuture
@@ -552,7 +552,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         sendActingAttorneyAuditEvent("processBonusPayments")
         BonusPaymentsForm.createForm.bindFromRequest().fold(
           formWithErrors => {
-            val employerFuture = Employer.create(journeyCacheService)
+            val employerFuture = IncomeSource.create(journeyCacheService)
             for {
               employer <- employerFuture
             } yield {
@@ -578,7 +578,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def bonusOvertimeAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        val employerFuture = Employer.create(journeyCacheService)
+        val employerFuture = IncomeSource.create(journeyCacheService)
         for {
           employer <- employerFuture
           bonusOvertimeAmount <- journeyCacheService.currentValue(UpdateIncome_BonusOvertimeAmountKey)
@@ -594,7 +594,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         sendActingAttorneyAuditEvent("processBonusOvertimeAmount")
         BonusOvertimeAmountForm.createForm().bindFromRequest().fold(
           formWithErrors => {
-            val employerFuture = Employer.create(journeyCacheService)
+            val employerFuture = IncomeSource.create(journeyCacheService)
             for {
               employer <- employerFuture
             } yield {
@@ -622,7 +622,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey, UpdateIncome_OtherInDaysKey)
         ) map tupled { (mandatorySeq, optionalSeq) => {
 
-          val employer = Employer(id = mandatorySeq(5).toInt, name = mandatorySeq(0))
+          val employer = IncomeSource(id = mandatorySeq(5).toInt, name = mandatorySeq(0))
           val payPeriodFrequency = mandatorySeq(1)
           val totalSalaryAmount = mandatorySeq(2)
           val hasPayslipDeductions = mandatorySeq(3)
@@ -650,7 +650,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
       implicit request =>
         sendActingAttorneyAuditEvent("getEstimatedPayPage")
 
-        val employerFuture = Employer.create(journeyCacheService)
+        val employerFuture = IncomeSource.create(journeyCacheService)
 
         val result: Future[Future[Result]] = for {
           employer <- employerFuture

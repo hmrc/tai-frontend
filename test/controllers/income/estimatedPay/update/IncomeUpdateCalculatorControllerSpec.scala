@@ -37,7 +37,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.tai.model.domain.income.{Employer, Live, OtherBasisOfOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -61,7 +61,7 @@ class IncomeUpdateCalculatorControllerSpec
     with EditIncomePayPeriodConstants {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  val employer = Employer(id = 1, name = "sample employer")
+  val employer = IncomeSource(id = 1, name = "sample employer")
 
   def fakeNino = new Generator(new Random).nextNino
 

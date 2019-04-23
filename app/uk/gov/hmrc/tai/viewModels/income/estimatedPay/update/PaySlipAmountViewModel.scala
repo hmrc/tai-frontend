@@ -19,17 +19,17 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 import play.api.data.Form
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.forms.PayslipForm
-import uk.gov.hmrc.tai.model.domain.income.Employer
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 
-case class PaySlipAmountViewModel(payslipForm: Form[PayslipForm], payPeriodTitle: String, employer: Employer)
+case class PaySlipAmountViewModel(payslipForm: Form[PayslipForm], payPeriodTitle: String, employer: IncomeSource)
 
 object PaySlipAmountViewModel extends EditIncomePayPeriodConstants with DynamicPayPeriodTitle {
 
   def apply(payslipForm: Form[PayslipForm],
             payPeriod: Option[String],
             payPeriodInDays: Option[String],
-            employer: Employer)(implicit message: Messages): PaySlipAmountViewModel = {
+            employer: IncomeSource)(implicit message: Messages): PaySlipAmountViewModel = {
     val title = GrossPayPeriodTitle.title(payPeriod, payPeriodInDays)
     PaySlipAmountViewModel(payslipForm, title, employer)
   }

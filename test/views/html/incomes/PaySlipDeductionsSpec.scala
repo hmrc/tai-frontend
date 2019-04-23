@@ -23,12 +23,12 @@ import play.api.data.{Field, Form}
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.PayslipDeductionsForm
-import uk.gov.hmrc.tai.model.domain.income.Employer
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class PaySlipDeductionsSpec extends TaiViewSpec with MockitoSugar {
 
-  val employer = Employer(id = 1, name = "Employer")
+  val employer = IncomeSource(id = 1, name = "Employer")
 
   "Pay slip deductions view" should {
     behave like pageWithBackLink

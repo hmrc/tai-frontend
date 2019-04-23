@@ -20,7 +20,7 @@ import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.forms.PayslipForm
-import uk.gov.hmrc.tai.model.domain.income.Employer
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 
 class PaySlipAmountViewModelSpec extends PlaySpec
@@ -31,7 +31,7 @@ class PaySlipAmountViewModelSpec extends PlaySpec
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val form = PayslipForm.createForm("tai.payslip.error.form.totalPay.input.mandatory")
-  val employer = Employer(id = 1, name = "employer name")
+  val employer = IncomeSource(id = 1, name = "employer name")
 
   "PaySlipAmountViewModel" must {
     "have a monthly title for a monthly pay period" in {

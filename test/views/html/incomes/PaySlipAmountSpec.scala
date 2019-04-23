@@ -23,14 +23,14 @@ import play.api.data.{Field, Form}
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.PayslipForm
-import uk.gov.hmrc.tai.model.domain.income.Employer
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.PaySlipAmountViewModel
 
 class PaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIncomePayPeriodConstants {
 
-  val employer = Employer(id = 1, name = "Employer")
+  val employer = IncomeSource(id = 1, name = "Employer")
 
   "Pay slip amount view" should {
     behave like pageWithBackLink

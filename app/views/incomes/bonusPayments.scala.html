@@ -21,8 +21,8 @@
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.forms.YesNoForm
 
-@import uk.gov.hmrc.tai.model.domain.income.Employer
-@(yesNoForm: Form[YesNoForm], employer: Employer)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
+@import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+@(yesNoForm: Form[YesNoForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Payslip deductions"}

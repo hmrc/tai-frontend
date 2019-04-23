@@ -21,7 +21,7 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.income.Employer
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
@@ -31,7 +31,7 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar{
 
   override def view: Html = views.html.incomes.estimatedPay(createViewModel())
 
-  val employer = Employer(id = 1, name = "Employer")
+  val employer = IncomeSource(id = 1, name = "Employer")
 
   def createViewModel(employmentStartDate:Option[LocalDate] = None) = {
 

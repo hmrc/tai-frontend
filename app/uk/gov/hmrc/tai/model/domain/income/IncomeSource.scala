@@ -22,17 +22,17 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.{ExecutionContext, Future}
 
-final case class Employer(id: Int, name: String)
+final case class IncomeSource(id: Int, name: String)
 
-object Employer extends JourneyCacheConstants {
-  def create(journeyCacheService: JourneyCacheService)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Employer] = {
+object IncomeSource extends JourneyCacheConstants {
+  def create(journeyCacheService: JourneyCacheService)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IncomeSource] = {
     val idFuture = journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
     val nameFuture = journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
     for {
       id <- idFuture
       name <- nameFuture
     } yield {
-      Employer(id, name)
+      IncomeSource(id, name)
     }
   }
 }
