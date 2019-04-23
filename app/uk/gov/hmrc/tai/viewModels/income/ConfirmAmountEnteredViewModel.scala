@@ -26,9 +26,9 @@ import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 case class ConfirmAmountEnteredViewModel(yearRange: String,
                                          employerName: String,
                                          mainText: String,
-                                         estimatedIncome:Int,
                                          onConfirm: String,
                                          onCancel: String,
+                                         estimatedIncome: Int,
                                          gaSettings: GoogleAnalyticsSettings)
 
 object ConfirmAmountEnteredViewModel {
@@ -45,26 +45,25 @@ object ConfirmAmountEnteredViewModel {
       employerName = employerName,
       yearRange = currentYear,
       mainText = mainParagraphText,
-      estimatedIncome=estimatedIncome,
       onConfirm = confirmUrl,
       onCancel = onCancelUrl,
+      estimatedIncome = estimatedIncome,
       gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estimatedIncome)
     )
   }
 
   def nextYearEstimatedPay(employmentId: Int, employerName: String, currentAmount: Int, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
     val nextYearRange: String = TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)
-    val mainParagraphText = messages("tai.updateIncome.CYPlus1.confirm.paragraph")
     val confirmUrl = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url
     val onCancelUrl = controllers.routes.IncomeTaxComparisonController.onPageLoad.url
 
     ConfirmAmountEnteredViewModel(
       employerName = employerName,
       yearRange = nextYearRange,
-      mainText = mainParagraphText,
-      estimatedIncome=estimatedIncome,
+      mainText = "",
       onConfirm = confirmUrl,
       onCancel = onCancelUrl,
+      estimatedIncome = estimatedIncome,
       gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome , currentAmount, estimatedIncome)
     )
   }

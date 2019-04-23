@@ -1400,6 +1400,8 @@ tai.updateIncome.CYPlus1.start.button=Diweddarwch eich incwm amcangyfrifedig
 tai.updateIncome.CYPlus1.start.paragraph1=Dylech ddiweddaru’r amcangyfrif o’ch incwm os ydych yn gwybod y bydd newid yn eich incwm gyda {0} y flwyddyn nesaf a’ch bod yn meddwl y bydd y newid yn effeithio ar eich haen gyfradd dreth.
 tai.updateIncome.CYPlus1.start.paragraph2=Os bydd eich cyflogaeth â {0} yn dod i ben y flwyddyn nesaf, gallwch roi gwybod i ni ar ôl iddi ddod i ben.
 tai.updateIncome.CYPlus1.confirm.paragraph=Rydych wedi nodi
+tai.updateIncome.CYPlus1.confirm.details.p1=Gallai diweddaru’ch incwm newid yr haen dreth sy’n berthnasol i chi.
+tai.updateIncome.CYPlus1.confirm.details.p2=Os bydd eich haen dreth yn newid byddwch yn cael cod treth newydd ac yn talu swm gwahanol o dreth.
 tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom=Caiff yr amcangyfrifon o’ch incwm ar gyfer y flwyddyn nesaf eu defnyddio ar gyfer eich cyfrif o {0} ymlaen.
 tai.updateIncome.CYPlus1.start.pension.paragraph2=Os bydd eich pensiwn oddi wrth {0} yn dod i ben y flwyddyn nesaf, gallwch roi gwybod i ni ar ôl iddo ddod i ben.
 tai.updateIncome.CYPlus1.edit.heading=Diweddarwch yr amcangyfrif o’ch cyflog trethadwy ar gyfer {0}
@@ -1419,7 +1421,7 @@ tai.updateIncome.CYPlus1.success.p1=Gallwch wirio''ch cyfrif ar ôl yr amser hwn
 tai.updateIncome.CYPlus1.success.pension.p2=Gall yr incwm amcangyfrifedig hwn newid pan fyddwn yn cael eich datganiad pensiwn terfynol ar gyfer y flwyddyn gyfredol {0}.
 tai.updateIncome.CYPlus1.success.employment.p2=Gall yr incwm amcangyfrifedig hwn newid pan gawn ni eich diweddariad cyflogres terfynol ar gyfer y flwyddyn dreth gyfredol gan {0}.
 
-tai.updateIncome.CYPlus1.same.heading=Amcangyfrif o’ch incwm trethadwy ar gyfer {0}
+tai.updateIncome.CYPlus1.same.heading=Eich incwm amcangyfrifedig ar gyfer {0}
 tai.updateIncome.CYPlus1.same.title=Diweddarwch eich incwm amcangyfrifedig
 tai.updateIncome.CYPlus1.same.paragraph1=Rydych wedi nodi {0}
 tai.updateIncome.CYPlus1.same.paragraph2=Mae hyn yr un peth â’r swm sydd gennym eisoes ar gyfer {0} ar gyfer y flwyddyn nesaf, felly does dim angen i chi ddiweddaru’ch incwm.
