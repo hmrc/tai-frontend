@@ -11,7 +11,7 @@ object FrontendBuild extends Build with MicroService {
   override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
   lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
   override lazy val playSettings: Seq[Setting[_]] = Seq(
-    dependencyOverrides += "uk.gov.hmrc" %% "play-config" % "7.3.0",
+    dependencyOverrides += "uk.gov.hmrc" %% "play-config" % "7.5.0",
     routesImport ++= Seq(
       "uk.gov.hmrc.domain._",
       "_root_.uk.gov.hmrc.tai.binders.TaxYearObjectBinder._",
@@ -28,13 +28,13 @@ private object AppDependencies {
   val compile = Seq(
     filters,
     "uk.gov.hmrc"  %% "play-conditional-form-mapping" %  "0.2.0",
-    "uk.gov.hmrc"  %%  "frontend-bootstrap"           %  "12.4.0",
+    "uk.gov.hmrc"  %%  "frontend-bootstrap"           %  "12.7.0",
     "uk.gov.hmrc"  %%  "url-builder"                  %  "2.1.0",
-    "uk.gov.hmrc"  %%  "play-partials"                %  "6.5.0",
+    "uk.gov.hmrc"  %%  "play-partials"                %  "6.9.0-play-25",
     "uk.gov.hmrc"  %%  "csp-client"                   %  "3.4.0",
     "uk.gov.hmrc"  %%  "play-language"                %  "3.4.0",
-    "uk.gov.hmrc"  %%  "local-template-renderer"      %  "2.3.0",
-    "uk.gov.hmrc"  %% "auth-client" % "2.19.0-play-25"
+    "uk.gov.hmrc"  %%  "local-template-renderer"      %  "2.4.0",
+    "uk.gov.hmrc"  %% "auth-client" % "2.20.0-play-25"
   )
 
   trait TestDependencies {
@@ -62,7 +62,7 @@ private object AppDependencies {
     def apply() = new TestDependencies {
       override lazy val scope: String = "it"
       override lazy val test = Seq(
-        "uk.gov.hmrc" %% "hmrctest" % "3.4.0-play-25" % scope,
+        "uk.gov.hmrc" %% "hmrctest" % "3.8.0-play-25" % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % scope,
         "org.pegdown" % "pegdown" % "1.6.0" % scope,
         "org.jsoup" % "jsoup" % "1.8.3" % scope,

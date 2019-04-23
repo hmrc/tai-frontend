@@ -20,21 +20,27 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.TaxablePayslipForm
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmountViewModel
 
 class TaxablePaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIncomePayPeriodConstants {
 
-  val id = 1
   val employerName = "Employer"
+  val employer = IncomeSource(id = 1, employerName)
   val taxablePayslipViewModel = createViewModel()
+
+  def createViewModel(form: Form[TaxablePayslipForm] = TaxablePayslipForm.createForm(None, Some(MONTHLY), None)) =
+    TaxablePaySlipAmountViewModel(form, Some(MONTHLY), None, employer)
+
+  override def view: Html = views.html.incomes.taxablePayslipAmount(taxablePayslipViewModel)
 
   "Taxable Pay slip amount view" should {
     behave like pageWithTitle(messages("tai.taxablePayslip.title.month", MONTHLY))
     behave like pageWithCombinedHeader(messages("tai.howToUpdate.preHeading", employerName), messages("tai.taxablePayslip.title.month", MONTHLY))
     behave like pageWithBackLink
-    behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(taxablePayslipViewModel.id))
+    behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(taxablePayslipViewModel.employer.id))
     behave like pageWithButtonForm("/check-income-tax/update-income/taxable-payslip-amount", messages("tai.submit"))
   }
 
@@ -45,16 +51,11 @@ class TaxablePaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIn
 
   "display error message" when {
     "the taxable pay has not been entered" in {
-      val formWithErrors = TaxablePayslipForm.createForm().bind(Map("taxablePay" -> ""))
+      val formWithErrors = TaxablePayslipForm.createForm(None, Some("blah"), None).bind(Map("taxablePay" -> ""))
       val viewModelError = createViewModel(formWithErrors)
       val errorView = views.html.incomes.taxablePayslipAmount(viewModelError)
       doc(errorView) must haveErrorLinkWithText(messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory"))
     }
 
   }
-
-  def createViewModel(form: Form[TaxablePayslipForm] = TaxablePayslipForm.createForm()) =
-    TaxablePaySlipAmountViewModel(form, Some(MONTHLY), None, id, employerName)
-
-  override def view: Html = views.html.incomes.taxablePayslipAmount(taxablePayslipViewModel)
 }

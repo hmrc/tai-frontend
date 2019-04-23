@@ -52,6 +52,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             <label for="otherInDays" class="form-label">${labelMessage}</label>
             ${errorSpan}
             <input type="text" class="form-control form-control-1-2 flush--bottom" id="otherInDays" name="otherInDays" />
+
         </div>
     </div>"""
 }
@@ -67,7 +68,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     <div class="section flush--bottom">
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
             @{inputRadioGroupStyling(
-                field=payPeriodForm("payPeriod"),
+                field=payPeriodForm(PayPeriodForm.PAY_PERIOD_KEY),
                 radioOptions=Seq(
                     PayPeriodForm.MONTHLY -> messages("tai.payPeriod.monthly"),
                     PayPeriodForm.WEEKLY -> messages("tai.payPeriod.weekly"),
@@ -86,6 +87,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
         }
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+        @cancelLink(controllers.routes.IncomeController.cancel(id), gaEventAction = Some(gaEventActionString))
     </div>
 }

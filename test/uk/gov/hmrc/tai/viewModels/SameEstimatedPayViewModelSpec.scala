@@ -24,15 +24,16 @@ class SameEstimatedPayViewModelSpec extends PlaySpec with FakeTaiPlayApplication
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val income = 123
+  val id = 1
 
   "SameEstimatedPayViewModel" must {
     "have a return link back to pension details" in {
-      val model = SameEstimatedPayViewModel("pension", income, isPension =  true)
+      val model = SameEstimatedPayViewModel("pension", id, income, isPension =  true)
       model.returnLink mustBe messagesApi("tai.updateEmployment.incomeSame.pension.return.link")
     }
 
     "have a return link back to employment details" in {
-      val model = SameEstimatedPayViewModel("employer", income, isPension =  false)
+      val model = SameEstimatedPayViewModel("employer", id, income, isPension =  false)
       model.returnLink mustBe messagesApi("tai.updateEmployment.incomeSame.employment.return.link")
     }
   }

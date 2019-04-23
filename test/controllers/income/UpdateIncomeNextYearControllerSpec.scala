@@ -29,7 +29,6 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, _}
@@ -40,7 +39,6 @@ import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import views.html.incomes.nextYear._
 
 import scala.concurrent.Future
-import scala.util.Random
 
 class UpdateIncomeNextYearControllerSpec extends PlaySpec
   with FakeTaiPlayApplication

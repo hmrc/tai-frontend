@@ -20,6 +20,7 @@ import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.forms.{PayslipForm, TaxablePayslipForm}
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 
 class TaxablePaySlipAmountViewModelSpec extends PlaySpec
@@ -29,21 +30,23 @@ class TaxablePaySlipAmountViewModelSpec extends PlaySpec
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val form = TaxablePayslipForm.createForm()
-  val employerId = 1
-  val employerName = "employer name"
+  val errorMessage = messagesApi("tai.taxablePayslip.error.form.incomes.radioButton.mandatory")
+
+  val employer = IncomeSource(1, "employer name")
 
   "TaxablePaySlipAmountViewModel" must {
     "have a monthly title for a monthly pay period" in {
       val payPeriod = Some(MONTHLY)
-      val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, None, employerId, employerName)
+      val form = TaxablePayslipForm.createForm(None, payPeriod, None)
+      val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, None, employer)
 
       viewModel.title mustBe messagesApi("tai.taxablePayslip.title.month")
     }
 
     "have a weekly title for a weekly pay period" in {
       val payPeriod = Some(WEEKLY)
-      val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, None, employerId, employerName)
+      val form = TaxablePayslipForm.createForm(None, payPeriod, None)
+      val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, None, employer)
 
       viewModel.title mustBe messagesApi("tai.taxablePayslip.title.week")
     }
@@ -51,15 +54,16 @@ class TaxablePaySlipAmountViewModelSpec extends PlaySpec
     "have a X-day title for a X-pay period" in {
       val payPeriod = Some(OTHER)
       val days = Some("123")
-      val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, days, employerId, employerName)
+      val form = TaxablePayslipForm.createForm(None, payPeriod, days)
+      val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, days, employer)
 
       viewModel.title mustBe messagesApi("tai.taxablePayslip.title.days", days.getOrElse(""))
     }
 
     "throw an exception if there is no pay period defined" in {
       val exception = intercept[RuntimeException]{
-        val payPeriod = None
-        TaxablePaySlipAmountViewModel(form, payPeriod, Some("123"), employerId, employerName)
+        val form = TaxablePayslipForm.createForm(None, None, None)
+        TaxablePaySlipAmountViewModel(form, None, Some("123"), employer)
       }
 
       exception.getMessage mustBe "No pay period found"
@@ -68,8 +72,8 @@ class TaxablePaySlipAmountViewModelSpec extends PlaySpec
     "throw an exception if there is no pay period in days defined" in {
       val exception = intercept[RuntimeException]{
         val payPeriod = Some(OTHER)
-        val payPeriodInDays = None
-        TaxablePaySlipAmountViewModel(form, payPeriod, payPeriodInDays, employerId, employerName)
+        val form = TaxablePayslipForm.createForm(None, payPeriod, None)
+        TaxablePaySlipAmountViewModel(form, payPeriod, None, employer)
       }
 
       exception.getMessage mustBe "No days found for pay period"

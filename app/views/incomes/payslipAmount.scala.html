@@ -33,7 +33,7 @@
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.payPeriodTitle,
-        preHeadingText = messages("tai.payslip.preHeading", viewModel.employerName)
+        preHeadingText = messages("tai.payslip.preHeading", viewModel.employer.name)
     )
 }
 
@@ -42,7 +42,7 @@
     articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(viewModel.employerName)
+    employerName = Some(viewModel.employer.name)
 ) {
     <p>@messages("tai.payslip.p1")</p>
     <p>@messages("tai.payslip.p2")</p>
@@ -58,6 +58,6 @@
         <input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/>
     }
 
-    @cancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.id).url))
+    @cancelLink(Call("GET", controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
 
 }
