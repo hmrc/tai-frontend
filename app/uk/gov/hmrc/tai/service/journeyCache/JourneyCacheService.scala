@@ -90,7 +90,7 @@ class JourneyCacheService @Inject() (val journeyName: String,
   private def mappedMandatory(cache: Map[String, String], mandatoryValues: Seq[String]): Seq[String] = {
     mandatoryValues map { key =>
       cache.get(key) match {
-        case Some(str) if !str.trim.isEmpty => str
+        case Some(str) if str.trim.nonEmpty => str
         case _ => throw new RuntimeException(s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
       }
     }
