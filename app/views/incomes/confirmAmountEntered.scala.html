@@ -31,7 +31,7 @@
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = None,
-        mainHeadingText = messages("tai.irregular.confirm.mainHeading", viewModel.yearRange),
+        mainHeadingText = messages("tai.incomes.confirm.save.heading", viewModel.yearRange),
         preHeadingText = messages("tai.estimatedPay.preHeading", <span class="carry-over">{viewModel.employerName}</span>)
     )
 }
@@ -51,7 +51,8 @@
     </p>
 
     <div class="panel panel-border-narrow">
-        <p>@messages("tai.irregular.confirm.effectOfChange")</p>
+        <p>@messages("tai.incomes.confirm.save.message.details.p1")</p>
+        <p>@messages("tai.incomes.confirm.save.message.details.p2")</p>
     </div>
 
 

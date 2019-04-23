@@ -790,7 +790,6 @@ tai.irregular.para2=Er mwyn cywiro''ch cofnodion, cysylltwch â {0} yn y lle cyn
 tai.irregular.para3=Gallwch ddiweddaru''ch cofnodion nawr os na allwch gysylltu â nhw neu ni fyddant yn eich talu eto.
 tai.irregular.para4=Rwyf eisiau:
 tai.irregular.preHeadingText=Dod â chyflogaeth i ben
-tai.irregular.confirm.effectOfChange=Gall newid eich swm newid eich cod treth a’r haen dreth yr ydych ynddi. Gallai hynny effeithio ar swm y dreth yr ydych yn ei thalu.
 tai.irregular.currentAmount=Y swm presennol
 tai.irregular.instruction.wholePounds=Nodwch y swm mewn punnoedd cyfan – anwybyddwch y ceiniogau.
 tai.irregular.newAmount=Swm newydd

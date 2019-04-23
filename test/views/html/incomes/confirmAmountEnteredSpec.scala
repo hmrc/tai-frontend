@@ -37,7 +37,7 @@ class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithTitle(messages("tai.irregular.title"))
     behave like pageWithCombinedHeader(
       messages("tai.payPeriod.preHeading", employerName),
-      messages("tai.irregular.confirm.mainHeading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
 
     "display the users current estimated income" in {
       val mainText = messages("tai.irregular.confirm.estimatedIncome")
@@ -46,7 +46,8 @@ class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
     }
 
     "display a message explaining the results of changing the estimated pay" in {
-      doc(view) must haveParagraphWithText(messages("tai.irregular.confirm.effectOfChange"))
+      doc(view) must haveParagraphWithText(messages("tai.incomes.confirm.save.message.details.p1"))
+      doc(view) must haveParagraphWithText(messages("tai.incomes.confirm.save.message.details.p2"))
     }
 
     "display a confirm and send button" in {
