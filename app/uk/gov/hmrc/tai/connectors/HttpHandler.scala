@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.google.inject.Inject
+import com.google.inject.{Inject, Singleton}
 import play.Logger
 import play.api.http.Status
 import play.api.http.Status._
@@ -27,6 +27,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
+@Singleton
 class HttpHandler @Inject()(val http: WSHttp) {
 
   def getFromApi(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
