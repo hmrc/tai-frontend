@@ -262,7 +262,7 @@ class IncomeController @Inject()(personService: PersonService,
       else if (isIncomeTheSame(income)) {
         Redirect(routes.IncomeController.sameAnnualEstimatedPay())
       } else {
-        journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0"))
+        journeyCacheService.cache(UpdateIncome_NewAmountKey, income.toEmploymentAmount().newAmount.toString)
         Redirect(confirmationCallback)
       }
     }

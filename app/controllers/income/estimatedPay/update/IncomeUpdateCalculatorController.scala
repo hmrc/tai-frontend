@@ -655,6 +655,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
       implicit request =>
         sendActingAttorneyAuditEvent("processCalculationResult")
         for {
+          employmentName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           income <- incomeService.employmentAmount(Nino(user.getNino), id)
           netAmount <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
@@ -666,10 +667,8 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
           } else {
 
-            val form = EditIncomeForm.create(preFillData = employmentAmount).get
-            val gaSetting = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, form.oldAmount, form.newAmount)
-
-            Ok(views.html.incomes.confirm_save_Income(form, gaSetting))
+            val vm = ConfirmAmountEnteredViewModel.annualPayCurrentYear(id, employmentName, employmentAmount.oldAmount, employmentAmount.newAmount)
+            Ok(views.html.incomes.confirmAmountEntered(vm))
           }
         }
   }

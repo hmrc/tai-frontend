@@ -34,13 +34,13 @@ class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink
-    behave like pageWithTitle(messages("tai.irregular.title"))
+    behave like pageWithTitle(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
     behave like pageWithCombinedHeader(
       messages("tai.payPeriod.preHeading", employerName),
       messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
 
     "display the users current estimated income" in {
-      val mainText = messages("tai.irregular.confirm.estimatedIncome")
+      val mainText = messages("tai.incomes.confirm.save.message")
       val amount = MonetaryUtil.withPoundPrefix(estimatedAmount)
       doc(view) must haveParagraphWithText( s"$mainText $amount")
     }

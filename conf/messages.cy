@@ -793,9 +793,6 @@ tai.irregular.preHeadingText=Dod â chyflogaeth i ben
 tai.irregular.currentAmount=Y swm presennol
 tai.irregular.instruction.wholePounds=Nodwch y swm mewn punnoedd cyfan – anwybyddwch y ceiniogau.
 tai.irregular.newAmount=Swm newydd
-tai.irregular.confirm.estimatedIncome=Eich incwm amcangyfrifedig newydd yw
-tai.irregular.confirm.mainHeading=Cadarnhewch eich incwm trethadwy amcangyfrifedig ar gyfer {0}
-tai.irregular.confirm.mainHeading.pension=Cadarnhewch eich incwm amcangyfrifedig ar gyfer {0}
 tai.irregular.error.error.incorrectTaxableIncome=Rhoddodd eich cyflogwr wybod i ni y talwyd £{0} i chi hyd at {1}. Ni allwch nodi swm incwm blynyddol sy’n is na hwn. Os yw’r swm yn anghywir, rhowch alwad i Wasanaeth Cwsmeriaid Cymraeg CThEM ar 0300 200 1900.
 tai.irregular.error.blankValue=Nodwch amcangyfrif newydd i fynd yn eich blaen
 

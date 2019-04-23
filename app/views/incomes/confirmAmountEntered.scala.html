@@ -37,7 +37,7 @@
 }
 
 @main(
-    title = messages("tai.irregular.title"),
+    title = messages("tai.incomes.confirm.save.title", viewModel.yearRange),
     pageHeader = Some(header),
     articleClasses = Some(""),
     gaSettings = viewModel.gaSettings
@@ -54,7 +54,6 @@
         <p>@messages("tai.incomes.confirm.save.message.details.p1")</p>
         <p>@messages("tai.incomes.confirm.save.message.details.p2")</p>
     </div>
-
 
 
     <p><a id="confirmAndSend" class="button section" role="button" href="@viewModel.onConfirm">@messages("tai.confirmAndSend")</a></p>

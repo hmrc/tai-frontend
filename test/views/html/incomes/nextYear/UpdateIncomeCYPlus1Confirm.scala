@@ -40,7 +40,7 @@ class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
     behave like pageWithTitle(messages("tai.irregular.title"))
     behave like pageWithCombinedHeader(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.irregular.confirm.mainHeading.pension", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
 
     "display the users current estimated income" in {
       doc(view) must haveParagraphWithText(messages("tai.updateIncome.CYPlus1.confirm.paragraph") + " £1,000")

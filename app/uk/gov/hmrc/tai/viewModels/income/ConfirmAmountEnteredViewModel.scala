@@ -37,7 +37,7 @@ object ConfirmAmountEnteredViewModel {
 
   def irregularPayCurrentYear(employmentId: Int, employerName: String, currentAmount: Int, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
     val currentYear = TaxYearRangeUtil.currentTaxYearRangeSingleLine
-    val mainParagraphText = messages("tai.irregular.confirm.estimatedIncome")
+    val mainParagraphText = messages("tai.incomes.confirm.save.message")
     val confirmUrl = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString
     val onCancelUrl = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
 

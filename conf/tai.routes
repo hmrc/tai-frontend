@@ -204,7 +204,7 @@ GET         /update-income/income/same-annual-estimated-pay                     
 GET         /update-income/pension/check-save                                          @controllers.IncomeController.confirmPensionIncome
 
 
-POST        /update-income/success-page                                                @controllers.IncomeController.updateEstimatedIncome
+GET        /update-income/success-page                                                 @controllers.IncomeController.updateEstimatedIncome
 
 
 ## Get Help Pages
