@@ -63,11 +63,11 @@
             cssClasses=Some("button"),
             dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
         </div>
-    </div>
 
-    <section class="section" id="webchat" aria-labelledby="webchat">
+        <section class="section anchor-webchat" id="webchat" aria-labelledby="webchat">
         @webchat()
-    </section>
+        </section>
+    </div>
 }
 
 
