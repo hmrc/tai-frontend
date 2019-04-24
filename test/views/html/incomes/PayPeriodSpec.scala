@@ -32,7 +32,7 @@ class PayPeriodSpec extends TaiViewSpec with MockitoSugar {
 
   "Pay period view" should {
     behave like pageWithBackLink
-    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.payPeriod.preHeading", employerName),
       messages("tai.payPeriod.heading"))

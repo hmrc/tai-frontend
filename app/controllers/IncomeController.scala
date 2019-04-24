@@ -68,6 +68,14 @@ class IncomeController @Inject()(personService: PersonService,
   with Auditable
   with FeatureTogglesConfig {
 
+  def cancel(empId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+    implicit request =>
+      journeyCacheService.flush() map { _ =>
+        Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+      }
+  }
+
   def regularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
