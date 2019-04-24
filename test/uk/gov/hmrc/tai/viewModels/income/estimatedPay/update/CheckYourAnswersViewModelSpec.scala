@@ -21,6 +21,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
@@ -180,7 +181,8 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
       hasDeductions,
       taxablePay,
       hasBonusOrOvertime,
-      totalBonusOrOvertime
+      totalBonusOrOvertime,
+      employer = IncomeSource(1, "employer name")
     )
   }
 
@@ -189,5 +191,4 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
   val taxablePay = "1800"
   val hasBonusOrOvertime = "Yes"
   val totalBonusOrOvertime = "3000"
-
 }

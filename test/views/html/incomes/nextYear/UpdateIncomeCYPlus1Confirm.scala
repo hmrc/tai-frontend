@@ -20,7 +20,7 @@ import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
@@ -40,14 +40,15 @@ class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
     behave like pageWithTitle(messages("tai.irregular.title"))
     behave like pageWithCombinedHeader(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.irregular.confirm.mainHeading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      messages("tai.irregular.confirm.mainHeading.pension", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
 
     "display the users current estimated income" in {
-      doc(view) must haveParagraphWithText(messages("tai.irregular.confirm.estimatedIncome", "£1,000"))
+      doc(view) must haveParagraphWithText(messages("tai.updateIncome.CYPlus1.confirm.paragraph") + " £1,000")
     }
 
     "display a message explaining the results of changing the estimated pay" in {
-      doc(view) must haveParagraphWithText(messages("tai.irregular.confirm.effectOfChange"))
+      doc(view) must haveParagraphWithText(messages("tai.updateIncome.CYPlus1.confirm.details.p1"))
+      doc(view) must haveParagraphWithText(messages("tai.updateIncome.CYPlus1.confirm.details.p2"))
     }
 
     "display a message explaining when change will take effect" in {
