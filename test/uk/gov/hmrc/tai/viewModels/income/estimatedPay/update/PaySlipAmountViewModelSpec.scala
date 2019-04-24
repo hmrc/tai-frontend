@@ -20,6 +20,7 @@ import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.forms.PayslipForm
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 
 class PaySlipAmountViewModelSpec extends PlaySpec
@@ -30,20 +31,19 @@ class PaySlipAmountViewModelSpec extends PlaySpec
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val form = PayslipForm.createForm("tai.payslip.error.form.totalPay.input.mandatory")
-  val employerId = 1
-  val employerName = "employer name"
+  val employer = IncomeSource(id = 1, name = "employer name")
 
   "PaySlipAmountViewModel" must {
     "have a monthly title for a monthly pay period" in {
       val payPeriod = Some(MONTHLY)
-      val viewModel = PaySlipAmountViewModel(form, payPeriod, None, employerId, employerName)
+      val viewModel = PaySlipAmountViewModel(form, payPeriod, None, employer)
 
       viewModel.payPeriodTitle mustBe messagesApi("tai.payslip.title.month")
     }
 
     "have a weekly title for a weekly pay period" in {
       val payPeriod = Some(WEEKLY)
-      val viewModel = PaySlipAmountViewModel(form, payPeriod, None, employerId, employerName)
+      val viewModel = PaySlipAmountViewModel(form, payPeriod, None, employer)
 
       viewModel.payPeriodTitle mustBe messagesApi("tai.payslip.title.week")
     }
@@ -51,7 +51,7 @@ class PaySlipAmountViewModelSpec extends PlaySpec
     "have a X-day title for a X-pay period" in {
       val payPeriod = Some(OTHER)
       val days = Some("123")
-      val viewModel = PaySlipAmountViewModel(form, payPeriod, days, employerId, employerName)
+      val viewModel = PaySlipAmountViewModel(form, payPeriod, days, employer)
 
       viewModel.payPeriodTitle mustBe messagesApi("tai.payslip.title.days", days.getOrElse(""))
     }
@@ -59,7 +59,7 @@ class PaySlipAmountViewModelSpec extends PlaySpec
     "throw an exception if there is no pay period defined" in {
       val exception = intercept[RuntimeException]{
         val payPeriod = None
-        PaySlipAmountViewModel(form, payPeriod, Some("123"), employerId, employerName)
+        PaySlipAmountViewModel(form, payPeriod, Some("123"), employer)
       }
 
       exception.getMessage mustBe "No pay period found"
@@ -69,7 +69,7 @@ class PaySlipAmountViewModelSpec extends PlaySpec
       val exception = intercept[RuntimeException]{
         val payPeriod = Some(OTHER)
         val payPeriodInDays = None
-        PaySlipAmountViewModel(form, payPeriod, payPeriodInDays, employerId, employerName)
+        PaySlipAmountViewModel(form, payPeriod, payPeriodInDays, employer)
       }
 
       exception.getMessage mustBe "No days found for pay period"

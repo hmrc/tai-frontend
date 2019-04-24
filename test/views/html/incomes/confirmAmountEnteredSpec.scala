@@ -18,7 +18,7 @@ package views.html.incomes
 
 import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 
@@ -40,7 +40,9 @@ class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
       messages("tai.irregular.confirm.mainHeading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
 
     "display the users current estimated income" in {
-      doc(view) must haveParagraphWithText(messages("tai.irregular.confirm.estimatedIncome", "£1,000"))
+      val mainText = messages("tai.irregular.confirm.estimatedIncome")
+      val amount = MonetaryUtil.withPoundPrefix(estimatedAmount)
+      doc(view) must haveParagraphWithText( s"$mainText $amount")
     }
 
     "display a message explaining the results of changing the estimated pay" in {
