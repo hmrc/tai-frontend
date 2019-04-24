@@ -56,7 +56,7 @@ object ConfirmAmountEnteredViewModel {
     val currentYear = TaxYearRangeUtil.currentTaxYearRangeSingleLine
     val mainParagraphText = messages("tai.incomes.confirm.save.message")
     val confirmUrl = controllers.routes.IncomeController.updateEstimatedIncome().url
-    val onCancelUrl = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
+    val onCancelUrl = controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
     ConfirmAmountEnteredViewModel(
       employerName = employerName,
