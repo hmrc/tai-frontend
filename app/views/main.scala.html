@@ -201,6 +201,8 @@
     @if(gaCallsAdditionalJs.isDefined && gaCallsAdditionalJs.get.toString.trim != ""){
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
+
+    <script type="text/javascript" src="@ApplicationConfig.webchatJsUrl"></script>
 }
 
 
