@@ -17,13 +17,18 @@
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import org.joda.time.LocalDate
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 
-case class EstimatedPayViewModel(grossAnnualPay: Option[BigDecimal], netAnnualPay: Option[BigDecimal], updateIncomeId: Int,
-                                 bonusOrOvertime: Boolean, annualAmount: Option[BigDecimal], incomeStartDate: Option[LocalDate],
-                                 employerName: String){
+case class EstimatedPayViewModel(grossAnnualPay: Option[BigDecimal],
+                                 netAnnualPay: Option[BigDecimal],
+                                 bonusOrOvertime: Boolean,
+                                 annualAmount: Option[BigDecimal],
+                                 incomeStartDate: Option[LocalDate],
+                                 employer: IncomeSource) {
 
-  def isGrossPayEqualsNetPay:Boolean = grossAnnualPay == netAnnualPay
-  def isGrossPayApportioned:Boolean = if(incomeStartDate.isDefined && annualAmount.isDefined) true else false
+  def isGrossPayEqualsNetPay: Boolean = grossAnnualPay == netAnnualPay
+
+  def isGrossPayApportioned: Boolean = if (incomeStartDate.isDefined && annualAmount.isDefined) true else false
 
 }
 
