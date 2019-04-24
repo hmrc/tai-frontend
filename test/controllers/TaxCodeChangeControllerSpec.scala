@@ -87,7 +87,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         status(result) mustBe OK
 
-        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
+        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel, webChatEnabled)
       }
     }
   }
@@ -113,10 +113,11 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       val expectedViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates, reasons, false)
 
       status(result) mustBe OK
-      result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel)
+      result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel, webChatEnabled)
     }
   }
 
+  val webChatEnabled = false
   val nino: Nino = new Generator(new Random).nextNino
 
   val giftAmount = 1000
