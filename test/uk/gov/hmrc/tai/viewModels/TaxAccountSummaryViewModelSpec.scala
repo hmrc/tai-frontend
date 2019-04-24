@@ -26,9 +26,14 @@ import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service.ThreeWeeks
 import uk.gov.hmrc.tai.util.{HtmlFormatter, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
+import utils.TaxAccountSummaryTestData
 
 
-class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
+class TaxAccountSummaryViewModelSpec extends PlaySpec
+  with FakeTaiPlayApplication
+  with I18nSupport
+  with TaxAccountSummaryTestData
+{
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "TaxAccountSummaryViewModel apply method" must {
@@ -437,36 +442,6 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
     }
   }
 
-  val liveEmployment1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
-  val liveEmployment2 = TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment", "BR", "employer2", Week1Month1BasisOfOperation, Live)
-  val livePension3 = TaxCodeIncome(PensionIncome, Some(3), 3333, "employment", "1150L", "employer3", OtherBasisOfOperation, Live)
-  val livePension4 = TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOfOperation, Live)
-  val potentiallyCeasedEmployment9 = TaxCodeIncome(EmploymentIncome, Some(9), 1111, "employment", "1150L", "employer9", OtherBasisOfOperation, PotentiallyCeased)
-  val ceasedEmployment10 = TaxCodeIncome(EmploymentIncome, Some(10), 2222, "employment", "BR", "employer10", Week1Month1BasisOfOperation, Ceased)
-
-  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
-    liveEmployment1,
-    liveEmployment2,
-    livePension3,
-    livePension4,
-    TaxCodeIncome(JobSeekerAllowanceIncome, Some(5), 5555, "employment", "1150L", "employer5", OtherBasisOfOperation, Live),
-    TaxCodeIncome(JobSeekerAllowanceIncome, Some(6), 6666, "employment", "BR", "employer6", Week1Month1BasisOfOperation, Live),
-    TaxCodeIncome(OtherIncome, Some(7), 7777, "employment", "1150L", "employer7", OtherBasisOfOperation, Live),
-    TaxCodeIncome(OtherIncome, Some(8), 8888, "employment", "BR", "employer8", Week1Month1BasisOfOperation, Live),
-    potentiallyCeasedEmployment9,
-    ceasedEmployment10,
-    TaxCodeIncome(PensionIncome, Some(11), 1111, "employment", "1150L", "employer11", OtherBasisOfOperation, PotentiallyCeased),
-    TaxCodeIncome(PensionIncome, Some(12), 2222, "employment", "BR", "employer12", Week1Month1BasisOfOperation, Ceased),
-    TaxCodeIncome(EmploymentIncome, None, 2222, "employment", "BR", "employer", Week1Month1BasisOfOperation, Live)
-  )
-
-  val empEmployment1 = Employment("Employer name1", Some("1ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST1", "PAYE1", 1, None, false, false)
-  val empEmployment2 = Employment("Employer name2", Some("1ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST2", "PAYE2", 2, None, false, false)
-  val pensionEmployment3 = Employment("Pension name1", Some("3ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST3", "PAYE3", 3, None, false, false)
-  val pensionEmployment4 = Employment("Pension name2", Some("4ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST4", "PAYE4", 4, None, false, false)
-  val empEmployment9 = Employment("Employer name3", Some("9ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST9", "PAYE9", 9, None, false, false)
-  val empEmployment10 = Employment("Employer name4", Some("10ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST10", "PAYE10", 10, None, false, false)
-
   val employments: Seq[Employment] = Seq(
     empEmployment1,
     empEmployment2,
@@ -482,39 +457,8 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
     Employment("Pension name4", Some("12ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST12", "PAYE12", 12, None, false, false)
   )
 
-  val livePensionIncomeSources: Seq[TaxedIncome] = Seq(
-    TaxedIncome(livePension3, pensionEmployment3),
-    TaxedIncome(livePension4, pensionEmployment4)
-  )
-
-  val liveEmploymentIncomeSources: Seq[TaxedIncome] = Seq(
-    TaxedIncome(liveEmployment1, empEmployment1),
-    TaxedIncome(liveEmployment2, empEmployment2)
-  )
-
-  val ceasedEmploymentIncomeSources: Seq[TaxedIncome] = Seq(
-    TaxedIncome(potentiallyCeasedEmployment9, empEmployment9),
-    TaxedIncome(ceasedEmployment10, empEmployment10)
-  )
-
-  val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
-  val taxCodeIncomeCeased = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Ceased)
-  val employment = Employment("Employer name", Some("123ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST123", "PAYE543", 1, None, false, false)
-  val payment = Payment(new LocalDate(), BigDecimal(123.45), BigDecimal(678.90), BigDecimal(123.12), BigDecimal(444.44), BigDecimal(555.55), BigDecimal(666.66), Monthly)
-  val annualAccount = AnnualAccount("key", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(payment), Nil)
-  val ceasedEmployment = Employment("Ceased employer name", Some("123ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq(annualAccount), "DIST123", "PAYE543", 1, None, false, false)
-
-  val nonMatchingSequenceNumber = 998
-
-
-  val nonMatchedEmployments = Seq(
-    ceasedEmployment.copy(sequenceNumber = nonMatchingSequenceNumber),
-    Employment("Pension name1", Some("3ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST3", "PAYE3", 999, None, false, false)
-  )
-
   val emptyTaxCodeIncomes = Seq.empty[TaxCodeIncome]
   val emptyEmployments = Seq.empty[Employment]
-  val taxAccountSummary = TaxAccountSummary(1111, 2222, 333.32, 444.44, 111.11)
 
   val otherIncomeSourceViewModel = IncomeSourceViewModel(
     "",
@@ -530,9 +474,6 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
     displayDetailsLink = true
   )
 
-  val nonTaxCodeIncome = NonTaxCodeIncome(Some(uk.gov.hmrc.tai.model.domain.income.UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest", Seq.empty[BankAccount])), Seq(
-    OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
-  ))
   val noIncomesSources = IncomesSources(Seq(), Seq(), Seq())
   val incomeSources = IncomesSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources)
 

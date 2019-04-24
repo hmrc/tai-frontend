@@ -20,40 +20,31 @@ import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.{JsString, Json}
+import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live, PotentiallyCeased, TaxCodeIncomeSourceStatus}
 
-class TaxComponentTypeSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
+class TaxCodeIncomeSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  "toMessage" must {
-    "return the tax component type as a user friendly label" in {
-      val taxComponentType = GiftAidPayments
-
-      taxComponentType.toMessage() mustBe "Gift Aid Payments"
-    }
-  }
-
-  "Income component format" must {
+  "TaxCodeIncomeSourceStatus format" must {
     "create a valid object" when {
       "given a valid json value" in {
-        JsString("EmploymentIncome").as[TaxComponentType] mustBe EmploymentIncome
-        JsString("PensionIncome").as[TaxComponentType] mustBe PensionIncome
-        JsString("JobSeekerAllowanceIncome").as[TaxComponentType] mustBe JobSeekerAllowanceIncome
-        JsString("OtherIncome").as[TaxComponentType] mustBe OtherIncome
+        JsString("Live").as[TaxCodeIncomeSourceStatus] mustBe Live
+        JsString("PotentiallyCeased").as[TaxCodeIncomeSourceStatus] mustBe PotentiallyCeased
+        JsString("Ceased").as[TaxCodeIncomeSourceStatus] mustBe Ceased
       }
 
       "throw an exception" when {
         "give an invalid json value" in {
-          val exception = the[IllegalArgumentException] thrownBy JsString("Wrong").as[TaxComponentType]
+          val exception = the[IllegalArgumentException] thrownBy JsString("Wrong").as[TaxCodeIncomeSourceStatus]
           exception.getMessage mustBe "Invalid Tax component type"
         }
       }
 
       "create a valid json value" when {
-        "given an Income Component Type" in {
-          Json.toJson(EmploymentIncome) mustBe JsString("EmploymentIncome")
-          Json.toJson(PensionIncome) mustBe JsString("PensionIncome")
-          Json.toJson(JobSeekerAllowanceIncome) mustBe JsString("JobSeekerAllowanceIncome")
-          Json.toJson(OtherIncome) mustBe JsString("OtherIncome")
+        "given an TaxCodeIncomeSourceStatus" in {
+          Json.toJson(Live) mustBe JsString("Live")
+          Json.toJson(PotentiallyCeased) mustBe JsString("PotentiallyCeased")
+          Json.toJson(Ceased) mustBe JsString("Ceased")
         }
       }
     }

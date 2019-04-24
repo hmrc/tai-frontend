@@ -39,15 +39,22 @@ class TaxAccountSummaryService @Inject()(trackingService: TrackingService,
 
 
   def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)
-                                (implicit hc: HeaderCarrier, messages: Messages): Future[TaxAccountSummaryViewModel] =
+                                (implicit hc: HeaderCarrier, messages: Messages): Future[TaxAccountSummaryViewModel] = {
+    val livePensionIncomeSourcesF = taxAccountService.incomeSources(nino, TaxYear(), PensionIncome, Live)
+    val liveEmploymentIncomeSourcesF = taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Live)
+    val ceasedEmploymentIncomeSourcesF = taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Ceased)
+    val nonMatchingCeasedEmploymentsF = employmentService.ceasedEmployments(nino, TaxYear())
+    val nonTaxCodeIncomeF = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
+    val isAnyFormInProgressF = trackingService.isAnyIFormInProgress(nino.nino)
+
     for {
-      livePensionIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), PensionIncome, Live)
-      liveEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Live)
-      ceasedEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Ceased)
-      nonMatchingCeasedEmployments <- employmentService.ceasedEmployments(nino, TaxYear())
-      nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
-      isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
-    }  yield {
+      livePensionIncomeSources <- livePensionIncomeSourcesF
+      liveEmploymentIncomeSources <- liveEmploymentIncomeSourcesF
+      ceasedEmploymentIncomeSources <- ceasedEmploymentIncomeSourcesF
+      nonMatchingCeasedEmployments <- nonMatchingCeasedEmploymentsF
+      nonTaxCodeIncome <- nonTaxCodeIncomeF
+      isAnyFormInProgress <- isAnyFormInProgressF
+    } yield {
       (livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources, nonMatchingCeasedEmployments, nonTaxCodeIncome) match {
         case (TaiSuccessResponseWithPayload(livePensionIncomeSources: Seq[TaxedIncome]),
         TaiSuccessResponseWithPayload(liveEmploymentIncomeSources: Seq[TaxedIncome]),
@@ -62,5 +69,7 @@ class TaxAccountSummaryService @Inject()(trackingService: TrackingService,
         case _ => throw new RuntimeException("Failed to fetch income details")
       }
     }
+  }
+
 
 }
