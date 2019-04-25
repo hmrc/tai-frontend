@@ -115,6 +115,14 @@
             }
 
         </div>
+
+
+        @if(webChatEnabled) {
+            <section class="section anchor-webchat" id="webchat" aria-labelledby="webchat">
+            @webchat()
+            </section>
+        }
+
     </div>
 
     <div class="grid grid-1-3">
@@ -194,11 +202,5 @@
             </section>
         </div>
     </div>
-
-    @if(webChatEnabled) {
-        <section class="section" id="webchat" aria-labelledby="webchat">
-        @webchat()
-        </section>
-    }
 </div>
 }
