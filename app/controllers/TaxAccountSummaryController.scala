@@ -30,6 +30,7 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
@@ -53,7 +54,8 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
-  with AuditConstants {
+  with AuditConstants
+  with FeatureTogglesConfig {
 
   def onPageLoad: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -69,7 +71,7 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                 Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
               case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
                 taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
-                  Ok(views.html.incomeTaxSummary(vm))
+                  Ok(views.html.incomeTaxSummary(vm, webChatEnabled))
                 }
               case _ => throw new RuntimeException("Failed to fetch tax account summary details")
             }
