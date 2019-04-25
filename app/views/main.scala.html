@@ -202,7 +202,6 @@
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
 
-    <script type="text/javascript" src="@ApplicationConfig.webchatJsUrl"></script>
 }
 
 
@@ -244,7 +243,8 @@
             Map("url" -> controllers.routes.AssetsController.versioned("javascript/char-count.js")),
             Map("url" -> controllers.routes.AssetsController.versioned("javascript/card.js")),
             Map("url" -> controllers.routes.AssetsController.versioned("javascript/tax-code-change.js")),
-            Map("url" -> controllers.routes.AssetsController.versioned("javascript/urbanner.js"))
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/urbanner.js")),
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/inqChatLaunch10006719.js"))
         ),
         "inlineScript" -> inlineScript,
         "showPropositionLinks" -> isWelshEnabled,
