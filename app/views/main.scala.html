@@ -202,7 +202,6 @@
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
 
-    <script type="text/javascript" src="@ApplicationConfig.webchatJsUrl"></script>
 }
 
 
@@ -212,6 +211,25 @@
 
 @isWelshActive = @{
     LanguageUtils.getCurrentLang == Lang("cy")
+}
+
+@scriptMap = @{
+  Seq(
+    Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai-new.js")),
+    Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai-backlink.js")),
+    Map("url" -> controllers.routes.AssetsController.versioned("javascript/char-count.js")),
+    Map("url" -> controllers.routes.AssetsController.versioned("javascript/card.js")),
+    Map("url" -> controllers.routes.AssetsController.versioned("javascript/tax-code-change.js")),
+    Map("url" -> controllers.routes.AssetsController.versioned("javascript/urbanner.js"))
+  )
+}
+
+@scriptElements = @{
+  if(FeatureTogglesConfig.webChatEnabled){
+    scriptMap :+ Map("url" -> controllers.routes.AssetsController.versioned("javascript/inqChatLaunch10006719.js"))
+  } else {
+    scriptMap
+  }
 }
 
 @mustacheMap = @{
@@ -238,14 +256,7 @@
         "feedbackIdentifier" -> TaiConstants.SERVICE_IDENTIFIER,
         "googleAnalytics" -> googleAnalytics,
         "gaCustomEvent" -> gaCustomEvent,
-        "scriptElems" -> Seq(
-            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai-new.js")),
-            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai-backlink.js")),
-            Map("url" -> controllers.routes.AssetsController.versioned("javascript/char-count.js")),
-            Map("url" -> controllers.routes.AssetsController.versioned("javascript/card.js")),
-            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tax-code-change.js")),
-            Map("url" -> controllers.routes.AssetsController.versioned("javascript/urbanner.js"))
-        ),
+        "scriptElems" -> scriptElements,
         "inlineScript" -> inlineScript,
         "showPropositionLinks" -> isWelshEnabled,
         "langSelector" -> isWelshEnabled,
