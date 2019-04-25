@@ -25,11 +25,11 @@
 
 @header = @{
     ptaHeader(
-    formForErrorSummary = None,
-    displayBackLink = true,
-    backLinkGaEventAction = Some(gaEventActionString),
-    mainHeadingText = Messages("taxCode.change.yourTaxFreeAmount.title"),
-    preHeadingText = Messages("taxCode.change.journey.preHeading"))
+        formForErrorSummary = None,
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("taxCode.change.yourTaxFreeAmount.title"),
+        preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
 
 @main(
@@ -38,27 +38,20 @@
     pageHeader = Some(header),
     authedUser = Some(user),
     gaCustomTitle = None
-){
+) {
+    <div class="column-two-thirds">
 
-    <div class="grid-row">
-
-        <div class="column-two-thirds">
-
+        <div class="grid-row">
             <p class="lede">@Messages("taxCode.change.yourTaxFreeAmount.desc")</p>
-
         </div>
 
-    </div>
-
-    <div class="grid-row">
-        
-        <div class="column-two-thirds">
+        <div class="grid-row">
 
             <h2 class="flush--bottom heading-medium">
-                @Messages("tai.taxFreeAmount.heading.pt1")<br/>
+                @Messages("tai.taxFreeAmount.heading.pt1") <br/>
                 @currentTaxFreeAmount.currentTaxFreeInfo.date
                 <span class="display-block bold-large section section--narrow flush--bottom">
-                    @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeAmount.currentTaxFreeInfo.annualTaxFreeAmount)
+                @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeAmount.currentTaxFreeInfo.annualTaxFreeAmount)
                 </span>
             </h2>
 
@@ -67,35 +60,31 @@
                 <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h2>
 
                 <div class="margin-bottom-large">
-                    @taxFreeAmountSummaryComparison(currentTaxFreeAmount, gaEventActionString, taxCodeChange = true)
+                @taxFreeAmountSummaryComparison(currentTaxFreeAmount, gaEventActionString, taxCodeChange = true)
                 </div>
 
             </section>
-
         </div>
 
-    </div>
-
-    <div class="grid-row">
-        <div class="column-two-thirds">
-
-
+        <div class="grid-row">
             <div class="form-group">
-                @Link.toInternalPage(
-                    id=Some("seeWhatHappensNext"),
-                    value=Some(Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")),
-                    url = routes.TaxCodeChangeController.whatHappensNext.url,
-                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")}")),
-                    cssClasses=Some("button")
-                ).toHtml
+            @Link.toInternalPage(
+                id = Some("seeWhatHappensNext"),
+                value = Some(Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")),
+                url = routes.TaxCodeChangeController.whatHappensNext.url,
+                dataAttributes = Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")}")),
+                cssClasses = Some("button")
+            ).toHtml
             </div>
-
         </div>
 
+        <div class="grid-row">
         @if(webChatEnabled) {
             <section class="section anchor-webchat" id="webchat" aria-labelledby="webchat">
             @webchat()
             </section>
         }
+        </div>
+
     </div>
 }
