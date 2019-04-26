@@ -286,6 +286,9 @@ GET         /unauthorised/confidence-level                                      
 
 ### Update Income CY + 1
 
+GET         /update-income/next-year/income/:empId/load                                @controllers.income.UpdateIncomeNextYearController.onPageLoad(empId: Int)
+GET         /update-income/next-year/income/:empId/warning                             @controllers.income.UpdateIncomeNextYearController.duplicateWarning(empId: Int)
+POST        /update-income/next-year/income/:empId/warning                             @controllers.income.UpdateIncomeNextYearController.submitDuplicateWarning(empId: Int)
 GET         /update-income/next-year/income/:empId/start                               @controllers.income.UpdateIncomeNextYearController.start(empId: Int)
 GET         /update-income/next-year/income/:empId/edit                                @controllers.income.UpdateIncomeNextYearController.edit(empId: Int)
 POST        /update-income/next-year/income/:empId/edit                                @controllers.income.UpdateIncomeNextYearController.update(empId: Int)

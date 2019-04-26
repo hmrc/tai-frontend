@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.MonetaryUtil
+import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
 
 trait DuplicateSubmissionEstimatedPay {
   val heading: String
@@ -44,4 +44,24 @@ case class DuplicateSubmissionPensionViewModel(incomeName: String, newAmount: In
   override val paragraphOne: String = messages("tai.incomes.warning.pension.text1", formattedNewAmount, incomeName)
   override val optionOne: String = messages("tai.incomes.warning.pension.radio1", incomeName)
   override val optionTwo: String = messages("tai.incomes.warning.pension.radio2", incomeName)
+}
+
+case class DuplicateSubmissionCYPlus1EmploymentViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages) extends DuplicateSubmissionEstimatedPay {
+
+  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount.toInt)
+
+  override val heading: String = messages("tai.incomes.warning.cyPlus1.heading", incomeName)
+  override val paragraphOne: String = messages("tai.incomes.warning.cyPlus1.text1", formattedNewAmount, TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
+  override val optionOne: String = messages("tai.incomes.warning.employment.radio1", incomeName)
+  override val optionTwo: String = messages("tai.incomes.warning.cyPlus1.radio2")
+}
+
+case class DuplicateSubmissionCYPlus1PensionViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages) extends DuplicateSubmissionEstimatedPay {
+
+  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount.toInt)
+
+  override val heading: String = messages("tai.incomes.warning.cyPlus1.heading", incomeName)
+  override val paragraphOne: String = messages("tai.incomes.warning.cyPlus1.text1", formattedNewAmount, TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
+  override val optionOne: String = messages("tai.incomes.warning.pension.radio1", incomeName)
+  override val optionTwo: String = messages("tai.incomes.warning.cyPlus1.radio2")
 }

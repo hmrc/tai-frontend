@@ -729,6 +729,9 @@ tai.incomes.warning.pension.heading=Rydych eisoes wedi anfon incwm amcangyfrifed
 tai.incomes.warning.pension.text1=Rydym wedi cael eich incwm amcangyfrifedig newydd, sef {0}, ar gyfer eich pensiwn gan {1}.
 tai.incomes.warning.pension.radio1=Hoffwn anfon incwm amcangyfrifedig arall ar gyfer fy mhensiwn gan {0}
 tai.incomes.warning.pension.radio2=Hoffwn ddychwelyd i’m manylion pensiwn
+tai.incomes.warning.cyPlus1.heading=Rydych eisoes wedi anfon incwm amcangyfrifedig newydd gan {0} ar gyfer y flwyddyn dreth nesaf
+tai.incomes.warning.cyPlus1.text1=Rydym wedi cael eich incwm amcangyfrifedig newydd, sef {0} ar gyfer {1}.
+tai.incomes.warning.cyPlus1.radio2=Hoffwn ddychwelyd i’m cymhariaeth o ran Treth Incwm
 
 tai.incomes.landing.Heading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
 tai.incomes.landing.title=Diweddarwch eich incwm amcangyfrifedig

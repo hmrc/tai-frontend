@@ -33,27 +33,106 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, _}
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
+import uk.gov.hmrc.tai.forms.pensions.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.DuplicateSubmissionCYPlus1EmploymentViewModel
 import views.html.incomes.nextYear._
 
 import scala.concurrent.Future
 
 class UpdateIncomeNextYearControllerSpec extends PlaySpec
   with FakeTaiPlayApplication
+  with FormValuesConstants
   with MockitoSugar
   with ControllerViewTestHelper {
 
   val employmentID = 1
   val currentEstPay = 1234
+  val newEstPay = 9999
   val employerName = "EmployerName"
   val isPension = false
-  val model = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay)
+  val model = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay, Some(newEstPay))
 
   def mockedGet(testController: UpdateIncomeNextYearController) = {
     when(updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.any())(any()))
       .thenReturn(Future.successful(model))
+  }
+
+  "onPageLoad" must {
+    "redirect to the duplicateSubmissionWarning url" when {
+      "an income update has already been performed" in {
+
+        val testController = createTestIncomeController()
+
+        when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any())).thenReturn(Future.successful(true))
+
+        val result = testController.onPageLoad(employmentID)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result).get mustBe routes.UpdateIncomeNextYearController.duplicateWarning(employmentID).url
+      }
+    }
+
+    "redirect to the estimatedPayLanding url" when {
+      "an income update has already been performed" in {
+
+        val testController = createTestIncomeController()
+
+        when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any())).thenReturn(Future.successful(false))
+
+        val result = testController.onPageLoad(employmentID)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result).get mustBe routes.UpdateIncomeNextYearController.start(employmentID).url
+      }
+    }
+  }
+
+  "duplicateSubmissionWarning" must {
+    "show employment duplicateSubmissionWarning view" in {
+      val testController = createTestIncomeController()
+
+      val vm = DuplicateSubmissionCYPlus1EmploymentViewModel(employerName, newEstPay)
+      mockedGet(testController)
+
+      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
+
+      val result: Future[Result] = testController.duplicateWarning(employmentID)(fakeRequest)
+
+      status(result) mustBe OK
+      result rendersTheSameViewAs updateIncomeCYPlus1Warning(DuplicateSubmissionWarningForm.createForm, vm, employmentID)
+    }
+  }
+
+  "submitDuplicateSubmissionWarning" must {
+    "redirect to the start url when yes is selected" in {
+      val testController = createTestIncomeController()
+
+      mockedGet(testController)
+
+      val result = testController.submitDuplicateWarning(employmentID)(RequestBuilder
+        .buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(YesNoChoice -> YesValue))
+
+      status(result) mustBe SEE_OTHER
+
+      redirectLocation(result).get mustBe routes.UpdateIncomeNextYearController.start(employmentID).url
+    }
+
+    "redirect to the IncomeTaxComparison page url when no is selected" in {
+      val testController = createTestIncomeController()
+
+      mockedGet(testController)
+
+      val result = testController.submitDuplicateWarning(employmentID)(RequestBuilder
+        .buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(YesNoChoice -> NoValue))
+
+      status(result) mustBe SEE_OTHER
+
+      redirectLocation(result).get mustBe controllers.routes.IncomeTaxComparisonController.onPageLoad().url
+    }
   }
 
   "start" must {
