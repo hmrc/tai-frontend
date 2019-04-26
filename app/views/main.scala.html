@@ -56,6 +56,7 @@
     request.session.get(SessionKeys.authProvider)
 }
 
+
 @isGG = @{
     authProvider.contains("GGW")
 }
@@ -68,6 +69,8 @@
         _.getUTR != ""
     }
 }
+
+
 
 @isVerify = @{
     authProvider.contains("IDA")
@@ -110,12 +113,12 @@
 
 @helpForm = @{partialRetriever.getPartialContent(ApplicationConfig.reportAProblemPartialUrl)}
 
+@confidenceLevel = @{
+    user.fold(authedUser.fold("false")(_.confidenceLevel))(_.authContext.user.confidenceLevel.toString)
+    }
+
 
 @googleAnalytics = @{
-
-    def confidenceLevel: String = {
-        user.fold(authedUser.fold("false")(_.confidenceLevel))(_.authContext.user.confidenceLevel.toString)
-    }
 
     Map[String, Any](
         "trackingId" -> ApplicationConfig.analyticsToken,
@@ -158,7 +161,12 @@
     window.dataLayer = window.dataLayer || []
     window.dataLayer.push(
       {
-        'Session id (cd67)': '@request.session.get("sessionId")'
+          'Session id': ''
+          'Session-X-ID': '@request.session.get("sessionId")',
+          'Authentication Type': '@authProvider',
+          'Confidence Level': '@confidenceLevel',
+          'Client id': '',
+          'Timestamp': (new Date()).getTime()
       }
     );
   </script>
