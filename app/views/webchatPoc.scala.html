@@ -14,24 +14,26 @@
  * limitations under the License.
  *@
 
-@()
+@()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-<script type="text/javascript">
- if (!Modernizr.touch) {
-  var div = document.createElement('div');
+@main(
+    title = "Webchat POC",
+    articleClasses = Some("full-width"),
+    authedUser = Some(user),
+    gaCustomTitle = None
+) {
 
-  div.className = 'webchat-non-mobile';
+    <header class="page-header">
+        <h1 id="deceased-header" class="flush--bottom">WEBCHAT POC</h1>
+    </header>
 
-  div.innerHTML =
-          '<div id="Nuance-chat-fixed">\<' +
-          '/div><div id="Nuance-chat-anchored"></div>';
+    </br>
 
-  document.getElementById('webchat').appendChild(div);
- }
+    <section class="section anchor-webchat" id="webchat" aria-labelledby="webchat">
+    @webchat()
+    </section>
 
-</script>
-
-<script type="text/javascript" src="@ApplicationConfig.webchatJsUrl"></script>
+}
