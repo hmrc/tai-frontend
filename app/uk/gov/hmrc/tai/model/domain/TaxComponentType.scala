@@ -192,7 +192,7 @@ object TaxComponentType{
       case "PensionIncome" => JsSuccess(PensionIncome)
       case "JobSeekerAllowanceIncome" => JsSuccess(JobSeekerAllowanceIncome)
       case "OtherIncome" => JsSuccess(OtherIncome)
-      case _ =>  throw new IllegalArgumentException("Invalid Tax component type")
+      case _ =>  JsError("Invalid Tax component type")
     }
     override def writes(taxComponentType: TaxComponentType) = JsString(taxComponentType.toString)
   }
@@ -230,7 +230,7 @@ object NonTaxCodeIncomeComponentType {
       case "IncapacityBenefit" => JsSuccess(IncapacityBenefit)
       case "JobSeekersAllowance" => JsSuccess(JobSeekersAllowance)
       case "EmploymentAndSupportAllowance" => JsSuccess(EmploymentAndSupportAllowance)
-      case _ => throw new IllegalArgumentException("Invalid Non tax code component type")
+      case _ => JsError("Invalid Non tax code component type")
     }
     override def writes(nonTaxCodeIncomeComponentType: NonTaxCodeIncomeComponentType) = JsString(nonTaxCodeIncomeComponentType.toString)
   }

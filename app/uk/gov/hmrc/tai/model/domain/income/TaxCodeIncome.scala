@@ -55,7 +55,7 @@ object TaxCodeIncomeSourceStatus {
       case "Live" => JsSuccess(Live)
       case "PotentiallyCeased" => JsSuccess(PotentiallyCeased)
       case "Ceased" => JsSuccess(Ceased)
-      case _ => throw new IllegalArgumentException("Invalid Tax component type")
+      case _ => JsError("Invalid Tax component type")
     }
 
     override def writes(taxCodeIncomeSourceStatus: TaxCodeIncomeSourceStatus) = JsString(taxCodeIncomeSourceStatus.toString)

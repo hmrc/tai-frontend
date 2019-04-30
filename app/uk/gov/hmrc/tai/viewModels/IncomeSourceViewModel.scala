@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, TaxCodeIncom
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 
-case class IncomeSourceViewModel(name: String,
+abstract case class IncomeSourceViewModel(name: String,
                                  amount: String,
                                  taxCode: String,
                                  displayTaxCode: Boolean,
