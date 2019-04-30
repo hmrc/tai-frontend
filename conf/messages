@@ -1440,7 +1440,7 @@ tai.updateIncome.CYPlus1.same.heading=Your estimated income for {0}
 tai.updateIncome.CYPlus1.same.title=Update your estimated income
 tai.updateIncome.CYPlus1.same.paragraph1=You have entered {0}
 tai.updateIncome.CYPlus1.same.paragraph2=This is the same as the amount already estimated for {0} for next year, so you do not need to update your income.
-tai.updateIncome.CYPlus1.same.cancel=Return to your Income Tax comparison for current tax year and next tax year
+tai.updateIncome.CYPlus1.same.cancel=Return to your Income Tax Summary
 
 tai.taxCodeComparison.add.employer=You have a new employment with {0}
 tai.taxCodeComparison.add.pension=You have a new private pension with {0}
