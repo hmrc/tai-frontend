@@ -39,6 +39,7 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
         result.shouldHavePaid mustEqual 1000.00
         result.actuallyPaid mustEqual 900.00
         result.amountDue mustEqual 100.00
+        result.poundedAmountDue mustEqual "£100.00"
       }
     }
     "given employments accross multiple years" must {
@@ -50,6 +51,7 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
         result.amountDue mustEqual 100.00
         result.actuallyPaid mustEqual 900.00
         result.shouldHavePaid mustEqual 1000.00
+        result.poundedAmountDue mustEqual "£100.00"
       }
     }
   }

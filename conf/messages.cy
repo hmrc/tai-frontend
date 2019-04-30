@@ -963,7 +963,11 @@ tai.pension.warning.legend=Ydych chi am anfon diweddariad pensiwn arall?
 tai.personalAllowance.paReceived=Gan fod eich priod neu''ch partner sifil wedi dewis trosglwyddo £{0} o''i Lwfans Personol i chi, fe''i cynyddir i £{1}.
 tai.personalAllowance.paTransferred=Gan eich bod wedi dewis trosglwyddo £{0} i''ch priod neu''ch partner sifil, mae''n cael ei leihau i £{1}.
 tai.phoneNumber=Rhif ffôn
-tai.previous.year.underpayment.para1=Mae tandaliad o flwyddyn flaenorol yn golygu na daloch ddigon o Dreth Incwm mewn blwyddyn dreth flaenorol.
+
+tai.previous.year.underpayment.p1=Nid oeddech wedi talu digon o Dreth Incwm ar gyfer blwyddyn dreth {0}.
+tai.previous.year.underpayment.you.owe=Mae arnoch
+tai.previous.year.underpayment.h1=Sut y caiff ei gasglu
+
 tai.previous.year.underpayment.para2=Ar gyfer y flwyddyn dreth o 6 Ebrill {0} i 5 Ebrill {1} dylech fod wedi talu £{2} ond talwyd £{3} gennych mewn gwirionedd.
 tai.previous.year.underpayment.para3=Mae’ch Lwfans Personol wedi’i ostwng £{0} er mwyn casglu’r £{1} sy’n dal i fod yn ddyledus.
 tai.previous.year.underpayment.para4=Mae hyn yn golygu y byddwch yn talu treth ar gyfradd o 20% ar £{0} ychwanegol o’ch incwm. Caiff y swm ei rannu ar draws y flwyddyn dreth a’i gasglu drwy randaliadau cyfartal.

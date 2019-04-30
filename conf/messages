@@ -963,7 +963,11 @@ tai.pension.warning.legend=Do you want to send another pension update?
 tai.personalAllowance.paReceived = Because your spouse or civil partner has chosen to transfer £{0} of their Personal Allowance to you it is increased to £{1}.
 tai.personalAllowance.paTransferred = Because you’ve chosen to transfer £{0} to your spouse or civil partner it is reduced to £{1}.
 tai.phoneNumber=Phone number
-tai.previous.year.underpayment.para1=A previous year underpayment means you didn’t pay enough Income Tax in a previous tax year.
+
+tai.previous.year.underpayment.p1=You did not pay enough Income Tax for the tax year {0}.
+tai.previous.year.underpayment.you.owe=You owe
+tai.previous.year.underpayment.h1=How it will be collected
+
 tai.previous.year.underpayment.para2=For the tax year from 6 April {0} to 5 April {1} you should have paid £{2} but you actually paid £{3}.
 tai.previous.year.underpayment.para3=Your Personal Allowance has been reduced by £{0} to collect the £{1} still due.
 tai.previous.year.underpayment.para4=This means you will pay tax at 20% on an extra £{0} of your income. This will be spread over the tax year so it is collected in equal instalments.

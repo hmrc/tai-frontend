@@ -20,7 +20,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.{NonSavingsIncomeCategory, TotalTax}
 import uk.gov.hmrc.tai.model.domain.{Employment, UnderPaymentFromPreviousYear}
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.{MonetaryUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxAmountDueFromUnderpayment
 
@@ -29,7 +29,8 @@ case class PreviousYearUnderpaymentViewModel(
                                               actuallyPaid: BigDecimal,
                                               allowanceReducedBy: BigDecimal,
                                               amountDue: BigDecimal,
-                                              previousTaxYear: TaxYear) {
+                                              previousTaxYear: TaxYear,
+                                              poundedAmountDue: String) {
 
 }
 
@@ -55,6 +56,8 @@ object PreviousYearUnderpaymentViewModel extends ViewModelHelper with BandTypesC
 
     val shouldHavePaid = actuallyPaid + amountDue
 
-    PreviousYearUnderpaymentViewModel(shouldHavePaid, actuallyPaid, allowanceReducedBy, amountDue, taxYear)
+    val poundedAmountDue = MonetaryUtil.withPoundPrefix(amountDue.toInt, 2)
+
+    PreviousYearUnderpaymentViewModel(shouldHavePaid, actuallyPaid, allowanceReducedBy, amountDue, taxYear, poundedAmountDue)
   }
 }
