@@ -211,7 +211,9 @@
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
 
-    <script type="text/javascript" src="@ApplicationConfig.webchatJsUrl"></script>
+    @if(FeatureTogglesConfig.webChatEnabled){
+      <script type="text/javascript" src="@ApplicationConfig.webchatJsUrl"></script>
+    }
 }
 
 
