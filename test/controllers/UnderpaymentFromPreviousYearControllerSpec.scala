@@ -23,6 +23,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import play.api.i18n.MessagesApi
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
@@ -41,10 +42,10 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
   with FakeTaiPlayApplication {
 
   override lazy val app = new GuiceApplicationBuilder().build()
-
   def injector = app.injector
-
   val nino = new Generator().nextNino
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
 
   val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
   val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
@@ -56,7 +57,7 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
         val controller = new SUT
         val result = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        contentAsString(result) must include("What is a previous year underpayment?")
+        contentAsString(result) must include(messagesApi("tai.previous.year.underpayment.title"))
       }
     }
   }
