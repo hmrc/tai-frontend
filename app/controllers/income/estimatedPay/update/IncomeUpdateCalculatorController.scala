@@ -19,8 +19,9 @@ package controllers.income.estimatedPay.update
 import com.google.inject.Inject
 import com.google.inject.name.Named
 import controllers.TaiBaseController
+import controllers.actions.ValidatePerson
 import controllers.audit.Auditable
-import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import controllers.auth.{AuthAction, TaiUser, WithAuthorisedForTaiLite}
 import controllers.employments.routes
 import org.joda.time.LocalDate
 import play.api.Play.current
@@ -56,6 +57,7 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.GrossPayPeriodTitle
 
 import scala.Function.tupled
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
                                                  employmentService: EmploymentService,
@@ -65,6 +67,8 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
                                                  val auditConnector: AuditConnector,
                                                  val delegationConnector: DelegationConnector,
                                                  val authConnector: AuthConnector,
+                                                 authenticate: AuthAction,
+                                                 validatePerson: ValidatePerson,
                                                  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
                                                  override implicit val partialRetriever: FormPartialRetriever,
                                                  override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
@@ -344,34 +348,36 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         }
   }
 
-  def submitIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
+  def submitIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
 
-          val updateJourneyCompletion: String => Future[Map[String, String]] = (incomeId: String) => {
-            estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
-          }
+      implicit val user = request.taiUser
 
-          val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) => {
-            journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newPay) map { _ =>
-              Ok(views.html.incomes.editSuccess(incomeName, incomeId.toInt))
+      val updateJourneyCompletion: String => Future[Map[String, String]] = (incomeId: String) => {
+        estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
+      }
+
+      val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) => {
+        journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newPay) map { _ =>
+          Ok(views.html.incomes.editSuccess(incomeName, incomeId.toInt))
+        }
+      }
+
+      journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap(cache => {
+        val incomeName :: newPay :: incomeId :: Nil = cache.toList
+
+        taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) flatMap {
+          case TaiSuccessResponse => {
+            updateJourneyCompletion(incomeId) flatMap { _ =>
+              cacheAndRespond(incomeName, incomeId, newPay)
             }
           }
+          case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
+        }
 
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap(cache => {
-            val incomeName :: newPay :: incomeId :: Nil = cache.toList
-
-            taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) flatMap {
-              case TaiSuccessResponse => {
-                updateJourneyCompletion(incomeId) flatMap { _ =>
-                  cacheAndRespond(incomeName, incomeId, newPay)
-                }
-              }
-              case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
-            }
-
-          })
+      }).recover {
+        case NonFatal(e) => internalServerError(e.getMessage)
+      }
   }
 
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -747,28 +753,32 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         result.flatMap(identity)
   }
 
-  def handleCalculationResult: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit person =>
-      implicit request =>
-        sendActingAttorneyAuditEvent("processCalculationResult")
-        for {
-          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-          income <- incomeService.employmentAmount(Nino(user.getNino), id)
-          netAmount <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
-        } yield {
-          val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
-          val employmentAmount = income.copy(newAmount = convertedNetAmount)
+  def handleCalculationResult: Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
 
-          if (employmentAmount.newAmount == income.oldAmount) {
-            Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
-          } else {
+      implicit val user = request.taiUser
+      val nino = user.nino
 
-            val form = EditIncomeForm.create(preFillData = employmentAmount).get
-            val gaSetting = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, form.oldAmount, form.newAmount)
+      (for {
+        id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+        income <- incomeService.employmentAmount(nino, id)
+        netAmount <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
+      } yield {
+        val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
+        val employmentAmount = income.copy(newAmount = convertedNetAmount)
 
-            Ok(views.html.incomes.confirm_save_Income(form, gaSetting))
-          }
+        if (employmentAmount.newAmount == income.oldAmount) {
+          Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
+        } else {
+
+          val form = EditIncomeForm.create(preFillData = employmentAmount).get
+          val gaSetting = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, form.oldAmount, form.newAmount)
+
+          Ok(views.html.incomes.confirm_save_Income(form, gaSetting))
         }
+      }).recover {
+        case NonFatal(e) => internalServerError(e.getMessage)
+      }
   }
 
   private def incomeTypeIdentifier(isPension: Boolean): String = {

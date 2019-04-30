@@ -17,7 +17,8 @@
 package controllers.income.estimatedPay.update
 
 import builders.{AuthBuilder, RequestBuilder, UserBuilder}
-import controllers.{ControllerViewTestHelper, FakeTaiPlayApplication}
+import controllers.actions.FakeValidatePerson
+import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -65,7 +66,7 @@ class IncomeUpdateCalculatorControllerSpec
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
   val employer = IncomeSource(id = 1, name = "sample employer")
 
-  def fakeNino = new Generator(new Random).nextNino
+  def fakeNino = FakeAuthAction.nino
 
   def createTestIncomeUpdateCalculatorController = new TestIncomeUpdateCalculatorController()
 
@@ -85,6 +86,8 @@ class IncomeUpdateCalculatorControllerSpec
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     journeyCacheService,
     mock[FormPartialRetriever],
     MockTemplateRenderer

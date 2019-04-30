@@ -16,7 +16,7 @@
 
 package controllers.audit
 
-import controllers.auth.TaiUser
+import controllers.auth.{AuthedUser, TaiUser}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.DataEvent
 

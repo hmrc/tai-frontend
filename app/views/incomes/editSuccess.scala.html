@@ -17,12 +17,12 @@
 @import uk.gov.hmrc.tai.util.ViewModelHelper.htmlNonBroken
 
 @(employerName: String, employerId: Int)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
     title = messages("tai.incomes.updated.check.title"),
     articleClasses = Some("full-width"),
-    user = Some(user),
+    authedUser = Some(user),
     employerName = Some(employerName)
 ){
     <div class="column-two-thirds">
