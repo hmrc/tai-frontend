@@ -56,18 +56,12 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
     }
   }
 
-  val shouldHavePaid = 1000
-  val actuallyPaid = 900
   val allowanceReducedBy = 500
-  val amountDue = 100
-  val previousTaxYear = TaxYear(2016)
   val poundedAmountDue = "£100.00"
 
   val test = Dates.formatDate(TaxYear().start)
 
 
-  override def view = previousYearUnderpayment(
-    PreviousYearUnderpaymentViewModel(shouldHavePaid, actuallyPaid, allowanceReducedBy, amountDue, previousTaxYear, poundedAmountDue)
-  )
+  override def view = previousYearUnderpayment(PreviousYearUnderpaymentViewModel(allowanceReducedBy, poundedAmountDue))
 
 }

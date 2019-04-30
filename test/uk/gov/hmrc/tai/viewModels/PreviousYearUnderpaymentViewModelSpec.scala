@@ -36,9 +36,6 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
         val result = PreviousYearUnderpaymentViewModel(codingComponents, sampleEmployments, totalTax)
 
         result.allowanceReducedBy mustEqual 500.00
-        result.shouldHavePaid mustEqual 1000.00
-        result.actuallyPaid mustEqual 900.00
-        result.amountDue mustEqual 100.00
         result.poundedAmountDue mustEqual "£100.00"
       }
     }
@@ -48,9 +45,6 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
         val result = PreviousYearUnderpaymentViewModel(codingComponents, sampleEmployments2, totalTax)
 
         result.allowanceReducedBy mustEqual 500.00
-        result.amountDue mustEqual 100.00
-        result.actuallyPaid mustEqual 900.00
-        result.shouldHavePaid mustEqual 1000.00
         result.poundedAmountDue mustEqual "£100.00"
       }
     }
