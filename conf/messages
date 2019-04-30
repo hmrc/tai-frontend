@@ -967,8 +967,13 @@ tai.phoneNumber=Phone number
 tai.previous.year.underpayment.p1=You did not pay enough Income Tax for the tax year {0}.
 tai.previous.year.underpayment.you.owe=You owe
 tai.previous.year.underpayment.h1=How it will be collected
+tai.previous.year.underpayment.p2=To collect this we have reduced your Personal Allowance by £{0}. This means that you will pay more tax until {1}, so that we can collect the {2} owed.
+tai.previous.year.underpayment.p3=Your tax code has been adjusted for this.
+tai.previous.year.underpayment.h2=What happens next
+tai.previous.year.underpayment.p4=At the end of the tax year we will assess your actual income for {0}.
+tai.previous.year.underpayment.p5=We will contact you if you owe any tax or if we owe you a refund.
 
-tai.previous.year.underpayment.para2=For the tax year from 6 April {0} to 5 April {1} you should have paid £{2} but you actually paid £{3}.
+
 tai.previous.year.underpayment.para3=Your Personal Allowance has been reduced by £{0} to collect the £{1} still due.
 tai.previous.year.underpayment.para4=This means you will pay tax at 20% on an extra £{0} of your income. This will be spread over the tax year so it is collected in equal instalments.
 tai.previous.year.underpayment.para5=Your tax code has been adjusted for this.
