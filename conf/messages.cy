@@ -1442,7 +1442,7 @@ tai.updateIncome.CYPlus1.same.heading=Eich incwm amcangyfrifedig ar gyfer {0}
 tai.updateIncome.CYPlus1.same.title=Diweddarwch eich incwm amcangyfrifedig
 tai.updateIncome.CYPlus1.same.paragraph1=Rydych wedi nodi {0}
 tai.updateIncome.CYPlus1.same.paragraph2=Mae hyn yr un peth â’r swm sydd gennym eisoes ar gyfer {0} ar gyfer y flwyddyn nesaf, felly does dim angen i chi ddiweddaru’ch incwm.
-tai.updateIncome.CYPlus1.same.cancel=Dychwelyd i’ch cymhariaeth Treth Incwm ar gyfer y flwyddyn dreth bresennol a’r flwyddyn dreth nesaf
+tai.updateIncome.CYPlus1.same.cancel=Dychwelyd i''ch Crynodeb Treth Incwm
 
 tai.taxCodeComparison.add.employer=Mae gennych gyflogaeth newydd gyda {0}
 tai.taxCodeComparison.add.pension=Mae gennych bensiwn preiffat newydd gyda {0}
