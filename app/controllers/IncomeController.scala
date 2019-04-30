@@ -49,24 +49,17 @@ import scala.Function.tupled
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-class IncomeController @Inject()(personService: PersonService,
-                                 @Named("Update Income") journeyCacheService: JourneyCacheService,
+class IncomeController @Inject()(@Named("Update Income") journeyCacheService: JourneyCacheService,
                                  taxAccountService: TaxAccountService,
                                  employmentService: EmploymentService,
                                  incomeService: IncomeService,
                                  estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
-                                 val auditConnector: AuditConnector,
-                                 val delegationConnector: DelegationConnector,
-                                 val authConnector: AuthConnector,
                                  authenticate: AuthAction,
                                  validatePerson: ValidatePerson,
                                  override implicit val partialRetriever: FormPartialRetriever,
                                  override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
   with JourneyCacheConstants
-  with AuditConstants
   with FormValuesConstants
-  with Auditable
   with FeatureTogglesConfig {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {

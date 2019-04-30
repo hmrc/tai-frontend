@@ -737,15 +737,11 @@ class IncomeControllerSpec extends PlaySpec
 
   private def createTestIncomeController() = new TestIncomeController()
   private class TestIncomeController() extends IncomeController(
-    personService,
     journeyCacheService,
     taxAccountService,
     employmentService,
     incomeService,
     estimatedPayJourneyCompletionService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
     FakeAuthAction,
     FakeValidatePerson,
     mock[FormPartialRetriever],
@@ -771,10 +767,6 @@ class IncomeControllerSpec extends PlaySpec
 
     val employmentStartDateForm = EmploymentAddDateForm("employer")
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino)))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
   }
 
 }
