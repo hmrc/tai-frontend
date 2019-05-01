@@ -70,7 +70,6 @@ class IncomeUpdateCalculatorControllerSpec
 
   def createTestIncomeUpdateCalculatorController = new TestIncomeUpdateCalculatorController()
 
-  val personService: PersonService = mock[PersonService]
   val incomeService: IncomeService = mock[IncomeService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
@@ -81,11 +80,7 @@ class IncomeUpdateCalculatorControllerSpec
     incomeService,
     employmentService,
     taxAccountService,
-    personService,
     estimatedPayJourneyCompletionService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
     FakeAuthAction,
     FakeValidatePerson,
     journeyCacheService,
@@ -94,9 +89,6 @@ class IncomeUpdateCalculatorControllerSpec
   ) {
 
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(fakeNino)))
     when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(employer.id))
     when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any())).thenReturn(Future.successful(employer.name))
   }
