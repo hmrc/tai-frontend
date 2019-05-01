@@ -45,7 +45,7 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
   def injector = app.injector
   val nino = new Generator().nextNino
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
+  val referralMap = Map("Referer" ->"http://somelocation/somePageResource")
 
   val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
   val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
@@ -55,7 +55,7 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
     "respond with OK" when {
       "underpaymentExplanation is called" in {
         val controller = new SUT
-        val result = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         status(result) mustBe OK
         contentAsString(result) must include(messagesApi("tai.previous.year.underpayment.title"))
       }

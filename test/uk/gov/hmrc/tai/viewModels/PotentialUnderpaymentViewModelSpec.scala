@@ -29,23 +29,6 @@ class PotentialUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
   "PotentialUnderpaymentViewModel apply method" must {
 
-
-    "create a return link" when {
-      "given a valid referer and resourceName" in {
-        val referalPath = "http://somelocation/tax-free-allowance"
-        val resourceName = "tax-free-allowance"
-        PotentialUnderpaymentViewModel(tas, Nil, referalPath, resourceName).returnLink mustBe
-          Link.toInternalPage(referalPath,Some(messagesApi("tai.iya.tax.free.amount.return.link"))).toHtml
-      }
-
-      "given an invalid referer and resourceName" in {
-        val referalPath = "http://somelocation/someOtherResourceName"
-        val resourceName = "someOtherResourceName"
-        PotentialUnderpaymentViewModel(tas, Nil, referalPath, resourceName).returnLink mustBe
-          Link.toInternalPage(routes.TaxAccountSummaryController.onPageLoad.url,Some(messagesApi("return.to.your.income.tax.summary"))).toHtml
-      }
-    }
-
     "return an instance with an iyaCYAmount drawn from the totalInYearAdjustmentIntoCY value of the supplied TaxAccountSummary" in {
       PotentialUnderpaymentViewModel(tas, Nil, "", "").iyaCYAmount mustBe BigDecimal(123.45)
       PotentialUnderpaymentViewModel(tasZero, Nil, "", "").iyaCYAmount mustBe BigDecimal(0)
