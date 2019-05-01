@@ -31,6 +31,7 @@ import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
@@ -87,7 +88,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         status(result) mustBe OK
 
-        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
+        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel, testWebChatEnabled)
       }
     }
   }
@@ -113,7 +114,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       val expectedViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates, reasons, false)
 
       status(result) mustBe OK
-      result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel)
+      result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel, testWebChatEnabled)
     }
   }
 
@@ -133,9 +134,14 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val yourTaxFreeAmountService = mock[YourTaxFreeAmountService]
   val taxCodeChangeReasonsService = mock[TaxCodeChangeReasonsService]
 
-  private def createController() = new TaxCodeChangeTestController()
+  val testWebChatEnabled = false
+  trait FeatureTogglesConfigMock extends FeatureTogglesConfig {
+    override val webChatEnabled = testWebChatEnabled
+  }
 
-  private class TaxCodeChangeTestController() extends TaxCodeChangeController(
+  private def createController() = new TaxCodeChangeTestController with FeatureTogglesConfigMock
+
+  private class TaxCodeChangeTestController extends TaxCodeChangeController (
     taxCodeChangeService,
     taxAccountService,
     describedYourTaxFreeAmountService,
@@ -146,7 +152,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
   }

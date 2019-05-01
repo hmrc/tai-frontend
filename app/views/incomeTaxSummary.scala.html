@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.IFormInProgressBannerViewModel
 
-@(viewModel: TaxAccountSummaryViewModel
+@(viewModel: TaxAccountSummaryViewModel, webChatEnabled: Boolean
 )(implicit request: Request[_],
   messages: Messages,
   user: controllers.auth.TaiUser,
@@ -115,6 +115,14 @@
             }
 
         </div>
+
+
+        @if(webChatEnabled) {
+            <section class="section anchor-webchat" id="webchat" aria-labelledby="webchat">
+            @webchat()
+            </section>
+        }
+
     </div>
 
     <div class="grid grid-1-3">
@@ -194,9 +202,5 @@
             </section>
         </div>
     </div>
-
-    <section class="section" id="webchat" aria-labelledby="webchat">
-        @webchat()
-    </section>
 </div>
 }

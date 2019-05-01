@@ -122,14 +122,14 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
 
         doc(liveView).select("#pensionUpdateLink").html() mustBe Html(messages(
           "tai.income.calculation.update.pension",
-          Link.toInternalPage(url = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).url,
+          Link.toInternalPage(url = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
             value = Some(messages("tai.income.calculation.updateLink.regular"))).toHtml)).body
       }
 
       "employment type is Employment Income" in {
         doc(view).select("#regularUpdateLink").html() mustBe Html(messages(
           "tai.income.calculation.update.regular",
-          Link.toInternalPage(url = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).url,
+          Link.toInternalPage(url = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
             value = Some(messages("tai.income.calculation.updateLink.regular"))).toHtml)).body
       }
     }

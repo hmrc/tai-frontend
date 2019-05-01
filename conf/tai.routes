@@ -147,7 +147,10 @@ GET         /print-your-income-calculation-previous-year/:year/:empId           
 
 
 ## Income calculator URIs
-GET         /update-income/start/:empId                                                @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.estimatedPayLandingPage(empId: Int)
+GET         /update-income/load/:empId                                                 @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.onPageLoad(empId: Int)
+GET         /update-income/start                                                       @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.estimatedPayLandingPage
+GET         /update-income/warning                                                     @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage
+POST        /update-income/warning                                                     @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.submitDuplicateSubmissionWarning
 
 GET         /update-income/how-to-update-income/:empId                                 @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.howToUpdatePage(empId: Int)
 POST        /update-income/how-to-update-income                                        @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleChooseHowToUpdate
@@ -155,8 +158,6 @@ POST        /update-income/how-to-update-income                                 
 GET         /update-income/working-hours                                               @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.workingHoursPage
 POST        /update-income/working-hours                                               @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleWorkingHours
 
-GET         /update-income/pay-period                                                  @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payPeriodPage
-POST        /update-income/pay-period                                                  @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayPeriod
 GET         /update-income/edit-income-irregular-hours/:employmentId                   @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.editIncomeIrregularHours(employmentId: Int)
 POST        /update-income/edit-income-irregular-hours/:employmentId                   @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleIncomeIrregularHours(employmentId: Int)
 GET         /update-income/edit-income-irregular-hours/:employmentId/confirm           @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId: Int)
@@ -187,6 +188,7 @@ GET         /update-income/estimated-pay                                        
 GET         /update-income/confirm-estimated-pay                                       @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleCalculationResult
 
 ## Regular Income URIs
+GET         /update-income/cancel/:id                                                  @controllers.IncomeController.cancel(id: Int)
 GET         /update-income/select-taxable-pay                                          @controllers.IncomeController.viewIncomeForEdit
 
 GET         /update-income/edit-taxable-pay                                            @controllers.IncomeController.regularIncome
@@ -202,7 +204,6 @@ GET         /update-income/income/same-estimated-pay                            
 GET         /update-income/income/same-annual-estimated-pay                            @controllers.IncomeController.sameAnnualEstimatedPay
 
 GET         /update-income/pension/check-save                                          @controllers.IncomeController.confirmPensionIncome
-
 
 POST        /update-income/success-page                                                @controllers.IncomeController.updateEstimatedIncome
 
@@ -285,6 +286,9 @@ GET         /unauthorised/confidence-level                                      
 
 ### Update Income CY + 1
 
+GET         /update-income/next-year/income/:empId/load                                @controllers.income.UpdateIncomeNextYearController.onPageLoad(empId: Int)
+GET         /update-income/next-year/income/:empId/warning                             @controllers.income.UpdateIncomeNextYearController.duplicateWarning(empId: Int)
+POST        /update-income/next-year/income/:empId/warning                             @controllers.income.UpdateIncomeNextYearController.submitDuplicateWarning(empId: Int)
 GET         /update-income/next-year/income/:empId/start                               @controllers.income.UpdateIncomeNextYearController.start(empId: Int)
 GET         /update-income/next-year/income/:empId/edit                                @controllers.income.UpdateIncomeNextYearController.edit(empId: Int)
 POST        /update-income/next-year/income/:empId/edit                                @controllers.income.UpdateIncomeNextYearController.update(empId: Int)

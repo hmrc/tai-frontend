@@ -27,7 +27,7 @@
 
 @if(model.hasScottishTaxCodeNextYear) {
     <p class="notice text">
-        <i class="icon icon-information"><span class="visuallyhidden">Information</span></i>
+        <i class="icon icon-information"><span class="visuallyhidden">@messages("tai.information")</span></i>
         <strong id="scottishTaxCodeInfo" class="bold-small">@Html(messages("tai.incomeTaxComparison.taxCodes.scottishInfo",
             Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value=Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml))</strong>
     </p>

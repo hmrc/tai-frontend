@@ -39,7 +39,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
-        preHeadingText = messages("tai.estimatedPay.preHeading", <span class="carry-over">{viewModel.employerName}</span>)
+        preHeadingText = messages("tai.estimatedPay.preHeading", <span class="carry-over">{viewModel.employer.name}</span>)
     )
 }
 
@@ -48,7 +48,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     articleClasses = Some("full-width text"),
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(viewModel.employerName)
+    employerName = Some(viewModel.employer.name)
 ){
     <div>
         <p>@messages("tai.estimatedPay.weHaveCalculated")</p>
@@ -94,7 +94,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             id=Some("confirmAndSend")
         )
 
-        @cancelLink(url = Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.updateIncomeId).url),
+        @cancelLink(url = Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employer.id).url),
                     linkText = Some(messages("tai.cancel.noSave")))
     </div>
 

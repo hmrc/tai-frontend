@@ -20,20 +20,24 @@ import com.google.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.audit.Auditable
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
+import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionCYPlus1EmploymentViewModel, DuplicateSubmissionCYPlus1PensionViewModel, DuplicateSubmissionEstimatedPay}
 
 import scala.concurrent.Future
 import scala.util.control.NonFatal
@@ -45,20 +49,79 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
                                                override implicit val partialRetriever: FormPartialRetriever,
                                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with FeatureTogglesConfig
+  with FormValuesConstants
   with Auditable {
+
+
+  def onPageLoad(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      preAction {
+          updateNextYearsIncomeService.isEstimatedPayJourneyComplete map { isEstimatedPayJourneyComplete =>
+            if (isEstimatedPayJourneyComplete) {
+              Redirect(routes.UpdateIncomeNextYearController.duplicateWarning(employmentId).url)
+            }
+            else {
+              Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url)
+            }
+          }
+      }
+  }
+
+  private def determineViewModel(isPension: Boolean, employmentName: String, newValue: Int): DuplicateSubmissionEstimatedPay = {
+    if (isPension) {
+      DuplicateSubmissionCYPlus1PensionViewModel(employmentName, newValue)
+    } else {
+      DuplicateSubmissionCYPlus1EmploymentViewModel(employmentName, newValue)
+    }
+  }
+
+  def duplicateWarning(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      preAction {
+          implicit val user: AuthedUser = request.taiUser
+          val nino = user.nino
+
+          updateNextYearsIncomeService.get(employmentId, nino) map { model =>
+            val vm = determineViewModel(model.isPension, model.employmentName, model.newValue.get)
+            Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Warning(DuplicateSubmissionWarningForm.createForm, vm, employmentId))
+          }
+      }
+  }
+
+  def submitDuplicateWarning(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      preAction {
+        implicit val user = request.taiUser
+        val nino = user.nino
+
+          DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
+            formWithErrors => {
+              updateNextYearsIncomeService.get(employmentId, nino) flatMap { model =>
+                val vm = determineViewModel(model.isPension, model.employmentName, model.newValue.get)
+                Future.successful(BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId)))
+              }
+            },
+            success => {
+              success.yesNoChoice match {
+                case Some(YesValue) => Future.successful(Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url))
+                case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad().url))
+              }
+            }
+
+          )
+        }
+  }
 
   def start(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       preAction {
-        updateNextYearsIncomeService.reset flatMap { _ =>
+
           implicit val user = request.taiUser
           val nino = user.nino
 
           updateNextYearsIncomeService.get(employmentId, nino) map { model =>
             Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension))
           }
-        }
-
       }
   }
 
@@ -94,12 +157,10 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
         implicit val user = request.taiUser
         val nino = user.nino
 
-        updateNextYearsIncomeService.reset flatMap { _ =>
           updateNextYearsIncomeService.get(employmentId, nino) map { model =>
             Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName, model.isPension))
           }
         }
-      }
   }
 
   def confirm(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
