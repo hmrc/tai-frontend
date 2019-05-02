@@ -62,5 +62,5 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
 
   val viewModel: TaxCodeViewModel = TaxCodeViewModel("main heading", "main heading", "lede message", Seq(taxCodeDescription1, taxCodeDescription2), messages(s"tai.taxCode.preHeader"))
 
-  override def view = views.html.taxCodeDetails(viewModel, webChatEnabled = false)
+  override def view = views.html.taxCodeDetails(viewModel)
 }
