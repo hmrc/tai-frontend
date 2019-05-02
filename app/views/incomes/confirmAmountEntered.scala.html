@@ -44,7 +44,7 @@
 ){
 
     <p>
-        @viewModel.mainText
+        @viewModel.mainText.getOrElse("")
         <span class="tai-detail-large">
         @MonetaryUtil.withPoundPrefix(viewModel.estimatedIncome)
         </span>

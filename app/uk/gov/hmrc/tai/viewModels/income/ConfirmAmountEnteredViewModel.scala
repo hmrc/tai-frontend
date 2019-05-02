@@ -18,14 +18,18 @@ package uk.gov.hmrc.tai.viewModels.income
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.{MapForGoogleAnalytics, MonetaryUtil, TaxYearRangeUtil}
-import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefix
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
 import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
+sealed trait PayType
+case object IrregularPay extends PayType
+case object NextYearPay extends PayType
+
+
 case class ConfirmAmountEnteredViewModel(yearRange: String,
                                          employerName: String,
-                                         mainText: String,
+                                         mainText: Option[String] = None,
                                          onConfirm: String,
                                          onCancel: String,
                                          estimatedIncome: Int,
@@ -35,54 +39,51 @@ object ConfirmAmountEnteredViewModel {
 
   private implicit def toMoneyPounds(amount: Int): MoneyPounds = MoneyPounds(amount, 0)
 
-  def irregularPayCurrentYear(employmentId: Int, employerName: String, currentAmount: Int, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
-    val currentYear = TaxYearRangeUtil.currentTaxYearRangeSingleLine
-    val mainParagraphText = messages("tai.incomes.confirm.save.message")
-    val confirmUrl = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString
-    val onCancelUrl = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
 
-    ConfirmAmountEnteredViewModel(
-      employerName = employerName,
-      yearRange = currentYear,
-      mainText = mainParagraphText,
-      onConfirm = confirmUrl,
-      onCancel = onCancelUrl,
-      estimatedIncome = estimatedIncome,
-      gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estimatedIncome)
-    )
+  def apply(employmentId: Int, empName: String, currentAmount: Int, estIncome: Int, payType: PayType)
+           (implicit messages: Messages): ConfirmAmountEnteredViewModel = {
+
+    val irregularPayCurrentYear = {
+      ConfirmAmountEnteredViewModel(
+        yearRange = TaxYearRangeUtil.currentTaxYearRangeSingleLine,
+        employerName = empName,
+        mainText = Some(messages("tai.incomes.confirm.save.message")),
+        onConfirm = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString,
+        onCancel = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url,
+        estimatedIncome = estIncome,
+        gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estIncome)
+      )
+    }
+
+    val nextYearEstimatedPay = {
+      ConfirmAmountEnteredViewModel(
+        yearRange = TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1),
+        employerName = empName,
+        onConfirm = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url,
+        onCancel = controllers.routes.IncomeTaxComparisonController.onPageLoad.url,
+        estimatedIncome = estIncome,
+        gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome , currentAmount, estIncome)
+      )
+    }
+
+    payType match {
+      case IrregularPay => irregularPayCurrentYear
+      case NextYearPay => nextYearEstimatedPay
+    }
+
   }
 
-  def annualPayCurrentYear(employmentId: Int, employerName: String, currentAmount: Int, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
-    val currentYear = TaxYearRangeUtil.currentTaxYearRangeSingleLine
-    val mainParagraphText = messages("tai.incomes.confirm.save.message")
-    val confirmUrl = controllers.routes.IncomeController.updateEstimatedIncome().url
-    val onCancelUrl = controllers.routes.TaxAccountSummaryController.onPageLoad().url
+  def apply(empName: String, currentAmount: Int, estIncome: Int)
+           (implicit messages: Messages): ConfirmAmountEnteredViewModel = {
 
     ConfirmAmountEnteredViewModel(
-      employerName = employerName,
-      yearRange = currentYear,
-      mainText = mainParagraphText,
-      onConfirm = confirmUrl,
-      onCancel = onCancelUrl,
-      estimatedIncome = estimatedIncome,
-      gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estimatedIncome)
-    )
+        yearRange = TaxYearRangeUtil.currentTaxYearRangeSingleLine,
+        employerName = empName,
+        mainText = Some(messages("tai.incomes.confirm.save.message")),
+        onConfirm = controllers.routes.IncomeController.updateEstimatedIncome().url,
+        onCancel = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
+        estimatedIncome = estIncome,
+        gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estIncome)
+      )
   }
-
-  def nextYearEstimatedPay(employmentId: Int, employerName: String, currentAmount: Int, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
-    val nextYearRange: String = TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)
-    val confirmUrl = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url
-    val onCancelUrl = controllers.routes.IncomeTaxComparisonController.onPageLoad.url
-
-    ConfirmAmountEnteredViewModel(
-      employerName = employerName,
-      yearRange = nextYearRange,
-      mainText = "",
-      onConfirm = confirmUrl,
-      onCancel = onCancelUrl,
-      estimatedIncome = estimatedIncome,
-      gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome , currentAmount, estimatedIncome)
-    )
-  }
-
 }

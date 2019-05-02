@@ -32,7 +32,7 @@ class ConfirmAmountEnteredViewModelSpec extends PlaySpec with FakeTaiPlayApplica
   "nextYearEstimatedPay" should {
     "produce a Google Analytics settings" when {
       "CY" in {
-        val viewModel = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, employerName, currentAmount, estimatedIncome)
+        val viewModel = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedIncome, IrregularPay)
 
         val expectedDimensions = Some(Map(GoogleAnalyticsConstants.taiCYEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
         val expectedSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(expectedDimensions)
@@ -41,7 +41,7 @@ class ConfirmAmountEnteredViewModelSpec extends PlaySpec with FakeTaiPlayApplica
       }
 
       "CY+1" in {
-        val viewModel = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, employerName, currentAmount, estimatedIncome)
+        val viewModel = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedIncome, NextYearPay)
 
         val expectedDimensions = Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
         val expectedSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(expectedDimensions)

@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
-import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 
 import scala.concurrent.Future
 import scala.util.control.NonFatal
@@ -110,7 +110,7 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
 
         (updateNextYearsIncomeService.get(employmentId, user.nino).map {
           case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue, Some(estimatedAmount)) => {
-            val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, employmentName, currentValue, estimatedAmount)
+            val vm = ConfirmAmountEnteredViewModel(employmentId, employmentName, currentValue, estimatedAmount, NextYearPay)
             Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm))
           }
           case UpdateNextYearsIncomeCacheModel(_, _, _, _, None) => {

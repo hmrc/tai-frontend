@@ -24,7 +24,6 @@ import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.data.Form
-import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
@@ -42,15 +41,12 @@ import uk.gov.hmrc.tai.model.domain.{Employment, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.{FormHelper, MapForGoogleAnalytics, MonetaryUtil}
+import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
+import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants._
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
-import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel}
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
-import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.GrossPayPeriodTitle
-
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{GrossPayPeriodTitle, _}
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
 import scala.Function.tupled
 import scala.concurrent.Future
 
@@ -271,7 +267,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
               Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
             } else {
-              val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, paymentToDate.toInt, newIrregularPay.toInt)
+              val vm = ConfirmAmountEnteredViewModel(employmentId, name, paymentToDate.toInt, newIrregularPay.toInt, IrregularPay)
               Ok(views.html.incomes.confirmAmountEntered(vm))
             }
           }
@@ -698,7 +694,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
           } else {
 
-            val vm = ConfirmAmountEnteredViewModel.annualPayCurrentYear(id, employmentName, employmentAmount.oldAmount, employmentAmount.newAmount)
+            val vm = ConfirmAmountEnteredViewModel(employmentName, employmentAmount.oldAmount, employmentAmount.newAmount)
             Ok(views.html.incomes.confirmAmountEntered(vm))
           }
         }

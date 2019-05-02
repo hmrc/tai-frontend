@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, _}
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
-import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 import views.html.incomes.nextYear._
 
 import scala.concurrent.Future
@@ -287,7 +287,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
             Future.successful(serviceResponse)
           )
 
-          val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentID, employerName, currentAmount, newAmount)
+          val vm = ConfirmAmountEnteredViewModel(employmentID, employerName, currentAmount, newAmount, NextYearPay)
           val expectedView = updateIncomeCYPlus1Confirm(vm)
 
           val result = controller.confirm(employmentID)(fakeRequest)

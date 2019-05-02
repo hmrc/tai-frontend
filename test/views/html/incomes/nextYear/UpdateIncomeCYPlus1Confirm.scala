@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat
 import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, IrregularPay}
 import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
@@ -32,7 +32,7 @@ class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
   val estimatedAmount = 1000
   val employmentId = 1
 
-  val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, employerName, currentAmount, estimatedAmount)
+  val vm = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedAmount, IrregularPay)
   override lazy val view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm)
 
   "Edit income Irregular Hours view" should {

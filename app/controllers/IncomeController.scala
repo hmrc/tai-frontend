@@ -182,7 +182,7 @@ class IncomeController @Inject()(personService: PersonService,
                     case Some(taxCodeIncome) =>
                       val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
-                      val vm = ConfirmAmountEnteredViewModel.annualPayCurrentYear(id, employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
+                      val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
                       Ok(views.html.incomes.confirmAmountEntered(vm))
 
                     case _ => throw new RuntimeException(s"Not able to found employment with id $id")
@@ -320,7 +320,7 @@ class IncomeController @Inject()(personService: PersonService,
                     case Some(taxCodeIncome) =>
                       val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
-                      val vm = ConfirmAmountEnteredViewModel.annualPayCurrentYear(id, employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
+                      val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
                       Ok(views.html.incomes.confirmAmountEntered(vm))
                     case _ => throw new RuntimeException(s"Not able to found employment with id $id")
                   }
