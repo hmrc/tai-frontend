@@ -45,7 +45,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "not display iForms status message when no iForms are in progress" in{
       val vm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Seq(activeEmployment), Seq(pensionIncome), Seq(endedEmployment),
         false, NoTimeToProcess, Seq(otherIncomeSourceViewModel))
-      def view: Html = views.html.incomeTaxSummary(vm, webChatEnabled)
+      def view: Html = views.html.incomeTaxSummary(vm)
       doc(view) must not(haveElementWithId("isAnyFormInProgressBanner"))
     }
 
@@ -64,7 +64,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "hide each of the three outline sections: 'income from employment', 'employments that have ended', and 'income from private pensions'" when {
 
       "the associated collections within the view model are empty" in {
-        val docWithoutIncomeSections = doc(views.html.incomeTaxSummary(noSectionsVm, webChatEnabled))
+        val docWithoutIncomeSections = doc(views.html.incomeTaxSummary(noSectionsVm))
         docWithoutIncomeSections must not(haveSectionWithId("incomeFromEmploymentSection"))
         docWithoutIncomeSections must not(haveSectionWithId("incomeFromPensionSection"))
         docWithoutIncomeSections must not(haveSectionWithId("endedIncomeSection"))
@@ -91,7 +91,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "display an 'In Year Adjustment' banner" when {
       "the corresponding boolean is set within the view model" in {
         val vm = TaxAccountSummaryViewModel("", "", "", "", "", Nil, Nil, Nil, true, ThreeWeeks, Seq(otherIncomeSourceViewModel))
-        val docWithIyaBanner = doc(views.html.incomeTaxSummary(vm, webChatEnabled))
+        val docWithIyaBanner = doc(views.html.incomeTaxSummary(vm))
         docWithIyaBanner must haveElementAtPathWithText("#inYearAdjustmentBanner", s"${messages("tai.notifications.iya.banner.text")} ${messages("tai.notifications.iya.linkText")}")
       }
     }
@@ -117,7 +117,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       "there are multiple income source view model instance supplied within the 'employments' view model sequnce" in {
         val vm = TaxAccountSummaryViewModel("", "", "", "", "",
           Seq(activeEmployment.copy(name="name1"), activeEmployment.copy(name="name2"), activeEmployment.copy(name="name3")), Nil, Nil, false, ThreeWeeks, Seq(otherIncomeSourceViewModel))
-        val docWithMultipleEmployments = doc(views.html.incomeTaxSummary(vm, webChatEnabled))
+        val docWithMultipleEmployments = doc(views.html.incomeTaxSummary(vm))
         docWithMultipleEmployments.select("#incomeFromEmploymentSection h3").size mustBe 3
 
         docWithMultipleEmployments must haveElementAtPathWithId("div", "employment1")
@@ -142,7 +142,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       "there are multiple income source view model instance supplied within the 'pensions' view model sequnce" in {
         val vm = TaxAccountSummaryViewModel("", "", "", "", "", Nil,
           Seq(endedEmployment.copy(name="name1"), endedEmployment.copy(name="name2"), endedEmployment.copy(name="name3"), endedEmployment.copy(name="name4")), Nil, false, ThreeWeeks, Seq(otherIncomeSourceViewModel))
-        val docWithMultiplePensionIncomes = doc(views.html.incomeTaxSummary(vm, webChatEnabled))
+        val docWithMultiplePensionIncomes = doc(views.html.incomeTaxSummary(vm))
         docWithMultiplePensionIncomes.select("#incomeFromPensionSection h3").size mustBe 4
 
         docWithMultiplePensionIncomes must haveElementAtPathWithId("div", "pension1")
@@ -169,7 +169,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       "there are multiple income source view model instance supplied within the 'ceasedEmployments' view model sequnce" in {
         val vm = TaxAccountSummaryViewModel("", "", "", "", "", Nil, Nil,
           Seq(pensionIncome.copy(name="name1"), pensionIncome.copy(name="name2"), pensionIncome.copy(name="name3"), pensionIncome.copy(name="name4")), false, ThreeWeeks, Seq(otherIncomeSourceViewModel))
-        val docWithMultipleEndedIncomes = doc(views.html.incomeTaxSummary(vm, webChatEnabled))
+        val docWithMultipleEndedIncomes = doc(views.html.incomeTaxSummary(vm))
         docWithMultipleEndedIncomes.select("#endedIncomeSection h3").size mustBe 4
 
         docWithMultipleEndedIncomes must haveElementAtPathWithId("div", "income1")
@@ -202,7 +202,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
     "omit a tax code when instructed" in {
       val vm = TaxAccountSummaryViewModel("", "", "", "", "", Seq(activeEmployment.copy(displayTaxCode = false)), Nil, Nil, false, ThreeWeeks, Seq(otherIncomeSourceViewModel))
-      val document = doc(views.html.incomeTaxSummary(vm, webChatEnabled))
+      val document = doc(views.html.incomeTaxSummary(vm))
       document must not(haveElementWithId("employment1TaxCodeLink"))
     }
 
@@ -212,14 +212,14 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
     "omit a payroll number when instructed" in {
       val vm = TaxAccountSummaryViewModel("", "", "", "", "", Seq(activeEmployment.copy(displayPayrollNumber = false)), Nil, Nil, false, ThreeWeeks, Seq(otherIncomeSourceViewModel))
-      val document = doc(views.html.incomeTaxSummary(vm, webChatEnabled))
+      val document = doc(views.html.incomeTaxSummary(vm))
       document must not(haveElementWithId("employment1PayrollNumber"))
     }
 
     "show an end date when instructed" in {
       val inactiveEmployment = activeEmployment.copy(displayEndDate = true, endDate = "31 July 2017")
       val vm = TaxAccountSummaryViewModel("", "", "", "", "", Seq(inactiveEmployment), Nil, Nil, false, ThreeWeeks, Seq(otherIncomeSourceViewModel))
-      val document = doc(views.html.incomeTaxSummary(vm, webChatEnabled))
+      val document = doc(views.html.incomeTaxSummary(vm))
       document must haveElementAtPathWithText("#employment1EndDate", messages("tai.incomeTaxSummary.endDate.prefix", inactiveEmployment.endDate))
     }
 
@@ -234,7 +234,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
     "omit a view details link when instructed" in {
       val vm = TaxAccountSummaryViewModel("", "", "", "", "", Seq(activeEmployment.copy(displayDetailsLink = false)), Nil, Nil, false, ThreeWeeks, Seq(otherIncomeSourceViewModel))
-      val document = doc(views.html.incomeTaxSummary(vm, webChatEnabled))
+      val document = doc(views.html.incomeTaxSummary(vm))
       document must not(haveElementWithId("employment1DetailsLink"))
     }
   }
@@ -301,5 +301,5 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   val noSectionsVm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Nil, Nil, Nil, false, ThreeWeeks, Seq(otherIncomeSourceViewModel))
 
   override implicit val user = UserBuilder("Mr", "Firstname", "Surname")
-  override def view: Html = views.html.incomeTaxSummary(vm, webChatEnabled)
+  override def view: Html = views.html.incomeTaxSummary(vm)
 }

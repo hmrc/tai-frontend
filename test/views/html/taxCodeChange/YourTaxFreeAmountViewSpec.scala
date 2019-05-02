@@ -203,7 +203,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
   val currentOnlyTaxFreeAmount: YourTaxFreeAmountViewModel = createViewModel(showPreviousTaxFreeInfo = false)
 
   def createView(viewModel: YourTaxFreeAmountViewModel = taxFreeAmount) =
-    views.html.taxCodeChange.yourTaxFreeAmount(viewModel, webChatEnabled = false)
+    views.html.taxCodeChange.yourTaxFreeAmount(viewModel)
 
   override def view = createView()
   private lazy val currentOnlyView = createView(viewModel = currentOnlyTaxFreeAmount)
