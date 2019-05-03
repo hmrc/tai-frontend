@@ -71,7 +71,7 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                 Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
               case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
                 taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
-                  Ok(views.html.incomeTaxSummary(vm))
+                  Ok(views.html.incomeTaxSummary(vm, webChatEnabled))
                 }
               case _ => throw new RuntimeException("Failed to fetch tax account summary details")
             }

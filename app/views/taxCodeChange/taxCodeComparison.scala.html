@@ -26,7 +26,7 @@
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 @import uk.gov.hmrc.tai.util.HtmlFormatter
-@(taxCodeChangeViewModel: TaxCodeChangeViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(taxCodeChangeViewModel: TaxCodeChangeViewModel, webChatEnabled: Boolean)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax code change"}
 @gaEventLabelString = @{Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}
@@ -64,6 +64,11 @@
             dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
         </div>
 
+        @if(webChatEnabled) {
+            <section class="anchor-webchat" id="webchat" aria-labelledby="webchat">
+            @webchat()
+            </section>
+        }
     </div>
 }
 

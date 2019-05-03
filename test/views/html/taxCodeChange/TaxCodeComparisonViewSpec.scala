@@ -37,7 +37,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
   val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
   val webChatEnabled = false
 
-  override def view = views.html.taxCodeChange.taxCodeComparison(viewModel)
+  override def view = views.html.taxCodeChange.taxCodeComparison(viewModel, webChatEnabled)
 
   def testTaxCodeRecordFormat(record: TaxCodeRecord) = {
     doc must haveParagraphWithText(record.employerName)
@@ -113,14 +113,14 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       "primary employments have changed" in {
         val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), false)
 
-        val view = views.html.taxCodeChange.taxCodeComparison(viewModel)
+        val view = views.html.taxCodeChange.taxCodeComparison(viewModel, webChatEnabled)
         doc(view) must haveClassCount("tax-code-reason", 2)
       }
 
       "display a generic tax code reason" in {
         val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), true)
 
-        val view = views.html.taxCodeChange.taxCodeComparison(viewModel)
+        val view = views.html.taxCodeChange.taxCodeComparison(viewModel, webChatEnabled)
         doc(view) must haveClassCount("tax-code-reason", 1)
       }
     }

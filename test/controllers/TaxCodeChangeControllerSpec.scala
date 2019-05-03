@@ -88,7 +88,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         status(result) mustBe OK
 
-        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
+        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel, testWebChatEnabled)
       }
     }
   }
@@ -114,7 +114,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       val expectedViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates, reasons, false)
 
       status(result) mustBe OK
-      result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel)
+      result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel, testWebChatEnabled)
     }
   }
 
@@ -134,9 +134,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val yourTaxFreeAmountService = mock[YourTaxFreeAmountService]
   val taxCodeChangeReasonsService = mock[TaxCodeChangeReasonsService]
 
+  val testWebChatEnabled = false
+  trait FeatureTogglesConfigMock extends FeatureTogglesConfig {
+    override val webChatEnabled = testWebChatEnabled
+  }
 
-
-  private def createController() = new TaxCodeChangeTestController
+  private def createController() = new TaxCodeChangeTestController with FeatureTogglesConfigMock
 
   private class TaxCodeChangeTestController extends TaxCodeChangeController (
     taxCodeChangeService,

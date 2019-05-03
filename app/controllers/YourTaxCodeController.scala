@@ -51,7 +51,7 @@ class YourTaxCodeController @Inject()(taxAccountService: TaxAccountService,
       } yield {
         val taxCodeViewModel = TaxCodeViewModel.apply(taxCodeIncomes, scottishTaxRateBands)
         implicit val user = request.taiUser
-        Ok(views.html.taxCodeDetails(taxCodeViewModel))
+        Ok(views.html.taxCodeDetails(taxCodeViewModel, webChatEnabled))
       }) recover {
         case NonFatal(e) => {
           internalServerError(s"Exception: ${e.getClass()}")
