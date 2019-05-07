@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.model.domain
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.{JsResultException, JsString, Json}
 
 class TaxComponentTypeSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -43,8 +43,8 @@ class TaxComponentTypeSpec extends PlaySpec with FakeTaiPlayApplication with I18
 
       "throw an exception" when {
         "give an invalid json value" in {
-          val exception = the[IllegalArgumentException] thrownBy JsString("Wrong").as[TaxComponentType]
-          exception.getMessage mustBe "Invalid Tax component type"
+          val exception = the[JsResultException] thrownBy JsString("Wrong").as[TaxComponentType]
+          exception.getMessage must include("Invalid Tax component type")
         }
       }
 

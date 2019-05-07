@@ -66,7 +66,7 @@ class TaxAccountSummaryService @Inject()(trackingService: TrackingService,
             nonTaxCodeIncome,
             IncomesSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
             nonMatchingCeasedEmployments)
-        case _ => Left(RuntimeException("Failed to fetch income details"))
+        case _ => throw new RuntimeException("Failed to fetch income details")
       }
     }
   }

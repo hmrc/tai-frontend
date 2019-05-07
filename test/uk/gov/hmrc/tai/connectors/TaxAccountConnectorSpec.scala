@@ -76,7 +76,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         val sut = createSUT
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(incomeSourceJson))
 
-        val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, EmploymentIncome, Live), 10 seconds)
+        val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, EmploymentIncome, Live), 5 seconds)
         result mustBe TaiSuccessResponseWithPayload(Seq(incomeSource))
       }
     }
@@ -86,7 +86,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         val sut = createSUT
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(incomeSourceEmpty))
 
-        val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, EmploymentIncome, Live), 10 seconds)
+        val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, EmploymentIncome, Live), 5 seconds)
         result mustBe TaiSuccessResponseWithPayload(Seq.empty[TaxedIncome])
       }
     }
@@ -282,9 +282,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
   )
 
   val incomeSourceEmpty: JsValue = Json.obj(
-    "data" -> Json.arr(
-
-    )
+    "data" -> Json.arr()
   )
 
   val codingComponentSampleJson: JsValue = Json.obj(

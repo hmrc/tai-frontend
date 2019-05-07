@@ -192,7 +192,7 @@ object TaxComponentType{
       case "PensionIncome" => JsSuccess(PensionIncome)
       case "JobSeekerAllowanceIncome" => JsSuccess(JobSeekerAllowanceIncome)
       case "OtherIncome" => JsSuccess(OtherIncome)
-      case _ =>  JsError("Invalid Tax component type")
+      case _ => JsError("Invalid Tax component type")
     }
     override def writes(taxComponentType: TaxComponentType) = JsString(taxComponentType.toString)
   }
