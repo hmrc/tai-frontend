@@ -19,7 +19,7 @@
 @import includes.taxFreeAmountSummaryComparison
 @import uk.gov.hmrc.urls.Link
 
-@(currentTaxFreeAmount: YourTaxFreeAmountViewModel, webChatEnabled: Boolean)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax-free amount"}
 
@@ -46,15 +46,6 @@
         </div>
 
         <div class="grid-row">
-
-            <h2 class="flush--bottom heading-medium">
-                @Messages("tai.taxFreeAmount.heading.pt1") <br/>
-                @currentTaxFreeAmount.currentTaxFreeInfo.date
-                <span class="display-block bold-large section section--narrow flush--bottom">
-                @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeAmount.currentTaxFreeInfo.annualTaxFreeAmount)
-                </span>
-            </h2>
-
             <section id="yourTaxFreeAmount">
 
                 <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h2>
@@ -76,14 +67,6 @@
                 cssClasses = Some("button")
             ).toHtml
             </div>
-        </div>
-
-        <div class="grid-row">
-        @if(webChatEnabled) {
-            <section class="section anchor-webchat" id="webchat" aria-labelledby="webchat">
-            @webchat()
-            </section>
-        }
         </div>
 
     </div>

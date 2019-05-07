@@ -47,18 +47,13 @@ class EstimatedIncomeTaxController @Inject()(codingComponentService: CodingCompo
   def estimatedIncomeTax(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       val nino = request.taiUser.nino
-      val taxSummaryFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
-      val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
-      val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-      val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
-      val taxCodeIncomeFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
 
       for {
-        taxSummary <- taxSummaryFuture
-        codingComponents <- codingComponentFuture
-        totalTax <- totalTaxFuture
-        nonTaxCode <- nonTaxCodeIncomeFuture
-        taxCodeIncomes <- taxCodeIncomeFuture
+        taxSummary <- taxAccountService.taxAccountSummary(nino, TaxYear())
+        codingComponents <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+        totalTax <- taxAccountService.totalTax(nino, TaxYear())
+        nonTaxCode <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
+        taxCodeIncomes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
         iFormLinks <- partialService.getIncomeTaxPartial
       } yield {
         (taxSummary, totalTax, nonTaxCode, taxCodeIncomes) match {

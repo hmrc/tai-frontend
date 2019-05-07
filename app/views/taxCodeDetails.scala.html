@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 
-@(taxCodeViewModel: TaxCodeViewModel, webChatEnabled: Boolean)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(taxCodeViewModel: TaxCodeViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax codes"}
 
@@ -76,13 +76,6 @@
                 }
 
             </div>
-
-
-            @if(webChatEnabled) {
-                <section class="section anchor-webchat" id="webchat" aria-labelledby="webchat">
-                @webchat()
-                </section>
-            }
 
         </div>
 

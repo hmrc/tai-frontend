@@ -40,26 +40,6 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       doc must haveParagraphWithText(Messages("taxCode.change.yourTaxFreeAmount.desc"))
     }
 
-    "have h2 heading showing the date period for tax-free amount" in {
-      val fromDate = new LocalDate()
-      val toDate = TaxYear().end
-      val expectedDateRange = ViewModelHelper.dynamicDateRangeHtmlNonBreak(fromDate, toDate)
-      val expectedMessage = Messages("taxCode.change.yourTaxFreeAmount.dates", expectedDateRange)
-
-      doc(viewP2Date) must haveH2HeadingWithText(s"$expectedMessage £1,150")
-
-      def viewP2Date: Html = createView(createViewModel(expectedDateRange))
-    }
-
-
-    "display figure for Your tax-free amount" in {
-      val taxFreeAmount = "£11,500"
-
-      doc(viewTaxFreeAmount) must haveSpanWithText(taxFreeAmount)
-
-      def viewTaxFreeAmount: Html = createView(createViewModel(annualTaxFreeAmount =  11500))
-    }
-
     "have h2 heading for how tax-free amount is calculated" in {
       doc must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.summaryHeading"))
     }
@@ -223,7 +203,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
   val currentOnlyTaxFreeAmount: YourTaxFreeAmountViewModel = createViewModel(showPreviousTaxFreeInfo = false)
 
   def createView(viewModel: YourTaxFreeAmountViewModel = taxFreeAmount) =
-    views.html.taxCodeChange.yourTaxFreeAmount(viewModel, webChatEnabled = false)
+    views.html.taxCodeChange.yourTaxFreeAmount(viewModel)
 
   override def view = createView()
   private lazy val currentOnlyView = createView(viewModel = currentOnlyTaxFreeAmount)
