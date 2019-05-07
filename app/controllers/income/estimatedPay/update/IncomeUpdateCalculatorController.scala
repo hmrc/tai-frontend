@@ -109,14 +109,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     }
   }
 
-  private def determineViewModel(incomeType: String, employmentName: String, previouslyUpdatedAmount: Int): DuplicateSubmissionEstimatedPay = {
-    if (incomeType == TaiConstants.IncomeTypePension) {
-      DuplicateSubmissionPensionViewModel(employmentName, previouslyUpdatedAmount)
-    } else {
-      DuplicateSubmissionEmploymentViewModel(employmentName, previouslyUpdatedAmount)
-    }
-  }
-
   def duplicateSubmissionWarningPage(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
@@ -124,7 +116,12 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey, UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
           val incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil = mandatoryValues.toList
 
-          val vm = determineViewModel(incomeType, incomeName, previouslyUpdatedAmount.toInt)
+          val vm = if (incomeType == TaiConstants.IncomeTypePension) {
+            DuplicateSubmissionPensionViewModel(incomeName, previouslyUpdatedAmount.toInt)
+          } else {
+            DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
+          }
+
           Ok(views.html.incomes.duplicateSubmissionWarning(
             DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt)
           )
@@ -140,7 +137,12 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
             formWithErrors => {
-              val vm = determineViewModel(incomeType, incomeName, newAmount.toInt)
+              val vm = if (incomeType == TaiConstants.IncomeTypePension) {
+                DuplicateSubmissionPensionViewModel(incomeName, newAmount.toInt)
+              } else {
+                DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
+              }
+
               Future.successful(BadRequest(views.html.incomes.
                 duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
             },
