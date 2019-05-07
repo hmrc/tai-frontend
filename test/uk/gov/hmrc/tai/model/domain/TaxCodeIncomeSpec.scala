@@ -16,14 +16,11 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live, PotentiallyCeased, TaxCodeIncomeSourceStatus}
 
-class TaxCodeIncomeSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class TaxCodeIncomeSpec extends PlaySpec {
 
   "TaxCodeIncomeSourceStatus format" must {
     "create a valid object" when {

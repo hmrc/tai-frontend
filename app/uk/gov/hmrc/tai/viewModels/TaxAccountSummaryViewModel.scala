@@ -50,17 +50,17 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter 
             incomesSources: IncomesSources,
             nonMatchingCeasedEmployments: Seq[Employment])(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
-    val header: String = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
-    val title: String = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+    val header = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+    val title = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
 
-    val taxFreeAmount: String = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
-    val estimatedIncomeTaxAmount: String = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
+    val taxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
+    val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
 
-    val employmentViewModels: Seq[IncomeSourceViewModel] = incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel(_))
+    val employmentViewModels = incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel(_))
 
-    val pensionsViewModels: Seq[IncomeSourceViewModel] = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel(_))
+    val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel(_))
 
-    val ceasedEmploymentViewModels: Seq[IncomeSourceViewModel] = incomesSources.ceasedEmploymentIncomeSources.map(IncomeSourceViewModel(_)) ++
+    val ceasedEmploymentViewModels = incomesSources.ceasedEmploymentIncomeSources.map(IncomeSourceViewModel(_)) ++
       nonMatchingCeasedEmployments.map(IncomeSourceViewModel(_))
 
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)

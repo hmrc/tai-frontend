@@ -51,7 +51,7 @@ case object Ceased extends TaxCodeIncomeSourceStatus
 
 object TaxCodeIncomeSourceStatus {
   implicit val formatTaxCodeIncomeSourceStatus: Format[TaxCodeIncomeSourceStatus] = new Format[TaxCodeIncomeSourceStatus] {
-    override def reads(json: JsValue): JsSuccess[TaxCodeIncomeSourceStatus] = json.as[String] match {
+    override def reads(json: JsValue): JsResult[TaxCodeIncomeSourceStatus] = json.as[String] match {
       case "Live" => JsSuccess(Live)
       case "PotentiallyCeased" => JsSuccess(PotentiallyCeased)
       case "Ceased" => JsSuccess(Ceased)

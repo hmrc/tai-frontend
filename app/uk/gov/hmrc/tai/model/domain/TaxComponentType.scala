@@ -187,7 +187,7 @@ case object OtherIncome extends TaxCodeIncomeComponentType
 
 object TaxComponentType{
   implicit val formatTaxComponentType: Format[TaxComponentType] = new Format[TaxComponentType] {
-    override def reads(json: JsValue): JsSuccess[TaxComponentType] =  json.as[String] match {
+    override def reads(json: JsValue): JsResult[TaxComponentType] =  json.as[String] match {
       case "EmploymentIncome" => JsSuccess(EmploymentIncome)
       case "PensionIncome" => JsSuccess(PensionIncome)
       case "JobSeekerAllowanceIncome" => JsSuccess(JobSeekerAllowanceIncome)
@@ -200,7 +200,7 @@ object TaxComponentType{
 
 object NonTaxCodeIncomeComponentType {
   implicit val formatTaxComponentType: Format[NonTaxCodeIncomeComponentType] = new Format[NonTaxCodeIncomeComponentType] {
-    override def reads(json: JsValue): JsSuccess[NonTaxCodeIncomeComponentType] = json.as[String] match {
+    override def reads(json: JsValue): JsResult[NonTaxCodeIncomeComponentType] = json.as[String] match {
       case "NonCodedIncome" => JsSuccess(NonCodedIncome)
       case "Commission" => JsSuccess(Commission)
       case "OtherIncomeEarned" => JsSuccess(OtherIncomeEarned)

@@ -24,7 +24,8 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, TaxCodeIncom
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 
-abstract case class IncomeSourceViewModel(name: String,
+
+case class IncomeSourceViewModel(name: String,
                                  amount: String,
                                  taxCode: String,
                                  displayTaxCode: Boolean,
@@ -67,20 +68,20 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
   def apply(incomeSource: TaxedIncome)(implicit messages: Messages): IncomeSourceViewModel = {
     val endDate: Option[String] = incomeSource.employment.endDate.map(Dates.formatDate(_))
-    val detailsLinkLabel = incomeSource.taxCodeIncome.componentType match {
-      case EmploymentIncome if incomeSource.taxCodeIncome.status == Live => messages("tai.incomeTaxSummary.employmentAndBenefits.link")
-      case EmploymentIncome if incomeSource.taxCodeIncome.status != Live => messages("tai.incomeTaxSummary.employment.link")
-      case PensionIncome => messages("tai.incomeTaxSummary.pension.link")
-      case _ => messages("tai.incomeTaxSummary.income.link")
-    }
+        val detailsLinkLabel = incomeSource.taxCodeIncome.componentType match {
+          case EmploymentIncome if incomeSource.taxCodeIncome.status == Live => messages("tai.incomeTaxSummary.employmentAndBenefits.link")
+          case EmploymentIncome if incomeSource.taxCodeIncome.status != Live => messages("tai.incomeTaxSummary.employment.link")
+          case PensionIncome => messages("tai.incomeTaxSummary.pension.link")
+          case _ => messages("tai.incomeTaxSummary.income.link")
+        }
 
-    val incomeSourceSummaryUrl =
-      if (incomeSource.taxCodeIncome.componentType == EmploymentIncome && incomeSource.taxCodeIncome.status != Live) {
-        controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(incomeSource.employment.sequenceNumber).url
-      }
-      else {
-        controllers.routes.IncomeSourceSummaryController.onPageLoad(incomeSource.employment.sequenceNumber).url
-      }
+        val incomeSourceSummaryUrl =
+          if (incomeSource.taxCodeIncome.componentType == EmploymentIncome && incomeSource.taxCodeIncome.status != Live) {
+            controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(incomeSource.employment.sequenceNumber).url
+          }
+          else {
+            controllers.routes.IncomeSourceSummaryController.onPageLoad(incomeSource.employment.sequenceNumber).url
+          }
 
     IncomeSourceViewModel(
       incomeSource.employment.name,

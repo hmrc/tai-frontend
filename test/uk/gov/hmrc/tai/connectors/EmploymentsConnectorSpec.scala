@@ -165,34 +165,6 @@ class EmploymentsConnectorSpec extends PlaySpec
 
   "EmploymentsConnector ceasedEmployments" must {
 
-    "call the employments API with a URL containing a service URL" when {
-      "the service URL is supplied" in {
-        val SUT = createSUT("test/service")
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(oneCeasedEmployment)))
-
-        val responseFuture = SUT.ceasedEmployments(nino, year)
-
-        Await.result(responseFuture, 5 seconds)
-        verify(httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
-      }
-    }
-
-    "call the employments API with a URL containing a service URL" when {
-
-      "the service URL is not supplied" in {
-
-        val SUT = createSUT()
-
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(oneCeasedEmployment)))
-
-        val responseFuture = SUT.ceasedEmployments(nino, year)
-
-        Await.result(responseFuture, 5 seconds)
-
-        verify(httpHandler).getFromApi(Matchers.eq(s"/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
-      }
-    }
-
     "return employments from the employments API" when {
 
       "api provides one employments" in {
