@@ -181,7 +181,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
         verify(employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include("Sorry, there is a problem so you can’t use this service")
+        doc.title() must include("Sorry, there is a problem so you cannot use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
       }
@@ -212,7 +212,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include("Sorry, there is a problem so you can’t use this service")
+        doc.title() must include("Sorry, there is a problem so you cannot use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
       }
@@ -231,7 +231,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
         verify(employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include("Sorry, there is a problem so you can’t use this service")
+        doc.title() must include("Sorry, there is a problem so you cannot use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
       }
