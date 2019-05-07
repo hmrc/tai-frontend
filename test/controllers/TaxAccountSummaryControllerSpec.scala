@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -113,6 +114,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
+
       "a downstream error has occurred in the employment service (which does not reply with TaiResponse type)" in {
         val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
@@ -178,7 +180,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
   }
 
 
-  val nino = new Generator(new Random).nextNino
+  val nino = FakeAuthAction.nino
 
   val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
 
@@ -210,6 +212,8 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
