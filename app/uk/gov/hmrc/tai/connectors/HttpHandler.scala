@@ -30,35 +30,41 @@ import scala.util.{Failure, Success, Try}
 @Singleton
 class HttpHandler @Inject()(val http: WSHttp) {
 
+  val notFoundResponse = (response: HttpResponse) => {
+    Logger.warn(s"HttpHandler - No DATA Found")
+    throw new NotFoundException(response.body)
+  }
+
+ val internalServerErrorResponse = (response: HttpResponse) => {
+   Logger.warn(s"HttpHandler - Internal Server error")
+   throw new InternalServerException(response.body)
+ }
+
+  val badRequestResponse = (response: HttpResponse) => {
+    Logger.warn(s"HttpHandler - Bad request exception")
+    throw new BadRequestException(response.body)
+  }
+
+  val generalExceptionResponse = (response: HttpResponse) => {
+    Logger.warn(s"HttpHandler - Error received with status: ${response.status} and body: ${response.body}")
+    throw new HttpException(response.body, response.status)
+  }
+
+
   def getFromApi(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
 
     implicit val reads = new HttpReads[HttpResponse] {
       override def read(method: String, url: String, response: HttpResponse): HttpResponse = {
         response.status match {
-          case Status.OK => Try(response) match {
-            case Success(data) => data
-            case Failure(exception) => throw new RuntimeException(s"Unable to parse response: $exception")
-          }
-          case Status.NOT_FOUND => {
-            Logger.warn(s"HttpHandler - No DATA Found")
-            throw new NotFoundException(response.body)
-          }
-          case Status.INTERNAL_SERVER_ERROR => {
-            Logger.warn(s"HttpHandler - Internal Server error")
-            throw new InternalServerException(response.body)
-          }
-          case Status.BAD_REQUEST => {
-            Logger.warn(s"HttpHandler - Bad request exception")
-            throw new BadRequestException(response.body)
-          }
+          case Status.OK => response
+          case Status.NOT_FOUND => notFoundResponse(response)
+          case Status.INTERNAL_SERVER_ERROR => internalServerErrorResponse(response)
+          case Status.BAD_REQUEST => badRequestResponse(response)
           case Status.LOCKED => {
             Logger.warn(s"HttpHandler - Locked received")
             throw new LockedException(response.body)
           }
-          case _ => {
-            Logger.warn(s"HttpHandler - Server error received")
-            throw new HttpException(response.body, response.status)
-          }
+          case _ => generalExceptionResponse(response)
         }
       }
     }
@@ -73,21 +79,10 @@ class HttpHandler @Inject()(val http: WSHttp) {
       override def read(method: String, url: String, response: HttpResponse): HttpResponse = {
         response.status match {
           case OK => response
-          case NOT_FOUND =>
-            Logger.warn(s"HttpHandler - No data can be found")
-            throw new NotFoundException(response.body)
-
-          case INTERNAL_SERVER_ERROR =>
-            Logger.warn(s"HttpHandler - Internal Server Error received")
-            throw new InternalServerException(response.body)
-
-          case BAD_REQUEST =>
-            Logger.warn(s"HttpHandler - Bad Request received")
-            throw new BadRequestException(response.body)
-
-          case _ =>
-            Logger.warn(s"HttpHandler - Server error received")
-            throw new HttpException(response.body, response.status)
+          case NOT_FOUND => notFoundResponse(response)
+          case INTERNAL_SERVER_ERROR => internalServerErrorResponse(response)
+          case BAD_REQUEST => badRequestResponse(response)
+          case _ => generalExceptionResponse(response)
         }
       }
     }
@@ -101,9 +96,7 @@ class HttpHandler @Inject()(val http: WSHttp) {
       override def read(method: String, url: String, response: HttpResponse): HttpResponse = {
         response.status match {
           case OK | CREATED => response
-          case _ =>
-            Logger.warn(s"HttpHandler - Error received with status: ${response.status} and body: ${response.body}")
-            throw new HttpException(response.body, response.status)
+          case _ => generalExceptionResponse(response)
         }
       }
     }
@@ -117,9 +110,7 @@ class HttpHandler @Inject()(val http: WSHttp) {
       override def read(method: String, url: String, response: HttpResponse): HttpResponse = {
         response.status match {
           case OK | NO_CONTENT | ACCEPTED => response
-          case _ =>
-            Logger.warn(s"HttpHandler - Error received with status: ${response.status} and body: ${response.body}")
-            throw new HttpException(response.body, response.status)
+          case _ => generalExceptionResponse(response)
         }
       }
 

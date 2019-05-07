@@ -171,11 +171,14 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplica
     "return Http exception" when {
       "http response is NOT_FOUND" in {
 
+        val errorMessage = "not found"
+
         server.stubFor(post(urlEqualTo(url.getPath)).willReturn(aResponse().withStatus(Status.NOT_FOUND)
-          .withBody("")))
+          .withBody(errorMessage)))
 
         val thrown = the[HttpException] thrownBy postResponse
         thrown.responseCode mustBe Status.NOT_FOUND
+        thrown.message mustBe errorMessage
       }
 
       "http response is GATEWAY_TIMEOUT" in {
