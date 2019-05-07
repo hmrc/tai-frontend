@@ -152,9 +152,6 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
       "a downstream error has occurred in one of the TaiResponse responding service methods due to no found primary employment information" in {
         val sut = createSUT
 
-        when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-        when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg.toLowerCase)))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -164,9 +161,6 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
       }
       "a downstream error has occurred in one of the TaiResponse responding service methods due to no employments recorded for current tax year" in {
         val sut = createSUT
-    
-        when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-        when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentForCurrentTaxYear.toLowerCase)))
 
@@ -197,7 +191,6 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
 
   def createSUT = new SUT()
 
-  val personService: PersonService = mock[PersonService]
   val trackingService = mock[TrackingService]
   val auditService = mock[AuditService]
   val employmentService = mock[EmploymentService]
@@ -208,19 +201,12 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
     employmentService,
     taxAccountService,
     auditService,
-    personService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
     FakeAuthAction,
     FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
     when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(ThreeWeeks))
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
 
 }

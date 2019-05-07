@@ -47,17 +47,10 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                                             employmentService: EmploymentService,
                                             taxAccountService: TaxAccountService,
                                             auditService: AuditService,
-                                            personService: PersonService,
-                                            val auditConnector: AuditConnector,
-                                            val delegationConnector: DelegationConnector,
-                                            val authConnector: AuthConnector,
                                             authenticate: AuthAction,
                                             validatePerson: ValidatePerson,
                                             override implicit val partialRetriever: FormPartialRetriever,
                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite
-  with Auditable
   with AuditConstants
   with FeatureTogglesConfig {
 
