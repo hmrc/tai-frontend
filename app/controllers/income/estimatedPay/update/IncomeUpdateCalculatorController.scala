@@ -21,12 +21,14 @@ import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import controllers.employments.routes
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
@@ -36,6 +38,7 @@ import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCach
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
+import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
@@ -70,25 +73,96 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   with FormValuesConstants
   with FeatureTogglesConfig {
 
-  def estimatedPayLandingPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+  def onPageLoad(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
 
-        val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
-        val employmentFuture = employmentService.employment(Nino(user.getNino), id)
+        val estimatedPayCompletionFuture = estimatedPayJourneyCompletionService.hasJourneyCompleted(id.toString)
+        val cacheEmploymentDetailsFuture = cacheEmploymentDetails(id, employmentService.employment(Nino(user.getNino), id))
 
         for {
-          taxCodeIncomeDetails <- taxCodeIncomesFuture
-          employmentDetails <- employmentFuture
+          estimatedPayCompletion <- estimatedPayCompletionFuture
+          _ <- cacheEmploymentDetailsFuture
         } yield {
-          (taxCodeIncomeDetails, employmentDetails) match {
-            case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-              val taxCodeIncomeSource = taxCodeIncomes.find(_.employmentId.contains(id)).
-                getOrElse(throw new RuntimeException(s"Income details not found for employment id $id"))
-              val isPension = taxCodeIncomeSource.componentType == PensionIncome
-              Ok(views.html.incomes.estimatedPayLandingPage(employment.name, id, isPension))
-            case _ => throw new RuntimeException("Not able to find employment")
+
+          if (estimatedPayCompletion) {
+            Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage())
+          } else {
+            Redirect(routes.IncomeUpdateCalculatorController.estimatedPayLandingPage())
           }
+        }
+  }
+
+  private def cacheEmploymentDetails(id: Int, employmentFuture: Future[Option[Employment]])(implicit hc: HeaderCarrier): Future[Map[String, String]] = {
+    employmentFuture flatMap {
+      case Some(employment) =>
+        val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
+        journeyCache(cacheMap = Map(
+          UpdateIncome_NameKey -> employment.name,
+          UpdateIncome_IdKey -> id.toString,
+          UpdateIncome_IncomeTypeKey -> incomeType))
+      case _ => throw new RuntimeException("Not able to find employment")
+    }
+  }
+
+  private def determineViewModel(incomeType: String, employmentName: String, previouslyUpdatedAmount: Int): DuplicateSubmissionEstimatedPay = {
+    if (incomeType == TaiConstants.IncomeTypePension) {
+      DuplicateSubmissionPensionViewModel(employmentName, previouslyUpdatedAmount)
+    } else {
+      DuplicateSubmissionEmploymentViewModel(employmentName, previouslyUpdatedAmount)
+    }
+  }
+
+  def duplicateSubmissionWarningPage(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+      implicit request =>
+
+        journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey, UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
+          val incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil = mandatoryValues.toList
+
+          val vm = determineViewModel(incomeType, incomeName, previouslyUpdatedAmount.toInt)
+          Ok(views.html.incomes.duplicateSubmissionWarning(
+            DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt)
+          )
+        }
+  }
+
+  def submitDuplicateSubmissionWarning: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+      implicit request =>
+
+        journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey,  UpdateIncome_IncomeTypeKey) flatMap { mandatoryValues =>
+          val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryValues.toList
+
+          DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
+            formWithErrors => {
+              val vm = determineViewModel(incomeType, incomeName, newAmount.toInt)
+              Future.successful(BadRequest(views.html.incomes.
+                duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
+            },
+            success => {
+              success.yesNoChoice match {
+                case Some(YesValue) => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.estimatedPayLandingPage()))
+                case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
+                  onPageLoad(incomeId.toInt)))
+              }
+            }
+          )
+        }
+  }
+
+  def estimatedPayLandingPage(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+      implicit request =>
+
+        journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
+          val incomeName :: incomeId :: incomeType :: Nil = mandatoryValues.toList
+          Ok(views.html.incomes.estimatedPayLandingPage(
+            incomeName,
+            incomeId.toInt,
+            incomeType == TaiConstants.IncomeTypePension
+          )
+          )
         }
   }
 
@@ -99,20 +173,12 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         employmentService.employment(Nino(user.getNino), id) flatMap {
           case Some(employment: Employment) =>
 
-            val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
             val incomeToEditFuture = incomeService.employmentAmount(Nino(user.getNino), id)
             val taxCodeIncomeDetailsFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
 
             for {
               incomeToEdit: EmploymentAmount <- incomeToEditFuture
               taxCodeIncomeDetails <- taxCodeIncomeDetailsFuture
-              _ <- {
-                journeyCache(cacheMap = Map(
-                  UpdateIncome_NameKey -> employment.name,
-                  UpdateIncome_IdKey -> id.toString,
-                  UpdateIncome_IncomeTypeKey -> incomeType)
-                )
-              }
             } yield {
               processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
             }

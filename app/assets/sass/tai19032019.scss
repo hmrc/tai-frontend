@@ -161,3 +161,10 @@ hr {
   font-size: 32px;
   color: #4B5053;
 }
+
+.anchor-webchat {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 9999;
+}

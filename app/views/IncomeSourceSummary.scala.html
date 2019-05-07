@@ -128,14 +128,14 @@
                 <p  aria-hidden="true">
                     @Link.toInternalPage(
                         id=Some("updateIncome"),
-                        url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayLandingPage(model.empId).url,
+                        url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
                         value=Some(messages("tai.income.details.updateTaxableIncome.update")),
                         dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.income.details.updateTaxableIncome.update")}"))).toHtml
                 </p>
                 <p class="visuallyhidden">
                     @Link.toInternalPage(
                         id=Some("updateIncomeScreenReader"),
-                        url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayLandingPage(model.empId).url,
+                        url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
                         value=Some(messages("tai.income.details.updateTaxableIncome.screenReader"))).toHtml
                 </p>
         </div>

@@ -147,7 +147,10 @@ GET         /print-your-income-calculation-previous-year/:year/:empId           
 
 
 ## Income calculator URIs
-GET         /update-income/start/:empId                                                @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.estimatedPayLandingPage(empId: Int)
+GET         /update-income/load/:empId                                                 @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.onPageLoad(empId: Int)
+GET         /update-income/start                                                       @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.estimatedPayLandingPage
+GET         /update-income/warning                                                     @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage
+POST        /update-income/warning                                                     @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.submitDuplicateSubmissionWarning
 
 GET         /update-income/how-to-update-income/:empId                                 @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.howToUpdatePage(empId: Int)
 POST        /update-income/how-to-update-income                                        @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleChooseHowToUpdate
@@ -284,6 +287,9 @@ GET         /unauthorised/confidence-level                                      
 
 ### Update Income CY + 1
 
+GET         /update-income/next-year/income/:empId/load                                @controllers.income.UpdateIncomeNextYearController.onPageLoad(empId: Int)
+GET         /update-income/next-year/income/:empId/warning                             @controllers.income.UpdateIncomeNextYearController.duplicateWarning(empId: Int)
+POST        /update-income/next-year/income/:empId/warning                             @controllers.income.UpdateIncomeNextYearController.submitDuplicateWarning(empId: Int)
 GET         /update-income/next-year/income/:empId/start                               @controllers.income.UpdateIncomeNextYearController.start(empId: Int)
 GET         /update-income/next-year/income/:empId/edit                                @controllers.income.UpdateIncomeNextYearController.edit(empId: Int)
 POST        /update-income/next-year/income/:empId/edit                                @controllers.income.UpdateIncomeNextYearController.update(empId: Int)
