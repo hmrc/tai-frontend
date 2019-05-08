@@ -92,7 +92,7 @@ object EditIncomeForm {
       employmentAmount.name,
       employmentAmount.description,
       employmentAmount.employmentId,
-      Some(newAmount),
+      FormHelper.stripNumber(Some(newAmount)),
       employmentAmount.oldAmount,
       employmentAmount.worksNumber,
       employmentAmount.jobTitle,
@@ -103,6 +103,7 @@ object EditIncomeForm {
       false,
       payToDate)
   }
+
 
   def bind(employerName: String, taxablePayYTD: BigDecimal = BigDecimal(0), payDate: Option[LocalDate] = None,
            errMessage: Option[String] = None)(implicit request: Request[_], messages: Messages) = createForm(employerName, taxablePayYTD, payDate, errMessage).bindFromRequest
@@ -131,8 +132,38 @@ object EditIncomeForm {
         "isOccupationalPension" -> boolean,
         "hasMultipleIncomes" -> boolean,
         "payToDate" -> optional(text)
-      )(EditIncomeForm.apply)(EditIncomeForm.unapply)
+      )(customApply)(EditIncomeForm.unapply)
     )
   }
+
+  val customApply: (String, String, Int, Option[String], Int, Option[String], Option[String], Option[LocalDate],
+    Option[LocalDate], Boolean, Boolean, Boolean, Option[String])
+    => EditIncomeForm = (name: String,
+                        description : String,
+                        employmentId: Int,
+                        newAmount: Option[String],
+                        oldAmount: Int,
+                        worksNumber: Option[String],
+                        jobTitle: Option[String],
+                        startDate: Option[LocalDate],
+                        endDate: Option[LocalDate],
+                        isLive: Boolean,
+                        isOccupationalPension: Boolean,
+                        hasMultipleIncomes: Boolean,
+                        payToDate: Option[String])
+  => EditIncomeForm(name,
+                    description,
+                    employmentId,
+                    FormHelper.stripNumber(newAmount),
+                    oldAmount,
+                    worksNumber,
+                    jobTitle,
+                    startDate,
+                    endDate,
+                    isLive,
+                    isOccupationalPension,
+                    hasMultipleIncomes,
+                    payToDate)
+
 }
 
