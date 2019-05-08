@@ -20,7 +20,7 @@ import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, IrregularPay}
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, IrregularPay, NextYearPay}
 
 class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
 
@@ -32,7 +32,7 @@ class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
   val vm = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedAmount, IrregularPay)
   override lazy val view: Html = views.html.incomes.confirmAmountEntered(vm)
 
-  "Edit income Irregular Hours view" should {
+  "Confirm income Irregular Hours view" should {
     behave like pageWithBackLink
     behave like pageWithTitle(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
     behave like pageWithCombinedHeader(
@@ -50,7 +50,7 @@ class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
       doc(view) must haveParagraphWithText(messages("tai.incomes.confirm.save.message.details.p2"))
     }
 
-    "display a confirm and send button" in {
+    "display the correct confirm and send button" in {
       doc(view) must haveLinkElement(
         id = "confirmAndSend",
         href = s"/update-income/edit-income-irregular-hours/$employmentId/submit",
@@ -63,4 +63,31 @@ class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
     }
   }
 
+  "Confirm income Annual Amount view" should {
+
+    "display the correct confirm and send button" in {
+      val vm = ConfirmAmountEnteredViewModel(employerName, currentAmount, estimatedAmount)
+      val annualPayView: Html = views.html.incomes.confirmAmountEntered(vm)
+
+      doc(annualPayView) must haveLinkElement(
+        id = "confirmAndSend",
+        href = s"/update-income/success-page",
+        text = messages("tai.confirmAndSend")
+      )
+    }
+  }
+
+  "Confirm income CY+1 view" should {
+
+    "display the correct confirm and send button" in {
+      val vm = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedAmount, NextYearPay)
+      val cyPlus1PayView: Html = views.html.incomes.confirmAmountEntered(vm)
+
+      doc(cyPlus1PayView) must haveLinkElement(
+        id = "confirmAndSend",
+        href = s"/update-income/next-year/income/$employmentId/confirmed",
+        text = messages("tai.confirmAndSend")
+      )
+    }
+  }
 }
