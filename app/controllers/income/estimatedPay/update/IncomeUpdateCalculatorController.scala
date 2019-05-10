@@ -99,52 +99,56 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     }
   }
 
-  private def determineViewModel(incomeType: String, employmentName: String, previouslyUpdatedAmount: Int): DuplicateSubmissionEstimatedPay = {
-    if (incomeType == TaiConstants.IncomeTypePension) {
-      DuplicateSubmissionPensionViewModel(employmentName, previouslyUpdatedAmount)
-    } else {
-      DuplicateSubmissionEmploymentViewModel(employmentName, previouslyUpdatedAmount)
-    }
-  }
-
-  def duplicateSubmissionWarningPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+ def duplicateSubmissionWarningPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
 
       implicit val user = request.taiUser
 
-      journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey, UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
-        val incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil = mandatoryValues.toList
 
-        val vm = determineViewModel(incomeType, incomeName, previouslyUpdatedAmount.toInt)
-        Ok(views.html.incomes.duplicateSubmissionWarning(
-          DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt)
-        )
-      }
-  }
+        journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey, UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
+          val incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil = mandatoryValues.toList
 
-  def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-
-      implicit val user = request.taiUser
-
-      journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey, UpdateIncome_IncomeTypeKey) flatMap { mandatoryValues =>
-        val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryValues.toList
-
-        DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
-          formWithErrors => {
-            val vm = determineViewModel(incomeType, incomeName, newAmount.toInt)
-            Future.successful(BadRequest(views.html.incomes.
-              duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
-          },
-          success => {
-            success.yesNoChoice match {
-              case Some(YesValue) => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.estimatedPayLandingPage()))
-              case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
-                onPageLoad(incomeId.toInt)))
-            }
+          val vm = if (incomeType == TaiConstants.IncomeTypePension) {
+            DuplicateSubmissionPensionViewModel(incomeName, previouslyUpdatedAmount.toInt)
+          } else {
+            DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
           }
-        )
-      }
+
+          Ok(views.html.incomes.duplicateSubmissionWarning(
+            DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt)
+          )
+        }
+  }
+
+ def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+
+      implicit val user = request.taiUser
+
+
+        journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey,  UpdateIncome_IncomeTypeKey) flatMap { mandatoryValues =>
+          val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryValues.toList
+
+          DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
+            formWithErrors => {
+              val vm = if (incomeType == TaiConstants.IncomeTypePension) {
+                DuplicateSubmissionPensionViewModel(incomeName, newAmount.toInt)
+              } else {
+                DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
+              }
+
+              Future.successful(BadRequest(views.html.incomes.
+                duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
+            },
+            success => {
+              success.yesNoChoice match {
+                case Some(YesValue) => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.estimatedPayLandingPage()))
+                case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
+                  onPageLoad(incomeId.toInt)))
+              }
+            }
+          )
+        }
   }
 
   def estimatedPayLandingPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
