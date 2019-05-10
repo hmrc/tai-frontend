@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder, UserBuilder}
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -701,7 +702,7 @@ class IncomeControllerSpec extends PlaySpec
     }
   }
 
-  val nino = new Generator(new Random).nextNino
+  val nino = FakeAuthAction.nino
 
   def employmentWithAccounts(accounts:List[AnnualAccount]) = Employment("ABCD", Some("ABC123"), new LocalDate(2000, 5, 20),
     None, accounts, "", "", 8, None, false, false)
@@ -736,15 +737,13 @@ class IncomeControllerSpec extends PlaySpec
 
   private def createTestIncomeController() = new TestIncomeController()
   private class TestIncomeController() extends IncomeController(
-    personService,
     journeyCacheService,
     taxAccountService,
     employmentService,
     incomeService,
     estimatedPayJourneyCompletionService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer){
 
@@ -752,12 +751,14 @@ class IncomeControllerSpec extends PlaySpec
 
     def renderSuccess(employerName: String, employerId: Int) = {
       implicit request: FakeRequest[_] => {
+        implicit val user = FakeAuthAction.user
         views.html.incomes.editSuccess(employerName, employerId)
       }
     }
 
     def renderPensionSuccess(employerName: String, employerId: Int) = {
       implicit request: FakeRequest[_] => {
+        implicit val user = FakeAuthAction.user
         views.html.incomes.editPensionSuccess(employerName, employerId)
       }
     }
@@ -766,10 +767,6 @@ class IncomeControllerSpec extends PlaySpec
 
     val employmentStartDateForm = EmploymentAddDateForm("employer")
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino)))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
   }
 
 }

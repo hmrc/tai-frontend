@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
+@(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
@@ -61,7 +61,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @main(
     title = messages("tai.payPeriod.title"),
     articleClasses = None,
-    user = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName)
 ){
