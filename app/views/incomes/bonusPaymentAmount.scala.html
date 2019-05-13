@@ -21,8 +21,8 @@
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 @import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages,
+        user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Bonus or overtime payments"}
 
@@ -39,7 +39,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @main(
     title = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     articleClasses = None,
-    user = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     employerName = Some(employer.name),
     gaCustomTitle = None

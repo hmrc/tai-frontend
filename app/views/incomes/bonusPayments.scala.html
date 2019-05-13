@@ -22,7 +22,7 @@
 @import uk.gov.hmrc.tai.forms.YesNoForm
 
 @import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-@(yesNoForm: Form[YesNoForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
+@(yesNoForm: Form[YesNoForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Payslip deductions"}
@@ -40,7 +40,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @main(
     title = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     articleClasses = Some(""),
-    user = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     employerName = Some(employer.name),
     gaCustomTitle = None

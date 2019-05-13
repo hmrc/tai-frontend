@@ -26,9 +26,10 @@ import scala.util.Random
 object FakeAuthAction extends AuthAction {
 
   val nino = new Generator(new Random).nextNino
+  val user = AuthedUser("person name", nino.toString(), "utr", "userDetailsUri", "200")
 
   override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
-    block(AuthenticatedRequest(request, AuthedUser("person name", nino.toString(), "utr", "userDetailsUri", "200")))
+    block(AuthenticatedRequest(request, user))
 }
 
 

@@ -15,7 +15,7 @@
  *@
 
 @(howToUpdateForm: Form[uk.gov.hmrc.tai.forms.HowToUpdateForm], id: Int, employerName: String)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -38,7 +38,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @main(
     title = Messages("tai.howToUpdate.title"),
     articleClasses = Some("full-width text"),
-    user = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName),
     webChat = true
