@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.model.domain
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.{JsResultException, JsString, Json}
 
 class TaxComponentTypeSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -28,6 +29,33 @@ class TaxComponentTypeSpec extends PlaySpec with FakeTaiPlayApplication with I18
       val taxComponentType = GiftAidPayments
 
       taxComponentType.toMessage() mustBe "Gift Aid Payments"
+    }
+  }
+
+  "Income component format" must {
+    "create a valid object" when {
+      "given a valid json value" in {
+        JsString("EmploymentIncome").as[TaxComponentType] mustBe EmploymentIncome
+        JsString("PensionIncome").as[TaxComponentType] mustBe PensionIncome
+        JsString("JobSeekerAllowanceIncome").as[TaxComponentType] mustBe JobSeekerAllowanceIncome
+        JsString("OtherIncome").as[TaxComponentType] mustBe OtherIncome
+      }
+
+      "throw an exception" when {
+        "give an invalid json value" in {
+          val exception = the[JsResultException] thrownBy JsString("Wrong").as[TaxComponentType]
+          exception.getMessage must include("Invalid Tax component type")
+        }
+      }
+
+      "create a valid json value" when {
+        "given an Income Component Type" in {
+          Json.toJson(EmploymentIncome) mustBe JsString("EmploymentIncome")
+          Json.toJson(PensionIncome) mustBe JsString("PensionIncome")
+          Json.toJson(JobSeekerAllowanceIncome) mustBe JsString("JobSeekerAllowanceIncome")
+          Json.toJson(OtherIncome) mustBe JsString("OtherIncome")
+        }
+      }
     }
   }
 }

@@ -29,6 +29,5 @@ object TaxFreeAmountComparison extends CodingComponentFormatters {
 
     (JsPath \ "previous").read(Reads.seq[CodingComponent](codingComponentReads)) and
       (JsPath \ "current").read(Reads.seq[CodingComponent](codingComponentReads))
-
     )(TaxFreeAmountComparison.apply _)
 }

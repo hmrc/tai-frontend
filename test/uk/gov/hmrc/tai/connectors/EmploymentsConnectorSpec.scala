@@ -46,7 +46,7 @@ class EmploymentsConnectorSpec extends PlaySpec
     Mockito.reset(httpHandler)
   }
 
-  "EmploymentsConnector" must {
+  "EmploymentsConnector employments" must {
     "return a blank the service url" when {
       "no service url is provided" in {
         val SUT = createSUT()
@@ -163,6 +163,67 @@ class EmploymentsConnectorSpec extends PlaySpec
 
   }
 
+  "EmploymentsConnector ceasedEmployments" must {
+
+    "return employments from the employments API" when {
+
+      "api provides one employments" in {
+
+        val SUT = createSUT("test/service")
+
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(oneCeasedEmployment)))
+
+        val responseFuture = SUT.ceasedEmployments(nino, year)
+
+        val result = Await.result(responseFuture, 5 seconds)
+
+        result mustBe oneEmploymentDetails
+
+        verify(httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
+      }
+
+      "api provides multiple employments" in {
+
+        val SUT = createSUT("test/service")
+
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(twoCeasedEmployments)))
+
+        val responseFuture = SUT.ceasedEmployments(nino, year)
+
+        val result = Await.result(responseFuture, 5 seconds)
+
+        result mustBe twoEmploymentsDetails
+
+        verify(httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
+      }
+    }
+
+    "return nil when api returns zero employments" in {
+      val SUT = createSUT("test/service")
+
+      when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(zeroCeasedEmployments)))
+
+      val responseFuture = SUT.ceasedEmployments(nino, year)
+
+      val result = Await.result(responseFuture, 5 seconds)
+
+      result mustBe Nil
+
+      verify(httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
+    }
+
+    "throw an exception" when {
+      "invalid json has returned by api" in {
+        val SUT = createSUT("test/service")
+
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse("""{"test":"test"}""")))
+
+        val ex = the[RuntimeException] thrownBy Await.result(SUT.ceasedEmployments(nino, year), 5 seconds)
+        ex.getMessage mustBe "Invalid employment json"
+      }
+    }
+  }
+
   "EmploymentsConnector employment" must {
 
     "return service url" in {
@@ -192,7 +253,6 @@ class EmploymentsConnectorSpec extends PlaySpec
       }
     }
   }
-
 
   "EmploymentsConnector endEmployment" must {
     "return an envelope" when {
@@ -259,11 +319,22 @@ class EmploymentsConnectorSpec extends PlaySpec
     payeNumber = "4321", sequenceNumber = 3, receivingOccupationalPension = true) :: Nil
 
   private val zeroEmployments =
-    """{
-          "data" : {
-            "employments": []
-            }
-        }"""
+    """|{
+       |   "data":{
+       |      "employments":[
+       |
+       |      ]
+       |   }
+       |}""".stripMargin
+
+  private val zeroCeasedEmployments =
+    """|{
+       |   "data":[
+       |
+       |      ]
+       |
+       |}""".stripMargin
+
 
   private val anEmployment =
     """{
@@ -303,9 +374,9 @@ class EmploymentsConnectorSpec extends PlaySpec
 
   private val twoEmployments =
     """{
-          "data" : {
-            "employments": [
-          {
+ |       "data" : {
+ |           "employments": [
+ |         {
  |            "name": "company name",
  |            "payrollNumber": "123",
  |            "startDate": "2016-05-26",
@@ -332,6 +403,54 @@ class EmploymentsConnectorSpec extends PlaySpec
  |            "receivingOccupationalPension" : true
  |          }]}
         }""".stripMargin
+
+  private val oneCeasedEmployment =
+    """{
+          "data" : [{
+            "name": "company name",
+            "payrollNumber": "123",
+            "startDate": "2016-05-26",
+            "endDate": "2016-05-26",
+            "annualAccounts": [],
+            "taxDistrictNumber": "123",
+            "payeNumber": "321",
+            "sequenceNumber": 2,
+            "isPrimary": true,
+            "hasPayrolledBenefit" : false,
+            "receivingOccupationalPension": false
+          }]
+        }"""
+
+  private val twoCeasedEmployments =
+    """{
+ |       "data" : [{
+ |            "name": "company name",
+ |            "payrollNumber": "123",
+ |            "startDate": "2016-05-26",
+ |            "endDate": "2016-05-26",
+ |            "annualAccounts": [],
+ |            "taxDistrictNumber": "123",
+ |            "payeNumber": "321",
+ |            "sequenceNumber": 2,
+ |            "isPrimary": true,
+ |            "hasPayrolledBenefit" : false,
+ |            "receivingOccupationalPension" : false
+ |          },
+ |          {
+ |            "name": "company name",
+ |            "payrollNumber": "123",
+ |            "startDate": "2016-05-26",
+ |            "endDate": "2016-05-26",
+ |            "annualAccounts": [],
+ |            "taxDistrictNumber": "1234",
+ |            "payeNumber": "4321",
+ |            "sequenceNumber": 3,
+ |            "isPrimary": true,
+ |            "hasPayrolledBenefit" : false,
+ |            "receivingOccupationalPension" : true
+ |          }]
+        }""".stripMargin
+
 
   private val year: TaxYear = TaxYear(DateTime.now().getYear)
   private val nino: Nino = new Generator(new Random).nextNino
