@@ -149,7 +149,7 @@ class IncomeSummarySpec extends TaiViewSpec {
   private def hasEstimatedIncomeLink(view: Html, income: IncomeSourceComparisonDetail) = {
     doc(view) must haveLinkElement(
       s"estimated-income-link-${income.empId}",
-      s"/check-income-tax/update-income/next-year/income/${income.empId}/start",
+      s"/check-income-tax/update-income/next-year/income/${income.empId}/load",
       s"Update estimated income for ${income.name}"
     )
   }

@@ -49,17 +49,12 @@ class IncomeSourceSummaryController @Inject()(val auditConnector: AuditConnector
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       val nino = request.taiUser.nino
-      
-      val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
-      val employmentFuture = employmentService.employment(nino, empId)
-      val benefitsFuture = benefitsService.benefits(nino, TaxYear().year)
-      val estimatedPayCompletionFuture = estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
 
       (for {
-        taxCodeIncomeDetails <- taxCodeIncomesFuture
-        employmentDetails <- employmentFuture
-        benefitsDetails <- benefitsFuture
-        estimatedPayCompletion <- estimatedPayCompletionFuture
+        taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+        employmentDetails <- employmentService.employment(nino, empId)
+        benefitsDetails <- benefitsService.benefits(nino, TaxYear().year)
+        estimatedPayCompletion <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
       } yield {
         (taxCodeIncomeDetails, employmentDetails) match {
           case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>

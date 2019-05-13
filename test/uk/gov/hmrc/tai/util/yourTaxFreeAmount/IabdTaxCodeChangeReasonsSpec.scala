@@ -136,8 +136,8 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
       reasons mustBe Seq(
-        "Your Job expenses has been increased from £50 to £100",
-        "Your Car benefit has been reduced from £5,555 to £2,345"
+        "your Job expenses has been increased from £50 to £100",
+        "your Car benefit has been reduced from £5,555 to £2,345"
       )
     }
   }

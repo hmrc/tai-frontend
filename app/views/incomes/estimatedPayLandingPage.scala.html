@@ -15,7 +15,7 @@
  *@
 
 @(incomeName: String, id: Int, isPension: Boolean)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.urls.Link
@@ -36,7 +36,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
 @main(
     title = messages("tai.incomes.landing.title", incomeName),
-    user = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None
 ){

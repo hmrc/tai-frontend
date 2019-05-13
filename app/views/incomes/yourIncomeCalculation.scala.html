@@ -179,12 +179,12 @@ partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
                         @if(model.isPension){
                             <p id="pensionUpdateLink">@Html(Messages(
                                 "tai.income.calculation.update.pension",
-                                Link.toInternalPage(url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
+                                Link.toInternalPage(url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
                                 ))</p>
                         } else {
                             <p id="regularUpdateLink">@Html(Messages(
                                 "tai.income.calculation.update.regular",
-                                Link.toInternalPage(url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
+                                Link.toInternalPage(url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
                                 ))
                             </p>
                         }

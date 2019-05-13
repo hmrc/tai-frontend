@@ -35,11 +35,12 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
   val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "BR", startDate = startDate.plusDays(3), endDate = TaxYear().end, pensionIndicator = false, payrollNumber = Some("Payroll Number"))
   val taxCodeChange: TaxCodeChange = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
   val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
+  val webChatEnabled = false
 
   override def view = views.html.taxCodeChange.taxCodeComparison(viewModel)
 
   def testTaxCodeRecordFormat(record: TaxCodeRecord) = {
-    doc must haveHeadingH3WithText(record.employerName)
+    doc must haveParagraphWithText(record.employerName)
     doc must haveClassWithText(Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)), "tax-code-change__date")
     doc(view).toString must include(record.taxCode)
 

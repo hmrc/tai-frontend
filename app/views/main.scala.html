@@ -38,7 +38,8 @@
   gaSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(),
   gaCustomTitle: Option[String] = None,
   optimizelyAudience: Option[String] = None,
-  pageHeader: Option[Html] = None
+  pageHeader: Option[Html] = None,
+  script: Option[Html] = None
 )(mainContent: Html
 )(implicit request: Request[_],
   messages: Messages,
@@ -149,14 +150,6 @@
 
 @inlineScript = {
 
-  <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','TSFTCWZ');</script>
-  <!-- End Google Tag Manager -->
-
   <script>
     window.dataLayer = window.dataLayer || []
     window.dataLayer.push(
@@ -170,6 +163,15 @@
       }
     );
   </script>
+
+    <script type="text/javascript">
+
+        var nuanceData =
+        {
+            'sessionId': '@request.session.get("sessionId")'
+        }
+
+    </script>
 
 
     @if(webChat){
@@ -209,6 +211,12 @@
     @if(gaCallsAdditionalJs.isDefined && gaCallsAdditionalJs.get.toString.trim != ""){
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
+
+    @if(FeatureTogglesConfig.webChatEnabled){
+      <script id="webchat-tag" type="text/javascript" src="@ApplicationConfig.webchatJsUrl"></script>
+    }
+
+    @script
 }
 
 

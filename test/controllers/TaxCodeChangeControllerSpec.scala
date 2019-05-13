@@ -31,6 +31,7 @@ import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
@@ -133,9 +134,11 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val yourTaxFreeAmountService = mock[YourTaxFreeAmountService]
   val taxCodeChangeReasonsService = mock[TaxCodeChangeReasonsService]
 
-  private def createController() = new TaxCodeChangeTestController()
 
-  private class TaxCodeChangeTestController() extends TaxCodeChangeController(
+
+  private def createController() = new TaxCodeChangeTestController
+
+  private class TaxCodeChangeTestController extends TaxCodeChangeController (
     taxCodeChangeService,
     taxAccountService,
     describedYourTaxFreeAmountService,
@@ -146,7 +149,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
   }

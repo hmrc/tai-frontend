@@ -88,14 +88,12 @@
                 </td>
                 @if(estimatedPayEnabled) {
                     <td class="link-update">
-                        <a id="estimated-income-link-@employmentIncomeSourceDetail.empId"
-                        href="/check-income-tax/update-income/next-year/income/@employmentIncomeSourceDetail.empId/start"
-                        >
-                            @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
-                            <span class="visuallyhidden">
-                            @messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)
-                            </span>
-                        </a>
+                        @Link.toInternalPage(
+                        id=Some(s"estimated-income-link-${employmentIncomeSourceDetail.empId}"),
+                        url=controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(employmentIncomeSourceDetail.empId).url,
+                        value=Some(messages("tai.incomeTaxComparison.incomeTax.updateEstimated")),
+                        hiddenInfo=Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)}")
+                        ).toHtml
                     </td>
                 }
             </tr>
@@ -129,14 +127,12 @@
                     </td>
                     @if(estimatedPayEnabled) {
                         <td class="link-update">
-                            <a id="estimated-income-link-@pensionIncomeSourceDetail.empId"
-                            href="/check-income-tax/update-income/next-year/income/@pensionIncomeSourceDetail.empId/start"
-                            >
-                                @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
-                                <span class="visuallyhidden">
-                                @messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)
-                                </span>
-                            </a>
+                            @Link.toInternalPage(
+                            id=Some(s"estimated-income-link-${pensionIncomeSourceDetail.empId}"),
+                            url=controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(pensionIncomeSourceDetail.empId).url,
+                            value=Some(messages("tai.incomeTaxComparison.incomeTax.updateEstimated")),
+                            hiddenInfo=Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)}")
+                            ).toHtml
                         </td>
                     }
                 </tr>

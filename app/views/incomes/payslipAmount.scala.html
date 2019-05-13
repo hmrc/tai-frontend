@@ -20,7 +20,7 @@
 @import includes.forms.input
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@(viewModel: PaySlipAmountViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
+@(viewModel: PaySlipAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{
@@ -40,7 +40,7 @@
 @main(
     title = viewModel.payPeriodTitle,
     articleClasses = None,
-    user = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     employerName = Some(viewModel.employer.name)
 ) {
