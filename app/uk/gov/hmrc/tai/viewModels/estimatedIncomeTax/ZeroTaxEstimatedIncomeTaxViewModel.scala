@@ -43,7 +43,7 @@ object ZeroTaxEstimatedIncomeTaxViewModel extends BandTypesConstants with TaxReg
     val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = EstimatedIncomeTaxService.retrieveTaxBands(taxBands :+ paBand)
     val graph = BandedGraph(codingComponents,mergedTaxBands,taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedTax,
-      Some(taxAccountSummary.totalEstimatedIncome), ZeroTaxView)
+      taxAccountSummary.totalEstimatedIncome, ZeroTaxView)
     val taxRegion = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
 
     ZeroTaxEstimatedIncomeTaxViewModel(
