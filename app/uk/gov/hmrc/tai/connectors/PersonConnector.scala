@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.Future
 
-class PersonConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesConfig {
+class PersonConnector @Inject() (httpHandler: HttpHandler) extends DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
@@ -39,9 +39,9 @@ class PersonConnector @Inject()(httpHandler: HttpHandler) extends DefaultService
       json =>
         TaiSuccessResponseWithPayload((json \ "data").as[Person])
       ) recover {
-      case e: Exception =>
-        Logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
-        TaiNotFoundResponse(e.getMessage)
-    }
+        case e: Exception =>
+          Logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
+          TaiNotFoundResponse(e.getMessage)
+      }
   }
 }
