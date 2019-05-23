@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.FakeValidatePerson
-import builders.RequestBuilder
+import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -32,6 +32,8 @@ import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{controllers, _}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -404,6 +406,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
 
   private def createTestController(isCyPlusOneEnabled: Boolean = true) = new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled)
 
+  val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val trackingService = mock[TrackingService]
   val auditService = mock[AuditService]
@@ -411,26 +414,33 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
   val taxAccountService = mock[TaxAccountService]
 
   class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true) extends WhatDoYouWantToDoController(
+    personService,
     employmentService,
     taxCodeChangeService,
     taxAccountService,
     trackingService,
     mock[AuditConnector],
     auditService,
-    FakeAuthAction,
-    FakeValidatePerson,
+    mock[AuthConnector],
+    mock[DelegationConnector],
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
 
     override val cyPlusOneEnabled: Boolean = isCyPlusOneEnabled
 
+    val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
+    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
+
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any())).thenReturn(Future.successful(AuditResult.Success))
-    when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(NoTimeToProcess))
 
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-      Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary)))
+      Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary))
+    )
+
+    when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(NoTimeToProcess))
   }
 
 }
