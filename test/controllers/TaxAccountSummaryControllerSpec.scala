@@ -16,7 +16,7 @@
 
 package controllers
 
-import builders.RequestBuilder
+import builders.{AuthBuilder, RequestBuilder}
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
@@ -29,8 +29,11 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.BadRequestException
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
@@ -41,6 +44,7 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.Random
 
 class TaxAccountSummaryControllerSpec extends PlaySpec
   with MockitoSugar
@@ -170,7 +174,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
   }
 
 
-  val nino = FakeAuthAction.nino
+  val nino = new Generator(new Random).nextNino
 
   val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
 
@@ -191,17 +195,23 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
   val auditService = mock[AuditService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
+  val personService = mock[PersonService]
+  val authConnector = mock[AuthConnector]
 
   class SUT() extends TaxAccountSummaryController(
     trackingService,
     employmentService,
     taxAccountService,
     auditService,
-    FakeAuthAction,
-    FakeValidatePerson,
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    authConnector,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
     when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(ThreeWeeks))
   }
 
