@@ -22,10 +22,12 @@ import uk.gov.hmrc.tai.model.domain.TaxComponentType
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 sealed trait BasisOfOperation
+
 case object Week1Month1BasisOfOperation extends BasisOfOperation
+
 case object OtherBasisOfOperation extends BasisOfOperation
 
-object BasisOfOperation{
+object BasisOfOperation {
   implicit val formatBasisOperation = new Format[BasisOfOperation] {
     override def reads(json: JsValue): JsSuccess[BasisOfOperation] = json.as[String] match {
       case "Week1Month1BasisOperation" => JsSuccess(Week1Month1BasisOfOperation)
@@ -40,28 +42,44 @@ object BasisOfOperation{
 }
 
 sealed trait TaxCodeIncomeSourceStatus
+
 case object Live extends TaxCodeIncomeSourceStatus
+
 case object PotentiallyCeased extends TaxCodeIncomeSourceStatus
+
 case object Ceased extends TaxCodeIncomeSourceStatus
 
-object TaxCodeIncomeSourceStatus{
-  implicit val formatTaxCodeIncomeSourceStatus = new Format[TaxCodeIncomeSourceStatus] {
-    override def reads(json: JsValue): JsSuccess[TaxCodeIncomeSourceStatus] = ???
+object TaxCodeIncomeSourceStatus {
+  implicit val formatTaxCodeIncomeSourceStatus: Format[TaxCodeIncomeSourceStatus] = new Format[TaxCodeIncomeSourceStatus] {
+    override def reads(json: JsValue): JsResult[TaxCodeIncomeSourceStatus] = json.as[String] match {
+      case "Live" => JsSuccess(Live)
+      case "PotentiallyCeased" => JsSuccess(PotentiallyCeased)
+      case "Ceased" => JsSuccess(Ceased)
+      case _ => JsError("Invalid Tax component type")
+    }
+
     override def writes(taxCodeIncomeSourceStatus: TaxCodeIncomeSourceStatus) = JsString(taxCodeIncomeSourceStatus.toString)
   }
 }
 
 sealed trait IabdUpdateSource
+
 case object ManualTelephone extends IabdUpdateSource
+
 case object Letter extends IabdUpdateSource
+
 case object Email extends IabdUpdateSource
+
 case object AgentContact extends IabdUpdateSource
+
 case object OtherForm extends IabdUpdateSource
+
 case object Internet extends IabdUpdateSource
+
 case object InformationLetter extends IabdUpdateSource
 
 object IabdUpdateSource extends IabdUpdateSource {
-  implicit val formatIabdUpdateSource = new Format[IabdUpdateSource] {
+  implicit val formatIabdUpdateSource: Format[IabdUpdateSource] = new Format[IabdUpdateSource] {
     override def reads(json: JsValue): JsSuccess[IabdUpdateSource] = json.as[String] match {
       case "ManualTelephone" => JsSuccess(ManualTelephone)
       case "Letter" => JsSuccess(Letter)
@@ -77,17 +95,18 @@ object IabdUpdateSource extends IabdUpdateSource {
   }
 }
 
-case class TaxCodeIncome(componentType:TaxComponentType,
-                         employmentId:Option[Int],
-                         amount:BigDecimal,
-                         description:String,
-                         taxCode:String,
+case class TaxCodeIncome(componentType: TaxComponentType,
+                         employmentId: Option[Int],
+                         amount: BigDecimal,
+                         description: String,
+                         taxCode: String,
                          name: String,
                          basisOperation: BasisOfOperation,
                          status: TaxCodeIncomeSourceStatus,
                          iabdUpdateSource: Option[IabdUpdateSource] = None,
                          updateNotificationDate: Option[LocalDate] = None,
-                         updateActionDate: Option[LocalDate] = None){
+                         updateActionDate: Option[LocalDate] = None) {
+
   lazy val taxCodeWithEmergencySuffix: String = basisOperation match {
     case Week1Month1BasisOfOperation => taxCode + TaiConstants.EmergencyTaxCodeSuffix
     case _ => taxCode

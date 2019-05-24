@@ -186,50 +186,52 @@ case object JobSeekerAllowanceIncome extends TaxCodeIncomeComponentType
 case object OtherIncome extends TaxCodeIncomeComponentType
 
 object TaxComponentType{
-  implicit val formatTaxComponentType = new Format[TaxComponentType] {
-    override def reads(json: JsValue): JsSuccess[TaxComponentType] = ???
+  implicit val formatTaxComponentType: Format[TaxComponentType] = new Format[TaxComponentType] {
+    override def reads(json: JsValue): JsResult[TaxComponentType] =  json.as[String] match {
+      case "EmploymentIncome" => JsSuccess(EmploymentIncome)
+      case "PensionIncome" => JsSuccess(PensionIncome)
+      case "JobSeekerAllowanceIncome" => JsSuccess(JobSeekerAllowanceIncome)
+      case "OtherIncome" => JsSuccess(OtherIncome)
+      case _ => JsError("Invalid Tax component type")
+    }
     override def writes(taxComponentType: TaxComponentType) = JsString(taxComponentType.toString)
   }
 }
 
 object NonTaxCodeIncomeComponentType {
-
-  private val nonTaxCodeIncomesMap: Map[String, NonTaxCodeIncomeComponentType] = Map(
-    "NonCodedIncome" -> NonCodedIncome,
-    "Commission" -> Commission,
-    "OtherIncomeEarned" -> OtherIncomeEarned,
-    "OtherIncomeNotEarned" -> OtherIncomeNotEarned,
-    "PartTimeEarnings" -> PartTimeEarnings,
-    "Tips" -> Tips,
-    "OtherEarnings" -> OtherEarnings,
-    "CasualEarnings" -> CasualEarnings,
-    "ForeignDividendIncome" -> ForeignDividendIncome,
-    "ForeignPropertyIncome" -> ForeignPropertyIncome,
-    "ForeignInterestAndOtherSavings" -> ForeignInterestAndOtherSavings,
-    "ForeignPensionsAndOtherIncome" -> ForeignPensionsAndOtherIncome,
-    "StatePension" -> StatePension,
-    "OccupationalPension" -> OccupationalPension,
-    "PublicServicesPension" -> PublicServicesPension,
-    "ForcesPension" -> ForcesPension,
-    "PersonalPensionAnnuity" -> PersonalPensionAnnuity,
-    "Profit" -> Profit,
-    "BankOrBuildingSocietyInterest" -> BankOrBuildingSocietyInterest,
-    "UkDividend" -> UkDividend,
-    "UnitTrust" -> UnitTrust,
-    "StockDividend" -> StockDividend,
-    "NationalSavings" -> NationalSavings,
-    "SavingsBond" -> SavingsBond,
-    "PurchasedLifeAnnuities" -> PurchasedLifeAnnuities,
-    "UntaxedInterestIncome" -> UntaxedInterestIncome,
-    "IncapacityBenefit" -> IncapacityBenefit,
-    "JobSeekersAllowance" -> JobSeekersAllowance,
-    "EmploymentAndSupportAllowance" -> EmploymentAndSupportAllowance
-  )
-
-  implicit val formatTaxComponentType = new Format[NonTaxCodeIncomeComponentType] {
-    override def reads(json: JsValue): JsSuccess[NonTaxCodeIncomeComponentType] = JsSuccess(nonTaxCodeIncomesMap.getOrElse(json.as[String],
-      throw new IllegalArgumentException("Invalid Non tax code component type")))
-
+  implicit val formatTaxComponentType: Format[NonTaxCodeIncomeComponentType] = new Format[NonTaxCodeIncomeComponentType] {
+    override def reads(json: JsValue): JsResult[NonTaxCodeIncomeComponentType] = json.as[String] match {
+      case "NonCodedIncome" => JsSuccess(NonCodedIncome)
+      case "Commission" => JsSuccess(Commission)
+      case "OtherIncomeEarned" => JsSuccess(OtherIncomeEarned)
+      case "OtherIncomeNotEarned" => JsSuccess(OtherIncomeNotEarned)
+      case "PartTimeEarnings" => JsSuccess(PartTimeEarnings)
+      case "Tips" => JsSuccess(Tips)
+      case "OtherEarnings" => JsSuccess(OtherEarnings)
+      case "CasualEarnings" => JsSuccess(CasualEarnings)
+      case "ForeignDividendIncome" => JsSuccess(ForeignDividendIncome)
+      case "ForeignPropertyIncome" => JsSuccess(ForeignPropertyIncome)
+      case "ForeignInterestAndOtherSavings" => JsSuccess(ForeignInterestAndOtherSavings)
+      case "ForeignPensionsAndOtherIncome" => JsSuccess(ForeignPensionsAndOtherIncome)
+      case "StatePension" => JsSuccess(StatePension)
+      case "OccupationalPension" => JsSuccess(OccupationalPension)
+      case "PublicServicesPension" => JsSuccess(PublicServicesPension)
+      case "ForcesPension" => JsSuccess(ForcesPension)
+      case "PersonalPensionAnnuity" => JsSuccess(PersonalPensionAnnuity)
+      case "Profit" => JsSuccess(Profit)
+      case "BankOrBuildingSocietyInterest" => JsSuccess(BankOrBuildingSocietyInterest)
+      case "UkDividend" => JsSuccess(UkDividend)
+      case "UnitTrust" => JsSuccess(UnitTrust)
+      case "StockDividend" => JsSuccess(StockDividend)
+      case "NationalSavings" => JsSuccess(NationalSavings)
+      case "SavingsBond" => JsSuccess(SavingsBond)
+      case "PurchasedLifeAnnuities" => JsSuccess(PurchasedLifeAnnuities)
+      case "UntaxedInterestIncome" => JsSuccess(UntaxedInterestIncome)
+      case "IncapacityBenefit" => JsSuccess(IncapacityBenefit)
+      case "JobSeekersAllowance" => JsSuccess(JobSeekersAllowance)
+      case "EmploymentAndSupportAllowance" => JsSuccess(EmploymentAndSupportAllowance)
+      case _ => JsError("Invalid Non tax code component type")
+    }
     override def writes(nonTaxCodeIncomeComponentType: NonTaxCodeIncomeComponentType) = JsString(nonTaxCodeIncomeComponentType.toString)
   }
 }
