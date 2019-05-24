@@ -54,10 +54,11 @@ class PayeControllerHistoric @Inject()(val config: ApplicationConfig,
   }
 
   private def getHistoricPayePage(taxYear: TaxYear)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] = {
+    val nino = request.taiUser.nino
+
     if (taxYear >= TaxYear()) {
       Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
     } else {
-      val nino = request.taiUser.nino
       val employmentsFuture = employmentService.employments(nino, taxYear)
       val hasTaxCodeRecordsFuture = taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear)
 
@@ -76,11 +77,12 @@ class PayeControllerHistoric @Inject()(val config: ApplicationConfig,
   def hodStatusRedirect(implicit request: AuthenticatedRequest[AnyContent]): PartialFunction[Throwable, Future[Result]] = {
 
     implicit val rl: RecoveryLocation = classOf[WhatDoYouWantToDoController]
+    val nino = request.taiUser.getNino
 
-    npsEmploymentAbsentResult orElse
-      rtiEmploymentAbsentResult orElse
-      hodBadRequestResult orElse
-      hodInternalErrorResult orElse
-      hodAnyErrorResult
+    npsEmploymentAbsentResult(nino) orElse
+      rtiEmploymentAbsentResult(nino) orElse
+      hodBadRequestResult(nino) orElse
+      hodInternalErrorResult(nino) orElse
+      hodAnyErrorResult(nino)
   }
 }

@@ -18,13 +18,17 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.audit.Auditable
+import controllers.auth.{AuthAction, WithAuthorisedForTaiLite}
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
@@ -42,31 +46,39 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                                             taxAccountService: TaxAccountService,
                                             taxAccountSummaryService: TaxAccountSummaryService,
                                             auditService: AuditService,
-                                            authenticate: AuthAction,
-                                            validatePerson: ValidatePerson,
+                                            personService: PersonService,
+                                            val auditConnector: AuditConnector,
+                                            val delegationConnector: DelegationConnector,
+                                            val authConnector: AuthConnector,
                                             override implicit val partialRetriever: FormPartialRetriever,
                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
+  with DelegationAwareActions
+  with WithAuthorisedForTaiLite
+  with Auditable
   with AuditConstants
   with FeatureTogglesConfig {
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
+  def onPageLoad: Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            val nino = Nino(user.getNino)
 
-      implicit val user = request.taiUser
-      val nino = user.nino
-      auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> nino.toString()))
+            auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> nino.toString()))
 
-      (taxAccountService.taxAccountSummary(nino, TaxYear()).flatMap {
-        case TaiTaxAccountFailureResponse(message) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
-          message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
-          Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
-        case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
-          taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
-            Ok(views.html.incomeTaxSummary(vm))
+            (taxAccountService.taxAccountSummary(nino, TaxYear()).flatMap {
+             case TaiTaxAccountFailureResponse(message) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
+      		message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
+                Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+              case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
+               taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
+        	     Ok(views.html.incomeTaxSummary(vm))
+                }
+              case _ => throw new RuntimeException("Failed to fetch tax account summary details")
+            }).recover {
+              case NonFatal(e) => internalServerError(e.getMessage)
+            }
           }
-        case _ => throw new RuntimeException("Failed to fetch tax account summary details")
-      }).recover {
-        case NonFatal(e) => internalServerError(e.getMessage)
-      }
   }
 }

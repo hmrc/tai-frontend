@@ -16,8 +16,7 @@
 
 package controllers
 
-import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
+import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -29,11 +28,11 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
-import uk.gov.hmrc.http.BadRequestException
-import play.api.test.Helpers._
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
@@ -185,17 +184,6 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
 
   }
 
-
-  override val nino = FakeAuthAction.nino
-
-  override val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
-
-  override val taxAccountSummary = TaxAccountSummary(111, 222, 333.33, 444.44, 111.11)
-
-  override val taxCodeIncomes = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live))
-
   override val nonTaxCodeIncome = NonTaxCodeIncome(Some(uk.gov.hmrc.tai.model.domain.income.UntaxedInterest(UntaxedInterestIncome,
     None, 100, "Untaxed Interest", Seq.empty[BankAccount])), Seq(
     OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
@@ -208,6 +196,8 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
   val taxAccountSummaryService = mock[TaxAccountSummaryService]
+  val personService = mock[PersonService]
+  val authConnector = mock[AuthConnector]
 
   class SUT() extends TaxAccountSummaryController(
     trackingService,
@@ -215,11 +205,15 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
     taxAccountService,
     taxAccountSummaryService,
     auditService,
-    FakeAuthAction,
-    FakeValidatePerson,
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    authConnector,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
     when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(ThreeWeeks))
   }
 
