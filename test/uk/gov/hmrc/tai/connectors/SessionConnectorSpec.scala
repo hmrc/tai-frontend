@@ -37,8 +37,6 @@ class SessionConnectorSpec extends PlaySpec
       Mockito.reset(httpHandler)
     }
 
-  private implicit val hc = HeaderCarrier()
-
   "Session Connector" must {
     "return Http response" when {
       "cache is invalidated" in {
@@ -55,6 +53,8 @@ class SessionConnectorSpec extends PlaySpec
       verify(httpHandler, times(1)).deleteFromApi(Matchers.eq("localhost/tai/session-cache"))(any(), any())
     }
   }
+
+  private implicit val hc = HeaderCarrier()
 
   private def createSUT = new SUT
   val httpHandler: HttpHandler = mock[HttpHandler]
