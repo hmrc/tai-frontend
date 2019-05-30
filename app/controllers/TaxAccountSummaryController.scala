@@ -34,9 +34,11 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
+import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 
 import scala.concurrent.Future
 import scala.util.control.NonFatal
@@ -44,7 +46,6 @@ import scala.util.control.NonFatal
 class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                                             employmentService: EmploymentService,
                                             taxAccountService: TaxAccountService,
-                                            taxAccountSummaryService: TaxAccountSummaryService,
                                             auditService: AuditService,
                                             personService: PersonService,
                                             val auditConnector: AuditConnector,
@@ -68,17 +69,33 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
             auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> nino.toString()))
 
             (taxAccountService.taxAccountSummary(nino, TaxYear()).flatMap {
-             case TaiTaxAccountFailureResponse(message) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
-      		message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
+              case (TaiTaxAccountFailureResponse(message)) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
+                message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
                 Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
               case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
-               taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
-        	     Ok(views.html.incomeTaxSummary(vm))
+                taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
+                  Ok(views.html.incomeTaxSummary(vm))
                 }
               case _ => throw new RuntimeException("Failed to fetch tax account summary details")
             }).recover {
               case NonFatal(e) => internalServerError(e.getMessage)
             }
           }
+  }
+
+  private def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(implicit hc: HeaderCarrier, messages: Messages) = {
+    for {
+      taxCodeIncomes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+      nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
+      employments <- employmentService.employments(nino, TaxYear())
+      isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
+    } yield {
+      (taxCodeIncomes, nonTaxCodeIncome) match {
+        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+        TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
+          TaxAccountSummaryViewModel(taxCodeIncomes, employments, taxAccountSummary, isAnyFormInProgress, nonTaxCodeIncome)(messages)
+        case _ => throw new RuntimeException("Failed to fetch income details")
+      }
+    }
   }
 }

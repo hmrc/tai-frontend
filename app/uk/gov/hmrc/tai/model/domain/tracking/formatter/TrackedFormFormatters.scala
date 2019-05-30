@@ -23,9 +23,9 @@ import uk.gov.hmrc.tai.util.JsonExtra
 
 trait TrackedFormFormatters {
 
-  val trackedFormReads: Reads[TrackedForm] = new Reads[TrackedForm] {
+  val trackedFormReads = new Reads[TrackedForm] {
     override def reads(json: JsValue): JsResult[TrackedForm] = {
-      implicit val stringMapFormat: Format[Map[String, String]] = JsonExtra.mapFormat[String, String]("milestone", "status")
+      implicit val stringMapFormat = JsonExtra.mapFormat[String, String]("milestone", "status")
 
       val id = (json \ "formId").as[String]
       val name = (json \ "formName").as[String]
@@ -48,10 +48,12 @@ trait TrackedFormFormatters {
     }
   }
 
-  val trackedFormSeqReads: Reads[Seq[TrackedForm]] = new Reads[Seq[TrackedForm]] {
+  val trackedFormSeqReads = new Reads[Seq[TrackedForm]] {
     override def reads(json: JsValue): JsResult[Seq[TrackedForm]] = {
       val result = (json \ "submissions").as[Seq[TrackedForm]](Reads.seq(trackedFormReads))
       JsSuccess(result)
     }
   }
+
+
 }
