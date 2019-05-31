@@ -228,7 +228,7 @@ tai.bbsi.update.captureInterest.accordion.title=What happens if I enter the wron
 tai.bbsi.update.captureInterest.customGaTitle=Estimated interest from this account
 tai.bbsi.update.captureInterest.para1=For the tax year {0} to {1} we estimate you will be paid {2} interest on this account.
 tai.bbsi.update.captureInterest.para2=You can change this amount. It does not have to be completely accurate, just a rough estimate.
-tai.bbsi.update.captureInterest.para3=You may find it helpful to use an online ''compound interest calculator'' to work out your interest.
+tai.bbsi.update.captureInterest.para3=You may find it helpful to use an online ‘compound interest calculator’ to work out your interest.
 tai.bbsi.update.captureInterest.para4=Details of the interest you actually received for the tax year April {0} to April {1} will be sent to us after {2}. We will use the actual figures to calculate how much Income Tax you should have paid in that year.
 tai.bbsi.update.captureInterest.preHeading=Update estimated interest
 tai.bbsi.update.captureInterest.textBox.title=Enter your estimate
@@ -266,7 +266,7 @@ tai.bonusPaymentsAmount.error.form.input.invalid=Your bonus, commission or overt
 tai.bonusPaymentsAmount.preHeading=Update your estimated income from {0}
 tai.bonusPaymentsAmount.hint=This does not have to be accurate, just an estimate.
 tai.canWeContactByPhone.YesNoChoice.empty=Select yes if we can call you if we need more information
-tai.canWeContactByPhone.explanation.pt2=If you select ''No'' we will contact you by letter. For security reasons we can not ask for more information by email.
+tai.canWeContactByPhone.explanation.pt2=If you select ‘No’ we will contact you by letter. For security reasons we can not ask for more information by email.
 tai.canWeContactByPhone.explanation=We will only contact you if we need more information about your update. It is the quickest way to resolve any problems.
 tai.canWeContactByPhone.legend=Can we contact you by phone?
 tai.canWeContactByPhone.telephone.empty=Telephone number field can not be left blank.
@@ -640,7 +640,7 @@ tai.incomeTaxComparison.incomeTax.description=This estimate is based on your cur
 
 tai.incomeTaxComparison.incomeTax.updateEstimated=Update estimated income
 tai.incomeTaxComparison.incomeTax.forEmployer=for {0}
-tai.incomeTaxComparison.incomeTax.fromEmployer.description=You can update your estimated income from employment or pensions for next year. This will update the estimate that we will base next year''s tax on.
+tai.incomeTaxComparison.incomeTax.fromEmployer.description=You can update your estimated income from employment or pensions for next year. This will update the estimate that we will base next year’s tax on.
 
 tai.incomeTaxComparison.incomeTax.estimate=Your PAYE Income Tax estimate
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment =Income from employment
