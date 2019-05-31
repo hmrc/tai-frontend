@@ -16,24 +16,21 @@
 
 package controllers.income.estimatedPay.update
 
-import builders.{AuthBuilder, RequestBuilder, UserBuilder}
+import builders.{AuthBuilder, RequestBuilder}
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
@@ -50,7 +47,6 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{PaySlipAmountViewM
 import views.html.incomes.{bonusPaymentAmount, bonusPayments, payslipAmount, taxablePayslipAmount}
 
 import scala.concurrent.Future
-import scala.util.Random
 
 class IncomeUpdateCalculatorControllerSpec
   extends PlaySpec
@@ -221,11 +217,35 @@ class IncomeUpdateCalculatorControllerSpec
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
       when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
       when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
-      when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
       val result = testController.howToUpdatePage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.IncomeController.pensionIncome().url)
+    }
+
+    "cache the employer details" in {
+      Mockito.reset(journeyCacheService)
+
+      val testController = createTestIncomeUpdateCalculatorController
+
+      val employment = Employment("company", Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1, None, false, false)
+      val employmentAmount = EmploymentAmount(name = "name", description = "description", employmentId = employer.id,
+        newAmount = 200, oldAmount = 200, isLive = false, isOccupationalPension = true)
+      when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+      when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
+
+      val result = testController.howToUpdatePage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+
+      val expectedCacheMap = Map(
+        UpdateIncome_NameKey -> employment.name,
+        UpdateIncome_IdKey -> employer.id.toString,
+        UpdateIncome_IncomeTypeKey -> TaiConstants.IncomeTypeEmployment)
+
+      verify(journeyCacheService, times(1)).cache(Matchers.eq(expectedCacheMap))(any())
     }
 
     "employments return empty income is none" in {

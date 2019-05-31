@@ -178,12 +178,14 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
           val incomeToEditFuture = incomeService.employmentAmount(nino, id)
           val taxCodeIncomeDetailsFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
+          val cacheEmploymentDetailsFuture = cacheEmploymentDetails(id, employmentService.employment(nino, id))
 
           for {
             incomeToEdit: EmploymentAmount <- incomeToEditFuture
             taxCodeIncomeDetails <- taxCodeIncomeDetailsFuture
+            _ <- cacheEmploymentDetailsFuture
           } yield {
-            processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
+              processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
           }
         case None => throw new RuntimeException("Not able to find employment")
       }).recover {
