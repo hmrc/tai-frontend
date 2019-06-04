@@ -17,7 +17,7 @@
 package controllers.auth
 
 import controllers.ErrorPagesHandler
-import play.Logger
+import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits.applicationMessages
@@ -26,7 +26,7 @@ import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.HeaderCarrierConverter.fromHeadersAndSession
-import uk.gov.hmrc.play.frontend.auth._
+import uk.gov.hmrc.play.frontend.auth.{AnyAuthenticationProvider, _}
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.tai.auth.ConfigProperties
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -38,19 +38,44 @@ import scala.concurrent.Future
 
 object TaiAuthenticationProvider extends AnyAuthenticationProvider {
 
+  val logger = Logger(this.getClass)
+
+  override def redirectToLogin(implicit request: Request[_]) = {
+    logger.info("AnyAuthenticationProvider ggRedirect")
+    ggRedirect
+  }
+  override def login: String = throw new RuntimeException("Unused")
+
   override def ggwAuthenticationProvider: GovernmentGateway = new GovernmentGateway {
     def login: String = throw new RuntimeException("Unused")
-    override def redirectToLogin(implicit request: Request[_]) = ggRedirect
+    override def redirectToLogin(implicit request: Request[_]) = {
+      logger.info("ggwAuthenticationProvider ggRedirect")
+      ggRedirect
+    }
 
     override def continueURL: String = throw new RuntimeException("Unused")
 
     override def loginURL: String = throw new RuntimeException("Unused")
+
+    override def handleNotAuthenticated(implicit request: Request[_]) = {
+      logger.info("handleNotAuthenticated in GG session: " + request.session.get(SessionKeys.authProvider))
+      super.handleNotAuthenticated
+    }
   }
 
   override def verifyAuthenticationProvider: Verify = new Verify {
     override def login: String = throw new RuntimeException("Unused")
 
-    override def redirectToLogin(implicit request: Request[_]) = idaRedirect
+    override def redirectToLogin(implicit request: Request[_]) = {
+      logger.info("verifyAuthenticationProvider verifyRedirect")
+
+      idaRedirect
+    }
+
+    override def handleNotAuthenticated(implicit request: Request[_]) = {
+      logger.info("handleNotAuthenticated in Verify session: " + request.session.get(SessionKeys.authProvider))
+      super.handleNotAuthenticated
+    }
   }
 
   private def idaRedirect(implicit request: Request[_]): Future[Result] = {
@@ -70,10 +95,6 @@ object TaiAuthenticationProvider extends AnyAuthenticationProvider {
       companyAuthUrl}/${ApplicationConfig.gg_web_context}/sign-in?continue=${postSignInUpliftUrl}&accountType=individual"
     Future.successful(Redirect(ggSignIn))
   }
-
-  override def redirectToLogin(implicit request: Request[_]) = ggRedirect
-
-  override def login: String = throw new RuntimeException("Unused")
 }
 
 trait WithAuthorisedForTaiLite extends DelegationAwareActions { this: ErrorPagesHandler =>
