@@ -88,10 +88,10 @@ class TaxAccountSummaryServiceSpec extends PlaySpec
       caught.getMessage mustBe "Failed Call"
     }
 
-    "return a BadRequestException if incomeSources Ceased EmploymentIncome fails" in {
+    "return a BadRequestException if incomeSources NotLive EmploymentIncome fails" in {
       val sut = createSUT
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Ceased))(any[HeaderCarrier])).thenReturn(
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(any[HeaderCarrier])).thenReturn(
         Future.failed(new BadRequestException("Failed Call"))
       )
 
@@ -102,7 +102,7 @@ class TaxAccountSummaryServiceSpec extends PlaySpec
     "return a BadRequestException if NonTaxCodeIncome fails" in {
       val sut = createSUT
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Ceased))(any[HeaderCarrier])).thenReturn(
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(any[HeaderCarrier])).thenReturn(
         Future.failed(new BadRequestException("Failed Call"))
       )
 
@@ -133,10 +133,10 @@ class TaxAccountSummaryServiceSpec extends PlaySpec
       caught.getMessage mustBe "Failed to fetch income details"
     }
 
-    "return a RuntimeException if incomeSources (EmploymentIncome - ceased) returned failed payload" in {
+    "return a RuntimeException if incomeSources (EmploymentIncome - NotLive) returned failed payload" in {
       val sut = createSUT
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Ceased))(any[HeaderCarrier])).thenReturn(
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(any[HeaderCarrier])).thenReturn(
         Future.successful(TaiTaxAccountFailureResponse("FAILURE!"))
       )
 
@@ -207,7 +207,7 @@ class TaxAccountSummaryServiceSpec extends PlaySpec
       Future.successful(TaiSuccessResponseWithPayload[Seq[TaxedIncome]](Seq.empty[TaxedIncome]))
     )
 
-    when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Ceased))(any[HeaderCarrier])).thenReturn(
+    when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(any[HeaderCarrier])).thenReturn(
       Future.successful(TaiSuccessResponseWithPayload[Seq[TaxedIncome]](Seq.empty[TaxedIncome]))
     )
 
