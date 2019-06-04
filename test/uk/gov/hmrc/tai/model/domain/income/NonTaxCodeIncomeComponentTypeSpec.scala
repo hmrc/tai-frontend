@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.model.domain.income
 
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.{JsResultException, JsString, Json}
 import uk.gov.hmrc.tai.model.domain._
 
 class NonTaxCodeIncomeComponentTypeSpec extends PlaySpec {
@@ -58,8 +58,8 @@ class NonTaxCodeIncomeComponentTypeSpec extends PlaySpec {
 
       "throw an exception" when {
         "give an invalid json value" in {
-          val exception = the[IllegalArgumentException] thrownBy JsString("Wrong").as[NonTaxCodeIncomeComponentType]
-          exception.getMessage mustBe "Invalid Non tax code component type"
+          val exception = the[JsResultException] thrownBy JsString("Wrong").as[NonTaxCodeIncomeComponentType]
+          exception.getMessage must include("Invalid Non tax code component type")
         }
       }
 
