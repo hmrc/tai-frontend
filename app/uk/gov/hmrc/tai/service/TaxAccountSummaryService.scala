@@ -26,7 +26,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live, NonTaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, NotLive}
 import uk.gov.hmrc.tai.viewModels.{IncomesSources, TaxAccountSummaryViewModel}
 
 import scala.concurrent.Future
@@ -40,20 +40,13 @@ class TaxAccountSummaryService @Inject()(trackingService: TrackingService,
 
   def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)
                                 (implicit hc: HeaderCarrier, messages: Messages): Future[TaxAccountSummaryViewModel] = {
-    val livePensionIncomeSourcesF = taxAccountService.incomeSources(nino, TaxYear(), PensionIncome, Live)
-    val liveEmploymentIncomeSourcesF = taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Live)
-    val ceasedEmploymentIncomeSourcesF = taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Ceased)
-    val nonMatchingCeasedEmploymentsF = employmentService.ceasedEmployments(nino, TaxYear())
-    val nonTaxCodeIncomeF = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
-    val isAnyFormInProgressF = trackingService.isAnyIFormInProgress(nino.nino)
-
     for {
-      livePensionIncomeSources <- livePensionIncomeSourcesF
-      liveEmploymentIncomeSources <- liveEmploymentIncomeSourcesF
-      ceasedEmploymentIncomeSources <- ceasedEmploymentIncomeSourcesF
-      nonMatchingCeasedEmployments <- nonMatchingCeasedEmploymentsF
-      nonTaxCodeIncome <- nonTaxCodeIncomeF
-      isAnyFormInProgress <- isAnyFormInProgressF
+      livePensionIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), PensionIncome, Live)
+      liveEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Live)
+      ceasedEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, NotLive)
+      nonMatchingCeasedEmployments <- employmentService.ceasedEmployments(nino, TaxYear())
+      nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
+      isAnyFormInProgress <-  trackingService.isAnyIFormInProgress(nino.nino)
     } yield {
       (livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources, nonMatchingCeasedEmployments, nonTaxCodeIncome) match {
         case (TaiSuccessResponseWithPayload(livePensionIncomeSources: Seq[TaxedIncome]),
