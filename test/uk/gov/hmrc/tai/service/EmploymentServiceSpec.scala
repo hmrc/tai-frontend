@@ -24,9 +24,9 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -34,37 +34,24 @@ import scala.concurrent.{Await, Future}
 class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
 
   "Employment Service" must {
-    "return one employment" when {
-      "connector gives one employment" in {
-        val sut = createSUT
-        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(oneEmploymentDetails))
+    "return employments" in {
+      val sut = createSUT
+      when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employments))
 
-        val data = Await.result(sut.employments(nino, year), 5.seconds)
+      val data = Await.result(sut.employments(nino, year), 5.seconds)
 
-        data mustBe oneEmploymentDetails
-      }
+      data mustBe employments
     }
+  }
 
-    "return multiple employments" when {
-      "connector gives multiple employments" in {
-        val sut = createSUT
-        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(twoEmploymentsDetails))
+  "CeasedEmployments Service" must {
+    "return employments" in {
+      val sut = createSUT
+      when(employmentsConnector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(employments))
 
-        val data = Await.result(sut.employments(nino, year), 5.seconds)
+      val data = Await.result(sut.ceasedEmployments(nino, year), 5.seconds)
 
-        data mustBe twoEmploymentsDetails
-      }
-    }
-
-    "return nil" when {
-      "connector gives nil" in {
-        val sut = createSUT
-        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
-
-        val data = Await.result(sut.employments(nino, year), 5.seconds)
-
-        data mustBe Nil
-      }
+      data mustBe employments
     }
   }
 
@@ -72,7 +59,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     "return a map of employment id and employment name" when {
       "connector returns one employment" in {
         val sut = createSUT
-        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(oneEmploymentDetails))
+        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employmentDetails))
 
         val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
 
@@ -109,11 +96,11 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
       "the connector returns one" in {
         val sut = createSUT
 
-        when(employmentsConnector.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment1)))
+        when(employmentsConnector.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val data = Await.result(sut.employment(nino, 8), 5 seconds)
 
-        data mustBe Some(employment1)
+        data mustBe Some(employment)
       }
     }
     "return none" when {
@@ -134,7 +121,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
       val sut = createSUT
       when(employmentsConnector.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
 
-      val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15),"YES", Some("EXT-TEST"))
+      val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15), "YES", Some("EXT-TEST"))
 
       val data = Await.result(sut.endEmployment(nino, 1, endEmploymentData), 5.seconds)
 
@@ -158,7 +145,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
         val model = AddEmployment(employerName = "testEmployment", payrollNumber = "12345", startDate = new LocalDate(2017, 6, 6), telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
         when(employmentsConnector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
 
-        val rte = the[RuntimeException] thrownBy(Await.result(sut.addEmployment(nino, model), 5.seconds))
+        val rte = the[RuntimeException] thrownBy (Await.result(sut.addEmployment(nino, model), 5.seconds))
         rte.getMessage mustBe s"No envelope id was generated when adding the new employment for ${nino.nino}"
       }
     }
@@ -190,10 +177,10 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
   private val year: TaxYear = TaxYear(DateTime.now().getYear)
   private val nino: Nino = new Generator().nextNino
   private implicit val hc: HeaderCarrier = HeaderCarrier()
-  private val employment1 = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
+  private val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
     Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
-  private val oneEmploymentDetails = List(employment1)
-  private val twoEmploymentsDetails = oneEmploymentDetails.head :: oneEmploymentDetails.head :: Nil
+  private val employmentDetails = List(employment)
+  private val employments = employmentDetails.head :: employmentDetails.head :: Nil
 
   private def createSUT = new EmploymentServiceTest
 

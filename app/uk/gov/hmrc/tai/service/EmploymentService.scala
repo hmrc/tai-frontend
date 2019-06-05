@@ -32,6 +32,10 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
     employmentsConnector.employments(nino, year)
   }
 
+  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
+    employmentsConnector.ceasedEmployments(nino, year)
+  }
+
   def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] = {
     employmentsConnector.employment(nino, id.toString)
   }
