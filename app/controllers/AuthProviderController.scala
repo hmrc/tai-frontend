@@ -23,8 +23,7 @@ import uk.gov.hmrc.play.frontend.controller.{FrontendController, UnauthorisedAct
 
 class AuthProviderController extends FrontendController {
 
-
-
+  // this is magically called in a redirect by some other service, maybe from citizen-auth-frontend
   def verifyEntryPoint =  UnauthorisedAction { implicit request =>
     TaiAuthenticationProvider.logger.info("verifyEntryPoint")
     Redirect(routes.TaxAccountSummaryController.onPageLoad().url).withNewSession.addingToSession(
