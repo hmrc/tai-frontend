@@ -24,7 +24,7 @@
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-@(model: IncomeSourceSummaryViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
+@(model: IncomeSourceSummaryViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 
 @gaEventActionString = @{"Your employment details for current tax year"}
 
@@ -74,7 +74,7 @@
 
 @main(
     title = title,
-    user = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
     gaCustomTitle = Some(title)
