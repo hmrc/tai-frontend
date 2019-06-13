@@ -286,15 +286,22 @@ class EndEmploymentController @Inject()(auditService: AuditService,
     implicit request =>
       implicit val user = request.taiUser
 
-      journeyCacheService.collectedValues(Seq(EndEmployment_EmploymentIdKey,
+      journeyCacheService.collectedJourneyValues(Seq(EndEmployment_EmploymentIdKey,
         EndEmployment_EndDateKey, EndEmployment_TelephoneQuestionKey),
         Seq(EndEmployment_TelephoneNumberKey)) map tupled { (mandatorySeq, optionalSeq) =>
-        val model = IncomeCheckYourAnswersViewModel(mandatorySeq(0).toInt, Messages("tai.endEmployment.preHeadingText"),
-          mandatorySeq(1), mandatorySeq(2), optionalSeq(0),
-          controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
-          controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
-          controllers.employments.routes.EndEmploymentController.cancel(mandatorySeq.head.toInt).url)
-        Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
+
+        mandatorySeq match {
+          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          case Right(mandatoryValues) => {
+
+            val model = IncomeCheckYourAnswersViewModel(mandatoryValues(0).toInt, Messages("tai.endEmployment.preHeadingText"),
+              mandatoryValues(1), mandatoryValues(2), optionalSeq(0),
+              controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
+              controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
+              controllers.employments.routes.EndEmploymentController.cancel(mandatoryValues.head.toInt).url)
+            Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
+          }
+        }
       }
   }
 

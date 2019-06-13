@@ -317,7 +317,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
       }
     }
 
-    "redirect to the page if a value is missing from the cache " in {
+    "redirect to the tax summary page if a value is missing from the cache " in {
 
       val sut = createSUT
 
