@@ -21,7 +21,7 @@ import org.joda.time.LocalDate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
-
+import play.api.Logger
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -65,7 +65,7 @@ class JourneyCacheService @Inject() (val journeyName: String,
     for {
       cache <- currentCache
     } yield {
-      mappedMandatory(cache, keys)
+      mappedMandatoryDeprecated(cache, keys)
     }
   }
 
@@ -77,7 +77,22 @@ class JourneyCacheService @Inject() (val journeyName: String,
     }
   }
 
-  def collectedValues(mandatoryValues: Seq[String], optionalValues: Seq[String])(implicit hc: HeaderCarrier): Future[(Seq[String], Seq[Option[String]])] = {
+  @deprecated("Use collectedJourneyValues")
+  def collectedValues(mandatoryValues: Seq[String], optionalValues: Seq[String])(implicit hc: HeaderCarrier):
+    Future[(Seq[String], Seq[Option[String]])] = {
+
+    for {
+      cache <- currentCache
+    } yield {
+      val mandatoryResult = mappedMandatoryDeprecated(cache, mandatoryValues)
+      val optionalResult = mappedOptional(cache, optionalValues)
+      (mandatoryResult, optionalResult)
+    }
+  }
+
+  def collectedJourneyValues(mandatoryValues: Seq[String], optionalValues: Seq[String])(implicit hc: HeaderCarrier):
+    Future[(Either[String, Seq[String]], Seq[Option[String]])]
+     = {
     for {
       cache <- currentCache
     } yield {
@@ -87,7 +102,28 @@ class JourneyCacheService @Inject() (val journeyName: String,
     }
   }
 
-  private def mappedMandatory(cache: Map[String, String], mandatoryValues: Seq[String]): Seq[String] = {
+
+  private def mappedMandatory(cache: Map[String, String], mandatoryValues: Seq[String]): Either[String, Seq[String]] = {
+
+    val allPresentValues = mandatoryValues flatMap { key =>
+      cache.get(key) match {
+        case Some(str) if !str.trim.isEmpty => Some(str)
+        case _ => {
+          Logger.warn(s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
+          None
+        }
+      }
+    }
+
+    allPresentValues.size == mandatoryValues.size match {
+      case true => Right(allPresentValues)
+      case false => Left("Mandatory values missing from cache")
+    }
+
+  }
+
+  @deprecated("Use mappedMandatory")
+  private def mappedMandatoryDeprecated(cache: Map[String, String], mandatoryValues: Seq[String]): Seq[String] = {
     mandatoryValues map { key =>
       cache.get(key) match {
         case Some(str) if !str.trim.isEmpty => str
