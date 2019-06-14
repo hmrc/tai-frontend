@@ -148,13 +148,9 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
     employmentService,
     benefitsService,
     estimatedPayJourneyCompletionService,
-    personService,
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
-  }
+  )
 }
