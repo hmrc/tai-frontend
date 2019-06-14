@@ -66,6 +66,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
   }
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val request = fakeRequest
 
   "stopDate" must {
     "show 'When did you stop getting benefits from company?' page" in {
@@ -420,14 +421,14 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
   "checkYourAnswers" must {
     "display check your answers containing populated values from the journey cache" in {
       val SUT = createSUT
-      when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
+      when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(classOf[scala.collection.immutable.List[String]]),
+        any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
         Future.successful((
-          Seq[String]("AwesomeType", "TestCompany", BeforeTaxYearEnd, "Yes", "Url"),
+          Right(Seq[String]("AwesomeType", "TestCompany", BeforeTaxYearEnd, "Yes", "Url")),
           Seq[Option[String]](Some("10000"), Some("123456789"))
         ))
       )
 
-      implicit val request = fakeRequest
       val result = SUT.checkYourAnswers()(request)
 
       val stopDate = Messages("tai.remove.company.benefit.beforeTaxYearEnd", Dates.formatDate(TaxYear().start))
@@ -435,6 +436,26 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
       result rendersTheSameViewAs removeCompanyBenefitCheckYourAnswers(expectedViewModel)
     }
+
+    "redirect to the summary page if a value is missing from the cache " in {
+
+      val sut = createSUT
+
+      when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(classOf[scala.collection.immutable.List[String]]),
+        any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
+        Future.successful((
+          Left("An error has occurred"),
+          Seq[Option[String]](Some("123456789"))
+        ))
+      )
+
+      val result = sut.checkYourAnswers()(fakeRequest)
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
+    }
+
+
   }
 
   "submit your answers" must {

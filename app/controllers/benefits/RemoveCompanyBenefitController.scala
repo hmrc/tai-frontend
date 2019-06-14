@@ -192,7 +192,7 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
 
       implicit val user = request.taiUser
 
-      journeyCacheService.collectedValues(
+      journeyCacheService.collectedJourneyValues(
         Seq(
           EndCompanyBenefit_EmploymentNameKey,
           EndCompanyBenefit_BenefitNameKey,
@@ -204,26 +204,31 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
           EndCompanyBenefit_TelephoneNumberKey
         )) map tupled { (mandatorySeq, optionalSeq) => {
 
+        mandatorySeq match {
+          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          case Right(mandatoryValues) => {
 
-        val stopDate = {
-          val startOfTaxYear = Dates.formatDate(TaxYear().start)
+            val stopDate = {
+              val startOfTaxYear = Dates.formatDate(TaxYear().start)
 
-          mandatorySeq(2) match {
-            case OnOrAfterTaxYearEnd => Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
-            case BeforeTaxYearEnd=> Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
+              mandatoryValues(2) match {
+                case OnOrAfterTaxYearEnd => Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
+                case BeforeTaxYearEnd=> Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
+              }
+            }
+
+            Ok(removeCompanyBenefitCheckYourAnswers(
+              RemoveCompanyBenefitCheckYourAnswersViewModel(
+                mandatoryValues(0),
+                mandatoryValues(1),
+                stopDate,
+                optionalSeq(0),
+                mandatoryValues(3),
+                optionalSeq(1))))
           }
         }
-
-        Ok(removeCompanyBenefitCheckYourAnswers(
-          RemoveCompanyBenefitCheckYourAnswersViewModel(
-            mandatorySeq(0),
-            mandatorySeq(1),
-            stopDate,
-            optionalSeq(0),
-            mandatorySeq(3),
-            optionalSeq(1))))
       }
-      }
+    }
   }
 
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {
