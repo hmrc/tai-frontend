@@ -154,7 +154,7 @@ class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: Previo
     implicit request =>
       implicit val user = request.taiUser
 
-      journeyCacheService.collectedValues(
+      journeyCacheService.collectedJourneyValues(
         Seq(
           UpdatePreviousYearsIncome_TaxYearKey,
           UpdatePreviousYearsIncome_IncomeDetailsKey,
@@ -162,12 +162,17 @@ class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: Previo
         Seq(
           UpdatePreviousYearsIncome_TelephoneNumberKey
         )) map tupled { (mandatorySeq, optionalSeq) => {
-        Ok(CheckYourAnswers(UpdateIncomeDetailsCheckYourAnswersViewModel(
-          TaxYear(mandatorySeq.head.toInt),
-          mandatorySeq(1),
-          mandatorySeq(2),
-          optionalSeq.head)))
-      }
+
+          mandatorySeq match {
+            case Right(mandatoryValues) => Ok(CheckYourAnswers(UpdateIncomeDetailsCheckYourAnswersViewModel(
+              TaxYear(mandatoryValues.head.toInt),
+              mandatoryValues(1),
+              mandatoryValues(2),
+              optionalSeq.head)))
+
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          }
+        }
       }
   }
 
