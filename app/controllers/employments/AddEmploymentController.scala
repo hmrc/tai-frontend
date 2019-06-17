@@ -259,17 +259,27 @@ class AddEmploymentController @Inject()(auditService: AuditService,
 
   def addEmploymentCheckYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async {
       implicit request =>
-        journeyCacheService.collectedValues(
+        journeyCacheService.collectedJourneyValues(
           Seq(AddEmployment_NameKey,AddEmployment_StartDateKey,AddEmployment_PayrollNumberKey, AddEmployment_TelephoneQuestionKey),
           Seq(AddEmployment_TelephoneNumberKey)
         ) map tupled { (mandatoryVals, optionalVals) =>
-          val model =
-            IncomeCheckYourAnswersViewModel(Messages("add.missing.employment"), mandatoryVals.head, mandatoryVals(1), mandatoryVals(2), mandatoryVals(3), optionalVals.head,
-              controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
-              controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,
-              controllers.employments.routes.AddEmploymentController.cancel().url)
-          implicit val user = request.taiUser
-          Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
+
+          mandatoryVals match {
+
+            case Right(mandatoryValues) => {
+              val model =
+                IncomeCheckYourAnswersViewModel(Messages("add.missing.employment"), mandatoryValues.head, mandatoryValues(1), mandatoryValues(2), mandatoryValues(3), optionalVals.head,
+                  controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
+                  controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,
+                  controllers.employments.routes.AddEmploymentController.cancel().url)
+              implicit val user = request.taiUser
+              Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
+            }
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          }
+
+
+
         }
   }
 
