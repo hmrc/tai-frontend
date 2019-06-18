@@ -17,7 +17,7 @@
 package controllers.income.bbsi
 
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction

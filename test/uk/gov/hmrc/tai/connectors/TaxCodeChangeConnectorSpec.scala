@@ -16,110 +16,106 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, serverError, urlEqualTo}
 import controllers.FakeTaiPlayApplication
+import org.mockito.Matchers
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.config.WSHttp
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
-
-import utils.WireMockHelper
 import utils.factories.TaxCodeMismatchFactory
 
-import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with WireMockHelper {
+class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
 
 
   "tax code change url" must {
-      "fetch the url to connect to TAI to retrieve tax code change" in {
-        val testConnector = createTestConnector
-        val nino = generateNino.nino
+    "fetch the url to connect to TAI to retrieve tax code change" in {
+      val testConnector = createTestConnector
+      val nino = generateNino.nino
 
-        testConnector.taxCodeChangeUrl(nino) mustBe s"${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change"
-      }
+      testConnector.taxCodeChangeUrl(nino) mustBe s"${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change"
     }
+  }
 
 
   "tax Code change" should {
-      "fetch the tax code change" when {
-        "provided with valid nino" in {
+    "fetch the tax code change" when {
+      "provided with valid nino" in {
 
-          val testConnector = createTestConnector
-          val nino = generateNino
+        val testConnector = createTestConnector
+        val nino = generateNino
 
-          val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
+        val taxCodeChangeUrl = s"${testConnector.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change"
 
-          val startDate = TaxYear().start
-          val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
-          val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYear().end)
+        val startDate = TaxYear().start
+        val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
+        val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYear().end)
 
-          val json = Json.obj(
-            "data" -> Json.obj(
-              "previous" -> Json.arr(
-                  Json.obj(
-                    "taxCode" -> "code",
-                    "startDate" -> startDate,
-                    "endDate" -> startDate.plusDays(1),
-                    "basisOfOperation" -> "Cumulative",
-                    "employerName" -> "Employer 1",
-                    "pensionIndicator" -> false,
-                    "payrollNumber" -> "1234",
-                    "primary" -> true
-                  )
-              ),
-              "current" -> Json.arr(
-                Json.obj(
-                  "taxCode" -> "code",
-                  "startDate" -> startDate.plusDays(2),
-                  "endDate" -> TaxYear().end,
-                  "basisOfOperation" -> "Cumulative",
-                  "employerName" -> "Employer 1",
-                  "pensionIndicator" -> false,
-                  "payrollNumber" -> "1234",
-                  "primary" -> true
-                )
+        val json = Json.obj(
+          "data" -> Json.obj(
+            "previous" -> Json.arr(
+              Json.obj(
+                "taxCode" -> "code",
+                "startDate" -> startDate,
+                "endDate" -> startDate.plusDays(1),
+                "basisOfOperation" -> "Cumulative",
+                "employerName" -> "Employer 1",
+                "pensionIndicator" -> false,
+                "payrollNumber" -> "1234",
+                "primary" -> true
               )
             ),
-            "links" -> JsArray(Seq())
-          )
+            "current" -> Json.arr(
+              Json.obj(
+                "taxCode" -> "code",
+                "startDate" -> startDate.plusDays(2),
+                "endDate" -> TaxYear().end,
+                "basisOfOperation" -> "Cumulative",
+                "employerName" -> "Employer 1",
+                "pensionIndicator" -> false,
+                "payrollNumber" -> "1234",
+                "primary" -> true
+              )
+            )
+          ),
+          "links" -> JsArray(Seq())
+        )
 
         val expectedResult = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
-          server.stubFor(
-            get(urlEqualTo(taxCodeChangeUrl)).willReturn(ok(json.toString()))
-          )
+        when(httpHandler.getFromApi(Matchers.eq(taxCodeChangeUrl))(any())).thenReturn(Future.successful(json))
 
-          val result = Await.result(testConnector.taxCodeChange(nino), 5 seconds)
-          result mustEqual TaiSuccessResponseWithPayload(expectedResult)
-        }
-      }
-
-      "return failure" when {
-        "tax code change returns 500" in {
-          val testConnector = createTestConnector
-          val nino = generateNino
-
-          val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
-
-          server.stubFor(
-            get(urlEqualTo(taxCodeChangeUrl)).willReturn(serverError())
-          )
-
-          val expectedMessage = s"GET of '${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change' returned 500. Response body: ''"
-          val result = Await.result(testConnector.taxCodeChange(nino), 5.seconds)
-
-          result mustBe TaiTaxAccountFailureResponse(expectedMessage)
-        }
+        val result = Await.result(testConnector.taxCodeChange(nino), 5 seconds)
+        result mustEqual TaiSuccessResponseWithPayload(expectedResult)
       }
     }
+
+    "return failure" when {
+      "tax code change returns 500" in {
+        val testConnector = createTestConnector
+        val nino = generateNino
+
+        val taxCodeChangeUrl = s"${testConnector.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change"
+
+        val expectedMessage = s"GET of '$taxCodeChangeUrl' returned 500. Response body: ''"
+
+        when(httpHandler.getFromApi(Matchers.eq(taxCodeChangeUrl))(any())).thenReturn(Future.failed(new RuntimeException(expectedMessage)))
+
+        val result = Await.result(testConnector.taxCodeChange(nino), 5.seconds)
+
+        result mustBe TaiTaxAccountFailureResponse(expectedMessage)
+      }
+    }
+  }
 
   "lastTaxCodeRecords" must {
     "fetch the most recent tax code records when given valid nino and year" in {
@@ -127,7 +123,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
       val nino = generateNino
       val year = TaxYear().prev.year
 
-      val latestTaxCodeRecordUrl = s"/tai/${nino.nino}/tax-account/$year/tax-code/latest"
+      val latestTaxCodeRecordUrl = s"${testConnector.serviceUrl}/tai/${nino.nino}/tax-account/$year/tax-code/latest"
 
       val startDate = TaxYear().start
       val taxCodeRecord = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
@@ -161,9 +157,8 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
       val expectedResult = Seq(taxCodeRecord, taxCodeRecord2)
 
-      server.stubFor(
-        get(urlEqualTo(latestTaxCodeRecordUrl)).willReturn(ok(json.toString()))
-      )
+      when(httpHandler.getFromApi(Matchers.eq(latestTaxCodeRecordUrl))(any())).thenReturn(Future.successful(json))
+
 
       val result = Await.result(testConnector.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
       result mustEqual TaiSuccessResponseWithPayload(expectedResult)
@@ -174,15 +169,14 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
       val nino = generateNino
       val year = TaxYear().prev.year
 
-      val latestTaxCodeRecordUrl = s"/tai/${nino.nino}/tax-account/$year/tax-code/latest"
+      val latestTaxCodeRecordUrl = s"${testConnector.serviceUrl}/tai/${nino.nino}/tax-account/$year/tax-code/latest"
 
       val json = Json.obj(
         "data" -> Json.arr(),
         "links" -> JsArray(Seq())
       )
-      server.stubFor(
-        get(urlEqualTo(latestTaxCodeRecordUrl)).willReturn(ok(json.toString()))
-      )
+
+      when(httpHandler.getFromApi(Matchers.eq(latestTaxCodeRecordUrl))(any())).thenReturn(Future.successful(json))
 
       val result = Await.result(testConnector.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
       result mustEqual TaiSuccessResponseWithPayload(Seq.empty)
@@ -206,13 +200,12 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
         val testConnector = createTestConnector
         val nino = generateNino
-        val hasTaxCodeChangedUrl = s"/tai/${nino.nino}/tax-account/tax-code-change/exists"
+        val hasTaxCodeChangedUrl = s"${testConnector.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change/exists"
 
-        val json = Json.toJson(true)
+        val json = Future.successful(Json.toJson(true))
 
-        server.stubFor(
-          get(urlEqualTo(hasTaxCodeChangedUrl)).willReturn(ok(json.toString()))
-        )
+        when(httpHandler.getFromApi(Matchers.eq(hasTaxCodeChangedUrl))(any())).thenReturn(json)
+
         val result = Await.result(testConnector.hasTaxCodeChanged(nino), 5 seconds)
         result mustEqual TaiSuccessResponseWithPayload(true)
       }
@@ -238,14 +231,11 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
         val testConnector = createTestConnector
         val nino = generateNino
 
-        val taxCodeMismatch = s"/tai/${nino.nino}/tax-account/tax-code-mismatch"
-
         val expectedResult = TaxCodeMismatchFactory.matchedTaxCode
-        val json = TaxCodeMismatchFactory.matchedTaxCodeJson
+        val json = Future.successful(TaxCodeMismatchFactory.matchedTaxCodeJson)
 
-        server.stubFor(
-          get(urlEqualTo(taxCodeMismatch)).willReturn(ok(json.toString()))
-        )
+        val url = s"${testConnector.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-mismatch"
+        when(httpHandler.getFromApi(Matchers.eq(url))(any())).thenReturn(json)
 
         val result = Await.result(testConnector.taxCodeMismatch(nino), 5 seconds)
         result mustEqual TaiSuccessResponseWithPayload(expectedResult)
@@ -258,14 +248,11 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
         val testConnector = createTestConnector
         val nino = generateNino
 
-        val taxCodeMismatch = s"/tai/${nino.nino}/tax-account/tax-code-mismatch"
-
         val expectedResult = TaxCodeMismatchFactory.mismatchedTaxCode
-        val json = TaxCodeMismatchFactory.mismatchedTaxCodeJson
+        val json = Future.successful(TaxCodeMismatchFactory.mismatchedTaxCodeJson)
 
-        server.stubFor(
-          get(urlEqualTo(taxCodeMismatch)).willReturn(ok(json.toString()))
-        )
+        val url = s"${testConnector.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-mismatch"
+        when(httpHandler.getFromApi(Matchers.eq(url))(any())).thenReturn(json)
 
         val result = Await.result(testConnector.taxCodeMismatch(nino), 5 seconds)
         result mustEqual TaiSuccessResponseWithPayload(expectedResult)
@@ -275,13 +262,10 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private def createTestConnector = new TestTaxCodeChangeConnector
+  private def createTestConnector = new TaxCodeChangeConnector(httpHandler)
 
   private def generateNino: Nino = new Generator(new Random).nextNino
 
-  val httpHandler: HttpHandler = new HttpHandler(WSHttp)
+  val httpHandler: HttpHandler = mock[HttpHandler]
 
-  private class TestTaxCodeChangeConnector extends TaxCodeChangeConnector(httpHandler) {
-    override val serviceUrl: String = s"http://localhost:${server.port()}"
-  }
 }

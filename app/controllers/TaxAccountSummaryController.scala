@@ -16,15 +16,12 @@
 
 package controllers
 
-import com.google.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+import javax.inject.Inject
 import play.api.Play.current
-import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
@@ -39,9 +36,8 @@ import scala.util.control.NonFatal
 
 class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                                             employmentService: EmploymentService,
-                                           taxAccountService: TaxAccountService,
-					   taxAccountSummaryService: TaxAccountSummaryService,
-                                           
+                                            taxAccountService: TaxAccountService,
+                                            taxAccountSummaryService: TaxAccountSummaryService,
                                             auditService: AuditService,
                                             authenticate: AuthAction,
                                             validatePerson: ValidatePerson,
@@ -63,8 +59,8 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
           message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
           Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
         case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
-        taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
-               Ok(views.html.incomeTaxSummary(vm))
+          taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
+            Ok(views.html.incomeTaxSummary(vm))
           }
         case _ => throw new RuntimeException("Failed to fetch tax account summary details")
       }).recover {

@@ -26,7 +26,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
-import uk.gov.hmrc.play.frontend.auth.AuthenticationProviderIds
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -35,7 +35,7 @@ import scala.concurrent.duration._
 class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   lazy val fakeVerifyRequest = FakeRequest("GET", "/").withSession(
-    SessionKeys.authProvider -> AuthenticationProviderIds.VerifyProviderId
+    SessionKeys.authProvider -> TaiConstants.AuthProviderVerify
   )
 
   class Harness(authAction: AuthAction) extends Controller {

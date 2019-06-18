@@ -17,57 +17,46 @@
 package uk.gov.hmrc.tai.config
 
 import akka.actor.ActorSystem
-import play.api.Play
-import uk.gov.hmrc.http.hooks.HttpHooks
-import uk.gov.hmrc.http.{HttpDelete, HttpGet, HttpPost, HttpPut}
+import javax.inject.Inject
+import play.api.Configuration
+import play.api.libs.ws.{DefaultWSProxyServer, WSClient, WSProxyServer}
+import uk.gov.hmrc.crypto.PlainText
+import uk.gov.hmrc.http.hooks.HttpHook
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.frontend.config.LoadAuditingConfig
+import uk.gov.hmrc.play.bootstrap.config.AppName
+import uk.gov.hmrc.play.bootstrap.filters.frontend.crypto.SessionCookieCrypto
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.http.ws._
 import uk.gov.hmrc.play.partials._
 
-object AuditConnector extends Auditing with DefaultAppName with DefaultRunMode {
-  override lazy val auditingConfig = LoadAuditingConfig(s"$env.auditing")
+
+trait HttpClient extends HttpGet with HttpPut with HttpPost with HttpDelete with HttpPatch
+
+class ProxyHttpClient @Inject()(config: Configuration,
+                                override val auditConnector: Auditing,
+                                override val wsClient: WSClient,
+                                defaultWSProxyServer: DefaultWSProxyServer,
+                                override protected val actorSystem: ActorSystem)
+  extends HttpClient
+    with WSHttp
+    with HttpAuditing
+    with WSProxy {
+
+  override lazy val configuration = Option(config.underlying)
+
+  override val appName: String = new AppName {
+    override def configuration: Configuration = config
+  }.appName
+
+  override val hooks: Seq[HttpHook] = Seq(AuditingHook)
+
+  override def wsProxyServer: Option[WSProxyServer] = Some(defaultWSProxyServer)
 }
 
-trait Hooks extends HttpHooks with HttpAuditing {
-  override val hooks = Seq(AuditingHook)
-  override lazy val auditConnector: Auditing = AuditConnector
-}
+class TaiHtmlPartialRetriever @Inject()(sessionCookieCrypto: SessionCookieCrypto, http: DefaultHttpClient) extends FormPartialRetriever {
+  override val httpGet = http
 
-trait WSHttp extends HttpGet with WSGet
-  with HttpPut with WSPut
-  with HttpPost with WSPost
-  with HttpDelete with WSDelete
-  with Hooks with DefaultAppName
-
-object WSHttp extends WSHttp{
-  override lazy val configuration = Some(Play.current.configuration.underlying)
-  override lazy val actorSystem: ActorSystem = ActorSystem()
-}
-
-trait WSHttpProxy extends WSHttp with WSProxy with DefaultRunMode with HttpAuditing with DefaultServicesConfig
-
-object WSHttpProxy extends WSHttpProxy {
-  override lazy val configuration = Some(Play.current.configuration.underlying)
-  override def appName = getString("appName")
-  override lazy val wsProxyServer = WSProxyConfiguration(s"proxy")
-  override lazy val auditConnector = AuditConnector
-  override lazy val actorSystem: ActorSystem = ActorSystem()
-}
-
-object TaiHtmlPartialRetriever extends FormPartialRetriever {
-  override val httpGet = WSHttp
-  override def crypto: String => String = ApplicationGlobal.sessionCookieCryptoFilter.encrypt
-}
-
-object FrontendAuthConnector extends AuthConnector with DefaultServicesConfig {
-  lazy val serviceUrl = baseUrl("auth")
-  lazy val http = WSHttp
-}
-
-object FrontEndDelegationConnector extends DelegationConnector with DefaultServicesConfig {
-  override protected def serviceUrl: String = baseUrl("delegation")
-  override protected def http: WSHttp = WSHttp
+  override def crypto: String => String = cookie => sessionCookieCrypto.crypto.encrypt(PlainText(cookie)).value
 }

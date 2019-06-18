@@ -16,25 +16,22 @@
 
 package controllers
 
-import controllers.auth.TaiAuthenticationProvider
 import uk.gov.hmrc.http.SessionKeys
-import uk.gov.hmrc.play.frontend.auth.AuthenticationProviderIds
-import uk.gov.hmrc.play.frontend.controller.{FrontendController, UnauthorisedAction}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendController, UnauthorisedAction}
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 class AuthProviderController extends FrontendController {
 
   // this is magically called in a redirect by some other service, maybe from citizen-auth-frontend
   def verifyEntryPoint =  UnauthorisedAction { implicit request =>
-    TaiAuthenticationProvider.logger.info("verifyEntryPoint")
     Redirect(routes.TaxAccountSummaryController.onPageLoad().url).withNewSession.addingToSession(
-      SessionKeys.authProvider -> AuthenticationProviderIds.VerifyProviderId
+      SessionKeys.authProvider -> TaiConstants.AuthProviderVerify
     )
   }
 
   def governmentGatewayEntryPoint =  UnauthorisedAction { implicit request =>
-    TaiAuthenticationProvider.logger.info("governmentGatewayEntryPoint")
     Redirect(routes.TaxAccountSummaryController.onPageLoad().url).withNewSession.addingToSession(
-      SessionKeys.authProvider -> AuthenticationProviderIds.GovernmentGatewayId
+      SessionKeys.authProvider -> "AuthenticationProviderIds.GovernmentGatewayId"
     )
   }
 }

@@ -18,7 +18,6 @@ package views.html
 
 import builders.UserBuilder
 import controllers.FakeTaiPlayApplication
-import controllers.auth.TaiUser
 import uk.gov.hmrc.tai.viewModels._
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
@@ -35,8 +34,7 @@ class yourTaxGraphPageSpec extends UnitSpec
   with FakeTaiPlayApplication
   with TaxRegionConstants {
 
-  implicit val request = FakeRequest("GET", "")
-  implicit val user: TaiUser = UserBuilder.apply()
+  implicit val request = fakeRequest
 
   "Graph" should {
 

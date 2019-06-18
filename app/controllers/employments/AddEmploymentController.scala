@@ -16,11 +16,10 @@
 
 package controllers.employments
 
-import com.google.inject.Inject
 import com.google.inject.name.Named
+import javax.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.audit.Auditable
 import controllers.auth.AuthAction
 import org.joda.time.LocalDate
 import play.api.Play.current
@@ -226,7 +225,7 @@ class AddEmploymentController @Inject()(auditService: AuditService,
               case _ => None
             }
             implicit val user = request.taiUser
-            Ok(views.html.can_we_contact_by_phone(Some(user),None,
+            Ok(views.html.can_we_contact_by_phone(Some(user),
               telephoneNumberViewModel,
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(optSeq.head, telNoToDisplay))
             ))
@@ -241,7 +240,7 @@ class AddEmploymentController @Inject()(auditService: AuditService,
           Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
           formWithErrors => {
               implicit val user = request.taiUser
-              Future.successful(BadRequest(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel, formWithErrors)))
+              Future.successful(BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors)))
           },
           form => {
             val mandatoryData = Map(AddEmployment_TelephoneQuestionKey -> Messages(s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))

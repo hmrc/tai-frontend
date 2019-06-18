@@ -16,70 +16,12 @@
 
 package builders
 
-import controllers.auth.{AuthedUser, TaiUser}
+import controllers.auth.AuthedUser
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.play.frontend.auth.{Attorney, AuthContext, Link}
-import uk.gov.hmrc.tai.model.domain.Person
-
-object AuthActionedUserBuilder {
-  val nino: Nino = new Generator().nextNino
-  def apply(firstName: String = "Firstname", lastName: String = "Surname", utr: String = "utr") = {
-    AuthedUser(firstName + " " + lastName, nino.toString(), utr, "userDetails", "200")  }
-}
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 object UserBuilder {
-
   val nino: Nino = new Generator().nextNino
-
-  def apply(title: String = "Mr", firstName: String = "Jjj", lastName: String = "Bbb") = {
-    val person = Person(
-      nino = nino,
-      firstName = firstName,
-      surname = lastName,
-      isDeceased = false,
-      hasCorruptData = false)
-
-    def taxForIndividualsAuthority(id: String, nino: String): Authority =
-      Authority(uri = s"/path/to/authority",
-        accounts =  Accounts(tai = Some(TaxForIndividualsAccount(s"/tai/$nino", Nino(nino))),
-          paye = Some(PayeAccount(s"/tai/$nino", Nino(nino)))),
-        loggedInAt = None,
-        previouslyLoggedInAt = None,
-        credentialStrength = CredentialStrength.Strong,
-        confidenceLevel = ConfidenceLevel.L200,
-        userDetailsLink = Some(s"/user-details/$id"),
-        enrolments = Some(s"/auth/oid/$id/enrolments"),
-        ids = Some(s"/auth/oid/$id/ids"),
-        legacyOid = s"$id")
-
-
-    def payeAuthority(id: String, nino: String): Authority =
-      Authority(uri = s"/path/to/authority",
-        accounts =  Accounts(paye = Some(PayeAccount(s"/tai/$nino", Nino(nino)))),
-        loggedInAt = None,
-        previouslyLoggedInAt = None,
-        credentialStrength = CredentialStrength.Strong,
-        confidenceLevel = ConfidenceLevel.L200,
-        userDetailsLink = Some(s"/user-details/$id"),
-        enrolments = Some(s"/auth/oid/$id/enrolments"),
-        ids = Some(s"/auth/oid/$id/ids"),
-        legacyOid = s"$id")
-
-
-    def taiAuthContext(id: String, nino: String) = {
-      AuthContext(taxForIndividualsAuthority(id, nino),governmentGatewayToken = Some("a token"))
-    }
-
-    TaiUser(
-      authContext = taiAuthContext(s"${firstName.head.toLower}${lastName.toLowerCase}", person.nino.nino),
-      person = person
-    )
-  }
-
-  def createUserWithAttorney(attorneyName: String, attorneyLink: Link): TaiUser = {
-    val user = apply()
-    TaiUser(user.authContext.copy(attorney = Some(Attorney(attorneyName,attorneyLink))), user.person)
-  }
-
+  def apply(firstName: String = "Firstname", lastName: String = "Surname", utr: String = "utr", providerType: String = TaiConstants.AuthProviderGG) = {
+    AuthedUser(firstName + " " + lastName, nino.toString(), utr, providerType, "200")  }
 }

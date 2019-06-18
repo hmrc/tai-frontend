@@ -18,31 +18,20 @@ package controllers
 
 import java.util.UUID
 
-import builders.{AuthBuilder, RequestBuilder}
 import controllers.actions.FakeValidatePerson
+import controllers.auth.AuthAction
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers._
-import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.libs.json.{JsArray, JsValue}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttp}
-import uk.gov.hmrc.tai.connectors._
-import uk.gov.hmrc.tai.model.UserDetails
-import uk.gov.hmrc.tai.service.PersonService
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-
-import scala.concurrent.Future
 
 class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
 
@@ -53,7 +42,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
   "Time Out page" should {
     "return page when called" in {
       val fakeRequest = FakeRequest("POST", "").withFormUrlEncodedBody()
-      val sut = createSut
+      val sut = createSut()
       val result = sut.timeoutPage()(fakeRequest)
       status(result) shouldBe 200
 
@@ -64,68 +53,44 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
 
   "Sign Out" should {
     "redirect to company auth frontend if it is a GG user" in {
-      val sut = createSut
+      val sut = createSut()
 
-      when(userDetailsConnector.userDetails(any[String](any()))).thenReturn(Future.successful(UserDetails("GovernmentGateway")))
-
-      val result = sut.serviceSignout()(authorisedRequest)
+      val result = sut.serviceSignout()(fakeRequest)
 
       status(result) shouldBe 303
       redirectLocation(result) shouldBe Some(ApplicationConfig.companyAuthFrontendSignOutUrl)
     }
 
     "redirect to citizen auth frontend if it is a Verify user" in {
-      val sut = createSut
+      val sut = createSut(FakeAuthActionVerify)
 
-      when(userDetailsConnector.userDetails(any[String])(any()))
-        .thenReturn(Future.successful(UserDetails("Verify")))
-
-      val result = sut.serviceSignout()(authorisedRequest)
+      val result = sut.serviceSignout()(fakeRequest)
 
       status(result) shouldBe 303
       redirectLocation(result) shouldBe Some(ApplicationConfig.citizenAuthFrontendSignOutUrl)
       session(result).get(TaiConstants.SessionPostLogoutPage) shouldBe Some(ApplicationConfig.feedbackSurveyUrl)
     }
-
-    "return 500 when userDetails returns failed" in {
-      val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-      val sut = createSut
-      when(userDetailsConnector.userDetails(any[String])(any())).thenReturn(Future.failed(new RuntimeException))
-      val result = sut.serviceSignout()(request)
-      status(result) shouldBe 500
-    }
   }
 
   "gateKeeper" should {
-    "return return manualCorrespondence page when called" in {
+    "return manualCorrespondence page when called" in {
       val fakeRequest = FakeRequest("GET", "").withFormUrlEncodedBody()
-      val sut = createSut
-      val result = sut.gateKeeper()(authorisedRequest)
+      val sut = createSut()
+      val result = sut.gateKeeper()(fakeRequest)
       status(result) shouldBe OK
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() should include(Messages("tai.gatekeeper.refuse.title"))
     }
   }
 
-  def createSut = new SUT
+  def createSut(authAction: AuthAction = FakeAuthAction) = new SUT(authAction)
 
-  val userDetailsConnector = mock[UserDetailsConnector]
-
-  class SUT extends ServiceController(
-    userDetailsConnector,
-    FakeAuthAction,
+  class SUT(authAction: AuthAction = FakeAuthAction) extends ServiceController(
+    authAction,
     FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   )
-
-  private val nino = new Generator().nextNino.nino
-
-  lazy val authorisedRequest = FakeRequest("GET", path = "").withSession(
-    SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-    SessionKeys.authProvider -> "IDA",
-    SessionKeys.userId -> s"/path/to/authority",
-    SessionKeys.authToken -> "a token")
 
 }
 

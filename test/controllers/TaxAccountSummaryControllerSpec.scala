@@ -19,6 +19,7 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
@@ -42,6 +43,7 @@ import utils.TaxAccountSummaryTestData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.Random
 
 class TaxAccountSummaryControllerSpec extends PlaySpec
   with MockitoSugar
