@@ -16,8 +16,7 @@
 
 package controllers.employments
 
-import com.google.inject.Inject
-import com.google.inject.name.Named
+import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
@@ -124,7 +123,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
         telephoneCache <- journeyCacheService.optionalValues(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey)
       } yield {
         implicit val user = request.taiUser
-        Ok(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel(employmentId),
+        Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId),
           YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
       }
 
@@ -139,7 +138,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             implicit val user = request.taiUser
-            BadRequest(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel(currentCache(UpdateEmployment_EmploymentIdKey).toInt), formWithErrors))
+            BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(currentCache(UpdateEmployment_EmploymentIdKey).toInt), formWithErrors))
           }
         },
         form => {

@@ -18,7 +18,7 @@ package controllers
 
 import controllers.auth.AuthedUser
 import controllers.auth.AuthenticatedRequest
-import builders.{AuthActionedUserBuilder, UserBuilder}
+import builders.UserBuilder
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -43,7 +43,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     with I18nSupport
     with MockitoSugar {
 
-  implicit val authedUser: AuthedUser = AuthActionedUserBuilder()
+  implicit val authedUser: AuthedUser = UserBuilder()
 
   "ErrorPagesHandler" must {
     "handle an internal server error" in {

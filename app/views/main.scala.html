@@ -28,7 +28,6 @@
   sidebarLinks: Option[Html] = None,
   sidebarClass: Option[String] = None,
   articleClasses: Option[String] = Some("full-width"),
-  user: Option[controllers.auth.TaiUser] = None,
   authedUser: Option[controllers.auth.AuthedUser] = None,
   employerName: Option[String] = None,
   includeGridWrapper: Boolean = false,
@@ -63,10 +62,7 @@
 }
 
 @isSa = @{
-    user.fold(false) {
-        user =>
-            user.authContext.principal.accounts.sa.map(_.utr).isDefined
-    } || authedUser.fold(false) {
+    authedUser.fold(false) {
         _.getUTR != ""
     }
 }
@@ -82,21 +78,7 @@
 @signOutUrl = @{
     mustacheCheck{
         val signOutLink = routes.ServiceController.serviceSignout().url
-        user.fold(authedUser.fold("")(_ => signOutLink))(_ => signOutLink)
-    }
-}
-
-@actingAttorneyBanner = @{
-    user.fold(HtmlFormat.empty) {
-        authContext =>
-            authContext.authContext.attorney.fold(HtmlFormat.empty) {
-                _ => layouts.attorney_banner(
-                    authContext.authContext.principal.name,
-                    authContext.authContext.attorney.get.returnLink.url,
-                    standAlone,
-                    Some(Messages("attorney.banner.link"))
-                )
-            }
+        authedUser.fold("")(_ => signOutLink)
     }
 }
 
@@ -116,7 +98,7 @@
 @googleAnalytics = @{
 
     def confidenceLevel: String = {
-        user.fold(authedUser.fold("false")(_.confidenceLevel))(_.authContext.user.confidenceLevel.toString)
+        authedUser.fold("false")(_.confidenceLevel)
     }
 
     Map[String, Any](
@@ -237,7 +219,6 @@
         "isSa" -> isSa,
         "isVerify" -> isVerify,
         "signOutUrl" -> signOutUrl,
-        "actingAttorneyBanner" -> actingAttorneyBanner,
         "mainContentHeader" -> mainContentHeader,
         "sidebar" -> sidebar,
         "getHelpForm" -> helpForm,

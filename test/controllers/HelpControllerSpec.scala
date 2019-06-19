@@ -29,7 +29,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttpProxy}
+import uk.gov.hmrc.tai.config.{ApplicationConfig, ProxyHttpClient}
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
@@ -107,11 +107,11 @@ class HelpControllerSpec extends PlaySpec
 
   def createSut = new SUT
 
-  val mockWSHttpProxy: WSHttpProxy = mock[WSHttpProxy]
+  val proxyHttpClient = mock[ProxyHttpClient]
 
   class SUT extends HelpController(
     mock[ApplicationConfig],
-    mockWSHttpProxy,
+    proxyHttpClient,
     FakeAuthAction,
     FakeValidatePerson,
     mock[FormPartialRetriever],

@@ -16,8 +16,7 @@
 
 package controllers.income.previousYears
 
-import com.google.inject.Inject
-import com.google.inject.name.Named
+import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
@@ -120,7 +119,7 @@ class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: Previo
       implicit val user = request.taiUser
 
       journeyCacheService.currentCache map { currentCache =>
-        Ok(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), YesNoTextEntryForm.form()))
+        Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), YesNoTextEntryForm.form()))
       }
   }
 
@@ -134,7 +133,7 @@ class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: Previo
         Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
-            BadRequest(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), formWithErrors))
+            BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), formWithErrors))
           }
         },
         form => {

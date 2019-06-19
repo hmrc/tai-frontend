@@ -24,12 +24,11 @@
 @import includes.forms.inputRadioGroupStyling
 
 @(      incomingAuthedUser: Option[controllers.auth.AuthedUser],
-        incomingUser: Option[controllers.auth.TaiUser],
         viewModel: CanWeContactByPhoneViewModel,
         yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_],
         messages: Messages,
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-        partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
+        partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Can we contact you by phone?"}
 
@@ -44,7 +43,6 @@
 @main(
     title = viewModel.mainHeading,
     authedUser = incomingAuthedUser,
-    user = incomingUser,
     pageHeader = Some(header),
     articleClasses = None,
     gaCustomTitle = None) {

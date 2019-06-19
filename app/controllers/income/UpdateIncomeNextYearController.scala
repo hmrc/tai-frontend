@@ -16,10 +16,9 @@
 
 package controllers.income
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.audit.Auditable
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.Play.current
 import play.api.i18n.Messages
@@ -49,9 +48,7 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
                                                override implicit val partialRetriever: FormPartialRetriever,
                                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with FeatureTogglesConfig
-  with FormValuesConstants
-  with Auditable {
-
+  with FormValuesConstants {
 
   def onPageLoad(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>

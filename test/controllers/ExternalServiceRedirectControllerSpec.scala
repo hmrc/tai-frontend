@@ -16,7 +16,7 @@
 
 package controllers
 
-import builders.{AuthActionedUserBuilder, RequestBuilder}
+import builders.{UserBuilder, RequestBuilder}
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers

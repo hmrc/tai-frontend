@@ -16,9 +16,8 @@
 
 package controllers
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import controllers.actions.ValidatePerson
-import controllers.audit.Auditable
 import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
@@ -41,8 +40,7 @@ class NoCYIncomeTaxErrorController @Inject()(employmentService: EmploymentServic
                                              authenticate: AuthAction,
                                              validatePerson: ValidatePerson,
                                              override implicit val partialRetriever: FormPartialRetriever,
-                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with Auditable {
+                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
   def noCYIncomeTaxErrorPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request => {

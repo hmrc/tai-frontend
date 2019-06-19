@@ -16,7 +16,7 @@
 
 package controllers
 
-import builders.{AuthActionedUserBuilder, RequestBuilder, UserBuilder}
+import builders.{UserBuilder, RequestBuilder}
 import controllers.actions.FakeValidatePerson
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
@@ -329,7 +329,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
   implicit val templateRenderer = MockTemplateRenderer
   implicit val partialRetriever = MockPartialRetriever
-  implicit val user = AuthActionedUserBuilder()
+  implicit val user = UserBuilder()
 
   val nino: Nino = new Generator(new Random).nextNino
 
