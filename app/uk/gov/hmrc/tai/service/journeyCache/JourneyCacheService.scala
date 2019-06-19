@@ -119,11 +119,7 @@ class JourneyCacheService @Inject() (val journeyName: String,
       }
     }
 
-    allPresentValues.size == mandatoryValues.size match {
-      case true => Right(allPresentValues)
-      case false => Left("Mandatory values missing from cache")
-    }
-
+   if (allPresentValues.size == mandatoryValues.size) Right(allPresentValues) else Left("Mandatory values missing from cache")
   }
 
   @deprecated("Use mappedMandatory")
