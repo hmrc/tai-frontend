@@ -173,8 +173,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
             optionalSeq.head)))
         }
       }
-      }
-
+    }
   }
 
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {

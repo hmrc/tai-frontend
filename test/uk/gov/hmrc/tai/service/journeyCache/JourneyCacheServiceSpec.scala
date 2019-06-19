@@ -112,6 +112,28 @@ class JourneyCacheServiceSpec extends PlaySpec
     }
   }
 
+  "Mandatory journey values as Int" must {
+
+    "return an Int value" in {
+      val sut = createSut
+      val id = 1
+
+      when(journeyCacheConnector.mandatoryJourneyValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("key1"), Matchers.any[Function1[String, Int]]())(any()))
+        .thenReturn(Future.successful(Right(id)): Future[Either[String, Int]])
+      Await.result(sut.mandatoryJourneyValueAsInt("key1"), 5 seconds) mustBe Right(id)
+    }
+
+    "return an error message when a mandatory value is missing in the cache" in {
+      val sut = createSut
+      val errorMessage = "Value missing from cache"
+
+      when(journeyCacheConnector.mandatoryJourneyValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("key1"), Matchers.any[Function1[String, Int]]())(any()))
+        .thenReturn(Future.successful(Left(errorMessage)): Future[Either[String, Int]])
+      Await.result(sut.mandatoryJourneyValueAsInt("key1"), 5 seconds) mustBe Left(errorMessage)
+    }
+
+  }
+
   "collectedValues method" must {
     "return a sequence of all retrieved mandatory values" in {
       val sut = createSut
@@ -141,6 +163,41 @@ class JourneyCacheServiceSpec extends PlaySpec
 
       Await.result(sut.collectedValues(Seq("key1","key2"), Seq("key4", "key3")), 5 seconds) mustBe Tuple2(Seq("val1", "val2"), Seq(Some("val3"), None))
     }
+  }
+
+  "collected journey values method" must {
+
+    "return a sequence of all retrieved mandatory values" in {
+      val sut = createSut
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      Await.result(sut.collectedJourneyValues(Seq("key1","key2"), Seq("key4", "key9")), 5 seconds) mustBe
+        Tuple2(Right(Seq("val1", "val2")), Seq(Some("val3"), None))
+    }
+
+    "return an error message if one or more of the mandatory values are not found" in {
+      val sut = createSut
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+
+      Await.result(sut.collectedJourneyValues(Seq("key1", "key9"), Seq("key4", "key9")), 5 seconds) mustBe
+        Tuple2(Left("Mandatory values missing from cache"), Seq(Some("val3"), None))
+    }
+
+    "return an error message if one or more of the mandatory values is an empty string" in {
+      val sut = createSut
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+
+      Await.result(sut.collectedJourneyValues(Seq("key1","key3"), Seq("key4", "key9")), 5 seconds) mustBe
+        Tuple2(Left("Mandatory values missing from cache"), Seq(Some("val3"), None))
+    }
+
+    "return a none when an empty string is found within one of the optional values" in {
+      val sut = createSut
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+
+      Await.result(sut.collectedJourneyValues(Seq("key1","key2"), Seq("key4", "key3")), 5 seconds) mustBe
+        Tuple2(Right(Seq("val1", "val2")), Seq(Some("val3"), None))
+    }
+
   }
 
   "optionalValues" must{

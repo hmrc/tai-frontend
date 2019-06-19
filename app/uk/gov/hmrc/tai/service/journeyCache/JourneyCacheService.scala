@@ -49,6 +49,10 @@ class JourneyCacheService @Inject() (val journeyName: String,
     mandatoryValueAs[String](key, identity)
   }
 
+  def mandatoryJourneyValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Either[String, Int]] = {
+    mandatoryJourneyValueAs[Int](key, string => string.toInt)
+  }
+
   def mandatoryValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Int] = {
     mandatoryValueAs[Int](key, string => string.toInt)
   }
@@ -149,6 +153,11 @@ class JourneyCacheService @Inject() (val journeyName: String,
     journeyCacheConnector.currentValueAs[T](journeyName, key, convert)
   }
 
+  def mandatoryJourneyValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[Either[String, T]] = {
+    journeyCacheConnector.mandatoryJourneyValueAs[T](journeyName, key, convert)
+  }
+
+  @deprecated("Use mandatoryJourneyValueAs")
   def mandatoryValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[T] = {
     journeyCacheConnector.mandatoryValueAs[T](journeyName, key, convert)
   }

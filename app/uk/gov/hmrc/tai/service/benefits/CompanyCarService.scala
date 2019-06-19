@@ -89,8 +89,8 @@ class CompanyCarService @Inject() (carConnector: CompanyCarConnector,
     }
   }
 
-  def companyCarEmploymentId(implicit hc: HeaderCarrier): Future[Int] = {
-    journeyCacheService.mandatoryValueAsInt(CompanyCar_EmployerIdKey)
+  def companyCarEmploymentId(implicit hc: HeaderCarrier): Future[Either[String, Int]] = {
+    journeyCacheService.mandatoryJourneyValueAsInt(CompanyCar_EmployerIdKey)
   }
 
   def withdrawCompanyCarAndFuel(nino: Nino, referer: String)(implicit hc: HeaderCarrier): Future[TaiResponse] = {

@@ -333,7 +333,6 @@ class UpdateEmploymentControllerSpec extends PlaySpec
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
-
     }
   }
 
