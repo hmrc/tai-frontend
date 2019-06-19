@@ -18,12 +18,11 @@
 @import includes.confirmation_summary
 
 @import views.html.includes.confirmationSuccessBanner
-@()(implicit request: Request[_], authedUser: Option[controllers.auth.AuthedUser] = None, user: Option[controllers.auth.TaiUser] = None, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@()(implicit request: Request[_], authedUser: Option[controllers.auth.AuthedUser] = None, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
 title = Messages("tai.employmentConfirmation.heading"),
 authedUser = authedUser,
-user = user,
 articleClasses = None,
 gaCustomTitle = None) {
 

@@ -16,7 +16,7 @@
 
 package controllers
 
-import builders.{AuthActionedUserBuilder, AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
@@ -192,8 +192,6 @@ class PayeControllerHistoricSpec extends PlaySpec
   }
 
   val fakeNino = new Generator(new Random).nextNino
-
-  val fakeAuthority = AuthBuilder.createFakeAuthority(fakeNino.nino)
 
   def createTestController(employments: Seq[Employment] = Nil, previousYears: Int = 3, showTaxCodeDescriptionLink: Boolean = false) = {
     new PayeControllerHistoricTest(employments, previousYears, showTaxCodeDescriptionLink)

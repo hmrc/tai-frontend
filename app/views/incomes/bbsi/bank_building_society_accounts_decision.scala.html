@@ -25,7 +25,7 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import includes.forms.inputRadioGroupStyling
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.income.BbsiAccountsDecisionViewModel, bankAccountsDecisionForm:Form[uk.gov.hmrc.tai.forms.income.bbsi.BankAccountsDecisionFormData])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
+@(viewModel: uk.gov.hmrc.tai.viewModels.income.BbsiAccountsDecisionViewModel, bankAccountsDecisionForm:Form[uk.gov.hmrc.tai.forms.income.bbsi.BankAccountsDecisionFormData])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update or remove account"}
 

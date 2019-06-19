@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodePair, TaxCodePairs}

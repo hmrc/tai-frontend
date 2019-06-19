@@ -16,8 +16,7 @@
 
 package controllers.pensions
 
-import com.google.inject.Inject
-import com.google.inject.name.Named
+import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
@@ -150,7 +149,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
       } yield {
         val user = Some(request.taiUser)
 
-        Ok(views.html.can_we_contact_by_phone(user, None, telephoneNumberViewModel(pensionId),
+        Ok(views.html.can_we_contact_by_phone(user, telephoneNumberViewModel(pensionId),
           YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
       }
   }
@@ -164,7 +163,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             val user = Some(request.taiUser)
-            BadRequest(views.html.can_we_contact_by_phone(user, None, telephoneNumberViewModel(currentCache(UpdatePensionProvider_IdKey).toInt), formWithErrors))
+            BadRequest(views.html.can_we_contact_by_phone(user, telephoneNumberViewModel(currentCache(UpdatePensionProvider_IdKey).toInt), formWithErrors))
           }
         },
         form => {

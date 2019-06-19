@@ -18,41 +18,27 @@ package uk.gov.hmrc.tai.config
 
 import com.typesafe.config.Config
 import controllers.routes
+import javax.inject.Inject
 import net.ceedubs.ficus.Ficus._
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Request
-import play.api.{Application, Play}
+import play.api.{Configuration, Play}
 import play.twirl.api.Html
+import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 import uk.gov.hmrc.play.config.ControllerConfig
-import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
-import uk.gov.hmrc.play.frontend.filters.{FrontendAuditFilter, FrontendLoggingFilter, MicroserviceFilterSupport}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.urls.Link
 
-object ApplicationGlobal extends DefaultFrontendGlobal with DefaultRunMode {
+class TaiErrorHandler @Inject()(localTemplateRenderer: LocalTemplateRenderer,
+                                taiHtmlPartialRetriever: TaiHtmlPartialRetriever,
+                                val messagesApi: MessagesApi,
+                                val configuration: Configuration)
+  extends FrontendErrorHandler {
 
-  override val auditConnector = AuditConnector
-  override val loggingFilter = HFLoggingFilter
-  override val frontendAuditFilter = HelpFrontendAuditFilter
+  implicit val templateRenderer = localTemplateRenderer
+  implicit val partialRetriever = taiHtmlPartialRetriever
 
-  implicit val templateRenderer = LocalTemplateRenderer
-  implicit val partialRetriever = TaiHtmlPartialRetriever
-
-  override def onStart(app: Application) {
-    super.onStart(app)
-    applicationCrypto.verifyConfiguration()
-  }
-
-  // TODO: tidy up and use config mechanism
-  lazy val csrfCookieName = Play.current.configuration.getString("csrf.cookie.name").getOrElse("pccn")
-
-  val EMAIL_TEMPLATE_ID = "dfs_submission_success_template_id"
-
-  override def microserviceMetricsConfig(implicit app: Application) = app.configuration.getConfig(s"$env.microservice.metrics")
-
-  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html = {
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]) = {
     views.html.error_template_noauth(pageTitle, heading, message)
   }
 
@@ -83,14 +69,4 @@ object ApplicationGlobal extends DefaultFrontendGlobal with DefaultRunMode {
 
 object ControllerConfiguration extends ControllerConfig {
   lazy val controllerConfigs = Play.current.configuration.underlying.as[Config]("controllers")
-}
-object HFLoggingFilter extends FrontendLoggingFilter with MicroserviceFilterSupport {
-  override def controllerNeedsLogging(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsLogging
-}
-object HelpFrontendAuditFilter extends FrontendAuditFilter with DefaultRunMode with DefaultAppName with MicroserviceFilterSupport {
-  override lazy val maskedFormFields :Seq[String] = Seq.empty[String]
-  override lazy val applicationPort: Option[Int] = None
-  override lazy val auditConnector = AuditConnector
-  override def controllerNeedsAuditing(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsAuditing
-
 }

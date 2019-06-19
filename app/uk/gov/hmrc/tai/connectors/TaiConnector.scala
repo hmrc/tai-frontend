@@ -16,16 +16,17 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import play.api.libs.json.Reads
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.tai.config.{DefaultServicesConfig, WSHttp}
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.tai.config.{DefaultServicesConfig}
 import uk.gov.hmrc.tai.model._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TaiConnector @Inject()(val http: WSHttp) extends RawResponseReads with DefaultServicesConfig {
+class TaiConnector @Inject()(http: DefaultHttpClient) extends RawResponseReads with DefaultServicesConfig {
 
   val serviceUrl = baseUrl("tai")
 

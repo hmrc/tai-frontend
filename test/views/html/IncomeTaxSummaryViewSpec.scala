@@ -300,6 +300,5 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   val vm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Seq(activeEmployment), Seq(pensionIncome), Seq(endedEmployment), false, ThreeWeeks, Seq(otherIncomeSourceViewModel))
   val noSectionsVm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Nil, Nil, Nil, false, ThreeWeeks, Seq(otherIncomeSourceViewModel))
 
-  override implicit val user = UserBuilder("Mr", "Firstname", "Surname")
   override def view: Html = views.html.incomeTaxSummary(vm)
 }

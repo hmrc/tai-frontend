@@ -16,7 +16,8 @@
 
 package controllers.actions
 
-import com.google.inject.{ImplementedBy, Inject, Singleton}
+import com.google.inject.ImplementedBy
+import javax.inject.{Inject, Singleton}
 import controllers.auth.AuthenticatedRequest
 import controllers.routes
 import play.api.mvc.{ActionFilter, Result}

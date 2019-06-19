@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.util.viewHelpers
 
-import builders.{AuthActionedUserBuilder, UserBuilder}
+import builders.{UserBuilder}
 import controllers.FakeTaiPlayApplication
 import controllers.auth.AuthedUser
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
@@ -38,8 +38,7 @@ trait TaiViewSpec extends PlaySpec
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
   implicit val templateRenderer = MockTemplateRenderer
   implicit val partialRetriever = MockPartialRetriever
-  implicit val user = UserBuilder()
-  implicit val authedUser: AuthedUser = AuthActionedUserBuilder()
+  implicit val authedUser: AuthedUser = UserBuilder()
 
   def view: Html
 

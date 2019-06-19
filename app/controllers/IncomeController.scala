@@ -16,10 +16,9 @@
 
 package controllers
 
-import com.google.inject.Inject
 import com.google.inject.name.Named
+import javax.inject.Inject
 import controllers.actions.ValidatePerson
-import controllers.audit.Auditable
 import controllers.auth.{AuthAction, AuthedUser}
 import org.joda.time.LocalDate
 import play.api.Play.current
@@ -27,9 +26,6 @@ import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
