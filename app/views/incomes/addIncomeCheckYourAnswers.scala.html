@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None, user: Option[controllers.auth.TaiUser] = None, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.urls.Link
@@ -38,7 +38,6 @@
 @main(
     title = Messages("tai.checkYourAnswers.title"),
     authedUser = authedUser,
-    user = user,
     pageHeader = Some(header),
     articleClasses = None
 ) {

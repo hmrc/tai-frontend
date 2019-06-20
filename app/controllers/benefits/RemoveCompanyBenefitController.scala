@@ -16,8 +16,8 @@
 
 package controllers.benefits
 
-import com.google.inject.Inject
 import com.google.inject.name.Named
+import javax.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
@@ -152,7 +152,7 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
           YesNoTextEntryForm(currentCache.get(EndCompanyBenefit_TelephoneQuestionKey), currentCache.get(EndCompanyBenefit_TelephoneNumberKey))
         )
 
-        Ok(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel, form))
+        Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, form))
       }
   }
 
@@ -169,7 +169,7 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
-            BadRequest(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel, formWithErrors))
+            BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors))
           }
         },
         form => {

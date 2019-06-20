@@ -16,7 +16,7 @@
 
 package controllers.income.estimatedPay.update
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
@@ -30,7 +30,6 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
@@ -83,8 +82,6 @@ class IncomeUpdateCalculatorControllerSpec
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
-    val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(employer.id))
     when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any())).thenReturn(Future.successful(employer.name))
   }

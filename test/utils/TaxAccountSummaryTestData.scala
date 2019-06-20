@@ -16,6 +16,7 @@
 
 package utils
 
+import controllers.FakeAuthAction
 import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.domain._
@@ -25,7 +26,7 @@ import scala.util.Random
 
 trait TaxAccountSummaryTestData {
 
-  val nino: Nino = new Generator(new Random).nextNino
+  val nino: Nino = FakeAuthAction.nino
 
   val employment = Employment("Employer name", Some("123ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST123", "PAYE543", 1, None, false, false)
 

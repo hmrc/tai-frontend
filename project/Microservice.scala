@@ -32,8 +32,7 @@ trait MicroService {
       "tai.Routes.*",
       "prod.*",
       "testOnlyDoNotUseInAppConf.*",
-      "config.*",
-      "controllers.AuthenticationConnectors")
+      "config.*")
 
     Seq(
       ScoverageKeys.coverageExcludedPackages := scoverageExcludePatterns.mkString("", ";", ""),

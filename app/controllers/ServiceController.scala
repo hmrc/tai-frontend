@@ -16,26 +16,24 @@
 
 package controllers
 
-import com.google.inject.Inject
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, TaiUser}
+import controllers.auth.AuthAction
+import javax.inject.Inject
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.frontend.controller.UnauthorisedAction
+import uk.gov.hmrc.play.bootstrap.controller.UnauthorisedAction
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.UserDetailsConnector
-import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-class ServiceController @Inject()(userDetailsConnector: UserDetailsConnector,
-                                  authenticate: AuthAction,
+class ServiceController @Inject()(authenticate: AuthAction,
                                   validatePerson: ValidatePerson,
                                   override implicit val partialRetriever: FormPartialRetriever,
                                   override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
@@ -46,17 +44,12 @@ class ServiceController @Inject()(userDetailsConnector: UserDetailsConnector,
 
   def serviceSignout = (authenticate andThen validatePerson).async {
     implicit request =>
-      val userDetails: String = request.taiUser.userDetailsUri
 
-      userDetailsConnector.userDetails(userDetails).map { x =>
-        if (x.hasVerifyAuthProvider) {
-          Redirect(ApplicationConfig.citizenAuthFrontendSignOutUrl).
-            withSession(TaiConstants.SessionPostLogoutPage -> ApplicationConfig.feedbackSurveyUrl)
-        } else {
-          Redirect(ApplicationConfig.companyAuthFrontendSignOutUrl)
-        }
-      } recover {
-        case NonFatal(e) => internalServerError("", Some(e))
+      if (request.taiUser.providerType == TaiConstants.AuthProviderVerify) {
+        Future.successful(Redirect(ApplicationConfig.citizenAuthFrontendSignOutUrl).
+          withSession(TaiConstants.SessionPostLogoutPage -> ApplicationConfig.feedbackSurveyUrl))
+      } else {
+        Future.successful(Redirect(ApplicationConfig.companyAuthFrontendSignOutUrl))
       }
   }
 

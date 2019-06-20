@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.google.inject.{Inject, Singleton}
+import javax.inject.{Inject, Singleton}
 import play.api.http.HttpErrorHandler
 
 @Singleton

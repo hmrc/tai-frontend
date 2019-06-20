@@ -16,7 +16,7 @@
 
 package controllers.income.bbsi
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
@@ -28,9 +28,6 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.BankAccount
