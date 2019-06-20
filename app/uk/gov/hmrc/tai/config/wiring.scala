@@ -37,7 +37,6 @@ trait HttpClient extends HttpGet with HttpPut with HttpPost with HttpDelete with
 class ProxyHttpClient @Inject()(config: Configuration,
                                 override val auditConnector: Auditing,
                                 override val wsClient: WSClient,
-                                defaultWSProxyServer: DefaultWSProxyServer,
                                 override protected val actorSystem: ActorSystem)
   extends HttpClient
     with WSHttp
@@ -52,8 +51,8 @@ class ProxyHttpClient @Inject()(config: Configuration,
 
   override val hooks: Seq[HttpHook] = Seq(AuditingHook)
 
-  override def wsProxyServer: Option[WSProxyServer] = Some(defaultWSProxyServer)
-}
+  override def wsProxyServer: Option[WSProxyServer] = WSProxyConfiguration("proxy", config)
+  }
 
 class TaiHtmlPartialRetriever @Inject()(sessionCookieCrypto: SessionCookieCrypto, http: DefaultHttpClient) extends FormPartialRetriever {
   override val httpGet = http
