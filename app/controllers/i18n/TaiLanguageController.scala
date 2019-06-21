@@ -42,5 +42,5 @@ class TaiLanguageController @Inject()(authenticate: AuthAction,
     "cymraeg" -> Lang("cy")
   )
 
-  override protected def fallbackURL: String = controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url
+  override protected def fallbackURL: String = controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url
 }
