@@ -22,7 +22,6 @@ import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.{Environment, Mode}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.Generator
@@ -72,7 +71,7 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
         result.header.headers("Set-Cookie") must include("PLAY_LANG=en;")
       }
       "the requested language is supported, but the welsh language feature toggle is not enabled" in {
-        val result = Await.result(new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
+        val result = Await.result(new SUT(false).switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
         result.header.headers.isDefinedAt("Set-Cookie") mustBe true
         result.header.headers("Set-Cookie") must include("PLAY_LANG=en;")
       }
@@ -81,12 +80,13 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
 
   private val nino = new Generator(new Random).nextNino
 
-  private class SUT() extends TaiLanguageController(
+  private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController(
     FakeAuthAction,
     FakeValidatePerson,
     mock[FormPartialRetriever],
-    MockTemplateRenderer,
-    Environment.simple(mode = Mode.Dev)
-  )
+    MockTemplateRenderer
+  ) {
+    override val isWelshEnabled = welshEnabled
+  }
 
 }

@@ -22,7 +22,6 @@ import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.scalatest.mockito.MockitoSugar._
 import org.scalatestplus.play.PlaySpec
-import play.api.{Environment, Mode}
 import play.api.i18n.{I18nSupport, Lang, Messages, MessagesApi}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -176,11 +175,10 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
   object TaxCodeDescriptorConcrete extends TaxCodeDescriptor
   val personService: PersonService = mock[PersonService]
 
-  private class SUT extends TaiLanguageController(
+  private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController(
     FakeAuthAction,
     FakeValidatePerson,
     mock[FormPartialRetriever],
-    MockTemplateRenderer,
-    Environment.simple(mode = Mode.Dev)
+    MockTemplateRenderer
   )
 }
