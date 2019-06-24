@@ -264,25 +264,29 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
       implicit val user = request.taiUser
 
       try {
-        journeyCacheService.collectedValues(
+        journeyCacheService.collectedJourneyValues(
           Seq(AddPensionProvider_NameKey, AddPensionProvider_StartDateKey, AddPensionProvider_PayrollNumberKey, AddPensionProvider_TelephoneQuestionKey),
           Seq(AddPensionProvider_TelephoneNumberKey)
         ) map tupled { (mandatoryVals, optionalVals) =>
 
-          val model = CheckYourAnswersViewModel(
-            mandatoryVals.head,
-            mandatoryVals(1),
-            mandatoryVals(2),
-            mandatoryVals(3),
-            optionalVals.head
-          )
-          Ok(views.html.pensions.addPensionCheckYourAnswers(model))
+          mandatoryVals match {
+            case Right(mandatoryValues) => {
+              val model = CheckYourAnswersViewModel(
+                mandatoryValues.head,
+                mandatoryValues(1),
+                mandatoryValues(2),
+                mandatoryValues(3),
+                optionalVals.head
+              )
+              Ok(views.html.pensions.addPensionCheckYourAnswers(model))
+            }
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          }
         }
       } catch {
         case NonFatal(e) => Future.successful(internalServerError(e.getMessage))
       }
   }
-
 
   def submitYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>

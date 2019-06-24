@@ -378,15 +378,34 @@ class EndEmploymentControllerSpec
       "show the check your answers page" in {
         val endEmploymentTest = createEndEmploymentTest
 
-        val dataFromCache = (Seq("0", new LocalDate(2017, 2, 1).toString, "No"), Seq(Some("EXT-TEST")))
+        val dataFromCache = (Right(Seq("0", new LocalDate(2017, 2, 1).toString, "No")), Seq(Some("EXT-TEST")))
 
-        when(endEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(dataFromCache))
+        when(endEmploymentJourneyCacheService.collectedJourneyValues(any(classOf[scala.collection.immutable.List[String]]),
+          any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(Future.successful(dataFromCache))
 
         val result = endEmploymentTest.endEmploymentCheckYourAnswers()(fakeGetRequest)
         val doc = Jsoup.parse(contentAsString(result))
 
         status(result) mustBe OK
         doc.title() must include(Messages("tai.endEmploymentConfirmAndSend.heading"))
+      }
+
+      "redirect to the summary page if a value is missing from the cache " in {
+
+        val endEmploymentTest = createEndEmploymentTest
+
+        when(endEmploymentJourneyCacheService.collectedJourneyValues(any(classOf[scala.collection.immutable.List[String]]),
+          any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
+          Future.successful((
+            Left("An error has occurred"),
+            Seq[Option[String]](Some("123456789"))
+          ))
+        )
+
+        val result = endEmploymentTest.endEmploymentCheckYourAnswers()(fakeGetRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
       }
 
       "submit the details to backend" in {

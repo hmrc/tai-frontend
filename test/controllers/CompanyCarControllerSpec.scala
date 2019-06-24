@@ -58,7 +58,7 @@ class CompanyCarControllerSpec extends PlaySpec
     "Successfully present the update/remove company car view" when {
       "GET'ing the getCompanyCarDetails endpoint with an authorised session" in {
         val sut = createSUT()
-        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
+        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(Right(1)))
         when(companyCarService.beginJourney(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(carWithoutFuelBenCache)))
 
         val result = sut.getCompanyCarDetails()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -71,13 +71,23 @@ class CompanyCarControllerSpec extends PlaySpec
     "redirect to companyCarService" when{
       "the service returns TaiCompanyCarWithdrawnDateFoundResponse" in{
         val sut = createSUT()
-        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
+        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(Right(1)))
         when(companyCarService.beginJourney(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(
           TaiNoCompanyCarFoundResponse("A car with date withdrawn found!")))
 
         val result = sut.getCompanyCarDetails()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe ApplicationConfig.companyCarServiceUrl
+      }
+
+      "redirect to the tax summary page if a value is missing from the cache " in {
+
+        val sut = createSUT()
+        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(Left("Cache missing mandatory values")))
+
+        val result = sut.getCompanyCarDetails()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
 

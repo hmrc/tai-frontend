@@ -55,17 +55,17 @@ class CompanyCarController @Inject()(companyCarService: CompanyCarService,
 
   def getCompanyCarDetails: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request: AuthenticatedRequest[AnyContent] =>
-      for {
-        empId <- companyCarService.companyCarEmploymentId
-        response <- companyCarService.beginJourney(request.taiUser.nino, empId)
-      } yield {
-        implicit val user = request.taiUser
-        response match {
-          case TaiSuccessResponseWithPayload(x: Map[String, String]) =>
-            Ok(views.html.benefits.updateCompanyCar(UpdateOrRemoveCarForm.createForm, CompanyCarChoiceViewModel(x)))
-          case TaiNoCompanyCarFoundResponse(_) =>
-            Redirect(ApplicationConfig.companyCarServiceUrl)
+      implicit val user = request.taiUser
+      companyCarService.companyCarEmploymentId flatMap {
+        case Right(employmentId) => {
+          companyCarService.beginJourney(request.taiUser.nino, employmentId) map {
+            case TaiSuccessResponseWithPayload(x: Map[String, String]) =>
+              Ok(views.html.benefits.updateCompanyCar(UpdateOrRemoveCarForm.createForm, CompanyCarChoiceViewModel(x)))
+            case TaiNoCompanyCarFoundResponse(_) =>
+              Redirect(ApplicationConfig.companyCarServiceUrl)
+          }
         }
+        case Left(_) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
       }
   }
 

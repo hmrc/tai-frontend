@@ -34,6 +34,7 @@ import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
@@ -49,7 +50,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
                                            @Named("Update Employment") journeyCacheService: JourneyCacheService,
                                            @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
                                            override implicit val partialRetriever: FormPartialRetriever,
-                                           override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
+                                           override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController with Referral
   with JourneyCacheConstants
   with AuditConstants
   with FormValuesConstants {
@@ -156,18 +157,22 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
   def updateEmploymentCheckYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
-      journeyCacheService.collectedValues(Seq(UpdateEmployment_EmploymentIdKey, UpdateEmployment_NameKey,
+
+      journeyCacheService.collectedJourneyValues(Seq(UpdateEmployment_EmploymentIdKey, UpdateEmployment_NameKey,
         UpdateEmployment_EmploymentDetailsKey, UpdateEmployment_TelephoneQuestionKey),
         Seq(UpdateEmployment_TelephoneNumberKey)) map tupled { (mandatorySeq, optionalSeq) => {
-        Ok(views.html.employments.update.UpdateEmploymentCheckYourAnswers(UpdateEmploymentCheckYourAnswersViewModel(
-          mandatorySeq.head.toInt,
-          mandatorySeq(1),
-          mandatorySeq(2),
-          mandatorySeq(3),
-          optionalSeq.head)))
-      }
-      }
 
+        mandatorySeq match {
+          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          case Right(mandatoryValues) => Ok(views.html.employments.update.UpdateEmploymentCheckYourAnswers(UpdateEmploymentCheckYourAnswersViewModel(
+            mandatoryValues.head.toInt,
+            mandatoryValues(1),
+            mandatoryValues(2),
+            mandatoryValues(3),
+            optionalSeq.head)))
+        }
+      }
+    }
   }
 
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {
