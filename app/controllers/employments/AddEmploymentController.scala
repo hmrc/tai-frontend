@@ -20,7 +20,7 @@ import com.google.inject.name.Named
 import javax.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
@@ -262,23 +262,18 @@ class AddEmploymentController @Inject()(auditService: AuditService,
           Seq(AddEmployment_NameKey,AddEmployment_StartDateKey,AddEmployment_PayrollNumberKey, AddEmployment_TelephoneQuestionKey),
           Seq(AddEmployment_TelephoneNumberKey)
         ) map tupled { (mandatoryVals, optionalVals) =>
-
           mandatoryVals match {
-
             case Right(mandatoryValues) => {
               val model =
                 IncomeCheckYourAnswersViewModel(Messages("add.missing.employment"), mandatoryValues.head, mandatoryValues(1), mandatoryValues(2), mandatoryValues(3), optionalVals.head,
                   controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
                   controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,
                   controllers.employments.routes.AddEmploymentController.cancel().url)
-              implicit val user = request.taiUser
+              implicit val user: AuthedUser = request.taiUser
               Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
             }
             case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           }
-
-
-
         }
   }
 

@@ -53,6 +53,7 @@ class JourneyCacheService @Inject() (val journeyName: String,
     mandatoryJourneyValueAs[Int](key, string => string.toInt)
   }
 
+  @deprecated("Use mandatoryJourneyValueAsInt")
   def mandatoryValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Int] = {
     mandatoryValueAs[Int](key, string => string.toInt)
   }
@@ -111,7 +112,7 @@ class JourneyCacheService @Inject() (val journeyName: String,
 
     val allPresentValues = mandatoryValues flatMap { key =>
       cache.get(key) match {
-        case Some(str) if !str.trim.isEmpty => Some(str)
+        case Some(str) if str.trim.nonEmpty => Some(str)
         case _ => {
           Logger.warn(s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
           None
