@@ -43,8 +43,8 @@ case class AnnualAccount (
   })
 
 
-  private def maxPayment(maxPayment: => BigDecimal): BigDecimal = {
-    if (payments.isEmpty) BigDecimal(0) else maxPayment
+  private def maxPayment(maximumPayment: => BigDecimal): BigDecimal = {
+    if (payments.isEmpty) 0 else maximumPayment
   }
 
 }
