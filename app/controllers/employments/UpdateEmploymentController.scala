@@ -119,14 +119,16 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       for {
-        employmentId <- journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey)
+        employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey)
         telephoneCache <- journeyCacheService.optionalValues(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey)
       } yield {
         implicit val user = request.taiUser
-        Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId),
-          YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
+        employmentId match {
+          case Right(empId) => Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(empId),
+              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
+          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+        }
       }
-
   }
 
   def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -163,13 +165,13 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
         Seq(UpdateEmployment_TelephoneNumberKey)) map tupled { (mandatorySeq, optionalSeq) => {
 
         mandatorySeq match {
-          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           case Right(mandatoryValues) => Ok(views.html.employments.update.UpdateEmploymentCheckYourAnswers(UpdateEmploymentCheckYourAnswersViewModel(
             mandatoryValues.head.toInt,
             mandatoryValues(1),
             mandatoryValues(2),
             mandatoryValues(3),
             optionalSeq.head)))
+          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
         }
       }
     }
