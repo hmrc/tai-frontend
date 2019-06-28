@@ -27,8 +27,12 @@ case class AnnualAccount (
                            payments: Seq[Payment],
                            endOfTaxYearUpdates: Seq[EndOfTaxYearUpdate]) {
 
-  lazy val totalIncomeYearToDate: BigDecimal = maxPayment(payments.max.amountYearToDate)
-  lazy val totalTaxPaidYearToDate: BigDecimal = maxPayment(payments.max.taxAmountYearToDate)
+  lazy val totalIncomeYearToDate: BigDecimal =
+    if (payments.isEmpty) 0 else payments.max.amountYearToDate
+
+  lazy val totalTaxPaidYearToDate: BigDecimal = {
+    payments.max.taxAmountYearToDate
+  }
 
   lazy val employerDesignation = {
     val split = key.split("-")
@@ -41,12 +45,6 @@ case class AnnualAccount (
     latestPayment.payFrequency == Irregular || latestPayment.payFrequency == Annually ||
       latestPayment.payFrequency == BiAnnually
   })
-
-
-  private def maxPayment(maximumPayment: => BigDecimal): BigDecimal = {
-    if (payments.isEmpty) 0 else maximumPayment
-  }
-
 }
 
 
