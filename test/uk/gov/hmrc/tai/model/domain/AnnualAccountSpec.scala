@@ -69,6 +69,11 @@ class AnnualAccountSpec extends PlaySpec {
         SutWithMultiplePayments.totalTaxPaidYearToDate mustBe 2500
       }
     }
+    "return zero for the latest year to date value" when {
+      "there are no payments" in {
+        SutWithNoPayments.totalTaxPaidYearToDate mustBe 0
+      }
+    }
   }
 
   "latestPayment" must {
