@@ -50,6 +50,7 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
     implicit request =>
 
       implicit val user = request.taiUser
+
       val nino = user.nino
 
       auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> nino.toString()))

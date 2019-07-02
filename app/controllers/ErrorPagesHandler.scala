@@ -152,6 +152,7 @@ trait ErrorPagesHandler {
 
         case e: Upstream5xxResponse => {
           Logger.warn(s"<Upstream5xxResponse> - $methodName nino $nino")
+          println("\n\n\n\n\n upstream")
           Future.successful(InternalServerError(error5xx(
             Messages("tai.technical.error.npsdown.message"))))
         }
