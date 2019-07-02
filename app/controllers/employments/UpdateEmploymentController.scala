@@ -55,6 +55,8 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
   with AuditConstants
   with FormValuesConstants {
 
+  private lazy val emptyCacheRedirect = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       journeyCacheService.flush() map { _ =>
@@ -126,7 +128,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
         employmentId match {
           case Right(empId) => Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(empId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
-          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          case Left(_) => emptyCacheRedirect
         }
       }
   }
@@ -171,7 +173,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
             mandatoryValues(2),
             mandatoryValues(3),
             optionalSeq.head)))
-          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          case Left(_) => emptyCacheRedirect
         }
       }
     }

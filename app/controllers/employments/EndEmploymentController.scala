@@ -60,6 +60,8 @@ class EndEmploymentController @Inject()(auditService: AuditService,
   with IrregularPayConstants
   with AuditConstants {
 
+  private lazy val emptyCacheRedirect = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       journeyCacheService.flush() map { _ =>
@@ -208,15 +210,20 @@ class EndEmploymentController @Inject()(auditService: AuditService,
     implicit request =>
       implicit val user = request.taiUser
       val nino = Nino(user.getNino)
-      journeyCacheService.collectedValues(Seq(EndEmployment_NameKey, EndEmployment_EmploymentIdKey),
+      journeyCacheService.collectedJourneyValues(Seq(EndEmployment_NameKey, EndEmployment_EmploymentIdKey),
         Seq(EndEmployment_EndDateKey)) map tupled { (mandatorySeq, optionalSeq) => {
-        optionalSeq match {
-          case Seq(Some(date)) => Ok(views.html.employments.endEmployment(EmploymentEndDateForm(mandatorySeq(0))
-            .form.fill(new LocalDate(date)), EmploymentViewModel(mandatorySeq(0), mandatorySeq(1).toInt)))
-          case _ => Ok(views.html.employments.endEmployment(EmploymentEndDateForm(mandatorySeq(0)).form,
-            EmploymentViewModel(mandatorySeq(0), mandatorySeq(1).toInt)))
+          mandatorySeq match {
+            case Right(mandatorySequence) => {
+              optionalSeq match {
+                case Seq(Some(date)) => Ok(views.html.employments.endEmployment(EmploymentEndDateForm(mandatorySequence(0))
+                  .form.fill(new LocalDate(date)), EmploymentViewModel(mandatorySequence(0), mandatorySequence(1).toInt)))
+                case _ => Ok(views.html.employments.endEmployment(EmploymentEndDateForm(mandatorySequence(0)).form,
+                  EmploymentViewModel(mandatorySequence(0), mandatorySequence(1).toInt)))
+              }
+            }
+            case Left(_) => emptyCacheRedirect
+          }
         }
-      }
       }
   }
 
@@ -248,11 +255,16 @@ class EndEmploymentController @Inject()(auditService: AuditService,
       implicit val user = request.taiUser
 
       for {
-        employmentId <- journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey)
+        employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey)
         telephoneCache <- journeyCacheService.optionalValues(EndEmployment_TelephoneQuestionKey, EndEmployment_TelephoneNumberKey)
       } yield {
-        Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId),
-          YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
+
+        employmentId match {
+          case Right(mandatoryEmploymentId) =>
+            Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(mandatoryEmploymentId),
+            YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
+          case Left(_) => emptyCacheRedirect
+        }
       }
   }
 
@@ -291,7 +303,6 @@ class EndEmploymentController @Inject()(auditService: AuditService,
         Seq(EndEmployment_TelephoneNumberKey)) map tupled { (mandatorySeq, optionalSeq) =>
 
         mandatorySeq match {
-          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           case Right(mandatoryValues) => {
 
             val model = IncomeCheckYourAnswersViewModel(mandatoryValues(0).toInt, Messages("tai.endEmployment.preHeadingText"),
@@ -301,6 +312,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
               controllers.employments.routes.EndEmploymentController.cancel(mandatoryValues.head.toInt).url)
             Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
           }
+          case Left(_) => emptyCacheRedirect
         }
       }
   }
