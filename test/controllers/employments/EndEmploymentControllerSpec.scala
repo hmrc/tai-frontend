@@ -71,8 +71,8 @@ class EndEmploymentControllerSpec
       val endEmploymentTest = createEndEmploymentTest
       val employmentId = 1
 
-      when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-        .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
       val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
       val doc = Jsoup.parse(contentAsString(result))
@@ -80,6 +80,19 @@ class EndEmploymentControllerSpec
       status(result) mustBe OK
       doc.title() must include(Messages("tai.employment.decision.customGaTitle"))
     }
+
+    "redirect to the tax summary page if a value is missing from the cache " in {
+      val endEmploymentTest = createEndEmploymentTest
+
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Left("Mandatory values missing from cache")))
+
+      val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+    }
+
   }
 
   "handleEmploymentUpdateRemove" must {
@@ -641,14 +654,26 @@ class EndEmploymentControllerSpec
       val endEmploymentTest = createEndEmploymentTest
       val employmentId = 1
 
-      when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-        .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
       val result = endEmploymentTest.duplicateSubmissionWarning(fakeGetRequest)
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
       doc.title() must include(Messages("tai.employment.warning.customGaTitle"))
+    }
+
+    "redirect to the tax summary page if a value is missing from the cache " in {
+      val endEmploymentTest = createEndEmploymentTest
+
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Left("Mandatory values missing from cache")))
+
+      val result = endEmploymentTest.duplicateSubmissionWarning(fakeGetRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
     }
   }
 
