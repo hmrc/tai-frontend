@@ -18,8 +18,10 @@ package views.html
 
 import controllers.routes
 import play.api.i18n.Messages
+import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 
@@ -31,7 +33,7 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
   "previousYearUnderpaymentView" must {
 
     behave like pageWithCombinedHeader(
-      Messages("understand.your.tax"),
+      Messages("tai.iya.tax.you.owe.preHeading"),
       Messages("tai.previous.year.underpayment.title"))
 
     behave like pageWithTitle(Messages("tai.previous.year.underpayment.title"))
@@ -40,30 +42,27 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
 
     "display paragraphs" in {
 
-      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para1"))
-      doc must haveParagraphWithText(Messages(
-        "tai.previous.year.underpayment.para2",
-        previousTaxYear.year.toString,
-        previousTaxYear.next.year.toString,
-        shouldHavePaid,
-        actuallyPaid
-      ))
+      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p1", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(-1)))
+      doc must haveSpanWithText(poundedAmountDue)
+      doc must haveH2HeadingWithText(Messages("tai.previous.year.underpayment.h1"))
 
-      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para3", allowanceReducedBy, amountDue))
-      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para4", allowanceReducedBy))
-      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para5"))
+      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p2", allowanceReducedBy, Dates.formatDate(TaxYear().end), poundedAmountDue))
 
+      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p3"))
+
+      doc must haveH2HeadingWithText(Messages("tai.previous.year.underpayment.h2"))
+
+      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p5"))
     }
   }
 
-  val shouldHavePaid = 1000
-  val actuallyPaid = 900
   val allowanceReducedBy = 500
-  val amountDue = 100
-  val previousTaxYear = TaxYear(2016)
+  val poundedAmountDue = "£100.00"
 
   val test = Dates.formatDate(TaxYear().start)
 
-  override def view = previousYearUnderpayment(PreviousYearUnderpaymentViewModel(shouldHavePaid, actuallyPaid, allowanceReducedBy, amountDue, previousTaxYear))
+
+  override def view = previousYearUnderpayment(PreviousYearUnderpaymentViewModel(allowanceReducedBy, poundedAmountDue, Html("some-link")))
 
 }

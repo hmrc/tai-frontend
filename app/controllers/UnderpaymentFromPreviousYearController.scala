@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.Play.current
@@ -28,6 +28,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
+import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 import views.html.previousYearUnderpayment
 
@@ -39,7 +40,8 @@ class UnderpaymentFromPreviousYearController @Inject()(codingComponentService: C
                                                        authenticate: AuthAction,
                                                        validatePerson: ValidatePerson,
                                                        override implicit val partialRetriever: FormPartialRetriever,
-                                                       override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
+                                                       override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
+  with Referral {
 
   def underpaymentExplanation = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -58,7 +60,9 @@ class UnderpaymentFromPreviousYearController @Inject()(codingComponentService: C
       } yield {
         totalTax match {
           case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
-            Ok(previousYearUnderpayment(PreviousYearUnderpaymentViewModel(codingComponents, employments, totalTax)))
+            val model = PreviousYearUnderpaymentViewModel(codingComponents, employments, totalTax, referer, resourceName)
+
+            Ok(previousYearUnderpayment(model))
           case _ => throw new RuntimeException("Failed to fetch total tax details")
         }
       }

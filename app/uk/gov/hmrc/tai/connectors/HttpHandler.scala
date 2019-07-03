@@ -16,18 +16,18 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import play.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Writes}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.tai.config.WSHttp
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-class HttpHandler @Inject()(val http: WSHttp) {
+class HttpHandler @Inject()(val http: DefaultHttpClient) {
 
   def getFromApi(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
 

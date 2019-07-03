@@ -16,8 +16,7 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
-import com.google.inject.Inject
-import com.google.inject.name.Named
+import javax.inject.{Inject, Named}
 import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -89,8 +88,8 @@ class CompanyCarService @Inject() (carConnector: CompanyCarConnector,
     }
   }
 
-  def companyCarEmploymentId(implicit hc: HeaderCarrier): Future[Int] = {
-    journeyCacheService.mandatoryValueAsInt(CompanyCar_EmployerIdKey)
+  def companyCarEmploymentId(implicit hc: HeaderCarrier): Future[Either[String, Int]] = {
+    journeyCacheService.mandatoryJourneyValueAsInt(CompanyCar_EmployerIdKey)
   }
 
   def withdrawCompanyCarAndFuel(nino: Nino, referer: String)(implicit hc: HeaderCarrier): Future[TaiResponse] = {

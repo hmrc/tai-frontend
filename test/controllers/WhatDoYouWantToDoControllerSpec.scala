@@ -16,8 +16,8 @@
 
 package controllers
 
-import controllers.actions.FakeValidatePerson
 import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -30,7 +30,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.{controllers, _}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
@@ -181,7 +181,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
         verify(employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include("Sorry, there is a problem so you can’t use this service")
+        doc.title() must include("Sorry, there is a problem so you cannot use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
       }
@@ -212,7 +212,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include("Sorry, there is a problem so you can’t use this service")
+        doc.title() must include("Sorry, there is a problem so you cannot use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
       }
@@ -231,7 +231,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
         verify(employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include("Sorry, there is a problem so you can’t use this service")
+        doc.title() must include("Sorry, there is a problem so you cannot use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
       }
@@ -422,7 +422,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
     override val cyPlusOneEnabled: Boolean = isCyPlusOneEnabled
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))

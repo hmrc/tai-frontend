@@ -16,8 +16,7 @@
 
 package controllers.pensions
 
-import com.google.inject.Inject
-import com.google.inject.name.Named
+import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
@@ -150,7 +149,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
       } yield {
         val user = Some(request.taiUser)
 
-        Ok(views.html.can_we_contact_by_phone(user, None, telephoneNumberViewModel(pensionId),
+        Ok(views.html.can_we_contact_by_phone(user, telephoneNumberViewModel(pensionId),
           YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
       }
   }
@@ -164,7 +163,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             val user = Some(request.taiUser)
-            BadRequest(views.html.can_we_contact_by_phone(user, None, telephoneNumberViewModel(currentCache(UpdatePensionProvider_IdKey).toInt), formWithErrors))
+            BadRequest(views.html.can_we_contact_by_phone(user, telephoneNumberViewModel(currentCache(UpdatePensionProvider_IdKey).toInt), formWithErrors))
           }
         },
         form => {
@@ -182,7 +181,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
 
   def checkYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      journeyCacheService.collectedValues(
+      journeyCacheService.collectedJourneyValues(
         Seq(
           UpdatePensionProvider_IdKey,
           UpdatePensionProvider_NameKey,
@@ -191,17 +190,26 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
           UpdatePensionProvider_TelephoneQuestionKey),
         Seq(UpdatePensionProvider_TelephoneNumberKey)
       ) map tupled { (mandatorySeq, optionalSeq) => {
-        implicit val user = request.taiUser
 
-        Ok(views.html.pensions.update.updatePensionCheckYourAnswers(UpdatePensionCheckYourAnswersViewModel(
-          mandatorySeq.head.toInt,
-          mandatorySeq(1),
-          mandatorySeq(2),
-          mandatorySeq(3),
-          mandatorySeq(4),
-          optionalSeq.head)))
+        mandatorySeq match {
+
+          case Right(mandatoryValues) => {
+
+            implicit val user = request.taiUser
+
+            Ok(views.html.pensions.update.updatePensionCheckYourAnswers(UpdatePensionCheckYourAnswersViewModel(
+              mandatoryValues.head.toInt,
+              mandatoryValues(1),
+              mandatoryValues(2),
+              mandatoryValues(3),
+              mandatoryValues(4),
+              optionalSeq.head)))
+            }
+
+          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+        }
       }
-      }
+    }
   }
 
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import javax.inject.Singleton
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.domain.Nino

@@ -16,31 +16,19 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import uk.gov.hmrc.tai.config.WSHttp
 import uk.gov.hmrc.tai.model.UserDetails
 
 import scala.concurrent.Future
 
-class UserDetailsConnector @Inject()(val http: WSHttp) {
+class UserDetailsConnector @Inject()(val http: DefaultHttpClient) {
 
   def userDetails(userDetailsUri: String)(implicit hc: HeaderCarrier): Future[UserDetails] = {
     Logger.debug(s"Calling User Details with uri: $userDetailsUri")
     http.GET[UserDetails](userDetailsUri)
-  }
-
-  // TODO delete this post auth update
-  def userDetails(authContext: AuthContext)(implicit hc: HeaderCarrier): Future[UserDetails] = {
-    authContext.userDetailsUri match {
-      case Some(ud: String) =>
-        userDetails(ud)
-      case _ =>
-        Logger.info("User details URI couldn't be found!!!")
-        Future.failed(new RuntimeException("User details URI couldn't be found!!!"))
-    }
   }
 }

@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.urls.Link
 
-@(employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
+@(employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"We can’t add this employer yet"}
 
@@ -35,7 +35,6 @@
 
 @main(
   title = Messages("tai.addEmployment.employmentErrorPage.title"),
-  user = None,
   authedUser = Some(user),
   pageHeader = Some(header),
   articleClasses = None,

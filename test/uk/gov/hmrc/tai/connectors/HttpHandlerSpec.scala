@@ -25,7 +25,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.http.Status._
 import play.api.libs.json.{Format, JsString, Json}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.tai.config.WSHttp
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -285,7 +285,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
   private val UnknownErrorHttpResponse: HttpResponse = HttpResponse(418, Some(JsString("unknown response")), Map("ETag" -> Seq("34")))
 
   private def createSUT = new HttpHandlerTest()
-  val http = mock[WSHttp]
+  val http = mock[DefaultHttpClient]
   
   private class HttpHandlerTest() extends HttpHandler(http)
 }

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package uk.gov.hmrc.tai.model.domain
 
-import uk.gov.hmrc.tai.config.{AuditConnector, FrontEndDelegationConnector, FrontendAuthConnector}
+import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 
-trait AuthenticationConnectors {
+case class TaxedIncome(taxCodeIncome: TaxCodeIncome, employment: Employment)
 
-  lazy val auditConnector = AuditConnector
-  lazy val authConnector = FrontendAuthConnector
-  lazy val delegationConnector = FrontEndDelegationConnector
-
+object TaxedIncome {
+  implicit val format: Format[TaxedIncome] = Json.format[TaxedIncome]
 }

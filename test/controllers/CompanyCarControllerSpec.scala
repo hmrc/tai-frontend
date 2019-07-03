@@ -16,10 +16,9 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -28,21 +27,15 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, SessionKeys}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.forms.benefits.DateForm
+import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.service.SessionService
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.service.{PersonService, SessionService}
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.Future
@@ -65,7 +58,7 @@ class CompanyCarControllerSpec extends PlaySpec
     "Successfully present the update/remove company car view" when {
       "GET'ing the getCompanyCarDetails endpoint with an authorised session" in {
         val sut = createSUT()
-        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
+        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(Right(1)))
         when(companyCarService.beginJourney(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(carWithoutFuelBenCache)))
 
         val result = sut.getCompanyCarDetails()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -78,13 +71,23 @@ class CompanyCarControllerSpec extends PlaySpec
     "redirect to companyCarService" when{
       "the service returns TaiCompanyCarWithdrawnDateFoundResponse" in{
         val sut = createSUT()
-        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
+        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(Right(1)))
         when(companyCarService.beginJourney(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(
           TaiNoCompanyCarFoundResponse("A car with date withdrawn found!")))
 
         val result = sut.getCompanyCarDetails()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe ApplicationConfig.companyCarServiceUrl
+      }
+
+      "redirect to the tax summary page if a value is missing from the cache " in {
+
+        val sut = createSUT()
+        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(Left("Cache missing mandatory values")))
+
+        val result = sut.getCompanyCarDetails()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
 
@@ -166,8 +169,6 @@ class CompanyCarControllerSpec extends PlaySpec
     CompanyCar_CarProviderKey -> "jobs done",
     CompanyCar_DateStartedKey -> "2015-7-7",
     CompanyCar_HasActiveFuelBenefitdKey -> "false")
-
-  val fakeAuthority = AuthBuilder.createFakeAuthority(fakeNino.nino)
 
   def createSUT(isCompanyCarForceRedirectEnabled: Boolean = false) = new SUT(isCompanyCarForceRedirectEnabled)
 

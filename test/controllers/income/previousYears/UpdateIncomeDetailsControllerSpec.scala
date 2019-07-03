@@ -16,7 +16,7 @@
 
 package controllers.income.previousYears
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.{RequestBuilder}
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
@@ -32,8 +32,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.TaxYear
@@ -247,9 +245,9 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
   "checkYourAnswers" must {
     "display check your answers containing populated values from the journey cache" in {
       val SUT = createSUT
-      when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+      when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
         Future.successful((
-          Seq[String]("2016", "whatYouToldUs", "Yes"),
+          Right(Seq[String]("2016", "whatYouToldUs", "Yes")),
           Seq[Option[String]](Some("123456789"))
         ))
       )
@@ -259,6 +257,25 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(Messages("tai.checkYourAnswers.title"))
     }
+
+    "redirect to the summary page if a value is missing from the cache " in {
+
+      val SUT = createSUT
+
+      when(journeyCacheService.collectedJourneyValues(any(classOf[scala.collection.immutable.List[String]]),
+        any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
+        Future.successful((
+          Left("An error has occurred"),
+          Seq[Option[String]](Some("123456789"))
+        ))
+      )
+
+      val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
+    }
+
   }
 
   "submit your answers" must {

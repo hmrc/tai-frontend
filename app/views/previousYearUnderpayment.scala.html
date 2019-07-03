@@ -19,6 +19,9 @@
 @import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 @import uk.gov.hmrc.urls.Link
 
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+@import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.play.views.formatting.Dates
 @(viewModel: PreviousYearUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Underpayment from previous year"}
@@ -28,7 +31,7 @@
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.previous.year.underpayment.title"),
-        preHeadingText = Messages("understand.your.tax")
+        preHeadingText = Messages("tai.iya.tax.you.owe.preHeading")
     )
 }
 
@@ -44,18 +47,24 @@
 <div class="grid-row">
     <div class="grid grid-2-3">
         <div class="inner-block">
-            <p class="lede">@Messages("tai.previous.year.underpayment.para1")</p>
-            <p>@Messages(
-                    "tai.previous.year.underpayment.para2",
-                    viewModel.previousTaxYear.year.toString,
-                    viewModel.previousTaxYear.next.year.toString,
-                    viewModel.shouldHavePaid,
-                    viewModel.actuallyPaid
-                )</p>
-            <p>@Messages("tai.previous.year.underpayment.para3", viewModel.allowanceReducedBy, viewModel.amountDue)</p>
-            <p>@Messages("tai.previous.year.underpayment.para4", viewModel.allowanceReducedBy)</p>
-            <p>@Messages("tai.previous.year.underpayment.para5")</p>
+            <p>@messages("tai.previous.year.underpayment.p1", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(-1))</p>
 
+            <p>@messages("tai.previous.year.underpayment.you.owe")
+                <span class="display-block bold-large">@viewModel.poundedAmountDue</span>
+            </p>
+
+            <h2>@messages("tai.previous.year.underpayment.h1")</h2>
+
+            <p>@messages("tai.previous.year.underpayment.p2", viewModel.allowanceReducedBy, Dates.formatDate(TaxYear().end), viewModel.poundedAmountDue)</p>
+
+            <p>@messages("tai.previous.year.underpayment.p3")</p>
+
+            <h2>@messages("tai.previous.year.underpayment.h2")</h2>
+
+            <p>@messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRangeSingleLine)</p>
+            <p>@messages("tai.previous.year.underpayment.p5")</p>
+
+            <p>@viewModel.returnLink</p>
         </div>
     </div>
 </div>

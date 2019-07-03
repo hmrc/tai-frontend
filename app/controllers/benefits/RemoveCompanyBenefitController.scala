@@ -16,8 +16,8 @@
 
 package controllers.benefits
 
-import com.google.inject.Inject
 import com.google.inject.name.Named
+import javax.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
@@ -152,7 +152,7 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
           YesNoTextEntryForm(currentCache.get(EndCompanyBenefit_TelephoneQuestionKey), currentCache.get(EndCompanyBenefit_TelephoneNumberKey))
         )
 
-        Ok(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel, form))
+        Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, form))
       }
   }
 
@@ -169,7 +169,7 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
-            BadRequest(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel, formWithErrors))
+            BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors))
           }
         },
         form => {
@@ -192,7 +192,7 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
 
       implicit val user = request.taiUser
 
-      journeyCacheService.collectedValues(
+      journeyCacheService.collectedJourneyValues(
         Seq(
           EndCompanyBenefit_EmploymentNameKey,
           EndCompanyBenefit_BenefitNameKey,
@@ -204,26 +204,31 @@ class RemoveCompanyBenefitController @Inject()(@Named("End Company Benefit") jou
           EndCompanyBenefit_TelephoneNumberKey
         )) map tupled { (mandatorySeq, optionalSeq) => {
 
+        mandatorySeq match {
+          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          case Right(mandatoryValues) => {
 
-        val stopDate = {
-          val startOfTaxYear = Dates.formatDate(TaxYear().start)
+            val stopDate = {
+              val startOfTaxYear = Dates.formatDate(TaxYear().start)
 
-          mandatorySeq(2) match {
-            case OnOrAfterTaxYearEnd => Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
-            case BeforeTaxYearEnd=> Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
+              mandatoryValues(2) match {
+                case OnOrAfterTaxYearEnd => Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
+                case BeforeTaxYearEnd=> Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
+              }
+            }
+
+            Ok(removeCompanyBenefitCheckYourAnswers(
+              RemoveCompanyBenefitCheckYourAnswersViewModel(
+                mandatoryValues(0),
+                mandatoryValues(1),
+                stopDate,
+                optionalSeq(0),
+                mandatoryValues(3),
+                optionalSeq(1))))
           }
         }
-
-        Ok(removeCompanyBenefitCheckYourAnswers(
-          RemoveCompanyBenefitCheckYourAnswersViewModel(
-            mandatorySeq(0),
-            mandatorySeq(1),
-            stopDate,
-            optionalSeq(0),
-            mandatorySeq(3),
-            optionalSeq(1))))
       }
-      }
+    }
   }
 
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {

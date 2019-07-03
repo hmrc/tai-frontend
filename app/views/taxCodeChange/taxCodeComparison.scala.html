@@ -46,7 +46,9 @@
     pageHeader = Some(header),
     authedUser = Some(user),
     gaCustomTitle = None,
-    gaSettings = GoogleAnalyticsSettings(dimensions = Some(taxCodeChangeViewModel.gaDimensions))) {
+    gaSettings = GoogleAnalyticsSettings(dimensions = Some(taxCodeChangeViewModel.gaDimensions)),
+    includeWebchatScript = false
+  ) {
 
     <div class="column-two-thirds">
         <div class="grid-row">

@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.tai.service.journeyCache
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.joda.time.LocalDate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
-
+import play.api.Logger
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -49,6 +49,11 @@ class JourneyCacheService @Inject() (val journeyName: String,
     mandatoryValueAs[String](key, identity)
   }
 
+  def mandatoryJourneyValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Either[String, Int]] = {
+    mandatoryJourneyValueAs[Int](key, string => string.toInt)
+  }
+
+  @deprecated("Use mandatoryJourneyValueAsInt")
   def mandatoryValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Int] = {
     mandatoryValueAs[Int](key, string => string.toInt)
   }
@@ -65,7 +70,7 @@ class JourneyCacheService @Inject() (val journeyName: String,
     for {
       cache <- currentCache
     } yield {
-      mappedMandatory(cache, keys)
+      mappedMandatoryDeprecated(cache, keys)
     }
   }
 
@@ -77,7 +82,22 @@ class JourneyCacheService @Inject() (val journeyName: String,
     }
   }
 
-  def collectedValues(mandatoryValues: Seq[String], optionalValues: Seq[String])(implicit hc: HeaderCarrier): Future[(Seq[String], Seq[Option[String]])] = {
+  @deprecated("Use collectedJourneyValues")
+  def collectedValues(mandatoryValues: Seq[String], optionalValues: Seq[String])(implicit hc: HeaderCarrier):
+    Future[(Seq[String], Seq[Option[String]])] = {
+
+    for {
+      cache <- currentCache
+    } yield {
+      val mandatoryResult = mappedMandatoryDeprecated(cache, mandatoryValues)
+      val optionalResult = mappedOptional(cache, optionalValues)
+      (mandatoryResult, optionalResult)
+    }
+  }
+
+  def collectedJourneyValues(mandatoryValues: Seq[String], optionalValues: Seq[String])(implicit hc: HeaderCarrier):
+    Future[(Either[String, Seq[String]], Seq[Option[String]])]
+     = {
     for {
       cache <- currentCache
     } yield {
@@ -87,7 +107,24 @@ class JourneyCacheService @Inject() (val journeyName: String,
     }
   }
 
-  private def mappedMandatory(cache: Map[String, String], mandatoryValues: Seq[String]): Seq[String] = {
+
+  private def mappedMandatory(cache: Map[String, String], mandatoryValues: Seq[String]): Either[String, Seq[String]] = {
+
+    val allPresentValues = mandatoryValues flatMap { key =>
+      cache.get(key) match {
+        case Some(str) if str.trim.nonEmpty => Some(str)
+        case _ => {
+          Logger.warn(s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
+          None
+        }
+      }
+    }
+
+   if (allPresentValues.size == mandatoryValues.size) Right(allPresentValues) else Left("Mandatory values missing from cache")
+  }
+
+  @deprecated("Use mappedMandatory")
+  private def mappedMandatoryDeprecated(cache: Map[String, String], mandatoryValues: Seq[String]): Seq[String] = {
     mandatoryValues map { key =>
       cache.get(key) match {
         case Some(str) if !str.trim.isEmpty => str
@@ -113,6 +150,11 @@ class JourneyCacheService @Inject() (val journeyName: String,
     journeyCacheConnector.currentValueAs[T](journeyName, key, convert)
   }
 
+  def mandatoryJourneyValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[Either[String, T]] = {
+    journeyCacheConnector.mandatoryJourneyValueAs[T](journeyName, key, convert)
+  }
+
+  @deprecated("Use mandatoryJourneyValueAs")
   def mandatoryValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[T] = {
     journeyCacheConnector.mandatoryValueAs[T](journeyName, key, convert)
   }

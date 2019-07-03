@@ -16,11 +16,9 @@
 
 package controllers.pensions
 
-import com.google.inject.Inject
-import com.google.inject.name.Named
+import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.audit.Auditable
 import controllers.auth.AuthAction
 import org.joda.time.LocalDate
 import play.api.Play.current
@@ -55,7 +53,6 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
                                              @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
                                              override implicit val partialRetriever: FormPartialRetriever,
                                              override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with Auditable
   with JourneyCacheConstants
   with AuditConstants
   with FormValuesConstants {
@@ -234,7 +231,7 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
 
         val user = Some(request.taiUser)
 
-        Ok(views.html.can_we_contact_by_phone(user, None, contactPhonePensionProvider, YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
+        Ok(views.html.can_we_contact_by_phone(user, contactPhonePensionProvider, YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
       }
   }
 
@@ -247,7 +244,7 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
         Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
         formWithErrors => {
           val user = Some(request.taiUser)
-          Future.successful(BadRequest(views.html.can_we_contact_by_phone(user, None, contactPhonePensionProvider, formWithErrors)))
+          Future.successful(BadRequest(views.html.can_we_contact_by_phone(user, contactPhonePensionProvider, formWithErrors)))
         },
         form => {
           val mandatoryData = Map(AddPensionProvider_TelephoneQuestionKey -> Messages(s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
@@ -267,25 +264,29 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
       implicit val user = request.taiUser
 
       try {
-        journeyCacheService.collectedValues(
+        journeyCacheService.collectedJourneyValues(
           Seq(AddPensionProvider_NameKey, AddPensionProvider_StartDateKey, AddPensionProvider_PayrollNumberKey, AddPensionProvider_TelephoneQuestionKey),
           Seq(AddPensionProvider_TelephoneNumberKey)
         ) map tupled { (mandatoryVals, optionalVals) =>
 
-          val model = CheckYourAnswersViewModel(
-            mandatoryVals.head,
-            mandatoryVals(1),
-            mandatoryVals(2),
-            mandatoryVals(3),
-            optionalVals.head
-          )
-          Ok(views.html.pensions.addPensionCheckYourAnswers(model))
+          mandatoryVals match {
+            case Right(mandatoryValues) => {
+              val model = CheckYourAnswersViewModel(
+                mandatoryValues.head,
+                mandatoryValues(1),
+                mandatoryValues(2),
+                mandatoryValues(3),
+                optionalVals.head
+              )
+              Ok(views.html.pensions.addPensionCheckYourAnswers(model))
+            }
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          }
         }
       } catch {
         case NonFatal(e) => Future.successful(internalServerError(e.getMessage))
       }
   }
-
 
   def submitYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>

@@ -16,20 +16,14 @@
 
 package controllers.income.previousYears
 
-import com.google.inject.Inject
-import com.google.inject.name.Named
+import javax.inject.{Inject, Named}
+import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.audit.Auditable
-import controllers.auth.{AuthAction, WithAuthorisedForTaiLite}
-import controllers.{ServiceCheckLite, TaiBaseController}
+import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
@@ -37,9 +31,9 @@ import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumbe
 import uk.gov.hmrc.tai.forms.income.previousYears.{UpdateIncomeDetailsDecisionForm, UpdateIncomeDetailsForm}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
+import uk.gov.hmrc.tai.service.PreviousYearsIncomeService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.service.{PersonService, PreviousYearsIncomeService}
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
 import views.html.incomes.previousYears.CheckYourAnswers
@@ -125,7 +119,7 @@ class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: Previo
       implicit val user = request.taiUser
 
       journeyCacheService.currentCache map { currentCache =>
-        Ok(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), YesNoTextEntryForm.form()))
+        Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), YesNoTextEntryForm.form()))
       }
   }
 
@@ -139,7 +133,7 @@ class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: Previo
         Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
-            BadRequest(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), formWithErrors))
+            BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), formWithErrors))
           }
         },
         form => {
@@ -159,7 +153,7 @@ class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: Previo
     implicit request =>
       implicit val user = request.taiUser
 
-      journeyCacheService.collectedValues(
+      journeyCacheService.collectedJourneyValues(
         Seq(
           UpdatePreviousYearsIncome_TaxYearKey,
           UpdatePreviousYearsIncome_IncomeDetailsKey,
@@ -167,12 +161,17 @@ class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: Previo
         Seq(
           UpdatePreviousYearsIncome_TelephoneNumberKey
         )) map tupled { (mandatorySeq, optionalSeq) => {
-        Ok(CheckYourAnswers(UpdateIncomeDetailsCheckYourAnswersViewModel(
-          TaxYear(mandatorySeq.head.toInt),
-          mandatorySeq(1),
-          mandatorySeq(2),
-          optionalSeq.head)))
-      }
+
+          mandatorySeq match {
+            case Right(mandatoryValues) => Ok(CheckYourAnswers(UpdateIncomeDetailsCheckYourAnswersViewModel(
+              TaxYear(mandatoryValues.head.toInt),
+              mandatoryValues(1),
+              mandatoryValues(2),
+              optionalSeq.head)))
+
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          }
+        }
       }
   }
 

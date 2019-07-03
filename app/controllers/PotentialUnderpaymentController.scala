@@ -16,22 +16,18 @@
 
 package controllers
 
-import com.google.inject.Inject
-import controllers.audit.Auditable
-import controllers.auth.WithAuthorisedForTaiLite
+import javax.inject.Inject
+import controllers.actions.ValidatePerson
+import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
-import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
@@ -39,35 +35,30 @@ import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 class PotentialUnderpaymentController @Inject()(taxAccountService: TaxAccountService,
                                                 codingComponentService: CodingComponentService,
                                                 auditService: AuditService,
-                                                personService: PersonService,
-                                                val auditConnector: AuditConnector,
-                                                val delegationConnector: DelegationConnector,
-                                                val authConnector: AuthConnector,
+                                                authenticate: AuthAction,
+                                                validatePerson: ValidatePerson,
                                                 override implicit val partialRetriever: FormPartialRetriever,
                                                 override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite
-  with Auditable
   with AuditConstants
   with Referral {
 
-  def potentialUnderpaymentPage(): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            sendActingAttorneyAuditEvent("getPotentialUnderpaymentPage")
-            val tasFuture = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
-            val ccFuture = codingComponentService.taxFreeAmountComponents(Nino(user.getNino), TaxYear())
+  def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request => {
 
-            for {
-              TaiSuccessResponseWithPayload(tas: TaxAccountSummary) <- tasFuture
-              ccs <- ccFuture
-            } yield {
-              auditService.createAndSendAuditEvent(PotentialUnderpayment_InYearAdjustment, Map("nino" -> user.getNino))
-              val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
-              Ok(views.html.potentialUnderpayment(vm))
-            }
-          } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", Nino(user.getNino))
+      implicit val user = request.taiUser
+      val nino = user.nino
+
+      val tasFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
+      val ccFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+
+      for {
+        TaiSuccessResponseWithPayload(tas: TaxAccountSummary) <- tasFuture
+        ccs <- ccFuture
+      } yield {
+        auditService.createAndSendAuditEvent(PotentialUnderpayment_InYearAdjustment, Map("nino" -> nino.toString()))
+        val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
+        Ok(views.html.potentialUnderpayment(vm))
+      }
+    } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", request.taiUser.nino)
   }
 }

@@ -103,7 +103,7 @@ class TaxSummaryLabelSpec extends PlaySpec with FakeTaiPlayApplication {
         "tax component type is an EstimatedTaxYouOweThisYear" in {
           val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
           val id = "estimatedTaxOwedLink"
-          val link = Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", "£200"), href, id))
+          val link = Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", "£200.00"), href, id))
 
           val actual = TaxSummaryLabel(EstimatedTaxYouOweThisYear, employmentId = None, taxFreeAmountDetails, amount = 1000)
           actual mustBe TaxSummaryLabel("Estimated tax you owe this year", link)

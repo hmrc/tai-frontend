@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
@@ -43,9 +43,16 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler) extends DefaultS
     }
   }
 
+  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
+    httpHandler.getFromApi(ceasedEmploymentServiceUrl(nino, year)).map {
+      json =>
+        (json \ "data").validate[Seq[Employment]].recoverTotal(_ => throw new RuntimeException("Invalid employment json"))
+    }
+  }
+
   def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     httpHandler.getFromApi(employmentUrl(nino, id)).map(
-      json => ((json \ "data").asOpt[Employment])
+      json => (json \ "data").asOpt[Employment]
     )
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] = {
@@ -76,6 +83,8 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler) extends DefaultS
   def addEmploymentServiceUrl(nino: Nino) = s"$serviceUrl/tai/$nino/employments"
 
   def employmentServiceUrl(nino: Nino, year: TaxYear) = s"$serviceUrl/tai/$nino/employments/years/${year.year}"
+
+  def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear) = s"$serviceUrl/tai/$nino/employments/year/${year.year}/status/ceased"
 
   def incorrectEmploymentServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/employments/$id/reason"
 }
