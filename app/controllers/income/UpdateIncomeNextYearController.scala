@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
-import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionCYPlus1EmploymentViewModel, DuplicateSubmissionCYPlus1PensionViewModel, DuplicateSubmissionEstimatedPay}
 
 import scala.concurrent.Future
@@ -170,7 +170,7 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
 
         (updateNextYearsIncomeService.get(employmentId, user.nino).map {
           case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue, Some(estimatedAmount)) => {
-            val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, employmentName, currentValue, estimatedAmount)
+            val vm = ConfirmAmountEnteredViewModel(employmentId, employmentName, currentValue, estimatedAmount, NextYearPay)
             Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm))
           }
           case UpdateNextYearsIncomeCacheModel(_, _, _, _, None) => {

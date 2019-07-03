@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.forms.pensions.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
-import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.DuplicateSubmissionCYPlus1EmploymentViewModel
 import views.html.incomes.nextYear._
 
@@ -366,7 +366,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
             Future.successful(serviceResponse)
           )
 
-          val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentID, employerName, currentAmount, newAmount)
+          val vm = ConfirmAmountEnteredViewModel(employmentID, employerName, currentAmount, newAmount, NextYearPay)
           val expectedView = updateIncomeCYPlus1Confirm(vm)
 
           val result = controller.confirm(employmentID)(fakeRequest)
