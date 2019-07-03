@@ -1,4 +1,4 @@
-global.error.InternalServerError500.title = Mae’n ddrwg gennym, mae problem gyda’r gwasanaeth - 500
+global.error.InternalServerError500.title = Mae’n ddrwg gennym, mae problem gyda’r gwasanaeth
 global.error.InternalServerError500.heading = Mae’n ddrwg gennym, mae problem gyda’r gwasanaeth
 global.error.InternalServerError500.message = Rhowch gynnig arall arni yn nes ymlaen.
 
