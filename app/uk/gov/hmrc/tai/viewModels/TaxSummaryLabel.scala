@@ -60,7 +60,7 @@ object TaxSummaryLabel {
         case EstimatedTaxYouOweThisYear =>
           val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
           val id = "estimatedTaxOwedLink"
-          Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", MonetaryUtil.withPoundPrefix(underpaymentAmount.toInt)), href, id))
+          Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", MonetaryUtil.withPoundPrefix(underpaymentAmount.toInt,2)), href, id))
 
         case _ =>
           None
