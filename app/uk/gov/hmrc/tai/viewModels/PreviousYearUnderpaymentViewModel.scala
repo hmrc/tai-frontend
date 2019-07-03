@@ -16,33 +16,27 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import uk.gov.hmrc.tai.model.TaxYear
+import play.api.i18n.Messages
+import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.tax.{NonSavingsIncomeCategory, TotalTax}
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{Employment, UnderPaymentFromPreviousYear}
-import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxAmountDueFromUnderpayment
+import uk.gov.hmrc.tai.util.{MonetaryUtil, ViewModelHelper}
 
-case class PreviousYearUnderpaymentViewModel(
-                                              shouldHavePaid: BigDecimal,
-                                              actuallyPaid: BigDecimal,
-                                              allowanceReducedBy: BigDecimal,
-                                              amountDue: BigDecimal,
-                                              previousTaxYear: TaxYear) {
+case class PreviousYearUnderpaymentViewModel(allowanceReducedBy: BigDecimal,
+                                             poundedAmountDue: String,
+                                             returnLink: Html) {
 
 }
 
-object PreviousYearUnderpaymentViewModel extends ViewModelHelper with BandTypesConstants {
+object PreviousYearUnderpaymentViewModel extends ViewModelHelper
+  with BandTypesConstants
+  with ReturnLink {
 
-  def apply(codingComponents: Seq[CodingComponent], employments: Seq[Employment], totalTax: TotalTax): PreviousYearUnderpaymentViewModel = {
-
-    val taxYear = TaxYear().prev
-
-    val actuallyPaid = (for {
-      emp <- employments
-      account <- emp.annualAccounts.find(_.taxYear.year == taxYear.year)
-    } yield account.totalTaxPaidYearToDate).sum
+  def apply(codingComponents: Seq[CodingComponent], employments: Seq[Employment], totalTax: TotalTax, referer: String,
+            resourceName: String)(implicit messages: Messages): PreviousYearUnderpaymentViewModel = {
 
     val allowanceReducedBy = codingComponents.collectFirst {
       case CodingComponent(UnderPaymentFromPreviousYear, _, amount, _, _) => amount
@@ -50,8 +44,8 @@ object PreviousYearUnderpaymentViewModel extends ViewModelHelper with BandTypesC
 
     val amountDue = TaxAmountDueFromUnderpayment.amountDue(allowanceReducedBy, totalTax)
 
-    val shouldHavePaid = actuallyPaid + amountDue
+    val poundedAmountDue = MonetaryUtil.withPoundPrefix(amountDue.toInt, 2)
 
-    PreviousYearUnderpaymentViewModel(shouldHavePaid, actuallyPaid, allowanceReducedBy, amountDue, taxYear)
+    PreviousYearUnderpaymentViewModel(allowanceReducedBy, poundedAmountDue, createReturnLink(referer, resourceName))
   }
 }

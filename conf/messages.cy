@@ -963,13 +963,21 @@ tai.pension.warning.legend=Ydych chi am anfon diweddariad pensiwn arall?
 tai.personalAllowance.paReceived=Gan fod eich priod neu''ch partner sifil wedi dewis trosglwyddo £{0} o''i Lwfans Personol i chi, fe''i cynyddir i £{1}.
 tai.personalAllowance.paTransferred=Gan eich bod wedi dewis trosglwyddo £{0} i''ch priod neu''ch partner sifil, mae''n cael ei leihau i £{1}.
 tai.phoneNumber=Rhif ffôn
-tai.previous.year.underpayment.para1=Mae tandaliad o flwyddyn flaenorol yn golygu na daloch ddigon o Dreth Incwm mewn blwyddyn dreth flaenorol.
-tai.previous.year.underpayment.para2=Ar gyfer y flwyddyn dreth o 6 Ebrill {0} i 5 Ebrill {1} dylech fod wedi talu £{2} ond talwyd £{3} gennych mewn gwirionedd.
+
+tai.previous.year.underpayment.p1=Nid oeddech wedi talu digon o Dreth Incwm ar gyfer blwyddyn dreth {0}.
+tai.previous.year.underpayment.you.owe=Mae arnoch
+tai.previous.year.underpayment.h1=Sut y caiff ei gasglu
+tai.previous.year.underpayment.p2=Er mwyn gwneud hyn, rydym wedi gostwng eich Lwfans Personol gan £{0}. Mae hyn yn golygu y byddwch yn talu mwy o dreth tan {1}, er mwyn i ni gasglu''r {2} sy''n ddyledus.
+tai.previous.year.underpayment.p3=Mae''ch cod treth wedi cael ei addasu ar gyfer hyn.
+tai.previous.year.underpayment.h2=Yr hyn sy''n digwydd nesaf
+tai.previous.year.underpayment.p4=Ar ddiwedd y flwyddyn dreth, byddwn yn asesu''ch incwm gwirioneddol ar gyfer {0}.
+tai.previous.year.underpayment.p5=Byddwn yn cysylltu â chi os oes arnoch dreth neu os oes arnom ad-daliad i chi.
+
 tai.previous.year.underpayment.para3=Mae’ch Lwfans Personol wedi’i ostwng £{0} er mwyn casglu’r £{1} sy’n dal i fod yn ddyledus.
 tai.previous.year.underpayment.para4=Mae hyn yn golygu y byddwch yn talu treth ar gyfradd o 20% ar £{0} ychwanegol o’ch incwm. Caiff y swm ei rannu ar draws y flwyddyn dreth a’i gasglu drwy randaliadau cyfartal.
 tai.previous.year.underpayment.para5=Mae’ch cod treth wedi cael ei addasu ar gyfer hyn.
 tai.previous.year.underpayment.return=Yn ôl i’ch swm rhydd o dreth
-tai.previous.year.underpayment.title=Beth yw tandaliad o flwyddyn flaenorol?
+tai.previous.year.underpayment.title=Tandaliad o''r flwyddyn flaenorol
 tai.ptaHeader.accessible.preHeading=Yr adran hon yw
 tai.remove.company.benefit.beforeTaxYearEnd=Cyn {0}
 tai.remove.company.benefit.onOrAfterTaxYearEnd=Ar neu ar ôl {0}
