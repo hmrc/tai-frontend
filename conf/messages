@@ -1,4 +1,4 @@
-global.error.InternalServerError500.title = Sorry, there is a problem with the service - 500
+global.error.InternalServerError500.title = Sorry, there is a problem with the service
 global.error.InternalServerError500.heading = Sorry, there is a problem with the service
 global.error.InternalServerError500.message = Try again later.
 

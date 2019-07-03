@@ -49,7 +49,7 @@ class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
       val doc = Jsoup.parse(content)
 
       val title = doc.select("title").text()
-      title must include("Sorry, there is a problem with the service - 500")
+      title must include("Sorry, there is a problem with the service")
     }
   }
 

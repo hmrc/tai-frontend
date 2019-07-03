@@ -137,7 +137,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
       heading mustBe "Sorry, there is a problem with the service"
 
       val title = doc.select("title").text()
-      title must include("Sorry, there is a problem with the service - 500")
+      title must include("Sorry, there is a problem with the service")
 
     }
 
@@ -203,7 +203,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
       heading mustBe "Sorry, there is a problem with the service"
 
       val title = doc.select("title").text()
-      title must include("Sorry, there is a problem with the service - 500")
+      title must include("Sorry, there is a problem with the service")
 
     }
   }
