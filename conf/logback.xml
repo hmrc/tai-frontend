@@ -45,6 +45,8 @@
         <appender-ref ref="STDOUT_IGNORE_NETTY" />
     </logger>
 
+    <logger name="controllers.auth.TaiAuthenticationProvider" level="${logger.auth:-INFO}"/>
+
     <root level="WARN">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>

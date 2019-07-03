@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.Play.current
@@ -73,7 +73,7 @@ class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeServi
             val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
 
             implicit val user = request.taiUser
-            Ok(views.html.taxCodeChange.taxCodeComparison(viewModel, webChatEnabled))
+            Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
           case _ => throw new RuntimeException("Failed to fetch total tax details for tax code comparison")
         }
       }
@@ -87,7 +87,7 @@ class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeServi
       implicit val user = request.taiUser
 
       taxFreeAmountViewModel.map(viewModel => {
-        Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel, webChatEnabled))
+        Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
       })
   }
 

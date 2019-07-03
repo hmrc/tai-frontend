@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
@@ -30,6 +30,10 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
     employmentsConnector.employments(nino, year)
+  }
+
+  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
+    employmentsConnector.ceasedEmployments(nino, year)
   }
 
   def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] = {

@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.google.inject.Inject
+import javax.inject.Inject
+import play.api.Logger
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
@@ -43,6 +44,19 @@ class JourneyCacheConnector @Inject() (httpHandler: HttpHandler) extends Default
     }
   }
 
+  def mandatoryJourneyValueAs[T](journeyName: String, key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[Either[String, T]] = {
+    val url = s"${cacheUrl(journeyName)}/values/$key"
+
+    httpHandler.getFromApi(url).map(value => Right(convert(value.as[String]))) recover {
+      case e:NotFoundException =>{
+        val errorMessage = s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'"
+        Logger.warn(errorMessage)
+        Left(errorMessage)
+      }
+    }
+  }
+
+  @deprecated("Use mandatoryJourneyValueAs")
   def mandatoryValueAs[T](journeyName: String, key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[T] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
     httpHandler.getFromApi(url).map(value => convert(value.as[String])) recover {

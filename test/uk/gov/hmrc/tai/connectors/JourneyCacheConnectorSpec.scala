@@ -106,6 +106,25 @@ class JourneyCacheConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiP
     }
   }
 
+  "mandatoryJourneyValueAs" must {
+
+    "return the requested values where present" in {
+      val sut = createSUT()
+      when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(JsString("true")))
+      Await.result(sut.mandatoryJourneyValueAs[Boolean](journeyName, "booleanValKey", string => string.toBoolean), 5 seconds) mustBe Right(true)
+    }
+
+    "return an error message when the requested value is not found" in {
+      val sut = createSUT()
+      when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new NotFoundException("key wasn't found in cache")))
+
+      val expectedMsg = "The mandatory value under key 'key1' was not found in the journey cache for 'journey1'"
+      Await.result(sut.mandatoryJourneyValueAs[Int](journeyName, "key1", string => string.toInt), 5 seconds) mustBe Left(expectedMsg)
+    }
+  }
+
+
+
   "cache" must {
 
     "return the updated journey cache in full" in {

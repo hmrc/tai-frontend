@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.Play.current
@@ -51,7 +51,7 @@ class YourTaxCodeController @Inject()(taxAccountService: TaxAccountService,
       } yield {
         val taxCodeViewModel = TaxCodeViewModel.apply(taxCodeIncomes, scottishTaxRateBands)
         implicit val user = request.taiUser
-        Ok(views.html.taxCodeDetails(taxCodeViewModel, webChatEnabled))
+        Ok(views.html.taxCodeDetails(taxCodeViewModel))
       }) recover {
         case NonFatal(e) => {
           internalServerError(s"Exception: ${e.getClass()}")

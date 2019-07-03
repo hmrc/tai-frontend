@@ -16,10 +16,9 @@
 
 package controllers
 
-import com.google.inject.Inject
 import controllers.actions.ValidatePerson
-import controllers.audit.Auditable
 import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.Inject
 import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
@@ -50,42 +49,47 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
                                             validatePerson: ValidatePerson,
                                             override implicit val partialRetriever: FormPartialRetriever,
                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with Auditable
   with FeatureTogglesConfig {
 
   implicit val recoveryLocation: RecoveryLocation = classOf[WhatDoYouWantToDoController]
 
   def whatDoYouWantToDoPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-        implicit request => {
-          implicit val user = request.taiUser
-          val nino = request.taiUser.nino
-          val possibleRedirectFuture =
-            for {
-              taxAccountSummary <- taxAccountService.taxAccountSummary(nino, TaxYear())
-              _ <- employmentService.employments(nino, TaxYear())
-              prevYearEmployments <- previousYearEmployments(nino)
-            } yield {
+    implicit request => {
+      implicit val user = request.taiUser
+      val nino = request.taiUser.nino
+      val ninoString = request.taiUser.nino.toString()
 
-              val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
-                npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments) orElse
-                  npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments) orElse
-                  npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments) orElse
-                  npsNoEmploymentResult orElse
-                  npsTaxAccountDeceasedResult orElse { case _ => None }
+      val possibleRedirectFuture =
+        for {
+          taxAccountSummary <- taxAccountService.taxAccountSummary(nino, TaxYear())
+          _ <- employmentService.employments(nino, TaxYear())
+          prevYearEmployments <- previousYearEmployments(nino)
+        } yield {
 
-              npsFailureHandlingPf(taxAccountSummary)
-            }
+          val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
+            npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+              npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+              npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+              npsNoEmploymentResult(ninoString) orElse
+              npsTaxAccountDeceasedResult(ninoString) orElse { case _ => None }
 
-          possibleRedirectFuture.flatMap(
-            _.map(Future.successful).getOrElse(allowWhatDoYouWantToDo)
-          )
+          npsFailureHandlingPf(taxAccountSummary)
+        }
 
-        } recoverWith (hodBadRequestResult orElse hodInternalErrorResult)
+      possibleRedirectFuture.flatMap(
+        _.map(Future.successful).getOrElse(allowWhatDoYouWantToDo)
+      )
+
+    } recoverWith {
+      val nino = request.taiUser.getNino
+
+      (hodBadRequestResult(nino) orElse hodInternalErrorResult(nino))
+    }
   }
 
   private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
 
-    val nino = Nino(user.getNino)
+    val nino = user.nino
 
     auditNumberOfTaxCodesReturned(nino)
 

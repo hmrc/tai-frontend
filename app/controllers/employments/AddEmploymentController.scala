@@ -16,12 +16,11 @@
 
 package controllers.employments
 
-import com.google.inject.Inject
 import com.google.inject.name.Named
+import javax.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.audit.Auditable
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
@@ -226,7 +225,7 @@ class AddEmploymentController @Inject()(auditService: AuditService,
               case _ => None
             }
             implicit val user = request.taiUser
-            Ok(views.html.can_we_contact_by_phone(Some(user),None,
+            Ok(views.html.can_we_contact_by_phone(Some(user),
               telephoneNumberViewModel,
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(optSeq.head, telNoToDisplay))
             ))
@@ -241,7 +240,7 @@ class AddEmploymentController @Inject()(auditService: AuditService,
           Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
           formWithErrors => {
               implicit val user = request.taiUser
-              Future.successful(BadRequest(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel, formWithErrors)))
+              Future.successful(BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors)))
           },
           form => {
             val mandatoryData = Map(AddEmployment_TelephoneQuestionKey -> Messages(s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
@@ -259,17 +258,22 @@ class AddEmploymentController @Inject()(auditService: AuditService,
 
   def addEmploymentCheckYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async {
       implicit request =>
-        journeyCacheService.collectedValues(
+        journeyCacheService.collectedJourneyValues(
           Seq(AddEmployment_NameKey,AddEmployment_StartDateKey,AddEmployment_PayrollNumberKey, AddEmployment_TelephoneQuestionKey),
           Seq(AddEmployment_TelephoneNumberKey)
         ) map tupled { (mandatoryVals, optionalVals) =>
-          val model =
-            IncomeCheckYourAnswersViewModel(Messages("add.missing.employment"), mandatoryVals.head, mandatoryVals(1), mandatoryVals(2), mandatoryVals(3), optionalVals.head,
-              controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
-              controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,
-              controllers.employments.routes.AddEmploymentController.cancel().url)
-          implicit val user = request.taiUser
-          Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
+          mandatoryVals match {
+            case Right(mandatoryValues) => {
+              val model =
+                IncomeCheckYourAnswersViewModel(Messages("add.missing.employment"), mandatoryValues.head, mandatoryValues(1), mandatoryValues(2), mandatoryValues(3), optionalVals.head,
+                  controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
+                  controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,
+                  controllers.employments.routes.AddEmploymentController.cancel().url)
+              implicit val user: AuthedUser = request.taiUser
+              Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
+            }
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          }
         }
   }
 

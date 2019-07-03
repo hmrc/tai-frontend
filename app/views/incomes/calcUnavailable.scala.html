@@ -15,7 +15,7 @@
  *@
 
 @(employmentId: Int, employerName: String)(implicit request: Request[_], messages: Messages,
-user: controllers.auth.TaiUser,
+user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
@@ -37,7 +37,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @main(
     title = messages("tai.unableToCalculate.title"),
     articleClasses = Some("full-width"),
-    user = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName),
     gaCustomTitle = None

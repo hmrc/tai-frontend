@@ -18,7 +18,7 @@ package controllers
 
 import controllers.auth.AuthedUser
 import controllers.auth.AuthenticatedRequest
-import builders.{AuthActionedUserBuilder, UserBuilder}
+import builders.UserBuilder
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -43,7 +43,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     with I18nSupport
     with MockitoSugar {
 
-  implicit val authedUser: AuthedUser = AuthActionedUserBuilder()
+  implicit val authedUser: AuthedUser = UserBuilder()
 
   "ErrorPagesHandler" must {
     "handle an internal server error" in {
@@ -134,7 +134,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
       val doc = Jsoup.parse(content)
 
       val heading = doc.select(".h1-heading").text()
-      heading mustBe "Sorry we’re experiencing technical difficulties"
+      heading mustBe "Sorry we are experiencing technical difficulties"
 
       val title = doc.select("title").text()
       title must include("Sorry, we are experiencing technical difficulties - 500")
@@ -200,7 +200,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
       val doc = Jsoup.parse(content)
 
       val heading = doc.select(".h1-heading").text()
-      heading mustBe "Sorry we’re experiencing technical difficulties"
+      heading mustBe "Sorry we are experiencing technical difficulties"
 
       val title = doc.select("title").text()
       title must include("Sorry, we are experiencing technical difficulties - 500")
@@ -218,14 +218,14 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "nps tax account responds with a deceased nessage" in {
         val handler = createSut
-        val partialErrorFunction = handler.npsTaxAccountDeceasedResult
+        val partialErrorFunction = handler.npsTaxAccountDeceasedResult(ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsTaxAccountDeceasedMsg))
         result mustBe Some(Redirect(routes.DeceasedController.deceased()))
       }
 
       "nps tax account responds with a 'no employments recorded for this individual' message" in {
         val handler = createSut
-        val partialErrorFunction = handler.npsNoEmploymentResult
+        val partialErrorFunction = handler.npsNoEmploymentResult(ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsNoEmploymentsRecorded))
         result mustBe Some(BadRequest(views.html.error_no_primary()))
       }
@@ -233,14 +233,14 @@ class ErrorPagesHandlerSpec extends PlaySpec
       "nps tax account responds with a 'no primary employment' message (data is absent), but employment data is available for previous year" in {
         val handler = createSut
         val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false))
-        val partialErrorFunction = handler.npsTaxAccountAbsentResult_withEmployCheck(employmentDetails)
+        val partialErrorFunction = handler.npsTaxAccountAbsentResult_withEmployCheck(employmentDetails, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsTaxAccountDataAbsentMsg))
         result mustBe None
       }
 
       "nps tax account responds with a 'no primary employment' message (data is absent), and no employment data is available for previous year" in {
         val handler = createSut
-        val partialErrorFunction = handler.npsTaxAccountAbsentResult_withEmployCheck(Nil)
+        val partialErrorFunction = handler.npsTaxAccountAbsentResult_withEmployCheck(Nil, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsTaxAccountDataAbsentMsg))
         result mustBe Some(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
       }
@@ -248,14 +248,14 @@ class ErrorPagesHandlerSpec extends PlaySpec
       "nps tax account responds with a 'no tax account information' message (data is absent), but employment data is available for previous year" in {
         val handler = createSut
         val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false))
-        val partialErrorFunction = handler.npsTaxAccountCYAbsentResult_withEmployCheck(employmentDetails)
+        val partialErrorFunction = handler.npsTaxAccountCYAbsentResult_withEmployCheck(employmentDetails, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsTaxAccountCYDataAbsentMsg))
         result mustBe None
       }
 
       "nps tax account responds with a 'no tax account information' message (data is absent), and no employment data is available for previous year" in {
         val handler = createSut
-        val partialErrorFunction = handler.npsTaxAccountCYAbsentResult_withEmployCheck(Nil)
+        val partialErrorFunction = handler.npsTaxAccountCYAbsentResult_withEmployCheck(Nil, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsTaxAccountCYDataAbsentMsg))
         result mustBe Some(BadRequest(views.html.error_no_primary()))
       }
@@ -263,14 +263,14 @@ class ErrorPagesHandlerSpec extends PlaySpec
       "nps tax account responds with a 'no employments recorded for current tax year' message, but employment data is available for previous year" in {
         val exceptionController = createSut
         val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false))
-        val partialErrorFunction = exceptionController.npsNoEmploymentForCYResult_withEmployCheck(employmentDetails)
+        val partialErrorFunction = exceptionController.npsNoEmploymentForCYResult_withEmployCheck(employmentDetails, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsNoEmploymentForCurrentTaxYear))
         result mustBe None
       }
 
       "nps tax account responds with a 'no employments recorded for current tax year' message, and no employment data is available for previous year" in {
         val exceptionController = createSut
-        val partialErrorFunction = exceptionController.npsNoEmploymentForCYResult_withEmployCheck(Nil)
+        val partialErrorFunction = exceptionController.npsNoEmploymentForCYResult_withEmployCheck(Nil, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsNoEmploymentForCurrentTaxYear))
         result mustBe Some(BadRequest(views.html.error_no_primary()))
       }
@@ -284,7 +284,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
         implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedUser)
         implicit val rl = exceptionController.recoveryLocation
 
-        val partialErrorFunction = exceptionController.hodInternalErrorResult
+        val partialErrorFunction = exceptionController.hodInternalErrorResult(ninoValue)
         val result = partialErrorFunction(new InternalServerException("Internal server error"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -294,7 +294,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
         implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedUser)
         implicit val rl = exceptionController.recoveryLocation
 
-        val partialErrorFunction = exceptionController.hodBadRequestResult
+        val partialErrorFunction = exceptionController.hodBadRequestResult(ninoValue)
         val result = partialErrorFunction(new BadRequestException("Bad Request Exception"))
         status(result) mustBe BAD_REQUEST
       }
@@ -304,7 +304,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
         implicit val request = AuthenticatedRequest[AnyContent](FakeRequest("GET", "/"), authedUser)
         implicit val rl = exceptionController.recoveryLocation
 
-        val partialErrorFunction = exceptionController.hodAnyErrorResult
+        val partialErrorFunction = exceptionController.hodAnyErrorResult(ninoValue)
         val result = partialErrorFunction(new ForbiddenException("Exception"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -315,6 +315,8 @@ class ErrorPagesHandlerSpec extends PlaySpec
   implicit val testTemplateRenderer = MockTemplateRenderer
   implicit val testPartialRetriever = MockPartialRetriever
   val nino = new Generator().nextNino
+  val ninoValue = nino.value
+
 
   val createSut = new SUT
 

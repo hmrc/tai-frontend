@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.Play.current
@@ -44,27 +44,25 @@ class IncomeSourceSummaryController @Inject()(val auditConnector: AuditConnector
                                               authenticate: AuthAction,
                                               validatePerson: ValidatePerson,
                                               override implicit val partialRetriever: FormPartialRetriever,
-                                              override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController with FeatureTogglesConfig {
+                                              override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
+  with FeatureTogglesConfig {
 
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      val nino = request.taiUser.nino
-      
-      val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
-      val employmentFuture = employmentService.employment(nino, empId)
-      val benefitsFuture = benefitsService.benefits(nino, TaxYear().year)
-      val estimatedPayCompletionFuture = estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
+      val taiUser = request.taiUser
+      val nino = taiUser.nino
 
       (for {
-        taxCodeIncomeDetails <- taxCodeIncomesFuture
-        employmentDetails <- employmentFuture
-        benefitsDetails <- benefitsFuture
-        estimatedPayCompletion <- estimatedPayCompletionFuture
+        taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+        employmentDetails <- employmentService.employment(nino, empId)
+        benefitsDetails <- benefitsService.benefits(nino, TaxYear().year)
+        estimatedPayCompletion <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
       } yield {
         (taxCodeIncomeDetails, employmentDetails) match {
           case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-            val incomeDetailsViewModel = IncomeSourceSummaryViewModel(empId, request.taiUser.getDisplayName, taxCodeIncomes,
+            val incomeDetailsViewModel = IncomeSourceSummaryViewModel(empId, taiUser.getDisplayName, taxCodeIncomes,
               employment, benefitsDetails, estimatedPayCompletion)
+
             implicit val user = request.taiUser
             Ok(views.html.IncomeSourceSummary(incomeDetailsViewModel))
           case _ => throw new RuntimeException("Error while fetching income summary details")

@@ -28,7 +28,7 @@ trait DuplicateSubmissionEstimatedPay {
 
 case class DuplicateSubmissionEmploymentViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages) extends DuplicateSubmissionEstimatedPay {
 
-  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount.toInt)
+  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount)
 
   override val heading: String = messages("tai.incomes.warning.employment.heading", incomeName)
   override val paragraphOne: String = messages("tai.incomes.warning.employment.text1", formattedNewAmount, incomeName)
@@ -38,7 +38,7 @@ case class DuplicateSubmissionEmploymentViewModel(incomeName: String, newAmount:
 
 case class DuplicateSubmissionPensionViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages) extends DuplicateSubmissionEstimatedPay {
 
-  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount.toInt)
+  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount)
 
   override val heading: String = messages("tai.incomes.warning.pension.heading", incomeName)
   override val paragraphOne: String = messages("tai.incomes.warning.pension.text1", formattedNewAmount, incomeName)
@@ -48,7 +48,7 @@ case class DuplicateSubmissionPensionViewModel(incomeName: String, newAmount: In
 
 case class DuplicateSubmissionCYPlus1EmploymentViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages) extends DuplicateSubmissionEstimatedPay {
 
-  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount.toInt)
+  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount)
 
   override val heading: String = messages("tai.incomes.warning.cyPlus1.heading", incomeName)
   override val paragraphOne: String = messages("tai.incomes.warning.cyPlus1.text1", formattedNewAmount, TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
@@ -58,7 +58,7 @@ case class DuplicateSubmissionCYPlus1EmploymentViewModel(incomeName: String, new
 
 case class DuplicateSubmissionCYPlus1PensionViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages) extends DuplicateSubmissionEstimatedPay {
 
-  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount.toInt)
+  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount)
 
   override val heading: String = messages("tai.incomes.warning.cyPlus1.heading", incomeName)
   override val paragraphOne: String = messages("tai.incomes.warning.cyPlus1.text1", formattedNewAmount, TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))

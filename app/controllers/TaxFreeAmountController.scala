@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.Play.current
@@ -46,12 +46,12 @@ class TaxFreeAmountController @Inject()(codingComponentService: CodingComponentS
   def taxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       val nino = request.taiUser.nino
-      val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
+
       (for {
         codingComponents <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
         employmentNames <- employmentService.employmentNames(nino, TaxYear())
         companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
-        totalTax <- totalTaxFuture
+        totalTax <- taxAccountService.totalTax(nino, TaxYear())
       } yield {
         totalTax match {
           case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>

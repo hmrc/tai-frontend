@@ -16,12 +16,13 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -29,8 +30,6 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.ForbiddenException
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -106,7 +105,6 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
     }
   }
 
-  val personService: PersonService = mock[PersonService]
   val codingComponentService = mock[CodingComponentService]
   val auditService = mock[AuditService]
   val taxAccountService = mock[TaxAccountService]
@@ -116,17 +114,11 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
     taxAccountService,
     codingComponentService,
     auditService,
-    personService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
       Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](
         TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)

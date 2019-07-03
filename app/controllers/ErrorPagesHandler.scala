@@ -16,9 +16,6 @@
 
 package controllers
 
-import controllers.auth.TaiUser
-import controllers.auth.AuthedUser
-import controllers.auth.AuthenticatedRequest
 import play.Logger
 import play.api.Play.current
 import play.api.i18n.Messages
@@ -167,93 +164,88 @@ trait ErrorPagesHandler {
       }
   }
 
-  def npsEmploymentAbsentResult(implicit request: AuthenticatedRequest[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+  def npsEmploymentAbsentResult(nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: NotFoundException if e.getMessage.toLowerCase.contains(NpsAppStatusMsg) =>
-      val nino = request.taiUser.nino
-      Logger.warn(s"<Not found response received from NPS> - for nino ${nino} @${rl.getName}")
+      Logger.warn(s"<Not found response received from NPS> - for nino $nino @${rl.getName}")
       Future.successful(NotFound(error4xxFromNps(Messages("global.error.pageNotFound404.title"))))
   }
 
-  def rtiEmploymentAbsentResult(implicit request: AuthenticatedRequest[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+  def rtiEmploymentAbsentResult(nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: NotFoundException =>
-      val nino = request.taiUser.nino
-      Logger.warn(s"<Not found response received from rti> - for nino ${nino} @${rl.getName}")
+      Logger.warn(s"<Not found response received from rti> - for nino $nino @${rl.getName}")
       Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
   }
 
-  def hodInternalErrorResult(implicit request: AuthenticatedRequest[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+  def hodInternalErrorResult(nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e @ (_:InternalServerException | _:HttpException) =>
-      val nino = request.taiUser.nino
-      Logger.warn(s"<Exception returned from HOD call for nino ${nino} @${rl.getName} with exception: ${e.getClass()}", e)
+      Logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
       Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
   }
 
-  def hodBadRequestResult(implicit request: AuthenticatedRequest[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+  def hodBadRequestResult(nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: BadRequestException =>
-      val nino = request.taiUser.nino
-      Logger.warn(s"<Bad request exception returned from HOD call for nino ${nino} @${rl.getName} with exception: ${e.getClass}", e)
+      Logger.warn(s"<Bad request exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass}", e)
       Future.successful(BadRequest(error4xxPageWithLink(Messages("global.error.badRequest400.title"))))
   }
 
-  def hodAnyErrorResult(implicit request: AuthenticatedRequest[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+  def hodAnyErrorResult(nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e =>
-      val nino = request.taiUser.nino
-      Logger.warn(s"<Exception returned from HOD call for nino ${nino} @${rl.getName} with exception: ${e.getClass()}", e)
+      Logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
       Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
   }
 
-  def npsTaxAccountDeceasedResult(implicit request: Request[AnyContent], user: AuthedUser, messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
+  def npsTaxAccountDeceasedResult(nino: String)(implicit request: Request[AnyContent],  messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.contains(TaiConstants.NpsTaxAccountDeceasedMsg) => {
-      Logger.warn(s"<Deceased response received from nps tax account> - for nino ${user.getNino} @${rl.getName}")
+      Logger.warn(s"<Deceased response received from nps tax account> - for nino $nino @${rl.getName}")
       Some(Redirect(routes.DeceasedController.deceased()))
     }
   }
-  def npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment])(implicit request: Request[AnyContent], user: AuthedUser, messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] ={
+  def npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] ={
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountCYDataAbsentMsg) => {
       prevYearEmployments match {
         case Nil => {
-          Logger.warn(s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino ${user.getNino} @${rl.getName}")
+          Logger.warn(s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
           Some(BadRequest(views.html.error_no_primary()))
         }
         case _ => {
-          Logger.info(s"<No current year data returned from nps tax account, but nps previous year employment data is present> - for nino ${user.getNino} @${rl.getName}")
+          Logger.info(s"<No current year data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")
           None
         }
       }
     }
   }
 
-  def npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment])(implicit request: Request[AnyContent], user: AuthedUser, messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] ={
+  def npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] ={
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) => {
       prevYearEmployments match {
         case Nil => {
-          Logger.warn(s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino ${user.getNino} @${rl.getName}")
+          Logger.warn(s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
           Some(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
         }
         case _ => {
-          Logger.warn(s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino ${user.getNino} @${rl.getName}")
+          Logger.warn(s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")
           None
         }
       }
     }
   }
 
-  def npsNoEmploymentResult(implicit request: Request[AnyContent], user: AuthedUser, messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
+  def npsNoEmploymentResult(nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentsRecorded) => {
-      Logger.warn(s"<No data returned from nps employments> - for nino ${user.getNino} @${rl.getName}")
+      Logger.warn(s"<No data returned from nps employments> - for nino $nino @${rl.getName}")
       Some(BadRequest(views.html.error_no_primary()))
     }
   }
 
-  def npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments: Seq[Employment])(implicit request: Request[AnyContent], user: AuthedUser, messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
+  def npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) => {
       prevYearEmployments match {
         case Nil => {
-          Logger.warn(s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino ${user.getNino} @${rl.getName}")
+          Logger.warn(s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
           Some(BadRequest(views.html.error_no_primary()))
         }
         case _ => {
-          Logger.info(s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino ${user.getNino} @${rl.getName}")
+          Logger.info(s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")
           None
         }
       }

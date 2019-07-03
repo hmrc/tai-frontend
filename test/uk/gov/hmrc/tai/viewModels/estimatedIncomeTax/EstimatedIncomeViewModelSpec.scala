@@ -39,9 +39,24 @@ class EstimatedIncomeViewModelSpec extends PlaySpec with FakeTaiPlayApplication 
 
     "return an empty BandedGraph with Nil bands and values set to zero when an empty list is supplied." in {
 
-      val result = BandedGraph(Seq.empty[CodingComponent],List.empty[TaxBand],0,0,taxViewType = ZeroTaxView)
+      val result = BandedGraph(Seq.empty[CodingComponent], List.empty[TaxBand], 0, 0, 0, taxViewType = ZeroTaxView)
 
       result mustBe BandedGraph("taxGraph", Nil, 0, 0, 0, 0, 0, 0, 0, None,None)
+
+    }
+
+    "have two bands(0&NextBand) to display in graph" in {
+
+      val taxBand = List(
+        TaxBand("pa", "", income = 11500, tax = 0, lowerBand = Some(0), upperBand = None, rate = 0)
+      )
+
+      val bands = List(
+        Band("TaxFree", 78.26, 11500, 0, "pa"))
+
+      val graph = BandedGraph(Seq.empty[CodingComponent],taxBand, 11500, 0, 9000, taxViewType = ZeroTaxView)
+
+      graph mustBe BandedGraph("taxGraph", bands, 0, 11500, 11500, 78.26, 11500, 78.26, 0, None, None)
 
     }
 
@@ -461,6 +476,22 @@ class EstimatedIncomeViewModelSpec extends PlaySpec with FakeTaiPlayApplication 
       val percentage = BandedGraph.calcBarPercentage(20000, Nil, totalTaxBandIncome = 10000, taxViewType = SimpleTaxView)
 
       percentage mustBe 0
+    }
+
+    "return valid percentage when a user earns less than their tax free amount" in {
+
+      val personalAllowance = 11500
+
+      val taxBands = List(
+        TaxBand("pa", "", income = personalAllowance, tax = 0, lowerBand = Some(0), upperBand = None, rate = 0)
+      )
+
+      val percentage = BandedGraph.calcBarPercentage(personalAllowance, taxBands, personalAllowance = Some(personalAllowance),
+        taxFreeAllowanceBandSum = personalAllowance, totalTaxBandIncome = personalAllowance, totalEstimatedIncome = 9000,
+          taxViewType = ZeroTaxView)
+
+      percentage mustBe 78.26
+
     }
 
     "return valid percentage for first income when two bands has passed" in {

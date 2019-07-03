@@ -16,31 +16,27 @@
 
 package controllers.employments
 
-import com.google.inject.Inject
 import com.google.inject.name.Named
+import javax.inject.Inject
 import controllers._
 import controllers.actions.ValidatePerson
-import controllers.audit.Auditable
-import controllers.auth.{AuthAction, AuthedUser, WithAuthorisedForTaiLite}
+import controllers.auth.AuthAction
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Result}
-import uk.gov.hmrc.auth.core.ConfidenceLevel
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
-import uk.gov.hmrc.tai.model.domain.{Employment, EndEmployment}
+import uk.gov.hmrc.tai.model.domain.EndEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
@@ -255,7 +251,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
         employmentId <- journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey)
         telephoneCache <- journeyCacheService.optionalValues(EndEmployment_TelephoneQuestionKey, EndEmployment_TelephoneNumberKey)
       } yield {
-        Ok(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel(employmentId),
+        Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId),
           YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
       }
   }
@@ -270,7 +266,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
         Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
         formWithErrors => {
           journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey) map { employmentId =>
-            BadRequest(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel(employmentId), formWithErrors))
+            BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
           }
         },
         form => {
@@ -290,15 +286,22 @@ class EndEmploymentController @Inject()(auditService: AuditService,
     implicit request =>
       implicit val user = request.taiUser
 
-      journeyCacheService.collectedValues(Seq(EndEmployment_EmploymentIdKey,
+      journeyCacheService.collectedJourneyValues(Seq(EndEmployment_EmploymentIdKey,
         EndEmployment_EndDateKey, EndEmployment_TelephoneQuestionKey),
         Seq(EndEmployment_TelephoneNumberKey)) map tupled { (mandatorySeq, optionalSeq) =>
-        val model = IncomeCheckYourAnswersViewModel(mandatorySeq(0).toInt, Messages("tai.endEmployment.preHeadingText"),
-          mandatorySeq(1), mandatorySeq(2), optionalSeq(0),
-          controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
-          controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
-          controllers.employments.routes.EndEmploymentController.cancel(mandatorySeq.head.toInt).url)
-        Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
+
+        mandatorySeq match {
+          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+          case Right(mandatoryValues) => {
+
+            val model = IncomeCheckYourAnswersViewModel(mandatoryValues(0).toInt, Messages("tai.endEmployment.preHeadingText"),
+              mandatoryValues(1), mandatoryValues(2), optionalSeq(0),
+              controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
+              controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
+              controllers.employments.routes.EndEmploymentController.cancel(mandatoryValues.head.toInt).url)
+            Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
+          }
+        }
       }
   }
 

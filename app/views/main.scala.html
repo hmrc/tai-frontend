@@ -28,7 +28,6 @@
   sidebarLinks: Option[Html] = None,
   sidebarClass: Option[String] = None,
   articleClasses: Option[String] = Some("full-width"),
-  user: Option[controllers.auth.TaiUser] = None,
   authedUser: Option[controllers.auth.AuthedUser] = None,
   employerName: Option[String] = None,
   includeGridWrapper: Boolean = false,
@@ -38,7 +37,9 @@
   gaSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(),
   gaCustomTitle: Option[String] = None,
   optimizelyAudience: Option[String] = None,
-  pageHeader: Option[Html] = None
+  pageHeader: Option[Html] = None,
+  script: Option[Html] = None,
+  includeWebchatScript: Boolean = true
 )(mainContent: Html
 )(implicit request: Request[_],
   messages: Messages,
@@ -61,10 +62,7 @@
 }
 
 @isSa = @{
-    user.fold(false) {
-        user =>
-            user.authContext.principal.accounts.sa.map(_.utr).isDefined
-    } || authedUser.fold(false) {
+    authedUser.fold(false) {
         _.getUTR != ""
     }
 }
@@ -80,21 +78,7 @@
 @signOutUrl = @{
     mustacheCheck{
         val signOutLink = routes.ServiceController.serviceSignout().url
-        user.fold(authedUser.fold("")(_ => signOutLink))(_ => signOutLink)
-    }
-}
-
-@actingAttorneyBanner = @{
-    user.fold(HtmlFormat.empty) {
-        authContext =>
-            authContext.authContext.attorney.fold(HtmlFormat.empty) {
-                _ => layouts.attorney_banner(
-                    authContext.authContext.principal.name,
-                    authContext.authContext.attorney.get.returnLink.url,
-                    standAlone,
-                    Some(Messages("attorney.banner.link"))
-                )
-            }
+        authedUser.fold("")(_ => signOutLink)
     }
 }
 
@@ -114,7 +98,7 @@
 @googleAnalytics = @{
 
     def confidenceLevel: String = {
-        user.fold(authedUser.fold("false")(_.confidenceLevel))(_.authContext.user.confidenceLevel.toString)
+        authedUser.fold("false")(_.confidenceLevel)
     }
 
     Map[String, Any](
@@ -145,31 +129,26 @@
 }
 
 @inlineScript = {
-
-  <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','TSFTCWZ');</script>
-  <!-- End Google Tag Manager -->
-
   <script>
+    var sessionId = new Date().getTime() + '.' + Math.random().toString(36).substring(5)
+    var clientId = ga.getAll()[0].get('clientId');
+
     window.dataLayer = window.dataLayer || []
     window.dataLayer.push(
       {
-        'Session id (cd67)': '@request.session.get("sessionId")'
+        'Timestamp': new Date().toUTCString(),
+        'Session ID': sessionId,
+        'Client ID': clientId,
+        'Session-X-ID': '@request.session.get("sessionId")'
       }
     );
   </script>
 
     <script type="text/javascript">
-
         var nuanceData =
         {
             'sessionId': '@request.session.get("sessionId")'
         }
-
     </script>
 
 
@@ -211,7 +190,11 @@
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
 
-    <script type="text/javascript" src="@ApplicationConfig.webchatJsUrl"></script>
+    @if(FeatureTogglesConfig.webChatEnabled && includeWebchatScript){
+      <script id="webchat-tag" type="text/javascript" src="https://hmrc-uk.digital.nuance.com/chatskins/launch/inqChatLaunch10006719.js"></script>
+    }
+
+    @script
 }
 
 
@@ -239,7 +222,6 @@
         "isSa" -> isSa,
         "isVerify" -> isVerify,
         "signOutUrl" -> signOutUrl,
-        "actingAttorneyBanner" -> actingAttorneyBanner,
         "mainContentHeader" -> mainContentHeader,
         "sidebar" -> sidebar,
         "getHelpForm" -> helpForm,
@@ -265,7 +247,6 @@
             "audience" -> optimizelyAudience.getOrElse("Other user"),
             "projectId" -> "8461600066"
         ),
-
         "googleTagManager" -> Map(
             "gtmId" -> "TSFTCWZ"
         )
@@ -279,7 +260,7 @@
             "fullWidthBannerText" -> Messages("tai.urbanner.text"),
             "fullWidthBannerLink" -> ApplicationConfig.urBannerLink,
             "fullWidthBannerDismissText" -> Messages("tai.urbanner.reject"),
-            "fullWidthBannerGaAction" -> "Help improve HMRC letters"
+            "fullWidthBannerGaAction" -> "Help improve the HMRC website"
         )
     } else mustacheMap
 }

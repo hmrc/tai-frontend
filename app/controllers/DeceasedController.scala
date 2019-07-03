@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._

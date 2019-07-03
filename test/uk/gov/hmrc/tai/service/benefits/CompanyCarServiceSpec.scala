@@ -190,15 +190,15 @@ class CompanyCarServiceSpec extends PlaySpec
 
     "return the employment id value from journey cache" in {
       val sut = createSut
-      when(journeyCacheService.mandatoryValueAsInt(CompanyCar_EmployerIdKey)(hc)).thenReturn(Future.successful(1))
-      Await.result(sut.companyCarEmploymentId, 5 seconds) mustBe 1
+      when(journeyCacheService.mandatoryJourneyValueAsInt(CompanyCar_EmployerIdKey)(hc)).thenReturn(Future.successful(Right(1)))
+      Await.result(sut.companyCarEmploymentId, 5 seconds) mustBe Right(1)
     }
 
-    "throw a runtime exception when the value is not found in journey cache" in {
+    "return an error message when a value is not present in the journey cache" in {
       val sut = createSut
-      when(journeyCacheService.mandatoryValueAsInt(CompanyCar_EmployerIdKey)(hc)).thenReturn(Future.failed(new RuntimeException("not found")))
-      val thrown = the[RuntimeException] thrownBy Await.result(sut.companyCarEmploymentId, 5 seconds)
-      thrown.getMessage mustBe "not found"
+      val errorMessage = "Mandatory value missing"
+      when(journeyCacheService.mandatoryJourneyValueAsInt(CompanyCar_EmployerIdKey)(hc)).thenReturn(Future.successful(Left(errorMessage)))
+      Await.result(sut.companyCarEmploymentId, 5 seconds) mustBe Left(errorMessage)
     }
   }
 

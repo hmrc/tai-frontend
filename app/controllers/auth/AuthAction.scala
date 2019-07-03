@@ -16,7 +16,8 @@
 
 package controllers.auth
 
-import com.google.inject.{ImplementedBy, Inject, Singleton}
+import javax.inject.{Inject, Singleton}
+import com.google.inject.ImplementedBy
 import controllers.routes
 import play.Logger
 import play.api.mvc.Results.Redirect
@@ -25,14 +26,15 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name, ~}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.{ExecutionContext, Future}
 
 case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser) extends WrappedRequest[A](request)
 
-case class AuthedUser(name: String, validNino: String, utr: String, userDetailsUri: String, confidenceLevel: String) {
+case class AuthedUser(name: String, validNino: String, utr: String, providerType: String, confidenceLevel: String) {
   def getDisplayName = name
 
   def getNino = validNino
@@ -43,13 +45,13 @@ case class AuthedUser(name: String, validNino: String, utr: String, userDetailsU
 }
 
 object AuthedUser {
-  def apply(name: Option[Name], nino: Option[String], saUtr: Option[String], userDetailsUri: Option[String], confidenceLevel: ConfidenceLevel): AuthedUser = {
+  def apply(name: Option[Name], nino: Option[String], saUtr: Option[String], providerType: Option[String], confidenceLevel: ConfidenceLevel): AuthedUser = {
     val validNino = nino.getOrElse("")
     val validName = name.flatMap(_.name).getOrElse("")
     val validUtr = saUtr.getOrElse("")
-    val validUserDetailsUri = userDetailsUri.getOrElse("")
+    val validPoviderType = providerType.getOrElse("")
 
-    AuthedUser(validName, validNino, validUtr, validUserDetailsUri, confidenceLevel.toString)
+    AuthedUser(validName, validNino, validUtr, validPoviderType, confidenceLevel.toString)
   }
 }
 
@@ -63,24 +65,24 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised().
-      retrieve(Retrievals.credentials and Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri and Retrievals.confidenceLevel) {
-        case credentials ~ nino ~ name ~ saUtr ~ userDetailsUri ~ confidenceLevel => {
-          val user = AuthedUser(name, nino, saUtr, userDetailsUri, confidenceLevel)
+      retrieve(Retrievals.credentials and Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.confidenceLevel) {
+        case credentials ~ nino ~ name ~ saUtr ~ confidenceLevel => {
+
+          val providerType = credentials.map(_.providerType)
+          val user = AuthedUser(name, nino, saUtr, providerType, confidenceLevel)
+
           authWithCredentials(request, block, credentials, user)
         }
         case _ => throw new RuntimeException("Can't find credentials for user")
-      } recover handleGGFailure
+      } recover handleEntryPointFailure(request)
   }
 
   private def authWithCredentials[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result], credentials: Option[Credentials], user: AuthedUser)(implicit hc: HeaderCarrier): Future[Result] = {
-    val GOVERNMENT_GATEWAY = "GovernmentGateway"
-    val VERIFY = "Verify"
-
     credentials match {
-      case Some(Credentials(_, GOVERNMENT_GATEWAY)) => {
+      case Some(Credentials(_, TaiConstants.AuthProviderGG)) => {
         processRequest(user, request, block, handleGGFailure)
       }
-      case Some(Credentials(_, VERIFY)) => {
+      case Some(Credentials(_, TaiConstants.AuthProviderVerify)) => {
         processRequest(user, request, block, handleVerifyFailure)
       }
       case _ => throw new RuntimeException("Can't find valid credentials for user")
@@ -93,7 +95,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)
     val confidenceLevel = user.confidenceLevel.toInt
 
     (confidenceLevel match {
-    case level if level >= 200 => {
+      case level if level >= 200 => {
         for {
           result <- block(AuthenticatedRequest(request, user))
         } yield {
@@ -102,6 +104,15 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)
       }
       case _ => Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl()))
     }) recover failureHandler
+  }
+
+  private def handleEntryPointFailure[A](request: Request[A]): PartialFunction[Throwable, Result] = {
+    request.session.get(SessionKeys.authProvider) match {
+      case Some(TaiConstants.AuthProviderVerify) =>
+        handleVerifyFailure
+      case _ =>
+        handleGGFailure
+    }
   }
 
   private def handleGGFailure: PartialFunction[Throwable, Result] = {

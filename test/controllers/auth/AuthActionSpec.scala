@@ -17,24 +17,29 @@
 package controllers.auth
 
 import controllers.{FakeTaiPlayApplication, routes}
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Controller
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future, Await}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
 
 class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  lazy val fakeVerifyRequest = FakeRequest("GET", "/").withSession(
+    SessionKeys.authProvider -> TaiConstants.AuthProviderVerify
+  )
 
   class Harness(authAction: AuthAction) extends Controller {
-    def onPageLoad() = authAction { request => Ok }
+    def onPageLoad() = authAction { request => BadRequest }
   }
 
   class FakeFailingAuthConnector(exceptionToReturn: Throwable) extends AuthConnector {
@@ -43,6 +48,8 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
     override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
       Future.failed(exceptionToReturn)
   }
+
+
 
   "Auth Action" when {
     val authErrors = Seq[AuthorisationException](
@@ -70,9 +77,9 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
   }
 
   "Given the user is unauthorised" should {
-    "redirect the user to the log in page" when {
+    "redirect the user to the GG log in page" when {
 
-      val authErrors = Seq[AuthorisationException](
+      val authErrors = Seq[RuntimeException](
         new InvalidBearerToken,
         new BearerTokenExpired,
         new MissingBearerToken,
@@ -85,10 +92,34 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
         }" in {
           val authAction = new AuthActionImpl(new FakeFailingAuthConnector(error))
           val controller = new Harness(authAction)
+
           val result = controller.onPageLoad()(fakeRequest)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginGG().toString)
+        }
+      })
+    }
+
+    "redirect the user to the Verify log in page" when {
+      val authErrors = Seq[RuntimeException](
+        new InvalidBearerToken,
+        new BearerTokenExpired,
+        new MissingBearerToken,
+        new SessionRecordNotFound
+      )
+
+      authErrors.foreach(error => {
+        s"there is an ${
+          error.toString
+        }" in {
+          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(error))
+          val controller = new Harness(authAction)
+
+          val result = controller.onPageLoad()(fakeVerifyRequest)
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginVerify().toString)
         }
       })
     }

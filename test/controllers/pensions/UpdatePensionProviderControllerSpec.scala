@@ -16,7 +16,7 @@
 
 package controllers.pensions
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.{RequestBuilder}
 import controllers.actions.FakeValidatePerson
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
@@ -31,8 +31,6 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
@@ -282,11 +280,11 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "show summary page" when {
       "valid details are present in journey cache" in {
 
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
-          Future.successful((
-            Seq[String](pensionId, pensionName, "Yes", "some random info", "Yes"),
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+          Future.successful(
+            Right(Seq[String](pensionId, pensionName, "Yes", "some random info", "Yes")),
             Seq[Option[String]](Some("123456789"))
-          ))
+          )
         )
 
         val result = createController.checkYourAnswers()(fakeGetRequest)
@@ -296,6 +294,24 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         doc.title() must include(Messages("tai.checkYourAnswers.title"))
       }
     }
+
+
+    "redirect to the summary page if a value is missing from the cache " in {
+
+      when(journeyCacheService.collectedJourneyValues(any(classOf[scala.collection.immutable.List[String]]),
+        any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
+        Future.successful((
+          Left("An error has occurred"),
+          Seq[Option[String]](Some("123456789"))
+        ))
+      )
+
+      val result = createController.checkYourAnswers()(fakeGetRequest)
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
+    }
+
   }
 
   "submit your answers" must {

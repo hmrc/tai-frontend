@@ -16,10 +16,9 @@
 
 package controllers.income
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.audit.Auditable
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.Play.current
 import play.api.i18n.Messages
@@ -49,9 +48,7 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
                                                override implicit val partialRetriever: FormPartialRetriever,
                                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with FeatureTogglesConfig
-  with FormValuesConstants
-  with Auditable {
-
+  with FormValuesConstants {
 
   def onPageLoad(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -67,14 +64,6 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
       }
   }
 
-  private def determineViewModel(isPension: Boolean, employmentName: String, newValue: Int): DuplicateSubmissionEstimatedPay = {
-    if (isPension) {
-      DuplicateSubmissionCYPlus1PensionViewModel(employmentName, newValue)
-    } else {
-      DuplicateSubmissionCYPlus1EmploymentViewModel(employmentName, newValue)
-    }
-  }
-
   def duplicateWarning(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       preAction {
@@ -82,7 +71,12 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
           val nino = user.nino
 
           updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-            val vm = determineViewModel(model.isPension, model.employmentName, model.newValue.get)
+            val vm = if (model.isPension) {
+              DuplicateSubmissionCYPlus1PensionViewModel(model.employmentName, model.newValue.get)
+            } else {
+              DuplicateSubmissionCYPlus1EmploymentViewModel(model.employmentName, model.newValue.get)
+            }
+
             Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Warning(DuplicateSubmissionWarningForm.createForm, vm, employmentId))
           }
       }
@@ -97,7 +91,12 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
             formWithErrors => {
               updateNextYearsIncomeService.get(employmentId, nino) flatMap { model =>
-                val vm = determineViewModel(model.isPension, model.employmentName, model.newValue.get)
+                val vm = if (model.isPension) {
+                  DuplicateSubmissionCYPlus1PensionViewModel(model.employmentName, model.newValue.get)
+                } else {
+                  DuplicateSubmissionCYPlus1EmploymentViewModel(model.employmentName, model.newValue.get)
+                }
+
                 Future.successful(BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId)))
               }
             },
