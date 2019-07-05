@@ -1,3 +1,7 @@
+global.error.InternalServerError500.title = Sorry, there is a problem with the service
+global.error.InternalServerError500.heading = Sorry, there is a problem with the service
+global.error.InternalServerError500.message = Try again later.
+
 add.missing.company.benefit=Add a missing company benefit
 add.missing.employment=Add a missing employment
 add.missing.pension=Add a missing pension
@@ -1258,7 +1262,7 @@ tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime = Total bonu
 tai.taxcode.deduction.type-45=Estimate of the tax you owe this year
 tai.taxcode.deduction.type-4=Other pension
 tai.taxedIncome.desc=TaxedIncome
-tai.technical.error.heading=Sorry we are experiencing technical difficulties
+tai.technical.error.heading = Sorry, there is a problem with the service
 tai.technical.error.message=Try again later
 tai.technical.error.npsdown.message=Please try again later. You do not need to contact us about this.
 tai.technical.error.title=Error

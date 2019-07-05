@@ -134,10 +134,10 @@ class ErrorPagesHandlerSpec extends PlaySpec
       val doc = Jsoup.parse(content)
 
       val heading = doc.select(".h1-heading").text()
-      heading mustBe "Sorry we are experiencing technical difficulties"
+      heading mustBe "Sorry, there is a problem with the service"
 
       val title = doc.select("title").text()
-      title must include("Sorry, we are experiencing technical difficulties - 500")
+      title must include("Sorry, there is a problem with the service")
 
     }
 
@@ -200,10 +200,10 @@ class ErrorPagesHandlerSpec extends PlaySpec
       val doc = Jsoup.parse(content)
 
       val heading = doc.select(".h1-heading").text()
-      heading mustBe "Sorry we are experiencing technical difficulties"
+      heading mustBe "Sorry, there is a problem with the service"
 
       val title = doc.select("title").text()
-      title must include("Sorry, we are experiencing technical difficulties - 500")
+      title must include("Sorry, there is a problem with the service")
 
     }
   }

@@ -1,3 +1,7 @@
+global.error.InternalServerError500.title = Mae’n ddrwg gennym, mae problem gyda’r gwasanaeth
+global.error.InternalServerError500.heading = Mae’n ddrwg gennym, mae problem gyda’r gwasanaeth
+global.error.InternalServerError500.message = Rhowch gynnig arall arni yn nes ymlaen.
+
 add.missing.company.benefit=Ychwanegu buddiant cwmni sydd ar goll
 add.missing.employment=Ychwanegu Cyflogaeth sydd ar goll
 add.missing.pension=Ychwanegu pensiwn sydd ar goll
@@ -1245,7 +1249,7 @@ tai.taxablePayslip.taxablePay.explanation=Cyflog trethadwy yw’ch cyflog gros a
 tai.taxcode.deduction.type-45=Amcangyfrif o''r dreth sydd arnoch y flwyddyn hon
 tai.taxcode.deduction.type-4=Pensiwn arall
 tai.taxedIncome.desc=Incwm wedi''i drethu
-tai.technical.error.heading=Mae''n ddrwg gennym, mae anawsterau technegol wedi codi
+tai.technical.error.heading = Mae’n ddrwg gennym, mae problem gyda’r gwasanaeth
 tai.technical.error.message=Rhowch gynnig arall arni yn nes ymlaen
 tai.technical.error.npsdown.message=Rhowch gynnig arall arni yn nes ymlaen. Does dim rhaid i chi gysylltu â ni am hyn.
 tai.technical.error.title=Gwall

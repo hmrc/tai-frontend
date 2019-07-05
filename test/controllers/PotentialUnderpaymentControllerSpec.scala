@@ -101,7 +101,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
       val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
       status(res) mustBe INTERNAL_SERVER_ERROR
       val doc = Jsoup.parse(contentAsString(res))
-      doc.title() must include("Sorry, we are experiencing technical difficulties - 500")
+      doc.title() must include("Sorry, there is a problem with the service")
     }
   }
 
