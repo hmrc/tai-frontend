@@ -1394,8 +1394,8 @@ taxCode.change.yourTaxFreeAmount.desc=Caiff eich cod treth ei gyfrifo o’ch swm
 taxCode.change.yourTaxFreeAmount.dates=Eich swm rhydd o dreth ar gyfer {0}
 taxCode.change.yourTaxFreeAmount.summaryHeading=Sut caiff eich swm rhydd o dreth ei gyfrifo
 taxCode.change.yourTaxFreeAmount.whatHappensNext.link=Gweler beth fydd yn digwydd nesaf
-taxCode.change.yourTaxCodeChanged.h1=Fe wnaethom newid eich cod treth ar {0}
-taxCode.change.yourTaxCodeChanged.h2=Pam mae''ch cod treth wedi newid
+taxCode.change.yourTaxCodeChanged.h1=Gwnaethom newid eich cod treth ar {0}
+taxCode.change.yourTaxCodeChanged.h2=Pam y mae''ch cod treth wedi newid
 taxCode.change.yourTaxCodeChanged.paragraph=Gallai hyn fod o ganlyniad i newid i’ch incwm neu’ch buddiannau, neu newid i’ch cyflogaeth.
 taxCode.change.yourTaxCodeChanged.checkYourTaxButton=Gweld sut gwnaethom gyfrifo’ch cod treth
 taxCode.change.yourTaxCodeChanged.from=O {0}
@@ -1454,7 +1454,7 @@ tai.updateIncome.CYPlus1.same.cancel=Dychwelyd i''ch Crynodeb Treth Incwm
 
 tai.taxCodeComparison.add.employer=mae gennych gyflogaeth newydd gyda {0}
 tai.taxCodeComparison.add.pension=mae gennych bensiwn preiffat newydd gyda {0}
-tai.taxCodeComparison.removeEmployer=mae’ch cyflogaeth {0} wedi dod i ben
+tai.taxCodeComparison.removeEmployer=mae’ch cyflogaeth gyda {0} wedi dod i ben
 tai.taxCodeComparison.title=Gwnaethom newid hyn oherwydd y canlynol:
 
 tai.taxCodeComparison.iabd.increased=gynyddu

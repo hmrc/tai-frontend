@@ -1452,7 +1452,7 @@ tai.updateIncome.CYPlus1.same.cancel=Return to your Income Tax Summary
 
 tai.taxCodeComparison.add.employer=you have a new employment with {0}
 tai.taxCodeComparison.add.pension=you have a new private pension with {0}
-tai.taxCodeComparison.removeEmployer=your employment {0} has ended
+tai.taxCodeComparison.removeEmployer=your employment with {0} has ended
 tai.taxCodeComparison.title=We changed this because:
 tai.taxCodeComparison.iabd.increased=increased
 tai.taxCodeComparison.iabd.reduced=reduced
