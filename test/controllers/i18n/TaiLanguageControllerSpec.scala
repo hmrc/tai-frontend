@@ -81,8 +81,6 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
   private val nino = new Generator(new Random).nextNino
 
   private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController(
-    FakeAuthAction,
-    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {

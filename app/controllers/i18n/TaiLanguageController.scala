@@ -29,10 +29,9 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 
-class TaiLanguageController @Inject()(authenticate: AuthAction,
-                                      validatePerson: ValidatePerson,
-                                      override implicit val partialRetriever: FormPartialRetriever,
-                                      override implicit val templateRenderer: TemplateRenderer) extends LanguageController
+class TaiLanguageController @Inject()(
+                                      val partialRetriever: FormPartialRetriever,
+                                      val templateRenderer: TemplateRenderer) extends LanguageController
   with TaiBaseController
   with FeatureTogglesConfig {
 
@@ -45,7 +44,7 @@ class TaiLanguageController @Inject()(authenticate: AuthAction,
 
   protected def isWelshEnabled = welshLanguageEnabled
 
-  override def switchToLanguage(language: String): Action[AnyContent] = (authenticate andThen validatePerson) {
+  override def switchToLanguage(language: String): Action[AnyContent] = Action {
     implicit request =>
       val newLanguage =
         if (isWelshEnabled)
