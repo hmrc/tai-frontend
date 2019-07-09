@@ -38,8 +38,7 @@
   gaCustomTitle: Option[String] = None,
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None,
-  script: Option[Html] = None,
-  includeWebchatScript: Boolean = true
+  script: Option[Html] = None
 )(mainContent: Html
 )(implicit request: Request[_],
   messages: Messages,
@@ -190,7 +189,7 @@
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
 
-    @if(FeatureTogglesConfig.webChatEnabled && includeWebchatScript){
+    @if(FeatureTogglesConfig.webChatEnabled){
       <script id="webchat-tag" type="text/javascript" src="https://hmrc-uk.digital.nuance.com/chatskins/launch/inqChatLaunch10006719.js"></script>
     }
 
