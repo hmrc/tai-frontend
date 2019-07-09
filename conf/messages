@@ -689,6 +689,7 @@ tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText=Te
 tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText=allowances or tax reliefs
 tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText=Tell us about allowances or tax reliefs
 tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link=Return to your PAYE Income Tax overview
+tai.incomeTaxComparison.welshAmmendmentToDate={0}
 
 tai.incomeTaxSummary.addMissingIncome.section.employerLink=Add a missing employer
 tai.incomeTaxSummary.addMissingIncome.section.heading=Something missing?
@@ -1473,3 +1474,5 @@ tai.urbanner.reject=No thanks
 checkProgress.link=Check the progress of your update
 
 tai.information = Information
+
+tai = {0} ymwla

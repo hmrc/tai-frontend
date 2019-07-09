@@ -17,10 +17,16 @@
 package uk.gov.hmrc.tai.viewModels.incomeTaxComparison
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxComparisonItem]) extends ViewModelHelper {
+
+  override def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
+    Messages("tai.incomeTaxComparison.welshAmmendmentToDate",htmlNonBroken(Dates.formatDate(TaxYear().next.start)))
+  }
+
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
   def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
 
