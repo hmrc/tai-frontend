@@ -24,7 +24,16 @@ import uk.gov.hmrc.tai.util.ViewModelHelper
 case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxComparisonItem]) extends ViewModelHelper {
 
   override def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
-    Messages("tai.incomeTaxComparison.welshAmmendmentToDate",htmlNonBroken(Dates.formatDate(TaxYear().next.start)))
+
+    changeInTaxAmount match {
+      case gt if gt > 0 => Messages("tai.incomeTaxComparison.dateWithoutWelshAmendment",htmlNonBroken(Dates.formatDate(TaxYear().next.start)))
+      case lt if lt < 0 => Messages("tai.incomeTaxComparison.welshAmendmentToDate",htmlNonBroken(Dates.formatDate(TaxYear().next.start)))
+      case _ => Messages("tai.incomeTaxComparison.welshAmendmentToDate",htmlNonBroken(Dates.formatDate(TaxYear().next.start)))
+    }
+
+    // if they pay less or the same display this message
+//    Messages("tai.incomeTaxComparison.welshAmmendmentToDate",htmlNonBroken(Dates.formatDate(TaxYear().next.start)))
+  //if they are expected to pay mor tax yo dont want the ylmaen on the end
   }
 
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak

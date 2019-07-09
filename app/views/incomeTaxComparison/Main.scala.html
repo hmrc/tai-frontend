@@ -36,18 +36,26 @@
     </p>
 }
 
+@headingText = @{
+    incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel.changeInTaxAmount match {
+        case gt if gt > 0 => messages("tai.incomeTaxComparison.heading.more")
+        case lt if lt < 0 => messages("tai.incomeTaxComparison.heading.less")
+        case _ => messages("tai.incomeTaxComparison.heading.same")
+    }
+}
+
 @header = @{
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = None,
-        mainHeadingText = messages("tai.incomeTaxComparison.heading"),
+        mainHeadingText = headingText,
         preHeadingText = incomeTaxComparisonViewModel.username,
         preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"),
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
-@main(title = messages("tai.incomeTaxComparison.heading"),
-    gaCustomTitle = Some(messages("tai.incomeTaxComparison.heading")),
+@main(title = headingText,
+    gaCustomTitle = Some(headingText),
     pageHeader = Some(header),
     authedUser = Some(user)) {
 

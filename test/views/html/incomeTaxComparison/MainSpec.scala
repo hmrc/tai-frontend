@@ -29,14 +29,36 @@ import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, IncomeSource
 
 class MainSpec extends TaiViewSpec {
   "Cy plus one view" must {
-    behave like pageWithTitle(messages("tai.incomeTaxComparison.heading"))
-    behave like pageWithCombinedHeader(preHeaderText = incomeTaxComparisonViewModel.username,
-      mainHeaderText = messages("tai.incomeTaxComparison.heading"),
+
+    "show the correct page title" in {
+
+      doc(viewWithMore).title must include(messages("tai.incomeTaxComparison.heading.more"))
+    }
+
+
+    "show the correct heading when the user is estimated to pay more tax in CY plus 1" in {
+
+      doc(viewWithMore) must haveHeadingWithText(messages("tai.incomeTaxComparison.heading.more"))
+    }
+
+    "show the correct heading when the user is estimated to pay less tax in CY plus 1" in {
+
+      doc(viewWithLess) must haveHeadingWithText(messages("tai.incomeTaxComparison.heading.less"))
+
+    }
+
+    "show the correct heading when the user is estimated to pay the same tax in CY plus 1" in {
+
+      doc(view) must haveHeadingWithText(messages("tai.incomeTaxComparison.heading.same"))
+    }
+
+    behave like pageWithCombinedHeader(preHeaderText = "USERNAME",
+      mainHeaderText = messages("tai.incomeTaxComparison.heading.same"),
       preHeaderAnnouncementText = Some(messages("tai.incomeTaxComparison.preHeading.screenReader")))
 
     "show the income tax section with heading" in {
-      doc(view) must haveSectionWithId("incomeTax")
-      doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "£100"))
+      doc(viewWithMore) must haveSectionWithId("incomeTax")
+      doc(viewWithMore) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "£1"))
     }
 
     "display a link to return to choose tax year page" in {
@@ -108,7 +130,7 @@ class MainSpec extends TaiViewSpec {
     }
 
     "show the hypothetical banner" in {
-      val estimatedJourneyCompleted = IncomeTaxComparisonViewModel("USERNAME", estimatedIncomeTaxComparisonViewModel,
+      val estimatedJourneyCompleted = IncomeTaxComparisonViewModel("USERNAME", estimatedIncomeTaxComparisonViewModel("same"),
         TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil),IncomeSourceComparisonViewModel(Nil,Nil), true)
 
       def journeyCompletedView: Html = views.html.incomeTaxComparison.Main(estimatedJourneyCompleted, true)
@@ -119,12 +141,33 @@ class MainSpec extends TaiViewSpec {
 
   private lazy val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
   private lazy val startOfNextTaxYear = Dates.formatDate(TaxYear().next.start)
-  private lazy val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 200)
-  private lazy val estimatedIncomeTaxComparisonViewModel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
+  private lazy val nextYearItemMore = EstimatedIncomeTaxComparisonItem(TaxYear().next, 101)
+  private lazy val nextYearItemSame = EstimatedIncomeTaxComparisonItem(TaxYear().next, 100)
+  private lazy val nextYearItemLess = EstimatedIncomeTaxComparisonItem(TaxYear().next, 99)
+
+  private def estimatedIncomeTaxComparisonViewModel(nextYearValue: String) = {
+
+    nextYearValue.toLowerCase match {
+      case "more" => EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItemMore))
+      case "less" => EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItemLess))
+      case _ => EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItemSame))
+    }
+  }
+
   val isEstimatedJourneyComplete = false
 
-  private lazy val incomeTaxComparisonViewModel = IncomeTaxComparisonViewModel("USERNAME", estimatedIncomeTaxComparisonViewModel,
+  private lazy val incomeTaxComparisonViewModelMore = IncomeTaxComparisonViewModel("USERNAME", estimatedIncomeTaxComparisonViewModel("more"),
     TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil),IncomeSourceComparisonViewModel(Nil,Nil), isEstimatedJourneyComplete)
 
-  override def view: Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModel, true)
+  private lazy val incomeTaxComparisonViewModelLess = IncomeTaxComparisonViewModel("USERNAME", estimatedIncomeTaxComparisonViewModel("less"),
+    TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil),IncomeSourceComparisonViewModel(Nil,Nil), isEstimatedJourneyComplete)
+
+  private lazy val incomeTaxComparisonViewModelSame = IncomeTaxComparisonViewModel("USERNAME", estimatedIncomeTaxComparisonViewModel("same"),
+    TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil),IncomeSourceComparisonViewModel(Nil,Nil), isEstimatedJourneyComplete)
+
+
+
+  def viewWithMore: Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelMore, true)
+  def viewWithLess: Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelLess, true)
+  override def view: Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelSame, true)
 }
