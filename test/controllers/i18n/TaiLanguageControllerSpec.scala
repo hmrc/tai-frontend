@@ -37,7 +37,7 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
   "switchLanguage method" must {
 
     "return a redirect to the what do you want to do page" when {
-      "the request is authorised but no referrer header is present" in {
+      "no referrer header is present" in {
         val result = new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
@@ -45,7 +45,7 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
     }
 
     "return a redirect to the referrer url" when {
-      "the request is authorised and a referrer header is present" in {
+      "a referrer header is present" in {
         val result = new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET", Map("Referer" -> "/fake/url")))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("/fake/url")
