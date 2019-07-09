@@ -653,7 +653,7 @@ tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensi
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions=Incwm o bensiynau preifat
 tai.incomeTaxComparison.incomeTax.subHeading.less=Rydym yn amcangyfrif y byddwch yn talu {0} yn llai o dreth y flwyddyn dreth nesaf
 tai.incomeTaxComparison.incomeTax.subHeading.more=Rydym yn amcangyfrif y byddwch yn talu {0} yn fwy o dreth y flwyddyn nesaf
-tai.incomeTaxComparison.incomeTax.subHeading.same=Rydym yn amcangyfrif y byddwch yn talu''r un faint o dreth y flwyddyn dreth nesaf
+tai.incomeTaxComparison.incomeTax.subHeading.same=Rydym yn amcangyfrif y byddwch yn talu''r un faint o dreth y flwyddyn nesaf
 tai.incomeTaxComparison.preHeading.screenReader=Yr adran hon yw''r gymhariaeth treth incwm ar gyfer
 tai.incomeTaxComparison.sidebar.subHeading=Ewch i''r flwyddyn dreth bresennol
 tai.incomeTaxComparison.taxCodes.description=Defnyddir eich codau treth i gyfrifo faint o Dreth Incwm i''w chymryd o''ch cyflog neu''ch pensiwn.
