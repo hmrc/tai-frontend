@@ -17,6 +17,7 @@
 package views.html.incomeTaxComparison
 
 import org.jsoup.Jsoup
+import play.api.i18n.{Lang, Messages}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -25,31 +26,65 @@ import uk.gov.hmrc.tai.util.{DateHelper, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, IncomeSourceViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
+import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 
-
-class MainSpec extends TaiViewSpec {
+class MainSpec extends TaiViewSpec with ViewModelHelper {
   "Cy plus one view" must {
+
+    val welshMessage = Messages(Lang("cy"), messages.messages)
 
     "show the correct page title" in {
 
-      doc(viewWithMore).title must include(messages("tai.incomeTaxComparison.heading.more"))
+      doc(viewWithMore(welshMessage)).title must include(welshMessage("tai.incomeTaxComparison.heading.more"))
     }
 
 
     "show the correct heading when the user is estimated to pay more tax in CY plus 1" in {
 
-      doc(viewWithMore) must haveHeadingWithText(messages("tai.incomeTaxComparison.heading.more"))
+      doc(viewWithMore(welshMessage)) must haveHeadingWithText(welshMessage("tai.incomeTaxComparison.heading.more"))
     }
 
     "show the correct heading when the user is estimated to pay less tax in CY plus 1" in {
 
-      doc(viewWithLess) must haveHeadingWithText(messages("tai.incomeTaxComparison.heading.less"))
+      doc(viewWithLess(welshMessage)) must haveHeadingWithText(welshMessage("tai.incomeTaxComparison.heading.less"))
 
     }
 
     "show the correct heading when the user is estimated to pay the same tax in CY plus 1" in {
 
-      doc(view) must haveHeadingWithText(messages("tai.incomeTaxComparison.heading.same"))
+      doc(viewWithSame(welshMessage)) must haveHeadingWithText(welshMessage("tai.incomeTaxComparison.heading.same"))
+    }
+
+    "show the correct h2 when user pays more tax next year" in {
+
+      doc(viewWithMore(welshMessage)) must haveH2HeadingWithText (welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.more","£1"))
+    }
+
+    "show the correct h2 when user pays less tax next year" in {
+
+      doc(viewWithSame(welshMessage)) must haveH2HeadingWithText (welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.same"))
+    }
+
+    "show the correct h2 when user pays same tax next year" in {
+
+      doc(viewWithLess(welshMessage)) must haveH2HeadingWithText (welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.less","£1"))
+    }
+
+    "show the correct table heading in welsh when user pays more tax next year" in {
+
+      doc(viewWithMore(welshMessage)).text() must include (welshMessage("tai.incomeTaxComparison.dateWithoutWelshAmendment",Dates.formatDate(TaxYear().next.start)(welshMessage)))
+    }
+
+    "show the correct table heading in welsh when user pays less tax next year" in {
+
+      doc(viewWithLess(welshMessage)).text() must include (welshMessage("tai.incomeTaxComparison.welshAmendmentToDate", Dates.formatDate(TaxYear().next.start)(welshMessage)))
+    }
+
+    "show the correct table heading in welsh when user pays same tax next year" in {
+
+      doc(viewWithSame(welshMessage)).text() must include (welshMessage("tai.incomeTaxComparison.welshAmendmentToDate", Dates.formatDate(TaxYear().next.start)(welshMessage)))
     }
 
     behave like pageWithCombinedHeader(preHeaderText = "USERNAME",
@@ -167,7 +202,8 @@ class MainSpec extends TaiViewSpec {
 
 
 
-  def viewWithMore: Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelMore, true)
-  def viewWithLess: Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelLess, true)
-  override def view: Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelSame, true)
+  def viewWithMore(implicit messages: Messages): Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelMore, true)
+  def viewWithLess(implicit messages: Messages): Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelLess, true)
+  def viewWithSame(implicit messages: Messages): Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelSame, true)
+  override def view: Html = viewWithSame
 }

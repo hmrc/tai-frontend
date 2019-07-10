@@ -52,6 +52,57 @@ object RequestBuilder {
       SessionKeys.authProvider -> "IDA",
       SessionKeys.userId -> s"/path/to/authority").withHeaders(headers.toArray : _*)
 
+  def buildFakeRequestWithAuthMore(method: String, headers: Map[String, String]) =
+    FakeRequest(method = method, path = "").withFormUrlEncodedBody(
+      "name" -> "test1", "description" -> "description",
+      "employmentId" -> "14",
+      "newAmount" -> "12",
+      "oldAmount" -> "11",
+      "worksNumber" -> "",
+      "startDate" -> "2013-08-03",
+      "endDate" -> "",
+      "isLive" -> "true",
+      "isOccupationalPension" -> "false",
+      "hasMultipleIncomes" -> "true").withSession(
+      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+      SessionKeys.authProvider -> "IDA",
+      SessionKeys.userId -> s"/path/to/authority").withHeaders(headers.toArray : _*)
+
+  def buildFakeRequestWithAuthLess(method: String, headers: Map[String, String]) =
+    FakeRequest(method = method, path = "").withFormUrlEncodedBody(
+      "name" -> "test1", "description" -> "description",
+      "employmentId" -> "14",
+      "newAmount" -> "10",
+      "oldAmount" -> "11",
+      "worksNumber" -> "",
+      "startDate" -> "2013-08-03",
+      "endDate" -> "",
+      "isLive" -> "true",
+      "isOccupationalPension" -> "false",
+      "hasMultipleIncomes" -> "true").withSession(
+      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+      SessionKeys.authProvider -> "IDA",
+      SessionKeys.userId -> s"/path/to/authority").withHeaders(headers.toArray : _*)
+
+  def buildFakeRequestWithAuthSame(method: String, headers: Map[String, String]) =
+    FakeRequest(method = method, path = "").withFormUrlEncodedBody(
+      "name" -> "test1", "description" -> "description",
+      "employmentId" -> "14",
+      "newAmount" -> "11",
+      "oldAmount" -> "11",
+      "worksNumber" -> "",
+      "startDate" -> "2013-08-03",
+      "endDate" -> "",
+      "isLive" -> "true",
+      "isOccupationalPension" -> "false",
+      "hasMultipleIncomes" -> "true").withSession(
+      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+      SessionKeys.authProvider -> "IDA",
+      SessionKeys.userId -> s"/path/to/authority").withHeaders(headers.toArray : _*)
+
+
+
+
   def buildFakeRequestWithAuth(method: String) =
     FakeRequest(method = method, path = "").withFormUrlEncodedBody(
       "name" -> "test1", "description" -> "description",
