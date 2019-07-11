@@ -30,10 +30,6 @@ case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxCo
       case lt if lt < 0 => Messages("tai.incomeTaxComparison.welshAmendmentToDate",htmlNonBroken(Dates.formatDate(TaxYear().next.start)))
       case _ => Messages("tai.incomeTaxComparison.welshAmendmentToDate",htmlNonBroken(Dates.formatDate(TaxYear().next.start)))
     }
-
-    // if they pay less or the same display this message
-//    Messages("tai.incomeTaxComparison.welshAmmendmentToDate",htmlNonBroken(Dates.formatDate(TaxYear().next.start)))
-  //if they are expected to pay mor tax yo dont want the ylmaen on the end
   }
 
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak

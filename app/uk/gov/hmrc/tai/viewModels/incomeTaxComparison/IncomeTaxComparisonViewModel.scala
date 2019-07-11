@@ -45,6 +45,4 @@ object IncomeTaxComparisonViewModel {
       incomeSourceComparisonViewModel,
       showBanner)
   }
-
-
 }
