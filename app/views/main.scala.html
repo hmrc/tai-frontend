@@ -75,12 +75,6 @@
 }
 
 @signOutUrl = @{
-    if(FeatureTogglesConfig.webChatEnabled){
-            <script type="text/javascript">
-                Inq.closeChat(); Inq.closeChat(); Inq.closeChat();
-            </script>
-    }
-
     mustacheCheck{
         val signOutLink = routes.ServiceController.serviceSignout().url
         authedUser.fold("")(_ => signOutLink)
