@@ -170,7 +170,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
         status(result) mustBe INTERNAL_SERVER_ERROR
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include("Sorry, we are experiencing technical difficulties - 500")
+        doc.title() must include("Sorry, there is a problem with the service")
         doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
         doc must haveParagraphWithText(Messages("tai.technical.error.message"))
       }
@@ -184,7 +184,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
         status(result) mustBe INTERNAL_SERVER_ERROR
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include("Sorry, we are experiencing technical difficulties - 500")
+        doc.title() must include("Sorry, there is a problem with the service")
         doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
         doc must haveParagraphWithText(Messages("tai.technical.error.message"))
       }

@@ -38,8 +38,7 @@
   gaCustomTitle: Option[String] = None,
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None,
-  script: Option[Html] = None,
-  includeWebchatScript: Boolean = true
+  script: Option[Html] = None
 )(mainContent: Html
 )(implicit request: Request[_],
   messages: Messages,
@@ -129,23 +128,26 @@
 }
 
 @inlineScript = {
-
   <script>
+    var sessionId = new Date().getTime() + '.' + Math.random().toString(36).substring(5)
+    var clientId = ga.getAll()[0].get('clientId');
+
     window.dataLayer = window.dataLayer || []
     window.dataLayer.push(
       {
-        'Session id (cd67)': '@request.session.get("sessionId")'
+        'Timestamp': new Date().toUTCString(),
+        'Session ID': sessionId,
+        'Client ID': clientId,
+        'Session-X-ID': '@request.session.get("sessionId")'
       }
     );
   </script>
 
     <script type="text/javascript">
-
         var nuanceData =
         {
             'sessionId': '@request.session.get("sessionId")'
         }
-
     </script>
 
 
@@ -187,7 +189,7 @@
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
 
-    @if(FeatureTogglesConfig.webChatEnabled && includeWebchatScript){
+    @if(FeatureTogglesConfig.webChatEnabled){
       <script id="webchat-tag" type="text/javascript" src="https://hmrc-uk.digital.nuance.com/chatskins/launch/inqChatLaunch10006719.js"></script>
     }
 
@@ -244,7 +246,6 @@
             "audience" -> optimizelyAudience.getOrElse("Other user"),
             "projectId" -> "8461600066"
         ),
-
         "googleTagManager" -> Map(
             "gtmId" -> "TSFTCWZ"
         )
@@ -258,7 +259,7 @@
             "fullWidthBannerText" -> Messages("tai.urbanner.text"),
             "fullWidthBannerLink" -> ApplicationConfig.urBannerLink,
             "fullWidthBannerDismissText" -> Messages("tai.urbanner.reject"),
-            "fullWidthBannerGaAction" -> "Help improve HMRC letters"
+            "fullWidthBannerGaAction" -> "Help improve the HMRC website"
         )
     } else mustacheMap
 }

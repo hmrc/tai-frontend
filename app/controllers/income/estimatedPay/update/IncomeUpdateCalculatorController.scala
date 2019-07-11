@@ -44,7 +44,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{GrossPayPeriodTitle, _}
-import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel}
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
 
 import scala.Function.tupled
 import scala.concurrent.Future
@@ -304,6 +304,33 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
       }
   }
 
+  def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+
+      val collectedValues = journeyCacheService.collectedValues(
+        Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_PayToDateKey),
+        Seq(UpdateIncome_ConfirmedNewAmountKey))
+
+      (for {
+        (mandatoryCache, optionalCache) <- collectedValues
+      } yield {
+        val name :: newIrregularPay :: paymentToDate :: Nil = mandatoryCache.toList
+        val confirmedNewAmount = optionalCache.head
+
+        if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
+          Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache())
+        } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
+          Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
+        } else {
+          val vm = ConfirmAmountEnteredViewModel(employmentId, name, paymentToDate.toInt, newIrregularPay.toInt, IrregularPay)
+          Ok(views.html.incomes.confirmAmountEntered(vm))
+        }
+      }).recover {
+        case NonFatal(e) => internalServerError(e.getMessage)
+      }
+  }
+
+
   def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       journeyCacheService.currentCache flatMap { cache =>
@@ -325,32 +352,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
               }
             }
         )
-      }
-  }
-
-  def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-
-      val collectedValues = journeyCacheService.collectedValues(
-        Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_PayToDateKey),
-        Seq(UpdateIncome_ConfirmedNewAmountKey))
-
-      (for {
-        (mandatoryCache, optionalCache) <- collectedValues
-      } yield {
-        val name :: newIrregularPay :: paymentToDate :: Nil = mandatoryCache.toList
-        val confirmedNewAmount = optionalCache.head
-
-        if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
-          Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache())
-        } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
-          Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
-        } else {
-          val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, paymentToDate.toInt, newIrregularPay.toInt)
-          Ok(views.html.incomes.confirmAmountEntered(vm))
-        }
-      }).recover {
-        case NonFatal(e) => internalServerError(e.getMessage)
       }
   }
 
@@ -755,14 +756,15 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
       result.flatMap(identity)
   }
-
-  def handleCalculationResult: Action[AnyContent] = (authenticate andThen validatePerson).async {
+  
+   def handleCalculationResult: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
 
       implicit val user = request.taiUser
       val nino = user.nino
 
       (for {
+        employmentName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
         id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
         income <- incomeService.employmentAmount(nino, id)
         netAmount <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
@@ -774,10 +776,8 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
         } else {
 
-          val form = EditIncomeForm.create(preFillData = employmentAmount).get
-          val gaSetting = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, form.oldAmount, form.newAmount)
-
-          Ok(views.html.incomes.confirm_save_Income(form, gaSetting))
+          val vm = ConfirmAmountEnteredViewModel(employmentName, employmentAmount.oldAmount, employmentAmount.newAmount)
+          Ok(views.html.incomes.confirmAmountEntered(vm))
         }
       }).recover {
         case NonFatal(e) => internalServerError(e.getMessage)

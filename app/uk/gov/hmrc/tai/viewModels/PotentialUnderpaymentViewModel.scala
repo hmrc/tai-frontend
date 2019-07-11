@@ -16,14 +16,12 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, TaxAccountSummary}
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants._
-import uk.gov.hmrc.urls.Link
 
 case class PotentialUnderpaymentViewModel(iyaCYAmount: BigDecimal,
                                           iyaTaxCodeChangeAmount: BigDecimal,
@@ -33,7 +31,7 @@ case class PotentialUnderpaymentViewModel(iyaCYAmount: BigDecimal,
                                           returnLink: Html,
                                           gaDimensions: Option[Map[String, String]] = None)
 
-object PotentialUnderpaymentViewModel extends ViewModelHelper {
+object PotentialUnderpaymentViewModel extends ViewModelHelper with ReturnLink {
 
   def apply(taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent], referer: String, resourceName: String)(implicit messages:Messages): PotentialUnderpaymentViewModel = {
 
@@ -58,22 +56,8 @@ object PotentialUnderpaymentViewModel extends ViewModelHelper {
       taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne,
       taxAccountSummary.totalInYearAdjustment,
       Messages("tai.iya.tax.you.owe.title"),
-      returnLink(referer, resourceName),
+      createReturnLink(referer, resourceName),
       gaDimensions
     )
   }
-
-  def returnLink(referer: String, resourceName: String)(implicit messages:Messages): Html = {
-
-    def createLink(message: String, defaultReferer : String = referer): Html = Link.toInternalPage(url=defaultReferer,value=Some(message)).toHtml
-
-    resourceName match {
-      case "tax-free-allowance"           => createLink(messages("tai.iya.tax.free.amount.return.link"))
-      case "detailed-income-tax-estimate" => createLink(messages("tai.iya.detailed.paye.return.link"))
-      case "your-tax-free-amount"         => createLink(messages("tai.iya.tax.code.change.return.link"))
-      case _                              => createLink(messages("return.to.your.income.tax.summary"), routes.TaxAccountSummaryController.onPageLoad.url)
-
-    }
-  }
-
 }

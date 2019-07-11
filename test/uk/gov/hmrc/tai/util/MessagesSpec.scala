@@ -151,9 +151,6 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
   )
 
   private val frameworkProvidedKeys = Set(
-    "global.error.InternalServerError500.heading",
-    "global.error.InternalServerError500.message",
-    "global.error.InternalServerError500.title",
     "global.error.badRequest400.heading",
     "global.error.badRequest400.message",
     "global.error.badRequest400.title",

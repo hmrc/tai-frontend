@@ -39,6 +39,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, SameEstimatedPayViewModel}
 
 import scala.Function.tupled
@@ -148,7 +149,7 @@ class IncomeController @Inject()(@Named("Update Income") journeyCacheService: Jo
     FormHelper.areEqual(Some(income.oldAmount.toString), income.newAmount)
   }
 
-  def confirmRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+ def confirmRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
       val nino = user.nino
@@ -164,11 +165,9 @@ class IncomeController @Inject()(@Named("Update Income") journeyCacheService: Jo
             taxCodeIncomes.find(_.employmentId.contains(cachedData.head.toInt)) match {
               case Some(taxCodeIncome) =>
                 val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
-                val (_, date) = retrieveAmountAndDate(employment)
-                val form = EditIncomeForm(employmentAmount, cachedData(1), date.map(_.toString()))
 
-                val gaSetting = gaSettings(GoogleAnalyticsConstants.taiCYEstimatedIncome, form.oldAmount, form.newAmount)
-                Ok(views.html.incomes.confirm_save_Income(form, gaSetting))
+                val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
+                Ok(views.html.incomes.confirmAmountEntered(vm))
 
               case _ => throw new RuntimeException(s"Not able to found employment with id $id")
             }
@@ -256,7 +255,7 @@ class IncomeController @Inject()(@Named("Update Income") journeyCacheService: Jo
       else if (isIncomeTheSame(income)) {
         Redirect(routes.IncomeController.sameAnnualEstimatedPay())
       } else {
-        journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0"))
+        journeyCacheService.cache(UpdateIncome_NewAmountKey, income.toEmploymentAmount().newAmount.toString)
         Redirect(confirmationCallback)
       }
     }
@@ -284,8 +283,8 @@ class IncomeController @Inject()(@Named("Update Income") journeyCacheService: Jo
       }
 
   }
-
-  def confirmPensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  
+   def confirmPensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
 
       implicit val user = request.taiUser
@@ -303,12 +302,9 @@ class IncomeController @Inject()(@Named("Update Income") journeyCacheService: Jo
             taxCodeIncomes.find(_.employmentId.contains(cachedData.head.toInt)) match {
               case Some(taxCodeIncome) =>
                 val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
-                val (_, date) = retrieveAmountAndDate(employment)
-                val form = EditIncomeForm(employmentAmount, cachedData(1), date.map(_.toString()))
 
-                val gaSetting = gaSettings(GoogleAnalyticsConstants.taiCYEstimatedIncome, form.oldAmount, form.newAmount)
-
-                Ok(views.html.incomes.confirm_save_Income(form, gaSetting))
+                val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
+                Ok(views.html.incomes.confirmAmountEntered(vm))
               case _ => throw new RuntimeException(s"Not able to found employment with id $id")
             }
           case _ => throw new RuntimeException("Exception while reading employment and tax code details")
