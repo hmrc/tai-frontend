@@ -353,9 +353,9 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         val sut = createSUT
         val incorrectEmployment = IncorrectIncome("whatYouToldUs", "Yes", Some("123456789"))
         val empId = 1
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful((
-            Seq[String](empId.toString, "whatYouToldUs", "Yes"),
+            Right(Seq[String](empId.toString, "whatYouToldUs", "Yes")),
             Seq[Option[String]](Some("123456789"))
           ))
         )
@@ -376,9 +376,9 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         val sut = createSUT
         val incorrectEmployment = IncorrectIncome("whatYouToldUs", "No", None)
         val empId = 1
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful((
-            Seq[String](empId.toString, "whatYouToldUs", "No"),
+            Right(Seq[String](empId.toString, "whatYouToldUs", "No")),
             Seq[Option[String]](None)
           ))
         )

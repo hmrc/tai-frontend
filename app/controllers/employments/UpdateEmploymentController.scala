@@ -183,7 +183,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
     implicit request =>
       implicit val user = request.taiUser
       for {
-        (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedValues(Seq(UpdateEmployment_EmploymentIdKey,
+        (Right(mandatoryCacheSeq), optionalCacheSeq) <- journeyCacheService.collectedJourneyValues(Seq(UpdateEmployment_EmploymentIdKey,
           UpdateEmployment_EmploymentDetailsKey, UpdateEmployment_TelephoneQuestionKey),
           Seq(UpdateEmployment_TelephoneNumberKey))
         model = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
