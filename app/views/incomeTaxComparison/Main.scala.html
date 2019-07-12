@@ -38,9 +38,9 @@
 
 @headingText = @{
     incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel.taxComparison.fold(
-        messages("tai.incomeTaxComparison.heading.more"),
-        messages("tai.incomeTaxComparison.heading.less"),
-        messages("tai.incomeTaxComparison.heading.same")
+        _ => messages("tai.incomeTaxComparison.heading.more"),
+        _ => messages("tai.incomeTaxComparison.heading.less"),
+             messages("tai.incomeTaxComparison.heading.same")
     )
 }
 
@@ -63,7 +63,9 @@
         <div class="column-two-thirds">
             @if(incomeTaxComparisonViewModel.isEstimatedCYPlusOneJourneyCompleted){
                 <div class="tai-progress-panel" id="estimatedPayCompletionBanner">
-                    <h2 class="heading-small flush-bottom flush--top" id="incomeSummary-banner-heading">@messages("tai.incomeTaxComparison.taxCodes.banner")</h2>
+                    <h2 class="heading-small flush-bottom flush--top" id="incomeSummary-banner-heading">
+                        @messages("tai.incomeTaxComparison.taxCodes.banner")
+                    </h2>
                 </div>
             }
 

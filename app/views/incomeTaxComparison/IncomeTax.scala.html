@@ -23,13 +23,11 @@
 
     <h2 id="incomeTaxHeading" class="heading-large">
 
-        @{
-            incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel.taxComparison.fold(
-            messages("tai.incomeTaxComparison.incomeTax.subHeading.more", pounds(gt)"),
-            messages("tai.incomeTaxComparison.incomeTax.subHeading.less", pounds(lt.abs)"),
-            messages("tai.incomeTaxComparison.incomeTax.subHeading.same")
+        @viewmodel.taxComparison.fold(
+            gt => messages("tai.incomeTaxComparison.incomeTax.subHeading.more", pounds(gt)),
+            lt => messages("tai.incomeTaxComparison.incomeTax.subHeading.less", pounds(lt.abs)),
+                  messages("tai.incomeTaxComparison.incomeTax.subHeading.same")
         )
-    }
 
     </h2>
 

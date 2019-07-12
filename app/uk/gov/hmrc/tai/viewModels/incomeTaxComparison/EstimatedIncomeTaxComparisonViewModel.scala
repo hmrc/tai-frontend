@@ -25,10 +25,10 @@ import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxComparisonItem]) extends ViewModelHelper {
 
-  lazy val taxComparison: TaxComparison = {
+  lazy val taxComparison: TaxComparison[BigDecimal] = {
     changeInTaxAmount match {
-      case gt if gt > 0 => GT
-      case lt if lt < 0 => LT
+      case gt if gt > 0 => GT(gt)
+      case lt if lt < 0 => LT(lt)
       case _ => EQ
     }
   }
@@ -37,9 +37,9 @@ case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxCo
 
   override def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
 
-   taxComparison.fold(messages("tai.incomeTaxComparison.dateWithoutWelshAmendment", formatDate(TaxYear().next.start)),
-                      messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start)),
-                      messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start)))
+   taxComparison.fold(_ => messages("tai.incomeTaxComparison.dateWithoutWelshAmendment", formatDate(TaxYear().next.start)),
+                      _ => messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start)),
+                           messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start)))
   }
 
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
@@ -54,19 +54,19 @@ case class EstimatedIncomeTaxComparisonItem(year: TaxYear, estimatedIncomeTax: B
 
 
 
-sealed trait TaxComparison {
+sealed trait TaxComparison[+A] {
 
-  def fold[A](gt: => A, lt: => A, eq: => A): A =
+  def fold[B](gt: A => B, lt: A => B, eq: => B): B =
     this match {
-      case GT => gt
-      case LT => lt
+      case GT(value) => gt(value)
+      case LT(value) => lt(value)
       case EQ => eq
     }
 
 }
 
-case object GT extends TaxComparison
-case object LT extends TaxComparison
-case object EQ extends TaxComparison
+case class GT[A](value: A) extends TaxComparison[A]
+case class LT[A](value: A) extends TaxComparison[A]
+case object EQ extends TaxComparison[Nothing]
 
 
