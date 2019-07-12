@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.tai.viewModels.incomeTaxComparison
 
+import org.joda.time.LocalDate
+
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
@@ -23,13 +25,21 @@ import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxComparisonItem]) extends ViewModelHelper {
 
+  lazy val taxComparison: TaxComparison = {
+    changeInTaxAmount match {
+      case gt if gt > 0 => GT
+      case lt if lt < 0 => LT
+      case _ => EQ
+    }
+  }
+
+  private def formatDate(date:LocalDate)(implicit messages: Messages) = htmlNonBroken(Dates.formatDate(date))
+
   override def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
 
-    changeInTaxAmount match {
-      case gt if gt > 0 => Messages("tai.incomeTaxComparison.dateWithoutWelshAmendment",htmlNonBroken(Dates.formatDate(TaxYear().next.start)))
-      case lt if lt < 0 => Messages("tai.incomeTaxComparison.welshAmendmentToDate",htmlNonBroken(Dates.formatDate(TaxYear().next.start)))
-      case _ => Messages("tai.incomeTaxComparison.welshAmendmentToDate",htmlNonBroken(Dates.formatDate(TaxYear().next.start)))
-    }
+   taxComparison.fold(messages("tai.incomeTaxComparison.dateWithoutWelshAmendment", formatDate(TaxYear().next.start)),
+                      messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start)),
+                      messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start)))
   }
 
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
@@ -41,3 +51,22 @@ case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxCo
 }
 
 case class EstimatedIncomeTaxComparisonItem(year: TaxYear, estimatedIncomeTax: BigDecimal)
+
+
+
+sealed trait TaxComparison {
+
+  def fold[A](gt: => A, lt: => A, eq: => A): A =
+    this match {
+      case GT => gt
+      case LT => lt
+      case EQ => eq
+    }
+
+}
+
+case object GT extends TaxComparison
+case object LT extends TaxComparison
+case object EQ extends TaxComparison
+
+

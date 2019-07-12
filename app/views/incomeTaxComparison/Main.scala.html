@@ -37,11 +37,11 @@
 }
 
 @headingText = @{
-    incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel.changeInTaxAmount match {
-        case gt if gt > 0 => messages("tai.incomeTaxComparison.heading.more")
-        case lt if lt < 0 => messages("tai.incomeTaxComparison.heading.less")
-        case _ => messages("tai.incomeTaxComparison.heading.same")
-    }
+    incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel.taxComparison.fold(
+        messages("tai.incomeTaxComparison.heading.more"),
+        messages("tai.incomeTaxComparison.heading.less"),
+        messages("tai.incomeTaxComparison.heading.same")
+    )
 }
 
 @header = @{

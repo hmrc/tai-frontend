@@ -74,7 +74,7 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
 
     "show the correct table heading in welsh when user pays more tax next year" in {
 
-      doc(viewWithMore(welshMessage)).text() must include (welshMessage("tai.incomeTaxComparison.dateWithoutWelshAmendment",Dates.formatDate(TaxYear().next.start)(welshMessage)))
+      doc(viewWithMore(welshMessage)).text() must include (welshMessage("tai.incomeTaxComparison.dateWithoutWelshAmendment", Dates.formatDate(TaxYear().next.start)(welshMessage)))
     }
 
     "show the correct table heading in welsh when user pays less tax next year" in {
@@ -165,7 +165,7 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
     }
 
     "show the hypothetical banner" in {
-      val estimatedJourneyCompleted = IncomeTaxComparisonViewModel("USERNAME", estimatedIncomeTaxComparisonViewModel("same"),
+      val estimatedJourneyCompleted = incomeTaxComparisonViewModelSame("USERNAME", estimatedIncomeTaxComparisonViewModel("same"),
         TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil),IncomeSourceComparisonViewModel(Nil,Nil), true)
 
       def journeyCompletedView: Html = views.html.incomeTaxComparison.Main(estimatedJourneyCompleted, true)
