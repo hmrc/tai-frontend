@@ -75,12 +75,6 @@
 }
 
 @signOutUrl = @{
-    if(FeatureTogglesConfig.webChatEnabled){
-            <script type="text/javascript">
-                Inq.closeChat(); Inq.closeChat(); Inq.closeChat();
-            </script>
-    }
-
     mustacheCheck{
         val signOutLink = routes.ServiceController.serviceSignout().url
         authedUser.fold("")(_ => signOutLink)
@@ -134,6 +128,23 @@
 }
 
 @inlineScript = {
+    <script>
+        function deleteNuanceCookies() {
+            if(arguments.length > 0) {
+                var srcs = Array.prototype.slice.call(arguments);
+                srcs.forEach(function(src) {
+                    var ifrm = document.createElement('iframe');
+                    ifrm.style.display = "none";
+                    document.body.appendChild(ifrm);
+                    ifrm.src = src +"?CLEAR"
+                })
+            }
+        }
+
+        window.onload = deleteNuanceCookies("https://hmrc-uk.digital.nuance.com/tagserver/postToServer.min.htm");
+
+    </script>
+
   <script>
     var sessionId = new Date().getTime() + '.' + Math.random().toString(36).substring(5)
     var clientId = ga.getAll()[0].get('clientId');
