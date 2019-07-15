@@ -36,6 +36,7 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
 
@@ -53,9 +54,8 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController with Referral
   with JourneyCacheConstants
   with AuditConstants
-  with FormValuesConstants {
-
-  private lazy val emptyCacheRedirect = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+  with FormValuesConstants
+  with EmptyCacheRedirect{
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -128,7 +128,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
         employmentId match {
           case Right(empId) => Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(empId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
-          case Left(_) => emptyCacheRedirect
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
       }
   }
@@ -173,7 +173,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
             mandatoryValues(2),
             mandatoryValues(3),
             optionalSeq.head)))
-          case Left(_) => emptyCacheRedirect
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
       }
     }

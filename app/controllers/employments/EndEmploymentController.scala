@@ -38,6 +38,7 @@ import uk.gov.hmrc.tai.model.domain.EndEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
@@ -58,9 +59,8 @@ class EndEmploymentController @Inject()(auditService: AuditService,
   with JourneyCacheConstants
   with FormValuesConstants
   with IrregularPayConstants
-  with AuditConstants {
-
-  private lazy val emptyCacheRedirect = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+  with AuditConstants
+  with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -88,7 +88,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
       journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map {
         case Right(mandatoryValues) => Ok(views.html.employments.update_remove_employment_decision(UpdateRemoveEmploymentForm.form, mandatoryValues(0),
           mandatoryValues(1).toInt))
-        case Left(_) => emptyCacheRedirect
+        case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
   }
 
@@ -223,7 +223,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
                   EmploymentViewModel(mandatorySequence(0), mandatorySequence(1).toInt)))
               }
             }
-            case Left(_) => emptyCacheRedirect
+            case Left(_) => Redirect(taxAccountSummaryRedirect)
           }
         }
       }
@@ -265,7 +265,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
           case Right(mandatoryEmploymentId) =>
             Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(mandatoryEmploymentId),
             YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
-          case Left(_) => emptyCacheRedirect
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
       }
   }
@@ -314,7 +314,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
               controllers.employments.routes.EndEmploymentController.cancel(mandatoryValues.head.toInt).url)
             Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
           }
-          case Left(_) => emptyCacheRedirect
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
       }
   }
@@ -340,7 +340,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
       journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map {
         case Right(mandatoryValues) => Ok(views.html.employments.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0),
           mandatoryValues(1).toInt))
-        case Left(_) => emptyCacheRedirect
+        case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
   }
 

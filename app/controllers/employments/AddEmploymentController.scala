@@ -37,6 +37,7 @@ import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
@@ -55,7 +56,8 @@ class AddEmploymentController @Inject()(auditService: AuditService,
                                         override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with JourneyCacheConstants
   with AuditConstants
-  with FormValuesConstants {
+  with FormValuesConstants
+  with EmptyCacheRedirect {
 
 
   def cancel(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -103,14 +105,19 @@ class AddEmploymentController @Inject()(auditService: AuditService,
 
   def addEmploymentStartDate(): Action[AnyContent] = (authenticate andThen validatePerson).async {
       implicit request =>
-        journeyCacheService.collectedValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_StartDateKey)) map tupled { (mandSeq, optSeq) =>
+        journeyCacheService.collectedJourneyValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_StartDateKey)) map tupled { (mandSeq, optSeq) =>
 
-          val form = optSeq.head match {
-            case Some(dateString) => EmploymentAddDateForm(mandSeq.head).form.fill(new LocalDate(dateString))
-            case _ => EmploymentAddDateForm(mandSeq.head).form
+          mandSeq match {
+            case Right(mandatorySequence) => {
+              val form = optSeq.head match {
+                case Some(dateString) => EmploymentAddDateForm(mandatorySequence.head).form.fill(new LocalDate(dateString))
+                case _ => EmploymentAddDateForm(mandatorySequence.head).form
+              }
+              implicit val user = request.taiUser
+              Ok(views.html.employments.add_employment_start_date_form(form, mandatorySequence.head))
+            }
+            case Left(_) => Redirect(taxAccountSummaryRedirect)
           }
-          implicit val user = request.taiUser
-          Ok(views.html.employments.add_employment_start_date_form(form, mandSeq.head))
         }
   }
 
@@ -272,7 +279,7 @@ class AddEmploymentController @Inject()(auditService: AuditService,
               implicit val user: AuthedUser = request.taiUser
               Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
             }
-            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+            case Left(_) => Redirect(taxAccountSummaryRedirect)
           }
         }
   }

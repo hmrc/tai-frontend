@@ -122,7 +122,8 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the request has an authorised session and no previously supplied start date is present in cache" in {
         val sut = createSUT
         val employmentName = "TEST"
-        when(addEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(employmentName), Seq(None)))
+        when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any())).
+          thenReturn(Future.successful(Right(Seq(employmentName)), Seq(None)))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -135,7 +136,8 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the request has an authorised session and a previously supplied start date is present in cache" in {
         val sut = createSUT
         val employmentName = "TEST"
-        when(addEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(employmentName), Seq(Some("2017-12-12"))))
+        when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any())).
+          thenReturn(Future.successful(Right(Seq(employmentName)), Seq(Some("2017-12-12"))))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -143,6 +145,18 @@ class AddEmploymentControllerSpec extends PlaySpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.startDateForm.pagetitle"))
         doc.select("#tellUsStartDateForm_year").get(0).attributes.get("value") mustBe "2017"
+      }
+
+      "redirect to the tax summary page if a value is missing from the cache " in {
+
+        val sut = createSUT
+        when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any())).
+          thenReturn(Future.successful(Left("Mandatory value missing from cache"), Seq(Some("2017-12-12"))))
+
+        val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
 

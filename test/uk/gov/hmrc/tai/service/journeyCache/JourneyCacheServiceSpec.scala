@@ -130,6 +130,31 @@ class JourneyCacheServiceSpec extends PlaySpec
   }
 
 
+  "Mandatory Journey value" must {
+
+    "return a value" in {
+      val sut = createSut
+      val cacheValue = "val1"
+
+      when(journeyCacheConnector.mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName),
+        Matchers.eq("key1"), Matchers.any[Function1[String, String]]())(any()))
+        .thenReturn(Future.successful(Right(cacheValue)): Future[Either[String, String]])
+
+      Await.result(sut.mandatoryJourneyValue("key1"), 5 seconds) mustBe Right(cacheValue)
+    }
+
+    "return an error message when a mandatory value is missing in the cache" in {
+      val sut = createSut
+      val errorMessage = "Value missing from cache"
+
+      when(journeyCacheConnector.mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("key1"),
+        Matchers.any[Function1[String, String]]())(any()))
+        .thenReturn(Future.successful(Left(errorMessage)): Future[Either[String, String]])
+      Await.result(sut.mandatoryJourneyValue("key1"), 5 seconds) mustBe Left(errorMessage)
+    }
+
+  }
+
 
   "Mandatory journey values as Int" must {
 
