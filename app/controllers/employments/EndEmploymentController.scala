@@ -20,7 +20,7 @@ import com.google.inject.name.Named
 import javax.inject.Inject
 import controllers._
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
@@ -84,7 +84,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def employmentUpdateRemoveDecision: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map {
         case Right(mandatoryValues) => Ok(views.html.employments.update_remove_employment_decision(UpdateRemoveEmploymentForm.form, mandatoryValues(0),
           mandatoryValues(1).toInt))
@@ -108,7 +108,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       val nino = Nino(user.getNino)
 
@@ -128,7 +128,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def handleEmploymentUpdateRemove: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) flatMap { mandatoryValues =>
         UpdateRemoveEmploymentForm.form.bindFromRequest.fold(
           formWithErrors => {
@@ -170,7 +170,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def endEmploymentError: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       journeyCacheService.mandatoryValues(EndEmployment_LatestPaymentDateKey, EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { data =>
         val date = new LocalDate(data.head)
         Ok(views.html.employments.endEmploymentWithinSixWeeksError(WithinSixWeeksViewModel(date.plusWeeks(6).plusDays(1), data(1), date, data(2).toInt)))
@@ -179,7 +179,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def irregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
         Ok(views.html.employments.EndEmploymentIrregularPaymentError(IrregularPayForm.createForm,
           EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt)))
@@ -189,7 +189,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def handleIrregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
         IrregularPayForm.createForm.bindFromRequest.fold(
           formWithErrors => {
@@ -210,7 +210,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def endEmploymentPage: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       val nino = Nino(user.getNino)
       journeyCacheService.collectedJourneyValues(Seq(EndEmployment_NameKey, EndEmployment_EmploymentIdKey),
         Seq(EndEmployment_EndDateKey)) map tupled { (mandatorySeq, optionalSeq) => {
@@ -231,7 +231,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       val nino = Nino(user.getNino)
       employmentService.employment(nino, employmentId) flatMap {
         case Some(employment) =>
@@ -254,7 +254,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       for {
         employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey)
@@ -272,7 +272,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       YesNoTextEntryForm.form(
         Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
@@ -298,7 +298,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def endEmploymentCheckYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       journeyCacheService.collectedJourneyValues(Seq(EndEmployment_EmploymentIdKey,
         EndEmployment_EndDateKey, EndEmployment_TelephoneQuestionKey),
@@ -322,7 +322,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def confirmAndSendEndEmployment(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       val nino = Nino(user.getNino)
       for {
         (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedValues(Seq(EndEmployment_EmploymentIdKey, EndEmployment_EndDateKey,
@@ -336,7 +336,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map {
         case Right(mandatoryValues) => Ok(views.html.employments.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0),
           mandatoryValues(1).toInt))
@@ -346,7 +346,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
   def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) flatMap { mandatoryValues =>
         val empId = mandatoryValues(1).toInt
 
