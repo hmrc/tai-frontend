@@ -45,9 +45,15 @@ class JourneyCacheService @Inject() (val journeyName: String,
     currentValueAs[LocalDate](key, string => LocalDate.parse(string))
   }
 
+  @deprecated("Use mandatoryJourneyValue")
   def mandatoryValue(key: String)(implicit hc: HeaderCarrier): Future[String] = {
     mandatoryValueAs[String](key, identity)
   }
+
+  def mandatoryJourneyValue(key: String)(implicit hc: HeaderCarrier): Future[Either[String, String]] = {
+    mandatoryJourneyValueAs[String](key, identity)
+  }
+
 
   def mandatoryJourneyValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Either[String, Int]] = {
     mandatoryJourneyValueAs[Int](key, string => string.toInt)
@@ -66,6 +72,16 @@ class JourneyCacheService @Inject() (val journeyName: String,
     mandatoryValueAs[LocalDate](key, string => LocalDate.parse(string))
   }
 
+
+  def mandatoryJourneyValues(keys : String*)(implicit hc: HeaderCarrier): Future[Either[String, Seq[String]]] = {
+    for {
+      cache <- currentCache
+    } yield {
+      mappedMandatory(cache, keys)
+    }
+  }
+
+  @deprecated("Use mandatoryJourneyValues")
   def mandatoryValues(keys : String*)(implicit hc: HeaderCarrier): Future[Seq[String]] = {
     for {
       cache <- currentCache

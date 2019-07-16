@@ -19,7 +19,7 @@ package controllers.employments
 import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
@@ -36,6 +36,7 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
 
@@ -53,7 +54,8 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController with Referral
   with JourneyCacheConstants
   with AuditConstants
-  with FormValuesConstants {
+  with FormValuesConstants
+  with EmptyCacheRedirect{
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -78,7 +80,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
 
   def updateEmploymentDetails(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       (for {
         userSuppliedDetails <- journeyCacheService.currentValue(UpdateEmployment_EmploymentDetailsKey)
         employment <- employmentService.employment(Nino(user.getNino), empId)
@@ -104,7 +106,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
       UpdateEmploymentDetailsForm.form.bindFromRequest.fold(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
-            implicit val user = request.taiUser
+            implicit val user: AuthedUser = request.taiUser
             BadRequest(views.html.employments.update.whatDoYouWantToTellUs(
               EmploymentViewModel(currentCache(UpdateEmployment_NameKey), empId), formWithErrors))
           }
@@ -119,14 +121,16 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       for {
-        employmentId <- journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey)
+        employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey)
         telephoneCache <- journeyCacheService.optionalValues(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey)
       } yield {
-        implicit val user = request.taiUser
-        Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId),
-          YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
+        implicit val user: AuthedUser = request.taiUser
+        employmentId match {
+          case Right(empId) => Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(empId),
+              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
+        }
       }
-
   }
 
   def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -137,7 +141,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
         Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
-            implicit val user = request.taiUser
+            implicit val user: AuthedUser = request.taiUser
             BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(currentCache(UpdateEmployment_EmploymentIdKey).toInt), formWithErrors))
           }
         },
@@ -156,20 +160,20 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
 
   def updateEmploymentCheckYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       journeyCacheService.collectedJourneyValues(Seq(UpdateEmployment_EmploymentIdKey, UpdateEmployment_NameKey,
         UpdateEmployment_EmploymentDetailsKey, UpdateEmployment_TelephoneQuestionKey),
         Seq(UpdateEmployment_TelephoneNumberKey)) map tupled { (mandatorySeq, optionalSeq) => {
 
         mandatorySeq match {
-          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           case Right(mandatoryValues) => Ok(views.html.employments.update.UpdateEmploymentCheckYourAnswers(UpdateEmploymentCheckYourAnswersViewModel(
             mandatoryValues.head.toInt,
             mandatoryValues(1),
             mandatoryValues(2),
             mandatoryValues(3),
             optionalSeq.head)))
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
       }
     }
@@ -177,9 +181,9 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
 
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       for {
-        (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedValues(Seq(UpdateEmployment_EmploymentIdKey,
+        (Right(mandatoryCacheSeq), optionalCacheSeq) <- journeyCacheService.collectedJourneyValues(Seq(UpdateEmployment_EmploymentIdKey,
           UpdateEmployment_EmploymentDetailsKey, UpdateEmployment_TelephoneQuestionKey),
           Seq(UpdateEmployment_TelephoneNumberKey))
         model = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
@@ -191,7 +195,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
 
   def confirmation: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       Future.successful(Ok(views.html.employments.confirmation()))
   }
 }

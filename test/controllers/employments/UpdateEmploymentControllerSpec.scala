@@ -201,9 +201,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
     "show the contact by telephone page" when {
       "valid details has been passed" in {
         val sut = createSUT
-        val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(journeyCacheService.mandatoryValueAsInt(any())(any())).thenReturn(Future.successful(1))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(Future.successful(Right(1)))
         when(journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None, None)))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -217,9 +215,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
       }
       "we fetch telephone details form cache" in {
         val sut = createSUT
-        val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(journeyCacheService.mandatoryValueAsInt(any())(any())).thenReturn(Future.successful(1))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(Future.successful(Right(1)))
         when(journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(YesValue), Some("01215485965"))))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -230,6 +226,21 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 1
         doc.select("input[id=yesNoTextEntry]").get(0).attributes().get("value") mustBe "01215485965"
       }
+    }
+
+    "redirect to the tax summary page if a value is missing from the cache " in {
+
+      val sut = createSUT
+
+      when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).
+        thenReturn(Future.successful(Left("Mandatory value missing from cache")))
+      when(journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None, None)))
+
+      val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
     }
   }
 
@@ -342,9 +353,9 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         val sut = createSUT
         val incorrectEmployment = IncorrectIncome("whatYouToldUs", "Yes", Some("123456789"))
         val empId = 1
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful((
-            Seq[String](empId.toString, "whatYouToldUs", "Yes"),
+            Right(Seq[String](empId.toString, "whatYouToldUs", "Yes")),
             Seq[Option[String]](Some("123456789"))
           ))
         )
@@ -365,9 +376,9 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         val sut = createSUT
         val incorrectEmployment = IncorrectIncome("whatYouToldUs", "No", None)
         val empId = 1
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful((
-            Seq[String](empId.toString, "whatYouToldUs", "No"),
+            Right(Seq[String](empId.toString, "whatYouToldUs", "No")),
             Seq[Option[String]](None)
           ))
         )

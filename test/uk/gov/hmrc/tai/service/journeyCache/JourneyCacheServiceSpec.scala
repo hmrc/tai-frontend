@@ -89,6 +89,23 @@ class JourneyCacheServiceSpec extends PlaySpec
     }
   }
 
+  "mandatoryJourneyValues method (collection retrieval)" must {
+
+    "return a sequence of all retrieved values" in {
+      val sut = createSut
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      Await.result(sut.mandatoryJourneyValues("key1", "key2"), 5 seconds) mustBe Right(Seq("val1", "val2"))
+    }
+
+    "return an error message when a mandatory value is missing in the cache" in {
+      val sut = createSut
+
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(Map.empty[String, String]))
+      Await.result(sut.mandatoryJourneyValues("key1", "key2"), 5 seconds) mustBe Left("Mandatory values missing from cache")
+    }
+
+  }
+
   "mandatoryValues method (collection retrieval)" must {
 
     "return a sequence of all retrieved values" in {
@@ -111,6 +128,33 @@ class JourneyCacheServiceSpec extends PlaySpec
       thrown.getMessage mustBe "The mandatory value under key 'key3' was not found in the journey cache for 'fakeJourneyName'"
     }
   }
+
+
+  "Mandatory Journey value" must {
+
+    "return a value" in {
+      val sut = createSut
+      val cacheValue = "val1"
+
+      when(journeyCacheConnector.mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName),
+        Matchers.eq("key1"), Matchers.any[Function1[String, String]]())(any()))
+        .thenReturn(Future.successful(Right(cacheValue)): Future[Either[String, String]])
+
+      Await.result(sut.mandatoryJourneyValue("key1"), 5 seconds) mustBe Right(cacheValue)
+    }
+
+    "return an error message when a mandatory value is missing in the cache" in {
+      val sut = createSut
+      val errorMessage = "Value missing from cache"
+
+      when(journeyCacheConnector.mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("key1"),
+        Matchers.any[Function1[String, String]]())(any()))
+        .thenReturn(Future.successful(Left(errorMessage)): Future[Either[String, String]])
+      Await.result(sut.mandatoryJourneyValue("key1"), 5 seconds) mustBe Left(errorMessage)
+    }
+
+  }
+
 
   "Mandatory journey values as Int" must {
 
