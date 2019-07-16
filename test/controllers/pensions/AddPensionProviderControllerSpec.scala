@@ -143,7 +143,12 @@ class AddPensionProviderControllerSpec extends PlaySpec
       "the request has an authorised session and no previous value is held in the cache" in {
         val sut = createSUT
         val pensionProviderName = "Pension Provider"
-        when(addPensionProviderJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(None)))
+
+        val mandatorySeq = List(AddPensionProvider_NameKey)
+        val optionalSeq = List(AddPensionProvider_FirstPaymentKey)
+
+        when(addPensionProviderJourneyCacheService.collectedJourneyValues(Matchers.eq(mandatorySeq), Matchers.eq(optionalSeq))(any())).
+          thenReturn(Future.successful(Right(Seq(pensionProviderName)), Seq(None)))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -155,7 +160,12 @@ class AddPensionProviderControllerSpec extends PlaySpec
       "the request has an authorised session and a previous value of 'No' is held in the cache" in {
         val sut = createSUT
         val pensionProviderName = "Pension Provider"
-        when(addPensionProviderJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(Some(NoValue))))
+
+        val mandatorySeq = List(AddPensionProvider_NameKey)
+        val optionalSeq = List(AddPensionProvider_FirstPaymentKey)
+
+        when(addPensionProviderJourneyCacheService.collectedJourneyValues(Matchers.eq(mandatorySeq), Matchers.eq(optionalSeq))(any())).
+          thenReturn(Future.successful(Right(Seq(pensionProviderName)), Seq(Some(NoValue))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -164,10 +174,16 @@ class AddPensionProviderControllerSpec extends PlaySpec
         doc.title() must include(Messages("tai.addPensionProvider.firstPay.pagetitle"))
         doc.select("input[id=firstPayChoice-no][checked=checked]").size() mustBe 1
       }
+
       "the request has an authorised session and a previous value of 'Yes' is held in the cache" in {
         val sut = createSUT
         val pensionProviderName = "Pension Provider"
-        when(addPensionProviderJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(Some(YesValue))))
+
+        val mandatorySeq = List(AddPensionProvider_NameKey)
+        val optionalSeq = List(AddPensionProvider_FirstPaymentKey)
+
+        when(addPensionProviderJourneyCacheService.collectedJourneyValues(Matchers.eq(mandatorySeq), Matchers.eq(optionalSeq))(any())).
+          thenReturn(Future.successful(Right(Seq(pensionProviderName)), Seq(Some(YesValue))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -176,6 +192,24 @@ class AddPensionProviderControllerSpec extends PlaySpec
         doc.title() must include(Messages("tai.addPensionProvider.firstPay.pagetitle"))
         doc.select("input[id=firstPayChoice-yes][checked=checked]").size() mustBe 1
       }
+
+      "redirect to the tax summary page if a value is missing from the cache " in {
+
+        val sut = createSUT
+
+        val mandatorySeq = List(AddPensionProvider_NameKey)
+        val optionalSeq = List(AddPensionProvider_FirstPaymentKey)
+
+        when(addPensionProviderJourneyCacheService.collectedJourneyValues(Matchers.eq(mandatorySeq), Matchers.eq(optionalSeq))(any())).
+          thenReturn(Future.successful(Left("Data missing from the cache"), Seq(Some(YesValue))))
+
+        val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
+      }
+
     }
   }
 
@@ -243,8 +277,14 @@ class AddPensionProviderControllerSpec extends PlaySpec
     "show the pension start date form page" when {
       "the request has an authorised session and no previously cached date present" in {
         val sut = createSUT
+
         val pensionProviderName = "TEST"
-        when(addPensionProviderJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(None)))
+        val mandatorySequence = List(AddPensionProvider_NameKey)
+        val optionalSequence = List(AddPensionProvider_StartDateKey)
+
+
+        when(addPensionProviderJourneyCacheService.collectedJourneyValues(Matchers.eq(mandatorySequence), Matchers.eq(optionalSequence))(any()))
+          .thenReturn(Future.successful(Right(Seq(pensionProviderName)), Seq(None)))
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -257,7 +297,12 @@ class AddPensionProviderControllerSpec extends PlaySpec
       "the request has an authorised session and a previously cached date is present" in {
         val sut = createSUT
         val pensionProviderName = "TEST"
-        when(addPensionProviderJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(Some("2037-01-18"))))
+
+        val mandatorySequence = List(AddPensionProvider_NameKey)
+        val optionalSequence = List(AddPensionProvider_StartDateKey)
+
+        when(addPensionProviderJourneyCacheService.collectedJourneyValues(Matchers.eq(mandatorySequence), Matchers.eq(optionalSequence))(any()))
+          .thenReturn(Future.successful(Right(Seq(pensionProviderName)), Seq(Some("2037-01-18"))))
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -266,13 +311,29 @@ class AddPensionProviderControllerSpec extends PlaySpec
         doc.title() must include(Messages("tai.addPensionProvider.startDateForm.pagetitle"))
         doc.toString must include("2037")
       }
+
+
+      "redirect to the tax summary page if a value is missing from the cache " in {
+
+        val mandatorySequence = List(AddPensionProvider_NameKey)
+        val optionalSequence = List(AddPensionProvider_StartDateKey)
+        val sut = createSUT
+
+        when(addPensionProviderJourneyCacheService.collectedJourneyValues(Matchers.eq(mandatorySequence), Matchers.eq(optionalSequence))(any()))
+          .thenReturn(Future.successful(Left("Data missing from the cache"), Seq(Some("2037-01-18"))))
+
+        val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
+      }
     }
 
     "return error" when {
-      "cache doesn't return data" in {
+      "cache throws an exception" in {
         val sut = createSUT
-        when(addPensionProviderJourneyCacheService.collectedValues(any(), any())(any()))
-          .thenReturn(Future.successful(Seq.empty, Seq.empty))
+        when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any())).
+          thenReturn(Future.failed(new RuntimeException("An error occurred")))
         when(addPensionProviderJourneyCacheService.currentValueAs[String](any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
