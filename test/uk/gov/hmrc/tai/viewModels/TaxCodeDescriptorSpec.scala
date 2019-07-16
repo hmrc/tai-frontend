@@ -176,8 +176,6 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
   val personService: PersonService = mock[PersonService]
 
   private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController(
-    FakeAuthAction,
-    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   )
