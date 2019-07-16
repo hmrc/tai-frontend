@@ -35,7 +35,7 @@ class IncomeTaxSpec extends TaiViewSpec {
         val viewmodel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
         def view: Html = views.html.incomeTaxComparison.IncomeTax(viewmodel)
 
-        doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "£101"))
+        doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "&pound;101"))
       }
     }
 
@@ -48,7 +48,7 @@ class IncomeTaxSpec extends TaiViewSpec {
         val viewmodel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
         def view: Html = views.html.incomeTaxComparison.IncomeTax(viewmodel)
 
-        doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.less", "£100"))
+        doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.less", "&pound;100"))
       }
     }
 

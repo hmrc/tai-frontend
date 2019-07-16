@@ -17,15 +17,18 @@
 @import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.EstimatedIncomeTaxComparisonViewModel
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.views.formatting.Money._
+@import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{IncomeTaxComparisonViewModel, EstimatedIncomeTaxComparisonViewModel}
 
 @(viewmodel: EstimatedIncomeTaxComparisonViewModel)(implicit messages: Messages)
 
     <h2 id="incomeTaxHeading" class="heading-large">
-        @viewmodel.changeInTaxAmount match {
-            case gt if gt > 0 => {@Html(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", pounds(gt)))}
-            case lt if lt < 0 => {@Html(messages("tai.incomeTaxComparison.incomeTax.subHeading.less", pounds(lt.abs)))}
-            case _ => {@messages("tai.incomeTaxComparison.incomeTax.subHeading.same")}
-        }
+
+        @viewmodel.taxComparison.fold(
+            gt => messages("tai.incomeTaxComparison.incomeTax.subHeading.more", pounds(gt)),
+            lt => messages("tai.incomeTaxComparison.incomeTax.subHeading.less", pounds(lt.abs)),
+                  messages("tai.incomeTaxComparison.incomeTax.subHeading.same")
+        )
+
     </h2>
 
     <p>@messages("tai.incomeTaxComparison.incomeTax.description")</p>

@@ -640,7 +640,9 @@ tai.incomeTaxComparison.incomeSourceAbsent=Ddim ar gael
 tai.incomeTaxComparison.incomeTax.column1=yn dod i ben ar {0}
 tai.incomeTaxComparison.incomeTax.column2=o {0}
 
-tai.incomeTaxComparison.heading=Cymhariaeth Treth Incwm: y flwyddyn dreth bresennol a’r flwyddyn nesaf
+tai.incomeTaxComparison.heading.less=Cymhariaeth Treth Incwm: y flwyddyn dreth bresennol a’r flwyddyn dreth nesaf
+tai.incomeTaxComparison.heading.more=Cymhariaeth Treth Incwm: y flwyddyn dreth bresennol a’r flwyddyn nesaf
+tai.incomeTaxComparison.heading.same=Cymhariaeth Treth Incwm: y flwyddyn dreth bresennol a’r flwyddyn nesaf
 tai.incomeTaxComparison.incomeTax.description=Mae’r amcangyfrif hwn yn seiliedig ar eich amgylchiadau presennol.
 
 tai.incomeTaxComparison.incomeTax.updateEstimated=Diweddarwch incwm amcangyfrifedig
@@ -652,8 +654,8 @@ tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment =Incwm o gyflo
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions=Incwm o gyflogaeth a phensiynau preifat
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions=Incwm o bensiynau preifat
 tai.incomeTaxComparison.incomeTax.subHeading.less=Rydym yn amcangyfrif y byddwch yn talu {0} yn llai o dreth y flwyddyn nesaf
-tai.incomeTaxComparison.incomeTax.subHeading.more=Rydym yn amcangyfrif y byddwch yn talu {0} yn fwy o dreth y flwyddyn nesaf
-tai.incomeTaxComparison.incomeTax.subHeading.same=Rydym yn amcangyfrif y byddwch yn talu''r un faint o dreth y flwyddyn nesaf
+tai.incomeTaxComparison.incomeTax.subHeading.more=Rydym yn amcangyfrif y byddwch yn talu {0} yn fwy o dreth y flwyddyn dreth nesaf
+tai.incomeTaxComparison.incomeTax.subHeading.same=Rydym yn amcangyfrif y byddwch yn talu''r un faint o dreth y flwyddyn dreth nesaf
 tai.incomeTaxComparison.preHeading.screenReader=Yr adran hon yw''r gymhariaeth treth incwm ar gyfer
 tai.incomeTaxComparison.sidebar.subHeading=Ewch i''r flwyddyn dreth bresennol
 tai.incomeTaxComparison.taxCodes.description=Defnyddir eich codau treth i gyfrifo faint o Dreth Incwm i''w chymryd o''ch cyflog neu''ch pensiwn.
@@ -690,6 +692,8 @@ tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText=Rh
 tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText=lwfansau neu ryddhad treth
 tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText=Rhowch wybod i ni am lwfansau neu ryddhad treth
 tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link=Dychwelyd i’r Trosolwg o’ch Treth Incwm TWE
+tai.incomeTaxComparison.welshAmendmentToDate={0} ymlaen
+tai.incomeTaxComparison.dateWithoutWelshAmendment={0}
 
 tai.incomeTaxSummary.addMissingIncome.section.employerLink=Ychwanegu cyflogwr sydd ar goll
 tai.incomeTaxSummary.addMissingIncome.section.heading=Rhywbeth ar goll?

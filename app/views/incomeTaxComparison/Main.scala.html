@@ -36,18 +36,26 @@
     </p>
 }
 
+@headingText = @{
+    incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel.taxComparison.fold(
+        _ => messages("tai.incomeTaxComparison.heading.more"),
+        _ => messages("tai.incomeTaxComparison.heading.less"),
+             messages("tai.incomeTaxComparison.heading.same")
+    )
+}
+
 @header = @{
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = None,
-        mainHeadingText = messages("tai.incomeTaxComparison.heading"),
+        mainHeadingText = headingText,
         preHeadingText = incomeTaxComparisonViewModel.username,
         preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"),
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
-@main(title = messages("tai.incomeTaxComparison.heading"),
-    gaCustomTitle = Some(messages("tai.incomeTaxComparison.heading")),
+@main(title = headingText,
+    gaCustomTitle = Some(headingText),
     pageHeader = Some(header),
     authedUser = Some(user)) {
 
@@ -55,7 +63,9 @@
         <div class="column-two-thirds">
             @if(incomeTaxComparisonViewModel.isEstimatedCYPlusOneJourneyCompleted){
                 <div class="tai-progress-panel" id="estimatedPayCompletionBanner">
-                    <h2 class="heading-small flush-bottom flush--top" id="incomeSummary-banner-heading">@messages("tai.incomeTaxComparison.taxCodes.banner")</h2>
+                    <h2 class="heading-small flush-bottom flush--top" id="incomeSummary-banner-heading">
+                        @messages("tai.incomeTaxComparison.taxCodes.banner")
+                    </h2>
                 </div>
             }
 

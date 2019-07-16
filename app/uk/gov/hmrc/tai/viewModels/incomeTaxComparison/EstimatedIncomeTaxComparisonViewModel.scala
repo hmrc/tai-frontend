@@ -16,11 +16,32 @@
 
 package uk.gov.hmrc.tai.viewModels.incomeTaxComparison
 
+import org.joda.time.LocalDate
+
 import play.api.i18n.Messages
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxComparisonItem]) extends ViewModelHelper {
+
+  lazy val taxComparison: TaxComparison[BigDecimal] = {
+    changeInTaxAmount match {
+      case gt if gt > 0 => GT(gt)
+      case lt if lt < 0 => LT(lt)
+      case _ => EQ
+    }
+  }
+
+  private def formatDate(date:LocalDate)(implicit messages: Messages) = htmlNonBroken(Dates.formatDate(date))
+
+  override def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
+
+   taxComparison.fold(_ => messages("tai.incomeTaxComparison.dateWithoutWelshAmendment", formatDate(TaxYear().next.start)),
+                      _ => messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start)),
+                           messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start)))
+  }
+
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
   def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
 
@@ -30,3 +51,22 @@ case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxCo
 }
 
 case class EstimatedIncomeTaxComparisonItem(year: TaxYear, estimatedIncomeTax: BigDecimal)
+
+
+
+sealed trait TaxComparison[+A] {
+
+  def fold[B](gt: A => B, lt: A => B, eq: => B): B =
+    this match {
+      case GT(value) => gt(value)
+      case LT(value) => lt(value)
+      case EQ => eq
+    }
+
+}
+
+case class GT[A](value: A) extends TaxComparison[A]
+case class LT[A](value: A) extends TaxComparison[A]
+case object EQ extends TaxComparison[Nothing]
+
+

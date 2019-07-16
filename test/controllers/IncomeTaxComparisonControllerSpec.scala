@@ -57,7 +57,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.incomeTaxComparison.heading"))
+      doc.title() must include(Messages("tai.incomeTaxComparison.heading.more"))
 
       verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
     }
