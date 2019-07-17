@@ -81,7 +81,6 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
       journeyCacheService.currentValue(AddPensionProvider_NameKey) map {
         pensionName =>
           implicit val user: AuthedUser = request.taiUser
-
           Ok(views.html.pensions.addPensionName(PensionProviderNameForm.form.fill(pensionName.getOrElse(""))))
       }
   }
@@ -292,7 +291,7 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
               )
               Ok(views.html.pensions.addPensionCheckYourAnswers(model))
             }
-            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+            case Left(_) => Redirect(taxAccountSummaryRedirect)
           }
         }
       } catch {

@@ -19,7 +19,7 @@ package controllers.pensions
 import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
@@ -38,6 +38,7 @@ import uk.gov.hmrc.tai.model.domain.{IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersViewModel
@@ -56,7 +57,8 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
                                                 override implicit val partialRetriever: FormPartialRetriever,
                                                 override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with JourneyCacheConstants
-  with FormValuesConstants {
+  with FormValuesConstants
+  with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -81,12 +83,17 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
 
   def doYouGetThisPension(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
-      journeyCacheService.collectedValues(Seq(UpdatePensionProvider_IdKey,UpdatePensionProvider_NameKey), Seq(UpdatePensionProvider_ReceivePensionQuestionKey)) map tupled { (mandatoryValues, optionalValues) =>
-        val model = PensionProviderViewModel(mandatoryValues.head.toInt, mandatoryValues(1))
-        val form = UpdateRemovePensionForm.form.fill(optionalValues.head)
-        Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, form))
+      journeyCacheService.collectedJourneyValues(Seq(UpdatePensionProvider_IdKey,UpdatePensionProvider_NameKey), Seq(UpdatePensionProvider_ReceivePensionQuestionKey)) map tupled { (mandatoryVal, optionalValues) =>
+        mandatoryVal match {
+          case Right(mandatoryValues) => {
+            val model = PensionProviderViewModel(mandatoryValues.head.toInt, mandatoryValues(1))
+            val form = UpdateRemovePensionForm.form.fill(optionalValues.head)
+            Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, form))
+          }
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
+        }
       }
   }
 
@@ -97,7 +104,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
         UpdateRemovePensionForm.form.bindFromRequest().fold(
           formWithErrors => {
             val model = PensionProviderViewModel(mandatoryVals.head.toInt, mandatoryVals.last)
-            implicit val user = request.taiUser
+            implicit val user: AuthedUser = request.taiUser
 
             Future(BadRequest(views.html.pensions.update.doYouGetThisPensionIncome(model, formWithErrors)))
           },
@@ -115,13 +122,17 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
   def whatDoYouWantToTellUs: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       for {
-        (mandatoryValues, optionalValues) <- journeyCacheService.collectedValues(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey),
+        (mandatoryVal, optionalValues) <- journeyCacheService.collectedJourneyValues(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey),
           Seq(UpdatePensionProvider_DetailsKey))
       } yield {
-        implicit val user = request.taiUser
-
-        Ok(views.html.pensions.update.whatDoYouWantToTellUs(mandatoryValues.head, mandatoryValues(1).toInt,
-          WhatDoYouWantToTellUsForm.form.fill(optionalValues.head.getOrElse(""))))
+        mandatoryVal match {
+          case Right(mandatoryValues) => {
+            implicit val user: AuthedUser = request.taiUser
+            Ok(views.html.pensions.update.whatDoYouWantToTellUs(mandatoryValues.head, mandatoryValues(1).toInt,
+              WhatDoYouWantToTellUsForm.form.fill(optionalValues.head.getOrElse(""))))
+          }
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
+        }
       }
   }
 
@@ -130,7 +141,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
       WhatDoYouWantToTellUsForm.form.bindFromRequest.fold(
         formWithErrors => {
           journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map { mandatoryValues =>
-            implicit val user = request.taiUser
+            implicit val user: AuthedUser = request.taiUser
             BadRequest(views.html.pensions.update.whatDoYouWantToTellUs(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
           }
         },
@@ -144,13 +155,21 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
   def addTelephoneNumber: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       for {
-        pensionId <- journeyCacheService.mandatoryValueAsInt(UpdatePensionProvider_IdKey)
+        pensionId <- journeyCacheService.mandatoryJourneyValueAsInt(UpdatePensionProvider_IdKey)
         telephoneCache <- journeyCacheService.optionalValues(UpdatePensionProvider_TelephoneQuestionKey, UpdatePensionProvider_TelephoneNumberKey)
       } yield {
-        val user = Some(request.taiUser)
 
-        Ok(views.html.can_we_contact_by_phone(user, telephoneNumberViewModel(pensionId),
-          YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
+        pensionId match {
+          case Right(mandatoryPensionId) => {
+            val user = Some(request.taiUser)
+
+            Ok(views.html.can_we_contact_by_phone(user, telephoneNumberViewModel(mandatoryPensionId),
+              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
+          }
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
+        }
+
+
       }
   }
 
@@ -195,7 +214,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
 
           case Right(mandatoryValues) => {
 
-            implicit val user = request.taiUser
+            implicit val user: AuthedUser = request.taiUser
 
             Ok(views.html.pensions.update.updatePensionCheckYourAnswers(UpdatePensionCheckYourAnswersViewModel(
               mandatoryValues.head.toInt,
@@ -232,7 +251,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
 
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       Future.successful(Ok(views.html.pensions.update.confirmation()))
   }
@@ -253,7 +272,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
 
   def UpdatePension(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       val cacheAndRedirect = (id: Int, taxCodeIncome: TaxCodeIncome) => {
         val successfulJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdatePensionKey-${id}")
@@ -279,7 +298,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
 
   def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map { mandatoryValues =>
         Ok(views.html.pensions.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0), mandatoryValues(1).toInt))
       }
@@ -288,7 +307,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
 
   def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) flatMap { mandatoryValues =>
         DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
           formWithErrors => {
