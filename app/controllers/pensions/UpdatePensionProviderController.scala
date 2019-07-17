@@ -299,10 +299,12 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
   def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map { mandatoryValues =>
-        Ok(views.html.pensions.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0), mandatoryValues(1).toInt))
+      journeyCacheService.mandatoryJourneyValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map { mandatoryVals =>
+        mandatoryVals match {
+          case Right(mandatoryValues) =>  Ok(views.html.pensions.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0), mandatoryValues(1).toInt))
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
+        }
       }
-
   }
 
   def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {

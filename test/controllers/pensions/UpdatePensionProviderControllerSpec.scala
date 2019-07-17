@@ -475,14 +475,25 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
   "duplicateSubmissionWarning" must {
     "show duplicateSubmissionWarning view" in {
 
-      when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-        .thenReturn(Future.successful(Seq(pensionName, pensionId.toString)))
+      when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Right(Seq(pensionName, pensionId.toString))))
 
       val result = createController.duplicateSubmissionWarning(fakeGetRequest)
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
       doc.title() must include(Messages("tai.pension.warning.customGaTitle"))
+    }
+
+    "redirect to the summary page if a value is missing from the cache " in {
+
+      when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Left("Data missing from cache")))
+
+      val result = createController.duplicateSubmissionWarning(fakeGetRequest)
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
     }
   }
 

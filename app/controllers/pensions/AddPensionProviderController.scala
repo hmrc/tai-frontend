@@ -151,7 +151,6 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
       implicit val user: AuthedUser = request.taiUser
 
       (journeyCacheService.collectedJourneyValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_StartDateKey)) map tupled { (mandSeq, optionalVals) =>
-
         mandSeq match {
           case Right(mandatorySequence) => {
 
@@ -165,7 +164,6 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
           case Left(_) => Redirect(taxAccountSummaryRedirect)
 
         }
-
       }).recover {
         case NonFatal(e) => internalServerError(e.getMessage)
       }
@@ -239,7 +237,6 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
           case Some(YesValue) => seq(1)
           case _ => None
         }
-
         val user = Some(request.taiUser)
 
         Ok(views.html.can_we_contact_by_phone(user, contactPhonePensionProvider, YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
