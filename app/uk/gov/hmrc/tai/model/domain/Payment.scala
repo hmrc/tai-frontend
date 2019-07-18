@@ -27,7 +27,8 @@ case class Payment(
                     amount: BigDecimal,
                     taxAmount: BigDecimal,
                     nationalInsuranceAmount: BigDecimal,
-                    payFrequency: PaymentFrequency
+                    payFrequency: PaymentFrequency,
+                    duplicate: Option[Boolean] = None
                   )
 
 object Payment {

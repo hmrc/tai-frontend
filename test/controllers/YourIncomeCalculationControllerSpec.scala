@@ -33,7 +33,8 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.viewModels.PaymentDetailsViewModel
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -57,7 +58,6 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.income.calculation.TaxableIncomeDetails", employment.name))
-
       }
     }
 
@@ -202,6 +202,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
   val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
   val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
   val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
+
   val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
   val employment = Employment("test employment", Some("EMPLOYER1"), LocalDate.now(),
     None, Seq(annualAccount), "", "", 2, None, false, false)
@@ -220,11 +221,13 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
   val personService: PersonService = mock[PersonService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
+  val paymentsService = mock[PaymentsService]
 
   class SUT extends YourIncomeCalculationController(
     personService,
     taxAccountService,
     employmentService,
+    paymentsService,
     FakeAuthAction,
     FakeValidatePerson,
     mock[FormPartialRetriever],
@@ -232,7 +235,14 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
   ) {
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+
+    val paymentDetails = Seq(
+      PaymentDetailsViewModel(firstPayment),
+      PaymentDetailsViewModel(secondPayment),
+      PaymentDetailsViewModel(thirdPayment),
+      PaymentDetailsViewModel(latestPayment)
+    )
+
+    when(paymentsService.filterDuplicates(employment)).thenReturn(paymentDetails)
   }
-
-
 }
