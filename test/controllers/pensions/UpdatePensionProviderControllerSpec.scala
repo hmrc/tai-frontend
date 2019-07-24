@@ -65,8 +65,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       val PensionQuestionKey = "yes"
 
-      when(journeyCacheService.collectedValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(any()))
-        .thenReturn(Future.successful(Seq(pensionId.toString, pensionName), Seq(Some(PensionQuestionKey))))
+      when(journeyCacheService.collectedJourneyValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(any()))
+        .thenReturn(Future.successful(Right(Seq(pensionId.toString, pensionName)), Seq(Some(PensionQuestionKey))))
 
       val result = createController.doYouGetThisPension()(fakeGetRequest)
 
@@ -74,6 +74,22 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(Messages("tai.updatePension.decision.pagetitle"))
     }
+
+    "redirect to the tax summary page if a value is missing from the cache " in {
+
+      val PensionQuestionKey = "yes"
+
+      when(journeyCacheService.collectedJourneyValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(any()))
+        .thenReturn(Future.successful(Left("Data missing from cache"), Seq(Some(PensionQuestionKey))))
+
+      val result = createController.doYouGetThisPension()(fakeGetRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
+    }
+
+
   }
 
   "handleDoYouGetThisPension" must {
@@ -127,8 +143,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "show the whatDoYouWantToTellUs page" when {
       "an authorised user calls the page" in {
 
-        when(journeyCacheService.collectedValues(Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
-          Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any())).thenReturn(Future.successful(Seq(pensionName, pensionId), Seq(None)))
+        when(journeyCacheService.collectedJourneyValues(Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
+          Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any())).thenReturn(Future.successful(Right(Seq(pensionName, pensionId)), Seq(None)))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
@@ -140,14 +156,25 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
         val cache = Seq(pensionName, pensionId)
         val optionalCache = Seq(Some("test1"))
-        when(journeyCacheService.collectedValues(Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
-          Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any())).thenReturn(Future.successful(cache, optionalCache))
+        when(journeyCacheService.collectedJourneyValues(Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
+          Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any())).thenReturn(Future.successful(Right(cache), optionalCache))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.pagetitle"))
+      }
+
+      "redirect to the tax summary page if a value is missing from the cache " in {
+
+        when(journeyCacheService.collectedJourneyValues(Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
+          Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any())).thenReturn(Future.successful(Left("Data missing from cache"), Seq(None)))
+
+        val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
   }
@@ -188,8 +215,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "show the contact by telephone page" when {
       "an authorised request is received" in {
 
-        when(journeyCacheService.mandatoryValueAsInt(any())(any())).
-          thenReturn(Future.successful(pensionId.toInt))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).
+          thenReturn(Future.successful(Right(pensionId.toInt)))
         when(journeyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(None, None)))
         val result = createController.addTelephoneNumber()(fakeGetRequest)
@@ -200,8 +227,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       }
       "an authorised request is received and we have cached data" in {
 
-        when(journeyCacheService.mandatoryValueAsInt(any())(any())).
-          thenReturn(Future.successful(pensionId.toInt))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).
+          thenReturn(Future.successful(Right(pensionId.toInt)))
         when(journeyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
         val result = createController.addTelephoneNumber()(fakeGetRequest)
@@ -210,6 +237,19 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
         doc.toString must include("123456789")
+      }
+
+      "redirect to the tax summary page if a value is missing from the cache " in {
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).
+          thenReturn(Future.successful(Left("Data missing from the cache")))
+        when(journeyCacheService.optionalValues(any())(any()))
+          .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
+        val result = createController.addTelephoneNumber()(fakeGetRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
       }
     }
   }
@@ -435,14 +475,25 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
   "duplicateSubmissionWarning" must {
     "show duplicateSubmissionWarning view" in {
 
-      when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-        .thenReturn(Future.successful(Seq(pensionName, pensionId.toString)))
+      when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Right(Seq(pensionName, pensionId.toString))))
 
       val result = createController.duplicateSubmissionWarning(fakeGetRequest)
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
       doc.title() must include(Messages("tai.pension.warning.customGaTitle"))
+    }
+
+    "redirect to the summary page if a value is missing from the cache " in {
+
+      when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Left("Data missing from cache")))
+
+      val result = createController.duplicateSubmissionWarning(fakeGetRequest)
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
     }
   }
 
