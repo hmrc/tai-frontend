@@ -25,7 +25,6 @@ class PaymentsService @Inject()() {
     val payments = employment.latestAnnualAccount.map(_.payments).getOrElse(Seq.empty[Payment])
     val paymentsWithoutDuplicates = payments.filterNot(_.duplicate.getOrElse(false))
 
-    paymentsWithoutDuplicates.map(payment =>
-      PaymentDetailsViewModel(payment.date, payment.amount, payment.taxAmount, payment.nationalInsuranceAmount))
+    paymentsWithoutDuplicates.map(PaymentDetailsViewModel(_))
   }
 }
