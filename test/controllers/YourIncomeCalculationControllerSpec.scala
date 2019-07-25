@@ -34,7 +34,6 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
-import uk.gov.hmrc.tai.viewModels.PaymentDetailsViewModel
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -221,7 +220,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
   val personService: PersonService = mock[PersonService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
-  val paymentsService = mock[PaymentsService]
+  val paymentsService = app.injector.instanceOf[PaymentsService]
 
   class SUT extends YourIncomeCalculationController(
     personService,
@@ -233,16 +232,6 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
-    val paymentDetails = Seq(
-      PaymentDetailsViewModel(firstPayment),
-      PaymentDetailsViewModel(secondPayment),
-      PaymentDetailsViewModel(thirdPayment),
-      PaymentDetailsViewModel(latestPayment)
-    )
-
-    when(paymentsService.filterDuplicates(employment)).thenReturn(paymentDetails)
   }
 }
