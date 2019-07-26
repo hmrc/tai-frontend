@@ -52,7 +52,10 @@ case class RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader: String,
 
     val contactByPhoneLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.contactByPhone"),
-      contactByPhone,
+      if (contactByPhone == YesValue)
+        Messages("tai.checkYourAnswers.contactByPhone.Yes")
+      else
+        Messages("tai.checkYourAnswers.contactByPhone.No"),
       controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
     )
 
