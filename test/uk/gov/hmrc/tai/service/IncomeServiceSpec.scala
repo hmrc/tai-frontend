@@ -268,7 +268,8 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
     amount = 1000,
     taxAmount = 100,
     nationalInsuranceAmount = 50,
-    payFrequency = Monthly)
+    payFrequency = Monthly,
+    duplicate = None)
 
   def createSUT = new SUT
 
