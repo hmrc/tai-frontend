@@ -32,6 +32,8 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
+import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
+import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneRegex
 import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, AddEmploymentPayrollNumberForm, EmploymentAddDateForm, EmploymentNameForm}
 import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -75,11 +77,6 @@ class AddEmploymentController @Inject()(auditService: AuditService,
     controllers.employments.routes.AddEmploymentController.cancel().url
   )
 
-  def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
-    Constraint[String]((textContent: String) => textContent match {
-      case txt if txt.length < 8 || txt.length > 30 => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
-      case _ => Valid
-    })
 
   def addEmploymentName(): Action[AnyContent] = (authenticate andThen validatePerson).async {
       implicit request =>
@@ -244,7 +241,7 @@ class AddEmploymentController @Inject()(auditService: AuditService,
         YesNoTextEntryForm.form(
           Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
           Messages("tai.canWeContactByPhone.telephone.empty"),
-          Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
+          Some(TelephoneNumberConstraint.telephoneNumberSizeConstraint)).bindFromRequest().fold(
           formWithErrors => {
             implicit val user: AuthedUser = request.taiUser
               Future.successful(BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors)))

@@ -31,6 +31,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
+import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneRegex
 import uk.gov.hmrc.tai.forms.pensions.{DuplicateSubmissionWarningForm, UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -69,7 +70,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
 
   def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) => textContent match {
-      case txt if txt.length < 8 || txt.length > 30 => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
+      case txt if txt.length < 8 || txt.length > 30 || !telephoneRegex.findAllMatchIn(txt).exists(_=> true)=> Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
       case _ => Valid
     })
 

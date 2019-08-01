@@ -45,6 +45,30 @@ class TelephoneNumberConstraintSpec extends PlaySpec with OneAppPerSuite with I1
         invalidatedForm.value mustBe None
       }
 
+      "phone number contains special characters" in {
+        val invalidPhoneNumberChoice = Json.obj(YesNoChoice -> YesValue, YesNoTextEntry -> "@£-12344556")
+        val invalidatedForm = form.bind(invalidPhoneNumberChoice)
+
+        invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
+        invalidatedForm.value mustBe None
+      }
+
+      "phone number is less than contains alphabets" in {
+        val invalidPhoneNumberChoice = Json.obj(YesNoChoice -> YesValue, YesNoTextEntry -> "abc-abc-abc")
+        val invalidatedForm = form.bind(invalidPhoneNumberChoice)
+
+        invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
+        invalidatedForm.value mustBe None
+      }
+
+      "phone number is less than contains alphanumeric" in {
+        val invalidPhoneNumberChoice = Json.obj(YesNoChoice -> YesValue, YesNoTextEntry -> "123-abc-456")
+        val invalidatedForm = form.bind(invalidPhoneNumberChoice)
+
+        invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
+        invalidatedForm.value mustBe None
+      }
+
       "phone number is less than more than 30 digits" in {
         val invalidPhoneNumberChoice = Json.obj(YesNoChoice -> YesValue, YesNoTextEntry -> "123456123456123456123456123456123456")
         val invalidatedForm = form.bind(invalidPhoneNumberChoice)
