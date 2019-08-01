@@ -67,7 +67,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
 
   def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) => textContent match {
-      case txt if txt.length < 8 || txt.length > 30 || telephoneRegex.findAllMatchIn(txt).exists(_=> true) => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
+      case txt if txt.length < 8 || txt.length > 30 || !telephoneRegex.findAllMatchIn(txt).exists(_=> true) => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
       case _ => Valid
     })
 
