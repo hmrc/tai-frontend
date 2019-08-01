@@ -29,16 +29,17 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.Person
+import uk.gov.hmrc.tai.model.domain.{Payment, Person}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
-import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
+import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, PaymentDetailsViewModel, YourIncomeCalculationViewModel}
 
 import scala.concurrent.Future
 
 class YourIncomeCalculationController @Inject()(personService: PersonService,
                                                 taxAccountService: TaxAccountService,
                                                 employmentService: EmploymentService,
+                                                paymentsService: PaymentsService,
                                                 authenticate: AuthAction,
                                                 validatePerson: ValidatePerson,
                                                 override implicit val partialRetriever: FormPartialRetriever,
@@ -67,7 +68,10 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-          val model = YourIncomeCalculationViewModel(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)
+
+          val paymentDetails = paymentsService.filterDuplicates(employment)
+
+          val model = YourIncomeCalculationViewModel(taxCodeIncomes.find(_.employmentId.contains(empId)), employment, paymentDetails)
           implicit val user = request.taiUser
           if (printPage) {
             Ok(views.html.print.yourIncomeCalculation(model))

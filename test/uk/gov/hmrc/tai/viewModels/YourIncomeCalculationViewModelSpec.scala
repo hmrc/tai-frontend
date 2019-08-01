@@ -91,7 +91,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
     "doesn't show message" when {
       "total is equal" in {
-        val model = incomeCalculationViewModel(payments = Seq(firstPayment))
+        val model = incomeCalculationViewModel(payments = Seq(firstPayment), paymentDetails = Seq(PaymentDetailsViewModel(firstPayment)))
 
         model.messageWhenTotalNotEqual mustBe None
       }
@@ -598,12 +598,18 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
   lazy val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   lazy val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
+  val paymentDetails = Seq(
+    PaymentDetailsViewModel(latestPayment),
+    PaymentDetailsViewModel(firstPayment)
+  )
+
   private def incomeCalculationViewModel(realTimeStatus: RealTimeStatus = Available,
                                          payments: Seq[Payment] = Seq(latestPayment, firstPayment),
                                          employmentStatus: TaxCodeIncomeSourceStatus = Live,
                                          employmentType: TaxCodeIncomeComponentType = EmploymentIncome,
                                          hasTaxCodeIncome: Boolean = true,
-                                         cessationPay: Option[BigDecimal] = None) = {
+                                         cessationPay: Option[BigDecimal] = None,
+                                         paymentDetails: Seq[PaymentDetailsViewModel] = paymentDetails) = {
     val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), realTimeStatus, payments, Nil)
     val employment = Employment("test employment", Some("EMPLOYER1"), uk.gov.hmrc.tai.model.TaxYear().start.plusDays(1),
       if (employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None, Seq(annualAccount), "", "", 2, cessationPay, false, false)
@@ -612,7 +618,9 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     } else {
       None
     }
-    YourIncomeCalculationViewModel(taxCodeIncome, employment)
+
+    YourIncomeCalculationViewModel(taxCodeIncome, employment, paymentDetails)
   }
 
 }
+

@@ -22,17 +22,11 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import CeasedIncomeMessages._
 import ManualUpdateIncomeMessages._
 import PaymentFrequencyIncomeMessages._
-
-case class PaymentDetailsViewModel(date: LocalDate,
-                                   taxableIncome: BigDecimal,
-                                   taxAmount: BigDecimal,
-                                   nationalInsuranceAmount: BigDecimal)
 
 case class LatestPayment(date: LocalDate,
                          amountYearToDate: BigDecimal,
@@ -56,12 +50,7 @@ case class YourIncomeCalculationViewModel(
                                          )
 
 object YourIncomeCalculationViewModel {
-  def apply(taxCodeIncome: Option[TaxCodeIncome], employment: Employment)(implicit messages: Messages): YourIncomeCalculationViewModel = {
-
-    val payments = employment.latestAnnualAccount.map(_.payments).getOrElse(Seq.empty[Payment])
-    val paymentDetails = payments.map(payment => PaymentDetailsViewModel(
-      payment.date, payment.amount, payment.taxAmount, payment.nationalInsuranceAmount))
-
+  def apply(taxCodeIncome: Option[TaxCodeIncome], employment: Employment, paymentDetails: Seq[PaymentDetailsViewModel])(implicit messages: Messages): YourIncomeCalculationViewModel = {
     val realTimeStatus = employment.latestAnnualAccount.map(_.realTimeStatus).getOrElse(TemporarilyUnavailable)
 
     val latestPayment = latestPaymentDetails(employment)
@@ -101,7 +90,8 @@ object YourIncomeCalculationViewModel {
                                    payments: Seq[PaymentDetailsViewModel],
                                    latestPayment: Option[LatestPayment],
                                    isPension: Boolean)(implicit messages: Messages) = {
-    val isTotalEqual = payments.map(_.taxAmount).sum == latestPayment.map(_.taxAmountYearToDate).getOrElse(0) &&
+    val isTotalEqual =
+      payments.map(_.taxAmount).sum == latestPayment.map(_.taxAmountYearToDate).getOrElse(0) &&
       payments.map(_.taxableIncome).sum == latestPayment.map(_.amountYearToDate).getOrElse(0) &&
       payments.map(_.nationalInsuranceAmount).sum == latestPayment.map(_.nationalInsuranceAmountYearToDate).getOrElse(0)
 
@@ -112,7 +102,6 @@ object YourIncomeCalculationViewModel {
     } else {
       None
     }
-
   }
 
   private def latestPaymentDetails(employment: Employment) = {
