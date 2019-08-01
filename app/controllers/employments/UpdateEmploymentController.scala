@@ -30,6 +30,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
+import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneRegex
 import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
@@ -64,12 +65,6 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
         Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
       }
   }
-
-  def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
-    Constraint[String]((textContent: String) => textContent match {
-      case txt if txt.length < 8 || txt.length > 30 || !telephoneRegex.findAllMatchIn(txt).exists(_=> true) => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
-      case _ => Valid
-    })
 
   def telephoneNumberViewModel(id: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
     messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
@@ -139,7 +134,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
       YesNoTextEntryForm.form(
         Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
         Messages("tai.canWeContactByPhone.telephone.empty"),
-        Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
+        Some(TelephoneNumberConstraint.telephoneNumberSizeConstraint)).bindFromRequest().fold(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             implicit val user: AuthedUser = request.taiUser
