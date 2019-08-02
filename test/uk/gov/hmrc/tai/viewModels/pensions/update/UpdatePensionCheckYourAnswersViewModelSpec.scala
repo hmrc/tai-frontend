@@ -27,19 +27,33 @@ class UpdatePensionCheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPl
   "Update pension check your answers view model" must {
     "generate journey lines without a phone number line" when {
       "contactByPhone property is No" in {
-        val model = UpdatePensionCheckYourAnswersViewModel(1, "PensionProvider1", "Yes", "My pension decreased", "No", None)
+        val model =
+          UpdatePensionCheckYourAnswersViewModel(1, "PensionProvider1", "Yes", "My pension decreased", "No", None)
 
         model.journeyConfirmationLines.size mustBe 3
-        model.journeyConfirmationLines mustBe Seq(receivePensionLine, whatYouToldUsLine, contactByPhoneLine.copy(answer = "No"))
+        model.journeyConfirmationLines mustBe Seq(
+          receivePensionLine,
+          whatYouToldUsLine,
+          contactByPhoneLine.copy(answer = "No"))
       }
     }
 
     "generate journey lines with a phone number line" when {
       "contactByPhone property is Yes" in {
-        val model = UpdatePensionCheckYourAnswersViewModel(1, "PensionProvider2", "Yes", "My pension decreased", "Yes", Some("1234567890"))
+        val model = UpdatePensionCheckYourAnswersViewModel(
+          1,
+          "PensionProvider2",
+          "Yes",
+          "My pension decreased",
+          "Yes",
+          Some("1234567890"))
 
         model.journeyConfirmationLines.size mustBe 4
-        model.journeyConfirmationLines mustBe Seq(receivePensionLine, whatYouToldUsLine, contactByPhoneLine, phoneNumberLine)
+        model.journeyConfirmationLines mustBe Seq(
+          receivePensionLine,
+          whatYouToldUsLine,
+          contactByPhoneLine,
+          phoneNumberLine)
       }
     }
   }

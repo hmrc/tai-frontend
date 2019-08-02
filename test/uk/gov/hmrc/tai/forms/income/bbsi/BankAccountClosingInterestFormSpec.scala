@@ -22,8 +22,8 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 
-
-class BankAccountClosingInterestFormSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with FormValuesConstants {
+class BankAccountClosingInterestFormSpec
+    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with FormValuesConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -69,7 +69,8 @@ class BankAccountClosingInterestFormSpec extends PlaySpec with FakeTaiPlayApplic
         val invalidChoice = Json.obj(choice -> "", interest -> "")
         val invalidatedForm = form.bind(invalidChoice)
 
-        invalidatedForm.errors.head.messages mustBe List(Messages("tai.closeBankAccount.closingInterest.error.selectOption"))
+        invalidatedForm.errors.head.messages mustBe List(
+          Messages("tai.closeBankAccount.closingInterest.error.selectOption"))
         invalidatedForm.value mustBe None
       }
 
@@ -77,7 +78,8 @@ class BankAccountClosingInterestFormSpec extends PlaySpec with FakeTaiPlayApplic
         val invalidChoice = Json.obj(interest -> "")
         val invalidatedForm = form.bind(invalidChoice)
 
-        invalidatedForm.errors.head.messages mustBe List(Messages("tai.closeBankAccount.closingInterest.error.selectOption"))
+        invalidatedForm.errors.head.messages mustBe List(
+          Messages("tai.closeBankAccount.closingInterest.error.selectOption"))
         invalidatedForm.value mustBe None
       }
 

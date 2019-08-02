@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.model.domain
 
 import play.api.libs.json.{Format, JsString, JsSuccess, JsValue}
 
-
 sealed trait RealTimeStatus
 
 case object Available extends RealTimeStatus
@@ -31,10 +30,10 @@ object RealTimeStatus extends RealTimeStatus {
 
   implicit val realTimeStatusFormat = new Format[RealTimeStatus] {
     override def reads(json: JsValue): JsSuccess[RealTimeStatus] = json.as[String] match {
-      case "Available" => JsSuccess(Available)
+      case "Available"              => JsSuccess(Available)
       case "TemporarilyUnavailable" => JsSuccess(TemporarilyUnavailable)
-      case "Unavailable" => JsSuccess(Unavailable)
-      case _ => throw new IllegalArgumentException("Invalid real time status value")
+      case "Unavailable"            => JsSuccess(Unavailable)
+      case _                        => throw new IllegalArgumentException("Invalid real time status value")
     }
 
     override def writes(realTimeStatus: RealTimeStatus) = JsString(realTimeStatus.toString)

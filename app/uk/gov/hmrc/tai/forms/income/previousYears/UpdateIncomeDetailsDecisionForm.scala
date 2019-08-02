@@ -26,6 +26,6 @@ object UpdateIncomeDetailsDecisionForm extends UpdateHistoricIncomeChoiceConstan
   def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
     single(
       UpdateIncomeChoice ->
-        optional(text).verifying(Messages("tai.error.chooseOneOption"), {_.isDefined}))
+        optional(text).verifying(Messages("tai.error.chooseOneOption"), { _.isDefined }))
   )
 }

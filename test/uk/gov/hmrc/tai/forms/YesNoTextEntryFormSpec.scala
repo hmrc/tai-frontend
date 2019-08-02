@@ -85,7 +85,8 @@ class YesNoTextEntryFormSpec extends PlaySpec with OneAppPerSuite with I18nSuppo
 
     "return errors with text field content that does not meet requirements of an additional constraint" in {
       val extraConstraint = Constraint[String]((textContent: String) => Invalid("bang"))
-      val formWithExtraConstraint = YesNoTextEntryForm.form("select yes or no", "enter some text", Some(extraConstraint))
+      val formWithExtraConstraint =
+        YesNoTextEntryForm.form("select yes or no", "enter some text", Some(extraConstraint))
 
       val validChoiceUntilExtraConstraint = Json.obj(YesNoChoice -> Some(YesValue), YesNoTextEntry -> "123")
       val invalidatedForm = formWithExtraConstraint.bind(validChoiceUntilExtraConstraint)

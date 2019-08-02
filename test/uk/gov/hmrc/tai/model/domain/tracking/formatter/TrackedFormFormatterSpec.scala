@@ -20,7 +20,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsError, JsResultException, Json}
 import uk.gov.hmrc.tai.model.domain.tracking._
 
-class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters{
+class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters {
 
   "trackingReads" should {
     "be able to parse incoming tracking" when {
@@ -90,16 +90,18 @@ class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters{
 
     }
 
-    "throw an exception" when{
-      "formId doesn't exist in the json" in{
-        val json = """{"formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
+    "throw an exception" when {
+      "formId doesn't exist in the json" in {
+        val json =
+          """{"formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
             "receivedDate":"01 Apr 2016","completionDate":"06 May 2016", "milestones":[{"milestone":"Received","status":"current"}]}"""
         val result = the[JsResultException] thrownBy Json.parse(json).as[TrackedForm](trackedFormReads)
         result.getMessage must include("'formId' is undefined")
       }
 
       "form name doesn't exist in the json" in {
-        val json = """{"formId":"R39_EN","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
+        val json =
+          """{"formId":"R39_EN","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
             "receivedDate":"01 Apr 2016","completionDate":"06 May 2016", "milestones":[{"milestone":"Received","status":"current"}]}"""
         val result = the[JsResultException] thrownBy Json.parse(json).as[TrackedForm](trackedFormReads)
         result.getMessage must include("'formName' is undefined")
@@ -167,7 +169,9 @@ class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters{
                          ]}]}"""
 
         val trackingFormSequence = Json.parse(json).as[Seq[TrackedForm]](trackedFormSeqReads)
-        trackingFormSequence mustBe(Seq(TrackedForm("R39_EN","TES1",TrackedFormReceived), TrackedForm("R38_EN", "TES2",TrackedFormAcquired)))
+        trackingFormSequence mustBe (Seq(
+          TrackedForm("R39_EN", "TES1", TrackedFormReceived),
+          TrackedForm("R38_EN", "TES2", TrackedFormAcquired)))
 
       }
 
@@ -183,7 +187,7 @@ class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters{
                         ]}]}"""
 
         val trackingFormSequence = Json.parse(json).as[Seq[TrackedForm]](trackedFormSeqReads)
-        trackingFormSequence mustBe(Seq(TrackedForm("R39_EN","TES1",TrackedFormReceived)))
+        trackingFormSequence mustBe (Seq(TrackedForm("R39_EN", "TES1", TrackedFormReceived)))
       }
     }
   }

@@ -24,55 +24,69 @@ class TaxAdjustmentSpec extends PlaySpec {
   "TaxAdjustmentType" must {
     "be able to parse json" when {
       "given a valid json with EnterpriseInvestmentSchemeRelief" in {
-        taxAdjustmentTypeJson("EnterpriseInvestmentSchemeRelief").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(EnterpriseInvestmentSchemeRelief, 10)))
+        taxAdjustmentTypeJson("EnterpriseInvestmentSchemeRelief")
+          .as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(EnterpriseInvestmentSchemeRelief, 10)))
       }
 
       "given a valid json with ConcessionalRelief" in {
-        taxAdjustmentTypeJson("ConcessionalRelief").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(ConcessionalRelief, 10)))
+        taxAdjustmentTypeJson("ConcessionalRelief")
+          .as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(ConcessionalRelief, 10)))
       }
 
       "given a valid json with MaintenancePayments" in {
-        taxAdjustmentTypeJson("MaintenancePayments").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(MaintenancePayments, 10)))
+        taxAdjustmentTypeJson("MaintenancePayments")
+          .as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(MaintenancePayments, 10)))
       }
 
       "given a valid json with MarriedCouplesAllowance" in {
-        taxAdjustmentTypeJson("MarriedCouplesAllowance").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(MarriedCouplesAllowance, 10)))
+        taxAdjustmentTypeJson("MarriedCouplesAllowance")
+          .as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(MarriedCouplesAllowance, 10)))
       }
 
       "given a valid json with DoubleTaxationRelief" in {
-        taxAdjustmentTypeJson("DoubleTaxationRelief").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(DoubleTaxationRelief, 10)))
+        taxAdjustmentTypeJson("DoubleTaxationRelief")
+          .as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(DoubleTaxationRelief, 10)))
       }
 
       "given a valid json with ExcessGiftAidTax" in {
-        taxAdjustmentTypeJson("ExcessGiftAidTax").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(ExcessGiftAidTax, 10)))
+        taxAdjustmentTypeJson("ExcessGiftAidTax")
+          .as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(ExcessGiftAidTax, 10)))
       }
 
       "given a valid json with ExcessWidowsAndOrphans" in {
-        taxAdjustmentTypeJson("ExcessWidowsAndOrphans").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(ExcessWidowsAndOrphans, 10)))
+        taxAdjustmentTypeJson("ExcessWidowsAndOrphans")
+          .as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(ExcessWidowsAndOrphans, 10)))
       }
 
       "given a valid json with PensionPaymentsAdjustment" in {
-        taxAdjustmentTypeJson("PensionPaymentsAdjustment").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(PensionPaymentsAdjustment, 10)))
+        taxAdjustmentTypeJson("PensionPaymentsAdjustment")
+          .as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(PensionPaymentsAdjustment, 10)))
       }
 
       "given a valid json with ChildBenefit" in {
-        taxAdjustmentTypeJson("ChildBenefit").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(ChildBenefit, 10)))
+        taxAdjustmentTypeJson("ChildBenefit")
+          .as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(ChildBenefit, 10)))
       }
 
       "given a valid json with TaxOnBankBSInterest" in {
-        taxAdjustmentTypeJson("TaxOnBankBSInterest").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(TaxOnBankBSInterest, 10)))
+        taxAdjustmentTypeJson("TaxOnBankBSInterest")
+          .as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(TaxOnBankBSInterest, 10)))
       }
 
       "given a valid json with TaxCreditOnUKDividends" in {
-        taxAdjustmentTypeJson("TaxCreditOnUKDividends").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(TaxCreditOnUKDividends, 10)))
+        taxAdjustmentTypeJson("TaxCreditOnUKDividends")
+          .as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(TaxCreditOnUKDividends, 10)))
       }
 
       "given a valid json with TaxCreditOnForeignInterest" in {
-        taxAdjustmentTypeJson("TaxCreditOnForeignInterest").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(TaxCreditOnForeignInterest, 10)))
+        taxAdjustmentTypeJson("TaxCreditOnForeignInterest")
+          .as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(TaxCreditOnForeignInterest, 10)))
       }
 
       "given a valid json with TaxCreditOnForeignIncomeDividends" in {
-        taxAdjustmentTypeJson("TaxCreditOnForeignIncomeDividends").as[TaxAdjustment] mustBe TaxAdjustment(10, Seq(TaxAdjustmentComponent(TaxCreditOnForeignIncomeDividends, 10)))
+        taxAdjustmentTypeJson("TaxCreditOnForeignIncomeDividends").as[TaxAdjustment] mustBe TaxAdjustment(
+          10,
+          Seq(TaxAdjustmentComponent(TaxCreditOnForeignIncomeDividends, 10)))
       }
     }
 
@@ -89,11 +103,10 @@ class TaxAdjustmentSpec extends PlaySpec {
       "amount" -> 10,
       "taxAdjustmentComponents" -> Json.arr(
         Json.obj(
-          "taxAdjustmentType" -> taxAdjustmentType,
+          "taxAdjustmentType"   -> taxAdjustmentType,
           "taxAdjustmentAmount" -> 10
         )
       )
     )
-
 
 }

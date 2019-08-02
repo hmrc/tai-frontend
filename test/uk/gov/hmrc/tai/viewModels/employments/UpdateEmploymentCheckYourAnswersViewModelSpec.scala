@@ -30,7 +30,10 @@ class UpdateEmploymentCheckYourAnswersViewModelSpec extends PlaySpec with FakeTa
         val model = UpdateEmploymentCheckYourAnswersViewModel(1, "Test", "what", "No", None)
 
         model.journeyConfirmationLines.size mustBe 3
-        model.journeyConfirmationLines mustBe Seq(currentlyWorkHereLine, whatYouToldUsLine, contactByPhoneLine.copy(answer = "No"))
+        model.journeyConfirmationLines mustBe Seq(
+          currentlyWorkHereLine,
+          whatYouToldUsLine,
+          contactByPhoneLine.copy(answer = "No"))
       }
     }
 
@@ -39,7 +42,11 @@ class UpdateEmploymentCheckYourAnswersViewModelSpec extends PlaySpec with FakeTa
         val model = UpdateEmploymentCheckYourAnswersViewModel(1, "Test", "what", "Yes", Some("1234567890"))
 
         model.journeyConfirmationLines.size mustBe 4
-        model.journeyConfirmationLines mustBe Seq(currentlyWorkHereLine, whatYouToldUsLine, contactByPhoneLine, phoneNumberLine)
+        model.journeyConfirmationLines mustBe Seq(
+          currentlyWorkHereLine,
+          whatYouToldUsLine,
+          contactByPhoneLine,
+          phoneNumberLine)
       }
     }
   }

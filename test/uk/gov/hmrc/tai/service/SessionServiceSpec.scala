@@ -41,8 +41,9 @@ class SessionServiceSpec extends PlaySpec with MockitoSugar {
 
   val sessionConnector: SessionConnector = mock[SessionConnector]
 
-  class SUT extends SessionService(
-    sessionConnector
-  )
+  class SUT
+      extends SessionService(
+        sessionConnector
+      )
 
 }

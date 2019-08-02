@@ -16,17 +16,16 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.CodingComponentPairModel
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
 
-
-case class YourTaxFreeAmountViewModel(previousTaxFreeInfo: Option[TaxFreeInfo],
-                                      currentTaxFreeInfo: TaxFreeInfo,
-                                      allowances: Seq[CodingComponentPairModel],
-                                      deductions: Seq[CodingComponentPairModel]) {
+case class YourTaxFreeAmountViewModel(
+  previousTaxFreeInfo: Option[TaxFreeInfo],
+  currentTaxFreeInfo: TaxFreeInfo,
+  allowances: Seq[CodingComponentPairModel],
+  deductions: Seq[CodingComponentPairModel]) {
 
   val showPreviousColumn: Boolean = previousTaxFreeInfo.isDefined
   val columns: Int = {
@@ -39,9 +38,8 @@ case class YourTaxFreeAmountViewModel(previousTaxFreeInfo: Option[TaxFreeInfo],
 }
 
 object YourTaxFreeAmountViewModel extends ViewModelHelper {
-  def prettyPrint(value: BigDecimal) : String = {
+  def prettyPrint(value: BigDecimal): String =
     withPoundPrefixAndSign(MoneyPounds(value, 0))
-  }
 
   def totalPrevious(sequence: Seq[CodingComponentPairModel]): String = {
     val total = sequence.map(_.previous).sum
@@ -55,17 +53,17 @@ object YourTaxFreeAmountViewModel extends ViewModelHelper {
 
   val additionsTranslationMap: Map[String, String] = {
     Map(
-      "title" -> "tai.taxFreeAmount.table.additions.caption",
+      "title"      -> "tai.taxFreeAmount.table.additions.caption",
       "totalTitle" -> "tai.taxFreeAmount.table.additions.total",
-      "noItems" -> "tai.taxFreeAmount.table.additions.noAddition"
+      "noItems"    -> "tai.taxFreeAmount.table.additions.noAddition"
     )
   }
 
   val deductionsTranslationMap: Map[String, String] = {
     Map(
-      "title" -> "tai.taxFreeAmount.table.deductions.caption",
+      "title"      -> "tai.taxFreeAmount.table.deductions.caption",
       "totalTitle" -> "tai.taxFreeAmount.table.deductions.total",
-      "noItems" -> "tai.taxFreeAmount.table.deductions.noDeduction"
+      "noItems"    -> "tai.taxFreeAmount.table.deductions.noDeduction"
     )
   }
 }

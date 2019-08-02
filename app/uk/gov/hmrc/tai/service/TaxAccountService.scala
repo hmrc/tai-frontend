@@ -31,17 +31,18 @@ import scala.concurrent.Future
 
 class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
 
-  def incomeSources(nino: Nino, year: TaxYear, incomeType: TaxCodeIncomeComponentType, status: TaxCodeIncomeSourceStatus)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def incomeSources(
+    nino: Nino,
+    year: TaxYear,
+    incomeType: TaxCodeIncomeComponentType,
+    status: TaxCodeIncomeSourceStatus)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     taxAccountConnector.incomeSources(nino, year, incomeType, status)
 
-  def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     taxAccountConnector.taxCodeIncomes(nino, year)
-  }
 
-  def taxCodeIncomeForEmployment(nino: Nino,
-                                 year: TaxYear,
-                                 employmentId: Int)(implicit hc: HeaderCarrier): Future[Option[TaxCodeIncome]] = {
-
+  def taxCodeIncomeForEmployment(nino: Nino, year: TaxYear, employmentId: Int)(
+    implicit hc: HeaderCarrier): Future[Option[TaxCodeIncome]] =
     for {
       taxCodeIncomesResponse <- taxAccountConnector.taxCodeIncomes(nino, year)
     } yield {
@@ -52,25 +53,22 @@ class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
         case _ => throw new RuntimeException(s"Not able to find tax code incomes")
       }
     }
-  }
 
-  def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     taxAccountConnector.taxAccountSummary(nino, year)
-  }
 
-  def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     taxAccountConnector.nonTaxCodeIncomes(nino, year)
-  }
 
-  def updateEstimatedIncome(nino: Nino, newAmount: Int, year: TaxYear, id: Int)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def updateEstimatedIncome(nino: Nino, newAmount: Int, year: TaxYear, id: Int)(
+    implicit hc: HeaderCarrier): Future[TaiResponse] =
     taxAccountConnector.updateEstimatedIncome(nino, year, newAmount, id)
-  }
 
-  def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     taxAccountConnector.totalTax(nino, year)
-  }
 
-  def scottishBandRates(nino: Nino, year: TaxYear, taxCodes: Seq[String])(implicit hc: HeaderCarrier): Future[Map[String, BigDecimal]] = {
+  def scottishBandRates(nino: Nino, year: TaxYear, taxCodes: Seq[String])(
+    implicit hc: HeaderCarrier): Future[Map[String, BigDecimal]] = {
     def isScottishStandAloneTaxcode(taxCode: String) = "D0|D1|D2|D3|D4|D5|D6|D7|D8".r.findFirstIn(taxCode).isDefined
 
     if (taxCodes.exists(isScottishStandAloneTaxcode)) {

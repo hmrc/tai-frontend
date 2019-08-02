@@ -85,12 +85,12 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
 
   def createSut(authAction: AuthAction = FakeAuthAction) = new SUT(authAction)
 
-  class SUT(authAction: AuthAction = FakeAuthAction) extends ServiceController(
-    authAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  )
+  class SUT(authAction: AuthAction = FakeAuthAction)
+      extends ServiceController(
+        authAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      )
 
 }
-

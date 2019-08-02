@@ -27,7 +27,6 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
 
   protected val server: WireMockServer = new WireMockServer(wireMockConfig().dynamicPort())
 
-
   override def beforeAll(): Unit = {
     server.start()
     super.beforeAll()

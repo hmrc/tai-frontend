@@ -33,8 +33,7 @@ class zeroTaxEstimatedIncomeTaxSpec extends TaiViewSpec {
         Dates.formatDate(TaxYear().start).replace(" ", "\u00A0"),
         Dates.formatDate(TaxYear().end).replace(" ", "\u00A0")),
       messages("tai.estimatedIncome.title"),
-      Some(messages("tai.estimatedIncome.accessiblePreHeading")
-      )
+      Some(messages("tai.estimatedIncome.accessiblePreHeading"))
     )
 
     behave like pageWithBackLink
@@ -52,43 +51,61 @@ class zeroTaxEstimatedIncomeTaxSpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.whyEstimate.link"))
       doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.howYouPay.heading"))
 
-      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.whyEstimate.desc",
-        Dates.formatDate(TaxYear().end))).body)
+      doc(view) must haveParagraphWithText(
+        Html(messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYear().end))).body)
 
-      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.howYouPay.desc",
-        messages("tai.estimatedIncome.taxCodes.link"))).body)
+      doc(view) must haveParagraphWithText(
+        Html(messages("tai.estimatedIncome.howYouPay.desc", messages("tai.estimatedIncome.taxCodes.link"))).body)
 
-      doc(view).select("#howYouPayDesc").html() mustBe Html(messages("tai.estimatedIncome.howYouPay.desc",
-        Link.toInternalPage(
-          id = Some("taxCodesLink"),
-          url = routes.YourTaxCodeController.taxCodes.url.toString,
-          value = Some(Messages("tai.estimatedIncome.taxCodes.link"))).toHtml)).body
+      doc(view).select("#howYouPayDesc").html() mustBe Html(
+        messages(
+          "tai.estimatedIncome.howYouPay.desc",
+          Link
+            .toInternalPage(
+              id = Some("taxCodesLink"),
+              url = routes.YourTaxCodeController.taxCodes.url.toString,
+              value = Some(Messages("tai.estimatedIncome.taxCodes.link")))
+            .toHtml
+        )).body
     }
 
     "have low estimated total income messages" when {
       "the earnings for a NINO were lower than the tax free allowance" in {
-        doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncomeLow.desc",
-          messages("tai.estimatedIncome.taxFree.link"),
-          "£11,500")).body)
+        doc(view) must haveParagraphWithText(
+          Html(messages("tai.estimatedIncomeLow.desc", messages("tai.estimatedIncome.taxFree.link"), "£11,500")).body)
 
-        doc(view).select("#estimatedIncomeLowDesc").html() mustBe Html(Messages("tai.estimatedIncomeLow.desc",
-          Link.toInternalPage(
-            id = Some("taxFreeAmountLink"),
-            url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
-            value = Some("tai.estimatedIncome.taxFree.link")
-          ).toHtml,
-          "£11,500")).body
+        doc(view).select("#estimatedIncomeLowDesc").html() mustBe Html(
+          Messages(
+            "tai.estimatedIncomeLow.desc",
+            Link
+              .toInternalPage(
+                id = Some("taxFreeAmountLink"),
+                url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
+                value = Some("tai.estimatedIncome.taxFree.link")
+              )
+              .toHtml,
+            "£11,500"
+          )).body
 
-        doc(view).select("#balanceEarningsDesc").html() mustBe Html(Messages("tai.estimatedIncomeEarning.desc",
-          "£2,500")).body
+        doc(view).select("#balanceEarningsDesc").html() mustBe Html(
+          Messages("tai.estimatedIncomeEarning.desc", "£2,500")).body
       }
     }
 
     "display navigational links to other pages in the service" in {
       doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
-      doc must haveLinkElement("taxCodesSideLink", routes.YourTaxCodeController.taxCodes.url, messages("check.your.tax.codes"))
-      doc must haveLinkElement("taxFreeAmountSideLink", routes.TaxFreeAmountController.taxFreeAmount.url, messages("check.your.tax.free.amount"))
-      doc must haveLinkElement("taxSummarySideLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("return.to.your.income.tax.summary"))
+      doc must haveLinkElement(
+        "taxCodesSideLink",
+        routes.YourTaxCodeController.taxCodes.url,
+        messages("check.your.tax.codes"))
+      doc must haveLinkElement(
+        "taxFreeAmountSideLink",
+        routes.TaxFreeAmountController.taxFreeAmount.url,
+        messages("check.your.tax.free.amount"))
+      doc must haveLinkElement(
+        "taxSummarySideLink",
+        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+        messages("return.to.your.income.tax.summary"))
     }
   }
 

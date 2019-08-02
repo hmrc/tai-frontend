@@ -36,16 +36,14 @@ import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
-  with OneAppPerSuite
-  with MockitoSugar
-  with FakeTaiPlayApplication {
+class UnderPaymentFromPreviousYearControllerSpec
+    extends PlaySpec with OneAppPerSuite with MockitoSugar with FakeTaiPlayApplication {
 
   override lazy val app = new GuiceApplicationBuilder().build()
   def injector = app.injector
   val nino = new Generator().nextNino
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  val referralMap = Map("Referer" ->"http://somelocation/somePageResource")
+  val referralMap = Map("Referer" -> "http://somelocation/somePageResource")
 
   val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
   val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
@@ -66,16 +64,17 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
 
-  private class SUT() extends UnderpaymentFromPreviousYearController(
-    codingComponentService,
-    employmentService,
-    mock[CompanyCarService],
-    taxAccountService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  ) {
+  private class SUT()
+      extends UnderpaymentFromPreviousYearController(
+        codingComponentService,
+        employmentService,
+        mock[CompanyCarService],
+        taxAccountService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      ) {
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
     when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future(TaiSuccessResponseWithPayload(totalTax)))
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))

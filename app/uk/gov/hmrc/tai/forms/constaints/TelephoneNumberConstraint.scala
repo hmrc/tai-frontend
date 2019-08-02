@@ -24,11 +24,12 @@ object TelephoneNumberConstraint {
   val telephoneRegex = """^(\(?\+?[0-9]*\)?)?[0-9_\- \(\)]*$""".r
 
   def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
-    Constraint[String]((textContent: String) => textContent match {
-      case txt if txt.length < 8 || txt.length > 30 || !telephoneRegex.findAllMatchIn(txt).exists(_=> true)=> {
-        Invalid(Messages("tai.canWeContactByPhone.telephone.invalid"))
-      }
-      case _ => Valid
+    Constraint[String]((textContent: String) =>
+      textContent match {
+        case txt if txt.length < 8 || txt.length > 30 || !telephoneRegex.findAllMatchIn(txt).exists(_ => true) => {
+          Invalid(Messages("tai.canWeContactByPhone.telephone.invalid"))
+        }
+        case _ => Valid
     })
 
 }

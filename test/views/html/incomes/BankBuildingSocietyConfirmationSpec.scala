@@ -28,7 +28,8 @@ class BankBuildingSocietyConfirmationSpec extends TaiViewSpec {
 
     "display return button" in {
       doc(view) must haveLinkWithText(messages("tai.bbsi.confirmation.back"))
-      doc(view).getElementById("returnToAccounts") must haveLinkURL(controllers.income.bbsi.routes.BbsiController.accounts().url)
+      doc(view).getElementById("returnToAccounts") must haveLinkURL(
+        controllers.income.bbsi.routes.BbsiController.accounts().url)
     }
 
   }

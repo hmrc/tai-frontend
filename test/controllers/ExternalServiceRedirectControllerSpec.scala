@@ -16,7 +16,7 @@
 
 package controllers
 
-import builders.{UserBuilder, RequestBuilder}
+import builders.{RequestBuilder, UserBuilder}
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers
@@ -42,7 +42,8 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
-        when(auditService.sendAuditEventAndGetRedirectUri(any(), Matchers.eq("Test"))(any(), any())).thenReturn(Future.successful(redirectUri))
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), Matchers.eq("Test"))(any(), any()))
+          .thenReturn(Future.successful(redirectUri))
         when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
         val result = sut.auditInvalidateCacheAndRedirectService("Test")(request)
@@ -62,12 +63,13 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
   val sessionService = mock[SessionService]
   val auditService = mock[AuditService]
 
-  class SUT extends ExternalServiceRedirectController(
-    sessionService,
-    auditService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  )
+  class SUT
+      extends ExternalServiceRedirectController(
+        sessionService,
+        auditService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      )
 }

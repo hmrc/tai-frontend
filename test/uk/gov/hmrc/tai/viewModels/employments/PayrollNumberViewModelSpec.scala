@@ -21,7 +21,8 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 
-class PayrollNumberViewModelSpec extends PlaySpec  with JourneyCacheConstants with FormValuesConstants with FakeTaiPlayApplication {
+class PayrollNumberViewModelSpec
+    extends PlaySpec with JourneyCacheConstants with FormValuesConstants with FakeTaiPlayApplication {
 
   "Payroll number view model" must {
     "create an instance of view model" when {

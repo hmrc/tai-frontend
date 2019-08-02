@@ -34,7 +34,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
+class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar {
 
   "taxCodeChange" must {
     "return the tax code change given a valid nino" in {
@@ -60,8 +60,10 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
         val taxCodeMismatch = TaxCodeMismatchFactory.matchedTaxCode
         val hasTaxCodeChanged = HasTaxCodeChanged(changed = true, Some(taxCodeMismatch))
 
-        when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
-        when(taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
+        when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
+        when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
 
         val result = testService.hasTaxCodeChanged(nino)
         Await.result(result, 5.seconds) mustBe hasTaxCodeChanged
@@ -75,8 +77,10 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
         val hasTaxCodeChanged = HasTaxCodeChanged(changed = false, None)
 
-        when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
-        when(taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
+        when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
+        when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
 
         val result = testService.hasTaxCodeChanged(nino)
         Await.result(result, 5.seconds) mustBe hasTaxCodeChanged
@@ -90,8 +94,10 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
         val taxCodeMismatch = TaxCodeMismatchFactory.matchedTaxCode
 
-        when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
-        when(taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
+        when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
+        when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
 
         val ex = the[RuntimeException] thrownBy Await.result(testService.hasTaxCodeChanged(nino), 5 seconds)
         ex.getMessage must include("Could not fetch tax code change")
@@ -120,7 +126,8 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
       when(taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
         .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
 
-      val ex = the[RuntimeException] thrownBy Await.result(testService.lastTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev), 5 seconds)
+      val ex = the[RuntimeException] thrownBy Await
+        .result(testService.lastTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev), 5 seconds)
       ex.getMessage must include(s"Could not fetch last tax code records for year ${TaxYear().prev}")
     }
   }
@@ -165,14 +172,22 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
   }
 
   val startDate = TaxYear().start
-  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation,"Employer 1", false, Some("1234"), true)
+  val taxCodeRecord1 = TaxCodeRecord(
+    "code",
+    startDate,
+    startDate.plusDays(1),
+    OtherBasisOfOperation,
+    "Employer 1",
+    false,
+    Some("1234"),
+    true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYear().end)
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private def generateNino: Nino = new Generator(new Random).nextNino
   private def createTestService = new TestService
-  
+
   val taxCodeChangeConnector = mock[TaxCodeChangeConnector]
 
-  private class TestService extends TaxCodeChangeService (taxCodeChangeConnector)
+  private class TestService extends TaxCodeChangeService(taxCodeChangeConnector)
 }

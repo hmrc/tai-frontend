@@ -28,21 +28,26 @@ object YesNoTextEntryForm extends FormValuesConstants {
 
   private def yesNoChoiceValidation(emptySelectionMsg: String) = Constraint[Option[String]]("") {
     case Some(txt) if txt == YesValue || txt == NoValue => Valid
-    case _ => Invalid(emptySelectionMsg)
+    case _                                              => Invalid(emptySelectionMsg)
   }
 
-  def form(emptySelectionMsg: String = "",
-           emptyTextFieldMsg: String = "",
-           additionalTextConstraint: Option[Constraint[String]] = None) = Form[YesNoTextEntryForm](
+  def form(
+    emptySelectionMsg: String = "",
+    emptyTextFieldMsg: String = "",
+    additionalTextConstraint: Option[Constraint[String]] = None) = Form[YesNoTextEntryForm](
     mapping(
       YesNoChoice -> optional(text).verifying(yesNoChoiceValidation(emptySelectionMsg)),
       YesNoTextEntry -> mandatoryIfEqual(
         YesNoChoice,
         YesValue,
-        text.verifying(
-          emptyTextFieldMsg,
-          _.nonEmpty
-        ).verifying(additionalTextConstraint.getOrElse( Constraint[String]{_:String=> Valid} )) )
+        text
+          .verifying(
+            emptyTextFieldMsg,
+            _.nonEmpty
+          )
+          .verifying(additionalTextConstraint.getOrElse(Constraint[String] { _: String =>
+            Valid
+          })))
     )(YesNoTextEntryForm.apply)(YesNoTextEntryForm.unapply)
   )
 

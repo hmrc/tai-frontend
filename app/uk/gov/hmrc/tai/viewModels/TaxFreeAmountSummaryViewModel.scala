@@ -28,25 +28,24 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
-case class ChangeLinkViewModel(isDisplayed: Boolean,
-                               value: String = "",
-                               href: String = "")
+case class ChangeLinkViewModel(isDisplayed: Boolean, value: String = "", href: String = "")
 
-case class TaxFreeAmountSummaryCategoryViewModel(headerCol1: String,
-                                                 headerCol2: String,
-                                                 hideHeaders: Boolean,
-                                                 hideCaption: Boolean,
-                                                 caption: String,
-                                                 rows: Seq[TaxFreeAmountSummaryRowViewModel])
+case class TaxFreeAmountSummaryCategoryViewModel(
+  headerCol1: String,
+  headerCol2: String,
+  hideHeaders: Boolean,
+  hideCaption: Boolean,
+  caption: String,
+  rows: Seq[TaxFreeAmountSummaryRowViewModel])
 
 case class TaxFreeAmountSummaryViewModel(summaryItems: Seq[TaxFreeAmountSummaryCategoryViewModel])
 
 object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
 
-  def apply(codingComponents: Seq[CodingComponent],
-            taxFreeAmountDetails: TaxFreeAmountDetails,
-            taxFreeAmountTotal: BigDecimal
-           )(implicit messages: Messages): TaxFreeAmountSummaryViewModel = {
+  def apply(
+    codingComponents: Seq[CodingComponent],
+    taxFreeAmountDetails: TaxFreeAmountDetails,
+    taxFreeAmountTotal: BigDecimal)(implicit messages: Messages): TaxFreeAmountSummaryViewModel = {
 
     val personalAllowance = personalAllowanceVM(codingComponents)
     val additions = additionsVM(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails)
@@ -61,7 +60,7 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
     val personalAllowance: Seq[CodingComponent] = codingComponents.filter(isPersonalAllowanceComponent)
     val personalAllowanceSum = personalAllowance match {
       case Nil => BigDecimal(0)
-      case _ => personalAllowance.map(_.amount).sum
+      case _   => personalAllowance.map(_.amount).sum
     }
 
     val personalAllowanceSumFormatted = withPoundPrefixAndSign(MoneyPounds(personalAllowanceSum, 0))
@@ -72,15 +71,17 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
       hideHeaders = false,
       hideCaption = true,
       Messages("tai.taxFreeAmount.table.allowances.caption"),
-      Seq(TaxFreeAmountSummaryRowViewModel(
-        Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
-        personalAllowanceSumFormatted,
-        ChangeLinkViewModel(false, "", "")
-      ))
+      Seq(
+        TaxFreeAmountSummaryRowViewModel(
+          Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
+          personalAllowanceSumFormatted,
+          ChangeLinkViewModel(false, "", "")
+        ))
     )
   }
 
-  private def additionsVM(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails)(implicit messages: Messages) = TaxFreeAmountSummaryCategoryViewModel(
+  private def additionsVM(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails)(
+    implicit messages: Messages) = TaxFreeAmountSummaryCategoryViewModel(
     Messages("tai.taxFreeAmount.table.columnOneHeader"),
     Messages("tai.taxFreeAmount.table.columnTwoHeader"),
     hideHeaders = true,
@@ -89,31 +90,34 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
     additionRows(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails)
   )
 
-  private def additionRows(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails)(implicit messages: Messages): Seq[TaxFreeAmountSummaryRowViewModel] = {
+  private def additionRows(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails)(
+    implicit messages: Messages): Seq[TaxFreeAmountSummaryRowViewModel] = {
 
     val additionComponents: Seq[CodingComponent] = codingComponents.collect {
       case cc @ CodingComponent(_: AllowanceComponentType, _, _, _, _) if !isPersonalAllowanceComponent(cc) => cc
     }
     if (additionComponents.isEmpty) {
-      Seq(TaxFreeAmountSummaryRowViewModel(
-        Messages("tai.taxFreeAmount.table.additions.noAddition"),
-        "£0",
-        ChangeLinkViewModel(false, "", "")
-      ))
+      Seq(
+        TaxFreeAmountSummaryRowViewModel(
+          Messages("tai.taxFreeAmount.table.additions.noAddition"),
+          "£0",
+          ChangeLinkViewModel(false, "", "")
+        ))
     } else {
       val totalAmount = additionComponents.map(_.amount).sum
       val totalAmountFormatted = withPoundPrefixAndSign(MoneyPounds(totalAmount, 0))
-      val totalsRow = Seq(TaxFreeAmountSummaryRowViewModel(
-        Messages("tai.taxFreeAmount.table.additions.total"),
-        totalAmountFormatted,
-        ChangeLinkViewModel(false, "", "")
-      ))
+      val totalsRow = Seq(
+        TaxFreeAmountSummaryRowViewModel(
+          Messages("tai.taxFreeAmount.table.additions.total"),
+          totalAmountFormatted,
+          ChangeLinkViewModel(false, "", "")
+        ))
       (additionComponents map (TaxFreeAmountSummaryRowViewModel(_, taxFreeAmountDetails: TaxFreeAmountDetails))) ++ totalsRow
     }
   }
 
-  private def deductionsVM(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails
-                          )(implicit messages: Messages) = TaxFreeAmountSummaryCategoryViewModel(
+  private def deductionsVM(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails)(
+    implicit messages: Messages) = TaxFreeAmountSummaryCategoryViewModel(
     Messages("tai.taxFreeAmount.table.columnOneHeader"),
     Messages("tai.taxFreeAmount.table.columnTwoHeader"),
     hideHeaders = true,
@@ -122,26 +126,30 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
     deductionRows(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails)
   )
 
-  private def deductionRows(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails
-                           )(implicit messages: Messages): Seq[TaxFreeAmountSummaryRowViewModel] = {
-    val deductionComponents: Seq[CodingComponent] = codingComponents.filter({_.componentType match{
-      case _: AllowanceComponentType => false
-      case _ => true
-    }})
+  private def deductionRows(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails)(
+    implicit messages: Messages): Seq[TaxFreeAmountSummaryRowViewModel] = {
+    val deductionComponents: Seq[CodingComponent] = codingComponents.filter({
+      _.componentType match {
+        case _: AllowanceComponentType => false
+        case _                         => true
+      }
+    })
     if (deductionComponents.isEmpty) {
-      Seq(TaxFreeAmountSummaryRowViewModel(
-        Messages("tai.taxFreeAmount.table.deductions.noDeduction"),
-        "£0",
-        ChangeLinkViewModel(false, "", "")
-      ))
+      Seq(
+        TaxFreeAmountSummaryRowViewModel(
+          Messages("tai.taxFreeAmount.table.deductions.noDeduction"),
+          "£0",
+          ChangeLinkViewModel(false, "", "")
+        ))
     } else {
       val totalAmount = deductionComponents.map(_.amount).sum
       val totalAmountFormatted = withPoundPrefix(MoneyPounds(totalAmount, 0))
-      val totalsRow = Seq(TaxFreeAmountSummaryRowViewModel(
-        Messages("tai.taxFreeAmount.table.deductions.total"),
-        totalAmountFormatted,
-        ChangeLinkViewModel(false, "", "")
-      ))
+      val totalsRow = Seq(
+        TaxFreeAmountSummaryRowViewModel(
+          Messages("tai.taxFreeAmount.table.deductions.total"),
+          totalAmountFormatted,
+          ChangeLinkViewModel(false, "", "")
+        ))
       (deductionComponents map (TaxFreeAmountSummaryRowViewModel(_, taxFreeAmountDetails))) ++ totalsRow
     }
   }
@@ -156,49 +164,65 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
       hideHeaders = true,
       hideCaption = true,
       Messages("tai.taxFreeAmount.table.totals.caption"),
-      Seq(TaxFreeAmountSummaryRowViewModel(
-        Messages("tai.taxFreeAmount.table.totals.label"),
-        totalAmountFormatted,
-        ChangeLinkViewModel(false, "", "")
-      ))
+      Seq(
+        TaxFreeAmountSummaryRowViewModel(
+          Messages("tai.taxFreeAmount.table.totals.label"),
+          totalAmountFormatted,
+          ChangeLinkViewModel(false, "", "")
+        ))
     )
   }
 
-  private def isPersonalAllowanceComponent(codingComponent: CodingComponent): Boolean = codingComponent.componentType match {
-    case PersonalAllowancePA | PersonalAllowanceAgedPAA | PersonalAllowanceElderlyPAE => true
-    case _ => false
-  }
+  private def isPersonalAllowanceComponent(codingComponent: CodingComponent): Boolean =
+    codingComponent.componentType match {
+      case PersonalAllowancePA | PersonalAllowanceAgedPAA | PersonalAllowanceElderlyPAE => true
+      case _                                                                            => false
+    }
 }
 
-case class TaxFreeAmountSummaryRowViewModel(label: TaxSummaryLabel,
-                                            value: String,
-                                            link: ChangeLinkViewModel)
+case class TaxFreeAmountSummaryRowViewModel(label: TaxSummaryLabel, value: String, link: ChangeLinkViewModel)
 
 object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
 
   def apply(label: String, value: String, link: ChangeLinkViewModel): TaxFreeAmountSummaryRowViewModel =
     new TaxFreeAmountSummaryRowViewModel(TaxSummaryLabel(label), value, link)
 
-  def apply(codingComponent: CodingComponent,
-            taxFreeAmountDetails: TaxFreeAmountDetails)(implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
-    val label: TaxSummaryLabel = TaxSummaryLabel(codingComponent.componentType, codingComponent.employmentId, taxFreeAmountDetails, codingComponent.amount)
+  def apply(codingComponent: CodingComponent, taxFreeAmountDetails: TaxFreeAmountDetails)(
+    implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
+    val label: TaxSummaryLabel = TaxSummaryLabel(
+      codingComponent.componentType,
+      codingComponent.employmentId,
+      taxFreeAmountDetails,
+      codingComponent.amount)
     val value = withPoundPrefix(MoneyPounds(codingComponent.amount, 0))
     val link = createChangeLink(codingComponent)
 
     TaxFreeAmountSummaryRowViewModel(label, value, link)
   }
 
-  private def createChangeLink(codingComponent: CodingComponent)(implicit messages: Messages): ChangeLinkViewModel = {
+  private def createChangeLink(codingComponent: CodingComponent)(implicit messages: Messages): ChangeLinkViewModel =
     codingComponent.componentType match {
       case MedicalInsurance =>
-        val url = routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url
+        val url = routes.ExternalServiceRedirectController
+          .auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform)
+          .url
         ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"), url)
       case MarriageAllowanceReceived =>
-        val url = routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MarriageAllowanceService).url
-        ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceReceived"), url)
+        val url = routes.ExternalServiceRedirectController
+          .auditInvalidateCacheAndRedirectService(TaiConstants.MarriageAllowanceService)
+          .url
+        ChangeLinkViewModel(
+          isDisplayed = true,
+          Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceReceived"),
+          url)
       case MarriageAllowanceTransferred =>
-        val url = routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MarriageAllowanceService).url
-        ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceTransferred"), url)
+        val url = routes.ExternalServiceRedirectController
+          .auditInvalidateCacheAndRedirectService(TaiConstants.MarriageAllowanceService)
+          .url
+        ChangeLinkViewModel(
+          isDisplayed = true,
+          Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceTransferred"),
+          url)
       case CarBenefit =>
         val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/${codingComponent.employmentId.getOrElse(0)}"
         ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), url)
@@ -206,13 +230,20 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
         val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/${codingComponent.employmentId.getOrElse(0)}"
         ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"), url)
       case companyBenefit: BenefitComponentType =>
-        val url = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(codingComponent.employmentId.getOrElse(0), companyBenefit).url
-        ChangeLinkViewModel(isDisplayed = true, Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"), url)
+        val url = controllers.benefits.routes.CompanyBenefitController
+          .redirectCompanyBenefitSelection(codingComponent.employmentId.getOrElse(0), companyBenefit)
+          .url
+        ChangeLinkViewModel(
+          isDisplayed = true,
+          Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"),
+          url)
       case allowanceComponentType: AllowanceComponentType =>
         val url = ApplicationConfig.taxFreeAllowanceLinkUrl
-        ChangeLinkViewModel(isDisplayed = true, Messages(s"tai.taxFreeAmount.table.taxComponent.${allowanceComponentType.toString}"), url)
+        ChangeLinkViewModel(
+          isDisplayed = true,
+          Messages(s"tai.taxFreeAmount.table.taxComponent.${allowanceComponentType.toString}"),
+          url)
       case _ =>
         ChangeLinkViewModel(isDisplayed = false)
     }
-  }
 }

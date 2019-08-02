@@ -22,10 +22,9 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 
-class AmountComparatorFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport  {
+class AmountComparatorFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
 
   "AmountComparatorForm" must {
 
@@ -48,10 +47,10 @@ class AmountComparatorFormSpec extends PlaySpec with OneAppPerSuite with I18nSup
       val invalidChoice = Json.obj("income" -> "11,00")
       val invalidatedForm = form.bind(invalidChoice)
 
-      invalidatedForm.errors.head.messages mustBe List(messagesApi("error.tai.update.estimatedTaxableIncome.input.invalid"))
+      invalidatedForm.errors.head.messages mustBe List(
+        messagesApi("error.tai.update.estimatedTaxableIncome.input.invalid"))
       invalidatedForm.value mustBe None
     }
-
 
     "return an error for no input value" in {
       val invalidChoice = Json.obj("income" -> "")
@@ -65,7 +64,8 @@ class AmountComparatorFormSpec extends PlaySpec with OneAppPerSuite with I18nSup
       val newAmount = Json.obj("income" -> "9000")
       val invalidatedForm = form.bind(newAmount)
 
-      invalidatedForm.errors.head.messages mustBe List(messagesApi("tai.irregular.error.error.incorrectTaxableIncome",taxablePayYTD,currentDate))
+      invalidatedForm.errors.head.messages mustBe List(
+        messagesApi("tai.irregular.error.error.incorrectTaxableIncome", taxablePayYTD, currentDate))
       invalidatedForm.value mustBe None
 
     }
@@ -82,6 +82,6 @@ class AmountComparatorFormSpec extends PlaySpec with OneAppPerSuite with I18nSup
 
   val currentDate = LocalDate.now().toString()
   val taxablePayYTD = BigDecimal(10000)
-  val form = AmountComparatorForm.createForm(Some(currentDate),Some(taxablePayYTD))
+  val form = AmountComparatorForm.createForm(Some(currentDate), Some(taxablePayYTD))
 
 }

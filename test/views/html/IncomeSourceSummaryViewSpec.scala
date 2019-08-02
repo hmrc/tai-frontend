@@ -28,36 +28,42 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
   "Income details spec" must {
     behave like pageWithCombinedHeader(
       model.displayName,
-      messages("tai.employment.income.details.mainHeading",
+      messages(
+        "tai.employment.income.details.mainHeading",
         model.empOrPensionName,
-        TaxYearRangeUtil.currentTaxYearRangeSingleLine
-      )
+        TaxYearRangeUtil.currentTaxYearRangeSingleLine)
     )
 
     behave like pageWithTitle(
-      messages("tai.employment.income.details.mainHeading.gaTitle",TaxYearRangeUtil.currentTaxYearRangeSingleLine
-      )
+      messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
     )
 
     "display headings" when {
       "income source is pension" in {
         pensionDoc must havePreHeadingWithText(pensionModel.displayName)
 
-        pensionDoc must haveHeadingWithText(messages("tai.pension.income.details.mainHeading", pensionModel.empOrPensionName,TaxYearRangeUtil.currentTaxYearRangeSingleLine))
-        pensionDoc.title must include( messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        pensionDoc must haveHeadingWithText(
+          messages(
+            "tai.pension.income.details.mainHeading",
+            pensionModel.empOrPensionName,
+            TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        pensionDoc.title must include(
+          messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
     }
 
     "display link to update or remove employer" when {
       "income source is employment" in {
         doc must haveParagraphWithText(messages("tai.employment.income.details.updateLinkText"))
-        doc must haveLinkWithUrlWithID("updateEmployer",
+        doc must haveLinkWithUrlWithID(
+          "updateEmployer",
           controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url)
       }
 
       "income source is pension" in {
         pensionDoc must haveParagraphWithText(messages("tai.pension.income.details.updateLinkText"))
-        pensionDoc must haveLinkWithUrlWithID("updatePension",
+        pensionDoc must haveLinkWithUrlWithID(
+          "updatePension",
           controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url)
       }
     }
@@ -68,7 +74,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         doc must haveParagraphWithText(messages("tai.income.details.estimatedTaxableIncome.desc"))
         doc must haveSpanWithText("£" + model.estimatedTaxableIncome)
         doc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.update"))
-        doc must haveLinkWithUrlWithID("updateIncome",
+        doc must haveLinkWithUrlWithID(
+          "updateIncome",
           controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url)
       }
 
@@ -77,7 +84,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         pensionDoc must haveParagraphWithText(messages("tai.income.details.estimatedTaxableIncome.desc"))
         pensionDoc must haveSpanWithText("£" + pensionModel.estimatedTaxableIncome)
         pensionDoc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.update"))
-        pensionDoc must haveLinkWithUrlWithID("updateIncome",
+        pensionDoc must haveLinkWithUrlWithID(
+          "updateIncome",
           controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url)
       }
     }
@@ -85,17 +93,21 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "display income received to date" when {
       "income source is employment" in {
         doc must haveHeadingH2WithText(messages("tai.income.details.incomeReceivedToDate"))
-        doc must haveParagraphWithText(messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear)))
+        doc must haveParagraphWithText(
+          messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear)))
         doc must haveSpanWithText("£" + model.incomeReceivedToDate)
-        doc must haveLinkWithUrlWithID("viewIncomeReceivedToDate",
+        doc must haveLinkWithUrlWithID(
+          "viewIncomeReceivedToDate",
           controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url)
       }
 
       "income source is pension" in {
         pensionDoc must haveHeadingH2WithText(messages("tai.income.details.incomeReceivedToDate"))
-        pensionDoc must haveParagraphWithText(messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear)))
+        pensionDoc must haveParagraphWithText(
+          messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear)))
         pensionDoc must haveSpanWithText("£" + pensionModel.incomeReceivedToDate)
-        pensionDoc must haveLinkWithUrlWithID("viewIncomeReceivedToDate",
+        pensionDoc must haveLinkWithUrlWithID(
+          "viewIncomeReceivedToDate",
           controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(pensionModel.empId).url)
       }
     }
@@ -103,8 +115,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "display tax code" in {
       doc must haveHeadingH2WithText(messages("tai.taxCode"))
       doc must haveSpanWithText(model.taxCode)
-      doc must haveLinkWithUrlWithID("understandTaxCode",
-        routes.YourTaxCodeController.taxCodes().toString)
+      doc must haveLinkWithUrlWithID("understandTaxCode", routes.YourTaxCodeController.taxCodes().toString)
     }
 
     "display payroll number" when {
@@ -121,7 +132,9 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
     "display a company benefit section" in {
       doc must haveSectionWithId("companyBenefitsSection")
-      doc must haveH2HeadingWithIdAndText("companyBenefitsHeading", messages("tai.income.details.companyuBenefitsHeading", "Employer"))
+      doc must haveH2HeadingWithIdAndText(
+        "companyBenefitsHeading",
+        messages("tai.income.details.companyuBenefitsHeading", "Employer"))
     }
 
     "use conditional logic to display the company benefits section" which {
@@ -159,22 +172,38 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
     "display the appropriate content with a specific company benefit list entry" in {
       val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(modelWithCompanyBenefits).toString)
-      testDoc must haveElementAtPathWithText("#companyBenefitTerm1", s"${messages("tai.income.details.benefit.name.announce")} ben1")
-      testDoc must haveElementAtPathWithText("#companyBenefitDescription1 span", s"${messages("tai.income.details.benefit.amount.announce", "£100")}")
+      testDoc must haveElementAtPathWithText(
+        "#companyBenefitTerm1",
+        s"${messages("tai.income.details.benefit.name.announce")} ben1")
+      testDoc must haveElementAtPathWithText(
+        "#companyBenefitDescription1 span",
+        s"${messages("tai.income.details.benefit.amount.announce", "£100")}")
       testDoc must haveElementAtPathWithText("#companyBenefitDescription1 span", "£100")
-      testDoc must haveElementAtPathWithText("#companyBenefitChangeLinkDescription1 a span", s"${messages("tai.updateOrRemove")} ben1")
+      testDoc must haveElementAtPathWithText(
+        "#companyBenefitChangeLinkDescription1 a span",
+        s"${messages("tai.updateOrRemove")} ben1")
       testDoc must haveLinkWithUrlWithID("changeCompanyBenefitLink1", "url1")
     }
 
     "display a link to add a missing company benefit" in {
       doc must haveElementAtPathWithId("#companyBenefitsSection a", "addMissingCompanyBenefitLink")
-      doc must haveLinkWithUrlWithID("addMissingCompanyBenefitLink", controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url)
+      doc must haveLinkWithUrlWithID(
+        "addMissingCompanyBenefitLink",
+        controllers.routes.ExternalServiceRedirectController
+          .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform)
+          .url
+      )
     }
 
     "use conditional logic to display a link to add a company car" which {
       "displays the link when the view model flag is set" in {
         val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(model.copy(displayAddCompanyCarLink = true)).toString)
-        testDoc must haveLinkWithUrlWithID("addMissingCompanyCarLink", controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyCarsIform).url)
+        testDoc must haveLinkWithUrlWithID(
+          "addMissingCompanyCarLink",
+          controllers.routes.ExternalServiceRedirectController
+            .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyCarsIform)
+            .url
+        )
       }
       "hides the link when the view model flag is not set" in {
         val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(model.copy(displayAddCompanyCarLink = false)).toString)
@@ -192,7 +221,15 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
   }
 
-  private lazy val model = IncomeSourceSummaryViewModel(1, "User Name", "Employer", 100, 400, "1100L", "EMPLOYER-1122", false,
+  private lazy val model = IncomeSourceSummaryViewModel(
+    1,
+    "User Name",
+    "Employer",
+    100,
+    400,
+    "1100L",
+    "EMPLOYER-1122",
+    false,
     estimatedPayJourneyCompleted = true)
   private lazy val companyBenefits = Seq(
     CompanyBenefitViewModel("ben1", BigDecimal(100.20), "url1"),
@@ -200,7 +237,15 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     CompanyBenefitViewModel("ben3", BigDecimal(22.44), "url3")
   )
   private lazy val modelWithCompanyBenefits = model.copy(benefits = companyBenefits)
-  private lazy val pensionModel = IncomeSourceSummaryViewModel(1, "User Name", "PENSION", 100, 400, "1100L", "PENSION-1122", true,
+  private lazy val pensionModel = IncomeSourceSummaryViewModel(
+    1,
+    "User Name",
+    "PENSION",
+    100,
+    400,
+    "1100L",
+    "PENSION-1122",
+    true,
     estimatedPayJourneyCompleted = true)
   private lazy val pensionDoc = Jsoup.parse(pensionView.toString())
 

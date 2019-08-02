@@ -29,53 +29,56 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-class BbsiConnector @Inject() (httpHandler: HttpHandler) extends DefaultServicesConfig {
+class BbsiConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
-  def bankAccounts(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[BankAccount]] = {
-    httpHandler.getFromApi(bbsiAccountsUrl(nino)) map ( json => (json \ "data").as[Seq[BankAccount]]) recover {
+  def bankAccounts(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[BankAccount]] =
+    httpHandler.getFromApi(bbsiAccountsUrl(nino)) map (json => (json \ "data").as[Seq[BankAccount]]) recover {
       case _: Exception =>
         Logger.warn(s"Exception generated while reading bank-accounts for nino $nino")
         Seq.empty[BankAccount]
     }
-  }
 
-  def bankAccount(nino:Nino, id:Int)(implicit hc: HeaderCarrier) : Future[Option[BankAccount]] = {
-    httpHandler.getFromApi(bbsiAccountUrl(nino, id)) map {
-      json: JsValue => (json \ "data").asOpt[BankAccount]
+  def bankAccount(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[BankAccount]] =
+    httpHandler.getFromApi(bbsiAccountUrl(nino, id)) map { json: JsValue =>
+      (json \ "data").asOpt[BankAccount]
 
     } recover {
       case NonFatal(_) =>
         Logger.warn(s"Could not find bank account for nino: $nino and id: $id")
         None
     }
-  }
 
-  def closeBankAccount(nino: Nino, id: Int, closeAccountRequest: CloseAccountRequest)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    httpHandler.putToApi[CloseAccountRequest](bbsiEndAccountUrl(nino, id), closeAccountRequest).map(response => (response.json \ "data").asOpt[String])
-  }
+  def closeBankAccount(nino: Nino, id: Int, closeAccountRequest: CloseAccountRequest)(
+    implicit hc: HeaderCarrier): Future[Option[String]] =
+    httpHandler
+      .putToApi[CloseAccountRequest](bbsiEndAccountUrl(nino, id), closeAccountRequest)
+      .map(response => (response.json \ "data").asOpt[String])
 
-
-  def untaxedInterest(nino: Nino)(implicit hc: HeaderCarrier): Future[Option[UntaxedInterest]] = {
-    httpHandler.getFromApi(bbsiSavingsInvestmentsUrl(nino)) map {
-      json: JsValue => (json \ "data").asOpt[UntaxedInterest]
+  def untaxedInterest(nino: Nino)(implicit hc: HeaderCarrier): Future[Option[UntaxedInterest]] =
+    httpHandler.getFromApi(bbsiSavingsInvestmentsUrl(nino)) map { json: JsValue =>
+      (json \ "data").asOpt[UntaxedInterest]
     }
-  }
 
-
-  def removeBankAccount(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[String]] ={
+  def removeBankAccount(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[String]] =
     httpHandler.deleteFromApi(bbsiAccountUrl(nino, id)).map(response => (response.json \ "data").asOpt[String])
-  }
 
-  def updateBankAccountInterest(nino: Nino, id: Int, amountRequest: AmountRequest)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    httpHandler.putToApi[AmountRequest](bbsiUpdateAccountUrl(nino, id), amountRequest).map(response => (response.json \ "data").asOpt[String])
-  }
+  def updateBankAccountInterest(nino: Nino, id: Int, amountRequest: AmountRequest)(
+    implicit hc: HeaderCarrier): Future[Option[String]] =
+    httpHandler
+      .putToApi[AmountRequest](bbsiUpdateAccountUrl(nino, id), amountRequest)
+      .map(response => (response.json \ "data").asOpt[String])
 
-  def bbsiAccountsUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts"
-  def bbsiAccountUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts/$id"
-  def bbsiEndAccountUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts/$id/closedAccount"
-  def bbsiUpdateAccountUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts/$id/interest-amount"
-  def bbsiSavingsInvestmentsUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/tax-account/income/savings-investments/untaxed-interest"
+  def bbsiAccountsUrl(nino: Nino): String =
+    s"$serviceUrl/tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts"
+  def bbsiAccountUrl(nino: Nino, id: Int): String =
+    s"$serviceUrl/tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts/$id"
+  def bbsiEndAccountUrl(nino: Nino, id: Int): String =
+    s"$serviceUrl/tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts/$id/closedAccount"
+  def bbsiUpdateAccountUrl(nino: Nino, id: Int): String =
+    s"$serviceUrl/tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts/$id/interest-amount"
+  def bbsiSavingsInvestmentsUrl(nino: Nino): String =
+    s"$serviceUrl/tai/$nino/tax-account/income/savings-investments/untaxed-interest"
 
 }

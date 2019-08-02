@@ -19,13 +19,12 @@ package uk.gov.hmrc.tai.model.domain
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.tai.model.TaxYear
 
-
-case class AnnualAccount (
-                           key: String,
-                           taxYear: TaxYear,
-                           realTimeStatus: RealTimeStatus,
-                           payments: Seq[Payment],
-                           endOfTaxYearUpdates: Seq[EndOfTaxYearUpdate]) {
+case class AnnualAccount(
+  key: String,
+  taxYear: TaxYear,
+  realTimeStatus: RealTimeStatus,
+  payments: Seq[Payment],
+  endOfTaxYearUpdates: Seq[EndOfTaxYearUpdate]) {
 
   lazy val totalIncomeYearToDate: BigDecimal = maxPayment(payments.max.amountYearToDate)
   lazy val totalTaxPaidYearToDate: BigDecimal = maxPayment(payments.max.taxAmountYearToDate)
@@ -39,16 +38,13 @@ case class AnnualAccount (
 
   lazy val isIrregularPayment: Boolean = latestPayment.exists(latestPayment => {
     latestPayment.payFrequency == Irregular || latestPayment.payFrequency == Annually ||
-      latestPayment.payFrequency == BiAnnually
+    latestPayment.payFrequency == BiAnnually
   })
 
-
-  private def maxPayment(maximumPayment: => BigDecimal): BigDecimal = {
+  private def maxPayment(maximumPayment: => BigDecimal): BigDecimal =
     if (payments.isEmpty) 0 else maximumPayment
-  }
 
 }
-
 
 object AnnualAccount {
   implicit val annualAccountOrdering: Ordering[AnnualAccount] = Ordering.by(_.taxYear.year)

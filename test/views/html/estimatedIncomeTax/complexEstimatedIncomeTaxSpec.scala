@@ -24,9 +24,7 @@ import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
-
 class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
-
 
   "Estimated Income Tax Page" must {
     behave like pageWithCombinedHeader(
@@ -34,9 +32,8 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
         "tai.taxYear",
         Dates.formatDate(TaxYear().start).replace(" ", "\u00A0"),
         Dates.formatDate(TaxYear().end).replace(" ", "\u00A0")),
-        messages("tai.estimatedIncome.title"),
-        Some(messages("tai.estimatedIncome.accessiblePreHeading")
-      )
+      messages("tai.estimatedIncome.title"),
+      Some(messages("tai.estimatedIncome.accessiblePreHeading"))
     )
 
     behave like pageWithBackLink
@@ -64,9 +61,18 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
 
     "display navigational links to other pages in the service" in {
       doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
-      doc must haveLinkElement("taxCodesSideLink", routes.YourTaxCodeController.taxCodes.url, messages("check.your.tax.codes"))
-      doc must haveLinkElement("taxFreeAmountSideLink", routes.TaxFreeAmountController.taxFreeAmount.url, messages("check.your.tax.free.amount"))
-      doc must haveLinkElement("taxSummarySideLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("return.to.your.income.tax.summary"))
+      doc must haveLinkElement(
+        "taxCodesSideLink",
+        routes.YourTaxCodeController.taxCodes.url,
+        messages("check.your.tax.codes"))
+      doc must haveLinkElement(
+        "taxFreeAmountSideLink",
+        routes.TaxFreeAmountController.taxFreeAmount.url,
+        messages("check.your.tax.free.amount"))
+      doc must haveLinkElement(
+        "taxSummarySideLink",
+        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+        messages("return.to.your.income.tax.summary"))
     }
 
   }
@@ -81,6 +87,7 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
 
   val viewModel = ComplexEstimatedIncomeTaxViewModel(15000, 48000, 11500, bandedGraph, "UK")
 
-
-  override def view: Html = views.html.estimatedIncomeTax.complexEstimatedIncomeTax(viewModel,Html("<Html><head></head><body>Test</body></Html>"))
+  override def view: Html =
+    views.html.estimatedIncomeTax
+      .complexEstimatedIncomeTax(viewModel, Html("<Html><head></head><body>Test</body></Html>"))
 }

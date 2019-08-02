@@ -21,33 +21,36 @@ import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.TaxIds
 
 // This is what we send to activity-logger
-case class Activity(applicationName    : String,
-                    eventTime          : DateTime,
-                    eventType          : String,
-                    eventDescriptionId : String,
-                    principalTaxIds    : TaxIds)
+case class Activity(
+  applicationName: String,
+  eventTime: DateTime,
+  eventType: String,
+  eventDescriptionId: String,
+  principalTaxIds: TaxIds)
 
 object Activity {
-  implicit val taxIdsFormat = TaxIds.format(TaxIds.defaultSerialisableIds :_*)
+  implicit val taxIdsFormat = TaxIds.format(TaxIds.defaultSerialisableIds: _*)
   implicit val formats = Json.format[Activity]
 }
 
 // This is what the activity-logger returns
-case class LogActivityEntry(applicationName  : String,
-                            eventTime        : DateTime,
-                            eventType        : String,
-                            eventDescription : String,
-                            principal        : PersonDetails,
-                            attorney         : PersonDetails)
+case class LogActivityEntry(
+  applicationName: String,
+  eventTime: DateTime,
+  eventType: String,
+  eventDescription: String,
+  principal: PersonDetails,
+  attorney: PersonDetails)
 
 object LogActivityEntry {
   implicit val formats = Json.format[LogActivityEntry]
 }
 
-case class LogActivityResponse( pageNumber           : Int,
-                                pageSize             : Int,
-                                totalNumberOfRecords : Int,
-                                activityList         : Seq[LogActivityEntry] )
+case class LogActivityResponse(
+  pageNumber: Int,
+  pageSize: Int,
+  totalNumberOfRecords: Int,
+  activityList: Seq[LogActivityEntry])
 
 object LogActivityResponse {
   implicit val formats = Json.format[LogActivityResponse]
@@ -56,6 +59,6 @@ object LogActivityResponse {
 case class PersonDetails(taxIds: TaxIds, name: String)
 
 object PersonDetails {
-  implicit val taxIdsFormat = TaxIds.format(TaxIds.defaultSerialisableIds :_*)
-  implicit val formats : Format[PersonDetails] = Json.format[PersonDetails]
+  implicit val taxIdsFormat = TaxIds.format(TaxIds.defaultSerialisableIds: _*)
+  implicit val formats: Format[PersonDetails] = Json.format[PersonDetails]
 }

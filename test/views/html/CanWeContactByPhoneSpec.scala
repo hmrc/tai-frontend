@@ -33,16 +33,19 @@ class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
 
     behave like pageWithTitle(messages("main heading"))
 
-    behave like pageWithCombinedHeader("pre heading","main heading")
+    behave like pageWithCombinedHeader("pre heading", "main heading")
 
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("continueUrl")
-    behave like pageWithYesNoRadioButton(YesNoTextEntryForm.YesNoChoice+"-yes", YesNoTextEntryForm.YesNoChoice+"-no")
+    behave like pageWithYesNoRadioButton(
+      YesNoTextEntryForm.YesNoChoice + "-yes",
+      YesNoTextEntryForm.YesNoChoice + "-no")
     behave like pageWithCancelLink(Call("GET", "cancelUrl"))
 
     "display an input field for text entry" in {
       doc.getElementById("yesNoTextEntry") must not be null
-      doc must haveInputLabelWithText("yesNoTextEntry",
+      doc must haveInputLabelWithText(
+        "yesNoTextEntry",
         s"${Messages("tai.phoneNumber")} ${Messages("tai.canWeContactByPhone.telephoneNumber.hint")}")
     }
 
@@ -52,8 +55,8 @@ class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
 
     "display an error notification" when {
       "the supplied form has errors" in {
-        val formWithErrors: Form[YesNoTextEntryForm] = YesNoTextEntryForm.form("answer yes or no", "provide text").
-          withError(YesNoChoice, "answer yes or no")
+        val formWithErrors: Form[YesNoTextEntryForm] =
+          YesNoTextEntryForm.form("answer yes or no", "provide text").withError(YesNoChoice, "answer yes or no")
         def sut = views.html.can_we_contact_by_phone(Some(authedUser), viewModel, formWithErrors)
 
         val errorMessage = doc(sut).select(".error-message").text
@@ -62,9 +65,13 @@ class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
     }
   }
 
-  private val form: Form[YesNoTextEntryForm] = YesNoTextEntryForm.form("enter yes or no", "enter a text value").bind(Map(
-    YesNoChoice -> NoValue
-  ))
+  private val form: Form[YesNoTextEntryForm] = YesNoTextEntryForm
+    .form("enter yes or no", "enter a text value")
+    .bind(
+      Map(
+        YesNoChoice -> NoValue
+      ))
 
-  private val viewModel = CanWeContactByPhoneViewModel("pre heading", "main heading", "backUrl", "continueUrl", "cancelUrl")
+  private val viewModel =
+    CanWeContactByPhoneViewModel("pre heading", "main heading", "backUrl", "continueUrl", "cancelUrl")
 }

@@ -20,14 +20,13 @@ import play.api.data.Form
 import play.api.data.Forms._
 
 /**
- * Created by dev01 on 17/03/15.
- */
+  * Created by dev01 on 17/03/15.
+  */
 case class IncomeSelectorForm(incomeId: Int)
 
 object IncomeSelectorForm {
-  def create(preFillData: IncomeSelectorForm) = {
+  def create(preFillData: IncomeSelectorForm) =
     createForm.fill(preFillData)
-  }
 
   def incomeSelectorForm = Form[IncomeSelectorForm](
     mapping(
@@ -35,13 +34,10 @@ object IncomeSelectorForm {
     )(IncomeSelectorForm.apply)(IncomeSelectorForm.unapply)
   )
 
-  def createForm () :Form[IncomeSelectorForm] = {
+  def createForm(): Form[IncomeSelectorForm] =
     Form[IncomeSelectorForm](
       mapping(
         "incomeId" -> number()
       )(IncomeSelectorForm.apply)(IncomeSelectorForm.unapply)
-
     )
-  }
 }
-

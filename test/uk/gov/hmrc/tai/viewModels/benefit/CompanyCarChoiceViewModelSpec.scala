@@ -21,8 +21,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
-class CompanyCarChoiceViewModelSpec extends PlaySpec
-  with JourneyCacheConstants with FakeTaiPlayApplication {
+class CompanyCarChoiceViewModelSpec extends PlaySpec with JourneyCacheConstants with FakeTaiPlayApplication {
 
   "Company car view model" must {
 

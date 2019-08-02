@@ -45,7 +45,12 @@ case class AuthedUser(name: String, validNino: String, utr: String, providerType
 }
 
 object AuthedUser {
-  def apply(name: Option[Name], nino: Option[String], saUtr: Option[String], providerType: Option[String], confidenceLevel: ConfidenceLevel): AuthedUser = {
+  def apply(
+    name: Option[Name],
+    nino: Option[String],
+    saUtr: Option[String],
+    providerType: Option[String],
+    confidenceLevel: ConfidenceLevel): AuthedUser = {
     val validNino = nino.getOrElse("")
     val validName = name.flatMap(_.name).getOrElse("")
     val validUtr = saUtr.getOrElse("")
@@ -56,28 +61,31 @@ object AuthedUser {
 }
 
 @Singleton
-class AuthActionImpl @Inject()(override val authConnector: AuthConnector)
-                              (implicit ec: ExecutionContext) extends AuthAction
-  with AuthorisedFunctions {
-
+class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implicit ec: ExecutionContext)
+    extends AuthAction with AuthorisedFunctions {
 
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit val hc: HeaderCarrier =
+      HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
-    authorised().
-      retrieve(Retrievals.credentials and Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.confidenceLevel) {
-        case credentials ~ nino ~ name ~ saUtr ~ confidenceLevel => {
+    authorised().retrieve(
+      Retrievals.credentials and Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.confidenceLevel) {
+      case credentials ~ nino ~ name ~ saUtr ~ confidenceLevel => {
 
-          val providerType = credentials.map(_.providerType)
-          val user = AuthedUser(name, nino, saUtr, providerType, confidenceLevel)
+        val providerType = credentials.map(_.providerType)
+        val user = AuthedUser(name, nino, saUtr, providerType, confidenceLevel)
 
-          authWithCredentials(request, block, credentials, user)
-        }
-        case _ => throw new RuntimeException("Can't find credentials for user")
-      } recover handleEntryPointFailure(request)
+        authWithCredentials(request, block, credentials, user)
+      }
+      case _ => throw new RuntimeException("Can't find credentials for user")
+    } recover handleEntryPointFailure(request)
   }
 
-  private def authWithCredentials[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result], credentials: Option[Credentials], user: AuthedUser)(implicit hc: HeaderCarrier): Future[Result] = {
+  private def authWithCredentials[A](
+    request: Request[A],
+    block: AuthenticatedRequest[A] => Future[Result],
+    credentials: Option[Credentials],
+    user: AuthedUser)(implicit hc: HeaderCarrier): Future[Result] =
     credentials match {
       case Some(Credentials(_, TaiConstants.AuthProviderGG)) => {
         processRequest(user, request, block, handleGGFailure)
@@ -87,10 +95,12 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)
       }
       case _ => throw new RuntimeException("Can't find valid credentials for user")
     }
-  }
 
-  private def processRequest[A](user: AuthedUser, request: Request[A], block: AuthenticatedRequest[A] => Future[Result], failureHandler: PartialFunction[Throwable, Result])
-                               (implicit hc: HeaderCarrier): Future[Result] = {
+  private def processRequest[A](
+    user: AuthedUser,
+    request: Request[A],
+    block: AuthenticatedRequest[A] => Future[Result],
+    failureHandler: PartialFunction[Throwable, Result])(implicit hc: HeaderCarrier): Future[Result] = {
 
     val confidenceLevel = user.confidenceLevel.toInt
 
@@ -106,22 +116,19 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)
     }) recover failureHandler
   }
 
-  private def handleEntryPointFailure[A](request: Request[A]): PartialFunction[Throwable, Result] = {
+  private def handleEntryPointFailure[A](request: Request[A]): PartialFunction[Throwable, Result] =
     request.session.get(SessionKeys.authProvider) match {
       case Some(TaiConstants.AuthProviderVerify) =>
         handleVerifyFailure
       case _ =>
         handleGGFailure
     }
-  }
 
-  private def handleGGFailure: PartialFunction[Throwable, Result] = {
+  private def handleGGFailure: PartialFunction[Throwable, Result] =
     handleFailure(routes.UnauthorisedController.loginGG())
-  }
 
-  private def handleVerifyFailure: PartialFunction[Throwable, Result] = {
+  private def handleVerifyFailure: PartialFunction[Throwable, Result] =
     handleFailure(routes.UnauthorisedController.loginVerify())
-  }
 
   private def handleFailure(redirect: Call): PartialFunction[Throwable, Result] = {
     case _: NoActiveSession => Redirect(redirect)

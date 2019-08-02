@@ -20,7 +20,6 @@ import controllers.routes
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-
 class AddPensionErrorPageSpec extends TaiViewSpec {
   "Display error page when pension provider cannot be added" must {
     behave like pageWithTitle(messages("tai.addPensionProvider.errorPage.title"))

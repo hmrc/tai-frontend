@@ -22,21 +22,25 @@ import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.viewModels.TaxSummaryLabel
 
-case class TaxFreeAmountDetails(employmentIdNameMap: Map[Int, String],
-                                companyCarBenefits: Seq[CompanyCarBenefit],
-                                totalTax: TotalTax)
+case class TaxFreeAmountDetails(
+  employmentIdNameMap: Map[Int, String],
+  companyCarBenefits: Seq[CompanyCarBenefit],
+  totalTax: TotalTax)
 
-case class CodingComponentPair(componentType: TaxComponentType, employmentId: Option[Int], previous: Option[BigDecimal], current: Option[BigDecimal])
+case class CodingComponentPair(
+  componentType: TaxComponentType,
+  employmentId: Option[Int],
+  previous: Option[BigDecimal],
+  current: Option[BigDecimal])
 
 case class CodingComponentPairModel(label: TaxSummaryLabel, previous: BigDecimal, current: BigDecimal)
 
 object CodingComponentPairModel {
-  def apply(labelText: String, previousAmount: BigDecimal, currentAmount: BigDecimal): CodingComponentPairModel = {
-    CodingComponentPairModel(TaxSummaryLabel(labelText) ,previousAmount, currentAmount)
-  }
+  def apply(labelText: String, previousAmount: BigDecimal, currentAmount: BigDecimal): CodingComponentPairModel =
+    CodingComponentPairModel(TaxSummaryLabel(labelText), previousAmount, currentAmount)
 
-  def apply(codingComponentPair: CodingComponentPair, taxFreeAmountDetails: TaxFreeAmountDetails)
-           (implicit messages: Messages): CodingComponentPairModel = {
+  def apply(codingComponentPair: CodingComponentPair, taxFreeAmountDetails: TaxFreeAmountDetails)(
+    implicit messages: Messages): CodingComponentPairModel = {
 
     val previousAmount: BigDecimal = codingComponentPair.previous.getOrElse(0)
     val currentAmount: BigDecimal = codingComponentPair.current.getOrElse(0)

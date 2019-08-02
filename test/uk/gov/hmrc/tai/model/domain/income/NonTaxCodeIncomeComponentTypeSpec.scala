@@ -35,7 +35,8 @@ class NonTaxCodeIncomeComponentTypeSpec extends PlaySpec {
         JsString("CasualEarnings").as[NonTaxCodeIncomeComponentType] mustBe CasualEarnings
         JsString("ForeignDividendIncome").as[NonTaxCodeIncomeComponentType] mustBe ForeignDividendIncome
         JsString("ForeignPropertyIncome").as[NonTaxCodeIncomeComponentType] mustBe ForeignPropertyIncome
-        JsString("ForeignInterestAndOtherSavings").as[NonTaxCodeIncomeComponentType] mustBe ForeignInterestAndOtherSavings
+        JsString("ForeignInterestAndOtherSavings")
+          .as[NonTaxCodeIncomeComponentType] mustBe ForeignInterestAndOtherSavings
         JsString("ForeignPensionsAndOtherIncome").as[NonTaxCodeIncomeComponentType] mustBe ForeignPensionsAndOtherIncome
         JsString("StatePension").as[NonTaxCodeIncomeComponentType] mustBe StatePension
         JsString("OccupationalPension").as[NonTaxCodeIncomeComponentType] mustBe OccupationalPension

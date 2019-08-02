@@ -28,105 +28,105 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
 import uk.gov.hmrc.tai.model.domain.income.{Incomes, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.model.domain.{TaxedIncome, TaxAccountSummary, TaxCodeIncomeComponentType, UpdateTaxCodeIncomeRequest}
+import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentType, TaxedIncome, UpdateTaxCodeIncomeRequest}
 import scala.util.control.NonFatal
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TaxAccountConnector @Inject() (httpHandler: HttpHandler) extends CodingComponentFormatters with DefaultServicesConfig {
+class TaxAccountConnector @Inject()(httpHandler: HttpHandler)
+    extends CodingComponentFormatters with DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
-  def taxAccountUrl(nino: String, year: TaxYear): String = s"$serviceUrl/tai/$nino/tax-account/${year.year}/income/tax-code-incomes"
+  def taxAccountUrl(nino: String, year: TaxYear): String =
+    s"$serviceUrl/tai/$nino/tax-account/${year.year}/income/tax-code-incomes"
 
   def incomeSourceUrl(nino: String, year: TaxYear, incomeType: String, status: String): String =
     s"$serviceUrl/tai/$nino/tax-account/year/${year.year}/income/$incomeType/status/$status"
 
-  def nonTaxCodeIncomeUrl(nino: String, year: TaxYear): String = s"$serviceUrl/tai/$nino/tax-account/${year.year}/income"
+  def nonTaxCodeIncomeUrl(nino: String, year: TaxYear): String =
+    s"$serviceUrl/tai/$nino/tax-account/${year.year}/income"
 
-  def codingComponentsUrl(nino: String, year: TaxYear): String = s"$serviceUrl/tai/$nino/tax-account/${year.year}/tax-components"
+  def codingComponentsUrl(nino: String, year: TaxYear): String =
+    s"$serviceUrl/tai/$nino/tax-account/${year.year}/tax-components"
 
-  def taxAccountSummaryUrl(nino: String, year: TaxYear): String = s"$serviceUrl/tai/$nino/tax-account/${year.year}/summary"
+  def taxAccountSummaryUrl(nino: String, year: TaxYear): String =
+    s"$serviceUrl/tai/$nino/tax-account/${year.year}/summary"
 
   def updateTaxCodeIncome(nino: String, year: TaxYear, id: Int): String =
     s"$serviceUrl/tai/$nino/tax-account/snapshots/${year.year}/incomes/tax-code-incomes/$id/estimated-pay"
 
   def totalTaxUrl(nino: String, year: TaxYear): String = s"$serviceUrl/tai/$nino/tax-account/${year.year}/total-tax"
 
-  def incomeSources(nino: Nino, year: TaxYear, incomeType: TaxCodeIncomeComponentType, status: TaxCodeIncomeSourceStatus)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.getFromApi(incomeSourceUrl(nino = nino.nino, year = year, incomeType = incomeType.toString, status = status.toString)).map (
-    json =>
-      TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxedIncome]])
-    ) recover {
-    case NonFatal(e) =>
-      Logger.warn(s"Couldn't retrieve $status $incomeType income sources for $nino with exception:${e.getMessage}",e)
-      TaiTaxAccountFailureResponse(e.getMessage)
-  }
-
-  def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-    httpHandler.getFromApi(taxAccountUrl(nino.nino, year)) map (
-      json =>
-        TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads)))
+  def incomeSources(
+    nino: Nino,
+    year: TaxYear,
+    incomeType: TaxCodeIncomeComponentType,
+    status: TaxCodeIncomeSourceStatus)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+    httpHandler
+      .getFromApi(
+        incomeSourceUrl(nino = nino.nino, year = year, incomeType = incomeType.toString, status = status.toString))
+      .map(
+        json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxedIncome]])
       ) recover {
+      case NonFatal(e) =>
+        Logger.warn(s"Couldn't retrieve $status $incomeType income sources for $nino with exception:${e.getMessage}", e)
+        TaiTaxAccountFailureResponse(e.getMessage)
+    }
+
+  def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+    httpHandler.getFromApi(taxAccountUrl(nino.nino, year)) map (
+      json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads)))
+    ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve tax code for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
-  }
 
-  def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApi(nonTaxCodeIncomeUrl(nino.nino, year)) map (
-      json =>
-        TaiSuccessResponseWithPayload((json \ "data").as[Incomes].nonTaxCodeIncomes)
-      ) recover {
+      json => TaiSuccessResponseWithPayload((json \ "data").as[Incomes].nonTaxCodeIncomes)
+    ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve non tax code incomes for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
-  }
 
-  def codingComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def codingComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApi(codingComponentsUrl(nino.nino, year)) map (
-      json =>
-        TaiSuccessResponseWithPayload((json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads)))
-      ) recover {
+      json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads)))
+    ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve coding components for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
-  }
 
-  def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApi(taxAccountSummaryUrl(nino.nino, year)) map (
-      json =>
-        TaiSuccessResponseWithPayload((json \ "data").as[TaxAccountSummary])
-      ) recover {
+      json => TaiSuccessResponseWithPayload((json \ "data").as[TaxAccountSummary])
+    ) recover {
       case NonFatal(e) =>
         Logger.warn(s"Couldn't retrieve tax summary for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
-  }
 
-  def updateEstimatedIncome(nino: Nino, year: TaxYear, newAmount: Int, id: Int)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def updateEstimatedIncome(nino: Nino, year: TaxYear, newAmount: Int, id: Int)(
+    implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.putToApi(updateTaxCodeIncome(nino.nino, year, id), UpdateTaxCodeIncomeRequest(newAmount)) map (_ =>
-      TaiSuccessResponse
-      ) recover {
+      TaiSuccessResponse) recover {
       case e: Exception =>
         Logger.warn(s"Error while updating estimated income for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
-  }
 
-  def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApi(totalTaxUrl(nino.nino, year)) map (
-      json =>
-        TaiSuccessResponseWithPayload((json \ "data").as[TotalTax])
-      ) recover {
+      json => TaiSuccessResponseWithPayload((json \ "data").as[TotalTax])
+    ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve total tax for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
-  }
 
 }

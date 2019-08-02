@@ -142,14 +142,17 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
         implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")))
 
-        val employment = Employment("The Man Plc", None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false, false)
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
+        val employment =
+          Employment("The Man Plc", None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false, false)
+        val taxCodeIncome =
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
         Await.result(sut.sendUserEntryAuditEvent(nino, "NA", List(employment), List(taxCodeIncome)), 5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
-          auditType = sut.userEnterEvent, detail = auditDetail(sut.userEnterEvent, Some("1")))
+          auditType = sut.userEnterEvent,
+          detail = auditDetail(sut.userEnterEvent, Some("1")))
           .copy(generatedAt = now, eventId = eventId)
       }
 
@@ -158,11 +161,13 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
         implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")))
 
-        Await.result(sut.sendUserEntryAuditEvent(nino, "NA", Seq.empty[Employment], Seq.empty[TaxCodeIncome]), 5.seconds)
+        Await
+          .result(sut.sendUserEntryAuditEvent(nino, "NA", Seq.empty[Employment], Seq.empty[TaxCodeIncome]), 5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
-        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(auditType = sut.userEnterEvent,
+        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
+          auditType = sut.userEnterEvent,
           detail = auditDetail(sut.userEnterEvent, Some("0"))).copy(generatedAt = now, eventId = eventId)
       }
     }
@@ -180,27 +185,45 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
-          auditType = sut.employmentPensionEvent, detail = auditDetail(sut.employmentPensionEvent)).copy(generatedAt = now, eventId = eventId)
+          auditType = sut.employmentPensionEvent,
+          detail = auditDetail(sut.employmentPensionEvent)).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started employee-pension iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")), sessionId = Some(SessionId("1234")),
-          authorization = Some(Authorization("123")), requestId = Some(RequestId("requestId")),
-          trueClientIp = Some("trueClientIp"), deviceID = Some("deviceId"), forwarded = Some(ForwardedFor("ip")),
-          trueClientPort = Some("clientPort"))
+        implicit val hc = HeaderCarrier(
+          userId = Some(UserId("ABC")),
+          sessionId = Some(SessionId("1234")),
+          authorization = Some(Authorization("123")),
+          requestId = Some(RequestId("requestId")),
+          trueClientIp = Some("trueClientIp"),
+          deviceID = Some("deviceId"),
+          forwarded = Some(ForwardedFor("ip")),
+          trueClientPort = Some("clientPort")
+        )
         implicit val request = FakeRequest().withHeaders(("Referer", "/test-path"))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, EmployeePensionIForm), 5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
-        val expectedDataEvent = event(sut.employmentPensionEvent, Some("1234"), Some("123"), Some("requestId"),
-          Some("trueClientIp"), Some("/test-path"), Some("deviceId"), Some("ip"), Some("clientPort"), auditDetail(
+        val expectedDataEvent = event(
+          sut.employmentPensionEvent,
+          Some("1234"),
+          Some("123"),
+          Some("requestId"),
+          Some("trueClientIp"),
+          Some("/test-path"),
+          Some("deviceId"),
+          Some("ip"),
+          Some("clientPort"),
+          auditDetail(
             sut.employmentPensionEvent
-          ))
-        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent.copy(generatedAt = now, eventId = eventId)
+          )
+        )
+        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent
+          .copy(generatedAt = now, eventId = eventId)
       }
 
       "user started company-benefits iform journey" in {
@@ -214,25 +237,43 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
-          sut.companyBenefitsEvent, detail = auditDetail(sut.companyBenefitsEvent)).copy(generatedAt = now, eventId = eventId)
+          sut.companyBenefitsEvent,
+          detail = auditDetail(sut.companyBenefitsEvent)).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started company-benefits iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")), sessionId = Some(SessionId("1234")),
-          authorization = Some(Authorization("123")), requestId = Some(RequestId("requestId")),
-          trueClientIp = Some("trueClientIp"), deviceID = Some("deviceId"), forwarded = Some(ForwardedFor("ip")),
-          trueClientPort = Some("clientPort"))
+        implicit val hc = HeaderCarrier(
+          userId = Some(UserId("ABC")),
+          sessionId = Some(SessionId("1234")),
+          authorization = Some(Authorization("123")),
+          requestId = Some(RequestId("requestId")),
+          trueClientIp = Some("trueClientIp"),
+          deviceID = Some("deviceId"),
+          forwarded = Some(ForwardedFor("ip")),
+          trueClientPort = Some("clientPort")
+        )
         implicit val request = FakeRequest().withHeaders(("Referer", "/test-path"))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, CompanyBenefitsIform), 5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
-        val expectedDataEvent = event(sut.companyBenefitsEvent, Some("1234"), Some("123"), Some("requestId"),
-          Some("trueClientIp"), Some("/test-path"), Some("deviceId"), Some("ip"), Some("clientPort"), auditDetail(sut.companyBenefitsEvent))
-        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent.copy(generatedAt = now, eventId = eventId)
+        val expectedDataEvent = event(
+          sut.companyBenefitsEvent,
+          Some("1234"),
+          Some("123"),
+          Some("requestId"),
+          Some("trueClientIp"),
+          Some("/test-path"),
+          Some("deviceId"),
+          Some("ip"),
+          Some("clientPort"),
+          auditDetail(sut.companyBenefitsEvent)
+        )
+        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent
+          .copy(generatedAt = now, eventId = eventId)
       }
 
       "user started company-car iform journey" in {
@@ -246,26 +287,43 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
-          sut.companyCarEvent, detail = auditDetail(sut.companyCarEvent)).copy(generatedAt = now, eventId = eventId)
+          sut.companyCarEvent,
+          detail = auditDetail(sut.companyCarEvent)).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started company-car iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")), sessionId = Some(SessionId("1234")),
-          authorization = Some(Authorization("123")), requestId = Some(RequestId("requestId")),
-          trueClientIp = Some("trueClientIp"), deviceID = Some("deviceId"), forwarded = Some(ForwardedFor("ip")),
-          trueClientPort = Some("clientPort"))
+        implicit val hc = HeaderCarrier(
+          userId = Some(UserId("ABC")),
+          sessionId = Some(SessionId("1234")),
+          authorization = Some(Authorization("123")),
+          requestId = Some(RequestId("requestId")),
+          trueClientIp = Some("trueClientIp"),
+          deviceID = Some("deviceId"),
+          forwarded = Some(ForwardedFor("ip")),
+          trueClientPort = Some("clientPort")
+        )
         implicit val request = FakeRequest().withHeaders(("Referer", "/test-path"))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, CompanyCarsIform), 5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
-        val expectedDataEvent = event(sut.companyCarEvent, Some("1234"), Some("123"), Some("requestId"),
-          Some("trueClientIp"), Some("/test-path"), Some("deviceId"), Some("ip"), Some("clientPort"),
-          auditDetail(sut.companyCarEvent))
-        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent.copy(generatedAt = now, eventId = eventId)
+        val expectedDataEvent = event(
+          sut.companyCarEvent,
+          Some("1234"),
+          Some("123"),
+          Some("requestId"),
+          Some("trueClientIp"),
+          Some("/test-path"),
+          Some("deviceId"),
+          Some("ip"),
+          Some("clientPort"),
+          auditDetail(sut.companyCarEvent)
+        )
+        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent
+          .copy(generatedAt = now, eventId = eventId)
       }
 
       "user started medical-benefits iform journey" in {
@@ -279,25 +337,43 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
-          sut.medicalBenefitsEvent, detail = auditDetail(sut.medicalBenefitsEvent)).copy(generatedAt = now, eventId = eventId)
+          sut.medicalBenefitsEvent,
+          detail = auditDetail(sut.medicalBenefitsEvent)).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started medical-benefits iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")), sessionId = Some(SessionId("1234")),
-          authorization = Some(Authorization("123")), requestId = Some(RequestId("requestId")),
-          trueClientIp = Some("trueClientIp"), deviceID = Some("deviceId"), forwarded = Some(ForwardedFor("ip")),
-          trueClientPort = Some("clientPort"))
+        implicit val hc = HeaderCarrier(
+          userId = Some(UserId("ABC")),
+          sessionId = Some(SessionId("1234")),
+          authorization = Some(Authorization("123")),
+          requestId = Some(RequestId("requestId")),
+          trueClientIp = Some("trueClientIp"),
+          deviceID = Some("deviceId"),
+          forwarded = Some(ForwardedFor("ip")),
+          trueClientPort = Some("clientPort")
+        )
         implicit val request = FakeRequest().withHeaders(("Referer", "/test-path"))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, MedicalBenefitsIform), 5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
-        val expectedDataEvent = event(sut.medicalBenefitsEvent, Some("1234"), Some("123"), Some("requestId"),
-          Some("trueClientIp"), Some("/test-path"), Some("deviceId"), Some("ip"), Some("clientPort"), auditDetail(sut.medicalBenefitsEvent))
-        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent.copy(generatedAt = now, eventId = eventId)
+        val expectedDataEvent = event(
+          sut.medicalBenefitsEvent,
+          Some("1234"),
+          Some("123"),
+          Some("requestId"),
+          Some("trueClientIp"),
+          Some("/test-path"),
+          Some("deviceId"),
+          Some("ip"),
+          Some("clientPort"),
+          auditDetail(sut.medicalBenefitsEvent)
+        )
+        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent
+          .copy(generatedAt = now, eventId = eventId)
       }
 
       "user started other-income iform journey" in {
@@ -311,26 +387,43 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
-          sut.otherIncomeEvent, detail = auditDetail(sut.otherIncomeEvent)).copy(generatedAt = now, eventId = eventId)
+          sut.otherIncomeEvent,
+          detail = auditDetail(sut.otherIncomeEvent)).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started other-income iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")), sessionId = Some(SessionId("1234")),
-          authorization = Some(Authorization("123")), requestId = Some(RequestId("requestId")),
-          trueClientIp = Some("trueClientIp"), deviceID = Some("deviceId"), forwarded = Some(ForwardedFor("ip")),
-          trueClientPort = Some("clientPort"))
+        implicit val hc = HeaderCarrier(
+          userId = Some(UserId("ABC")),
+          sessionId = Some(SessionId("1234")),
+          authorization = Some(Authorization("123")),
+          requestId = Some(RequestId("requestId")),
+          trueClientIp = Some("trueClientIp"),
+          deviceID = Some("deviceId"),
+          forwarded = Some(ForwardedFor("ip")),
+          trueClientPort = Some("clientPort")
+        )
         implicit val request = FakeRequest().withHeaders(("Referer", "/test-path"))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, OtherIncomeIform), 5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
-        val expectedDataEvent = event(sut.otherIncomeEvent, Some("1234"), Some("123"), Some("requestId"),
-          Some("trueClientIp"), Some("/test-path"), Some("deviceId"), Some("ip"), Some("clientPort"),
-          auditDetail(sut.otherIncomeEvent))
-        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent.copy(generatedAt = now, eventId = eventId)
+        val expectedDataEvent = event(
+          sut.otherIncomeEvent,
+          Some("1234"),
+          Some("123"),
+          Some("requestId"),
+          Some("trueClientIp"),
+          Some("/test-path"),
+          Some("deviceId"),
+          Some("ip"),
+          Some("clientPort"),
+          auditDetail(sut.otherIncomeEvent)
+        )
+        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent
+          .copy(generatedAt = now, eventId = eventId)
       }
 
       "user started state-benefit iform journey" in {
@@ -344,25 +437,43 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
-          sut.stateBenefitEvent, detail = auditDetail(sut.stateBenefitEvent)).copy(generatedAt = now, eventId = eventId)
+          sut.stateBenefitEvent,
+          detail = auditDetail(sut.stateBenefitEvent)).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started state-benefit iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")), sessionId = Some(SessionId("1234")),
-          authorization = Some(Authorization("123")), requestId = Some(RequestId("requestId")),
-          trueClientIp = Some("trueClientIp"), deviceID = Some("deviceId"), forwarded = Some(ForwardedFor("ip")),
-          trueClientPort = Some("clientPort"))
+        implicit val hc = HeaderCarrier(
+          userId = Some(UserId("ABC")),
+          sessionId = Some(SessionId("1234")),
+          authorization = Some(Authorization("123")),
+          requestId = Some(RequestId("requestId")),
+          trueClientIp = Some("trueClientIp"),
+          deviceID = Some("deviceId"),
+          forwarded = Some(ForwardedFor("ip")),
+          trueClientPort = Some("clientPort")
+        )
         implicit val request = FakeRequest().withHeaders(("Referer", "/test-path"))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, StateBenefitsIform), 5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
-        val expectedDataEvent = event(sut.stateBenefitEvent, Some("1234"), Some("123"), Some("requestId"),
-          Some("trueClientIp"), Some("/test-path"), Some("deviceId"), Some("ip"), Some("clientPort"), detail = auditDetail(sut.stateBenefitEvent))
-        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent.copy(generatedAt = now, eventId = eventId)
+        val expectedDataEvent = event(
+          sut.stateBenefitEvent,
+          Some("1234"),
+          Some("123"),
+          Some("requestId"),
+          Some("trueClientIp"),
+          Some("/test-path"),
+          Some("deviceId"),
+          Some("ip"),
+          Some("clientPort"),
+          detail = auditDetail(sut.stateBenefitEvent)
+        )
+        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent
+          .copy(generatedAt = now, eventId = eventId)
       }
 
       "user started investment-income iform journey" in {
@@ -376,25 +487,43 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
-          sut.investIncomeEvent, detail = auditDetail(sut.investIncomeEvent)).copy(generatedAt = now, eventId = eventId)
+          sut.investIncomeEvent,
+          detail = auditDetail(sut.investIncomeEvent)).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started investment-income iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")), sessionId = Some(SessionId("1234")),
-          authorization = Some(Authorization("123")), requestId = Some(RequestId("requestId")),
-          trueClientIp = Some("trueClientIp"), deviceID = Some("deviceId"), forwarded = Some(ForwardedFor("ip")),
-          trueClientPort = Some("clientPort"))
+        implicit val hc = HeaderCarrier(
+          userId = Some(UserId("ABC")),
+          sessionId = Some(SessionId("1234")),
+          authorization = Some(Authorization("123")),
+          requestId = Some(RequestId("requestId")),
+          trueClientIp = Some("trueClientIp"),
+          deviceID = Some("deviceId"),
+          forwarded = Some(ForwardedFor("ip")),
+          trueClientPort = Some("clientPort")
+        )
         implicit val request = FakeRequest().withHeaders(("Referer", "/test-path"))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, InvestIncomeIform), 5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
-        val expectedDataEvent = event(sut.investIncomeEvent, Some("1234"), Some("123"), Some("requestId"),
-          Some("trueClientIp"), Some("/test-path"), Some("deviceId"), Some("ip"), Some("clientPort"), detail = auditDetail(sut.investIncomeEvent))
-        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent.copy(generatedAt = now, eventId = eventId)
+        val expectedDataEvent = event(
+          sut.investIncomeEvent,
+          Some("1234"),
+          Some("123"),
+          Some("requestId"),
+          Some("trueClientIp"),
+          Some("/test-path"),
+          Some("deviceId"),
+          Some("ip"),
+          Some("clientPort"),
+          detail = auditDetail(sut.investIncomeEvent)
+        )
+        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent
+          .copy(generatedAt = now, eventId = eventId)
       }
 
       "user started marriage allowance service journey" in {
@@ -410,7 +539,8 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
-          sut.marriageAllowanceEvent, detail = auditDetail(MarriageAllowanceService)).copy(generatedAt = now, eventId = eventId)
+          sut.marriageAllowanceEvent,
+          detail = auditDetail(MarriageAllowanceService)).copy(generatedAt = now, eventId = eventId)
       }
     }
 
@@ -420,14 +550,17 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")))
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
-        val result = Await.result(sut.sendEndCompanyCarAuditEvent(nino.toString, "1", "1", "2017-01-01", Some("2017-01-01"), true, path = "NA"), 5.seconds)
+        val result = Await.result(
+          sut.sendEndCompanyCarAuditEvent(nino.toString, "1", "1", "2017-01-01", Some("2017-01-01"), true, path = "NA"),
+          5.seconds)
 
         result mustBe AuditResult.Success
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         val expectedDataEvent = event(sut.finishedCompanyCarEvent, detail = auditDetail(sut.finishedCompanyCarEvent))
-        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent.copy(generatedAt = now, eventId = eventId)
+        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent
+          .copy(generatedAt = now, eventId = eventId)
 
       }
       "no fuelEndDate is provided" in {
@@ -435,76 +568,95 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")))
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
-        val result = Await.result(sut.sendEndCompanyCarAuditEvent(nino.toString, "1", "1", "2017-01-01", None, true, path = "NA"), 5.seconds)
+        val result = Await.result(
+          sut.sendEndCompanyCarAuditEvent(nino.toString, "1", "1", "2017-01-01", None, true, path = "NA"),
+          5.seconds)
 
         result mustBe AuditResult.Success
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
-        val expectedDataEvent = event(sut.finishedCompanyCarEvent, detail = auditDetail("finishedCompanyCarJourneyNoFuel"))
-        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent.copy(generatedAt = now, eventId = eventId)
+        val expectedDataEvent =
+          event(sut.finishedCompanyCarEvent, detail = auditDetail("finishedCompanyCarJourneyNoFuel"))
+        argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent
+          .copy(generatedAt = now, eventId = eventId)
       }
     }
   }
 
   private val nino = new Generator().nextNino
 
-  private val entryAuditDetails = (noOfEmpAndTax: String) => Map("authProviderId" -> "ABC", "nino" -> nino.nino,
-    "noOfCurrentYearEmployments" -> noOfEmpAndTax, "noOfTaxCodes" -> noOfEmpAndTax)
+  private val entryAuditDetails = (noOfEmpAndTax: String) =>
+    Map(
+      "authProviderId"             -> "ABC",
+      "nino"                       -> nino.nino,
+      "noOfCurrentYearEmployments" -> noOfEmpAndTax,
+      "noOfTaxCodes"               -> noOfEmpAndTax)
 
   private val employmentOrPensionAuditDetails = Map("authProviderId" -> "ABC", "nino" -> nino.nino)
-  private val companyBenefitsAuditDetails = Map("authProviderId" -> "ABC", "nino" -> nino.nino)
+  private val companyBenefitsAuditDetails = Map("authProviderId"     -> "ABC", "nino" -> nino.nino)
   private val endCompanyCarDetails = Map(
     "authProviderId" -> "ABC",
-    "nino" -> nino.nino,
-    "employmentId" -> "1",
-    "carSequenceNo" -> "1",
-    "carEndDate" -> "2017-01-01",
-    "fuelEndDate" -> "2017-01-01",
-    "isSuccessful" -> "true"
+    "nino"           -> nino.nino,
+    "employmentId"   -> "1",
+    "carSequenceNo"  -> "1",
+    "carEndDate"     -> "2017-01-01",
+    "fuelEndDate"    -> "2017-01-01",
+    "isSuccessful"   -> "true"
   )
   private val endCompanyCarDetailsNoFuel = Map(
     "authProviderId" -> "ABC",
-    "nino" -> nino.nino,
-    "employmentId" -> "1",
-    "carSequenceNo" -> "1",
-    "carEndDate" -> "2017-01-01",
-    "fuelEndDate" -> "NA",
-    "isSuccessful" -> "true"
+    "nino"           -> nino.nino,
+    "employmentId"   -> "1",
+    "carSequenceNo"  -> "1",
+    "carEndDate"     -> "2017-01-01",
+    "fuelEndDate"    -> "NA",
+    "isSuccessful"   -> "true"
   )
 
-
-  private def auditDetail(auditType: String, noOfEmpAndTax: Option[String] = None): Map[String, String] = {
+  private def auditDetail(auditType: String, noOfEmpAndTax: Option[String] = None): Map[String, String] =
     auditType match {
-      case "userEntersService" => entryAuditDetails(noOfEmpAndTax.getOrElse("0"))
+      case "userEntersService"               => entryAuditDetails(noOfEmpAndTax.getOrElse("0"))
       case "startedEmploymentPensionJourney" => employmentOrPensionAuditDetails
-      case "finishedCompanyCarJourney" => endCompanyCarDetails
+      case "finishedCompanyCarJourney"       => endCompanyCarDetails
       case "finishedCompanyCarJourneyNoFuel" => endCompanyCarDetailsNoFuel
-      case _ => companyBenefitsAuditDetails
+      case _                                 => companyBenefitsAuditDetails
     }
-  }
 
-  private def event(auditType: String, sessionId: Option[String] = None,
-                    authorization: Option[String] = None, requestId: Option[String] = None,
-                    trueClientIp: Option[String] = None, path: Option[String] = None,
-                    deviceId: Option[String] = None, ipAddress: Option[String] = None,
-                    clientPort: Option[String] = None, detail: Map[String, String]) =
-    DataEvent(auditSource = "test", auditType = auditType,
-      tags = Map("clientIP" -> trueClientIp.getOrElse("-"),
-        "path" -> path.getOrElse("NA"), "X-Session-ID" -> sessionId.getOrElse("-"),
-        "Akamai-Reputation" -> "-", "X-Request-ID" -> requestId.getOrElse("-"),
-        "deviceID" -> deviceId.getOrElse("-"),
-        "clientPort" -> clientPort.getOrElse("-"),
-        "transactionName" -> auditType), detail = detail
-
+  private def event(
+    auditType: String,
+    sessionId: Option[String] = None,
+    authorization: Option[String] = None,
+    requestId: Option[String] = None,
+    trueClientIp: Option[String] = None,
+    path: Option[String] = None,
+    deviceId: Option[String] = None,
+    ipAddress: Option[String] = None,
+    clientPort: Option[String] = None,
+    detail: Map[String, String]) =
+    DataEvent(
+      auditSource = "test",
+      auditType = auditType,
+      tags = Map(
+        "clientIP"          -> trueClientIp.getOrElse("-"),
+        "path"              -> path.getOrElse("NA"),
+        "X-Session-ID"      -> sessionId.getOrElse("-"),
+        "Akamai-Reputation" -> "-",
+        "X-Request-ID"      -> requestId.getOrElse("-"),
+        "deviceID"          -> deviceId.getOrElse("-"),
+        "clientPort"        -> clientPort.getOrElse("-"),
+        "transactionName"   -> auditType
+      ),
+      detail = detail
     )
 
   def createSUT = new SUT
 
-  class SUT extends AuditService(
-    mock[AuditConnector],
-    mock[PersonService]
-  ) {
+  class SUT
+      extends AuditService(
+        mock[AuditConnector],
+        mock[PersonService]
+      ) {
 
     override val appName: String = "test"
   }

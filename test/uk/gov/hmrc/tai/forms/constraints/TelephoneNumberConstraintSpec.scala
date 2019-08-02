@@ -70,7 +70,8 @@ class TelephoneNumberConstraintSpec extends PlaySpec with OneAppPerSuite with I1
       }
 
       "phone number is less than more than 30 digits" in {
-        val invalidPhoneNumberChoice = Json.obj(YesNoChoice -> YesValue, YesNoTextEntry -> "123456123456123456123456123456123456")
+        val invalidPhoneNumberChoice =
+          Json.obj(YesNoChoice -> YesValue, YesNoTextEntry -> "123456123456123456123456123456123456")
         val invalidatedForm = form.bind(invalidPhoneNumberChoice)
 
         invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))

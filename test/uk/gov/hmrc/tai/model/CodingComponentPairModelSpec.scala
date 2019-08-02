@@ -29,12 +29,14 @@ class CodingComponentPairModelSpec extends PlaySpec with FakeTaiPlayApplication 
     "return a tax label summary with the previous and current amounts" in {
       val previousAmount = 456
       val currentAmount = 789
-        val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
-        val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-        val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
+      val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
+      val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
+      val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
       val codingComponentPair = CodingComponentPair(GiftAidPayments, None, Some(previousAmount), Some(currentAmount))
-      val actual = CodingComponentPairModel(codingComponentPair, TaxFreeAmountDetails(employmentIdNameMap = Map.empty, companyCarBenefits = Seq.empty, totalTax = totalTax))
+      val actual = CodingComponentPairModel(
+        codingComponentPair,
+        TaxFreeAmountDetails(employmentIdNameMap = Map.empty, companyCarBenefits = Seq.empty, totalTax = totalTax))
 
       actual mustBe CodingComponentPairModel("Gift Aid Payments", previousAmount, currentAmount)
     }

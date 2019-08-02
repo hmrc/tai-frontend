@@ -91,7 +91,6 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       }
     }
 
-
     "thrown exception" when {
       "tai sends an invalid json" in {
         val sut = createSUT
@@ -121,19 +120,21 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         val sut = createSUT
         val taxAccountSummaryJson = Json.obj(
           "data" -> Json.obj(
-            "totalEstimatedTax" -> 111,
-            "taxFreeAmount" -> 222,
-            "totalInYearAdjustmentIntoCY" -> 1111.11,
-            "totalInYearAdjustment" -> 2222.23,
+            "totalEstimatedTax"                  -> 111,
+            "taxFreeAmount"                      -> 222,
+            "totalInYearAdjustmentIntoCY"        -> 1111.11,
+            "totalInYearAdjustment"              -> 2222.23,
             "totalInYearAdjustmentIntoCYPlusOne" -> 1111.12,
-            "totalEstimatedIncome" -> 100,
-            "taxFreeAllowance" -> 200
+            "totalEstimatedIncome"               -> 100,
+            "taxFreeAllowance"                   -> 200
           ),
-          "links" -> Json.arr())
+          "links" -> Json.arr()
+        )
 
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(taxAccountSummaryJson))
         val result = sut.taxAccountSummary(generateNino, currentTaxYear)
-        Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(TaxAccountSummary(111, 222, 1111.11, 2222.23, 1111.12, 100, 200))
+        Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(
+          TaxAccountSummary(111, 222, 1111.11, 2222.23, 1111.12, 100, 200))
       }
     }
 
@@ -143,7 +144,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         val corruptTaxAccountSummaryJson = Json.obj(
           "data" -> Json.obj(
             "totalEstimatedTax222" -> 111,
-            "taxFreeAmount11" -> 222
+            "taxFreeAmount11"      -> 222
           ),
           "links" -> Json.arr())
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(corruptTaxAccountSummaryJson))
@@ -159,8 +160,8 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       "provided with valid nino" in {
         val sut = createSUT
         val nino = generateNino
-        when(httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/income"))(any())).
-          thenReturn(Future.successful(incomeJson))
+        when(httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/income"))(any()))
+          .thenReturn(Future.successful(incomeJson))
 
         val result = sut.nonTaxCodeIncomes(nino, currentTaxYear)
 
@@ -172,8 +173,8 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       "tai sends an invalid json" in {
         val sut = createSUT
         val nino = generateNino
-        when(httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/income"))(any())).
-          thenReturn(Future.successful(corruptJsonResponse))
+        when(httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/income"))(any()))
+          .thenReturn(Future.successful(corruptJsonResponse))
 
         val ex = Await.result(sut.nonTaxCodeIncomes(nino, currentTaxYear), 5 seconds)
         ex mustBe a[TaiTaxAccountFailureResponse]
@@ -186,8 +187,11 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       "update tax code income returns 200" in {
         val sut = createSUT
         val nino = generateNino
-        when(httpHandler.putToApi(Matchers.eq(sut.updateTaxCodeIncome(nino.nino, TaxYear(), 1)),
-          Matchers.eq(UpdateTaxCodeIncomeRequest(100)))(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200)))
+        when(
+          httpHandler.putToApi(
+            Matchers.eq(sut.updateTaxCodeIncome(nino.nino, TaxYear(), 1)),
+            Matchers.eq(UpdateTaxCodeIncomeRequest(100)))(any(), any(), any()))
+          .thenReturn(Future.successful(HttpResponse(200)))
 
         val response = Await.result(sut.updateEstimatedIncome(nino, TaxYear(), 100, 1), 5 seconds)
 
@@ -199,8 +203,11 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       "update tax code income returns 500" in {
         val sut = createSUT
         val nino = generateNino
-        when(httpHandler.putToApi(Matchers.eq(sut.updateTaxCodeIncome(nino.nino, TaxYear(), 1)),
-          Matchers.eq(UpdateTaxCodeIncomeRequest(100)))(any(), any(), any())).thenReturn(Future.failed(new InternalServerException("Failed")))
+        when(
+          httpHandler.putToApi(
+            Matchers.eq(sut.updateTaxCodeIncome(nino.nino, TaxYear(), 1)),
+            Matchers.eq(UpdateTaxCodeIncomeRequest(100)))(any(), any(), any()))
+          .thenReturn(Future.failed(new InternalServerException("Failed")))
 
         val response = Await.result(sut.updateEstimatedIncome(nino, TaxYear(), 100, 1), 5 seconds)
 
@@ -215,14 +222,23 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         val sut = createSUT
         val nino = generateNino
 
-        val expectedTotalTax = TotalTax(1000,
-          List(IncomeCategory(UkDividendsIncomeCategory, 10, 20, 30, List(TaxBand("", "", 0, 0, None, None, 0), TaxBand("B", "BR", 10000, 500, Some(5000), Some(20000), 10)))),
+        val expectedTotalTax = TotalTax(
+          1000,
+          List(
+            IncomeCategory(
+              UkDividendsIncomeCategory,
+              10,
+              20,
+              30,
+              List(TaxBand("", "", 0, 0, None, None, 0), TaxBand("B", "BR", 10000, 500, Some(5000), Some(20000), 10)))),
           Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(EnterpriseInvestmentSchemeRelief, 100)))),
           Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(ExcessGiftAidTax, 100)))),
-          Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(TaxOnBankBSInterest, 100)))))
+          Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(TaxOnBankBSInterest, 100))))
+        )
 
-        when(httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/total-tax"))(any())).
-          thenReturn(Future.successful(totalTaxJson))
+        when(
+          httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/total-tax"))(any()))
+          .thenReturn(Future.successful(totalTaxJson))
 
         val result = sut.totalTax(nino, currentTaxYear)
         Await.result(result, 5.seconds) mustBe TaiSuccessResponseWithPayload(expectedTotalTax)
@@ -237,44 +253,46 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
   def generateNino: Nino = new Generator(new Random).nextNino
 
   val taxCodeIncomeJson: JsValue = Json.obj(
-    "data" -> JsArray(Seq(Json.obj(
-      "componentType" -> "EmploymentIncome",
-      "employmentId" -> 1,
-      "amount" -> 1111,
-      "description" -> "employment",
-      "taxCode" -> "1150L",
-      "name" -> "Employer1",
-      "basisOperation" -> "OtherBasisOperation",
-      "status" -> "Live"
-    ))),
-    "links" -> JsArray(Seq()))
+    "data" -> JsArray(
+      Seq(Json.obj(
+        "componentType"  -> "EmploymentIncome",
+        "employmentId"   -> 1,
+        "amount"         -> 1111,
+        "description"    -> "employment",
+        "taxCode"        -> "1150L",
+        "name"           -> "Employer1",
+        "basisOperation" -> "OtherBasisOperation",
+        "status"         -> "Live"
+      ))),
+    "links" -> JsArray(Seq())
+  )
 
   val incomeSourceJson: JsValue = Json.obj(
     "data" -> Json.arr(
       Json.obj(
         "taxCodeIncome" -> Json.obj(
-          "componentType" -> "EmploymentIncome",
-          "employmentId" -> 1,
-          "amount" -> 1111,
-          "description" -> "employment",
-          "taxCode" -> "1150L",
-          "name" -> "Employer1",
-          "basisOperation" -> "OtherBasisOperation",
-          "status" -> "Live",
-          "inYearAdjustmentIntoCY" -> 0,
-          "totalInYearAdjustment" -> 0,
+          "componentType"                 -> "EmploymentIncome",
+          "employmentId"                  -> 1,
+          "amount"                        -> 1111,
+          "description"                   -> "employment",
+          "taxCode"                       -> "1150L",
+          "name"                          -> "Employer1",
+          "basisOperation"                -> "OtherBasisOperation",
+          "status"                        -> "Live",
+          "inYearAdjustmentIntoCY"        -> 0,
+          "totalInYearAdjustment"         -> 0,
           "inYearAdjustmentIntoCYPlusOne" -> 0
         ),
         "employment" -> Json.obj(
-          "name" -> "company name",
-          "payrollNumber" -> "888",
-          "startDate" -> "2019-05-26",
-          "annualAccounts" -> Json.arr(),
-          "taxDistrictNumber" -> "",
-          "payeNumber" -> "",
-          "sequenceNumber" -> 1,
-          "cessationPay" -> 100,
-          "hasPayrolledBenefit" -> false,
+          "name"                         -> "company name",
+          "payrollNumber"                -> "888",
+          "startDate"                    -> "2019-05-26",
+          "annualAccounts"               -> Json.arr(),
+          "taxDistrictNumber"            -> "",
+          "payeNumber"                   -> "",
+          "sequenceNumber"               -> 1,
+          "cessationPay"                 -> 100,
+          "hasPayrolledBenefit"          -> false,
           "receivingOccupationalPension" -> true
         )
       )
@@ -289,29 +307,34 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "data" -> Json.arr(
       Json.obj(
         "componentType" -> "EmployerProvidedServices",
-        "employmentId" -> 12,
-        "amount" -> 12321,
-        "description" -> "Some Description",
-        "iabdCategory" -> "Benefit"),
+        "employmentId"  -> 12,
+        "amount"        -> 12321,
+        "description"   -> "Some Description",
+        "iabdCategory"  -> "Benefit"),
       Json.obj(
         "componentType" -> "GiftsSharesCharity",
-        "employmentId" -> 31,
-        "amount" -> 12345,
-        "description" -> "Some Description Some",
-        "iabdCategory" -> "Allowance"
-      )),
-    "links" -> Json.arr())
+        "employmentId"  -> 31,
+        "amount"        -> 12345,
+        "description"   -> "Some Description Some",
+        "iabdCategory"  -> "Allowance"
+      )
+    ),
+    "links" -> Json.arr()
+  )
 
   val corruptJsonResponse: JsValue = Json.obj(
-    "data" -> JsArray(Seq(Json.obj(
-      "employmentId" -> 1,
-      "amount" -> 1111,
-      "description" -> "employment",
-      "taxCode" -> "1150L",
-      "name" -> "Employer1",
-      "basisOperation" -> "OtherBasisOperation"
-    ))),
-    "links" -> JsArray(Seq()))
+    "data" -> JsArray(
+      Seq(
+        Json.obj(
+          "employmentId"   -> 1,
+          "amount"         -> 1111,
+          "description"    -> "employment",
+          "taxCode"        -> "1150L",
+          "name"           -> "Employer1",
+          "basisOperation" -> "OtherBasisOperation"
+        ))),
+    "links" -> JsArray(Seq())
+  )
 
   val incomeJson: JsValue = Json.obj(
     "data" -> Json.obj(
@@ -320,13 +343,12 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         "otherNonTaxCodeIncomes" -> Json.arr(
           Json.obj(
             "incomeComponentType" -> "Profit",
-            "amount" -> 100,
-            "description" -> "Profit"
+            "amount"              -> 100,
+            "description"         -> "Profit"
           )
         )
       )
-    )
-    ,
+    ),
     "links" -> Json.arr()
   )
 
@@ -336,25 +358,25 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       "incomeCategories" -> Json.arr(
         Json.obj(
           "incomeCategoryType" -> "UkDividendsIncomeCategory",
-          "totalTax" -> 10,
+          "totalTax"           -> 10,
           "totalTaxableIncome" -> 20,
-          "totalIncome" -> 30,
+          "totalIncome"        -> 30,
           "taxBands" -> Json.arr(
             Json.obj(
               "bandType" -> "",
-              "code" -> "",
-              "income" -> 0,
-              "tax" -> 0,
-              "rate" -> 0
+              "code"     -> "",
+              "income"   -> 0,
+              "tax"      -> 0,
+              "rate"     -> 0
             ),
             Json.obj(
-              "bandType" -> "B",
-              "code" -> "BR",
-              "income" -> 10000,
-              "tax" -> 500,
+              "bandType"  -> "B",
+              "code"      -> "BR",
+              "income"    -> 10000,
+              "tax"       -> 500,
               "lowerBand" -> 5000,
               "upperBand" -> 20000,
-              "rate" -> 10
+              "rate"      -> 10
             )
           )
         )
@@ -363,7 +385,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         "amount" -> 100,
         "taxAdjustmentComponents" -> Json.arr(
           Json.obj(
-            "taxAdjustmentType" -> "EnterpriseInvestmentSchemeRelief",
+            "taxAdjustmentType"   -> "EnterpriseInvestmentSchemeRelief",
             "taxAdjustmentAmount" -> 100
           )
         )
@@ -372,7 +394,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         "amount" -> 100,
         "taxAdjustmentComponents" -> Json.arr(
           Json.obj(
-            "taxAdjustmentType" -> "ExcessGiftAidTax",
+            "taxAdjustmentType"   -> "ExcessGiftAidTax",
             "taxAdjustmentAmount" -> 100
           )
         )
@@ -381,7 +403,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         "amount" -> 100,
         "taxAdjustmentComponents" -> Json.arr(
           Json.obj(
-            "taxAdjustmentType" -> "TaxOnBankBSInterest",
+            "taxAdjustmentType"   -> "TaxOnBankBSInterest",
             "taxAdjustmentAmount" -> 100
           )
         )
@@ -390,15 +412,33 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "links" -> Json.arr()
   )
 
-  private val income = uk.gov.hmrc.tai.model.domain.income.Incomes(Seq.empty[TaxCodeIncome], NonTaxCodeIncome(None, Seq(
-    OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
-  )))
+  private val income = uk.gov.hmrc.tai.model.domain.income.Incomes(
+    Seq.empty[TaxCodeIncome],
+    NonTaxCodeIncome(
+      None,
+      Seq(
+        OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
+      )))
 
-  val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "Employer1", OtherBasisOfOperation, Live)
-  val employment = Employment("company name", Some("888"), new LocalDate(2019, 5, 26), None,
-    Seq.empty[AnnualAccount], "", "", 1, Some(BigDecimal(100)), hasPayrolledBenefit = false, receivingOccupationalPension = true)
-  val codingComponentSeq = Seq(CodingComponent(EmployerProvidedServices, Some(12), 12321, "Some Description"),
-    CodingComponent(GiftsSharesCharity, Some(31), 12345, "Some Description Some"))
+  val taxCodeIncome =
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "Employer1", OtherBasisOfOperation, Live)
+  val employment = Employment(
+    "company name",
+    Some("888"),
+    new LocalDate(2019, 5, 26),
+    None,
+    Seq.empty[AnnualAccount],
+    "",
+    "",
+    1,
+    Some(BigDecimal(100)),
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = true
+  )
+  val codingComponentSeq = Seq(
+    CodingComponent(EmployerProvidedServices, Some(12), 12321, "Some Description"),
+    CodingComponent(GiftsSharesCharity, Some(31), 12345, "Some Description Some")
+  )
   val incomeSource = TaxedIncome(taxCodeIncome, employment)
 
   private def createSUT = new SUT

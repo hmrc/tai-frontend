@@ -47,21 +47,13 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
+class CompanyBenefitControllerSpec
+    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with FormValuesConstants
+    with UpdateOrRemoveCompanyBenefitDecisionConstants with JourneyCacheConstants with JsoupMatchers
+    with BeforeAndAfterEach with ControllerViewTestHelper {
 
-class CompanyBenefitControllerSpec extends PlaySpec
-  with MockitoSugar
-  with FakeTaiPlayApplication
-  with I18nSupport
-  with FormValuesConstants
-  with UpdateOrRemoveCompanyBenefitDecisionConstants
-  with JourneyCacheConstants
-  with JsoupMatchers
-  with BeforeAndAfterEach
-  with ControllerViewTestHelper {
-
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(journeyCacheService)
-  }
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -74,7 +66,8 @@ class CompanyBenefitControllerSpec extends PlaySpec
 
       when(journeyCacheService.cache(Matchers.any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-      val result = SUT.redirectCompanyBenefitSelection(empId, BenefitInKind)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result =
+        SUT.redirectCompanyBenefitSelection(empId, BenefitInKind)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.CompanyBenefitController.decision().url
@@ -90,9 +83,10 @@ class CompanyBenefitControllerSpec extends PlaySpec
         val referer = "/check-income-tax/income-summary"
 
         val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",
-          EndCompanyBenefit_BenefitTypeKey -> benefitType,
-          EndCompanyBenefit_RefererKey -> referer)
+        val cache = Map(
+          EndCompanyBenefit_EmploymentIdKey -> "1",
+          EndCompanyBenefit_BenefitTypeKey  -> benefitType,
+          EndCompanyBenefit_RefererKey      -> referer)
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -107,9 +101,11 @@ class CompanyBenefitControllerSpec extends PlaySpec
         verify(employmentService, times(1)).employment(any(), any())(any())
         verify(journeyCacheService, times(1)).currentCache(any())
         verify(journeyCacheService, times(1)).cache(
-          mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> empName,
-            EndCompanyBenefit_BenefitNameKey -> benefitType,
-            EndCompanyBenefit_RefererKey -> referer)))(any())
+          mockEq(
+            Map(
+              EndCompanyBenefit_EmploymentNameKey -> empName,
+              EndCompanyBenefit_BenefitNameKey    -> benefitType,
+              EndCompanyBenefit_RefererKey        -> referer)))(any())
       }
 
       "prepopulate the decision selection" in {
@@ -118,16 +114,19 @@ class CompanyBenefitControllerSpec extends PlaySpec
         val referer = "/check-income-tax/income-summary"
 
         val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",
-          EndCompanyBenefit_BenefitTypeKey -> benefitType,
-          EndCompanyBenefit_RefererKey -> referer,
-          DecisionChoice -> YesIGetThisBenefit)
+        val cache = Map(
+          EndCompanyBenefit_EmploymentIdKey -> "1",
+          EndCompanyBenefit_BenefitTypeKey  -> benefitType,
+          EndCompanyBenefit_RefererKey      -> referer,
+          DecisionChoice                    -> YesIGetThisBenefit
+        )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
-        val expectedForm: Form[Option[String]] = UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(YesIGetThisBenefit))
+        val expectedForm: Form[Option[String]] =
+          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(YesIGetThisBenefit))
         val expectedViewModel = CompanyBenefitDecisionViewModel(benefitType, empName, expectedForm)
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -140,9 +139,10 @@ class CompanyBenefitControllerSpec extends PlaySpec
     "throw exception" when {
       "employment not found" in {
         val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",
-          EndCompanyBenefit_BenefitTypeKey -> "type",
-          EndCompanyBenefit_RefererKey -> "referrer")
+        val cache = Map(
+          EndCompanyBenefit_EmploymentIdKey -> "1",
+          EndCompanyBenefit_BenefitTypeKey  -> "type",
+          EndCompanyBenefit_RefererKey      -> "referrer")
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
@@ -161,8 +161,10 @@ class CompanyBenefitControllerSpec extends PlaySpec
 
         val SUT = createSUT
 
-        val result = SUT.submitDecision(RequestBuilder.buildFakeRequestWithAuth("POST").
-          withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
 
         status(result) mustBe SEE_OTHER
 
@@ -178,14 +180,16 @@ class CompanyBenefitControllerSpec extends PlaySpec
 
         val SUT = createSUT
 
-        val result = SUT.submitDecision()(RequestBuilder.buildFakeRequestWithAuth("POST").
-          withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
+        val result = SUT.submitDecision()(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
 
         status(result) mustBe SEE_OTHER
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
-        redirectUrl mustBe controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url
+        redirectUrl mustBe controllers.routes.ExternalServiceRedirectController
+          .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform)
+          .url
 
       }
     }
@@ -193,12 +197,15 @@ class CompanyBenefitControllerSpec extends PlaySpec
     "return Bad Request" when {
       "the form submission is having blank value" in {
         val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Employer A",
-          EndCompanyBenefit_BenefitTypeKey -> "Expenses",
-          EndCompanyBenefit_RefererKey -> "/check-income-tax/income-summary")
+        val cache = Map(
+          EndCompanyBenefit_EmploymentNameKey -> "Employer A",
+          EndCompanyBenefit_BenefitTypeKey    -> "Expenses",
+          EndCompanyBenefit_RefererKey        -> "/check-income-tax/income-summary"
+        )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        val result = SUT.submitDecision(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> ""))
+        val result = SUT.submitDecision(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> ""))
 
         status(result) mustBe BAD_REQUEST
 
@@ -211,25 +218,26 @@ class CompanyBenefitControllerSpec extends PlaySpec
       "it is a NoIDontGetThisBenefit" in {
         val SUT = createSUT
 
-        val result = SUT.submitDecision(RequestBuilder.buildFakeRequestWithAuth("POST").
-          withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
 
         Await.result(result, 5.seconds)
 
-        verify(journeyCacheService, times(1)).
-          cache(Matchers.eq(DecisionChoice), Matchers.eq(NoIDontGetThisBenefit))(any())
+        verify(journeyCacheService, times(1))
+          .cache(Matchers.eq(DecisionChoice), Matchers.eq(NoIDontGetThisBenefit))(any())
       }
 
       "it is a YesIGetThisBenefit" in {
         val SUT = createSUT
 
-        val result = SUT.submitDecision(RequestBuilder.buildFakeRequestWithAuth("POST").
-          withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
+        val result = SUT.submitDecision(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
 
         Await.result(result, 5.seconds)
 
-        verify(journeyCacheService, times(1)).
-          cache(Matchers.eq(DecisionChoice), Matchers.eq(YesIGetThisBenefit))(any())
+        verify(journeyCacheService, times(1)).cache(Matchers.eq(DecisionChoice), Matchers.eq(YesIGetThisBenefit))(any())
       }
     }
   }
@@ -240,19 +248,30 @@ class CompanyBenefitControllerSpec extends PlaySpec
 
   def createSUT = new SUT
 
-  val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
-    Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
+  val employment = Employment(
+    "company name",
+    Some("123"),
+    new LocalDate("2016-05-26"),
+    Some(new LocalDate("2016-05-26")),
+    Nil,
+    "",
+    "",
+    2,
+    None,
+    false,
+    false)
 
   val employmentService = mock[EmploymentService]
   val journeyCacheService = mock[JourneyCacheService]
 
-  class SUT extends CompanyBenefitController(
-    employmentService,
-    journeyCacheService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    MockTemplateRenderer,
-    mock[FormPartialRetriever]) {
+  class SUT
+      extends CompanyBenefitController(
+        employmentService,
+        journeyCacheService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        MockTemplateRenderer,
+        mock[FormPartialRetriever]) {
     when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
   }
 }

@@ -48,19 +48,15 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
   val resourceName = "tax-free-allowance"
 
   val viewModel = PotentialUnderpaymentViewModel(tas, ccs, referalPath, resourceName)
-  def document(viewModel: PotentialUnderpaymentViewModel = viewModel) = {
+  def document(viewModel: PotentialUnderpaymentViewModel = viewModel) =
     Jsoup.parseBodyFragment(views.html.potentialUnderpayment(viewModel).toString)
-  }
-
 
   override def view = views.html.potentialUnderpayment(viewModel)
-
 
   "Potential Underpayment" must {
     behave like pageWithBackLink
     behave like pageWithTitle(viewModel.pageTitle)
     behave like pageWithCombinedHeader(messages("tai.iya.tax.you.owe.preHeading"), viewModel.pageTitle)
-
 
     "display text indicating tax is owed " in {
       document() must haveParagraphWithText(messages("tai.iya.paidTooLittle.cy.text"))
@@ -71,7 +67,9 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
     }
 
     "display get help link" in {
-      document() must haveLinkElement("getHelpLink", controllers.routes.HelpController.helpPage.url,
+      document() must haveLinkElement(
+        "getHelpLink",
+        controllers.routes.HelpController.helpPage.url,
         messages("tai.iya.paidTooLittle.get.help.linkText"))
     }
 
@@ -110,7 +108,8 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
       def cyAndCYPlusOneDoc = document(cyAndCYPlusOneViewModel)
 
       "display amount owing" in {
-        cyAndCYPlusOneDoc must haveParagraphWithText(withPoundPrefix(MoneyPounds(cyAndCYPlusOneViewModel.iyaCYAmount, 2)))
+        cyAndCYPlusOneDoc must haveParagraphWithText(
+          withPoundPrefix(MoneyPounds(cyAndCYPlusOneViewModel.iyaCYAmount, 2)))
       }
 
       "display heading text in " in {
@@ -132,7 +131,8 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
       def cyPlusOneOnlyDoc = document(cyPlusOneOnlyViewModel)
 
       "display amount owing" in {
-        cyPlusOneOnlyDoc must haveParagraphWithText(withPoundPrefix(MoneyPounds(cyPlusOneOnlyViewModel.iyaCYPlusOneAmount, 2)))
+        cyPlusOneOnlyDoc must haveParagraphWithText(
+          withPoundPrefix(MoneyPounds(cyPlusOneOnlyViewModel.iyaCYPlusOneAmount, 2)))
       }
 
       "display heading text in " in {
@@ -144,8 +144,8 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
       }
 
       "display text regarding tax free amount " in {
-        cyPlusOneOnlyDoc must haveParagraphWithText(messages("tai.iya.reduce.tax-free.amount.description",
-          Dates.formatDate(TaxYear().next.start)))
+        cyPlusOneOnlyDoc must haveParagraphWithText(
+          messages("tai.iya.reduce.tax-free.amount.description", Dates.formatDate(TaxYear().next.start)))
       }
 
       "display tax code may change text" in {
@@ -153,6 +153,5 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
       }
     }
   }
-
 
 }

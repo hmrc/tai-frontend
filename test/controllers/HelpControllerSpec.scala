@@ -35,10 +35,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
 import scala.concurrent.Future
 
-class HelpControllerSpec extends PlaySpec
-  with JsoupMatchers
-  with MockitoSugar
-  with OneServerPerSuite {
+class HelpControllerSpec extends PlaySpec with JsoupMatchers with MockitoSugar with OneServerPerSuite {
 
   "show help page" must {
     "call getHelpPage() successfully with an authorized session" in {
@@ -109,14 +106,15 @@ class HelpControllerSpec extends PlaySpec
 
   val proxyHttpClient = mock[ProxyHttpClient]
 
-  class SUT extends HelpController(
-    mock[ApplicationConfig],
-    proxyHttpClient,
-    FakeAuthAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  ) {
+  class SUT
+      extends HelpController(
+        mock[ApplicationConfig],
+        proxyHttpClient,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      ) {
 
     override val webChatURL = ""
 

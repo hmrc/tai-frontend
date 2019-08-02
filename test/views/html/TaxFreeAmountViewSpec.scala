@@ -36,15 +36,23 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
 
       "contains title and highlighted amount" in {
         doc must haveSectionWithId("taxFreeAmountSummary")
-        doc must haveElementAtPathWithText("section[id=taxFreeAmountSummary]>h2", s"${messages("tai.taxFreeAmount.summarysection.heading")} £2020")
+        doc must haveElementAtPathWithText(
+          "section[id=taxFreeAmountSummary]>h2",
+          s"${messages("tai.taxFreeAmount.summarysection.heading")} £2020")
         val summarySection = doc.select("section[id=taxFreeAmountSummary]")
         summarySection.select("span").get(1) must haveText("£2020")
       }
 
       "contains the correct text content" in {
-        doc must haveElementAtPathWithText("section[id=taxFreeAmountSummary] p", messages("tai.taxFreeAmount.summarysection.p2"))
-        doc must haveElementAtPathWithText("section[id=taxFreeAmountSummary] li", messages("tai.taxFreeAmount.summarysection.bullet1"))
-        doc must haveElementAtPathWithText("section[id=taxFreeAmountSummary] li", messages("tai.taxFreeAmount.summarysection.bullet2"))
+        doc must haveElementAtPathWithText(
+          "section[id=taxFreeAmountSummary] p",
+          messages("tai.taxFreeAmount.summarysection.p2"))
+        doc must haveElementAtPathWithText(
+          "section[id=taxFreeAmountSummary] li",
+          messages("tai.taxFreeAmount.summarysection.bullet1"))
+        doc must haveElementAtPathWithText(
+          "section[id=taxFreeAmountSummary] li",
+          messages("tai.taxFreeAmount.summarysection.bullet2"))
       }
     }
 
@@ -52,7 +60,9 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
 
       "contains a title" in {
         doc must haveSectionWithId("taxFreeAmountDetail")
-        doc must haveElementAtPathWithText("section[id=taxFreeAmountDetail]>h2", messages("tai.taxFreeAmount.detailsection.heading"))
+        doc must haveElementAtPathWithText(
+          "section[id=taxFreeAmountDetail]>h2",
+          messages("tai.taxFreeAmount.detailsection.heading"))
       }
 
       "contains one group per summary category view model" in {
@@ -91,7 +101,9 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
         doc must haveElementWithId("summaryTable2Row1ChangeLinkCell")
         doc must haveLinkWithUrlWithID("summaryTable2Row1ChangeLink", "/dummy/url1")
         doc must haveElementAtPathWithClass("a[id=summaryTable2Row1ChangeLink] > span", "visually-hidden")
-        doc must haveElementAtPathWithText("a[id=summaryTable2Row1ChangeLink] > span", messages("tai.updateOrRemove") + " context1")
+        doc must haveElementAtPathWithText(
+          "a[id=summaryTable2Row1ChangeLink] > span",
+          messages("tai.updateOrRemove") + " context1")
       }
 
       "excludes a link cell from table rows, where instructed by the view model" in {
@@ -108,17 +120,33 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
 
     "display navigational links to other pages in the service" in {
       doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
-      doc must haveLinkElement("taxCodesLink", controllers.routes.YourTaxCodeController.taxCodes.url, messages("check.your.tax.codes"))
-      doc must haveLinkElement("incomeTaxEstimateLink", controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url, messages("check.your.income.tax.estimate"))
-      doc must haveLinkElement("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("return.to.your.income.tax.summary"))
+      doc must haveLinkElement(
+        "taxCodesLink",
+        controllers.routes.YourTaxCodeController.taxCodes.url,
+        messages("check.your.tax.codes"))
+      doc must haveLinkElement(
+        "incomeTaxEstimateLink",
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+        messages("check.your.income.tax.estimate"))
+      doc must haveLinkElement(
+        "taxableIncomeLink",
+        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+        messages("return.to.your.income.tax.summary"))
     }
 
     "display navigational link to 'Estimated tax you owe' page if EstimatedTaxYouOweThisYear is present" in {
       val labelVm = TaxSummaryLabel("labelText", Some(HelpLink("testValue", "testHref", "estimatedTaxOwedLink")))
-      val vm: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
-        TaxFreeAmountSummaryRowViewModel(labelVm, "£11,500", ChangeLinkViewModel(false)))
-      val svm: TaxFreeAmountSummaryViewModel = TaxFreeAmountSummaryViewModel(Seq(
-        TaxFreeAmountSummaryCategoryViewModel("header1", "header2", true, false, "Deductions from your Personal Allowance", vm)))
+      val vm: Seq[TaxFreeAmountSummaryRowViewModel] =
+        Seq(TaxFreeAmountSummaryRowViewModel(labelVm, "£11,500", ChangeLinkViewModel(false)))
+      val svm: TaxFreeAmountSummaryViewModel = TaxFreeAmountSummaryViewModel(
+        Seq(
+          TaxFreeAmountSummaryCategoryViewModel(
+            "header1",
+            "header2",
+            true,
+            false,
+            "Deductions from your Personal Allowance",
+            vm)))
       val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", svm)
 
       val document = doc(views.html.taxFreeAmount(viewModel))
@@ -131,31 +159,69 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
         doc must haveElementAtPathWithText("h2", messages("tai.incomeTaxSummary.addMissingIncome.section.heading"))
       }
       "includes a link to add a missing allowance or addition" in {
-          doc must haveLinkWithUrlWithID("addMissingAddition", ApplicationConfig.taxFreeAllowanceLinkUrl)
-        }
+        doc must haveLinkWithUrlWithID("addMissingAddition", ApplicationConfig.taxFreeAllowanceLinkUrl)
+      }
       "includes a link to add a missing company benefit" in {
         doc must haveLinkWithUrlWithID("addMissingDeduction", ApplicationConfig.companyBenefitsLinkUrl)
-        }
+      }
       "includes a link to add a missing income" in {
         doc must haveLinkWithUrlWithID("addMissingIncome", ApplicationConfig.otherIncomeLinkUrl)
-        }
       }
     }
-
+  }
 
   val rowViewModels: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
-    TaxFreeAmountSummaryRowViewModel("An example addition benefit", "£11,500", ChangeLinkViewModel(true, "context1", "/dummy/url1")),
-    TaxFreeAmountSummaryRowViewModel("Some Other Allowance", "£12,322", ChangeLinkViewModel(true, "context2", "/dummy/url2")),
+    TaxFreeAmountSummaryRowViewModel(
+      "An example addition benefit",
+      "£11,500",
+      ChangeLinkViewModel(true, "context1", "/dummy/url1")),
+    TaxFreeAmountSummaryRowViewModel(
+      "Some Other Allowance",
+      "£12,322",
+      ChangeLinkViewModel(true, "context2", "/dummy/url2")),
     TaxFreeAmountSummaryRowViewModel("Blah Blah Random Extra Row Content", "£11,111", ChangeLinkViewModel(false))
   )
   val taxFreeAmountSummaryViewModel: TaxFreeAmountSummaryViewModel =
-    TaxFreeAmountSummaryViewModel(Seq(
-      TaxFreeAmountSummaryCategoryViewModel("header1", "header2", false, true, messages("tai.taxFreeAmount.table.allowances.caption"), Seq(TaxFreeAmountSummaryRowViewModel("Personal Allowance" , "£11,500", ChangeLinkViewModel(false)))),
-      TaxFreeAmountSummaryCategoryViewModel("header3", "header4", true, false, "Additions to your Personal Allowance", rowViewModels),
-      TaxFreeAmountSummaryCategoryViewModel("header5", "header6", true, false, "Deductions from your Personal Allowance", Seq(TaxFreeAmountSummaryRowViewModel("An example single deduction benefit", "£12,300", ChangeLinkViewModel(true, "context1", "/dummy/url1")))),
-      TaxFreeAmountSummaryCategoryViewModel("header7", "header8", true, true, messages("tai.taxFreeAmount.table.totals.caption"), Seq(TaxFreeAmountSummaryRowViewModel("Your total tax-free amount", "£11,500", ChangeLinkViewModel(false))))
-  ))
-  val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", taxFreeAmountSummaryViewModel)
+    TaxFreeAmountSummaryViewModel(
+      Seq(
+        TaxFreeAmountSummaryCategoryViewModel(
+          "header1",
+          "header2",
+          false,
+          true,
+          messages("tai.taxFreeAmount.table.allowances.caption"),
+          Seq(TaxFreeAmountSummaryRowViewModel("Personal Allowance", "£11,500", ChangeLinkViewModel(false)))
+        ),
+        TaxFreeAmountSummaryCategoryViewModel(
+          "header3",
+          "header4",
+          true,
+          false,
+          "Additions to your Personal Allowance",
+          rowViewModels),
+        TaxFreeAmountSummaryCategoryViewModel(
+          "header5",
+          "header6",
+          true,
+          false,
+          "Deductions from your Personal Allowance",
+          Seq(
+            TaxFreeAmountSummaryRowViewModel(
+              "An example single deduction benefit",
+              "£12,300",
+              ChangeLinkViewModel(true, "context1", "/dummy/url1")))
+        ),
+        TaxFreeAmountSummaryCategoryViewModel(
+          "header7",
+          "header8",
+          true,
+          true,
+          messages("tai.taxFreeAmount.table.totals.caption"),
+          Seq(TaxFreeAmountSummaryRowViewModel("Your total tax-free amount", "£11,500", ChangeLinkViewModel(false)))
+        )
+      ))
+  val viewModel: TaxFreeAmountViewModel =
+    TaxFreeAmountViewModel("main heading", "main heading", "£2020", taxFreeAmountSummaryViewModel)
 
   override def view = views.html.taxFreeAmount(viewModel)
 }

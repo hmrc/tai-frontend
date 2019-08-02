@@ -35,7 +35,9 @@ class TaxYearObjectBinderSpec extends PlaySpec with FakeTaiPlayApplication {
 
         taxBinderResult.isRight mustBe true
 
-        taxBinderResult.right map { tbr => tbr mustBe testTaxYear  }
+        taxBinderResult.right map { tbr =>
+          tbr mustBe testTaxYear
+        }
       }
 
       "the supplied tax year isn't earlier than cy-4" in {
@@ -48,7 +50,9 @@ class TaxYearObjectBinderSpec extends PlaySpec with FakeTaiPlayApplication {
 
         taxBinderResult.isRight mustBe true
 
-        taxBinderResult.right map { tbr => tbr mustBe testTaxYear  }
+        taxBinderResult.right map { tbr =>
+          tbr mustBe testTaxYear
+        }
       }
     }
 
@@ -63,10 +67,11 @@ class TaxYearObjectBinderSpec extends PlaySpec with FakeTaiPlayApplication {
 
         taxBinderResult.isLeft mustBe true
 
-        taxBinderResult.left map { tbr => tbr mustBe s"The supplied value '${testTaxYear.year}' is not a currently supported tax year" }
+        taxBinderResult.left map { tbr =>
+          tbr mustBe s"The supplied value '${testTaxYear.year}' is not a currently supported tax year"
+        }
       }
     }
-
 
     "return a message stating that the tax year cannot be earlier than cy-4" when {
       "the supplied tax year is earlier than cy-4" in {
@@ -79,7 +84,9 @@ class TaxYearObjectBinderSpec extends PlaySpec with FakeTaiPlayApplication {
 
         taxBinderResult.isLeft mustBe true
 
-        taxBinderResult.left map { tbr => tbr mustBe s"The supplied value '${testTaxYear.year}' is not a currently supported tax year" }
+        taxBinderResult.left map { tbr =>
+          tbr mustBe s"The supplied value '${testTaxYear.year}' is not a currently supported tax year"
+        }
       }
     }
 
@@ -94,7 +101,9 @@ class TaxYearObjectBinderSpec extends PlaySpec with FakeTaiPlayApplication {
 
         taxBinderResult.isLeft mustBe true
 
-        taxBinderResult.left map { tbr => tbr mustBe s"The supplied value '$nonTaxYear' is not a valid tax year" }
+        taxBinderResult.left map { tbr =>
+          tbr mustBe s"The supplied value '$nonTaxYear' is not a valid tax year"
+        }
       }
     }
   }

@@ -23,4 +23,3 @@ case class UpdateTaxCodeIncomeRequest(amount: Int)
 object UpdateTaxCodeIncomeRequest {
   implicit val formats = Json.format[UpdateTaxCodeIncomeRequest]
 }
-

@@ -30,7 +30,10 @@ class TimeoutViewSpec extends TaiViewSpec {
     "contain the correct content" in {
       doc must haveParagraphWithText(Messages("tai.timeout.message"))
       doc must haveParagraphWithText(Messages("tai.timeout.message.pleaseLogin"))
-      doc must haveElementAtPathWithAttribute("a", "href", controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+      doc must haveElementAtPathWithAttribute(
+        "a",
+        "href",
+        controllers.routes.TaxAccountSummaryController.onPageLoad().url)
     }
   }
 

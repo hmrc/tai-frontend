@@ -44,7 +44,18 @@ class PaymentsServiceSpec extends PlaySpec {
       )
 
       val emptyAnnualAccounts = Seq.empty[AnnualAccount]
-      val employment = Employment("test employment", Some("EMPLOYER1"), testDate, None, emptyAnnualAccounts, "", "", 2, None, false, false)
+      val employment = Employment(
+        "test employment",
+        Some("EMPLOYER1"),
+        testDate,
+        None,
+        emptyAnnualAccounts,
+        "",
+        "",
+        2,
+        None,
+        false,
+        false)
 
       paymentsService.filterDuplicates(employment) mustBe Seq.empty[PaymentDetailsViewModel]
     }

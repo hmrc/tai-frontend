@@ -27,7 +27,8 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
 
   "removeBenefitTotalValue" must {
     behave like pageWithTitle(Messages("tai.remove.company.benefit.total.value.heading", benefitName, employerName))
-    behave like pageWithCombinedHeader(Messages("tai.benefits.ended.journey.preHeader"),
+    behave like pageWithCombinedHeader(
+      Messages("tai.benefits.ended.journey.preHeader"),
       Messages("tai.remove.company.benefit.total.value.heading", benefitName, employerName))
 
     behave like pageWithContinueButtonForm("/check-income-tax/remove-company-benefit/total-value-of-benefit")
@@ -53,7 +54,13 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
     }
     "contain summary with text and a hidden text" in {
       doc must haveSummaryWithText(Messages("tai.remove.company.benefit.total.value.whatHappens.link"))
-      doc must haveSpanWithText(Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.toString("yyyy"),TaxYear().end.toString("yyyy"), TaxYear().end.toString("d MMMM yyyy")))
+      doc must haveSpanWithText(
+        Messages(
+          "tai.remove.company.benefit.total.value.whatHappens.desc",
+          TaxYear().start.toString("yyyy"),
+          TaxYear().end.toString("yyyy"),
+          TaxYear().end.toString("d MMMM yyyy")
+        ))
     }
     "contain an input field with pound symbol appended" in {
       doc must haveElementAtPathWithId("input", "totalValue")
@@ -65,6 +72,8 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
   private lazy val employerName = "HMRC"
   private lazy val benefitName = "Other Benefit"
 
-  override def view: Html = views.html.benefits.removeBenefitTotalValue(BenefitViewModel(employerName, benefitName), CompanyBenefitTotalValueForm.form)
+  override def view: Html =
+    views.html.benefits
+      .removeBenefitTotalValue(BenefitViewModel(employerName, benefitName), CompanyBenefitTotalValueForm.form)
 
 }

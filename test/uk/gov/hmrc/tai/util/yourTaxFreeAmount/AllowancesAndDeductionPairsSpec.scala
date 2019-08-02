@@ -21,17 +21,19 @@ import uk.gov.hmrc.tai.model.CodingComponentPair
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain._
 
-
 class AllowancesAndDeductionPairsSpec extends PlaySpec {
 
-  private def createCodingComponent(allowance: TaxComponentType, employmentId: Option[Int], allowanceAmount: BigDecimal): CodingComponent = {
+  private def createCodingComponent(
+    allowance: TaxComponentType,
+    employmentId: Option[Int],
+    allowanceAmount: BigDecimal): CodingComponent =
     CodingComponent(allowance, employmentId, allowanceAmount, allowance.toString)
-  }
 
   "#fromCodingComponents" should {
     "return a AllowancesAndDeductionPairs" in {
       val expected = AllowancesAndDeductionPairs(Seq.empty[CodingComponentPair], Seq.empty[CodingComponentPair])
-      val actual = AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty[CodingComponent], Seq.empty[CodingComponent])
+      val actual =
+        AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty[CodingComponent], Seq.empty[CodingComponent])
 
       expected mustBe actual
     }
@@ -116,7 +118,8 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
           CodingComponentPair(OutstandingDebt, Some(456), None, Some(1000))
         )
 
-        val actual = AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
+        val actual =
+          AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
 
         allowancePairs mustBe actual.allowances
         deductionPairs mustBe actual.deductions

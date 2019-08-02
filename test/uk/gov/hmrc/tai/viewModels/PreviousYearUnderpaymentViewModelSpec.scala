@@ -52,12 +52,12 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
     }
   }
 
-
   val actuallyPaid = 900.00
 
   val codingComponents = Seq(
     CodingComponent(UnderPaymentFromPreviousYear, Some(1), 500.00, "UnderPaymentFromPreviousYear"),
-    CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear"))
+    CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")
+  )
 
   val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
   val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
@@ -66,20 +66,60 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
   val empName = "employer name"
   val previousYear = uk.gov.hmrc.tai.model.TaxYear().prev
 
-  val samplePayment = Payment(date = new LocalDate(2017, 5, 26), amountYearToDate = 2000, taxAmountYearToDate = 900,
-    nationalInsuranceAmountYearToDate = 1500, amount = 200, taxAmount = 100, nationalInsuranceAmount = 150, payFrequency = Monthly)
+  val samplePayment = Payment(
+    date = new LocalDate(2017, 5, 26),
+    amountYearToDate = 2000,
+    taxAmountYearToDate = 900,
+    nationalInsuranceAmountYearToDate = 1500,
+    amount = 200,
+    taxAmount = 100,
+    nationalInsuranceAmount = 150,
+    payFrequency = Monthly
+  )
   val sampleAnnualAccount = AnnualAccount("1-2-3", previousYear, Available, List(samplePayment), Nil)
 
-  val samplePayment2 = Payment(date = new LocalDate(2016, 5, 26), amountYearToDate = 5000, taxAmountYearToDate = 4000,
-    nationalInsuranceAmountYearToDate = 1500, amount = 200, taxAmount = 100, nationalInsuranceAmount = 150, payFrequency = Monthly)
+  val samplePayment2 = Payment(
+    date = new LocalDate(2016, 5, 26),
+    amountYearToDate = 5000,
+    taxAmountYearToDate = 4000,
+    nationalInsuranceAmountYearToDate = 1500,
+    amount = 200,
+    taxAmount = 100,
+    nationalInsuranceAmount = 150,
+    payFrequency = Monthly
+  )
   val sampleAnnualAccount2 = AnnualAccount("1-2-3", TaxYear(2016), Available, List(samplePayment), Nil)
 
-  val sampleEmployment1 = Employment(empName, None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false)
-  val sampleEmployment2 = Employment("emp2", None, new LocalDate(2017, 6, 10), None, Seq(sampleAnnualAccount), "taxNumber", "payeNumber", 2, None, false, false)
+  val sampleEmployment1 =
+    Employment(empName, None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false)
+  val sampleEmployment2 = Employment(
+    "emp2",
+    None,
+    new LocalDate(2017, 6, 10),
+    None,
+    Seq(sampleAnnualAccount),
+    "taxNumber",
+    "payeNumber",
+    2,
+    None,
+    false,
+    false)
   val sampleEmployments = List(sampleEmployment1, sampleEmployment2)
 
-  val sampleEmployment3 = Employment(empName, None, new LocalDate(2016, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false)
-  val sampleEmployment4 = Employment("emp2", None, new LocalDate(2016, 6, 10), None, Seq(sampleAnnualAccount2), "taxNumber", "payeNumber", 2, None, false, false)
+  val sampleEmployment3 =
+    Employment(empName, None, new LocalDate(2016, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false)
+  val sampleEmployment4 = Employment(
+    "emp2",
+    None,
+    new LocalDate(2016, 6, 10),
+    None,
+    Seq(sampleAnnualAccount2),
+    "taxNumber",
+    "payeNumber",
+    2,
+    None,
+    false,
+    false)
   val sampleEmployments2 = sampleEmployments ++ List(sampleEmployment3, sampleEmployment4)
 
 }

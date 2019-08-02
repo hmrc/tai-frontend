@@ -37,12 +37,10 @@ case class TaxYear(year: Int) extends Ordered[TaxYear] {
   def compare(that: TaxYear) = this.year compare that.year
   def twoDigitRange = s"${start.year.get % 100}-${end.year.get % 100}"
   def fourDigitRange = s"${start.year.get}-${end.year.get}"
-  def within(currentDate: LocalDate): Boolean = {
+  def within(currentDate: LocalDate): Boolean =
     (currentDate.isEqual(start) || currentDate.isAfter(start)) &&
       (currentDate.isBefore(end) || currentDate.isEqual(end))
-  }
 }
-
 
 object TaxYear {
   def apply(from: LocalDate = new LocalDate): TaxYear = {
@@ -67,8 +65,8 @@ object TaxYear {
           val year = yearStr.toInt
           val century = Option(cenStr).filter(_.nonEmpty) match {
             case None if year > CUT_OFF_YEAR => NINETEENTH_CENTURY
-            case None => TWENTIETH_CENTURY
-            case Some(x) => x.toInt * CENTURY
+            case None                        => TWENTIETH_CENTURY
+            case Some(x)                     => x.toInt * CENTURY
           }
           Some(century + year)
         }
@@ -78,7 +76,7 @@ object TaxYear {
 
     from match {
       case Year(year) => TaxYear(year)
-      case YearRange(Year(fYear),Year(tYear)) if tYear == fYear + 1 =>
+      case YearRange(Year(fYear), Year(tYear)) if tYear == fYear + 1 =>
         TaxYear(fYear)
       case x => throw new IllegalArgumentException(s"Cannot parse $x")
     }
@@ -97,7 +95,7 @@ object TaxYear {
   implicit val formatTaxYear = new Format[TaxYear] {
     override def reads(j: JsValue): JsResult[TaxYear] = j match {
       case JsNumber(n) => JsSuccess(TaxYear(n.toInt))
-      case x => JsError(s"Expected JsNumber, found $x")
+      case x           => JsError(s"Expected JsNumber, found $x")
     }
     override def writes(v: TaxYear): JsValue = JsNumber(v.year)
   }

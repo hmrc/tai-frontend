@@ -40,18 +40,14 @@ import uk.gov.hmrc.tai.util.constants.AuditConstants
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class PotentialUnderpaymentControllerSpec extends PlaySpec
-  with FakeTaiPlayApplication
-  with MockitoSugar
-  with AuditConstants
-  with I18nSupport
-  with BeforeAndAfterEach {
+class PotentialUnderpaymentControllerSpec
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with AuditConstants with I18nSupport
+    with BeforeAndAfterEach {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(auditService)
-  }
 
   val nino = new Generator().nextNino
 
@@ -66,9 +62,10 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
       "processing a TaxAccountSummary with no CY+1 amount" in {
         val sut = new SUT()
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-          Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](
-            TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
-          ))
+          Future.successful(
+            TaiSuccessResponseWithPayload[TaxAccountSummary](
+              TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
+            ))
         )
         val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         val doc = Jsoup.parse(contentAsString(res))
@@ -80,9 +77,10 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
       "processing a TaxAccountSummary with a CY+1 amount" in {
         val sut = new SUT()
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-          Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](
-            TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
-          ))
+          Future.successful(
+            TaiSuccessResponseWithPayload[TaxAccountSummary](
+              TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
+            ))
         )
         val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         val doc = Jsoup.parse(contentAsString(res))
@@ -92,12 +90,15 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
     }
     "raise an in year adjustment audit events" in {
       val sut = new SUT()
-      Await.result(sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap)), 5 seconds)
-      verify(auditService, times(1)).createAndSendAuditEvent(Matchers.eq(PotentialUnderpayment_InYearAdjustment), any())(any(), any())
+      Await
+        .result(sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap)), 5 seconds)
+      verify(auditService, times(1))
+        .createAndSendAuditEvent(Matchers.eq(PotentialUnderpayment_InYearAdjustment), any())(any(), any())
     }
     "return the service unavailable error page in response to an internal error" in {
       val sut = new SUT()
-      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.failed(new ForbiddenException("")))
+      when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        .thenReturn(Future.failed(new ForbiddenException("")))
       val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
       status(res) mustBe INTERNAL_SERVER_ERROR
       val doc = Jsoup.parse(contentAsString(res))
@@ -108,28 +109,31 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
   val codingComponentService = mock[CodingComponentService]
   val auditService = mock[AuditService]
   val taxAccountService = mock[TaxAccountService]
-  val referralMap = Map("Referer" ->"http://somelocation/somePageResource")
+  val referralMap = Map("Referer" -> "http://somelocation/somePageResource")
 
-  private class SUT() extends PotentialUnderpaymentController(
-    taxAccountService,
-    codingComponentService,
-    auditService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  ) {
+  private class SUT()
+      extends PotentialUnderpaymentController(
+        taxAccountService,
+        codingComponentService,
+        auditService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      ) {
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-      Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](
-        TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
-      ))
+      Future.successful(
+        TaiSuccessResponseWithPayload[TaxAccountSummary](
+          TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
+        ))
     )
 
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
-      Future.successful(Seq(
-        CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
-        CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")
-      ))
+      Future.successful(
+        Seq(
+          CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
+          CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")
+        ))
     )
   }
 

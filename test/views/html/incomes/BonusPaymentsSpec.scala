@@ -30,7 +30,8 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesCon
 
   val employer = IncomeSource(id = 1, name = "Employer")
 
-  val emptySelectionErrorMessage = messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
+  val emptySelectionErrorMessage = messages(
+    "tai.bonusPayments.error.form.incomes.radioButton.mandatory",
     TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
   val bonusPaymentsForm = BonusPaymentsForm.createForm
   val choice = YesNoForm.YesNoChoice
@@ -42,7 +43,8 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesCon
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeader(
       messages("tai.bonusPayments.preHeading", employer.name),
-      messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited))
+      messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited)
+    )
     behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
     behave like pageWithContinueButtonForm("/check-income-tax/update-income/bonus-payments")
 
@@ -68,7 +70,7 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesCon
 
       val errorView = views.html.incomes.bonusPayments(invalidatedForm, employer)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
-      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage),"error-message")
+      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
     }
 
   }

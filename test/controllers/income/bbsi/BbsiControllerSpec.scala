@@ -38,11 +38,8 @@ import uk.gov.hmrc.tai.util.constants.BankAccountDecisionConstants
 import scala.concurrent.Future
 import scala.util.Random
 
-class BbsiControllerSpec extends PlaySpec
-  with MockitoSugar
-  with FakeTaiPlayApplication
-  with I18nSupport
-  with BankAccountDecisionConstants {
+class BbsiControllerSpec
+    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with BankAccountDecisionConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -181,8 +178,8 @@ class BbsiControllerSpec extends PlaySpec
 
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          BankAccountDecision -> UpdateInterest))
+        val result = sut.handleDecisionPage(0)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(BankAccountDecision -> UpdateInterest))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.BbsiUpdateAccountController.captureInterest(0).url
@@ -197,8 +194,8 @@ class BbsiControllerSpec extends PlaySpec
 
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          BankAccountDecision -> CloseAccount))
+        val result = sut.handleDecisionPage(0)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(BankAccountDecision -> CloseAccount))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.BbsiCloseAccountController.captureCloseDate(0).url
@@ -213,8 +210,8 @@ class BbsiControllerSpec extends PlaySpec
 
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          BankAccountDecision -> RemoveAccount))
+        val result = sut.handleDecisionPage(0)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(BankAccountDecision -> RemoveAccount))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.BbsiRemoveAccountController.checkYourAnswers(0).url
@@ -229,14 +226,15 @@ class BbsiControllerSpec extends PlaySpec
 
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          BankAccountDecision -> "somethingElseNotHandled"))
+        val result = sut.handleDecisionPage(0)(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(BankAccountDecision -> "somethingElseNotHandled"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.BbsiController.accounts().url
       }
     }
-
 
     "return BadRequest" when {
       "no form data is posted" in {
@@ -258,8 +256,8 @@ class BbsiControllerSpec extends PlaySpec
         val sut = createSUT
         when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          BankAccountDecision -> ""))
+        val result = sut.handleDecisionPage(0)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(BankAccountDecision -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -272,8 +270,8 @@ class BbsiControllerSpec extends PlaySpec
         val sut = createSUT
         when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(emptyBankAccount)))
 
-        val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          BankAccountDecision -> ""))
+        val result = sut.handleDecisionPage(0)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(BankAccountDecision -> ""))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -285,8 +283,8 @@ class BbsiControllerSpec extends PlaySpec
 
         when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          BankAccountDecision -> ""))
+        val result = sut.handleDecisionPage(0)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(BankAccountDecision -> ""))
         status(result) mustBe NOT_FOUND
       }
     }
@@ -302,12 +300,13 @@ class BbsiControllerSpec extends PlaySpec
   val bbsiService = mock[BbsiService]
   val journeyCacheService = mock[JourneyCacheService]
 
-  class SUT extends BbsiController(
-    bbsiService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    journeyCacheService,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  )
+  class SUT
+      extends BbsiController(
+        bbsiService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        journeyCacheService,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      )
 }

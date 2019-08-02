@@ -21,9 +21,8 @@ import controllers.FakeTaiPlayApplication
 import org.scalatest.MustMatchers
 import org.scalatestplus.play.PlaySpec
 
-
 class ReferralSpec extends PlaySpec with MustMatchers with FakeTaiPlayApplication {
-  val referral = new Referral{}
+  val referral = new Referral {}
 
   "referer" must {
     "return a string containing the referral path" in {

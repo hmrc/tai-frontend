@@ -40,7 +40,8 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "fetch the correct Url" in {
       val sut = createSUT
       val nino = generateNino
-      sut.companyCarEmploymentUrl(nino, employmentId) mustBe s"${sut.serviceUrl}/tai/$nino/tax-account/tax-components/employments/$employmentId/benefits/company-car"
+      sut
+        .companyCarEmploymentUrl(nino, employmentId) mustBe s"${sut.serviceUrl}/tai/$nino/tax-account/tax-components/employments/$employmentId/benefits/company-car"
     }
   }
 
@@ -60,7 +61,8 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         val sut = createSUT
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(corruptJsonResponse))
 
-        val ex = the[JsResultException] thrownBy Await.result(sut.companyCarBenefitForEmployment(generateNino, employmentId), 5 seconds)
+        val ex = the[JsResultException] thrownBy Await
+          .result(sut.companyCarBenefitForEmployment(generateNino, employmentId), 5 seconds)
         ex.getMessage must include("List(ValidationError(List(error.path.missing)")
       }
     }
@@ -75,12 +77,13 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       val carSeqNum = 10
       val employmentSeqNum = 11
       val withdrawCarAndFuel = WithdrawCarAndFuel(10, carWithdrawDate, fuelWithdrawDate)
-      val url = s"${sut.companyCarEmploymentUrl(nino, employmentSeqNum)}/${carSeqNum}/withdrawn"
+      val url = s"${sut.companyCarEmploymentUrl(nino, employmentSeqNum)}/$carSeqNum/withdrawn"
 
-      when(httpHandler.putToApi(Matchers.eq(url), Matchers.eq(withdrawCarAndFuel))(any(), any(), any())).
-        thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson("123456")))))
+      when(httpHandler.putToApi(Matchers.eq(url), Matchers.eq(withdrawCarAndFuel))(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson("123456")))))
 
-      val result = Await.result(sut.withdrawCompanyCarAndFuel(nino, employmentSeqNum, carSeqNum, withdrawCarAndFuel), 5 seconds)
+      val result =
+        Await.result(sut.withdrawCompanyCarAndFuel(nino, employmentSeqNum, carSeqNum, withdrawCarAndFuel), 5 seconds)
 
       result mustBe TaiSuccessResponse
     }
@@ -108,7 +111,8 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
       "company car service returns a failure response" in {
         val sut = createSUT
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new HttpException("company car strange response", UNPROCESSABLE_ENTITY)))
+        when(httpHandler.getFromApi(any())(any()))
+          .thenReturn(Future.failed(new HttpException("company car strange response", UNPROCESSABLE_ENTITY)))
 
         val result = sut.companyCarsForCurrentYearEmployments(generateNino)
         Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
@@ -117,14 +121,18 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
   }
 
-  val companyCar: CompanyCarBenefit = CompanyCarBenefit(10,
+  val companyCar: CompanyCarBenefit = CompanyCarBenefit(
+    10,
     1000,
-    List(CompanyCar(10,
-      "Make Model",
-      hasActiveFuelBenefit = true,
-      dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-      dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
-      dateWithdrawn = None)),
+    List(
+      CompanyCar(
+        10,
+        "Make Model",
+        hasActiveFuelBenefit = true,
+        dateMadeAvailable = Some(new LocalDate("2016-10-10")),
+        dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
+        dateWithdrawn = None
+      )),
     Some(1)
   )
 
@@ -132,23 +140,26 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     Json.obj(
       "data" -> Json.obj(
         "employmentSeqNo" -> 10,
-        "grossAmount" -> 1000,
+        "grossAmount"     -> 1000,
         "companyCars" -> Json.arr(
           Json.obj(
-            "carSeqNo" -> 10,
-            "makeModel" -> "Make Model",
-            "hasActiveFuelBenefit" -> true,
-            "dateMadeAvailable" -> "2016-10-10",
-            "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11")),
-        "version" -> 1),
-      "links" -> Json.arr())
+            "carSeqNo"                           -> 10,
+            "makeModel"                          -> "Make Model",
+            "hasActiveFuelBenefit"               -> true,
+            "dateMadeAvailable"                  -> "2016-10-10",
+            "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
+          )),
+        "version" -> 1
+      ),
+      "links" -> Json.arr()
+    )
 
   val corruptJsonResponse: JsObject =
     Json.obj(
       "data" -> Json.obj(
         "companyCars" -> Json.arr(
           Json.obj(
-            "carSeqNo" -> 10,
+            "carSeqNo"  -> 10,
             "makeModel" -> "Make Model"
           ))
       )
@@ -157,25 +168,23 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
   val companyCars: JsObject =
     Json.obj(
       "data" -> Json.obj(
-        "companyCarBenefits" -> Json.arr(
-          Json.obj(
-            "employmentSeqNo" -> 10,
-            "grossAmount" -> 1000,
-            "companyCars" -> Json.arr(
-              Json.obj(
-                "carSeqNo" -> 10,
-                "makeModel" -> "Make Model",
-                "hasActiveFuelBenefit" -> true,
-                "dateMadeAvailable" -> "2016-10-10",
-                "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11")),
-            "version" -> 1))),
-      "links" -> Json.arr())
+        "companyCarBenefits" -> Json.arr(Json.obj(
+          "employmentSeqNo" -> 10,
+          "grossAmount"     -> 1000,
+          "companyCars" -> Json.arr(Json.obj(
+            "carSeqNo"                           -> 10,
+            "makeModel"                          -> "Make Model",
+            "hasActiveFuelBenefit"               -> true,
+            "dateMadeAvailable"                  -> "2016-10-10",
+            "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
+          )),
+          "version" -> 1
+        ))),
+      "links" -> Json.arr()
+    )
 
   val emptyCompanyCars: JsObject =
-    Json.obj(
-      "data" -> Json.obj(
-        "companyCarBenefits" -> Json.arr()),
-      "links" -> Json.arr())
+    Json.obj("data" -> Json.obj("companyCarBenefits" -> Json.arr()), "links" -> Json.arr())
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -187,7 +196,7 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  private class SUT extends CompanyCarConnector (httpHandler) {
+  private class SUT extends CompanyCarConnector(httpHandler) {
     override val serviceUrl: String = "mockUrl"
   }
 

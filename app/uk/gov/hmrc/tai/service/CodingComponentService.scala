@@ -28,35 +28,36 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 
-class CodingComponentService @Inject()(taxAccountConnector: TaxAccountConnector, taxFreeAmountComparisonConnector: TaxFreeAmountComparisonConnector) {
+class CodingComponentService @Inject()(
+  taxAccountConnector: TaxAccountConnector,
+  taxFreeAmountComparisonConnector: TaxFreeAmountComparisonConnector) {
 
-  def taxFreeAmountComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] = {
+  def taxFreeAmountComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] =
     taxAccountConnector.codingComponents(nino, year) map {
-      case TaiSuccessResponseWithPayload(codingComponents: Seq[CodingComponent]) => filterOutZeroAmountsComponents(codingComponents)
+      case TaiSuccessResponseWithPayload(codingComponents: Seq[CodingComponent]) =>
+        filterOutZeroAmountsComponents(codingComponents)
       case TaiTaxAccountFailureResponse(e) => throw new RuntimeException(e)
-      case _ => throw new RuntimeException("could not fetch coding components")
+      case _                               => throw new RuntimeException("could not fetch coding components")
     }
-  }
 
-  def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] = {
+  def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] =
     taxFreeAmountComparisonConnector.taxFreeAmountComparison(nino) map {
-      case TaiSuccessResponseWithPayload(taxFreeAmountComparison: TaxFreeAmountComparison) => filterOutZeroAmountsComponents(taxFreeAmountComparison)
+      case TaiSuccessResponseWithPayload(taxFreeAmountComparison: TaxFreeAmountComparison) =>
+        filterOutZeroAmountsComponents(taxFreeAmountComparison)
       case TaiTaxAccountFailureResponse(e) => throw new RuntimeException(e)
-      case _ => throw new RuntimeException("Could not fetch tax free amount comparison")
+      case _                               => throw new RuntimeException("Could not fetch tax free amount comparison")
     }
-  }
 
-  private def filterOutZeroAmountsComponents(taxFreeAmountComparison: TaxFreeAmountComparison): TaxFreeAmountComparison = {
+  private def filterOutZeroAmountsComponents(
+    taxFreeAmountComparison: TaxFreeAmountComparison): TaxFreeAmountComparison =
     TaxFreeAmountComparison(
       filterOutZeroAmountsComponents(taxFreeAmountComparison.previous),
       filterOutZeroAmountsComponents(taxFreeAmountComparison.current)
     )
-  }
 
-  private def filterOutZeroAmountsComponents(codingComponents: Seq[CodingComponent]): Seq[CodingComponent] = {
+  private def filterOutZeroAmountsComponents(codingComponents: Seq[CodingComponent]): Seq[CodingComponent] =
     codingComponents.filter {
       case component if component.amount == 0 => false
-      case _ => true
+      case _                                  => true
     }
-  }
 }

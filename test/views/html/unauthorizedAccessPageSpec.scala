@@ -18,7 +18,7 @@ package views.html
 
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class unauthorizedAccessPageSpec extends TaiViewSpec{
+class unauthorizedAccessPageSpec extends TaiViewSpec {
 
   override def view = views.html.unauthorizeAccess()
 

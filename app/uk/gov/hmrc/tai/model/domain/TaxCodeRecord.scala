@@ -21,14 +21,14 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.tai.model.domain.income.BasisOfOperation
 
 case class TaxCodeRecord(
-                          taxCode: String,
-                          startDate: LocalDate,
-                          endDate: LocalDate,
-                          basisOfOperation: BasisOfOperation,
-                          employerName: String,
-                          pensionIndicator: Boolean,
-                          payrollNumber: Option[String],
-                          primary: Boolean)
+  taxCode: String,
+  startDate: LocalDate,
+  endDate: LocalDate,
+  basisOfOperation: BasisOfOperation,
+  employerName: String,
+  pensionIndicator: Boolean,
+  payrollNumber: Option[String],
+  primary: Boolean)
 
 object TaxCodeRecord {
   implicit val format = Json.format[TaxCodeRecord]

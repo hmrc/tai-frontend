@@ -36,39 +36,44 @@ import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 
 import scala.util.control.NonFatal
 
-class IncomeSourceSummaryController @Inject()(val auditConnector: AuditConnector,
-                                              taxAccountService: TaxAccountService,
-                                              employmentService: EmploymentService,
-                                              benefitsService: BenefitsService,
-                                              estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
-                                              authenticate: AuthAction,
-                                              validatePerson: ValidatePerson,
-                                              override implicit val partialRetriever: FormPartialRetriever,
-                                              override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with FeatureTogglesConfig {
+class IncomeSourceSummaryController @Inject()(
+  val auditConnector: AuditConnector,
+  taxAccountService: TaxAccountService,
+  employmentService: EmploymentService,
+  benefitsService: BenefitsService,
+  estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController with FeatureTogglesConfig {
 
-  def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      val taiUser = request.taiUser
-      val nino = taiUser.nino
+  def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    val taiUser = request.taiUser
+    val nino = taiUser.nino
 
-      (for {
-        taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-        employmentDetails <- employmentService.employment(nino, empId)
-        benefitsDetails <- benefitsService.benefits(nino, TaxYear().year)
-        estimatedPayCompletion <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
-      } yield {
-        (taxCodeIncomeDetails, employmentDetails) match {
-          case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-            val incomeDetailsViewModel = IncomeSourceSummaryViewModel(empId, taiUser.getDisplayName, taxCodeIncomes,
-              employment, benefitsDetails, estimatedPayCompletion)
+    (for {
+      taxCodeIncomeDetails   <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+      employmentDetails      <- employmentService.employment(nino, empId)
+      benefitsDetails        <- benefitsService.benefits(nino, TaxYear().year)
+      estimatedPayCompletion <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
+    } yield {
+      (taxCodeIncomeDetails, employmentDetails) match {
+        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+          val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
+            empId,
+            taiUser.getDisplayName,
+            taxCodeIncomes,
+            employment,
+            benefitsDetails,
+            estimatedPayCompletion)
 
-            implicit val user = request.taiUser
-            Ok(views.html.IncomeSourceSummary(incomeDetailsViewModel))
-          case _ => throw new RuntimeException("Error while fetching income summary details")
-        }
-      }) recover {
-        case NonFatal(e) => internalServerError("IncomeSourceSummaryController exception", Some(e))
+          implicit val user = request.taiUser
+          Ok(views.html.IncomeSourceSummary(incomeDetailsViewModel))
+        case _ => throw new RuntimeException("Error while fetching income summary details")
       }
+    }) recover {
+      case NonFatal(e) => internalServerError("IncomeSourceSummaryController exception", Some(e))
+    }
   }
 }

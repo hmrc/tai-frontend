@@ -83,11 +83,12 @@ class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstant
       val invalidatedForm = duplicateSubmissionWarningForm.bind(invalidChoice)
       val emptySelectionErrorMessage = messages("tai.pension.warning.error")
 
-      val errorView = views.html.pensions.duplicateSubmissionWarning(invalidatedForm, pensionName ,pensionId)
+      val errorView = views.html.pensions.duplicateSubmissionWarning(invalidatedForm, pensionName, pensionId)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
-      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage),"error-message")
+      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
     }
   }
 
-  override def view: Html = views.html.pensions.duplicateSubmissionWarning(duplicateSubmissionWarningForm, pensionName, pensionId)
+  override def view: Html =
+    views.html.pensions.duplicateSubmissionWarning(duplicateSubmissionWarningForm, pensionName, pensionId)
 }

@@ -21,7 +21,8 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 
-class UpdateIncomeDetailsDecisionFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport with FormValuesConstants {
+class UpdateIncomeDetailsDecisionFormSpec
+    extends PlaySpec with OneAppPerSuite with I18nSupport with FormValuesConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 

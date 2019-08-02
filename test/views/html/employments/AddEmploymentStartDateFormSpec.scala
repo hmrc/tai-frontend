@@ -28,12 +28,14 @@ class AddEmploymentStartDateFormSpec extends TaiViewSpec {
   private val addDateForm = EmploymentAddDateForm(employmentName)
   private val globalErrorMessage: String = "day error message"
   private val formWithErrors: Form[LocalDate] = addDateForm.form.withError("", globalErrorMessage)
-  private lazy val employmentStartDateForm: Form[LocalDate] = addDateForm.form.bind(Map(
-    addDateForm.EmploymentFormDay -> "1",
-    "month" -> "1",
-    "year" -> "2017"
-  ))
-  override def view: Html = views.html.employments.add_employment_start_date_form(employmentStartDateForm, employmentName)
+  private lazy val employmentStartDateForm: Form[LocalDate] = addDateForm.form.bind(
+    Map(
+      addDateForm.EmploymentFormDay -> "1",
+      "month"                       -> "1",
+      "year"                        -> "2017"
+    ))
+  override def view: Html =
+    views.html.employments.add_employment_start_date_form(employmentStartDateForm, employmentName)
 
   "Add employment start date form" should {
     behave like pageWithTitle(messages("tai.addEmployment.startDateForm.pagetitle"))

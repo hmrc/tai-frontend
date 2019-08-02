@@ -25,83 +25,65 @@ import play.api.Logger
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class JourneyCacheService @Inject() (val journeyName: String,
-                                     journeyCacheConnector: JourneyCacheConnector) {
+class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnector: JourneyCacheConnector) {
 
-
-  def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     currentValueAs[String](key, identity)
-  }
 
-  def currentValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Option[Int]] = {
+  def currentValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Option[Int]] =
     currentValueAs[Int](key, string => string.toInt)
-  }
 
-  def currentValueAsBoolean(key: String)(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
+  def currentValueAsBoolean(key: String)(implicit hc: HeaderCarrier): Future[Option[Boolean]] =
     currentValueAs[Boolean](key, string => string.toBoolean)
-  }
 
-  def currentValueAsDate(key: String)(implicit hc: HeaderCarrier): Future[Option[LocalDate]] = {
+  def currentValueAsDate(key: String)(implicit hc: HeaderCarrier): Future[Option[LocalDate]] =
     currentValueAs[LocalDate](key, string => LocalDate.parse(string))
-  }
 
   @deprecated("Use mandatoryJourneyValue")
-  def mandatoryValue(key: String)(implicit hc: HeaderCarrier): Future[String] = {
+  def mandatoryValue(key: String)(implicit hc: HeaderCarrier): Future[String] =
     mandatoryValueAs[String](key, identity)
-  }
 
-  def mandatoryJourneyValue(key: String)(implicit hc: HeaderCarrier): Future[Either[String, String]] = {
+  def mandatoryJourneyValue(key: String)(implicit hc: HeaderCarrier): Future[Either[String, String]] =
     mandatoryJourneyValueAs[String](key, identity)
-  }
 
-
-  def mandatoryJourneyValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Either[String, Int]] = {
+  def mandatoryJourneyValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Either[String, Int]] =
     mandatoryJourneyValueAs[Int](key, string => string.toInt)
-  }
 
   @deprecated("Use mandatoryJourneyValueAsInt")
-  def mandatoryValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Int] = {
+  def mandatoryValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Int] =
     mandatoryValueAs[Int](key, string => string.toInt)
-  }
 
-  def mandatoryValueAsBoolean(key: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def mandatoryValueAsBoolean(key: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     mandatoryValueAs[Boolean](key, string => string.toBoolean)
-  }
 
-  def mandatoryValueAsDate(key: String)(implicit hc: HeaderCarrier): Future[LocalDate] = {
+  def mandatoryValueAsDate(key: String)(implicit hc: HeaderCarrier): Future[LocalDate] =
     mandatoryValueAs[LocalDate](key, string => LocalDate.parse(string))
-  }
 
-
-  def mandatoryJourneyValues(keys : String*)(implicit hc: HeaderCarrier): Future[Either[String, Seq[String]]] = {
+  def mandatoryJourneyValues(keys: String*)(implicit hc: HeaderCarrier): Future[Either[String, Seq[String]]] =
     for {
       cache <- currentCache
     } yield {
       mappedMandatory(cache, keys)
     }
-  }
 
   @deprecated("Use mandatoryJourneyValues")
-  def mandatoryValues(keys : String*)(implicit hc: HeaderCarrier): Future[Seq[String]] = {
+  def mandatoryValues(keys: String*)(implicit hc: HeaderCarrier): Future[Seq[String]] =
     for {
       cache <- currentCache
     } yield {
       mappedMandatoryDeprecated(cache, keys)
     }
-  }
 
-  def optionalValues(keys: String*)(implicit hc: HeaderCarrier): Future[Seq[Option[String]]] = {
+  def optionalValues(keys: String*)(implicit hc: HeaderCarrier): Future[Seq[Option[String]]] =
     for {
       cache <- currentCache
     } yield {
       mappedOptional(cache, keys)
     }
-  }
 
   @deprecated("Use collectedJourneyValues")
-  def collectedValues(mandatoryValues: Seq[String], optionalValues: Seq[String])(implicit hc: HeaderCarrier):
-    Future[(Seq[String], Seq[Option[String]])] = {
-
+  def collectedValues(mandatoryValues: Seq[String], optionalValues: Seq[String])(
+    implicit hc: HeaderCarrier): Future[(Seq[String], Seq[Option[String]])] =
     for {
       cache <- currentCache
     } yield {
@@ -109,11 +91,9 @@ class JourneyCacheService @Inject() (val journeyName: String,
       val optionalResult = mappedOptional(cache, optionalValues)
       (mandatoryResult, optionalResult)
     }
-  }
 
-  def collectedJourneyValues(mandatoryValues: Seq[String], optionalValues: Seq[String])(implicit hc: HeaderCarrier):
-    Future[(Either[String, Seq[String]], Seq[Option[String]])]
-     = {
+  def collectedJourneyValues(mandatoryValues: Seq[String], optionalValues: Seq[String])(
+    implicit hc: HeaderCarrier): Future[(Either[String, Seq[String]], Seq[Option[String]])] =
     for {
       cache <- currentCache
     } yield {
@@ -121,8 +101,6 @@ class JourneyCacheService @Inject() (val journeyName: String,
       val optionalResult = mappedOptional(cache, optionalValues)
       (mandatoryResult, optionalResult)
     }
-  }
-
 
   private def mappedMandatory(cache: Map[String, String], mandatoryValues: Seq[String]): Either[String, Seq[String]] = {
 
@@ -136,54 +114,49 @@ class JourneyCacheService @Inject() (val journeyName: String,
       }
     }
 
-   if (allPresentValues.size == mandatoryValues.size) Right(allPresentValues) else Left("Mandatory values missing from cache")
+    if (allPresentValues.size == mandatoryValues.size) Right(allPresentValues)
+    else Left("Mandatory values missing from cache")
   }
 
   @deprecated("Use mappedMandatory")
-  private def mappedMandatoryDeprecated(cache: Map[String, String], mandatoryValues: Seq[String]): Seq[String] = {
+  private def mappedMandatoryDeprecated(cache: Map[String, String], mandatoryValues: Seq[String]): Seq[String] =
     mandatoryValues map { key =>
       cache.get(key) match {
         case Some(str) if !str.trim.isEmpty => str
-        case _ => throw new RuntimeException(s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
+        case _ =>
+          throw new RuntimeException(
+            s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
       }
     }
-  }
 
-  private def mappedOptional(cache: Map[String, String], optionalValues: Seq[String]): Seq[Option[String]] = {
+  private def mappedOptional(cache: Map[String, String], optionalValues: Seq[String]): Seq[Option[String]] =
     optionalValues map { key =>
       cache.get(key) match {
         case found @ Some(str) if !str.trim.isEmpty => found
-        case _ => None
+        case _                                      => None
       }
     }
-  }
 
-  def currentCache(implicit hc: HeaderCarrier): Future[Map[String,String]] = {
+  def currentCache(implicit hc: HeaderCarrier): Future[Map[String, String]] =
     journeyCacheConnector.currentCache(journeyName)
-  }
 
-  def currentValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[Option[T]] = {
+  def currentValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[Option[T]] =
     journeyCacheConnector.currentValueAs[T](journeyName, key, convert)
-  }
 
-  def mandatoryJourneyValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[Either[String, T]] = {
+  def mandatoryJourneyValueAs[T](key: String, convert: String => T)(
+    implicit hc: HeaderCarrier): Future[Either[String, T]] =
     journeyCacheConnector.mandatoryJourneyValueAs[T](journeyName, key, convert)
-  }
 
   @deprecated("Use mandatoryJourneyValueAs")
-  def mandatoryValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[T] = {
+  def mandatoryValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[T] =
     journeyCacheConnector.mandatoryValueAs[T](journeyName, key, convert)
-  }
 
-  def cache(key: String, value: String)(implicit hc: HeaderCarrier): Future[Map[String,String]] = {
-    journeyCacheConnector.cache(journeyName, Map(key->value))
-  }
+  def cache(key: String, value: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
+    journeyCacheConnector.cache(journeyName, Map(key -> value))
 
-  def cache(data: Map[String,String])(implicit hc: HeaderCarrier): Future[Map[String,String]] = {
+  def cache(data: Map[String, String])(implicit hc: HeaderCarrier): Future[Map[String, String]] =
     journeyCacheConnector.cache(journeyName, data)
-  }
 
-  def flush()(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def flush()(implicit hc: HeaderCarrier): Future[TaiResponse] =
     journeyCacheConnector.flush(journeyName)
-  }
 }

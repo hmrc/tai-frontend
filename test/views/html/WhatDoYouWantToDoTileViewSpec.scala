@@ -37,7 +37,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))
     behave like pageWithHeader(messages("your.paye.income.tax.overview"))
 
-
     "display cards correctly" when {
       "CY+1 is not enabled" in {
 
@@ -62,9 +61,11 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
         cards.size mustBe 3
         cards.toString must include(Messages("current.tax.year"))
-        doc(nextYearView) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
+        doc(nextYearView) must haveParagraphWithText(
+          Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
         cards.toString must include(Messages("next.year"))
-        doc(nextYearView) must haveParagraphWithText(Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(yearsFromNow = 1)))
+        doc(nextYearView) must haveParagraphWithText(
+          Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(yearsFromNow = 1)))
         cards.toString must include(Messages("earlier"))
         cards.toString must include(Messages("check.tax.previous.years"))
       }
@@ -109,12 +110,12 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
   }
 
-  def createViewModel(isAnyIFormInProgress: TimeToProcess,
-                      isCyPlusOneEnabled: Boolean,
-                      hasTaxCodeChanged: Boolean = false,
-                      taxCodeMismatch: Option[TaxCodeMismatch] = None): WhatDoYouWantToDoViewModel = {
+  def createViewModel(
+    isAnyIFormInProgress: TimeToProcess,
+    isCyPlusOneEnabled: Boolean,
+    hasTaxCodeChanged: Boolean = false,
+    taxCodeMismatch: Option[TaxCodeMismatch] = None): WhatDoYouWantToDoViewModel =
     WhatDoYouWantToDoViewModel(isAnyIFormInProgress, isCyPlusOneEnabled, hasTaxCodeChanged, taxCodeMismatch)
-  }
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 

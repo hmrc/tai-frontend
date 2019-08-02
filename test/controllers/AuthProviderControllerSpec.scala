@@ -61,7 +61,5 @@ class AuthProviderControllerSpec extends PlaySpec with FakeTaiPlayApplication {
 
   def createSUT = new AuthProviderControllerTest
 
-  class AuthProviderControllerTest extends AuthProviderController {
-
-  }
+  class AuthProviderControllerTest extends AuthProviderController {}
 }

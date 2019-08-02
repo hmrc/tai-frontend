@@ -34,9 +34,8 @@ class TaxFreeInfoSpec extends PlaySpec with FakeTaiPlayApplication with MockitoS
   val taxAccountCalculatorMock = mock[TaxAccountCalculator]
   val taxFreeAmount = 123
 
-  def createCodingComponent(allowance: AllowanceComponentType, allowanceAmount: BigDecimal) = {
+  def createCodingComponent(allowance: AllowanceComponentType, allowanceAmount: BigDecimal) =
     CodingComponent(allowance, Some(123), allowanceAmount, allowance.toString())
-  }
 
   "#apply" should {
     when(taxAccountCalculatorMock.taxFreeAmount(any())).thenReturn(taxFreeAmount)
@@ -49,14 +48,16 @@ class TaxFreeInfoSpec extends PlaySpec with FakeTaiPlayApplication with MockitoS
     }
 
     "calculate the annual tax free amount" in {
-      val codingComponents = Seq(CodingComponent(MarriageAllowanceReceived, Some(taxFreeAmount), 5885, "MarriageAllowanceReceived"))
+      val codingComponents =
+        Seq(CodingComponent(MarriageAllowanceReceived, Some(taxFreeAmount), 5885, "MarriageAllowanceReceived"))
       val expected = TaxFreeInfo(date, taxFreeAmount, 0)
 
       TaxFreeInfo(date, codingComponents, taxAccountCalculatorMock) mustBe expected
     }
 
     "calculate the personal allowance" in {
-      val codingComponents = Seq(CodingComponent(PersonalAllowancePA, Some(taxFreeAmount), 11850, "MarriageAllowanceReceived"))
+      val codingComponents =
+        Seq(CodingComponent(PersonalAllowancePA, Some(taxFreeAmount), 11850, "MarriageAllowanceReceived"))
       val expected = TaxFreeInfo(date, taxFreeAmount, 11850)
 
       TaxFreeInfo(date, codingComponents, taxAccountCalculatorMock) mustBe expected

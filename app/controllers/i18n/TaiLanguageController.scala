@@ -30,10 +30,9 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 
 class TaiLanguageController @Inject()(
-                                      val partialRetriever: FormPartialRetriever,
-                                      val templateRenderer: TemplateRenderer) extends LanguageController
-  with TaiBaseController
-  with FeatureTogglesConfig {
+  val partialRetriever: FormPartialRetriever,
+  val templateRenderer: TemplateRenderer)
+    extends LanguageController with TaiBaseController with FeatureTogglesConfig {
 
   override protected def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
@@ -44,16 +43,15 @@ class TaiLanguageController @Inject()(
 
   protected def isWelshEnabled = welshLanguageEnabled
 
-  override def switchToLanguage(language: String): Action[AnyContent] = Action {
-    implicit request =>
-      val newLanguage =
-        if (isWelshEnabled)
-          languageMap.getOrElse(language, LanguageUtils.getCurrentLang)
-        else
-          LanguageUtils.getCurrentLang
+  override def switchToLanguage(language: String): Action[AnyContent] = Action { implicit request =>
+    val newLanguage =
+      if (isWelshEnabled)
+        languageMap.getOrElse(language, LanguageUtils.getCurrentLang)
+      else
+        LanguageUtils.getCurrentLang
 
-      val redirectURL = request.headers.get(REFERER).getOrElse(fallbackURL)
+    val redirectURL = request.headers.get(REFERER).getOrElse(fallbackURL)
 
-      Redirect(redirectURL).withLang(Lang(newLanguage.code))
+    Redirect(redirectURL).withLang(Lang(newLanguage.code))
   }
 }

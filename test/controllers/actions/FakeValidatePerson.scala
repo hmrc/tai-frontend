@@ -21,7 +21,6 @@ import play.api.mvc.Result
 import scala.concurrent.Future
 
 object FakeValidatePerson extends ValidatePerson {
-  override protected def filter[A](request: AuthenticatedRequest[A]): Future[Option[Result]] = {
+  override protected def filter[A](request: AuthenticatedRequest[A]): Future[Option[Result]] =
     Future.successful(None)
-  }
 }

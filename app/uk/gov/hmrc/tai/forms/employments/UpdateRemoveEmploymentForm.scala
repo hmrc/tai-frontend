@@ -23,7 +23,8 @@ import uk.gov.hmrc.tai.util.constants.EmploymentDecisionConstants
 
 object UpdateRemoveEmploymentForm extends EmploymentDecisionConstants {
   def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
-    single(EmploymentDecision ->
-      optional(text).verifying(error = Messages("tai.error.chooseOneOption"), constraint = !_.isEmpty))
+    single(
+      EmploymentDecision ->
+        optional(text).verifying(error = Messages("tai.error.chooseOneOption"), constraint = !_.isEmpty))
   )
 }

@@ -16,13 +16,11 @@
 
 package views.html.employments
 
-
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.EmploymentNameForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-
 
 class AddEmploymentNameFormSpec extends TaiViewSpec {
   "Add employment name form page" should {
@@ -43,14 +41,15 @@ class AddEmploymentNameFormSpec extends TaiViewSpec {
     }
   }
 
-  private lazy val formWithErrors: Form[String] = EmploymentNameForm.form.bind(Map(
-    "employmentName" -> ""
-  ))
+  private lazy val formWithErrors: Form[String] = EmploymentNameForm.form.bind(
+    Map(
+      "employmentName" -> ""
+    ))
 
-  private lazy val employmentNameForm: Form[String] = EmploymentNameForm.form.bind(Map(
-    "employmentName" -> "the company"
-  ))
-
+  private lazy val employmentNameForm: Form[String] = EmploymentNameForm.form.bind(
+    Map(
+      "employmentName" -> "the company"
+    ))
 
   override def view: Html = views.html.employments.add_employment_name_form(employmentNameForm)
 }

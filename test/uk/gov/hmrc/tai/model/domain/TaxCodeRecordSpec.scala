@@ -27,7 +27,7 @@ class TaxCodeRecordSpec extends PlaySpec {
     "return a valid Emergency TaxCodeRecord object when given valid Json" in {
       val expectedModel = TaxCodeRecord(
         "code",
-        new LocalDate(2018, 7,11),
+        new LocalDate(2018, 7, 11),
         new LocalDate(2018, 7, 11),
         Week1Month1BasisOfOperation,
         "Employer name",
@@ -41,7 +41,7 @@ class TaxCodeRecordSpec extends PlaySpec {
     "return a valid TaxCodeRecord object when given valid Json" in {
       val expectedModel = TaxCodeRecord(
         "code",
-        new LocalDate(2018, 7,11),
+        new LocalDate(2018, 7, 11),
         new LocalDate(2018, 7, 11),
         OtherBasisOfOperation,
         "Employer name",
@@ -53,7 +53,7 @@ class TaxCodeRecordSpec extends PlaySpec {
     }
 
     "throw an exception when an invalid basis of operation is returned" in {
-      intercept[IllegalArgumentException]{
+      intercept[IllegalArgumentException] {
         invalidBasisOfOperation.as[TaxCodeRecord]
       }.getMessage mustEqual "Invalid basis of operation"
     }
@@ -61,37 +61,37 @@ class TaxCodeRecordSpec extends PlaySpec {
 
   private val emergencyTaxCodeRecordJson =
     Json.obj(
-      "taxCode" -> "code",
-      "startDate" -> "2018-07-11",
-      "endDate" -> "2018-07-11",
+      "taxCode"          -> "code",
+      "startDate"        -> "2018-07-11",
+      "endDate"          -> "2018-07-11",
       "basisOfOperation" -> "Week1/Month1",
-      "employerName" -> "Employer name",
+      "employerName"     -> "Employer name",
       "pensionIndicator" -> false,
-      "payrollNumber" -> "1234",
-      "primary" -> true
+      "payrollNumber"    -> "1234",
+      "primary"          -> true
     )
 
   private val taxCodeRecordJson =
     Json.obj(
-      "taxCode" -> "code",
-      "startDate" -> "2018-07-11",
-      "endDate" -> "2018-07-11",
+      "taxCode"          -> "code",
+      "startDate"        -> "2018-07-11",
+      "endDate"          -> "2018-07-11",
       "basisOfOperation" -> "Cumulative",
-      "employerName" -> "Employer name",
+      "employerName"     -> "Employer name",
       "pensionIndicator" -> false,
-      "payrollNumber" -> "1234",
-      "primary" -> true
+      "payrollNumber"    -> "1234",
+      "primary"          -> true
     )
 
   private val invalidBasisOfOperation =
     Json.obj(
-      "taxCode" -> "code",
-      "startDate" -> "2018-07-11",
-      "endDate" -> "2018-07-11",
+      "taxCode"          -> "code",
+      "startDate"        -> "2018-07-11",
+      "endDate"          -> "2018-07-11",
       "basisOfOperation" -> "some invalid string",
-      "employerName" -> "Employer name",
+      "employerName"     -> "Employer name",
       "pensionIndicator" -> false,
-      "payrollNumber" -> "1234",
-      "primary" -> true
+      "payrollNumber"    -> "1234",
+      "primary"          -> true
     )
 }

@@ -30,27 +30,31 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class JourneyCacheServiceSpec extends PlaySpec
-  with MockitoSugar
-  with BeforeAndAfterEach {
+class JourneyCacheServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(journeyCacheConnector)
-  }
 
   "current value methods" must {
 
     "return the cached value as an instance of the relevant type" in {
       val sut = createSut
-      when(journeyCacheConnector.currentValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(any())).thenReturn(Future.successful(Some("found")))
-      when(journeyCacheConnector.currentValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(any())).thenReturn(Future.successful(Some(1)))
-      when(journeyCacheConnector.currentValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(any())).thenReturn(Future.successful(Some(true)))
-      when(journeyCacheConnector.currentValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(any())).thenReturn(Future.successful(Some(LocalDate.parse("2017-10-10"))))
+      when(
+        journeyCacheConnector.currentValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(
+          any())).thenReturn(Future.successful(Some("found")))
+      when(journeyCacheConnector.currentValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(any()))
+        .thenReturn(Future.successful(Some(1)))
+      when(
+        journeyCacheConnector.currentValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(
+          any())).thenReturn(Future.successful(Some(true)))
+      when(
+        journeyCacheConnector.currentValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(
+          any())).thenReturn(Future.successful(Some(LocalDate.parse("2017-10-10"))))
       Await.result(sut.currentValue("stringKey"), 5 seconds) mustBe Some("found")
       Await.result(sut.currentValueAsInt("intKey"), 5 seconds) mustBe Some(1)
       Await.result(sut.currentValueAsBoolean("boolKey"), 5 seconds) mustBe Some(true)
       Await.result(sut.currentValueAsDate("dateKey"), 5 seconds) mustBe Some(LocalDate.parse("2017-10-10"))
-      Await.result(sut.currentValueAs[Int]("intKey", s=>s.toInt), 5 seconds) mustBe Some(1)
+      Await.result(sut.currentValueAs[Int]("intKey", s => s.toInt), 5 seconds) mustBe Some(1)
     }
   }
 
@@ -58,29 +62,46 @@ class JourneyCacheServiceSpec extends PlaySpec
 
     "return the value where found" in {
       val sut = createSut
-      when(journeyCacheConnector.mandatoryValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(any())).thenReturn(Future.successful("found"))
-      when(journeyCacheConnector.mandatoryValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(any())).thenReturn(Future.successful(1))
-      when(journeyCacheConnector.mandatoryValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(any())).thenReturn(Future.successful(true))
-      when(journeyCacheConnector.mandatoryValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(any())).thenReturn(Future.successful(LocalDate.parse("2017-10-10")))
+      when(
+        journeyCacheConnector.mandatoryValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(
+          any())).thenReturn(Future.successful("found"))
+      when(
+        journeyCacheConnector.mandatoryValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(any()))
+        .thenReturn(Future.successful(1))
+      when(
+        journeyCacheConnector.mandatoryValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(
+          any())).thenReturn(Future.successful(true))
+      when(
+        journeyCacheConnector.mandatoryValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(
+          any())).thenReturn(Future.successful(LocalDate.parse("2017-10-10")))
       Await.result(sut.mandatoryValue("stringKey"), 5 seconds) mustBe "found"
       Await.result(sut.mandatoryValueAsInt("intKey"), 5 seconds) mustBe 1
       Await.result(sut.mandatoryValueAsBoolean("boolKey"), 5 seconds) mustBe true
       Await.result(sut.mandatoryValueAsDate("dateKey"), 5 seconds) mustBe LocalDate.parse("2017-10-10")
-      Await.result(sut.mandatoryValueAs[Int]("intKey", s=>s.toInt), 5 seconds) mustBe 1
+      Await.result(sut.mandatoryValueAs[Int]("intKey", s => s.toInt), 5 seconds) mustBe 1
     }
 
     "throw a runtime where not found" in {
       val sut = createSut
       val failed = Future.failed(new RuntimeException("not found"))
-      when(journeyCacheConnector.mandatoryValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(any())).thenReturn(failed)
-      when(journeyCacheConnector.mandatoryValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(any())).thenReturn(failed)
-      when(journeyCacheConnector.mandatoryValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(any())).thenReturn(failed)
-      when(journeyCacheConnector.mandatoryValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(any())).thenReturn(failed)
+      when(
+        journeyCacheConnector.mandatoryValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(
+          any())).thenReturn(failed)
+      when(
+        journeyCacheConnector.mandatoryValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(any()))
+        .thenReturn(failed)
+      when(
+        journeyCacheConnector.mandatoryValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(
+          any())).thenReturn(failed)
+      when(
+        journeyCacheConnector.mandatoryValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(
+          any())).thenReturn(failed)
       val thrown1 = the[RuntimeException] thrownBy Await.result(sut.mandatoryValue("stringKey"), 5 seconds)
       val thrown2 = the[RuntimeException] thrownBy Await.result(sut.mandatoryValueAsInt("intKey"), 5 seconds)
       val thrown3 = the[RuntimeException] thrownBy Await.result(sut.mandatoryValueAsBoolean("boolKey"), 5 seconds)
       val thrown4 = the[RuntimeException] thrownBy Await.result(sut.mandatoryValueAsDate("dateKey"), 5 seconds)
-      val thrown5 = the[RuntimeException] thrownBy Await.result(sut.mandatoryValueAs[Int]("intKey", s=>s.toInt), 5 seconds)
+      val thrown5 = the[RuntimeException] thrownBy Await
+        .result(sut.mandatoryValueAs[Int]("intKey", s => s.toInt), 5 seconds)
       thrown1.getMessage mustBe "not found"
       thrown2.getMessage mustBe "not found"
       thrown3.getMessage mustBe "not found"
@@ -93,15 +114,18 @@ class JourneyCacheServiceSpec extends PlaySpec
 
     "return a sequence of all retrieved values" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
       Await.result(sut.mandatoryJourneyValues("key1", "key2"), 5 seconds) mustBe Right(Seq("val1", "val2"))
     }
 
     "return an error message when a mandatory value is missing in the cache" in {
       val sut = createSut
 
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(Map.empty[String, String]))
-      Await.result(sut.mandatoryJourneyValues("key1", "key2"), 5 seconds) mustBe Left("Mandatory values missing from cache")
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(Map.empty[String, String]))
+      Await.result(sut.mandatoryJourneyValues("key1", "key2"), 5 seconds) mustBe Left(
+        "Mandatory values missing from cache")
     }
 
   }
@@ -110,25 +134,27 @@ class JourneyCacheServiceSpec extends PlaySpec
 
     "return a sequence of all retrieved values" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
       Await.result(sut.mandatoryValues("key1", "key2"), 5 seconds) mustBe Seq("val1", "val2")
     }
 
     "throw a runtime exception if one or more of the requested values is not found" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
       val thrown = the[RuntimeException] thrownBy Await.result(sut.mandatoryValues("key1", "doesntexist"), 5 seconds)
       thrown.getMessage mustBe "The mandatory value under key 'doesntexist' was not found in the journey cache for 'fakeJourneyName'"
     }
 
     "throw a runtime exception if one or more of the requested values is the empty string" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
       val thrown = the[RuntimeException] thrownBy Await.result(sut.mandatoryValues("key1", "key3"), 5 seconds)
       thrown.getMessage mustBe "The mandatory value under key 'key3' was not found in the journey cache for 'fakeJourneyName'"
     }
   }
-
 
   "Mandatory Journey value" must {
 
@@ -136,8 +162,11 @@ class JourneyCacheServiceSpec extends PlaySpec
       val sut = createSut
       val cacheValue = "val1"
 
-      when(journeyCacheConnector.mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName),
-        Matchers.eq("key1"), Matchers.any[Function1[String, String]]())(any()))
+      when(
+        journeyCacheConnector.mandatoryJourneyValueAs[String](
+          Matchers.eq(sut.journeyName),
+          Matchers.eq("key1"),
+          Matchers.any[Function1[String, String]]())(any()))
         .thenReturn(Future.successful(Right(cacheValue)): Future[Either[String, String]])
 
       Await.result(sut.mandatoryJourneyValue("key1"), 5 seconds) mustBe Right(cacheValue)
@@ -147,14 +176,16 @@ class JourneyCacheServiceSpec extends PlaySpec
       val sut = createSut
       val errorMessage = "Value missing from cache"
 
-      when(journeyCacheConnector.mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("key1"),
-        Matchers.any[Function1[String, String]]())(any()))
+      when(
+        journeyCacheConnector.mandatoryJourneyValueAs[String](
+          Matchers.eq(sut.journeyName),
+          Matchers.eq("key1"),
+          Matchers.any[Function1[String, String]]())(any()))
         .thenReturn(Future.successful(Left(errorMessage)): Future[Either[String, String]])
       Await.result(sut.mandatoryJourneyValue("key1"), 5 seconds) mustBe Left(errorMessage)
     }
 
   }
-
 
   "Mandatory journey values as Int" must {
 
@@ -162,7 +193,11 @@ class JourneyCacheServiceSpec extends PlaySpec
       val sut = createSut
       val id = 1
 
-      when(journeyCacheConnector.mandatoryJourneyValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("key1"), Matchers.any[Function1[String, Int]]())(any()))
+      when(
+        journeyCacheConnector.mandatoryJourneyValueAs[Int](
+          Matchers.eq(sut.journeyName),
+          Matchers.eq("key1"),
+          Matchers.any[Function1[String, Int]]())(any()))
         .thenReturn(Future.successful(Right(id)): Future[Either[String, Int]])
       Await.result(sut.mandatoryJourneyValueAsInt("key1"), 5 seconds) mustBe Right(id)
     }
@@ -171,7 +206,11 @@ class JourneyCacheServiceSpec extends PlaySpec
       val sut = createSut
       val errorMessage = "Value missing from cache"
 
-      when(journeyCacheConnector.mandatoryJourneyValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("key1"), Matchers.any[Function1[String, Int]]())(any()))
+      when(
+        journeyCacheConnector.mandatoryJourneyValueAs[Int](
+          Matchers.eq(sut.journeyName),
+          Matchers.eq("key1"),
+          Matchers.any[Function1[String, Int]]())(any()))
         .thenReturn(Future.successful(Left(errorMessage)): Future[Either[String, Int]])
       Await.result(sut.mandatoryJourneyValueAsInt("key1"), 5 seconds) mustBe Left(errorMessage)
     }
@@ -181,31 +220,41 @@ class JourneyCacheServiceSpec extends PlaySpec
   "collectedValues method" must {
     "return a sequence of all retrieved mandatory values" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
-      Await.result(sut.collectedValues(Seq("key1","key2"), Seq("key4", "key9")), 5 seconds) mustBe Tuple2(Seq("val1", "val2"), Seq(Some("val3"), None))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
+      Await.result(sut.collectedValues(Seq("key1", "key2"), Seq("key4", "key9")), 5 seconds) mustBe Tuple2(
+        Seq("val1", "val2"),
+        Seq(Some("val3"), None))
     }
 
     "throw a runtime exception if one or more of the mandatory values is not found" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
 
-      val thrown = the[RuntimeException] thrownBy Await.result(sut.collectedValues(Seq("key1", "key9"), Seq("key4", "key9")), 5 seconds)
+      val thrown = the[RuntimeException] thrownBy Await
+        .result(sut.collectedValues(Seq("key1", "key9"), Seq("key4", "key9")), 5 seconds)
       thrown.getMessage mustBe "The mandatory value under key 'key9' was not found in the journey cache for 'fakeJourneyName'"
     }
 
     "throw a runtime exception if one or more of the mandatory values is an empty string" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
 
-      val thrown = the[RuntimeException] thrownBy Await.result(sut.collectedValues(Seq("key1","key3"), Seq("key4", "key9")), 5 seconds)
+      val thrown = the[RuntimeException] thrownBy Await
+        .result(sut.collectedValues(Seq("key1", "key3"), Seq("key4", "key9")), 5 seconds)
       thrown.getMessage mustBe "The mandatory value under key 'key3' was not found in the journey cache for 'fakeJourneyName'"
     }
 
     "return a none when an empty string is found within one of the optional values" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
 
-      Await.result(sut.collectedValues(Seq("key1","key2"), Seq("key4", "key3")), 5 seconds) mustBe Tuple2(Seq("val1", "val2"), Seq(Some("val3"), None))
+      Await.result(sut.collectedValues(Seq("key1", "key2"), Seq("key4", "key3")), 5 seconds) mustBe Tuple2(
+        Seq("val1", "val2"),
+        Seq(Some("val3"), None))
     }
   }
 
@@ -213,14 +262,16 @@ class JourneyCacheServiceSpec extends PlaySpec
 
     "return a sequence of all retrieved mandatory values" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
-      Await.result(sut.collectedJourneyValues(Seq("key1","key2"), Seq("key4", "key9")), 5 seconds) mustBe
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
+      Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key9")), 5 seconds) mustBe
         Tuple2(Right(Seq("val1", "val2")), Seq(Some("val3"), None))
     }
 
     "return an error message if one or more of the mandatory values are not found" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
 
       Await.result(sut.collectedJourneyValues(Seq("key1", "key9"), Seq("key4", "key9")), 5 seconds) mustBe
         Tuple2(Left("Mandatory values missing from cache"), Seq(Some("val3"), None))
@@ -228,38 +279,43 @@ class JourneyCacheServiceSpec extends PlaySpec
 
     "return an error message if one or more of the mandatory values is an empty string" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
 
-      Await.result(sut.collectedJourneyValues(Seq("key1","key3"), Seq("key4", "key9")), 5 seconds) mustBe
+      Await.result(sut.collectedJourneyValues(Seq("key1", "key3"), Seq("key4", "key9")), 5 seconds) mustBe
         Tuple2(Left("Mandatory values missing from cache"), Seq(Some("val3"), None))
     }
 
     "return a none when an empty string is found within one of the optional values" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
 
-      Await.result(sut.collectedJourneyValues(Seq("key1","key2"), Seq("key4", "key3")), 5 seconds) mustBe
+      Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key3")), 5 seconds) mustBe
         Tuple2(Right(Seq("val1", "val2")), Seq(Some("val3"), None))
     }
 
   }
 
-  "optionalValues" must{
+  "optionalValues" must {
     "return sequence of strings when we have values in cache" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
 
       Await.result(sut.optionalValues("key1", "key2"), 5 seconds) mustBe Seq(Some("val1"), Some("val2"))
     }
     "return sequence of strings and a None when we have one value as string and a none" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
 
       Await.result(sut.optionalValues("key4", "key3"), 5 seconds) mustBe Seq(Some("val3"), None)
     }
     "return None when we have invalid values passed" in {
       val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(testCache))
 
       Await.result(sut.optionalValues("key5", "key6"), 5 seconds) mustBe Seq(None, None)
     }
@@ -268,7 +324,8 @@ class JourneyCacheServiceSpec extends PlaySpec
   "flush the cache" must {
     "remove the cache" in {
       val sut = createSut
-      when(journeyCacheConnector.flush(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(journeyCacheConnector.flush(Matchers.eq(sut.journeyName))(any()))
+        .thenReturn(Future.successful(TaiSuccessResponse))
       Await.result(sut.flush(), 5 seconds) mustBe TaiSuccessResponse
     }
   }
@@ -286,9 +343,10 @@ class JourneyCacheServiceSpec extends PlaySpec
 
   val journeyCacheConnector: JourneyCacheConnector = mock[JourneyCacheConnector]
 
-  private class SUT extends JourneyCacheService(
-    "fakeJourneyName",
-    journeyCacheConnector
-  )
+  private class SUT
+      extends JourneyCacheService(
+        "fakeJourneyName",
+        journeyCacheConnector
+      )
 
 }

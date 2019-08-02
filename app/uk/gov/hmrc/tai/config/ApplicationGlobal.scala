@@ -29,41 +29,52 @@ import uk.gov.hmrc.play.config.ControllerConfig
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.urls.Link
 
-class TaiErrorHandler @Inject()(localTemplateRenderer: LocalTemplateRenderer,
-                                taiHtmlPartialRetriever: TaiHtmlPartialRetriever,
-                                val messagesApi: MessagesApi,
-                                val configuration: Configuration)
-  extends FrontendErrorHandler {
+class TaiErrorHandler @Inject()(
+  localTemplateRenderer: LocalTemplateRenderer,
+  taiHtmlPartialRetriever: TaiHtmlPartialRetriever,
+  val messagesApi: MessagesApi,
+  val configuration: Configuration)
+    extends FrontendErrorHandler {
 
   implicit val templateRenderer = localTemplateRenderer
   implicit val partialRetriever = taiHtmlPartialRetriever
 
-  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]) = {
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(
+    implicit request: Request[_]) =
     views.html.error_template_noauth(pageTitle, heading, message)
-  }
 
-  def badRequestErrorTemplate(pageTitle: String, heading: String, message1: String, message2: Option[String] = None)(implicit request: Request[_]): Html = {
+  def badRequestErrorTemplate(pageTitle: String, heading: String, message1: String, message2: Option[String] = None)(
+    implicit request: Request[_]): Html =
     views.html.error_template_noauth(pageTitle, heading, message1, message2)
-  }
 
   override def badRequestTemplate(implicit request: Request[_]): Html = badRequestErrorTemplate(
     Messages("global.error.badRequest400.title"),
     Messages("tai.errorMessage.heading"),
     Messages("tai.errorMessage.frontend400.message1"),
-    Some(Messages("tai.errorMessage.frontend400.message2", Link.toInternalPage(
-      url="#report-name",
-      cssClasses=Some("report-error__toggle"),
-      value=Some(Messages("tai.errorMessage.reportAProblem"))).toHtml
-    ))
+    Some(
+      Messages(
+        "tai.errorMessage.frontend400.message2",
+        Link
+          .toInternalPage(
+            url = "#report-name",
+            cssClasses = Some("report-error__toggle"),
+            value = Some(Messages("tai.errorMessage.reportAProblem")))
+          .toHtml
+      ))
   )
 
   override def notFoundTemplate(implicit request: Request[_]): Html = standardErrorTemplate(
     Messages("global.error.pageNotFound404.title"),
     Messages("tai.errorMessage.heading"),
-    Messages("tai.errorMessage.frontend404",Link.toInternalPage(
-      url=routes.TaxAccountSummaryController.onPageLoad().url,
-      value=Some(Messages("tai.errorMessage.startAgain"))
-    ).toHtml)
+    Messages(
+      "tai.errorMessage.frontend404",
+      Link
+        .toInternalPage(
+          url = routes.TaxAccountSummaryController.onPageLoad().url,
+          value = Some(Messages("tai.errorMessage.startAgain"))
+        )
+        .toHtml
+    )
   )
 }
 

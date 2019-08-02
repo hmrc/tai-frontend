@@ -28,11 +28,12 @@ class AddPensionStartDateSpec extends TaiViewSpec {
   private val addDateForm = PensionAddDateForm(pensionName)
   private val globalErrorMessage: String = "day error message"
   private val formWithErrors: Form[LocalDate] = addDateForm.form.withError("", globalErrorMessage)
-  private lazy val pensionStartDateForm: Form[LocalDate] = addDateForm.form.bind(Map(
-    addDateForm.PensionFormDay -> "9",
-    "month" -> "6",
-    "year" -> "2017"
-  ))
+  private lazy val pensionStartDateForm: Form[LocalDate] = addDateForm.form.bind(
+    Map(
+      addDateForm.PensionFormDay -> "9",
+      "month"                    -> "6",
+      "year"                     -> "2017"
+    ))
   override def view: Html = views.html.pensions.addPensionStartDate(pensionStartDateForm, pensionName)
 
   "Add pension start date form" should {

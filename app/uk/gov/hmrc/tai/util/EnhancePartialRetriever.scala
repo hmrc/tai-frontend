@@ -18,10 +18,9 @@ package uk.gov.hmrc.tai.util
 
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import uk.gov.hmrc.play.partials.{HtmlPartial, HeaderCarrierForPartialsConverter}
+import uk.gov.hmrc.play.partials.{HeaderCarrierForPartialsConverter, HtmlPartial}
 import HtmlPartial._
 import uk.gov.hmrc.http.HttpGet
-
 
 /*
  * This is a PartialRetriever with a HeaderCarrierForPartialsConverter to forward request headers on
@@ -30,7 +29,6 @@ trait EnhancedPartialRetriever extends HeaderCarrierForPartialsConverter {
 
   val http: HttpGet
 
-  def loadPartial(url: String)(implicit request: RequestHeader) = {
+  def loadPartial(url: String)(implicit request: RequestHeader) =
     http.GET[HtmlPartial](url) recover connectionExceptionsAsHtmlPartialFailure
-  }
 }

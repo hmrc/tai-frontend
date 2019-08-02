@@ -40,13 +40,15 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
       "no referrer header is present" in {
         val result = new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+        redirectLocation(result).get must include(
+          controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
       }
     }
 
     "return a redirect to the referrer url" when {
       "a referrer header is present" in {
-        val result = new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET", Map("Referer" -> "/fake/url")))
+        val result = new SUT()
+          .switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET", Map("Referer" -> "/fake/url")))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("/fake/url")
       }
@@ -54,11 +56,13 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
 
     "return a header to set the PLAY_LANG cookie to the requested language code" when {
       "the requested language is supported" in {
-        val result = Await.result(new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
+        val result =
+          Await.result(new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
         result.header.headers.isDefinedAt("Set-Cookie") mustBe true
         result.header.headers("Set-Cookie") must include("PLAY_LANG=en;")
 
-        val result2 = Await.result(new SUT().switchToLanguage("cymraeg")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
+        val result2 =
+          Await.result(new SUT().switchToLanguage("cymraeg")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
         result2.header.headers.isDefinedAt("Set-Cookie") mustBe true
         result2.header.headers("Set-Cookie") must include("PLAY_LANG=cy;")
       }
@@ -66,12 +70,14 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
 
     "return a header to set the PLAY_LANG to the current language" when {
       "the requested language is not supported" in {
-        val result = Await.result(new SUT().switchToLanguage("czech")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
+        val result =
+          Await.result(new SUT().switchToLanguage("czech")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
         result.header.headers.isDefinedAt("Set-Cookie") mustBe true
         result.header.headers("Set-Cookie") must include("PLAY_LANG=en;")
       }
       "the requested language is supported, but the welsh language feature toggle is not enabled" in {
-        val result = Await.result(new SUT(false).switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
+        val result = Await
+          .result(new SUT(false).switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
         result.header.headers.isDefinedAt("Set-Cookie") mustBe true
         result.header.headers("Set-Cookie") must include("PLAY_LANG=en;")
       }
@@ -80,10 +86,11 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
 
   private val nino = new Generator(new Random).nextNino
 
-  private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController(
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  ) {
+  private class SUT(welshEnabled: Boolean = true)
+      extends TaiLanguageController(
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      ) {
     override val isWelshEnabled = welshEnabled
   }
 

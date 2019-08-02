@@ -35,9 +35,9 @@ case class BbsiUpdateInterestViewModel(id: Int, interestAmount: String, bankName
     val interestLine = CheckYourAnswersConfirmationLine(
       Messages("tai.bbsi.update.checkYourAnswers.rowTwo"),
       Money.pounds(BigDecimal(interestAmount)).toString().replace("&pound;", "\u00A3"),
-      routes.BbsiUpdateAccountController.captureInterest(id).url)
+      routes.BbsiUpdateAccountController.captureInterest(id).url
+    )
 
     Seq(updateLine, interestLine)
   }
 }
-

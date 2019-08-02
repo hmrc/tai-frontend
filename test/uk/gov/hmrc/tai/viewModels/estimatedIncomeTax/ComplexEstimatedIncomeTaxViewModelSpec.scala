@@ -28,10 +28,10 @@ import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 
 import scala.language.postfixOps
 
-class ComplexEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxRegionConstants with BandTypesConstants {
+class ComplexEstimatedIncomeTaxViewModelSpec
+    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxRegionConstants with BandTypesConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
 
   "ComplexEstimatedIncomeTaxViewModel" must {
     "return a valid view model" in {
@@ -47,13 +47,19 @@ class ComplexEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayAp
         TaxBand("SR", "", 1500, 0, Some(0), Some(5000), 45)
       )
 
-      val bandedGraph = BandedGraph(TaxGraph,
-        List(
-          Band(TaxFree, 69.69, 11500, 0, ZeroBand),
-          Band("Band", 30.30, 5000, 700, NonZeroBand))
-        , 0, 16500, 16500, 69.69, 11500, 99.99, 700,
+      val bandedGraph = BandedGraph(
+        TaxGraph,
+        List(Band(TaxFree, 69.69, 11500, 0, ZeroBand), Band("Band", 30.30, 5000, 700, NonZeroBand)),
+        0,
+        16500,
+        16500,
+        69.69,
+        11500,
+        99.99,
+        700,
         None,
-        Some(Swatch(4.24, 700)))
+        Some(Swatch(4.24, 700))
+      )
 
       val expectedViewModel = ComplexEstimatedIncomeTaxViewModel(700, 16500, 11500, bandedGraph, UkTaxRegion)
 
@@ -63,8 +69,19 @@ class ComplexEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayAp
   }
 
   val taxCodeIncome = Seq(
-    TaxCodeIncome(EmploymentIncome,Some(1),BigDecimal(15000),"EmploymentIncome","1150L","TestName",
-      OtherBasisOfOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26)))
+    TaxCodeIncome(
+      EmploymentIncome,
+      Some(1),
+      BigDecimal(15000),
+      "EmploymentIncome",
+      "1150L",
+      "TestName",
+      OtherBasisOfOperation,
+      Live,
+      None,
+      Some(new LocalDate(2015, 11, 26)),
+      Some(new LocalDate(2015, 11, 26))
+    )
   )
 
 }

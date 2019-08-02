@@ -18,10 +18,11 @@ package uk.gov.hmrc.tai.viewModels
 
 import uk.gov.hmrc.tai.util.{FormHelper, MapForGoogleAnalytics, MonetaryUtil}
 
-case class GoogleAnalyticsSettings(dimensions: Option[Map[String, String]] = None,
-                                   customClientIdRequired: Boolean = false,
-                                   customSessionIdRequired: Boolean = false,
-                                   customHitStampRequired: Boolean = false)
+case class GoogleAnalyticsSettings(
+  dimensions: Option[Map[String, String]] = None,
+  customClientIdRequired: Boolean = false,
+  customSessionIdRequired: Boolean = false,
+  customHitStampRequired: Boolean = false)
 
 object GoogleAnalyticsSettings {
 

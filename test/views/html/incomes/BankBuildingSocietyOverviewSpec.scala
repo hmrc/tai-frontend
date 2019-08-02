@@ -20,7 +20,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class BankBuildingSocietyOverviewSpec extends TaiViewSpec{
+class BankBuildingSocietyOverviewSpec extends TaiViewSpec {
 
   "BankBuildingSociety Overview page" should {
     behave like pageWithTitle(messages("tai.bbsi.overview.heading"))
@@ -30,17 +30,26 @@ class BankBuildingSocietyOverviewSpec extends TaiViewSpec{
     "display first section" in {
       page must haveParagraphWithText(messages("tai.bbsi.overview.para1"))
       page must haveParagraphWithText(messages("tai.bbsi.overview.para2"))
-      page must haveParagraphWithText("£2,000 " + messages("tai.bbsi.overview.interest.year.desc",
-        TaxYear().start.toString(dateFormatPattern), TaxYear().end.toString(dateFormatPattern)))
-      page must haveParagraphWithText(messages("tai.bbsi.overview.interest.estimate.desc",
-        TaxYear().prev.start.toString(dateFormatPattern), TaxYear().prev.end.toString(dateFormatPattern)))
+      page must haveParagraphWithText(
+        "£2,000 " + messages(
+          "tai.bbsi.overview.interest.year.desc",
+          TaxYear().start.toString(dateFormatPattern),
+          TaxYear().end.toString(dateFormatPattern)))
+      page must haveParagraphWithText(
+        messages(
+          "tai.bbsi.overview.interest.estimate.desc",
+          TaxYear().prev.start.toString(dateFormatPattern),
+          TaxYear().prev.end.toString(dateFormatPattern)))
     }
 
     "display second section" in {
       page must haveHeadingH2WithText(messages("tai.bbsi.overview.whatYouMustDo.title"))
       page must haveParagraphWithText(messages("tai.bbsi.overview.whatYouMustDo.desc"))
-      page must haveBulletPointWithText(messages("tai.bbsi.overview.whatYouMustDo.point1",
-        TaxYear().start.toString(dateFormatPattern), TaxYear().end.toString(dateFormatPattern)))
+      page must haveBulletPointWithText(
+        messages(
+          "tai.bbsi.overview.whatYouMustDo.point1",
+          TaxYear().start.toString(dateFormatPattern),
+          TaxYear().end.toString(dateFormatPattern)))
       page must haveBulletPointWithText(messages("tai.bbsi.overview.whatYouMustDo.point2"))
     }
 

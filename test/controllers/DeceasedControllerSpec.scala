@@ -47,10 +47,11 @@ class DeceasedControllerSpec extends PlaySpec with FakeTaiPlayApplication with I
 
   def createSut = new SUT
 
-  class SUT extends DeceasedController(
-    FakeAuthAction,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  )
+  class SUT
+      extends DeceasedController(
+        FakeAuthAction,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      )
 
 }

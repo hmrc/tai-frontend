@@ -24,7 +24,6 @@ import play.api.i18n.Messages
 
 import scala.util.Try
 
-
 case class DateForm(emptyDateMessage: String) {
 
   def form(implicit messages: Messages) = {
@@ -46,15 +45,15 @@ case class DateForm(emptyDateMessage: String) {
         if (errors.isEmpty) {
           val inputDate: Option[LocalDate] = Try(
             for {
-              day <- data.get(DateFormDay).map(Integer.parseInt)
+              day   <- data.get(DateFormDay).map(Integer.parseInt)
               month <- data.get(DateFormMonth).map(Integer.parseInt)
-              year <- data.get(DateFormYear).map(Integer.parseInt)
+              year  <- data.get(DateFormYear).map(Integer.parseInt)
             } yield new LocalDate(year, month, day)
           ).getOrElse(None)
 
           inputDate match {
             case Some(date) => Right(date)
-            case _ => Left(Seq(FormError(key = DateFormDay, message = Messages("tai.date.error.invalid"))))
+            case _          => Left(Seq(FormError(key = DateFormDay, message = Messages("tai.date.error.invalid"))))
           }
         } else {
           Left(errors)
@@ -62,9 +61,9 @@ case class DateForm(emptyDateMessage: String) {
       }
 
       override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
-        DateFormDay -> value.getDayOfMonth.toString,
+        DateFormDay   -> value.getDayOfMonth.toString,
         DateFormMonth -> value.getMonthOfYear.toString,
-        DateFormYear -> value.getYear.toString
+        DateFormYear  -> value.getYear.toString
       )
     }
 
@@ -80,7 +79,8 @@ case class DateForm(emptyDateMessage: String) {
 
 object DateForm {
 
-  def verifyDate(dateForm: Form[LocalDate], startDateInString: Option[String])(implicit messages: Messages): Form[LocalDate] = {
+  def verifyDate(dateForm: Form[LocalDate], startDateInString: Option[String])(
+    implicit messages: Messages): Form[LocalDate] =
     if (!dateForm.hasErrors) {
       val day = dateForm.data.get("dateForm_day").map(Integer.parseInt)
       val month = dateForm.data.get("dateForm_month").map(Integer.parseInt)
@@ -88,20 +88,19 @@ object DateForm {
 
       val formErrors =
         (year, month, day) match {
-          case (Some(y), Some(m), Some(d)) if new LocalDate(y, m, d).isAfter(LocalDate.now()) => Seq(FormError(key = "dateForm", Messages("tai.date.error.invalid")))
+          case (Some(y), Some(m), Some(d)) if new LocalDate(y, m, d).isAfter(LocalDate.now()) =>
+            Seq(FormError(key = "dateForm", Messages("tai.date.error.invalid")))
           case (Some(y), Some(m), Some(d)) =>
             startDateInString match {
-              case Some(dateInString) if new LocalDate(y, m, d).isBefore(new LocalDate(dateInString)) => Seq(FormError(key = "dateForm", Messages("tai.date.error.invalid")))
+              case Some(dateInString) if new LocalDate(y, m, d).isBefore(new LocalDate(dateInString)) =>
+                Seq(FormError(key = "dateForm", Messages("tai.date.error.invalid")))
               case _ => Nil
             }
-        case _ => Nil
-      }
+          case _ => Nil
+        }
       addErrorsToForm(dateForm, formErrors)
     } else dateForm
-  }
 
-  private def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {
+  private def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] =
     formErrors.foldLeft(form)((f, e) => f.withError(e))
-  }
 }
-

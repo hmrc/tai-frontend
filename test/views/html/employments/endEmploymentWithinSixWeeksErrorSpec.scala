@@ -31,19 +31,26 @@ class endEmploymentWithinSixWeeksErrorSpec extends TaiViewSpec {
     behave like pageWithHeader(messages("tai.endEmploymentWithinSixWeeksError.heading", model.earliestUpdateDateInHtml))
 
     "have a paragraph that contains the employer name and last pay date" in {
-      doc must haveParagraphWithText(messages("tai.endEmploymentWithinSixWeeksError.employerAndPayDate", model.employerName, model.latestPayDateInHtml))
+      doc must haveParagraphWithText(
+        messages(
+          "tai.endEmploymentWithinSixWeeksError.employerAndPayDate",
+          model.employerName,
+          model.latestPayDateInHtml))
     }
     "have a paragraph that tells the user what the employer should do" in {
-      doc must haveParagraphWithText(messages("tai.endEmploymentWithinSixWeeksError.whatTheEmployerShouldDo", model.earliestUpdateDateInHtml))
+      doc must haveParagraphWithText(
+        messages("tai.endEmploymentWithinSixWeeksError.whatTheEmployerShouldDo", model.earliestUpdateDateInHtml))
     }
     "have a paragraph that tells the user what to ask their employer to check" in {
-      doc must haveParagraphWithText(messages("tai.endEmploymentWithinSixWeeksError.checkWithEmployer", model.employerName))
+      doc must haveParagraphWithText(
+        messages("tai.endEmploymentWithinSixWeeksError.checkWithEmployer", model.employerName))
 
       doc must haveBulletPointWithText(messages("tai.endEmploymentWithinSixWeeksError.sendDetailsToHMRC"))
       doc must haveBulletPointWithText(messages("tai.endEmploymentWithinSixWeeksError.askForP45"))
     }
     "have a paragraph that tells the user to wait 6 weeks" in {
-      doc must haveParagraphWithText(messages("tai.endEmploymentWithinSixWeeksError.wait6Weeks", model.earliestUpdateDateInHtml))
+      doc must haveParagraphWithText(
+        messages("tai.endEmploymentWithinSixWeeksError.wait6Weeks", model.earliestUpdateDateInHtml))
     }
 
     "have link" in {

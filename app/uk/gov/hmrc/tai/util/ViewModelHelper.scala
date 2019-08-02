@@ -28,34 +28,28 @@ import scala.util.Try
 
 trait ViewModelHelper {
 
-  def withPoundPrefixAndSign(moneyPounds: MoneyPounds): String = {
-   MonetaryUtil.withPoundPrefixAndSign(moneyPounds)
-  }
+  def withPoundPrefixAndSign(moneyPounds: MoneyPounds): String =
+    MonetaryUtil.withPoundPrefixAndSign(moneyPounds)
 
   def withPoundPrefix(moneyPounds: MoneyPounds): String = MonetaryUtil.withPoundPrefix(moneyPounds)
 
-  def currentTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
-    htmlNonBroken( Dates.formatDate(TaxYear().end) )
-  }
+  def currentTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String =
+    htmlNonBroken(Dates.formatDate(TaxYear().end))
 
-  def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
-    htmlNonBroken( Dates.formatDate(TaxYear().next.start) )
-  }
+  def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String =
+    htmlNonBroken(Dates.formatDate(TaxYear().next.start))
 
   @deprecated("Use TaxYearRangeUtil.currentTaxYearRange", "0.456.0")
-  def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {
+  def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String =
     TaxYearRangeUtil.currentTaxYearRange
-  }
 
   @deprecated("Use TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited", "0.456.0")
-  def currentTaxYearRangeHtmlNonBreakBetween(implicit messages: Messages): String = {
+  def currentTaxYearRangeHtmlNonBreakBetween(implicit messages: Messages): String =
     TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited
-  }
 
   @deprecated("Use TaxYearRangeUtil.dynamicDateRange", "0.456.0")
-  def dynamicDateRangeHtmlNonBreak(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
+  def dynamicDateRangeHtmlNonBreak(from: LocalDate, to: LocalDate)(implicit messages: Messages): String =
     TaxYearRangeUtil.dynamicDateRange(from, to)
-  }
 
   def htmlNonBroken(string: String) = HtmlFormatter.htmlNonBroken(string)
 

@@ -30,12 +30,9 @@ class AddPensionCheckYourAnswersSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
 
-    behave like pageWithCombinedHeader(
-      preHeading,
-      messages("tai.checkYourAnswers.title"))
+    behave like pageWithCombinedHeader(preHeading, messages("tai.checkYourAnswers.title"))
 
-    behave like pageWithButtonForm("/fake/submission/url",
-      messages("tai.confirmAndSend"))
+    behave like pageWithButtonForm("/fake/submission/url", messages("tai.confirmAndSend"))
 
     behave like pageWithCheckYourAnswersSummary
 
@@ -83,7 +80,14 @@ class AddPensionCheckYourAnswersSpec extends TaiViewSpec {
     CheckYourAnswersConfirmationLine("q5", "a5", "q5/url")
   )
 
-  val viewModel = CheckYourAnswersViewModel(preHeading, "fake/backlink/url", "cya title", lines, "confirmation text", "/fake/submission/url", "/fake/cancel/url")
+  val viewModel = CheckYourAnswersViewModel(
+    preHeading,
+    "fake/backlink/url",
+    "cya title",
+    lines,
+    "confirmation text",
+    "/fake/submission/url",
+    "/fake/cancel/url")
 
   override def view: Html = views.html.pensions.addPensionCheckYourAnswers(viewModel)
 }

@@ -27,28 +27,27 @@ object WhatDoYouWantToTellUsForm {
   val pensionDetailsCharacterLimit = 500
 
   def form(implicit messages: Messages): Form[String] = Form(
-
     single(
       "pensionDetails" ->
         text
           .verifying(
-            StopOnFirstFail(
-              nonEmptyText(Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank"))),
-              textExceedsCharacterLimit(Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded", pensionDetailsCharacterLimit)
-          )))
+            StopOnFirstFail(nonEmptyText(Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank"))),
+            textExceedsCharacterLimit(
+              Messages(
+                "tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded",
+                pensionDetailsCharacterLimit))
+          ))
   )
 
-  def nonEmptyText(requiredErrMsg : String)(implicit messages: Messages): Constraint[String] = {
+  def nonEmptyText(requiredErrMsg: String)(implicit messages: Messages): Constraint[String] =
     Constraint[String]("required") {
-      case textValue:String if textValue.trim.nonEmpty => Valid
-      case _ => Invalid(requiredErrMsg)
+      case textValue: String if textValue.trim.nonEmpty => Valid
+      case _                                            => Invalid(requiredErrMsg)
     }
-  }
 
-  def textExceedsCharacterLimit(exceedErrorMsg : String)(implicit messages: Messages): Constraint[String] = {
+  def textExceedsCharacterLimit(exceedErrorMsg: String)(implicit messages: Messages): Constraint[String] =
     Constraint[String]("characterLimitExceeded") {
       case textValue if textValue.trim.length <= pensionDetailsCharacterLimit => Valid
-      case _ => Invalid(exceedErrorMsg)
+      case _                                                                  => Invalid(exceedErrorMsg)
     }
-  }
 }

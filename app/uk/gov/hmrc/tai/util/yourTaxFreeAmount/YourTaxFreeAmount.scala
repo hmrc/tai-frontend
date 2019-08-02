@@ -26,10 +26,8 @@ import uk.gov.hmrc.tai.util.{TaxAccountCalculator, TaxAccountCalculatorImpl, Tax
 
 trait YourTaxFreeAmount {
 
-  def buildTaxFreeAmount(changeDate: LocalDate,
-                         previous: Option[Seq[CodingComponent]],
-                         current: Seq[CodingComponent])
-                        (implicit messages: Messages): YourTaxFreeAmountComparison = {
+  def buildTaxFreeAmount(changeDate: LocalDate, previous: Option[Seq[CodingComponent]], current: Seq[CodingComponent])(
+    implicit messages: Messages): YourTaxFreeAmountComparison = {
 
     val taxAccountCalculator: TaxAccountCalculator = new TaxAccountCalculatorImpl
 
@@ -52,7 +50,8 @@ trait YourTaxFreeAmount {
     )
   }
 
-  def buildAllowancesAndDeductionPairs(previous: Seq[CodingComponent], current: Seq[CodingComponent]): AllowancesAndDeductionPairs = {
+  def buildAllowancesAndDeductionPairs(
+    previous: Seq[CodingComponent],
+    current: Seq[CodingComponent]): AllowancesAndDeductionPairs =
     AllowancesAndDeductionPairs.fromCodingComponents(previous, current)
-  }
 }

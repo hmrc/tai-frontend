@@ -32,7 +32,8 @@ import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.{HelpLink, TaxSummaryLabel}
 import uk.gov.hmrc.urls.Link
 
-class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport with PropertyChecks {
+class DetailedIncomeTaxEstimateViewModelSpec
+    extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport with PropertyChecks {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -43,7 +44,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
       "totalDividendIncome is called" must {
 
         "return the total income from dividends" in {
-          val taxBand = Seq(TaxBand(bandType = "", code = "", income = 100, tax = 0, lowerBand = None, upperBand = None, rate = 20))
+          val taxBand =
+            Seq(TaxBand(bandType = "", code = "", income = 100, tax = 0, lowerBand = None, upperBand = None, rate = 20))
 
           val incomeCategories = Seq(
             IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 10, taxBand),
@@ -63,9 +65,30 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
         "return the tax free dividend allowance when there is one" in {
 
           val taxBand = Seq(
-            TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
-            TaxBand(bandType = PersonalSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
-            TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20)
+            TaxBand(
+              bandType = DividendZeroRate,
+              code = "",
+              income = 100,
+              tax = 0,
+              lowerBand = None,
+              upperBand = Some(5000),
+              rate = 20),
+            TaxBand(
+              bandType = PersonalSavingsRate,
+              code = "",
+              income = 100,
+              tax = 0,
+              lowerBand = None,
+              upperBand = Some(5000),
+              rate = 20),
+            TaxBand(
+              bandType = StarterSavingsRate,
+              code = "",
+              income = 100,
+              tax = 0,
+              lowerBand = None,
+              upperBand = Some(5000),
+              rate = 20)
           )
 
           val incomeCategories = Seq(
@@ -84,8 +107,22 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
         "return zero free dividend allowance when there is not one" in {
 
           val taxBand = Seq(
-            TaxBand(bandType = PersonalSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
-            TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20)
+            TaxBand(
+              bandType = PersonalSavingsRate,
+              code = "",
+              income = 100,
+              tax = 0,
+              lowerBand = None,
+              upperBand = Some(5000),
+              rate = 20),
+            TaxBand(
+              bandType = StarterSavingsRate,
+              code = "",
+              income = 100,
+              tax = 0,
+              lowerBand = None,
+              upperBand = Some(5000),
+              rate = 20)
           )
 
           val incomeCategories = Seq(
@@ -100,18 +137,47 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
       "return all dividend bands that have an income" in {
 
         val taxBands = Seq(
-          TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 0),
-          TaxBand(bandType = DividendBasicRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 10),
-          TaxBand(bandType = DividendHigherRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
-          TaxBand(bandType = DividendAdditionalRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 30)
+          TaxBand(
+            bandType = DividendZeroRate,
+            code = "",
+            income = 100,
+            tax = 0,
+            lowerBand = None,
+            upperBand = Some(5000),
+            rate = 0),
+          TaxBand(
+            bandType = DividendBasicRate,
+            code = "",
+            income = 100,
+            tax = 0,
+            lowerBand = None,
+            upperBand = Some(5000),
+            rate = 10),
+          TaxBand(
+            bandType = DividendHigherRate,
+            code = "",
+            income = 100,
+            tax = 0,
+            lowerBand = None,
+            upperBand = Some(5000),
+            rate = 20),
+          TaxBand(
+            bandType = DividendAdditionalRate,
+            code = "",
+            income = 100,
+            tax = 0,
+            lowerBand = None,
+            upperBand = Some(5000),
+            rate = 30)
         )
         val incomeCategories = Seq(
           IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBands)
         )
         val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
-        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+        val model =
+          DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
-        model.dividends must contain theSameElementsAs(taxBands)
+        model.dividends must contain theSameElementsAs (taxBands)
 
       }
     }
@@ -122,10 +188,10 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
 
         val nonHigherTaxBandGen: Gen[TaxBand] = for {
           bandType <- Gen.oneOf(
-            StarterSavingsRate,
-            PersonalSavingsRate,
-            SavingsBasicRate
-          )
+                       StarterSavingsRate,
+                       PersonalSavingsRate,
+                       SavingsBasicRate
+                     )
           code      <- arbitrary[String]
           income    <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
           tax       <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
@@ -136,9 +202,9 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
 
         val higherTaxBandGen: Gen[TaxBand] = for {
           bandType <- Gen.oneOf(
-            SavingsHigherRate,
-            SavingsAdditionalRate
-          )
+                       SavingsHigherRate,
+                       SavingsAdditionalRate
+                     )
           code      <- arbitrary[String]
           income    <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
           tax       <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
@@ -150,13 +216,12 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
         "return true when the sequence contains HSR1 or HSR2" in {
 
           val gen: Gen[Seq[TaxBand]] = for {
-            higherBands <- Gen.nonEmptyListOf(higherTaxBandGen)
+            higherBands    <- Gen.nonEmptyListOf(higherTaxBandGen)
             nonHigherBands <- Gen.listOf(nonHigherTaxBandGen)
           } yield higherBands ++ nonHigherBands
 
-          forAll(gen) {
-            taxBands =>
-              DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual true
+          forAll(gen) { taxBands =>
+            DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual true
           }
         }
 
@@ -165,10 +230,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
           val gen: Gen[Seq[TaxBand]] =
             Gen.listOf[TaxBand](nonHigherTaxBandGen)
 
-          forAll(gen) {
-            taxBands =>
-
-              DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual false
+          forAll(gen) { taxBands =>
+            DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual false
           }
         }
       }
@@ -186,7 +249,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
             TaxAdjustmentComponent(PensionPaymentsAdjustment, 200),
             TaxAdjustmentComponent(ChildBenefit, 300)
           )
-          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(700, otherTaxDue)), None, None)
+          val totalTax =
+            TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(700, otherTaxDue)), None, None)
           val codingComponents = Seq(
             CodingComponent(UnderPaymentFromPreviousYear, None, 100, "", Some(10)),
             CodingComponent(EstimatedTaxYouOweThisYear, None, 0, "", Some(50)),
@@ -196,12 +260,28 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
           val result = DetailedIncomeTaxEstimateViewModel.createAdditionalTaxTable(codingComponents, totalTax)
 
           result mustBe Seq(
-            AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
-              Some(HelpLink(Messages("what.does.this.mean"),
-                controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString, "underPaymentFromPreviousYear"))), 10),
-            AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxcode.deduction.type-45"),
-              Some(HelpLink(Messages("what.does.this.mean"),
-                controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString, "estimatedTaxOwedLink"))), 50),
+            AdditionalTaxDetailRow(
+              TaxSummaryLabel(
+                Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
+                Some(HelpLink(
+                  Messages("what.does.this.mean"),
+                  controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
+                  "underPaymentFromPreviousYear"
+                ))
+              ),
+              10
+            ),
+            AdditionalTaxDetailRow(
+              TaxSummaryLabel(
+                Messages("tai.taxcode.deduction.type-45"),
+                Some(
+                  HelpLink(
+                    Messages("what.does.this.mean"),
+                    controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+                    "estimatedTaxOwedLink"))
+              ),
+              50
+            ),
             AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.OutstandingDebt.title")), 150),
             AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.childBenefit.title")), 300),
             AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.excessGiftAidTax.title")), 100),
@@ -249,7 +329,9 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
             TaxAdjustmentComponent(PersonalPensionPaymentRelief, 1100)
           )
 
-          val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+          val totalTax = TotalTax(
+            0,
+            Seq.empty[IncomeCategory],
             Some(tax.TaxAdjustment(3500, reliefsGivingBackTax)),
             None,
             Some(tax.TaxAdjustment(1000, alreadyTaxedAtSource)),
@@ -261,29 +343,63 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
             CodingComponent(MarriedCouplesAllowanceMAE, None, 1200, "", None)
           )
 
-          val result: Seq[ReductionTaxRow] = DetailedIncomeTaxEstimateViewModel.createReductionsTable(codingComponents, totalTax)
+          val result: Seq[ReductionTaxRow] =
+            DetailedIncomeTaxEstimateViewModel.createReductionsTable(codingComponents, totalTax)
 
           result mustBe Seq(
-            ReductionTaxRow(Messages("tai.taxCollected.atSource.otherIncome.description"), 100, Messages("tai.taxCollected.atSource.otherIncome.title")),
-            ReductionTaxRow(Messages("tai.taxCollected.atSource.dividends.description", 10), 200, Messages("tai.taxCollected.atSource.dividends.title")),
-            ReductionTaxRow(Messages("tai.taxCollected.atSource.bank.description", 20), 100, Messages("tai.taxCollected.atSource.bank.title")),
-            ReductionTaxRow(Messages("tai.taxCollected.atSource.marriageAllowance.description", MoneyPounds(1200).quantity,
-              Link.toInternalPage(
-                url = routes.YourTaxCodeController.taxCodes().toString,
-                value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
-              ).toHtml.body), 800, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
-            ReductionTaxRow(Messages("tai.taxCollected.atSource.maintenancePayments.description", MoneyPounds(1200).quantity,
-              routes.YourTaxCodeController.taxCodes().url), 700, Messages("tai.taxCollected.atSource.maintenancePayments.title")),
-            ReductionTaxRow(Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description"),
-              500, Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")),
-            ReductionTaxRow(Messages("tai.taxCollected.atSource.concessionalRelief.description"),
-              600, Messages("tai.taxCollected.atSource.concessionalRelief.title")),
-            ReductionTaxRow(Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"),
-              900, Messages("tai.taxCollected.atSource.doubleTaxationRelief.title")),
-            ReductionTaxRow(Messages("gift.aid.tax.relief",0,1000),
-              1000, Messages("gift.aid.savings")),
-            ReductionTaxRow(Messages("personal.pension.payment.relief",0,1100),
-              1100, Messages("personal.pension.payments"))
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.otherIncome.description"),
+              100,
+              Messages("tai.taxCollected.atSource.otherIncome.title")),
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.dividends.description", 10),
+              200,
+              Messages("tai.taxCollected.atSource.dividends.title")),
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.bank.description", 20),
+              100,
+              Messages("tai.taxCollected.atSource.bank.title")),
+            ReductionTaxRow(
+              Messages(
+                "tai.taxCollected.atSource.marriageAllowance.description",
+                MoneyPounds(1200).quantity,
+                Link
+                  .toInternalPage(
+                    url = routes.YourTaxCodeController.taxCodes().toString,
+                    value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
+                  )
+                  .toHtml
+                  .body
+              ),
+              800,
+              Messages("tai.taxCollected.atSource.marriageAllowance.title")
+            ),
+            ReductionTaxRow(
+              Messages(
+                "tai.taxCollected.atSource.maintenancePayments.description",
+                MoneyPounds(1200).quantity,
+                routes.YourTaxCodeController.taxCodes().url),
+              700,
+              Messages("tai.taxCollected.atSource.maintenancePayments.title")
+            ),
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description"),
+              500,
+              Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")
+            ),
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.concessionalRelief.description"),
+              600,
+              Messages("tai.taxCollected.atSource.concessionalRelief.title")),
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"),
+              900,
+              Messages("tai.taxCollected.atSource.doubleTaxationRelief.title")),
+            ReductionTaxRow(Messages("gift.aid.tax.relief", 0, 1000), 1000, Messages("gift.aid.savings")),
+            ReductionTaxRow(
+              Messages("personal.pension.payment.relief", 0, 1100),
+              1100,
+              Messages("personal.pension.payments"))
           )
         }
       }
@@ -300,10 +416,9 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
       }
     }
 
-
-
     "return tax bands from all categories" in {
-      val taxBand = Seq(TaxBand(bandType = "", code = "", income = 100, tax = 0, lowerBand = None, upperBand = None, rate = 20))
+      val taxBand =
+        Seq(TaxBand(bandType = "", code = "", income = 100, tax = 0, lowerBand = None, upperBand = None, rate = 20))
       val incomeCategories = Seq(
         IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 0, taxBand),
         IncomeCategory(UntaxedInterestIncomeCategory, 0, 2000, 0, taxBand),
@@ -314,16 +429,18 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
       )
       val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
 
-      val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+      val model =
+        DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
-      model.nonSavings mustEqual Seq(TaxBand(TaxFreeAllowanceBand,"",0,0,Some(0),None,0)) ++ taxBand
-      model.savings mustEqual  taxBand ++ taxBand ++ taxBand
+      model.nonSavings mustEqual Seq(TaxBand(TaxFreeAllowanceBand, "", 0, 0, Some(0), None, 0)) ++ taxBand
+      model.savings mustEqual taxBand ++ taxBand ++ taxBand
       model.dividends mustEqual taxBand ++ taxBand
     }
 
-    "return empty tax bands"  ignore {
+    "return empty tax bands" ignore {
       "only zero rate bands are present with no income" in {
-        val taxBand = Seq(TaxBand(bandType = "", code = "", income = 100, tax = 0, lowerBand = None, upperBand = None, rate = 0))
+        val taxBand =
+          Seq(TaxBand(bandType = "", code = "", income = 100, tax = 0, lowerBand = None, upperBand = None, rate = 0))
         val incomeCategories = Seq(
           IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 0, taxBand),
           IncomeCategory(UntaxedInterestIncomeCategory, 0, 2000, 0, taxBand),
@@ -334,15 +451,17 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
         )
         val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
 
-        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+        val model =
+          DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
         model.nonSavings mustBe Seq.empty[TaxBand]
-        model.savings mustBe  Seq.empty[TaxBand]
+        model.savings mustBe Seq.empty[TaxBand]
         model.dividends mustBe Seq.empty[TaxBand]
       }
 
       "income is zero" in {
-        val taxBand = Seq(TaxBand(bandType = "", code = "", income = 0, tax = 0, lowerBand = None, upperBand = None, rate = 20))
+        val taxBand =
+          Seq(TaxBand(bandType = "", code = "", income = 0, tax = 0, lowerBand = None, upperBand = None, rate = 20))
         val incomeCategories = Seq(
           IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 0, taxBand),
           IncomeCategory(UntaxedInterestIncomeCategory, 0, 2000, 0, taxBand),
@@ -353,25 +472,28 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
         )
         val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
 
-        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+        val model =
+          DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
         model.nonSavings mustBe Seq.empty[TaxBand]
-        model.savings mustBe  Seq.empty[TaxBand]
+        model.savings mustBe Seq.empty[TaxBand]
         model.dividends mustBe Seq.empty[TaxBand]
       }
     }
 
     "additional Income Tax Self Assessment text" should {
       "be returned when Non-Coded Income is present" in {
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, List(OtherNonTaxCodeIncome(NonCodedIncome,None,0,"")))
-        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, List(OtherNonTaxCodeIncome(NonCodedIncome, None, 0, "")))
+        val model =
+          DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
         model.selfAssessmentAndPayeText mustEqual Some(messagesApi("tai.estimatedIncome.selfAssessmentAndPayeText"))
       }
 
       "not returned when Non-Coded Income is absent" in {
         val nonTaxCodeIncome = NonTaxCodeIncome(None, List.empty)
-        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+        val model =
+          DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
         model.selfAssessmentAndPayeText mustEqual None
       }
@@ -381,9 +503,10 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
 
   private val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None)
   private val taxCodeIncomes = Seq.empty[TaxCodeIncome]
-  private val taxCodeSummary = TaxAccountSummary(0,0,0,0,0,0,0)
+  private val taxCodeSummary = TaxAccountSummary(0, 0, 0, 0, 0, 0, 0)
   private val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty)
 
-  val basicModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+  val basicModel =
+    DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
 }

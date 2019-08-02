@@ -20,24 +20,20 @@ import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-
-
 class noCurrentIncomeSpec extends TaiViewSpec {
-
 
   "noCurrentIncome view" must {
 
     behave like pageWithCombinedHeader(
-      messages("tai.taxYear",
+      messages(
+        "tai.taxYear",
         Dates.formatDate(TaxYear().start).replace(" ", "\u00A0"),
-        Dates.formatDate(TaxYear().end).replace(" ", "\u00A0")
-      ),
+        Dates.formatDate(TaxYear().end).replace(" ", "\u00A0")),
       messages("tai.estimatedIncome.title"),
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))
     )
 
     behave like pageWithBackLink
-
 
     "display no current income" in {
       doc(view) must haveParagraphWithText(messages("tai.no.increasesTax"))

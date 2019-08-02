@@ -43,10 +43,8 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import scala.concurrent.Future
 import scala.util.Random
 
-class IncomeSourceSummaryControllerSpec extends PlaySpec
-  with FakeTaiPlayApplication
-  with MockitoSugar
-  with I18nSupport {
+class IncomeSourceSummaryControllerSpec
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val employmentId = 1
@@ -56,46 +54,46 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
     "display the income details page" when {
       "asked for employment details" in {
         val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(employmentId.toString))(any())).
-          thenReturn(Future.successful(true))
+        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(employmentId.toString))(any()))
+          .thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.employment.income.details.mainHeading.gaTitle",
-          TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        doc.title() must include(
+          Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
 
       "asked for pension details" in {
         val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(pensionId.toString))(any())).
-          thenReturn(Future.successful(true))
+        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(pensionId.toString))(any()))
+          .thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.pension.income.details.mainHeading.gaTitle",
-          TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        doc.title() must include(
+          Messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
     }
 
     "throw error" when {
       "failed to read tax code incomes" in {
         val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiTaxAccountFailureResponse("FAILED")))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("FAILED")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -105,8 +103,8 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
       "failed to read employment details" in {
         val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -120,13 +118,29 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
   val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
   val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
   val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
-  val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
-  val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
-    None, Seq(annualAccount), "", "", 2, None, false, false)
+  val annualAccount = AnnualAccount(
+    "KEY",
+    uk.gov.hmrc.tai.model.TaxYear(),
+    Available,
+    Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
+    Nil)
+  val employment = Employment(
+    "test employment",
+    Some("EMPLOYER-1122"),
+    LocalDate.now(),
+    None,
+    Seq(annualAccount),
+    "",
+    "",
+    2,
+    None,
+    false,
+    false)
 
   val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live))
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
+  )
 
   val nino = new Generator(new Random).nextNino
 
@@ -140,15 +154,16 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
   val taxAccountService = mock[TaxAccountService]
   val estimatedPayJourneyCompletionService = mock[EstimatedPayJourneyCompletionService]
 
-  class SUT extends IncomeSourceSummaryController(
-    mock[AuditConnector],
-    taxAccountService,
-    employmentService,
-    benefitsService,
-    estimatedPayJourneyCompletionService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  )
+  class SUT
+      extends IncomeSourceSummaryController(
+        mock[AuditConnector],
+        taxAccountService,
+        employmentService,
+        benefitsService,
+        estimatedPayJourneyCompletionService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      )
 }

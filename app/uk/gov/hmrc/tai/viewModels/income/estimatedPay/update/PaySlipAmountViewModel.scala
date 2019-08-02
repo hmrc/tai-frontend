@@ -26,10 +26,11 @@ case class PaySlipAmountViewModel(payslipForm: Form[PayslipForm], payPeriodTitle
 
 object PaySlipAmountViewModel extends EditIncomePayPeriodConstants with DynamicPayPeriodTitle {
 
-  def apply(payslipForm: Form[PayslipForm],
-            payPeriod: Option[String],
-            payPeriodInDays: Option[String],
-            employer: IncomeSource)(implicit message: Messages): PaySlipAmountViewModel = {
+  def apply(
+    payslipForm: Form[PayslipForm],
+    payPeriod: Option[String],
+    payPeriodInDays: Option[String],
+    employer: IncomeSource)(implicit message: Messages): PaySlipAmountViewModel = {
     val title = GrossPayPeriodTitle.title(payPeriod, payPeriodInDays)
     PaySlipAmountViewModel(payslipForm, title, employer)
   }

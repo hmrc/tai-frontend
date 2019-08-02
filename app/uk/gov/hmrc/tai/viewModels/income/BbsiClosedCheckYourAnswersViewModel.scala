@@ -26,19 +26,25 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.model.TaxYear
 
-
-case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: String, closeBankAccountName: Option[String], closeBankAccountInterest: Option[String]) {
+case class BbsiClosedCheckYourAnswersViewModel(
+  id: Int,
+  closeBankAccountDate: String,
+  closeBankAccountName: Option[String],
+  closeBankAccountInterest: Option[String]) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
-    val confirmationLines = Seq(CheckYourAnswersConfirmationLine(
+    val confirmationLines = Seq(
+      CheckYourAnswersConfirmationLine(
         Messages("tai.checkYourAnswers.whatYouToldUs"),
         Messages("tai.bbsi.end.checkYourAnswers.rowOne.answer"),
-        routes.BbsiController.decision(id)toString),
+        routes.BbsiController.decision(id) toString),
       CheckYourAnswersConfirmationLine(
         Messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"),
         Dates.formatDate(new LocalDate(closeBankAccountDate)),
-        routes.BbsiCloseAccountController.captureCloseDate(id).toString))
+        routes.BbsiCloseAccountController.captureCloseDate(id).toString
+      )
+    )
 
     if (bankAccountClosedInCurrentTaxYear) {
       confirmationLines :+ CheckYourAnswersConfirmationLine(
@@ -46,9 +52,9 @@ case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: St
         closeBankAccountInterest
           .map(interest => Money.pounds(BigDecimal(interest)).toString().trim.replace("&pound;", "\u00A3"))
           .getOrElse(Messages("tai.closeBankAccount.closingInterest.notKnown")),
-        routes.BbsiCloseAccountController.captureClosingInterest(id).toString)
-    }
-    else confirmationLines
+        routes.BbsiCloseAccountController.captureClosingInterest(id).toString
+      )
+    } else confirmationLines
   }
 
   val bankAccountClosedInCurrentTaxYear: Boolean = TaxYear().within(LocalDate.parse(closeBankAccountDate))

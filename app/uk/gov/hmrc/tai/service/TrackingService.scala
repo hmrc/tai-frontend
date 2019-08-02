@@ -38,9 +38,10 @@ case object SevenDays extends TimeToProcess
 
 case object NoTimeToProcess extends TimeToProcess
 
-class TrackingService @Inject()(trackingConnector: TrackingConnector,
-                                @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
-                               ) extends JourneyCacheConstants {
+class TrackingService @Inject()(
+  trackingConnector: TrackingConnector,
+  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService)
+    extends JourneyCacheConstants {
 
   def isAnyIFormInProgress(nino: String)(implicit hc: HeaderCarrier): Future[TimeToProcess] = {
 
@@ -48,29 +49,31 @@ class TrackingService @Inject()(trackingConnector: TrackingConnector,
     val shortTESProcesses: Future[Seq[TrackedForm]] = unfinishedTrackingForms(nino, "TES[2-6]")
 
     for {
-      haveAnyLongProcesses <- longTESProcesses map (_.nonEmpty)
-      haveAnyShortProcesses <- shortTESProcesses map (_.nonEmpty)
+      haveAnyLongProcesses                    <- longTESProcesses map (_.nonEmpty)
+      haveAnyShortProcesses                   <- shortTESProcesses map (_.nonEmpty)
       successfulJournies: Map[String, String] <- successfulJourneyCacheService.currentCache
     } yield {
 
       val filteredJournies = successfulJournies.keySet.filterNot(
-        key => key.contains(TrackSuccessfulJourney_EstimatedPayKey) || key.contains(UpdateNextYearsIncomeConstants.SUCCESSFUL)
-          || key.contains(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey)
+        key =>
+          key.contains(TrackSuccessfulJourney_EstimatedPayKey) || key.contains(
+            UpdateNextYearsIncomeConstants.SUCCESSFUL)
+            || key.contains(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey)
       )
 
       (haveAnyShortProcesses, haveAnyLongProcesses, filteredJournies.isEmpty, isA3WeeksJourney(successfulJournies)) match {
-        case(true, false, _, _) | (_ , _, false, false) => SevenDays
-        case(_, true, _, _ ) | (_ , _, false, true) => ThreeWeeks
-        case _ => NoTimeToProcess
+        case (true, false, _, _) | (_, _, false, false) => SevenDays
+        case (_, true, _, _) | (_, _, false, true)      => ThreeWeeks
+        case _                                          => NoTimeToProcess
       }
     }
   }
 
-  private def isA3WeeksJourney(journies: Map[String, String]): Boolean = {
+  private def isA3WeeksJourney(journies: Map[String, String]): Boolean =
     journies exists { _ == TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true" }
-  }
 
-  private def unfinishedTrackingForms(nino: String, regex: String)(implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] = {
+  private def unfinishedTrackingForms(nino: String, regex: String)(
+    implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] = {
     val futureTrackedForms = trackingConnector.getUserTracking(nino).map(_.filter(_.id.matches(regex)))
 
     futureTrackedForms map { trackedForms =>

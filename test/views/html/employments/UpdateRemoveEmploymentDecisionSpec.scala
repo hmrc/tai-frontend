@@ -25,13 +25,14 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class UpdateRemoveEmploymentDecisionSpec extends TaiViewSpec with FormValuesConstants {
   val employmentName = "Employment Name"
   val empId = 1
-  val updateRemoveEmploymentForm: Form[Option[String]] = UpdateRemoveEmploymentForm.form.bind(
-    Map(UpdateRemoveEmploymentForm.EmploymentDecision -> YesValue))
+  val updateRemoveEmploymentForm: Form[Option[String]] =
+    UpdateRemoveEmploymentForm.form.bind(Map(UpdateRemoveEmploymentForm.EmploymentDecision -> YesValue))
 
-  override def view: Html = views.html.employments.update_remove_employment_decision(
-    updateRemoveForm = updateRemoveEmploymentForm,
-    employmentName = employmentName,
-    empId = empId)
+  override def view: Html =
+    views.html.employments.update_remove_employment_decision(
+      updateRemoveForm = updateRemoveEmploymentForm,
+      employmentName = employmentName,
+      empId = empId)
 
   "update_remove_employment_decision" must {
     behave like pageWithTitle(messages("tai.employment.decision.customGaTitle"))
@@ -43,10 +44,11 @@ class UpdateRemoveEmploymentDecisionSpec extends TaiViewSpec with FormValuesCons
       mainHeaderText = messages("tai.employment.decision.heading", employmentName))
 
     behave like pageWithYesNoRadioButton(
-      UpdateRemoveEmploymentForm.EmploymentDecision+"-yes",
-      UpdateRemoveEmploymentForm.EmploymentDecision+"-no",
+      UpdateRemoveEmploymentForm.EmploymentDecision + "-yes",
+      UpdateRemoveEmploymentForm.EmploymentDecision + "-no",
       messages("tai.employment.decision.radio1"),
-      messages("tai.employment.decision.radio2"))
+      messages("tai.employment.decision.radio2")
+    )
 
     behave like pageWithContinueButtonForm("/check-income-tax/update-remove-employment/decision")
 

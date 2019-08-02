@@ -37,25 +37,29 @@ class UpdateInterestFormSpec extends PlaySpec with OneAppPerSuite with I18nSuppo
       "passed empty value" in {
         val untaxedInterest = form.bind(Json.obj("untaxedInterest" -> ""))
 
-        untaxedInterest.errors must contain(FormError("untaxedInterest", List(Messages("tai.bbsi.update.form.interest.blank"))))
+        untaxedInterest.errors must contain(
+          FormError("untaxedInterest", List(Messages("tai.bbsi.update.form.interest.blank"))))
       }
 
       "passed characters" in {
         val untaxedInterest = form.bind(Json.obj("untaxedInterest" -> "dasdas"))
 
-        untaxedInterest.errors must contain(FormError("untaxedInterest", Messages("tai.bbsi.update.form.interest.isCurrency")))
+        untaxedInterest.errors must contain(
+          FormError("untaxedInterest", Messages("tai.bbsi.update.form.interest.isCurrency")))
       }
 
       "entered (,) at wrong place" in {
         val untaxedInterest = form.bind(Json.obj("untaxedInterest" -> "1,00"))
 
-        untaxedInterest.errors must contain(FormError("untaxedInterest", Messages("tai.bbsi.update.form.interest.isCurrency")))
+        untaxedInterest.errors must contain(
+          FormError("untaxedInterest", Messages("tai.bbsi.update.form.interest.isCurrency")))
       }
 
       "passed decimal value" in {
         val untaxedInterest = form.bind(Json.obj("untaxedInterest" -> "1.00"))
 
-        untaxedInterest.errors must contain(FormError("untaxedInterest", Messages("tai.bbsi.update.form.interest.wholeNumber")))
+        untaxedInterest.errors must contain(
+          FormError("untaxedInterest", Messages("tai.bbsi.update.form.interest.wholeNumber")))
       }
 
     }

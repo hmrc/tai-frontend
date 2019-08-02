@@ -21,36 +21,30 @@ import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
 
 object TaxCodeMismatchFactory {
 
-
-  def matchedTaxCode: TaxCodeMismatch = {
+  def matchedTaxCode: TaxCodeMismatch =
     TaxCodeMismatch(false, Seq("1185L"), Seq("1185L"))
-  }
 
-  def mismatchedTaxCode: TaxCodeMismatch = {
+  def mismatchedTaxCode: TaxCodeMismatch =
     TaxCodeMismatch(true, Seq("1185L"), Seq("0T"))
-  }
 
-  def mismatchedTaxCodeComplex: TaxCodeMismatch = {
+  def mismatchedTaxCodeComplex: TaxCodeMismatch =
     TaxCodeMismatch(true, Seq("1185L", "0T"), Seq("1180L", "0T"))
-  }
 
-  def matchedTaxCodeJson: JsObject = {
+  def matchedTaxCodeJson: JsObject =
     Json.obj(
       "data" -> Json.obj(
-        "mismatch" -> false,
+        "mismatch"            -> false,
         "unconfirmedTaxCodes" -> Json.arr("1185L"),
-        "confirmedTaxCodes" -> Json.arr("1185L")
+        "confirmedTaxCodes"   -> Json.arr("1185L")
       )
     )
-  }
 
-  def mismatchedTaxCodeJson: JsObject = {
+  def mismatchedTaxCodeJson: JsObject =
     Json.obj(
       "data" -> Json.obj(
-          "mismatch" -> true,
+        "mismatch"            -> true,
         "unconfirmedTaxCodes" -> Json.arr("1185L"),
-        "confirmedTaxCodes" -> Json.arr("0T")
+        "confirmedTaxCodes"   -> Json.arr("0T")
       )
     )
-  }
 }

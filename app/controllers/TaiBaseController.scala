@@ -26,4 +26,3 @@ trait TaiBaseController extends FrontendController with ErrorPagesHandler {
   implicit def partialRetriever: FormPartialRetriever
 
 }
-

@@ -29,20 +29,19 @@ import uk.gov.hmrc.play.HeaderCarrierConverter
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ValidatePersonImpl @Inject()(personService: PersonService)
-                           (implicit ec: ExecutionContext) extends ValidatePerson {
-
+class ValidatePersonImpl @Inject()(personService: PersonService)(implicit ec: ExecutionContext) extends ValidatePerson {
 
   override protected def filter[A](request: AuthenticatedRequest[A]): Future[Option[Result]] = {
 
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit val hc: HeaderCarrier =
+      HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
     val personNino = request.taiUser.nino
     val person = personService.personDetails(personNino)
 
-    person map({
-      case p if p.isDeceased => Some(Redirect(routes.DeceasedController.deceased()))
+    person map ({
+      case p if p.isDeceased     => Some(Redirect(routes.DeceasedController.deceased()))
       case p if p.hasCorruptData => Some(Redirect(routes.ServiceController.gateKeeper()))
-      case _ => None
+      case _                     => None
     })
   }
 

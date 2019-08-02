@@ -32,40 +32,39 @@ import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 import views.html.previousYearUnderpayment
 
+class UnderpaymentFromPreviousYearController @Inject()(
+  codingComponentService: CodingComponentService,
+  employmentService: EmploymentService,
+  companyCarService: CompanyCarService,
+  taxAccountService: TaxAccountService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController with Referral {
 
-class UnderpaymentFromPreviousYearController @Inject()(codingComponentService: CodingComponentService,
-                                                       employmentService: EmploymentService,
-                                                       companyCarService: CompanyCarService,
-                                                       taxAccountService: TaxAccountService,
-                                                       authenticate: AuthAction,
-                                                       validatePerson: ValidatePerson,
-                                                       override implicit val partialRetriever: FormPartialRetriever,
-                                                       override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with Referral {
+  def underpaymentExplanation = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
 
-  def underpaymentExplanation = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
+    val nino = user.nino
+    val year = TaxYear()
+    val totalTaxFuture = taxAccountService.totalTax(nino, year)
+    val employmentsFuture = employmentService.employments(nino, year.prev)
+    val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, year)
 
-      val nino = user.nino
-      val year = TaxYear()
-      val totalTaxFuture = taxAccountService.totalTax(nino, year)
-      val employmentsFuture = employmentService.employments(nino, year.prev)
-      val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, year)
+    for {
+      employments      <- employmentsFuture
+      codingComponents <- codingComponentsFuture
+      totalTax         <- totalTaxFuture
+    } yield {
+      totalTax match {
+        case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
+          val model = PreviousYearUnderpaymentViewModel(codingComponents, employments, totalTax, referer, resourceName)
 
-      for {
-        employments <- employmentsFuture
-        codingComponents <- codingComponentsFuture
-        totalTax <- totalTaxFuture
-      } yield {
-        totalTax match {
-          case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
-            val model = PreviousYearUnderpaymentViewModel(codingComponents, employments, totalTax, referer, resourceName)
-
-            Ok(previousYearUnderpayment(model))
-          case _ => throw new RuntimeException("Failed to fetch total tax details")
-        }
+          Ok(previousYearUnderpayment(model))
+        case _ => throw new RuntimeException("Failed to fetch total tax details")
       }
+    }
 
   }
 }

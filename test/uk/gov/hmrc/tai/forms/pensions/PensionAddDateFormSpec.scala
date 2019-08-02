@@ -22,9 +22,7 @@ import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 
-class PensionAddDateFormSpec extends PlaySpec
-  with OneAppPerSuite
-  with I18nSupport {
+class PensionAddDateFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -40,34 +38,38 @@ class PensionAddDateFormSpec extends PlaySpec
     "deconstruct a local date correctly" in {
       val prePopForm = form.fill(new LocalDate(2014, 8, 15))
 
-      prePopForm.data must contain(pensionAddDateForm.PensionFormDay -> "15")
+      prePopForm.data must contain(pensionAddDateForm.PensionFormDay   -> "15")
       prePopForm.data must contain(pensionAddDateForm.PensionFormMonth -> "8")
-      prePopForm.data must contain(pensionAddDateForm.PensionFormYear -> "2014")
+      prePopForm.data must contain(pensionAddDateForm.PensionFormYear  -> "2014")
     }
 
     "return an error" when {
       "day is blank" in {
         val validatedFormNoDayError = form.bind(invalidNoDayValue)
 
-        validatedFormNoDayError.errors must contain(FormError(DayTag, List(Messages("tai.addPensionProvider.date.error.blank", "employer"))))
+        validatedFormNoDayError.errors must contain(
+          FormError(DayTag, List(Messages("tai.addPensionProvider.date.error.blank", "employer"))))
       }
 
       "month is blank" in {
         val validatedFormNoMonthError = form.bind(invalidNoMonthValue)
 
-        validatedFormNoMonthError.errors must contain(FormError(DayTag, List(Messages("tai.addPensionProvider.date.error.blank", "employer"))))
+        validatedFormNoMonthError.errors must contain(
+          FormError(DayTag, List(Messages("tai.addPensionProvider.date.error.blank", "employer"))))
       }
 
       "year is blank" in {
         val validatedFormNoYearError = form.bind(invalidNoYearValue)
 
-        validatedFormNoYearError.errors must contain(FormError(DayTag, List(Messages("tai.addPensionProvider.date.error.blank", "employer"))))
+        validatedFormNoYearError.errors must contain(
+          FormError(DayTag, List(Messages("tai.addPensionProvider.date.error.blank", "employer"))))
       }
 
       "multiple fields are blank" in {
         val validatedFormNoDayNoYearError = form.bind(invalidNoDayNoYearValue)
 
-        validatedFormNoDayNoYearError.errors must be(List(FormError(DayTag, List(Messages("tai.addPensionProvider.date.error.blank", "employer")))))
+        validatedFormNoDayNoYearError.errors must be(
+          List(FormError(DayTag, List(Messages("tai.addPensionProvider.date.error.blank", "employer")))))
       }
 
       "date format is not a valid date" in {
@@ -98,17 +100,17 @@ class PensionAddDateFormSpec extends PlaySpec
   private val MonthTag: String = pensionAddDateForm.PensionFormMonth
   private val YearTag: String = pensionAddDateForm.PensionFormYear
 
-  private val validDate = Json.obj(DayTag -> 10, MonthTag -> 4, YearTag -> 2015)
-  private val validFutureDate = Json.obj(DayTag -> 10, MonthTag -> 4, YearTag -> (LocalDate.now().getYear + 1))
+  private val validDate = Json.obj(DayTag         -> 10, MonthTag -> 4, YearTag -> 2015)
+  private val validFutureDate = Json.obj(DayTag   -> 10, MonthTag -> 4, YearTag -> (LocalDate.now().getYear + 1))
   private val validLeapYearDate = Json.obj(DayTag -> 29, MonthTag -> 2, YearTag -> 2016)
 
-  private val invalidDay = Json.obj(DayTag -> "Bar", MonthTag -> 4, YearTag -> 2015)
-  private val invalidMonth = Json.obj(DayTag -> 1, MonthTag -> "Foo", YearTag -> 2015)
-  private val invalidYear = Json.obj(DayTag -> 1, MonthTag -> 4, YearTag -> "Baz")
-  private val invalidLeapYearDate = Json.obj(DayTag -> 29, MonthTag -> 2, YearTag -> 2015)
+  private val invalidDay = Json.obj(DayTag          -> "Bar", MonthTag -> 4, YearTag     -> 2015)
+  private val invalidMonth = Json.obj(DayTag        -> 1, MonthTag     -> "Foo", YearTag -> 2015)
+  private val invalidYear = Json.obj(DayTag         -> 1, MonthTag     -> 4, YearTag     -> "Baz")
+  private val invalidLeapYearDate = Json.obj(DayTag -> 29, MonthTag    -> 2, YearTag     -> 2015)
 
-  private val invalidNoDayValue = Json.obj(DayTag -> "", MonthTag -> 4, YearTag -> 2015)
-  private val invalidNoMonthValue = Json.obj(DayTag -> 4, MonthTag -> "", YearTag -> 2015)
-  private val invalidNoYearValue = Json.obj(DayTag -> 4, MonthTag -> 12, YearTag -> "")
+  private val invalidNoDayValue = Json.obj(DayTag       -> "", MonthTag -> 4, YearTag  -> 2015)
+  private val invalidNoMonthValue = Json.obj(DayTag     -> 4, MonthTag  -> "", YearTag -> 2015)
+  private val invalidNoYearValue = Json.obj(DayTag      -> 4, MonthTag  -> 12, YearTag -> "")
   private val invalidNoDayNoYearValue = Json.obj(DayTag -> "", MonthTag -> 12, YearTag -> "")
 }

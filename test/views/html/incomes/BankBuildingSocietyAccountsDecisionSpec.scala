@@ -42,17 +42,20 @@ class BankBuildingSocietyAccountsDecisionSpec extends TaiViewSpec with BankAccou
     "have an error box on the top of the page with link a to error field" when {
       "a form with errors is passed into the view" in {
 
-        val formWithError: Form[BankAccountsDecisionFormData] = BankAccountsDecisionForm.createForm.bind(Map(BankAccountDecision -> ""))
+        val formWithError: Form[BankAccountsDecisionFormData] =
+          BankAccountsDecisionForm.createForm.bind(Map(BankAccountDecision -> ""))
 
         def view: Html = views.html.incomes.bbsi.bank_building_society_accounts_decision(viewModel, formWithError)
 
-        doc(view).select(".error-summary--show > ul > li > #bankAccountDecision-error-summary").text mustBe Messages("tai.bbsi.decision.error.selectOption")
+        doc(view).select(".error-summary--show > ul > li > #bankAccountDecision-error-summary").text mustBe Messages(
+          "tai.bbsi.decision.error.selectOption")
       }
     }
 
     "have error message with the radio buttons" in {
 
-      val formWithError: Form[BankAccountsDecisionFormData] = BankAccountsDecisionForm.createForm.bind(Map(BankAccountDecision -> ""))
+      val formWithError: Form[BankAccountsDecisionFormData] =
+        BankAccountsDecisionForm.createForm.bind(Map(BankAccountDecision -> ""))
 
       def view: Html = views.html.incomes.bbsi.bank_building_society_accounts_decision(viewModel, formWithError)
 
@@ -64,9 +67,13 @@ class BankBuildingSocietyAccountsDecisionSpec extends TaiViewSpec with BankAccou
 
     "have three radio buttons with relevant text" in {
 
-      doc(view) must haveInputLabelWithText(s"${BankAccountDecision}-${UpdateInterest}", Messages("tai.bbsi.decision.radio1"))
-      doc(view) must haveInputLabelWithText(s"${BankAccountDecision}-${CloseAccount}", Messages("tai.bbsi.decision.radio2"))
-      doc(view) must haveInputLabelWithText(s"${BankAccountDecision}-${RemoveAccount}", Messages("tai.bbsi.decision.radio3"))
+      doc(view) must haveInputLabelWithText(
+        s"$BankAccountDecision-$UpdateInterest",
+        Messages("tai.bbsi.decision.radio1"))
+      doc(view) must haveInputLabelWithText(s"$BankAccountDecision-$CloseAccount", Messages("tai.bbsi.decision.radio2"))
+      doc(view) must haveInputLabelWithText(
+        s"$BankAccountDecision-$RemoveAccount",
+        Messages("tai.bbsi.decision.radio3"))
     }
   }
 

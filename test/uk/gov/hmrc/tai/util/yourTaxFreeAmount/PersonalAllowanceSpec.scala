@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.model.domain.{ChildBenefit, PersonalAllowanceElderlyPAE, PersonalAllowanceAgedPAA, PersonalAllowancePA}
+import uk.gov.hmrc.tai.model.domain.{ChildBenefit, PersonalAllowanceAgedPAA, PersonalAllowanceElderlyPAE, PersonalAllowancePA}
 
 class PersonalAllowanceSpec extends PlaySpec {
 

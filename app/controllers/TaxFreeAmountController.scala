@@ -33,35 +33,38 @@ import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 
 import scala.util.control.NonFatal
 
-class TaxFreeAmountController @Inject()(codingComponentService: CodingComponentService,
-                                        employmentService: EmploymentService,
-                                        taxAccountService: TaxAccountService,
-                                        companyCarService: CompanyCarService,
-                                        authenticate: AuthAction,
-                                        validatePerson: ValidatePerson,
-                                        override implicit val partialRetriever: FormPartialRetriever,
-                                        override implicit val templateRenderer: TemplateRenderer
-                                       ) extends TaiBaseController {
+class TaxFreeAmountController @Inject()(
+  codingComponentService: CodingComponentService,
+  employmentService: EmploymentService,
+  taxAccountService: TaxAccountService,
+  companyCarService: CompanyCarService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController {
 
-  def taxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      val nino = request.taiUser.nino
+  def taxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    val nino = request.taiUser.nino
 
-      (for {
-        codingComponents <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-        employmentNames <- employmentService.employmentNames(nino, TaxYear())
-        companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
-        totalTax <- taxAccountService.totalTax(nino, TaxYear())
-      } yield {
-        totalTax match {
-          case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
-            val viewModel = TaxFreeAmountViewModel(codingComponents, TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax))
-            implicit val user = request.taiUser
-            Ok(views.html.taxFreeAmount(viewModel))
-          case _ => throw new RuntimeException("Failed to fetch total tax details")
-          }}) recover {
-        case NonFatal(e) => internalServerError(s"Could not get tax free amount", Some(e))
+    (for {
+      codingComponents   <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+      employmentNames    <- employmentService.employmentNames(nino, TaxYear())
+      companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
+      totalTax           <- taxAccountService.totalTax(nino, TaxYear())
+    } yield {
+      totalTax match {
+        case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
+          val viewModel = TaxFreeAmountViewModel(
+            codingComponents,
+            TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax))
+          implicit val user = request.taiUser
+          Ok(views.html.taxFreeAmount(viewModel))
+        case _ => throw new RuntimeException("Failed to fetch total tax details")
       }
+    }) recover {
+      case NonFatal(e) => internalServerError(s"Could not get tax free amount", Some(e))
+    }
 
   }
 }

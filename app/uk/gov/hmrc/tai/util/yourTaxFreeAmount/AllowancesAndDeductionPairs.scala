@@ -21,14 +21,15 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
 case class AllowancesAndDeductionPairs(allowances: Seq[CodingComponentPair], deductions: Seq[CodingComponentPair]) {
-  def totalAllowances: (BigDecimal, BigDecimal) = {
+  def totalAllowances: (BigDecimal, BigDecimal) =
     (allowances.flatMap(_.previous).sum, allowances.flatMap(_.current).sum)
-  }
 }
 
 object AllowancesAndDeductionPairs {
 
-  def fromCodingComponents(previousCodingComponents: Seq[CodingComponent], currentCodingComponents: Seq[CodingComponent]): AllowancesAndDeductionPairs = {
+  def fromCodingComponents(
+    previousCodingComponents: Seq[CodingComponent],
+    currentCodingComponents: Seq[CodingComponent]): AllowancesAndDeductionPairs = {
     val pairs = pairCodingComponents(previousCodingComponents, currentCodingComponents)
     val allowances = getAllowances(pairs)
     val deductions = getDeductions(pairs)
@@ -36,56 +37,60 @@ object AllowancesAndDeductionPairs {
     AllowancesAndDeductionPairs(allowances, deductions)
   }
 
-  private def pairCodingComponents(previous: Seq[CodingComponent], current: Seq[CodingComponent]): Seq[CodingComponentPair] = {
+  private def pairCodingComponents(
+    previous: Seq[CodingComponent],
+    current: Seq[CodingComponent]): Seq[CodingComponentPair] = {
     val pairs = findPairs(previous, current)
     val nonPairs = findNonPairs(pairs, previous)
 
     pairs ++ nonPairs
   }
 
-  private def findPairs(previous: Seq[CodingComponent], current: Seq[CodingComponent]): Seq[CodingComponentPair] = {
-    current.map( addition => {
+  private def findPairs(previous: Seq[CodingComponent], current: Seq[CodingComponent]): Seq[CodingComponentPair] =
+    current.map(addition => {
       previous.find(matchingCodingComponents(_, addition)) match {
-        case Some(previousMatched) => CodingComponentPair(addition.componentType, addition.employmentId, Some(previousMatched.amount), Some(addition.amount))
+        case Some(previousMatched) =>
+          CodingComponentPair(
+            addition.componentType,
+            addition.employmentId,
+            Some(previousMatched.amount),
+            Some(addition.amount))
         case None => CodingComponentPair(addition.componentType, addition.employmentId, None, Some(addition.amount))
       }
     })
-  }
 
-  private def findNonPairs(pairs: Seq[CodingComponentPair], rest: Seq[CodingComponent]): Seq[CodingComponentPair] = {
+  private def findNonPairs(pairs: Seq[CodingComponentPair], rest: Seq[CodingComponent]): Seq[CodingComponentPair] =
     rest.flatMap(addition => {
       pairs.find(matchingCodingComponents(_, addition)) match {
         case Some(_) => None
-        case None => Some(CodingComponentPair(addition.componentType, addition.employmentId, Some(addition.amount), None))
+        case None =>
+          Some(CodingComponentPair(addition.componentType, addition.employmentId, Some(addition.amount), None))
       }
     })
-  }
 
-  private def matchingCodingComponents(lhs: CodingComponent, rhs: CodingComponent): Boolean = {
+  private def matchingCodingComponents(lhs: CodingComponent, rhs: CodingComponent): Boolean =
     lhs.employmentId == rhs.employmentId &&
       lhs.componentType == rhs.componentType
-  }
 
-  private def matchingCodingComponents(lhs: CodingComponentPair, rhs: CodingComponent): Boolean = {
+  private def matchingCodingComponents(lhs: CodingComponentPair, rhs: CodingComponent): Boolean =
     lhs.employmentId == rhs.employmentId &&
       lhs.componentType == rhs.componentType
-  }
 
-  private def getDeductions(codingComponents: Seq[CodingComponentPair]): Seq[CodingComponentPair] = {
+  private def getDeductions(codingComponents: Seq[CodingComponentPair]): Seq[CodingComponentPair] =
     codingComponents.filter({
       _.componentType match {
         case _: AllowanceComponentType => false
-        case _ => true
+        case _                         => true
       }
     })
-  }
 
-  private def getAllowances(codingComponents: Seq[CodingComponentPair]): Seq[CodingComponentPair] = {
-    codingComponents.filterNot(component => PersonalAllowance.isA(component.componentType)).filter({
-      _.componentType match {
-        case _: AllowanceComponentType => true
-        case _ => false
-      }
-    })
-  }
+  private def getAllowances(codingComponents: Seq[CodingComponentPair]): Seq[CodingComponentPair] =
+    codingComponents
+      .filterNot(component => PersonalAllowance.isA(component.componentType))
+      .filter({
+        _.componentType match {
+          case _: AllowanceComponentType => true
+          case _                         => false
+        }
+      })
 }

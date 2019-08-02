@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch, TaxCodeReco
 
 import scala.concurrent.Future
 
-class TaxCodeChangeConnector @Inject() (httpHandler: HttpHandler) extends DefaultServicesConfig {
+class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
@@ -36,53 +36,48 @@ class TaxCodeChangeConnector @Inject() (httpHandler: HttpHandler) extends Defaul
 
   def taxCodeChangeUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change"
 
-  def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApi(taxCodeChangeUrl(nino.nino)) map (
-      json =>
-        TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeChange])
-      ) recover {
+      json => TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeChange])
+    ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve tax code change for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
-  }
 
   def hasTaxCodeChangedUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change/exists"
 
-  def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApi(hasTaxCodeChangedUrl(nino.nino)) map (
       json => TaiSuccessResponseWithPayload(json.as[Boolean])
-      ) recover {
+    ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve tax code changed for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
-  }
 
   def taxCodeMismatchUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-mismatch"
 
-  def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApi(taxCodeMismatchUrl(nino.nino)) map (
       json => TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeMismatch])
-      ) recover {
+    ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve tax code mismatch for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
-  }
 
   def lastTaxCodeRecordsUrl(nino: String, year: Int): String = baseTaxAccountUrl(nino) + s"$year/tax-code/latest"
 
-  def lastTaxCodeRecords(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def lastTaxCodeRecords(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApi(lastTaxCodeRecordsUrl(nino.nino, year.year)) map (
       json => {
         TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxCodeRecord]])
       }
-      ) recover {
+    ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve tax code records for $nino for year $year with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
-  }
 
 }

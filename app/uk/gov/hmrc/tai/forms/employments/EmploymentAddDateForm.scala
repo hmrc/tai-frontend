@@ -24,7 +24,6 @@ import play.api.i18n.Messages
 
 import scala.util.Try
 
-
 case class EmploymentAddDateForm(employerName: String) {
 
   def form(implicit messages: Messages) = {
@@ -44,20 +43,20 @@ case class EmploymentAddDateForm(employerName: String) {
           Nil
         }
 
-
         if (errors.isEmpty) {
           val inputDate: Option[LocalDate] = Try(
             for {
-              day <- data.get(EmploymentFormDay).map(Integer.parseInt)
+              day   <- data.get(EmploymentFormDay).map(Integer.parseInt)
               month <- data.get(EmploymentFormMonth).map(Integer.parseInt)
-              year <- data.get(EmploymentFormYear).map(Integer.parseInt)
+              year  <- data.get(EmploymentFormYear).map(Integer.parseInt)
             } yield new LocalDate(year, month, day)
           ).getOrElse(None)
 
           inputDate match {
-            case Some(date) if date.isAfter(LocalDate.now()) => Left(Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.future"))))
+            case Some(date) if date.isAfter(LocalDate.now()) =>
+              Left(Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.future"))))
             case Some(d) => Right(d)
-            case _ => Left(Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.invalid"))))
+            case _       => Left(Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.invalid"))))
           }
         } else {
           Left(errors)
@@ -65,9 +64,9 @@ case class EmploymentAddDateForm(employerName: String) {
       }
 
       override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
-        EmploymentFormDay -> value.getDayOfMonth.toString,
+        EmploymentFormDay   -> value.getDayOfMonth.toString,
         EmploymentFormMonth -> value.getMonthOfYear.toString,
-        EmploymentFormYear -> value.getYear.toString
+        EmploymentFormYear  -> value.getYear.toString
       )
     }
 

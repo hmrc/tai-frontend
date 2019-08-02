@@ -23,7 +23,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.domain.TaxCodeChange
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, TaxCodeChangeReasons, IabdTaxCodeChangeReasons}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, IabdTaxCodeChangeReasons, TaxCodeChangeReasons}
 
 class TaxCodeChangeReasonsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
 
@@ -47,7 +47,8 @@ class TaxCodeChangeReasonsServiceSpec extends PlaySpec with MockitoSugar with Fa
       when(iabdTaxCodeChangeReasons.reasons(any())(any())).thenReturn(iabdReasons)
       when(employmentTaxCodeChangeReasons.reasons(any())(any())).thenReturn(employmentReasons)
 
-      service.combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons, iabdPairs, taxCodeChange) mustBe employmentReasons ++ iabdReasons
+      service
+        .combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons, iabdPairs, taxCodeChange) mustBe employmentReasons ++ iabdReasons
     }
 
     "show only unique tax code change reasons" in {

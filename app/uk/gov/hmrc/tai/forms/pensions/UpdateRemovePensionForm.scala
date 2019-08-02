@@ -23,7 +23,8 @@ import uk.gov.hmrc.tai.util.constants.IncorrectPensionDecisionConstants
 
 object UpdateRemovePensionForm extends IncorrectPensionDecisionConstants {
   def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
-    single(IncorrectPensionDecision ->
-      optional(text).verifying(error = Messages("tai.error.chooseOneOption"), constraint = !_.isEmpty))
+    single(
+      IncorrectPensionDecision ->
+        optional(text).verifying(error = Messages("tai.error.chooseOneOption"), constraint = !_.isEmpty))
   )
 }

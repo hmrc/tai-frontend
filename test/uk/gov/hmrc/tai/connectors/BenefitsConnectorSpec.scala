@@ -34,7 +34,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport{
+class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -67,25 +67,37 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
       val sut = createSUT
       val employmentId = 1
       val nino = generateNino
-      val endedCompanyBenefit = EndedCompanyBenefit("Accommodation",Messages("tai.noLongerGetBenefit"),"Before 6th April",Some("1000000"),"Yes",Some("0123456789"))
+      val endedCompanyBenefit = EndedCompanyBenefit(
+        "Accommodation",
+        Messages("tai.noLongerGetBenefit"),
+        "Before 6th April",
+        Some("1000000"),
+        "Yes",
+        Some("0123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(httpHandler.postToApi(Matchers.eq(s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"), Matchers.eq(endedCompanyBenefit))
-      (any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      when(
+        httpHandler.postToApi(
+          Matchers.eq(
+            s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"),
+          Matchers.eq(endedCompanyBenefit)
+        )(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)
 
       result mustBe Some("123-456-789")
     }
 
-
   }
 
-  val companyCars = List(CompanyCar(100,
-    "Make Model",
-    hasActiveFuelBenefit = true,
-    dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-    dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
-    dateWithdrawn = None))
+  val companyCars = List(
+    CompanyCar(
+      100,
+      "Make Model",
+      hasActiveFuelBenefit = true,
+      dateMadeAvailable = Some(new LocalDate("2016-10-10")),
+      dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
+      dateWithdrawn = None
+    ))
 
   val companyCarBenefit = CompanyCarBenefit(10, 1000, companyCars, Some(1))
   val genericBenefit = GenericBenefit(MedicalInsurance, Some(10), 1000)
@@ -94,43 +106,42 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
   val companyCarsJson: JsObject =
     Json.obj(
       "employmentSeqNo" -> 10,
-      "grossAmount" -> 1000,
+      "grossAmount"     -> 1000,
       "companyCars" -> Json.arr(
         Json.obj(
-          "carSeqNo" -> 100,
-          "makeModel" -> "Make Model",
-          "hasActiveFuelBenefit" -> true,
-          "dateMadeAvailable" -> "2016-10-10",
-          "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11")),
-      "version" -> 1)
+          "carSeqNo"                           -> 100,
+          "makeModel"                          -> "Make Model",
+          "hasActiveFuelBenefit"               -> true,
+          "dateMadeAvailable"                  -> "2016-10-10",
+          "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
+        )),
+      "version" -> 1
+    )
 
   val otherBenefitsJson: JsObject = Json.obj(
-    "benefitType" -> "MedicalInsurance",
+    "benefitType"  -> "MedicalInsurance",
     "employmentId" -> 10,
-    "amount" -> 1000
+    "amount"       -> 1000
   )
 
   val benefitsJson: JsObject =
     Json.obj(
-      "data" -> Json.obj(
-        "companyCarBenefits" -> Json.arr(companyCarsJson),
-        "otherBenefits" -> Json.arr(otherBenefitsJson))
-      ,
+      "data" -> Json
+        .obj("companyCarBenefits" -> Json.arr(companyCarsJson), "otherBenefits" -> Json.arr(otherBenefitsJson)),
       "links" -> Json.arr()
     )
 
   val invalidOtherBenefitsJson: JsObject = Json.obj(
-    "benefitType" -> "GiftAidPayments",
+    "benefitType"  -> "GiftAidPayments",
     "employmentId" -> 10,
-    "amount" -> 1000
+    "amount"       -> 1000
   )
 
   val invalidBenefitsJson: JsObject =
     Json.obj(
       "data" -> Json.obj(
         "companyCarBenefits" -> Json.arr(invalidOtherBenefitsJson),
-        "otherBenefits" -> Json.arr(otherBenefitsJson))
-      ,
+        "otherBenefits"      -> Json.arr(otherBenefitsJson)),
       "links" -> Json.arr()
     )
 
@@ -138,10 +149,10 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
   def generateNino: Nino = new Generator(new Random).nextNino
 
   private def createSUT = new SUT
-  
+
   val httpHandler = mock[HttpHandler]
 
-  private class SUT extends BenefitsConnector (httpHandler) {
+  private class SUT extends BenefitsConnector(httpHandler) {
     override val serviceUrl: String = "mockUrl"
   }
 

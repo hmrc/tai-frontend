@@ -45,12 +45,14 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
       val SUT = createSUT()
       val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
       val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-      val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
+      val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
-      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
+      when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+        .thenReturn(Future.successful(codingComponents))
       when(companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
       when(employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
-      when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
+      when(taxAccountService.totalTax(any(), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
       val result = SUT.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
@@ -65,7 +67,8 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
     "display error page" when {
       "display any error" in {
         val SUT = createSUT()
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.failed(new InternalError("error occurred")))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+          .thenReturn(Future.failed(new InternalError("error occurred")))
 
         val result = SUT.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -75,22 +78,25 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
 
   private def createSUT() = new SUT()
 
-  val codingComponents: Seq[CodingComponent] = Seq(CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
-    CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description"))
+  val codingComponents: Seq[CodingComponent] = Seq(
+    CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
+    CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description")
+  )
 
   val codingComponentService = mock[CodingComponentService]
   val companyCarService = mock[CompanyCarService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
 
-  private class SUT() extends TaxFreeAmountController(
-    codingComponentService,
-    employmentService,
-    taxAccountService,
-    companyCarService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  )
+  private class SUT()
+      extends TaxFreeAmountController(
+        codingComponentService,
+        employmentService,
+        taxAccountService,
+        companyCarService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      )
 }

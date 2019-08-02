@@ -25,29 +25,28 @@ import uk.gov.hmrc.tai.util.FormHelper.isValidCurrency
 
 object CompanyBenefitTotalValueForm {
 
-  def form(implicit messages: Messages): Form[String] = Form(
-    single(
-      "totalValue" ->
-        text.verifying(StopOnFirstFail(
-          nonEmptyText(Messages("tai.bbsi.update.form.interest.blank")),
-          isNumber(Messages("tai.bbsi.update.form.interest.isCurrency"))
-          ))
-  ))
+  def form(implicit messages: Messages): Form[String] =
+    Form(
+      single(
+        "totalValue" ->
+          text.verifying(
+            StopOnFirstFail(
+              nonEmptyText(Messages("tai.bbsi.update.form.interest.blank")),
+              isNumber(Messages("tai.bbsi.update.form.interest.isCurrency"))
+            ))
+      ))
 
-
-  def nonEmptyText(requiredErrMsg : String): Constraint[String] = {
+  def nonEmptyText(requiredErrMsg: String): Constraint[String] =
     Constraint[String]("required") {
-      case textValue:String if notBlank(textValue) => Valid
-      case _ => Invalid(requiredErrMsg)
+      case textValue: String if notBlank(textValue) => Valid
+      case _                                        => Invalid(requiredErrMsg)
     }
-  }
 
-  def isNumber(currencyErrorMsg : String): Constraint[String] = {
+  def isNumber(currencyErrorMsg: String): Constraint[String] =
     Constraint[String]("invalidCurrency") {
       case textValue if isValidCurrency(Some(textValue)) => Valid
-      case _ => Invalid(currencyErrorMsg)
+      case _                                             => Invalid(currencyErrorMsg)
     }
-  }
 
   def notBlank(value: String): Boolean = !value.trim.isEmpty
 

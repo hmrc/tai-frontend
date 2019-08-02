@@ -25,16 +25,16 @@ import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PreviousYearsIncomeConnector @Inject() (httpHandler: HttpHandler) extends DefaultServicesConfig {
+class PreviousYearsIncomeConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
   def previousYearsIncomeServiceUrl(nino: Nino, year: Int) = s"$serviceUrl/tai/$nino/employments/years/$year/update"
 
-  def incorrectIncome(nino: Nino, year: Int, incorrectIncome: IncorrectIncome)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def incorrectIncome(nino: Nino, year: Int, incorrectIncome: IncorrectIncome)(
+    implicit hc: HeaderCarrier): Future[Option[String]] =
     httpHandler.postToApi[IncorrectIncome](previousYearsIncomeServiceUrl(nino, year), incorrectIncome).map { response =>
       (response.json \ "data").asOpt[String]
     }
-  }
 
 }

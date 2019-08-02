@@ -16,7 +16,6 @@
 
 package controllers.benefits
 
-
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
@@ -50,20 +49,13 @@ import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYo
 import scala.concurrent.Future
 import scala.util.Random
 
-class RemoveCompanyBenefitControllerSpec extends PlaySpec
-  with MockitoSugar
-  with FakeTaiPlayApplication
-  with I18nSupport
-  with FormValuesConstants
-  with JourneyCacheConstants
-  with RemoveCompanyBenefitStopDateConstants
-  with JsoupMatchers
-  with BeforeAndAfterEach
-  with ControllerViewTestHelper {
+class RemoveCompanyBenefitControllerSpec
+    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with FormValuesConstants
+    with JourneyCacheConstants with RemoveCompanyBenefitStopDateConstants with JsoupMatchers with BeforeAndAfterEach
+    with ControllerViewTestHelper {
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(removeCompanyBenefitJourneyCacheService)
-  }
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val request = fakeRequest
@@ -71,9 +63,10 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
   "stopDate" must {
     "show 'When did you stop getting benefits from company?' page" in {
       val SUT = createSUT
-      val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Test",
-        EndCompanyBenefit_BenefitNameKey -> "Test",
-        EndCompanyBenefit_RefererKey -> "Test")
+      val cache = Map(
+        EndCompanyBenefit_EmploymentNameKey -> "Test",
+        EndCompanyBenefit_BenefitNameKey    -> "Test",
+        EndCompanyBenefit_RefererKey        -> "Test")
 
       when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
@@ -87,10 +80,12 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
     "show the prepopulated fields when an EndCompanyBenefit_BenefitStopDateKey has been cached" in {
       val SUT = createSUT
-      val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "EmploymentName",
-        EndCompanyBenefit_BenefitNameKey -> "BenefitName",
-        EndCompanyBenefit_RefererKey -> "Referer",
-        EndCompanyBenefit_BenefitStopDateKey -> BeforeTaxYearEnd)
+      val cache = Map(
+        EndCompanyBenefit_EmploymentNameKey  -> "EmploymentName",
+        EndCompanyBenefit_BenefitNameKey     -> "BenefitName",
+        EndCompanyBenefit_RefererKey         -> "Referer",
+        EndCompanyBenefit_BenefitStopDateKey -> BeforeTaxYearEnd
+      )
 
       when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
@@ -99,7 +94,10 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
       val expectedView = {
         val form = RemoveCompanyBenefitStopDateForm.form.fill(cache.get(EndCompanyBenefit_BenefitStopDateKey))
-        views.html.benefits.removeCompanyBenefitStopDate(form, cache(EndCompanyBenefit_BenefitNameKey), cache(EndCompanyBenefit_EmploymentNameKey))
+        views.html.benefits.removeCompanyBenefitStopDate(
+          form,
+          cache(EndCompanyBenefit_BenefitNameKey),
+          cache(EndCompanyBenefit_EmploymentNameKey))
       }
 
       result rendersTheSameViewAs expectedView
@@ -111,16 +109,19 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       "the form has the value beforeTaxYearEnd" in {
 
         val SUT = createSUT
-        when(removeCompanyBenefitJourneyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(removeCompanyBenefitJourneyCacheService.cache(any(), any())(any()))
+          .thenReturn(Future.successful(Map("" -> "")))
 
-        val result = SUT.submitStopDate(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> BeforeTaxYearEnd))
+        val result = SUT.submitStopDate(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> BeforeTaxYearEnd))
         status(result) mustBe SEE_OTHER
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
         redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
 
-        verify(removeCompanyBenefitJourneyCacheService, times(1)).cache(Matchers.eq(EndCompanyBenefit_BenefitStopDateKey), Matchers.eq(BeforeTaxYearEnd))(any())
+        verify(removeCompanyBenefitJourneyCacheService, times(1))
+          .cache(Matchers.eq(EndCompanyBenefit_BenefitStopDateKey), Matchers.eq(BeforeTaxYearEnd))(any())
       }
     }
 
@@ -128,16 +129,19 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       "the form has the value onOrAfterTaxYearEnd" in {
 
         val SUT = createSUT
-        when(removeCompanyBenefitJourneyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(removeCompanyBenefitJourneyCacheService.cache(any(), any())(any()))
+          .thenReturn(Future.successful(Map("" -> "")))
 
-        val result = SUT.submitStopDate(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> OnOrAfterTaxYearEnd))
+        val result = SUT.submitStopDate(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> OnOrAfterTaxYearEnd))
         status(result) mustBe SEE_OTHER
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
         redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
 
-        verify(removeCompanyBenefitJourneyCacheService, times(1)).cache(Matchers.eq(EndCompanyBenefit_BenefitStopDateKey), Matchers.eq(OnOrAfterTaxYearEnd))(any())
+        verify(removeCompanyBenefitJourneyCacheService, times(1))
+          .cache(Matchers.eq(EndCompanyBenefit_BenefitStopDateKey), Matchers.eq(OnOrAfterTaxYearEnd))(any())
       }
     }
 
@@ -145,8 +149,10 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       "the form submission is having blank value" in {
         val SUT = createSUT
 
-        when(removeCompanyBenefitJourneyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("EmployerA", "Expenses", "Url")))
-        val result = SUT.submitStopDate(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> ""))
+        when(removeCompanyBenefitJourneyCacheService.mandatoryValues(any())(any()))
+          .thenReturn(Future.successful(Seq("EmployerA", "Expenses", "Url")))
+        val result = SUT.submitStopDate(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> ""))
 
         status(result) mustBe BAD_REQUEST
 
@@ -161,22 +167,23 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     val benefitName = "Employer Provided Services"
     val referer = "Url"
 
-
     "show what was the total value page" when {
       "the request has an authorised session with employment name and benefit name" in {
         val SUT = createSUT
 
         when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
-          Future.successful((
-            Seq(employmentName, benefitName, referer),
-            Seq[Option[String]](None)
-          ))
+          Future.successful(
+            (
+              Seq(employmentName, benefitName, referer),
+              Seq[Option[String]](None)
+            ))
         )
 
         val result = SUT.totalValueOfBenefit()(fakeRequest)
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.remove.company.benefit.total.value.heading", benefitName, employmentName))
+        doc.title() must include(
+          Messages("tai.remove.company.benefit.total.value.heading", benefitName, employmentName))
       }
     }
 
@@ -186,10 +193,11 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       val valueOfBenefit = Some("9876543")
 
       when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
-        Future.successful((
-          Seq(employmentName, benefitName, referer),
-          Seq[Option[String]](valueOfBenefit)
-        ))
+        Future.successful(
+          (
+            Seq(employmentName, benefitName, referer),
+            Seq[Option[String]](valueOfBenefit)
+          ))
       )
 
       implicit val request = fakeRequest
@@ -208,11 +216,15 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val SUT = createSUT
         when(removeCompanyBenefitJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
-        val result = SUT.submitBenefitValue()(RequestBuilder.buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody(("totalValue", "1000")))
+        val result = SUT.submitBenefitValue()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(("totalValue", "1000")))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .telephoneNumber()
+          .url
       }
     }
 
@@ -222,10 +234,13 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val removeCompanyBenefitFormData = ("totalValue", "1000.00")
         val totalValue = Map("benefitValue" -> "1000")
 
-        when(removeCompanyBenefitJourneyCacheService.cache(mockEq(totalValue))(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(removeCompanyBenefitJourneyCacheService.cache(mockEq(totalValue))(any()))
+          .thenReturn(Future.successful(Map("" -> "")))
 
-        val result = SUT.submitBenefitValue()(RequestBuilder.buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody(removeCompanyBenefitFormData))
+        val result = SUT.submitBenefitValue()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(removeCompanyBenefitFormData))
 
         status(result) mustBe SEE_OTHER
 
@@ -238,10 +253,13 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val removeCompanyBenefitFormData = ("totalValue", "123,000.00")
         val totalValue = Map("benefitValue" -> "123000")
 
-        when(removeCompanyBenefitJourneyCacheService.cache(mockEq(totalValue))(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(removeCompanyBenefitJourneyCacheService.cache(mockEq(totalValue))(any()))
+          .thenReturn(Future.successful(Map("" -> "")))
 
-        val result = SUT.submitBenefitValue()(RequestBuilder.buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody(removeCompanyBenefitFormData))
+        val result = SUT.submitBenefitValue()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(removeCompanyBenefitFormData))
 
         status(result) mustBe SEE_OTHER
 
@@ -257,11 +275,14 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
         val removeCompanyBenefitFormData = ("totalValue", "")
 
-        when(removeCompanyBenefitJourneyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(employmentName, benefitName, referer)))
+        when(removeCompanyBenefitJourneyCacheService.mandatoryValues(any())(any()))
+          .thenReturn(Future.successful(Seq(employmentName, benefitName, referer)))
         when(removeCompanyBenefitJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
-        val result = SUT.submitBenefitValue()(RequestBuilder.buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody(removeCompanyBenefitFormData))
+        val result = SUT.submitBenefitValue()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(removeCompanyBenefitFormData))
 
         status(result) mustBe BAD_REQUEST
       }
@@ -276,11 +297,14 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
         val removeCompanyBenefitFormData = ("totalValue", "1234Â£$%@")
 
-        when(removeCompanyBenefitJourneyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(employmentName, benefitName, referer)))
+        when(removeCompanyBenefitJourneyCacheService.mandatoryValues(any())(any()))
+          .thenReturn(Future.successful(Seq(employmentName, benefitName, referer)))
         when(removeCompanyBenefitJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
-        val result = SUT.submitBenefitValue()(RequestBuilder.buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody(removeCompanyBenefitFormData))
+        val result = SUT.submitBenefitValue()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(removeCompanyBenefitFormData))
 
         status(result) mustBe BAD_REQUEST
       }
@@ -293,11 +317,11 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       "navigating from 'when did you stop getting benefits' page" in {
         val SUT = createSUT
         val cache = Map(
-          EndCompanyBenefit_EmploymentIdKey -> "1",
-          EndCompanyBenefit_EmploymentNameKey -> employment.name,
-          EndCompanyBenefit_BenefitTypeKey -> "amazing",
+          EndCompanyBenefit_EmploymentIdKey    -> "1",
+          EndCompanyBenefit_EmploymentNameKey  -> employment.name,
+          EndCompanyBenefit_BenefitTypeKey     -> "amazing",
           EndCompanyBenefit_BenefitStopDateKey -> "before6April2017",
-          EndCompanyBenefit_RefererKey -> "Test"
+          EndCompanyBenefit_RefererKey         -> "Test"
         )
         when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -305,9 +329,12 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-        doc.getElementsByClass("heading-secondary").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
+        doc.getElementsByClass("heading-secondary").text() must endWith(
+          Messages("tai.benefits.ended.journey.preHeader"))
         doc must haveBackLink
-        doc.getElementById("cancelLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
+        doc
+          .getElementById("cancelLink")
+          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
       }
 
       "has the yes field and telephone number prepopulated from the cache" in {
@@ -316,13 +343,13 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val telephoneNumber = "85256651"
 
         val cache = Map(
-          EndCompanyBenefit_EmploymentIdKey -> "1",
-          EndCompanyBenefit_EmploymentNameKey -> employment.name,
-          EndCompanyBenefit_BenefitTypeKey -> "amazing",
-          EndCompanyBenefit_BenefitStopDateKey -> "before6April2017",
-          EndCompanyBenefit_RefererKey -> "Test",
+          EndCompanyBenefit_EmploymentIdKey      -> "1",
+          EndCompanyBenefit_EmploymentNameKey    -> employment.name,
+          EndCompanyBenefit_BenefitTypeKey       -> "amazing",
+          EndCompanyBenefit_BenefitStopDateKey   -> "before6April2017",
+          EndCompanyBenefit_RefererKey           -> "Test",
           EndCompanyBenefit_TelephoneQuestionKey -> YesValue,
-          EndCompanyBenefit_TelephoneNumberKey -> telephoneNumber
+          EndCompanyBenefit_TelephoneNumberKey   -> telephoneNumber
         )
 
         when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
@@ -331,7 +358,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.getElementById("telephoneNumberEntry-container").getElementsByAttribute("value").toString must include(telephoneNumber)
+        doc.getElementById("telephoneNumberEntry-container").getElementsByAttribute("value").toString must include(
+          telephoneNumber)
       }
     }
 
@@ -339,21 +367,24 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       "navigating from 'total value of benefit' page" in {
         val SUT = createSUT
         val cache = Map(
-          EndCompanyBenefit_EmploymentIdKey -> "1",
-          EndCompanyBenefit_EmploymentNameKey -> employment.name,
-          EndCompanyBenefit_BenefitTypeKey -> "amazing",
+          EndCompanyBenefit_EmploymentIdKey    -> "1",
+          EndCompanyBenefit_EmploymentNameKey  -> employment.name,
+          EndCompanyBenefit_BenefitTypeKey     -> "amazing",
           EndCompanyBenefit_BenefitStopDateKey -> "before6April2017",
-          EndCompanyBenefit_BenefitValueKey -> "12345",
-          EndCompanyBenefit_RefererKey -> "Test"
+          EndCompanyBenefit_BenefitValueKey    -> "12345",
+          EndCompanyBenefit_RefererKey         -> "Test"
         )
         when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-        doc.getElementsByClass("heading-secondary").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
+        doc.getElementsByClass("heading-secondary").text() must endWith(
+          Messages("tai.benefits.ended.journey.preHeader"))
         doc must haveBackLink
-        doc.getElementById("cancelLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
+        doc
+          .getElementById("cancelLink")
+          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
       }
     }
   }
@@ -362,33 +393,48 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     "redirect to the check your answers page" when {
       "the request has an authorised session, and a telephone number has been provided" in {
         val SUT = createSUT
-        val expectedCache = Map(EndCompanyBenefit_TelephoneQuestionKey -> YesValue, EndCompanyBenefit_TelephoneNumberKey -> "12345678")
-        when(removeCompanyBenefitJourneyCacheService.cache(mockEq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
-        val result = SUT.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
+        val expectedCache =
+          Map(EndCompanyBenefit_TelephoneQuestionKey -> YesValue, EndCompanyBenefit_TelephoneNumberKey -> "12345678")
+        when(removeCompanyBenefitJourneyCacheService.cache(mockEq(expectedCache))(any()))
+          .thenReturn(Future.successful(expectedCache))
+        val result = SUT.submitTelephoneNumber()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers().url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .checkYourAnswers()
+          .url
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
         val SUT = createSUT
-        val expectedCacheWithErasingNumber = Map(EndCompanyBenefit_TelephoneQuestionKey -> NoValue, EndCompanyBenefit_TelephoneNumberKey -> "")
-        when(removeCompanyBenefitJourneyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any())).thenReturn(Future.successful(expectedCacheWithErasingNumber))
-        val result = SUT.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          YesNoChoice -> NoValue, YesNoTextEntry -> "this value must not be cached"))
+        val expectedCacheWithErasingNumber =
+          Map(EndCompanyBenefit_TelephoneQuestionKey -> NoValue, EndCompanyBenefit_TelephoneNumberKey -> "")
+        when(removeCompanyBenefitJourneyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any()))
+          .thenReturn(Future.successful(expectedCacheWithErasingNumber))
+        val result = SUT.submitTelephoneNumber()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(YesNoChoice -> NoValue, YesNoTextEntry -> "this value must not be cached"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers().url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .checkYourAnswers()
+          .url
       }
     }
 
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
         val SUT = createSUT
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map(EndCompanyBenefit_RefererKey -> "Test")))
-        val result = SUT.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          YesNoChoice -> YesValue, YesNoTextEntry -> ""))
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
+          .thenReturn(Future.successful(Map(EndCompanyBenefit_RefererKey -> "Test")))
+        val result = SUT.submitTelephoneNumber()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> ""))
 
         status(result) mustBe BAD_REQUEST
         val doc = Jsoup.parse(contentAsString(result))
@@ -397,17 +443,22 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
       "there is a form validation error (additional, controller specific constraint)" in {
         val SUT = createSUT
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map(EndCompanyBenefit_RefererKey -> "Test")))
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
+          .thenReturn(Future.successful(Map(EndCompanyBenefit_RefererKey -> "Test")))
 
-        val tooFewCharsResult = SUT.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
+        val tooFewCharsResult = SUT.submitTelephoneNumber()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
         status(tooFewCharsResult) mustBe BAD_REQUEST
 
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
-        val tooManyCharsResult = SUT.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
+        val tooManyCharsResult = SUT.submitTelephoneNumber()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
 
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
@@ -417,22 +468,30 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     }
   }
 
-
   "checkYourAnswers" must {
     "display check your answers containing populated values from the journey cache" in {
       val SUT = createSUT
-      when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(classOf[scala.collection.immutable.List[String]]),
-        any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
-        Future.successful((
-          Right(Seq[String]("AwesomeType", "TestCompany", BeforeTaxYearEnd, "Yes", "Url")),
-          Seq[Option[String]](Some("10000"), Some("123456789"))
-        ))
+      when(
+        removeCompanyBenefitJourneyCacheService.collectedJourneyValues(
+          any(classOf[scala.collection.immutable.List[String]]),
+          any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
+        Future.successful(
+          (
+            Right(Seq[String]("AwesomeType", "TestCompany", BeforeTaxYearEnd, "Yes", "Url")),
+            Seq[Option[String]](Some("10000"), Some("123456789"))
+          ))
       )
 
       val result = SUT.checkYourAnswers()(request)
 
       val stopDate = Messages("tai.remove.company.benefit.beforeTaxYearEnd", Dates.formatDate(TaxYear().start))
-      val expectedViewModel = RemoveCompanyBenefitCheckYourAnswersViewModel("AwesomeType", "TestCompany", stopDate, Some("10000"), "Yes", Some("123456789"))
+      val expectedViewModel = RemoveCompanyBenefitCheckYourAnswersViewModel(
+        "AwesomeType",
+        "TestCompany",
+        stopDate,
+        Some("10000"),
+        "Yes",
+        Some("123456789"))
 
       result rendersTheSameViewAs removeCompanyBenefitCheckYourAnswers(expectedViewModel)
     }
@@ -441,12 +500,15 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
       val sut = createSUT
 
-      when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(classOf[scala.collection.immutable.List[String]]),
-        any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
-        Future.successful((
-          Left("An error has occurred"),
-          Seq[Option[String]](Some("123456789"))
-        ))
+      when(
+        removeCompanyBenefitJourneyCacheService.collectedJourneyValues(
+          any(classOf[scala.collection.immutable.List[String]]),
+          any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
+        Future.successful(
+          (
+            Left("An error has occurred"),
+            Seq[Option[String]](Some("123456789"))
+          ))
       )
 
       val result = sut.checkYourAnswers()(fakeRequest)
@@ -454,7 +516,6 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
     }
-
 
   }
 
@@ -473,51 +534,58 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
           Some("0123456789"))
 
         when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
-          Future.successful((
-            Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "Yes"),
-            Seq[Option[String]](Some("1000000"), Some("0123456789"))
-          ))
+          Future.successful(
+            (
+              Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "Yes"),
+              Seq[Option[String]](Some("1000000"), Some("0123456789"))
+            ))
         )
-        when(benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
-          thenReturn(Future.successful("1"))
-        when(trackSuccessJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any())).
-          thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
+        when(
+          benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(
+            any())).thenReturn(Future.successful("1"))
+        when(
+          trackSuccessJourneyCacheService
+            .cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation().url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
         verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
 
       "the request has an authorised session and neither telephone number nor benefit value have been provided" in {
         val SUT = createSUT
         val employmentId: String = "1234"
-        val endedCompanyBenefit = EndedCompanyBenefit(
-          "Accommodation",
-          Messages("tai.noLongerGetBenefit"),
-          "Before 6th April",
-          None,
-          "No",
-          None)
+        val endedCompanyBenefit =
+          EndedCompanyBenefit("Accommodation", Messages("tai.noLongerGetBenefit"), "Before 6th April", None, "No", None)
 
         when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
-          Future.successful((
-            Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "No"),
-            Seq[Option[String]](None, None)
-          ))
+          Future.successful(
+            (
+              Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "No"),
+              Seq[Option[String]](None, None)
+            ))
         )
-        when(benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
-          thenReturn(Future.successful("1"))
-        when(trackSuccessJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any())).
-          thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
+        when(
+          benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(
+            any())).thenReturn(Future.successful("1"))
+        when(
+          trackSuccessJourneyCacheService
+            .cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation().url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
         verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
 
@@ -533,21 +601,27 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
           None)
 
         when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
-          Future.successful((
-            Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "No"),
-            Seq[Option[String]](Some("1000000"), None)
-          ))
+          Future.successful(
+            (
+              Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "No"),
+              Seq[Option[String]](Some("1000000"), None)
+            ))
         )
-        when(benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
-          thenReturn(Future.successful("1"))
-        when(trackSuccessJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any())).
-          thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
+        when(
+          benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(
+            any())).thenReturn(Future.successful("1"))
+        when(
+          trackSuccessJourneyCacheService
+            .cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation().url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
         verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
 
@@ -563,21 +637,27 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
           Some("0123456789"))
 
         when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
-          Future.successful((
-            Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "Yes"),
-            Seq[Option[String]](None, Some("0123456789"))
-          ))
+          Future.successful(
+            (
+              Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "Yes"),
+              Seq[Option[String]](None, Some("0123456789"))
+            ))
         )
-        when(benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
-          thenReturn(Future.successful("1"))
-        when(trackSuccessJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any())).
-          thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
+        when(
+          benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(
+            any())).thenReturn(Future.successful("1"))
+        when(
+          trackSuccessJourneyCacheService
+            .cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation().url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
         verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
     }
@@ -587,7 +667,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     "flush the cache and redirect to start of journey" in {
       val SUT = createSUT
 
-      when(removeCompanyBenefitJourneyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("Url")))
+      when(removeCompanyBenefitJourneyCacheService.mandatoryValues(any())(any()))
+        .thenReturn(Future.successful(Seq("Url")))
       when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
       val result = SUT.cancel(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -612,8 +693,18 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     }
   }
 
-  val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
-    Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
+  val employment = Employment(
+    "company name",
+    Some("123"),
+    new LocalDate("2016-05-26"),
+    Some(new LocalDate("2016-05-26")),
+    Nil,
+    "",
+    "",
+    2,
+    None,
+    false,
+    false)
 
   def generateNino: Nino = new Generator(new Random).nextNino
 
@@ -627,13 +718,15 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
   val removeCompanyBenefitJourneyCacheService = mock[JourneyCacheService]
   val trackSuccessJourneyCacheService = mock[JourneyCacheService]
 
-  class SUT extends RemoveCompanyBenefitController(
-    removeCompanyBenefitJourneyCacheService,
-    trackSuccessJourneyCacheService,
-    benefitsService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    MockTemplateRenderer,
-    mock[FormPartialRetriever])
+  class SUT
+      extends RemoveCompanyBenefitController(
+        removeCompanyBenefitJourneyCacheService,
+        trackSuccessJourneyCacheService,
+        benefitsService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        MockTemplateRenderer,
+        mock[FormPartialRetriever]
+      )
 
 }

@@ -32,33 +32,34 @@ import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 
-class PotentialUnderpaymentController @Inject()(taxAccountService: TaxAccountService,
-                                                codingComponentService: CodingComponentService,
-                                                auditService: AuditService,
-                                                authenticate: AuthAction,
-                                                validatePerson: ValidatePerson,
-                                                override implicit val partialRetriever: FormPartialRetriever,
-                                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with AuditConstants
-  with Referral {
+class PotentialUnderpaymentController @Inject()(
+  taxAccountService: TaxAccountService,
+  codingComponentService: CodingComponentService,
+  auditService: AuditService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController with AuditConstants with Referral {
 
   def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request => {
+    implicit request =>
+      {
 
-      implicit val user = request.taiUser
-      val nino = user.nino
+        implicit val user = request.taiUser
+        val nino = user.nino
 
-      val tasFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
-      val ccFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+        val tasFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
+        val ccFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
 
-      for {
-        TaiSuccessResponseWithPayload(tas: TaxAccountSummary) <- tasFuture
-        ccs <- ccFuture
-      } yield {
-        auditService.createAndSendAuditEvent(PotentialUnderpayment_InYearAdjustment, Map("nino" -> nino.toString()))
-        val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
-        Ok(views.html.potentialUnderpayment(vm))
-      }
-    } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", request.taiUser.nino)
+        for {
+          TaiSuccessResponseWithPayload(tas: TaxAccountSummary) <- tasFuture
+          ccs                                                   <- ccFuture
+        } yield {
+          auditService.createAndSendAuditEvent(PotentialUnderpayment_InYearAdjustment, Map("nino" -> nino.toString()))
+          val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
+          Ok(views.html.potentialUnderpayment(vm))
+        }
+      } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", request.taiUser.nino)
   }
 }

@@ -21,15 +21,14 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-
 class whyThisIsAnEstimateDescSpec extends TaiViewSpec {
 
   "have static messages" in {
 
     doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.whyEstimate.link"))
 
-    doc(view) must haveParagraphWithText(Html(
-      messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYear().end))).body)
+    doc(view) must haveParagraphWithText(
+      Html(messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYear().end))).body)
 
   }
 

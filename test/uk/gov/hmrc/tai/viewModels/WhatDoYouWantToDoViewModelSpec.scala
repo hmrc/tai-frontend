@@ -24,16 +24,15 @@ import utils.factories.TaxCodeMismatchFactory
 
 class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
 
-  def gaMap(result: String): Map[String, String] = {
+  def gaMap(result: String): Map[String, String] =
     Map(GoogleAnalyticsConstants.taiLandingPageInformation -> result)
-  }
 
-  def createViewModel(isAnyIFormInProgress: TimeToProcess,
-                      isCyPlusOneEnabled: Boolean,
-                      hasTaxCodeChanged: Boolean = false,
-                      taxCodeMismatch: Option[TaxCodeMismatch] = None): WhatDoYouWantToDoViewModel = {
+  def createViewModel(
+    isAnyIFormInProgress: TimeToProcess,
+    isCyPlusOneEnabled: Boolean,
+    hasTaxCodeChanged: Boolean = false,
+    taxCodeMismatch: Option[TaxCodeMismatch] = None): WhatDoYouWantToDoViewModel =
     WhatDoYouWantToDoViewModel(isAnyIFormInProgress, isCyPlusOneEnabled, hasTaxCodeChanged, taxCodeMismatch)
-  }
 
   val mismatchedTaxCode = TaxCodeMismatchFactory.mismatchedTaxCodeComplex
   val matchedTaxCode = TaxCodeMismatchFactory.matchedTaxCode

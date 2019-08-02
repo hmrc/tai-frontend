@@ -30,81 +30,97 @@ object RequestBuilder {
     require(HTTP_VERBS contains method)
 
     FakeRequest(method = method, path = "").withSession(
-      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+      SessionKeys.sessionId    -> s"session-${UUID.randomUUID()}",
       SessionKeys.authProvider -> "IDA",
-      SessionKeys.userId -> s"/path/to/authority"
+      SessionKeys.userId       -> s"/path/to/authority"
     )
   }
 
   def buildFakeRequestWithAuth(method: String, headers: Map[String, String]) =
-    FakeRequest(method = method, path = "").withFormUrlEncodedBody(
-      "name" -> "test1", "description" -> "description",
-      "employmentId" -> "14",
-      "newAmount" -> "1675",
-      "oldAmount" -> "11",
-      "worksNumber" -> "",
-      "startDate" -> "2013-08-03",
-      "endDate" -> "",
-      "isLive" -> "true",
-      "isOccupationalPension" -> "false",
-      "hasMultipleIncomes" -> "true").withSession(
-      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-      SessionKeys.authProvider -> "IDA",
-      SessionKeys.userId -> s"/path/to/authority").withHeaders(headers.toArray : _*)
+    FakeRequest(method = method, path = "")
+      .withFormUrlEncodedBody(
+        "name"                  -> "test1",
+        "description"           -> "description",
+        "employmentId"          -> "14",
+        "newAmount"             -> "1675",
+        "oldAmount"             -> "11",
+        "worksNumber"           -> "",
+        "startDate"             -> "2013-08-03",
+        "endDate"               -> "",
+        "isLive"                -> "true",
+        "isOccupationalPension" -> "false",
+        "hasMultipleIncomes"    -> "true"
+      )
+      .withSession(
+        SessionKeys.sessionId    -> s"session-${UUID.randomUUID()}",
+        SessionKeys.authProvider -> "IDA",
+        SessionKeys.userId       -> s"/path/to/authority")
+      .withHeaders(headers.toArray: _*)
 
   def buildFakeRequestWithAuth(method: String) =
-    FakeRequest(method = method, path = "").withFormUrlEncodedBody(
-      "name" -> "test1", "description" -> "description",
-      "employmentId" -> "14",
-      "newAmount" -> "1675",
-      "oldAmount" -> "11",
-      "worksNumber" -> "",
-      "startDate" -> "2013-08-03",
-      "endDate" -> "",
-      "isLive" -> "true",
-      "isOccupationalPension" -> "false",
-      "hasMultipleIncomes" -> "true").withSession(
-      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-      SessionKeys.authProvider -> "IDA",
-      SessionKeys.userId -> s"/path/to/authority")
+    FakeRequest(method = method, path = "")
+      .withFormUrlEncodedBody(
+        "name"                  -> "test1",
+        "description"           -> "description",
+        "employmentId"          -> "14",
+        "newAmount"             -> "1675",
+        "oldAmount"             -> "11",
+        "worksNumber"           -> "",
+        "startDate"             -> "2013-08-03",
+        "endDate"               -> "",
+        "isLive"                -> "true",
+        "isOccupationalPension" -> "false",
+        "hasMultipleIncomes"    -> "true"
+      )
+      .withSession(
+        SessionKeys.sessionId    -> s"session-${UUID.randomUUID()}",
+        SessionKeys.authProvider -> "IDA",
+        SessionKeys.userId       -> s"/path/to/authority")
 
   def buildFakeRequestWithAuth(method: String, action: String) =
-    FakeRequest(method = method, path = "").withFormUrlEncodedBody(
-      "name" -> "test1", "description" -> "description",
-      "employmentId" -> "14",
-      "newAmount" -> "1675",
-      "oldAmount" -> "11",
-      "worksNumber" -> "",
-      "startDate" -> "2013-08-03",
-      "endDate" -> "",
-      "isLive" -> "true",
-      "action" -> action,
-      "isOccupationalPension" -> "false",
-      "hasMultipleIncomes" -> "true").withSession(
-      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-      SessionKeys.authProvider -> "IDA",
-      SessionKeys.userId -> s"/path/to/authority")
+    FakeRequest(method = method, path = "")
+      .withFormUrlEncodedBody(
+        "name"                  -> "test1",
+        "description"           -> "description",
+        "employmentId"          -> "14",
+        "newAmount"             -> "1675",
+        "oldAmount"             -> "11",
+        "worksNumber"           -> "",
+        "startDate"             -> "2013-08-03",
+        "endDate"               -> "",
+        "isLive"                -> "true",
+        "action"                -> action,
+        "isOccupationalPension" -> "false",
+        "hasMultipleIncomes"    -> "true"
+      )
+      .withSession(
+        SessionKeys.sessionId    -> s"session-${UUID.randomUUID()}",
+        SessionKeys.authProvider -> "IDA",
+        SessionKeys.userId       -> s"/path/to/authority")
 
   def buildFakeInvalidRequestWithAuth(method: String) =
-    FakeRequest(method = method, path = "").withFormUrlEncodedBody(
-      "name" -> "test1", "description" -> "description",
-      "employmentId" -> "14").withSession(
-      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-      SessionKeys.authProvider -> "IDA",
-      SessionKeys.userId -> s"/path/to/authority")
+    FakeRequest(method = method, path = "")
+      .withFormUrlEncodedBody("name" -> "test1", "description" -> "description", "employmentId" -> "14")
+      .withSession(
+        SessionKeys.sessionId    -> s"session-${UUID.randomUUID()}",
+        SessionKeys.authProvider -> "IDA",
+        SessionKeys.userId       -> s"/path/to/authority")
 
   def buildFakeRequestWithoutAuth(method: String) =
-    FakeRequest(method = method, path = "").withFormUrlEncodedBody(
-      "name" -> "test1", "description" -> "description",
-      "employmentId" -> "14",
-      "newAmount" -> "1675",
-      "oldAmount" -> "11",
-      "worksNumber" -> "",
-      "startDate" -> "2013-08-03",
-      "endDate" -> "",
-      "isLive" -> "true",
-      "isOccupationalPension" -> "false",
-      "hasMultipleIncomes" -> "true").withSession(
-      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
+    FakeRequest(method = method, path = "")
+      .withFormUrlEncodedBody(
+        "name"                  -> "test1",
+        "description"           -> "description",
+        "employmentId"          -> "14",
+        "newAmount"             -> "1675",
+        "oldAmount"             -> "11",
+        "worksNumber"           -> "",
+        "startDate"             -> "2013-08-03",
+        "endDate"               -> "",
+        "isLive"                -> "true",
+        "isOccupationalPension" -> "false",
+        "hasMultipleIncomes"    -> "true"
+      )
+      .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
 
 }

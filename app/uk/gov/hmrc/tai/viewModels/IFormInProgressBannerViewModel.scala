@@ -20,11 +20,10 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.service.{SevenDays, ThreeWeeks, TimeToProcess}
 
 case class IFormInProgressBannerViewModel(isAnyIFormInProgress: TimeToProcess) {
-  def durationMessage()(implicit messages: Messages): Option[String] = {
+  def durationMessage()(implicit messages: Messages): Option[String] =
     isAnyIFormInProgress match {
       case ThreeWeeks => Some(messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2"))
-      case SevenDays => Some(messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2"))
-      case _ => None
+      case SevenDays  => Some(messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2"))
+      case _          => None
     }
-  }
 }
