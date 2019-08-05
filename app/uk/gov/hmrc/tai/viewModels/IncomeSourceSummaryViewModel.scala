@@ -62,7 +62,7 @@ object IncomeSourceSummaryViewModel {
       taxCodeIncomeSource.name,
       taxCodeIncomeSource.amount,
       amountYearToDate.getOrElse(0),
-      taxCodeIncomeSource.taxCodeWithEmergencySuffix,
+      taxCodeIncomeSource.taxCode,
       employment.payrollNumber.getOrElse(""),
       taxCodeIncomeSource.componentType == PensionIncome,
       benefitVMs,

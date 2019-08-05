@@ -36,8 +36,7 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
            (implicit messages: Messages): TaxCodeViewModel = {
 
     val descriptionListViewModels: Seq[DescriptionListViewModel] = taxCodeIncomes.map { income =>
-      val taxCode = income.taxCodeWithEmergencySuffix
-      createDescriptionListViewModel(taxCode, income.basisOperation, scottishTaxRateBands, income.name)
+      createDescriptionListViewModel(income.taxCode, income.basisOperation, scottishTaxRateBands, income.name)
     }
 
     TaxCodeViewModel(descriptionListViewModels)

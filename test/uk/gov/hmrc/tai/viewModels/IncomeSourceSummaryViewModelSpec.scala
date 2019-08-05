@@ -38,7 +38,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
   val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
   val estimatedPayJourneyCompleted = false
 
-  val expectedPenisonViewModel = IncomeSourceSummaryViewModel(1, "User Name", "Pension", 100, 400, "1100LX", "PENSION-1122", true,
+  val expectedPenisonViewModel = IncomeSourceSummaryViewModel(1, "User Name", "Pension", 100, 400, "1100L", "PENSION-1122", true,
     estimatedPayJourneyCompleted = false)
 
   val expectedEmploymentViewModel = IncomeSourceSummaryViewModel(1, "User Name", "Employer", 100, 400, "1100L", "EMPLOYER-1122", false,

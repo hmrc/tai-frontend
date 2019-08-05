@@ -86,7 +86,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
     IncomeSourceViewModel(
       incomeSource.employment.name,
       withPoundPrefixAndSign(MoneyPounds(incomeSource.taxCodeIncome.amount, 0)),
-      incomeSource.taxCodeIncome.taxCodeWithEmergencySuffix,
+      incomeSource.taxCodeIncome.taxCode,
       incomeSource.taxCodeIncome.status == Live,
       incomeSource.employment.payrollNumber.getOrElse(""),
       incomeSource.employment.payrollNumber.isDefined,
@@ -118,7 +118,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
     IncomeSourceViewModel(
       employment.name,
       withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0)),
-      taxCodeIncome.taxCodeWithEmergencySuffix,
+      taxCodeIncome.taxCode,
       taxCodeIncome.status == Live,
       employment.payrollNumber.getOrElse(""),
       employment.payrollNumber.isDefined,
