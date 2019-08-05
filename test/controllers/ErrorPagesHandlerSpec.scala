@@ -37,11 +37,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
 import scala.concurrent.Future
 
-
-class ErrorPagesHandlerSpec extends PlaySpec
-    with FakeTaiPlayApplication
-    with I18nSupport
-    with MockitoSugar {
+class ErrorPagesHandlerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
 
   implicit val authedUser: AuthedUser = UserBuilder()
 
@@ -54,9 +50,9 @@ class ErrorPagesHandlerSpec extends PlaySpec
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
 
-    "return the correct service unavailable page for 400" in  {
+    "return the correct service unavailable page for 400" in {
 
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("POST", "/"))
+      val sut = createSut.handleErrorResponse("testMethod", nino)(FakeRequest("POST", "/"))
 
       val e = new BadRequestException(message = "appStatusMessage=Version number incorrect")
       val result = sut(e)
@@ -74,17 +70,17 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
     }
 
-    "return the correct service unavailable page for  primary data" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
-      val e = new BadRequestException(message = "appStatusMessage=Primary") {override val responseCode = 400}
+    "return the correct service unavailable page for  primary data" in {
+      val sut = createSut.handleErrorResponse("testMethod", nino)(FakeRequest("GET", "/"))
+      val e = new BadRequestException(message = "appStatusMessage=Primary") { override val responseCode = 400 }
       val result = sut(e)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url
     }
 
-    "return the correct service unavailable page for no data" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
+    "return the correct service unavailable page for no data" in {
+      val sut = createSut.handleErrorResponse("testMethod", nino)(FakeRequest("GET", "/"))
       val e = new BadRequestException(message = "appStatusMessage=")
       val result = sut(e)
 
@@ -100,8 +96,8 @@ class ErrorPagesHandlerSpec extends PlaySpec
       heading mustBe Messages("tai.errorMessage.heading.nps")
     }
 
-    "return the correct service unavailable page for 404" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
+    "return the correct service unavailable page for 404" in {
+      val sut = createSut.handleErrorResponse("testMethod", nino)(FakeRequest("GET", "/"))
 
       val e = new Upstream4xxResponse("NotFoundException", 404, 404)
 
@@ -120,9 +116,8 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
     }
 
-
-    "return the correct service unavailable page for 500" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
+    "return the correct service unavailable page for 500" in {
+      val sut = createSut.handleErrorResponse("testMethod", nino)(FakeRequest("GET", "/"))
 
       val e = new Upstream5xxResponse("Upstream5xxResponse", 500, 500)
 
@@ -141,17 +136,20 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
     }
 
-    "return the correct page where the user has no primary employments" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
-      val e = new BadRequestException(message="appStatusMessage=Cannot complete a Coding Calculation without a Primary Employment") {override val responseCode = 400}
+    "return the correct page where the user has no primary employments" in {
+      val sut = createSut.handleErrorResponse("testMethod", nino)(FakeRequest("GET", "/"))
+      val e = new BadRequestException(
+        message = "appStatusMessage=Cannot complete a Coding Calculation without a Primary Employment") {
+        override val responseCode = 400
+      }
       val result = sut(e)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url
     }
 
-    "return the correct service unavailable page for not found with npm" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
+    "return the correct service unavailable page for not found with npm" in {
+      val sut = createSut.handleErrorResponse("testMethod", nino)(FakeRequest("GET", "/"))
 
       val e = new NotFoundException("appStatusMessage")
 
@@ -170,8 +168,8 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
     }
 
-    "return the correct service unavailable page for not found without npm" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
+    "return the correct service unavailable page for not found without npm" in {
+      val sut = createSut.handleErrorResponse("testMethod", nino)(FakeRequest("GET", "/"))
 
       val result = sut(new NotFoundException(""))
       status(result) mustBe 404
@@ -187,8 +185,8 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
     }
 
-    "return the correct service unavailable page for internal server error" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
+    "return the correct service unavailable page for internal server error" in {
+      val sut = createSut.handleErrorResponse("testMethod", nino)(FakeRequest("GET", "/"))
 
       val e = new InternalServerException("Internal Server Error")
 
@@ -232,7 +230,19 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "nps tax account responds with a 'no primary employment' message (data is absent), but employment data is available for previous year" in {
         val handler = createSut
-        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false))
+        val employmentDetails = Seq(
+          Employment(
+            "company name",
+            Some("123"),
+            new LocalDate("2016-05-26"),
+            Some(new LocalDate("2016-05-26")),
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false))
         val partialErrorFunction = handler.npsTaxAccountAbsentResult_withEmployCheck(employmentDetails, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsTaxAccountDataAbsentMsg))
         result mustBe None
@@ -247,7 +257,19 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "nps tax account responds with a 'no tax account information' message (data is absent), but employment data is available for previous year" in {
         val handler = createSut
-        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false))
+        val employmentDetails = Seq(
+          Employment(
+            "company name",
+            Some("123"),
+            new LocalDate("2016-05-26"),
+            Some(new LocalDate("2016-05-26")),
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false))
         val partialErrorFunction = handler.npsTaxAccountCYAbsentResult_withEmployCheck(employmentDetails, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsTaxAccountCYDataAbsentMsg))
         result mustBe None
@@ -262,8 +284,21 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "nps tax account responds with a 'no employments recorded for current tax year' message, but employment data is available for previous year" in {
         val exceptionController = createSut
-        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false))
-        val partialErrorFunction = exceptionController.npsNoEmploymentForCYResult_withEmployCheck(employmentDetails, ninoValue)
+        val employmentDetails = Seq(
+          Employment(
+            "company name",
+            Some("123"),
+            new LocalDate("2016-05-26"),
+            Some(new LocalDate("2016-05-26")),
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false))
+        val partialErrorFunction =
+          exceptionController.npsNoEmploymentForCYResult_withEmployCheck(employmentDetails, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsNoEmploymentForCurrentTaxYear))
         result mustBe None
       }
@@ -317,14 +352,13 @@ class ErrorPagesHandlerSpec extends PlaySpec
   val nino = new Generator().nextNino
   val ninoValue = nino.value
 
-
   val createSut = new SUT
 
   class SUT extends ErrorPagesHandler {
     override implicit def templateRenderer = testTemplateRenderer
     override implicit def partialRetriever = testPartialRetriever
 
-    val recoveryLocation:RecoveryLocation = classOf[SUT]
+    val recoveryLocation: RecoveryLocation = classOf[SUT]
   }
 
 }

@@ -21,9 +21,7 @@ import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 
-class WhatDoYouWantToTellUsFormSpec extends PlaySpec
-    with OneAppPerSuite
-    with I18nSupport {
+class WhatDoYouWantToTellUsFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -44,18 +42,23 @@ class WhatDoYouWantToTellUsFormSpec extends PlaySpec
       "employment details are blank" in {
 
         val validatedFormForPensionDetails = form.bind(emptyDetails)
-        validatedFormForPensionDetails.errors must contain(FormError("pensionDetails",
-          List(Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank"))))
+        validatedFormForPensionDetails.errors must contain(
+          FormError("pensionDetails", List(Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank"))))
       }
     }
 
     "return an error" when {
       "employment details have exceeded the maximum characters" in {
 
-        val validatedFormForPensionDetails  = form.bind(exceededCharDetails)
-        validatedFormForPensionDetails.errors must contain(FormError("pensionDetails",
-          List(Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded",
-            WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit))))
+        val validatedFormForPensionDetails = form.bind(exceededCharDetails)
+        validatedFormForPensionDetails.errors must contain(
+          FormError(
+            "pensionDetails",
+            List(
+              Messages(
+                "tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded",
+                WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit))
+          ))
       }
     }
   }
@@ -64,7 +67,7 @@ class WhatDoYouWantToTellUsFormSpec extends PlaySpec
 
   private val exceedingCharacters = "a" * 501
 
-  private val validDetails = Json.obj("pensionDetails" -> "test")
+  private val validDetails = Json.obj("pensionDetails"        -> "test")
   private val exceededCharDetails = Json.obj("pensionDetails" -> exceedingCharacters)
-  private val emptyDetails = Json.obj("pensionDetails" -> "")
+  private val emptyDetails = Json.obj("pensionDetails"        -> "")
 }

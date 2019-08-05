@@ -22,25 +22,37 @@ import play.api.Play.current
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
-case class EndIncomeCheckYourAnswersViewModel(preHeading: String,
-                                              employmentName: String,
-                                              employmentId: Int,
-                                              employmentEndDate: String,
-                                              contactableByPhone: String,
-                                              phoneNumber: Option[String],
-                                              backLinkUrl: String) {
+case class EndIncomeCheckYourAnswersViewModel(
+  preHeading: String,
+  employmentName: String,
+  employmentId: Int,
+  employmentEndDate: String,
+  contactableByPhone: String,
+  phoneNumber: Option[String],
+  backLinkUrl: String) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
     val mandatoryLines = Seq(
-      CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q2"), Dates.formatDate(new LocalDate(employmentEndDate)), controllers.employments.routes.EndEmploymentController.endEmploymentPage().url),
-      CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q4"), contactableByPhone, controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url)
+      CheckYourAnswersConfirmationLine(
+        Messages("tai.addEmployment.cya.q2"),
+        Dates.formatDate(new LocalDate(employmentEndDate)),
+        controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
+      ),
+      CheckYourAnswersConfirmationLine(
+        Messages("tai.addEmployment.cya.q4"),
+        contactableByPhone,
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url)
     )
 
     val optionalPhoneNoLine = phoneNumber map { phoneNo =>
-      Seq(CheckYourAnswersConfirmationLine(Messages("tai.phoneNumber"), phoneNo, controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url))
+      Seq(
+        CheckYourAnswersConfirmationLine(
+          Messages("tai.phoneNumber"),
+          phoneNo,
+          controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url))
     }
 
-    if(optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
+    if (optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
   }
 }

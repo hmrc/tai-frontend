@@ -21,7 +21,8 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 
-class AddEmploymentPayrollNumberFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport with FormValuesConstants {
+class AddEmploymentPayrollNumberFormSpec
+    extends PlaySpec with OneAppPerSuite with I18nSupport with FormValuesConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -62,7 +63,8 @@ class AddEmploymentPayrollNumberFormSpec extends PlaySpec with OneAppPerSuite wi
       val invalidChoice = Json.obj(choice -> "", payroll -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
-      invalidatedForm.errors.head.messages mustBe List(Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
+      invalidatedForm.errors.head.messages mustBe List(
+        Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
       invalidatedForm.value mustBe None
     }
 
@@ -70,7 +72,8 @@ class AddEmploymentPayrollNumberFormSpec extends PlaySpec with OneAppPerSuite wi
       val invalidChoice = Json.obj(payroll -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
-      invalidatedForm.errors.head.messages mustBe List(Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
+      invalidatedForm.errors.head.messages mustBe List(
+        Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
       invalidatedForm.value mustBe None
     }
 
@@ -78,7 +81,8 @@ class AddEmploymentPayrollNumberFormSpec extends PlaySpec with OneAppPerSuite wi
       val invalidYesChoice = Json.obj(choice -> Some(YesValue), payroll -> "")
       val invalidatedForm = form.bind(invalidYesChoice)
 
-      invalidatedForm.errors.head.messages mustBe List(Messages("tai.addEmployment.employmentPayrollNumber.error.blank"))
+      invalidatedForm.errors.head.messages mustBe List(
+        Messages("tai.addEmployment.employmentPayrollNumber.error.blank"))
       invalidatedForm.value mustBe None
     }
 

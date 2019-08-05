@@ -34,43 +34,43 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class IncomeService @Inject() (taxAccountService: TaxAccountService,
-                               employmentService: EmploymentService,
-                               taiConnector: TaiConnector) extends JourneyCacheConstants {
+class IncomeService @Inject()(
+  taxAccountService: TaxAccountService,
+  employmentService: EmploymentService,
+  taiConnector: TaiConnector)
+    extends JourneyCacheConstants {
 
-  def employmentAmount(nino: Nino, id: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[EmploymentAmount] = {
+  def employmentAmount(nino: Nino, id: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[EmploymentAmount] =
     for {
       taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-      employmentDetails <- employmentService.employment(nino, id)
+      employmentDetails    <- employmentService.employment(nino, id)
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
           taxCodeIncomes.find(_.employmentId.contains(id)) match {
             case Some(taxCodeIncome) => EmploymentAmount(taxCodeIncome, employment)
-            case _ => throw new RuntimeException(s"Not able to found employment with id $id")
+            case _                   => throw new RuntimeException(s"Not able to found employment with id $id")
           }
         case _ => throw new RuntimeException("Exception while reading employment and tax code details")
       }
     }
-  }
 
-  def latestPayment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Payment]] = {
+  def latestPayment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Payment]] =
     employmentService.employment(nino, id) map {
       case Some(employment) =>
         for {
           latestAnnualAccount <- employment.latestAnnualAccount
-          latestPayment <- latestAnnualAccount.latestPayment
+          latestPayment       <- latestAnnualAccount.latestPayment
         } yield latestPayment
 
       case _ => None
     }
-  }
 
-  def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(implicit hc: HeaderCarrier): Future[CalculatedPay] = {
+  def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(
+    implicit hc: HeaderCarrier): Future[CalculatedPay] = {
 
-    def isCacheAvailable(key: String): Option[BigDecimal]  =
+    def isCacheAvailable(key: String): Option[BigDecimal] =
       if (cache.contains(key)) Some(BigDecimal(FormHelper.convertCurrencyToInt(cache.get(key)))) else None
-
 
     val paymentFrequency = cache.getOrElse(UpdateIncome_PayPeriodKey, "")
     val pay = FormHelper.convertCurrencyToInt(cache.get(UpdateIncome_TotalSalaryKey))
@@ -90,13 +90,11 @@ class IncomeService @Inject() (taxAccountService: TaxAccountService,
     taiConnector.calculateEstimatedPay(payDetails)
   }
 
-  def editableIncomes(taxCodeIncomes: Seq[TaxCodeIncome]): Seq[TaxCodeIncome] = {
-    taxCodeIncomes.filter {
-      income =>
-        (income.componentType == EmploymentIncome || income.componentType == PensionIncome) &&
-          income.status != Ceased
+  def editableIncomes(taxCodeIncomes: Seq[TaxCodeIncome]): Seq[TaxCodeIncome] =
+    taxCodeIncomes.filter { income =>
+      (income.componentType == EmploymentIncome || income.componentType == PensionIncome) &&
+      income.status != Ceased
     }
-  }
 
   def singularIncomeId(taxCodeIncomes: Seq[TaxCodeIncome]): Option[Int] = {
     val incomes = editableIncomes(taxCodeIncomes)
@@ -107,11 +105,13 @@ class IncomeService @Inject() (taxAccountService: TaxAccountService,
     }
   }
 
-  def cachePaymentForRegularIncome(latestPayment: Option[Payment])(implicit hc: HeaderCarrier): Map[String, String] = {
+  def cachePaymentForRegularIncome(latestPayment: Option[Payment])(implicit hc: HeaderCarrier): Map[String, String] =
     latestPayment match {
-      case Some(payment) => Map(UpdateIncome_PayToDateKey -> payment.amountYearToDate.toString, UpdateIncome_DateKey -> payment.date.toString)
+      case Some(payment) =>
+        Map(
+          UpdateIncome_PayToDateKey -> payment.amountYearToDate.toString,
+          UpdateIncome_DateKey      -> payment.date.toString)
       case None => Map(UpdateIncome_PayToDateKey -> "0")
     }
-  }
 
 }

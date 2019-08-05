@@ -25,24 +25,25 @@ object TaxYearObjectBinder {
 
   implicit def taxYearObjectBinder = new PathBindable[TaxYear] {
 
-    override def bind(key: String, value: String): Either[String, TaxYear] = try {
+    override def bind(key: String, value: String): Either[String, TaxYear] =
+      try {
 
-      val taxYearRequired: TaxYear = TaxYear(value)
+        val taxYearRequired: TaxYear = TaxYear(value)
 
-      val currentYear: Int = TaxYear().year
-      val earliestSupportedYear: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(3)
+        val currentYear: Int = TaxYear().year
+        val earliestSupportedYear: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(3)
 
-      val latestSupportedTaxYear = TaxYear().next
-      val earliestSupportedTaxYear = TaxYear(currentYear - earliestSupportedYear)
+        val latestSupportedTaxYear = TaxYear().next
+        val earliestSupportedTaxYear = TaxYear(currentYear - earliestSupportedYear)
 
-      if (taxYearRequired >= earliestSupportedTaxYear && taxYearRequired <= latestSupportedTaxYear) {
-        Right(taxYearRequired)
-      } else {
-        Left(s"The supplied value '${taxYearRequired.year}' is not a currently supported tax year")
+        if (taxYearRequired >= earliestSupportedTaxYear && taxYearRequired <= latestSupportedTaxYear) {
+          Right(taxYearRequired)
+        } else {
+          Left(s"The supplied value '${taxYearRequired.year}' is not a currently supported tax year")
+        }
+      } catch {
+        case e: Throwable => Left(s"The supplied value '$value' is not a valid tax year")
       }
-    } catch {
-      case e: Throwable => Left(s"The supplied value '$value' is not a valid tax year")
-    }
 
     override def unbind(key: String, value: TaxYear): String = value.year.toString
   }

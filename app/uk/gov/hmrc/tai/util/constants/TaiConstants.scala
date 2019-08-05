@@ -30,7 +30,7 @@ object TaiConstants {
   val nextTaxYearDetails = 1
   val currentTaxYearDetails = 2
   val lastTaxYearDetails = 3
-  val claimATaxRefund  = 4
+  val claimATaxRefund = 4
 
   val notApplicable = "Not applicable"
 
@@ -76,7 +76,7 @@ object TaiConstants {
   val Failure = "failure"
 
   val NinoLength = 9
-  val NinoWithoutSuffixLength = NinoLength-1
+  val NinoWithoutSuffixLength = NinoLength - 1
   val TaxAmountFactor = 10
   val EmergencyTaxCode = "X"
 
@@ -91,7 +91,7 @@ object TaiConstants {
   val OtherIncomeIform = "other-income"
   val InvestIncomeIform = "invest-income"
   val StateBenefitsIform = "state-benefits"
-  val MarriageAllowanceService= "marriage-allowance"
+  val MarriageAllowanceService = "marriage-allowance"
 
   val NpsTaxAccountDeceasedMsg = "deceased"
   val NpsTaxAccountCYDataAbsentMsg = "no tax account information found"

@@ -37,7 +37,9 @@ class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
       messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/pension-number")
-    behave like pageWithYesNoRadioButton(AddPensionProviderNumberForm.PayrollNumberChoice+"-yes", AddPensionProviderNumberForm.PayrollNumberChoice+"-no")
+    behave like pageWithYesNoRadioButton(
+      AddPensionProviderNumberForm.PayrollNumberChoice + "-yes",
+      AddPensionProviderNumberForm.PayrollNumberChoice + "-no")
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "have gone back to firstPayChoice page" in {
@@ -54,8 +56,8 @@ class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
     "have an error message with the form inputs" when {
       "no payroll number choice is selected" in {
         val noPayrollNumberChooseError = messages("tai.addPensionProvider.pensionNumber.error.selectOption")
-        val formWithErrors: Form[AddPensionProviderNumberForm] = AddPensionProviderNumberForm.form.
-          withError(AddPensionProviderNumberForm.PayrollNumberChoice, noPayrollNumberChooseError)
+        val formWithErrors: Form[AddPensionProviderNumberForm] = AddPensionProviderNumberForm.form
+          .withError(AddPensionProviderNumberForm.PayrollNumberChoice, noPayrollNumberChooseError)
         def view: Html = views.html.pensions.addPensionNumber(formWithErrors, pensionNumberViewModel)
 
         val errorMessage = doc(view).select(".error-message").text
@@ -64,8 +66,8 @@ class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
 
       "no payroll number is provided" in {
         val noPayrollNumberChooseError = messages("tai.addPensionProvider.pensionNumber.error.blank")
-        val formWithErrors: Form[AddPensionProviderNumberForm] = AddPensionProviderNumberForm.form.
-          withError(AddPensionProviderNumberForm.PayrollNumberEntry, noPayrollNumberChooseError)
+        val formWithErrors: Form[AddPensionProviderNumberForm] = AddPensionProviderNumberForm.form
+          .withError(AddPensionProviderNumberForm.PayrollNumberEntry, noPayrollNumberChooseError)
         def view: Html = views.html.pensions.addPensionNumber(formWithErrors, pensionNumberViewModel)
 
         val errorMessage = doc(view).select(".error-message").text
@@ -74,9 +76,10 @@ class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
     }
   }
 
-  private val pensionNumberForm: Form[AddPensionProviderNumberForm] = AddPensionProviderNumberForm.form.bind(Map(
-    AddPensionProviderNumberForm.PayrollNumberChoice -> NoValue
-  ))
+  private val pensionNumberForm: Form[AddPensionProviderNumberForm] = AddPensionProviderNumberForm.form.bind(
+    Map(
+      AddPensionProviderNumberForm.PayrollNumberChoice -> NoValue
+    ))
 
   private lazy val pensionProviderName = "Aviva"
   private lazy val pensionNumberViewModel = PensionNumberViewModel(pensionProviderName, false)

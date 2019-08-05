@@ -25,8 +25,12 @@ class RemoveCompanyBenefitCheckYourAnswersSpec extends TaiViewSpec {
   "checkYourAnswers" should {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
-    behave like pageWithCombinedHeader(messages("tai.benefits.ended.journey.preHeader"), messages("tai.checkYourAnswers.title"))
-    behave like pageWithButtonForm("/check-income-tax/remove-company-benefit/submit-your-answers", messages("tai.confirmAndSend"))
+    behave like pageWithCombinedHeader(
+      messages("tai.benefits.ended.journey.preHeader"),
+      messages("tai.checkYourAnswers.title"))
+    behave like pageWithButtonForm(
+      "/check-income-tax/remove-company-benefit/submit-your-answers",
+      messages("tai.confirmAndSend"))
     behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel)
     behave like pageWithCheckYourAnswersSummary
 
@@ -46,20 +50,29 @@ class RemoveCompanyBenefitCheckYourAnswersSpec extends TaiViewSpec {
 
       doc must haveCheckYourAnswersSummaryLine(2, messages("tai.checkYourAnswers.dateBenefitEnded"))
       doc must haveCheckYourAnswersSummaryLineAnswer(2, viewModel.stopDate)
-      doc must haveCheckYourAnswersSummaryLineChangeLink(2, controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        2,
+        controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url)
 
-      val benefitValue = Money.pounds(BigDecimal(viewModel.valueOfBenefit.getOrElse("0"))).toString().trim.replace("&pound;","\u00A3")
+      val benefitValue =
+        Money.pounds(BigDecimal(viewModel.valueOfBenefit.getOrElse("0"))).toString().trim.replace("&pound;", "\u00A3")
       doc must haveCheckYourAnswersSummaryLine(3, messages("tai.checkYourAnswers.valueOfBenefit"))
       doc must haveCheckYourAnswersSummaryLineAnswer(3, benefitValue)
-      doc must haveCheckYourAnswersSummaryLineChangeLink(3, controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        3,
+        controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url)
 
       doc must haveCheckYourAnswersSummaryLine(4, messages("tai.checkYourAnswers.contactByPhone"))
       doc must haveCheckYourAnswersSummaryLineAnswer(4, viewModel.contactByPhone)
-      doc must haveCheckYourAnswersSummaryLineChangeLink(4, controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        4,
+        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url)
 
       doc must haveCheckYourAnswersSummaryLine(5, messages("tai.phoneNumber"))
       doc must haveCheckYourAnswersSummaryLineAnswer(5, viewModel.phoneNumber.getOrElse(""))
-      doc must haveCheckYourAnswersSummaryLineChangeLink(5, controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        5,
+        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url)
 
     }
 
@@ -69,7 +82,14 @@ class RemoveCompanyBenefitCheckYourAnswersSpec extends TaiViewSpec {
 
   }
 
-  def viewModel = RemoveCompanyBenefitCheckYourAnswersViewModel("Awesome benefit from TestCompany","Hello","Before 6 April",Some("10000"),"Yes",Some("123456789"))
+  def viewModel =
+    RemoveCompanyBenefitCheckYourAnswersViewModel(
+      "Awesome benefit from TestCompany",
+      "Hello",
+      "Before 6 April",
+      Some("10000"),
+      "Yes",
+      Some("123456789"))
 
   override def view = views.html.benefits.removeCompanyBenefitCheckYourAnswers(viewModel)
 }

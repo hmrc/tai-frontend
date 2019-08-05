@@ -16,15 +16,12 @@
 
 package uk.gov.hmrc.tai.forms.employments
 
-
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 
-class EmploymentNameFormSpec extends PlaySpec
-    with OneAppPerSuite
-    with I18nSupport {
+class EmploymentNameFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -44,7 +41,8 @@ class EmploymentNameFormSpec extends PlaySpec
       "name is blank" in {
         val validatedFormNoDayError = form.bind(emptyName)
 
-        validatedFormNoDayError.errors must contain(FormError("employmentName", List("Enter the name of your employer")))
+        validatedFormNoDayError.errors must contain(
+          FormError("employmentName", List("Enter the name of your employer")))
       }
     }
   }
@@ -53,5 +51,5 @@ class EmploymentNameFormSpec extends PlaySpec
 
   private val validName = Json.obj("employmentName" -> "the employer name")
   private val emptyName = Json.obj("employmentName" -> "")
-  
+
 }

@@ -57,7 +57,9 @@ class ValidatePersonSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
   val personAlive = !personDeceased
 
   class Harness(deceased: ValidatePerson) extends Controller {
-    def onPageLoad() = (FakeAuthAction andThen deceased) { request => Ok }
+    def onPageLoad() = (FakeAuthAction andThen deceased) { request =>
+      Ok
+    }
   }
 
   "DeceasedActionFilter" when {

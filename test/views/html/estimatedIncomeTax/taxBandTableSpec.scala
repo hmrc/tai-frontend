@@ -68,8 +68,8 @@ class taxBandTableSpec extends TaiViewSpec with BandTypesConstants with TaxRegio
     TaxBand(DividendZeroRate, "", 11500, 0, None, None, 0),
     TaxBand(DividendBasicRate, "", 32010, 6402, None, None, 20),
     TaxBand(DividendHigherRate, "", 36466, 14586.4, None, None, 40),
-    TaxBand(DividendAdditionalRate, "", 40000, 15000, None, None, 50))
-
+    TaxBand(DividendAdditionalRate, "", 40000, 15000, None, None, 50)
+  )
 
   override def view: Html = views.html.estimatedIncomeTax.taxBandTable("table-id", taxBands, UkTaxRegion)
 

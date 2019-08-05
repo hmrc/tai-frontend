@@ -34,15 +34,11 @@ import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest}
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class BbsiConnectorSpec extends PlaySpec
-  with MockitoSugar
-  with FakeTaiPlayApplication
-  with DefaultServicesConfig
-  with BeforeAndAfterEach {
+class BbsiConnectorSpec
+    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with DefaultServicesConfig with BeforeAndAfterEach {
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(httpHandler)
-  }
 
   "BbsiConnector" should {
 
@@ -52,9 +48,10 @@ class BbsiConnectorSpec extends PlaySpec
 
         val sut = createSut("http://")
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
-          jsonBbsiDetails(Json.arr())
-        ))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(
+          Future.successful(
+            jsonBbsiDetails(Json.arr())
+          ))
 
         val result = Await.result(sut.bankAccounts(nino), 5.seconds)
 
@@ -72,9 +69,8 @@ class BbsiConnectorSpec extends PlaySpec
 
         val sut = createSut("http://")
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
-          jsonBbsiDetails(jsonSingleBankAccounts))
-        )
+        when(httpHandler.getFromApi(any())(any()))
+          .thenReturn(Future.successful(jsonBbsiDetails(jsonSingleBankAccounts)))
 
         val result = Await.result(sut.bankAccounts(nino), 5.seconds)
 
@@ -89,9 +85,8 @@ class BbsiConnectorSpec extends PlaySpec
 
         val sut = createSut("http://")
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
-          jsonBbsiDetails(jsonMultipleBankAccounts))
-        )
+        when(httpHandler.getFromApi(any())(any()))
+          .thenReturn(Future.successful(jsonBbsiDetails(jsonMultipleBankAccounts)))
 
         val result = Await.result(sut.bankAccounts(nino), 5.seconds)
 
@@ -102,7 +97,6 @@ class BbsiConnectorSpec extends PlaySpec
         )(any())
       }
     }
-
 
     "return untaxed interest" when {
 
@@ -138,16 +132,17 @@ class BbsiConnectorSpec extends PlaySpec
       }
     }
   }
-    "return exception" when {
+  "return exception" when {
 
-     "return empty sequence of bank accounts" when {
+    "return empty sequence of bank accounts" when {
       "api returns invalid json" in {
 
         val sut = createSut()
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
-          Json.obj("" -> "")
-        ))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(
+          Future.successful(
+            Json.obj("" -> "")
+          ))
 
         val result = Await.result(sut.bankAccounts(nino), 5.seconds)
 
@@ -172,8 +167,7 @@ class BbsiConnectorSpec extends PlaySpec
       "a valid id is passed" in {
         val sut = createSut()
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
-          bankAccountJsonResponse))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(bankAccountJsonResponse))
 
         val result = Await.result(sut.bankAccount(nino, 1), 5.seconds)
 
@@ -213,11 +207,13 @@ class BbsiConnectorSpec extends PlaySpec
 
         val sut = createSut()
 
-        val json = Json.obj("data"-> "123-456-789")
+        val json = Json.obj("data" -> "123-456-789")
 
-        when(httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        when(httpHandler.putToApi(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
-        val result = Await.result(sut.closeBankAccount(nino, 1, CloseAccountRequest(new LocalDate(2017, 8, 8), None)), 5.seconds)
+        val result =
+          Await.result(sut.closeBankAccount(nino, 1, CloseAccountRequest(new LocalDate(2017, 8, 8), None)), 5.seconds)
 
         result mustBe Some("123-456-789")
       }
@@ -228,11 +224,13 @@ class BbsiConnectorSpec extends PlaySpec
 
         val sut = createSut()
 
-        val json = Json.obj("test"-> "123-456-789")
+        val json = Json.obj("test" -> "123-456-789")
 
-        when(httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        when(httpHandler.putToApi(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
-        val result = Await.result(sut.closeBankAccount(nino, 1, CloseAccountRequest(new LocalDate(2017, 8, 8), None)), 5.seconds)
+        val result =
+          Await.result(sut.closeBankAccount(nino, 1, CloseAccountRequest(new LocalDate(2017, 8, 8), None)), 5.seconds)
 
         result mustBe None
       }
@@ -242,7 +240,7 @@ class BbsiConnectorSpec extends PlaySpec
   "removeBankAccount" should {
     "return envelope id" in {
       val sut = createSut()
-      val json = Json.obj("data"-> "123-456-789")
+      val json = Json.obj("data" -> "123-456-789")
       when(httpHandler.deleteFromApi(any())(any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.removeBankAccount(nino, 1), 5.seconds)
@@ -253,8 +251,9 @@ class BbsiConnectorSpec extends PlaySpec
     "return None" when {
       "json is  invalid" in {
         val sut = createSut()
-        val json = Json.obj("test"-> "123-456-789")
-        when(httpHandler.deleteFromApi(any())(any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        val json = Json.obj("test" -> "123-456-789")
+        when(httpHandler.deleteFromApi(any())(any(), any()))
+          .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
         val result = Await.result(sut.removeBankAccount(nino, 1), 5.seconds)
 
@@ -266,8 +265,9 @@ class BbsiConnectorSpec extends PlaySpec
   "updateBankAccount" should {
     "return envelope id" in {
       val sut = createSut()
-      val json = Json.obj("data"-> "123-456-789")
-      when(httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      val json = Json.obj("data" -> "123-456-789")
+      when(httpHandler.putToApi(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.updateBankAccountInterest(nino, 1, amountRequest), 5.seconds)
 
@@ -277,8 +277,9 @@ class BbsiConnectorSpec extends PlaySpec
     "return None" when {
       "json is  invalid" in {
         val sut = createSut()
-        val json = Json.obj("test"-> "123-456-789")
-        when(httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        val json = Json.obj("test" -> "123-456-789")
+        when(httpHandler.putToApi(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
         val result = Await.result(sut.updateBankAccountInterest(nino, 1, amountRequest), 5.seconds)
 
@@ -303,9 +304,21 @@ class BbsiConnectorSpec extends PlaySpec
   private val grossInterest2 = 456.78
   private val source2 = "Customer2"
 
-  private val bankAccount1 = BankAccount(1, accountNumber = Some(accountNumber1), sortCode = Some(sortCode1), bankName = Some(bankName1), grossInterest = grossInterest1, source = Some(source1))
+  private val bankAccount1 = BankAccount(
+    1,
+    accountNumber = Some(accountNumber1),
+    sortCode = Some(sortCode1),
+    bankName = Some(bankName1),
+    grossInterest = grossInterest1,
+    source = Some(source1))
 
-  private val bankAccount2 = BankAccount(2, accountNumber = Some(accountNumber2), sortCode = Some(sortCode2), bankName = Some(bankName2), grossInterest = grossInterest2, source = Some(source2))
+  private val bankAccount2 = BankAccount(
+    2,
+    accountNumber = Some(accountNumber2),
+    sortCode = Some(sortCode2),
+    bankName = Some(bankName2),
+    grossInterest = grossInterest2,
+    source = Some(source2))
 
   private implicit val hc = HeaderCarrier()
 
@@ -318,20 +331,19 @@ class BbsiConnectorSpec extends PlaySpec
   private def jsonBbsiDetails(data: JsArray) = Json.obj("nino" -> nino.nino, "taxYear" -> taxYear, "data" -> data)
   private def jsonApiResponse(data: JsValue) = Json.obj("data" -> data)
 
-
   private val jsonSingleBankAccounts = Json.arr(jsonBankAccount1)
   private val jsonMultipleBankAccounts = Json.arr(jsonBankAccount1, jsonBankAccount2)
 
-  private val untaxedInterest = UntaxedInterest(200,Nil)
+  private val untaxedInterest = UntaxedInterest(200, Nil)
   private val savingsInvestments = SavingsInvestments(untaxedInterest)
 
   private val jsonUntaxedInterest = Json.toJson(untaxedInterest)
 
-  def createSut(servUrl: String = "")  = new SUT(servUrl)
-  
+  def createSut(servUrl: String = "") = new SUT(servUrl)
+
   val httpHandler = mock[HttpHandler]
 
-  class SUT(servUrl: String = "")  extends BbsiConnector (httpHandler) {
+  class SUT(servUrl: String = "") extends BbsiConnector(httpHandler) {
     override val serviceUrl: String = servUrl
   }
 }

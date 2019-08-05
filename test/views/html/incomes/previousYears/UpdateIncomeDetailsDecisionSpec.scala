@@ -30,22 +30,28 @@ class UpdateIncomeDetailsDecisionSpec extends TaiViewSpec {
 
   "decision" should {
 
-    behave like pageWithTitle(messages("tai.income.previousYears.decision.title", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
-    behave like pageWithCombinedHeader(messages("tai.income.previousYears.journey.preHeader"),
-      messages("tai.income.previousYears.decision.header",TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
+    behave like pageWithTitle(
+      messages("tai.income.previousYears.decision.title", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
+    behave like pageWithCombinedHeader(
+      messages("tai.income.previousYears.journey.preHeader"),
+      messages("tai.income.previousYears.decision.header", TaxPeriodLabelService.taxPeriodLabel(taxYear.year))
+    )
     behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(taxYear))
     behave like pageWithYesNoRadioButton(
-      UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice+"-yes",
-      UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice+"-no",
+      UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice + "-yes",
+      UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice + "-no",
       messages("tai.income.previousYears.decision.radio.yes"),
-      messages("tai.income.previousYears.decision.radio.no"))
+      messages("tai.income.previousYears.decision.radio.no")
+    )
     behave like pageWithContinueButtonForm("/check-income-tax/update-income-details/decision")
 
   }
 
   "display 'I want to:' legend" in {
-    doc must haveElementAtPathWithText("form fieldset legend span", messages("tai.income.previousYears.decision.IWantTo"))    // haveH2HeadingWithText(messages("tai.income.previousYears.decision.IWantTo"))
+    doc must haveElementAtPathWithText(
+      "form fieldset legend span",
+      messages("tai.income.previousYears.decision.IWantTo")) // haveH2HeadingWithText(messages("tai.income.previousYears.decision.IWantTo"))
   }
 
   "display paragraphs" in {
@@ -68,9 +74,11 @@ class UpdateIncomeDetailsDecisionSpec extends TaiViewSpec {
     }
   }
 
-  private lazy val formWithErrors: Form[Option[String]] = UpdateIncomeDetailsDecisionForm.form.bind(Map(
-    UpdateIncomeChoice -> ""
-  ))
+  private lazy val formWithErrors: Form[Option[String]] = UpdateIncomeDetailsDecisionForm.form.bind(
+    Map(
+      UpdateIncomeChoice -> ""
+    ))
 
-  override def view = views.html.incomes.previousYears.UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear)
+  override def view =
+    views.html.incomes.previousYears.UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear)
 }

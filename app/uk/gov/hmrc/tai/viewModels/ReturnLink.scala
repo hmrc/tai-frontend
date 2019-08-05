@@ -23,17 +23,17 @@ import uk.gov.hmrc.urls.Link
 
 trait ReturnLink {
 
-  def createReturnLink(referer: String, resourceName: String)(implicit messages:Messages): Html = {
+  def createReturnLink(referer: String, resourceName: String)(implicit messages: Messages): Html = {
 
-    def createLink(message: String, defaultReferer: String )(implicit messages:Messages): Html = {
+    def createLink(message: String, defaultReferer: String)(implicit messages: Messages): Html =
       Link.toInternalPage(url = defaultReferer, value = Some(message)).toHtml
-    }
 
     resourceName match {
       case "tax-free-allowance"           => createLink(messages("tai.iya.tax.free.amount.return.link"), referer)
       case "detailed-income-tax-estimate" => createLink(messages("tai.iya.detailed.paye.return.link"), referer)
       case "your-tax-free-amount"         => createLink(messages("tai.iya.tax.code.change.return.link"), referer)
-      case _                              => createLink(messages("return.to.your.income.tax.summary"), routes.TaxAccountSummaryController.onPageLoad.url)
+      case _ =>
+        createLink(messages("return.to.your.income.tax.summary"), routes.TaxAccountSummaryController.onPageLoad.url)
     }
   }
 }

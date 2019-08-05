@@ -25,22 +25,25 @@ import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxAmountDueFromUnderpayment
 import uk.gov.hmrc.tai.util.{MonetaryUtil, ViewModelHelper}
 
-case class PreviousYearUnderpaymentViewModel(allowanceReducedBy: BigDecimal,
-                                             poundedAmountDue: String,
-                                             returnLink: Html) {
+case class PreviousYearUnderpaymentViewModel(
+  allowanceReducedBy: BigDecimal,
+  poundedAmountDue: String,
+  returnLink: Html) {}
 
-}
+object PreviousYearUnderpaymentViewModel extends ViewModelHelper with BandTypesConstants with ReturnLink {
 
-object PreviousYearUnderpaymentViewModel extends ViewModelHelper
-  with BandTypesConstants
-  with ReturnLink {
+  def apply(
+    codingComponents: Seq[CodingComponent],
+    employments: Seq[Employment],
+    totalTax: TotalTax,
+    referer: String,
+    resourceName: String)(implicit messages: Messages): PreviousYearUnderpaymentViewModel = {
 
-  def apply(codingComponents: Seq[CodingComponent], employments: Seq[Employment], totalTax: TotalTax, referer: String,
-            resourceName: String)(implicit messages: Messages): PreviousYearUnderpaymentViewModel = {
-
-    val allowanceReducedBy = codingComponents.collectFirst {
-      case CodingComponent(UnderPaymentFromPreviousYear, _, amount, _, _) => amount
-    }.getOrElse(BigDecimal(0))
+    val allowanceReducedBy = codingComponents
+      .collectFirst {
+        case CodingComponent(UnderPaymentFromPreviousYear, _, amount, _, _) => amount
+      }
+      .getOrElse(BigDecimal(0))
 
     val amountDue = TaxAmountDueFromUnderpayment.amountDue(allowanceReducedBy, totalTax)
 

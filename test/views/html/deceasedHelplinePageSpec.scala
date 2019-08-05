@@ -84,8 +84,18 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
     }
 
     "display different address link" in {
-      assertElementById("different-address", Html(Messages("tai.deceased.post.p2",
-        Link.toInternalPage(url="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/couriers",value=Some(Messages("tai.deceased.post.p2.link.text"))).toHtml)).body)
+      assertElementById(
+        "different-address",
+        Html(
+          Messages(
+            "tai.deceased.post.p2",
+            Link
+              .toInternalPage(
+                url = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/couriers",
+                value = Some(Messages("tai.deceased.post.p2.link.text")))
+              .toHtml
+          )).body
+      )
     }
 
     "display static post content" in {
@@ -103,8 +113,18 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
     }
 
     "display tell us once link" in {
-      assertElementById("tell-us-once", Html(Messages("tai.deceased.tell.us.p1",
-        Link.toInternalPage(url="https://www.gov.uk/after-a-death/organisations-you-need-to-contact-and-tell-us-once",value=Some(Messages("tai.deceased.tell.us.p1.link.text"))).toHtml)).body)
+      assertElementById(
+        "tell-us-once",
+        Html(
+          Messages(
+            "tai.deceased.tell.us.p1",
+            Link
+              .toInternalPage(
+                url = "https://www.gov.uk/after-a-death/organisations-you-need-to-contact-and-tell-us-once",
+                value = Some(Messages("tai.deceased.tell.us.p1.link.text")))
+              .toHtml
+          )).body
+      )
     }
 
   }
@@ -112,8 +132,10 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
   val assertSubHeading = (subHeadingKey: String) => doc must haveHeadingH2WithText(messages(subHeadingKey))
   val assertSubHeadingH3 = (subHeadingKey: String) => doc must haveHeadingH3WithText(messages(subHeadingKey))
   val assertParagraph = (message: String) => doc must haveParagraphWithText(message)
-  val assertElementById = (id: String, message: String) => doc.getElementById(id).toString must include(messages(message))
+  val assertElementById = (id: String, message: String) =>
+    doc.getElementById(id).toString must include(messages(message))
   val assertBulletPoints = (message: String) => doc must haveBulletPointWithText(message)
-  val assertTimings = (message1: String, message2: String) => assertBulletPoints(messages(message1) + " " + messages(message2))
+  val assertTimings = (message1: String, message2: String) =>
+    assertBulletPoints(messages(message1) + " " + messages(message2))
 
 }

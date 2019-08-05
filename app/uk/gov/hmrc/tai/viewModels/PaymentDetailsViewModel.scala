@@ -19,13 +19,13 @@ package uk.gov.hmrc.tai.viewModels
 import org.joda.time.LocalDate
 import uk.gov.hmrc.tai.model.domain.Payment
 
-case class PaymentDetailsViewModel(date: LocalDate,
-                                   taxableIncome: BigDecimal,
-                                   taxAmount: BigDecimal,
-                                   nationalInsuranceAmount: BigDecimal)
+case class PaymentDetailsViewModel(
+  date: LocalDate,
+  taxableIncome: BigDecimal,
+  taxAmount: BigDecimal,
+  nationalInsuranceAmount: BigDecimal)
 
 object PaymentDetailsViewModel {
-  def apply(payment: Payment): PaymentDetailsViewModel = {
-      PaymentDetailsViewModel(payment.date, payment.amount, payment.taxAmount, payment.nationalInsuranceAmount)
-  }
+  def apply(payment: Payment): PaymentDetailsViewModel =
+    PaymentDetailsViewModel(payment.date, payment.amount, payment.taxAmount, payment.nationalInsuranceAmount)
 }

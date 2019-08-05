@@ -26,41 +26,37 @@ import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class BbsiService @Inject() (connector: BbsiConnector) {
+class BbsiService @Inject()(connector: BbsiConnector) {
 
-  def bankAccounts(nino:Nino)(implicit hc: HeaderCarrier): Future[Seq[BankAccount]] = {
+  def bankAccounts(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[BankAccount]] =
     connector.bankAccounts(nino)
-  }
 
-  def bankAccount(nino:Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[BankAccount]] = {
+  def bankAccount(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[BankAccount]] =
     connector.bankAccount(nino, id)
-  }
 
-  def closeBankAccount(nino: Nino, id: Int, closeAccountRequest: CloseAccountRequest)(implicit hc: HeaderCarrier): Future[String] = {
+  def closeBankAccount(nino: Nino, id: Int, closeAccountRequest: CloseAccountRequest)(
+    implicit hc: HeaderCarrier): Future[String] =
     connector.closeBankAccount(nino, id, closeAccountRequest) map {
       case Some(envelopeId) => envelopeId
-      case None => throw new RuntimeException("Failed while closing the bank account")
+      case None             => throw new RuntimeException("Failed while closing the bank account")
     }
-  }
 
-  def untaxedInterest(nino: Nino)(implicit hc: HeaderCarrier): Future[UntaxedInterest] = {
+  def untaxedInterest(nino: Nino)(implicit hc: HeaderCarrier): Future[UntaxedInterest] =
     connector.untaxedInterest(nino) map {
       case Some(untaxedInterest) => untaxedInterest
-      case None => throw new RuntimeException("Failed while retrieving untaxed interest")
+      case None                  => throw new RuntimeException("Failed while retrieving untaxed interest")
     }
-  }
 
-  def removeBankAccount(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[String] = {
+  def removeBankAccount(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[String] =
     connector.removeBankAccount(nino, id) map {
       case Some(envelopeId) => envelopeId
-      case None => throw new RuntimeException("Failed while removing the bank account")
+      case None             => throw new RuntimeException("Failed while removing the bank account")
     }
-  }
 
-  def updateBankAccountInterest(nino: Nino, id: Int, amountRequest: AmountRequest)(implicit hc: HeaderCarrier): Future[String] = {
+  def updateBankAccountInterest(nino: Nino, id: Int, amountRequest: AmountRequest)(
+    implicit hc: HeaderCarrier): Future[String] =
     connector.updateBankAccountInterest(nino, id, amountRequest) map {
       case Some(envelopeId) => envelopeId
-      case None => throw new RuntimeException("Failed while updating the bank account")
+      case None             => throw new RuntimeException("Failed while updating the bank account")
     }
-  }
 }

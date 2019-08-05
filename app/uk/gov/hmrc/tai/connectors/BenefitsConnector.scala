@@ -26,29 +26,30 @@ import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class BenefitsConnector @Inject() (httpHandler: HttpHandler) extends DefaultServicesConfig {
+class BenefitsConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
   def benefitsUrl(nino: String, taxYear: Int): String = s"$serviceUrl/tai/$nino/tax-account/$taxYear/benefits"
-  def endedCompanyBenefitUrl (nino: String, employmentId: Int) = s"$serviceUrl/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
+  def endedCompanyBenefitUrl(nino: String, employmentId: Int) =
+    s"$serviceUrl/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
 
-  def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] = {
-      httpHandler.getFromApi(benefitsUrl(nino.nino, taxYear)) map (
-        json =>
-          (json \ "data" ).as[Benefits]
-        ) recover {
-        case _: RuntimeException => {
-          Logger.warn(s"Couldn't retrieve benefits for nino: $nino")
-          throw new RuntimeException(s"Couldn't retrieve benefits for nino: $nino")
-        }
+  def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] =
+    httpHandler.getFromApi(benefitsUrl(nino.nino, taxYear)) map (
+      json => (json \ "data").as[Benefits]
+    ) recover {
+      case _: RuntimeException => {
+        Logger.warn(s"Couldn't retrieve benefits for nino: $nino")
+        throw new RuntimeException(s"Couldn't retrieve benefits for nino: $nino")
       }
-  }
-
-  def endedCompanyBenefit(nino: Nino, employmentId: Int, endedCompanyBenefit: EndedCompanyBenefit)(implicit hc: HeaderCarrier): Future[Option[String]]  = {
-    httpHandler.postToApi[EndedCompanyBenefit](endedCompanyBenefitUrl(nino.nino, employmentId), endedCompanyBenefit).map { response =>
-      (response.json \ "data").asOpt[String]
     }
-  }
+
+  def endedCompanyBenefit(nino: Nino, employmentId: Int, endedCompanyBenefit: EndedCompanyBenefit)(
+    implicit hc: HeaderCarrier): Future[Option[String]] =
+    httpHandler
+      .postToApi[EndedCompanyBenefit](endedCompanyBenefitUrl(nino.nino, employmentId), endedCompanyBenefit)
+      .map { response =>
+        (response.json \ "data").asOpt[String]
+      }
 
 }

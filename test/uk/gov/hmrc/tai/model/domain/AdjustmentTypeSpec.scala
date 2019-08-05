@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.model.domain
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsString, Json}
 
-class AdjustmentTypeSpec extends PlaySpec{
+class AdjustmentTypeSpec extends PlaySpec {
 
   "AdjustmentTypeFormat" should {
     "create a valid object" when {

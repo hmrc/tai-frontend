@@ -25,18 +25,24 @@ import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class YourTaxFreeAmountComparison(previousTaxFreeInfo: Option[TaxFreeInfo], currentTaxFreeInfo: TaxFreeInfo, iabdPairs: AllowancesAndDeductionPairs)
+case class YourTaxFreeAmountComparison(
+  previousTaxFreeInfo: Option[TaxFreeInfo],
+  currentTaxFreeInfo: TaxFreeInfo,
+  iabdPairs: AllowancesAndDeductionPairs)
 
-class YourTaxFreeAmountService @Inject()(taxCodeChangeService: TaxCodeChangeService,
-                                         codingComponentService: CodingComponentService) extends YourTaxFreeAmount {
+class YourTaxFreeAmountService @Inject()(
+  taxCodeChangeService: TaxCodeChangeService,
+  codingComponentService: CodingComponentService)
+    extends YourTaxFreeAmount {
 
-  def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier, messages: Messages): Future[YourTaxFreeAmountComparison] = {
+  def taxFreeAmountComparison(
+    nino: Nino)(implicit hc: HeaderCarrier, messages: Messages): Future[YourTaxFreeAmountComparison] = {
 
     val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
     val taxFreeAmountComparisonFuture = codingComponentService.taxFreeAmountComparison(nino)
 
     for {
-      taxCodeChange <- taxCodeChangeFuture
+      taxCodeChange           <- taxCodeChangeFuture
       taxFreeAmountComparison <- taxFreeAmountComparisonFuture
     } yield {
       buildTaxFreeAmount(

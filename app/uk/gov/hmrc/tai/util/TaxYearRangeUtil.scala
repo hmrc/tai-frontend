@@ -21,31 +21,25 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 
-
 object TaxYearRangeUtil {
 
   private val messageRangeKeyBetween = "tai.taxYear.between"
   private val messageRangeKeyFromAndTo = "tai.taxYear"
 
-  def dynamicDateRange(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
+  def dynamicDateRange(from: LocalDate, to: LocalDate)(implicit messages: Messages): String =
     dateRange(messageRangeKeyFromAndTo, from, to)
-  }
 
-  def currentTaxYearRange(implicit messages: Messages): String = {
+  def currentTaxYearRange(implicit messages: Messages): String =
     dateRange(messageRangeKeyFromAndTo, TaxYear().start, TaxYear().end)
-  }
 
-  def currentTaxYearRangeSingleLine(implicit messages: Messages): String = {
+  def currentTaxYearRangeSingleLine(implicit messages: Messages): String =
     dateRangeSingleLine(messageRangeKeyFromAndTo, TaxYear().start, TaxYear().end)
-  }
 
-  def currentTaxYearRangeBetweenDelimited(implicit messages: Messages): String = {
+  def currentTaxYearRangeBetweenDelimited(implicit messages: Messages): String =
     dateRange(messageRangeKeyBetween, TaxYear().start, TaxYear().end)
-  }
 
-  def currentTaxYearRangeSingleLineBetweenDelimited(implicit messages: Messages): String = {
+  def currentTaxYearRangeSingleLineBetweenDelimited(implicit messages: Messages): String =
     dateRangeSingleLine(messageRangeKeyBetween, TaxYear().start, TaxYear().end)
-  }
 
   def futureTaxYearRangeHtmlNonBreak(yearsFromNow: Int)(implicit messages: Messages): String = {
 
@@ -62,17 +56,17 @@ object TaxYearRangeUtil {
     messages("tai.taxYear", start, end)
   }
 
-  private def dateRangeSingleLine(messageKey: String, from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
-    HtmlFormatter.htmlNonBroken(dateRange(messageKey,from, to))
-  }
+  private def dateRangeSingleLine(messageKey: String, from: LocalDate, to: LocalDate)(
+    implicit messages: Messages): String =
+    HtmlFormatter.htmlNonBroken(dateRange(messageKey, from, to))
 
-  private def dateRange(messageKey: String, from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
-    if(from isAfter to) {
+  private def dateRange(messageKey: String, from: LocalDate, to: LocalDate)(implicit messages: Messages): String =
+    if (from isAfter to) {
       throw new IllegalArgumentException(s"From date:$from cannot be after To date:$to")
     } else {
-      messages(messageKey,
+      messages(
+        messageKey,
         HtmlFormatter.htmlNonBroken(Dates.formatDate(from)),
         HtmlFormatter.htmlNonBroken(Dates.formatDate(to)))
     }
-  }
 }

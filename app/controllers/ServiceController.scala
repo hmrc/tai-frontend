@@ -33,29 +33,29 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-class ServiceController @Inject()(authenticate: AuthAction,
-                                  validatePerson: ValidatePerson,
-                                  override implicit val partialRetriever: FormPartialRetriever,
-                                  override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
+class ServiceController @Inject()(
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController {
 
-  def timeoutPage() = UnauthorisedAction.async {
-    implicit request => Future.successful(Ok(views.html.timeout()))
+  def timeoutPage() = UnauthorisedAction.async { implicit request =>
+    Future.successful(Ok(views.html.timeout()))
   }
 
-  def serviceSignout = (authenticate andThen validatePerson).async {
-    implicit request =>
-
-      if (request.taiUser.providerType == TaiConstants.AuthProviderVerify) {
-        Future.successful(Redirect(ApplicationConfig.citizenAuthFrontendSignOutUrl).
-          withSession(TaiConstants.SessionPostLogoutPage -> ApplicationConfig.feedbackSurveyUrl))
-      } else {
-        Future.successful(Redirect(ApplicationConfig.companyAuthFrontendSignOutUrl))
-      }
+  def serviceSignout = (authenticate andThen validatePerson).async { implicit request =>
+    if (request.taiUser.providerType == TaiConstants.AuthProviderVerify) {
+      Future.successful(
+        Redirect(ApplicationConfig.citizenAuthFrontendSignOutUrl)
+          .withSession(TaiConstants.SessionPostLogoutPage -> ApplicationConfig.feedbackSurveyUrl))
+    } else {
+      Future.successful(Redirect(ApplicationConfig.companyAuthFrontendSignOutUrl))
+    }
   }
 
-  def gateKeeper() = (authenticate andThen validatePerson).async {
-    implicit request =>
-      getGateKeeper(request.taiUser.nino)
+  def gateKeeper() = (authenticate andThen validatePerson).async { implicit request =>
+    getGateKeeper(request.taiUser.nino)
   }
 
   def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent]): Future[Result] = {

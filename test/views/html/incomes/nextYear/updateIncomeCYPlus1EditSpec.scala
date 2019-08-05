@@ -31,31 +31,35 @@ class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
   val currentEstPay = 1234
   val isPension = false
 
-
   "CYPlus1 Edit Page" should {
     behave like pageWithBackLink
-    behave like pageWithCancelLink(Call("GET",controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
 
     behave like pageWithCombinedHeader(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
       messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRangeHtmlNonBreak(1)))
 
-    behave like pageWithContinueInputForm(controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url)
+    behave like pageWithContinueInputForm(
+      controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url)
 
     "display the users current estimated income" in {
       doc(view) must haveClassWithText(messages("tai.irregular.currentAmount"), "form-label")
-      doc(view) must haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentEstPay),0)))
+      doc(view) must haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentEstPay), 0)))
     }
 
     "have an input box for user to enter new amount" in {
-      doc(view) must haveInputLabelWithText("income",
-        messages("tai.irregular.newAmount") + " " + messages("tai.inPounds")
-      )
+      doc(view) must haveInputLabelWithText(
+        "income",
+        messages("tai.irregular.newAmount") + " " + messages("tai.inPounds"))
       doc(view).getElementsByClass("form-control-currency").size() mustBe 1
     }
   }
 
-
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Edit(employerName, employmentID, isPension, currentEstPay,
-    AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay)))
+  override def view: Html =
+    views.html.incomes.nextYear.updateIncomeCYPlus1Edit(
+      employerName,
+      employmentID,
+      isPension,
+      currentEstPay,
+      AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay)))
 }

@@ -25,9 +25,9 @@ class EstimatedIncomeTaxComparisonViewModelSpec extends PlaySpec {
     "return correct change in tax amount" when {
       "CY and CY+1 items are supplied to the view model" in {
 
-        val cy = EstimatedIncomeTaxComparisonItem(TaxYear(),100)
-        val cyPlusOne = EstimatedIncomeTaxComparisonItem(TaxYear().next,200)
-        val SUT = EstimatedIncomeTaxComparisonViewModel(Seq(cy,cyPlusOne))
+        val cy = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
+        val cyPlusOne = EstimatedIncomeTaxComparisonItem(TaxYear().next, 200)
+        val SUT = EstimatedIncomeTaxComparisonViewModel(Seq(cy, cyPlusOne))
 
         SUT.changeInTaxAmount mustBe 100
 
@@ -37,8 +37,8 @@ class EstimatedIncomeTaxComparisonViewModelSpec extends PlaySpec {
     "sort the comparison items by ascending year" when {
       "CY and CY+1 items are supplied to the view model" in {
 
-        val cy = EstimatedIncomeTaxComparisonItem(TaxYear(),100)
-        val cyPlusOne = EstimatedIncomeTaxComparisonItem(TaxYear().next,200)
+        val cy = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
+        val cyPlusOne = EstimatedIncomeTaxComparisonItem(TaxYear().next, 200)
 
         val SUT = EstimatedIncomeTaxComparisonViewModel(Seq(cyPlusOne, cy))
 

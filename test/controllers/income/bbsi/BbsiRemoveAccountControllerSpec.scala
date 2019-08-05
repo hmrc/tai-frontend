@@ -84,10 +84,11 @@ class BbsiRemoveAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
   val personService: PersonService = mock[PersonService]
   val bbsiService = mock[BbsiService]
 
-  class SUT extends BbsiRemoveAccountController(
-    bbsiService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer)
+  class SUT
+      extends BbsiRemoveAccountController(
+        bbsiService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer)
 }

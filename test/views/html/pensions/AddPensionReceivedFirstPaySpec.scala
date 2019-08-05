@@ -31,16 +31,18 @@ class AddPensionReceivedFirstPaySpec extends TaiViewSpec with FormValuesConstant
     behave like pageWithCombinedHeader(
       messages("add.missing.pension"),
       messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
-      behave like pageWithBackLink
-      behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/received-first-payment")
-      behave like pageWithYesNoRadioButton(AddPensionProviderFirstPayForm.FirstPayChoice+"-yes", AddPensionProviderFirstPayForm.FirstPayChoice+"-no")
-      behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
+    behave like pageWithBackLink
+    behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/received-first-payment")
+    behave like pageWithYesNoRadioButton(
+      AddPensionProviderFirstPayForm.FirstPayChoice + "-yes",
+      AddPensionProviderFirstPayForm.FirstPayChoice + "-no")
+    behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "display an error notification" when {
       "no user choice is made" in {
         val noPayrollNumberChooseError = messages("tai.error.chooseOneOption")
-        val formWithErrors: Form[Option[String]] = AddEmploymentFirstPayForm.form.
-          withError(AddEmploymentFirstPayForm.FirstPayChoice, noPayrollNumberChooseError)
+        val formWithErrors: Form[Option[String]] =
+          AddEmploymentFirstPayForm.form.withError(AddEmploymentFirstPayForm.FirstPayChoice, noPayrollNumberChooseError)
         def view: Html = views.html.employments.add_employment_first_pay_form(formWithErrors, pensionProviderName)
 
         val errorMessage = doc(view).select(".error-message").text
@@ -51,9 +53,10 @@ class AddPensionReceivedFirstPaySpec extends TaiViewSpec with FormValuesConstant
 
   private lazy val pensionProviderName = "Allied Oatcakes"
 
-  private val pensionFirstPayForm: Form[Option[String]] = AddPensionProviderFirstPayForm.form.bind(Map(
-    AddPensionProviderFirstPayForm.FirstPayChoice -> YesValue
-  ))
+  private val pensionFirstPayForm: Form[Option[String]] = AddPensionProviderFirstPayForm.form.bind(
+    Map(
+      AddPensionProviderFirstPayForm.FirstPayChoice -> YesValue
+    ))
 
   override def view: Html = views.html.pensions.addPensionReceivedFirstPay(pensionFirstPayForm, pensionProviderName)
 }

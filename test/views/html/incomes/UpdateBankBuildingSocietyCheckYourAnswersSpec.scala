@@ -48,7 +48,6 @@ class UpdateBankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineChangeLink(1, routes.BbsiController.decision(0).url)
     }
 
-
     "display the second row of check your answers with the proposed date that the account closed" in {
       doc must haveCheckYourAnswersSummaryLine(2, messages("tai.bbsi.update.checkYourAnswers.rowTwo"))
       doc must haveCheckYourAnswersSummaryLineAnswer(2, "£1,000")

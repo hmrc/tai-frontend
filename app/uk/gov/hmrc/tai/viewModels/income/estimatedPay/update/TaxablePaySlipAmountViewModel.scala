@@ -27,16 +27,18 @@ case class TaxablePaySlipAmountViewModel(form: Form[TaxablePayslipForm], title: 
 
 object TaxablePaySlipAmountViewModel extends EditIncomePayPeriodConstants {
 
-  def apply(taxablePayslipForm: Form[TaxablePayslipForm],
-            payPeriod: Option[String],
-            payPeriodInDays: Option[String],
-            employer: IncomeSource)
-           (implicit message: Messages): TaxablePaySlipAmountViewModel = {
+  def apply(
+    taxablePayslipForm: Form[TaxablePayslipForm],
+    payPeriod: Option[String],
+    payPeriodInDays: Option[String],
+    employer: IncomeSource)(implicit message: Messages): TaxablePaySlipAmountViewModel = {
 
-    val messages = Map(MONTHLY -> "tai.taxablePayslip.title.month",
-                       WEEKLY -> "tai.taxablePayslip.title.week",
-                       FORTNIGHTLY -> "tai.taxablePayslip.title.2week",
-                       OTHER -> "tai.taxablePayslip.title.days")
+    val messages = Map(
+      MONTHLY     -> "tai.taxablePayslip.title.month",
+      WEEKLY      -> "tai.taxablePayslip.title.week",
+      FORTNIGHTLY -> "tai.taxablePayslip.title.2week",
+      OTHER       -> "tai.taxablePayslip.title.days"
+    )
 
     val title = dynamicTitle(payPeriod, payPeriodInDays, messages)
 

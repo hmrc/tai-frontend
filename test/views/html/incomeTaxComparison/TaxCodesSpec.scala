@@ -33,9 +33,15 @@ class TaxCodesSpec extends TaiViewSpec {
     }
 
     "display scottish tax code information" in {
-      doc.select("#scottishTaxCodeInfo").html() mustBe Html(messages("tai.incomeTaxComparison.taxCodes.scottishInfo",
-        Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl,
-          value=Some(messages("tai.taxCode.scottishIncomeText.link"))).toHtml)).body
+      doc.select("#scottishTaxCodeInfo").html() mustBe Html(
+        messages(
+          "tai.incomeTaxComparison.taxCodes.scottishInfo",
+          Link
+            .toExternalPage(
+              url = ApplicationConfig.scottishRateIncomeTaxUrl,
+              value = Some(messages("tai.taxCode.scottishIncomeText.link")))
+            .toHtml
+        )).body
     }
 
     "display tax code comparision table" in {
@@ -53,7 +59,7 @@ class TaxCodesSpec extends TaiViewSpec {
   private lazy val employmentTaxCode = Seq(TaxCodeDetail("EMPLOYER", Seq("1115L", "S975L")))
   private lazy val pensionTaxCode = Seq(TaxCodeDetail("PENSION", Seq("1150L", "1250L")))
   private lazy val model = TaxCodeComparisonViewModel(employmentTaxCode, pensionTaxCode)
-  val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear()end))
+  val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear() end))
   val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start))
   override def view: Html = views.html.incomeTaxComparison.TaxCodes(model)
 }

@@ -64,7 +64,8 @@ class PotentialUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
     "return an instance with a title value" which {
       "is set to the current year value when no CY+1 ampount is present" in {
-        PotentialUnderpaymentViewModel(tasNoCYPlusOne, Nil, "", "").pageTitle mustBe Messages("tai.iya.tax.you.owe.title")
+        PotentialUnderpaymentViewModel(tasNoCYPlusOne, Nil, "", "").pageTitle mustBe Messages(
+          "tai.iya.tax.you.owe.title")
       }
       "is set to the general value when both CY and CY+1 amounts are present" in {
         PotentialUnderpaymentViewModel(tas, Nil, "", "").pageTitle mustBe Messages("tai.iya.tax.you.owe.title")

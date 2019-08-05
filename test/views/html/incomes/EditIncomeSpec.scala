@@ -54,5 +54,6 @@ class EditIncomeSpec extends TaiViewSpec with MockitoSugar {
 
   when(editIncomeForm.errors(anyString())).thenReturn(Nil)
 
-  override def view: Html = views.html.incomes.editIncome(editIncomeForm, hasMultipleIncomes = false, empId, "0",None,false)
+  override def view: Html =
+    views.html.incomes.editIncome(editIncomeForm, hasMultipleIncomes = false, empId, "0", None, false)
 }

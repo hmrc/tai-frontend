@@ -22,50 +22,46 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
-
 case class Employment(
-                       name: String,
-                       payrollNumber: Option[String],
-                       startDate: LocalDate,
-                       endDate: Option[LocalDate],
-                       annualAccounts: Seq[AnnualAccount],
-                       taxDistrictNumber:String,
-                       payeNumber: String,
-                       sequenceNumber: Int,
-                       cessationPay: Option[BigDecimal],
-                       hasPayrolledBenefit: Boolean,
-                       receivingOccupationalPension: Boolean) {
+  name: String,
+  payrollNumber: Option[String],
+  startDate: LocalDate,
+  endDate: Option[LocalDate],
+  annualAccounts: Seq[AnnualAccount],
+  taxDistrictNumber: String,
+  payeNumber: String,
+  sequenceNumber: Int,
+  cessationPay: Option[BigDecimal],
+  hasPayrolledBenefit: Boolean,
+  receivingOccupationalPension: Boolean) {
 
-  lazy val latestAnnualAccount: Option[AnnualAccount] = if (annualAccounts.isEmpty) None else Some (annualAccounts.max)
+  lazy val latestAnnualAccount: Option[AnnualAccount] = if (annualAccounts.isEmpty) None else Some(annualAccounts.max)
 }
 
 object Employment {
   implicit val employmentFormat: Format[Employment] = Json.format[Employment]
 }
 
-case class AddEmployment(employerName: String,
-                         startDate: LocalDate,
-                         payrollNumber: String,
-                         telephoneContactAllowed: String,
-                         telephoneNumber: Option[String])
+case class AddEmployment(
+  employerName: String,
+  startDate: LocalDate,
+  payrollNumber: String,
+  telephoneContactAllowed: String,
+  telephoneNumber: Option[String])
 
 object AddEmployment {
 
   implicit val addEmploymentFormat: Format[AddEmployment] = Json.format[AddEmployment]
 }
 
-case class EndEmployment(endDate: LocalDate,
-                         telephoneContactAllowed: String,
-                         telephoneNumber: Option[String])
+case class EndEmployment(endDate: LocalDate, telephoneContactAllowed: String, telephoneNumber: Option[String])
 
 object EndEmployment {
 
   implicit val addEmploymentFormat: Format[EndEmployment] = Json.format[EndEmployment]
 }
 
-case class IncorrectIncome(whatYouToldUs: String,
-                           telephoneContactAllowed: String,
-                           telephoneNumber: Option[String])
+case class IncorrectIncome(whatYouToldUs: String, telephoneContactAllowed: String, telephoneNumber: Option[String])
 
 object IncorrectIncome {
   implicit val formats: Format[IncorrectIncome] = Json.format[IncorrectIncome]

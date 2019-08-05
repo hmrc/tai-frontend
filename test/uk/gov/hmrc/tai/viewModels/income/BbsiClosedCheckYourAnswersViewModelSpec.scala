@@ -24,73 +24,87 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
-
-class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
-  with JourneyCacheConstants with FakeTaiPlayApplication {
+class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec with JourneyCacheConstants with FakeTaiPlayApplication {
 
   "Close BBSI view model" should {
     "create a valid model" when {
       "given a correct date, bank account name and closing interest amount" in {
 
-        val result: BbsiClosedCheckYourAnswersViewModel = BbsiClosedCheckYourAnswersViewModel(0,
-          dateWithinCurrentTaxYear.toString("yyyy-MM-dd"), Some("Bank name"), Some("123.43"))
+        val result: BbsiClosedCheckYourAnswersViewModel = BbsiClosedCheckYourAnswersViewModel(
+          0,
+          dateWithinCurrentTaxYear.toString("yyyy-MM-dd"),
+          Some("Bank name"),
+          Some("123.43"))
 
         result.journeyConfirmationLines.length mustBe 3
 
         result.journeyConfirmationLines(applicationMessages)(0) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.checkYourAnswers.whatYouToldUs"),
           Messages("tai.bbsi.end.checkYourAnswers.rowOne.answer"),
-          "/check-income-tax/income/bank-building-society-savings/accounts/0/decision")
+          "/check-income-tax/income/bank-building-society-savings/accounts/0/decision"
+        )
 
         result.journeyConfirmationLines(applicationMessages)(1) mustBe CheckYourAnswersConfirmationLine(
-            Messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"),
-            dateWithinCurrentTaxYear.toString("d MMMM yyyy"),
-            "/check-income-tax/income/bank-building-society-savings/0/close/date")
+          Messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"),
+          dateWithinCurrentTaxYear.toString("d MMMM yyyy"),
+          "/check-income-tax/income/bank-building-society-savings/0/close/date"
+        )
       }
     }
 
     "create a valid model with closing interest" when {
       "given a date within the current tax year, bank account name and closing interest amount" in {
 
-        val result: BbsiClosedCheckYourAnswersViewModel = BbsiClosedCheckYourAnswersViewModel(0,
-          dateWithinCurrentTaxYear.toString("yyyy-MM-dd"), Some("Bank name"), Some("123456"))
+        val result: BbsiClosedCheckYourAnswersViewModel = BbsiClosedCheckYourAnswersViewModel(
+          0,
+          dateWithinCurrentTaxYear.toString("yyyy-MM-dd"),
+          Some("Bank name"),
+          Some("123456"))
 
         result.journeyConfirmationLines.length mustBe 3
 
         result.journeyConfirmationLines(applicationMessages)(0) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.checkYourAnswers.whatYouToldUs"),
           Messages("tai.bbsi.end.checkYourAnswers.rowOne.answer"),
-          "/check-income-tax/income/bank-building-society-savings/accounts/0/decision")
+          "/check-income-tax/income/bank-building-society-savings/accounts/0/decision"
+        )
 
         result.journeyConfirmationLines(applicationMessages)(1) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"),
           dateWithinCurrentTaxYear.toString("d MMMM yyyy"),
-          "/check-income-tax/income/bank-building-society-savings/0/close/date")
+          "/check-income-tax/income/bank-building-society-savings/0/close/date"
+        )
 
         result.journeyConfirmationLines(applicationMessages)(2) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().year.toString),
           "£123,456",
-          "/check-income-tax/income/bank-building-society-savings/0/close/interest")
+          "/check-income-tax/income/bank-building-society-savings/0/close/interest"
+        )
       }
     }
 
     "create a valid model without closing interest" when {
       "given a date ouside of current tax year and a bank account name" in {
 
-        val result: BbsiClosedCheckYourAnswersViewModel = BbsiClosedCheckYourAnswersViewModel(0,
-          dateBeforeCurrentTaxYear.toString("yyyy-MM-dd"), Some("Bank name"), None)
+        val result: BbsiClosedCheckYourAnswersViewModel = BbsiClosedCheckYourAnswersViewModel(
+          0,
+          dateBeforeCurrentTaxYear.toString("yyyy-MM-dd"),
+          Some("Bank name"),
+          None)
 
         result.journeyConfirmationLines.length mustBe 2
 
         result.journeyConfirmationLines(applicationMessages)(0) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.checkYourAnswers.whatYouToldUs"),
           Messages("tai.bbsi.end.checkYourAnswers.rowOne.answer"),
-          "/check-income-tax/income/bank-building-society-savings/accounts/0/decision")
+          "/check-income-tax/income/bank-building-society-savings/accounts/0/decision"
+        )
 
         result.journeyConfirmationLines(applicationMessages)(1) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"),
           dateBeforeCurrentTaxYear.toString("d MMMM yyyy"),
-          "/check-income-tax/income/bank-building-society-savings/0/close/date")
+          "/check-income-tax/income/bank-building-society-savings/0/close/date"
+        )
       }
     }
   }

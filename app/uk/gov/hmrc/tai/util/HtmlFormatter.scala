@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.util
 
 object HtmlFormatter {
 
-  def htmlNonBroken(string: String): String = {
+  def htmlNonBroken(string: String): String =
     string.replace(" ", "\u00A0")
-  }
 }

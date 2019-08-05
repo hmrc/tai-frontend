@@ -21,13 +21,11 @@ import play.api.data.Mapping
 import play.api.i18n.Messages
 import org.joda.time.LocalDate
 
-  /**
- * Created by user02 on 6/9/14.
- */
+/**
+  * Created by user02 on 6/9/14.
+  */
 object TaiValidator extends BaseValidator {
 
-  def validateOptionalDate(): Mapping[Option[LocalDate]] = {
+  def validateOptionalDate(): Mapping[Option[LocalDate]] =
     dateTuple(true)
-  }
 }
-

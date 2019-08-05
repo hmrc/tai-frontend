@@ -28,12 +28,14 @@ class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
   private val employerName = "testEmployer"
   val empId = 1
 
-  override def view: Html = views.html.employments.update.whatDoYouWantToTellUs(EmploymentViewModel(employerName, empId),
-    UpdateEmploymentDetailsForm.form)
+  override def view: Html =
+    views.html.employments.update
+      .whatDoYouWantToTellUs(EmploymentViewModel(employerName, empId), UpdateEmploymentDetailsForm.form)
 
   "whatDoYouWantToTellUs" must {
     behave like pageWithTitle(Messages("tai.updateEmployment.whatDoYouWantToTellUs.pagetitle"))
-    behave like pageWithCombinedHeader(Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
+    behave like pageWithCombinedHeader(
+      Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
       Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", employerName))
     behave like pageWithContinueButtonForm("/check-income-tax/update-employment/what-do-you-want-to-tell-us/1")
     behave like pageWithCancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(empId))

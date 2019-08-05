@@ -32,9 +32,11 @@ class ConfirmAmountEnteredViewModelSpec extends PlaySpec with FakeTaiPlayApplica
   "nextYearEstimatedPay" should {
     "produce a Google Analytics settings" when {
       "CY Irregular pay" in {
-        val viewModel = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedIncome, IrregularPay)
+        val viewModel =
+          ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedIncome, IrregularPay)
 
-        val expectedDimensions = Some(Map(GoogleAnalyticsConstants.taiCYEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
+        val expectedDimensions =
+          Some(Map(GoogleAnalyticsConstants.taiCYEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
         val expectedSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(expectedDimensions)
 
         viewModel.gaSettings mustBe expectedSettings
@@ -43,16 +45,19 @@ class ConfirmAmountEnteredViewModelSpec extends PlaySpec with FakeTaiPlayApplica
       "CY Annual pay" in {
         val viewModel = ConfirmAmountEnteredViewModel(employerName, currentAmount, estimatedIncome)
 
-        val expectedDimensions = Some(Map(GoogleAnalyticsConstants.taiCYEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
+        val expectedDimensions =
+          Some(Map(GoogleAnalyticsConstants.taiCYEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
         val expectedSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(expectedDimensions)
 
         viewModel.gaSettings mustBe expectedSettings
       }
 
       "CY+1" in {
-        val viewModel = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedIncome, NextYearPay)
+        val viewModel =
+          ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedIncome, NextYearPay)
 
-        val expectedDimensions = Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
+        val expectedDimensions =
+          Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
         val expectedSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(expectedDimensions)
 
         viewModel.gaSettings mustBe expectedSettings

@@ -27,29 +27,28 @@ object UpdateIncomeDetailsForm {
   val historicEmploymentDetailsCharLimit = 500
 
   def form(implicit messages: Messages): Form[String] = Form(
-
     single(
       "employmentDetails" ->
         text
           .verifying(
-            StopOnFirstFail(
-              nonEmptyText(Messages("tai.income.previousYears.details.textarea.error.blank"))),
-            textExceedsCharacterLimit(Messages("tai.income.previousYears.details.textarea.error.maximumExceeded", historicEmploymentDetailsCharLimit)
-            )))
+            StopOnFirstFail(nonEmptyText(Messages("tai.income.previousYears.details.textarea.error.blank"))),
+            textExceedsCharacterLimit(
+              Messages(
+                "tai.income.previousYears.details.textarea.error.maximumExceeded",
+                historicEmploymentDetailsCharLimit))
+          ))
   )
 
-  def nonEmptyText(requiredErrMsg : String): Constraint[String] = {
+  def nonEmptyText(requiredErrMsg: String): Constraint[String] =
     Constraint[String]("required") {
-      case textValue:String if textValue.trim.nonEmpty => Valid
-      case _ => Invalid(requiredErrMsg)
+      case textValue: String if textValue.trim.nonEmpty => Valid
+      case _                                            => Invalid(requiredErrMsg)
     }
-  }
 
-  def textExceedsCharacterLimit(exceedErrorMsg : String): Constraint[String] = {
+  def textExceedsCharacterLimit(exceedErrorMsg: String): Constraint[String] =
     Constraint[String]("characterLimitExceeded") {
       case textValue if textValue.trim.length <= historicEmploymentDetailsCharLimit => Valid
-      case _ => Invalid(exceedErrorMsg)
+      case _                                                                        => Invalid(exceedErrorMsg)
     }
-  }
 
 }

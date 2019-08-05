@@ -33,7 +33,9 @@ class BenefitComponentTypeBinderSpec extends PlaySpec with FakeTaiPlayApplicatio
 
         benefitComponentTypeBinderResult.isRight mustBe true
 
-        benefitComponentTypeBinderResult.right map { tbr => tbr mustBe BenefitInKind }
+        benefitComponentTypeBinderResult.right map { tbr =>
+          tbr mustBe BenefitInKind
+        }
       }
     }
 

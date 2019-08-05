@@ -19,8 +19,7 @@ package views.html.incomes
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-
-class RemoveBankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec{
+class RemoveBankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
 
   private val id = 1
   private val bankName = "TEST"
@@ -29,9 +28,11 @@ class RemoveBankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec{
     behave like pageWithTitle(messages("tai.bbsi.remove.checkYourAnswers.title", bankName))
     behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.income.bbsi.routes.BbsiController.accounts())
-    behave like pageWithButtonForm("/check-income-tax/income/bank-building-society-savings/1/remove/check-your-answers",
+    behave like pageWithButtonForm(
+      "/check-income-tax/income/bank-building-society-savings/1/remove/check-your-answers",
       messages("tai.confirmAndSend"))
-    behave like pageWithCombinedHeader(messages("tai.bbsi.remove.checkYourAnswers.preHeading"),
+    behave like pageWithCombinedHeader(
+      messages("tai.bbsi.remove.checkYourAnswers.preHeading"),
       messages("tai.bbsi.remove.checkYourAnswers.title", bankName))
 
     "display description" in {

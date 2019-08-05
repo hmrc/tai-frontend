@@ -21,5 +21,4 @@ import javax.inject.{Inject, Singleton}
 import play.api.http.HttpErrorHandler
 
 @Singleton
-class TaiController @Inject() (errorHandler: HttpErrorHandler) extends AssetsBuilder(errorHandler)
-
+class TaiController @Inject()(errorHandler: HttpErrorHandler) extends AssetsBuilder(errorHandler)

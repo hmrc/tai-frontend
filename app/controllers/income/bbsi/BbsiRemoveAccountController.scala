@@ -16,7 +16,6 @@
 
 package controllers.income.bbsi
 
-
 import javax.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
@@ -29,29 +28,30 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.BbsiService
 
+class BbsiRemoveAccountController @Inject()(
+  bbsiService: BbsiService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController {
 
-class BbsiRemoveAccountController @Inject()(bbsiService: BbsiService,
-                                            authenticate: AuthAction,
-                                            validatePerson: ValidatePerson,
-                                            override implicit val partialRetriever: FormPartialRetriever,
-                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
-
-  def checkYourAnswers(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
-      bbsiService.bankAccount(Nino(user.getNino), id) map {
-        case Some(bankAccount) =>
-          Ok(views.html.incomes.bbsi.remove.bank_building_society_check_your_answers(id, bankAccount.bankName.getOrElse("")))
-        case None => NotFound
-      }
+  def checkYourAnswers(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
+    bbsiService.bankAccount(Nino(user.getNino), id) map {
+      case Some(bankAccount) =>
+        Ok(
+          views.html.incomes.bbsi.remove
+            .bank_building_society_check_your_answers(id, bankAccount.bankName.getOrElse("")))
+      case None => NotFound
+    }
   }
 
-  def submitYourAnswers(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
+  def submitYourAnswers(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
 
-      bbsiService.removeBankAccount(Nino(user.getNino), id) map { _ =>
-        Redirect(controllers.income.bbsi.routes.BbsiController.removeConfirmation())
-      }
+    bbsiService.removeBankAccount(Nino(user.getNino), id) map { _ =>
+      Redirect(controllers.income.bbsi.routes.BbsiController.removeConfirmation())
+    }
   }
 }

@@ -31,38 +31,46 @@ import uk.gov.hmrc.tai.viewModels.{IncomesSources, TaxAccountSummaryViewModel}
 
 import scala.concurrent.Future
 
-class TaxAccountSummaryService @Inject()(trackingService: TrackingService,
-                                         employmentService: EmploymentService,
-                                         taxAccountService: TaxAccountService,
-                                         override implicit val partialRetriever: FormPartialRetriever,
-                                         override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
+class TaxAccountSummaryService @Inject()(
+  trackingService: TrackingService,
+  employmentService: EmploymentService,
+  taxAccountService: TaxAccountService,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController {
 
-
-  def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)
-                                (implicit hc: HeaderCarrier, messages: Messages): Future[TaxAccountSummaryViewModel] = {
+  def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(
+    implicit hc: HeaderCarrier,
+    messages: Messages): Future[TaxAccountSummaryViewModel] =
     for {
-      livePensionIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), PensionIncome, Live)
-      liveEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Live)
+      livePensionIncomeSources      <- taxAccountService.incomeSources(nino, TaxYear(), PensionIncome, Live)
+      liveEmploymentIncomeSources   <- taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Live)
       ceasedEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, NotLive)
-      nonMatchingCeasedEmployments <- employmentService.ceasedEmployments(nino, TaxYear())
-      nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
-      isAnyFormInProgress <-  trackingService.isAnyIFormInProgress(nino.nino)
+      nonMatchingCeasedEmployments  <- employmentService.ceasedEmployments(nino, TaxYear())
+      nonTaxCodeIncome              <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
+      isAnyFormInProgress           <- trackingService.isAnyIFormInProgress(nino.nino)
     } yield {
-      (livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources, nonMatchingCeasedEmployments, nonTaxCodeIncome) match {
-        case (TaiSuccessResponseWithPayload(livePensionIncomeSources: Seq[TaxedIncome]),
-        TaiSuccessResponseWithPayload(liveEmploymentIncomeSources: Seq[TaxedIncome]),
-        TaiSuccessResponseWithPayload(ceasedEmploymentIncomeSources: Seq[TaxedIncome]),
-        nonMatchingCeasedEmployments: Seq[Employment],
-        TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
-          TaxAccountSummaryViewModel(taxAccountSummary,
+      (
+        livePensionIncomeSources,
+        liveEmploymentIncomeSources,
+        ceasedEmploymentIncomeSources,
+        nonMatchingCeasedEmployments,
+        nonTaxCodeIncome) match {
+        case (
+            TaiSuccessResponseWithPayload(livePensionIncomeSources: Seq[TaxedIncome]),
+            TaiSuccessResponseWithPayload(liveEmploymentIncomeSources: Seq[TaxedIncome]),
+            TaiSuccessResponseWithPayload(ceasedEmploymentIncomeSources: Seq[TaxedIncome]),
+            nonMatchingCeasedEmployments: Seq[Employment],
+            TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
+          TaxAccountSummaryViewModel(
+            taxAccountSummary,
             isAnyFormInProgress,
             nonTaxCodeIncome,
             IncomesSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
-            nonMatchingCeasedEmployments)
+            nonMatchingCeasedEmployments
+          )
         case _ => throw new RuntimeException("Failed to fetch income details")
       }
     }
-  }
-
 
 }

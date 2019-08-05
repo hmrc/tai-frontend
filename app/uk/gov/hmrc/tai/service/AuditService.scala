@@ -33,8 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class AuditService @Inject()(val auditConnector: AuditConnector,
-                             personService: PersonService) extends DefaultAppName {
+class AuditService @Inject()(val auditConnector: AuditConnector, personService: PersonService) extends DefaultAppName {
 
   val userEnterEvent = "userEntersService"
   val employmentPensionEvent = "startedEmploymentPensionJourney"
@@ -47,77 +46,84 @@ class AuditService @Inject()(val auditConnector: AuditConnector,
   val stateBenefitEvent = "startedStateBenefitJourney"
   val marriageAllowanceEvent = "startedMarriageAllowanceJourney"
 
-  def createAndSendAuditEvent(eventName: String, details: Map[String, String])
-                             (implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[AuditResult] = {
+  def createAndSendAuditEvent(eventName: String, details: Map[String, String])(
+    implicit hc: HeaderCarrier,
+    request: Request[AnyContent]): Future[AuditResult] =
     createAndSendAuditEvent(eventName, fetchPath(request), details)
-  }
 
-  def createAndSendAuditEvent(eventName: String, path: String, details: Map[String, String])
-                             (implicit hc: HeaderCarrier): Future[AuditResult] = {
-    auditConnector.sendEvent(DataEvent(
-      auditSource = appName,
-      auditType = eventName,
-      detail = details,
-      tags = AuditExtensions.auditHeaderCarrier(hc).toAuditDetails() ++
-        AuditExtensions.auditHeaderCarrier(hc).toAuditTags(eventName, path)
-    ))
-  }
+  def createAndSendAuditEvent(eventName: String, path: String, details: Map[String, String])(
+    implicit hc: HeaderCarrier): Future[AuditResult] =
+    auditConnector.sendEvent(
+      DataEvent(
+        auditSource = appName,
+        auditType = eventName,
+        detail = details,
+        tags = AuditExtensions.auditHeaderCarrier(hc).toAuditDetails() ++
+          AuditExtensions.auditHeaderCarrier(hc).toAuditTags(eventName, path)
+      ))
 
-  def sendUserEntryAuditEvent(nino: Nino, path: String, numberOfEmployments: Seq[Employment], numberOfTaxCodeIncomes: Seq[TaxCodeIncome])(implicit hc: HeaderCarrier): Future[AuditResult] = {
+  def sendUserEntryAuditEvent(
+    nino: Nino,
+    path: String,
+    numberOfEmployments: Seq[Employment],
+    numberOfTaxCodeIncomes: Seq[TaxCodeIncome])(implicit hc: HeaderCarrier): Future[AuditResult] = {
     val details = Map(
-      "authProviderId" -> authProviderId(hc),
-      "nino" -> nino.nino,
+      "authProviderId"             -> authProviderId(hc),
+      "nino"                       -> nino.nino,
       "noOfCurrentYearEmployments" -> numberOfEmployments.size.toString,
-      "noOfTaxCodes" -> numberOfTaxCodeIncomes.size.toString
+      "noOfTaxCodes"               -> numberOfTaxCodeIncomes.size.toString
     )
     createAndSendAuditEvent(userEnterEvent, path, details)
   }
 
-  def sendEndCompanyCarAuditEvent(nino: String,
-                                  employmentId: String,
-                                  carSeqNo: String,
-                                  endDate: String,
-                                  fuelBenefitDate: Option[String],
-                                  isSuccessful: Boolean,
-                                  path: String)(implicit hc: HeaderCarrier): Future[AuditResult] = {
+  def sendEndCompanyCarAuditEvent(
+    nino: String,
+    employmentId: String,
+    carSeqNo: String,
+    endDate: String,
+    fuelBenefitDate: Option[String],
+    isSuccessful: Boolean,
+    path: String)(implicit hc: HeaderCarrier): Future[AuditResult] = {
     val details = Map(
       "authProviderId" -> authProviderId(hc),
-      "nino" -> nino,
-      "employmentId" -> employmentId,
-      "carSequenceNo" -> carSeqNo,
-      "carEndDate" -> endDate,
-      "fuelEndDate" -> fuelBenefitDate.getOrElse("NA"),
-      "isSuccessful" -> isSuccessful.toString)
+      "nino"           -> nino,
+      "employmentId"   -> employmentId,
+      "carSequenceNo"  -> carSeqNo,
+      "carEndDate"     -> endDate,
+      "fuelEndDate"    -> fuelBenefitDate.getOrElse("NA"),
+      "isSuccessful"   -> isSuccessful.toString
+    )
 
     createAndSendAuditEvent(finishedCompanyCarEvent, path, details)
   }
 
-  def sendAuditEventAndGetRedirectUri(nino: Nino, iformName: String)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[String] = {
+  def sendAuditEventAndGetRedirectUri(nino: Nino, iformName: String)(
+    implicit hc: HeaderCarrier,
+    request: Request[AnyContent]): Future[String] = {
     def sendIformRedirectUriAuditEvent(nino: Nino, path: String, auditEvent: String) = {
       val details = Map(
         "authProviderId" -> authProviderId(hc),
-        "nino" -> nino.nino
+        "nino"           -> nino.nino
       )
       createAndSendAuditEvent(auditEvent, path, details)
     }
 
     val (redirectUri, auditEventName) = iformName match {
-      case EmployeePensionIForm => (ApplicationConfig.incomeFromEmploymentPensionLinkUrl, employmentPensionEvent)
-      case CompanyBenefitsIform => (ApplicationConfig.companyBenefitsLinkUrl, companyBenefitsEvent)
-      case CompanyCarsIform => (ApplicationConfig.companyCarServiceUrl, companyCarEvent)
-      case MedicalBenefitsIform => (ApplicationConfig.medBenefitServiceUrl, medicalBenefitsEvent)
-      case OtherIncomeIform => (ApplicationConfig.otherIncomeLinkUrl, otherIncomeEvent)
-      case InvestIncomeIform => (ApplicationConfig.investmentIncomeLinkUrl, investIncomeEvent)
-      case StateBenefitsIform => (ApplicationConfig.taxableStateBenefitLinkUrl, stateBenefitEvent)
+      case EmployeePensionIForm     => (ApplicationConfig.incomeFromEmploymentPensionLinkUrl, employmentPensionEvent)
+      case CompanyBenefitsIform     => (ApplicationConfig.companyBenefitsLinkUrl, companyBenefitsEvent)
+      case CompanyCarsIform         => (ApplicationConfig.companyCarServiceUrl, companyCarEvent)
+      case MedicalBenefitsIform     => (ApplicationConfig.medBenefitServiceUrl, medicalBenefitsEvent)
+      case OtherIncomeIform         => (ApplicationConfig.otherIncomeLinkUrl, otherIncomeEvent)
+      case InvestIncomeIform        => (ApplicationConfig.investmentIncomeLinkUrl, investIncomeEvent)
+      case StateBenefitsIform       => (ApplicationConfig.taxableStateBenefitLinkUrl, stateBenefitEvent)
       case MarriageAllowanceService => (ApplicationConfig.marriageServiceHistoryUrl, marriageAllowanceEvent)
     }
     sendIformRedirectUriAuditEvent(nino, fetchPath(request), auditEventName)
     Future.successful(redirectUri)
   }
 
-  private def fetchPath(request: Request[AnyContent]) = {
+  private def fetchPath(request: Request[AnyContent]) =
     request.headers.get("Referer").getOrElse("NA")
-  }
 
   private def authProviderId(hc: HeaderCarrier) = hc.userId.map(_.value).getOrElse("-")
 

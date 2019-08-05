@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-case class CanWeContactByPhoneViewModel(preHeading: String,
-                                        mainHeading: String,
-                                        backUrl : String,
-                                        continueUrl: String,
-                                        cancelUrl: String)
+case class CanWeContactByPhoneViewModel(
+  preHeading: String,
+  mainHeading: String,
+  backUrl: String,
+  continueUrl: String,
+  cancelUrl: String)

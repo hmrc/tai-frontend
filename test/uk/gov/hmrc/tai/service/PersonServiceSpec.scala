@@ -33,11 +33,7 @@ import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 import scala.util.Random
 
-
-class PersonServiceSpec extends PlaySpec
-    with MockitoSugar
-    with I18nSupport
-    with FakeTaiPlayApplication {
+class PersonServiceSpec extends PlaySpec with MockitoSugar with I18nSupport with FakeTaiPlayApplication {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -48,16 +44,18 @@ class PersonServiceSpec extends PlaySpec
       "connector returns successfully" in {
         val sut = createSut
         val person = fakePerson(nino)
-        when(personConnector.person(Matchers.eq(nino))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(person)))
+        when(personConnector.person(Matchers.eq(nino))(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(person)))
 
         val result = Await.result(sut.personDetails(nino), testTimeout)
-        result mustBe(person)
+        result mustBe (person)
       }
     }
     "throw a runtime exception" when {
       "copnnector did not return successfully" in {
         val sut = createSut
-        when(personConnector.person(Matchers.eq(nino))(any())).thenReturn(Future.successful(TaiNotFoundResponse("downstream not found")))
+        when(personConnector.person(Matchers.eq(nino))(any()))
+          .thenReturn(Future.successful(TaiNotFoundResponse("downstream not found")))
 
         val thrown = the[RuntimeException] thrownBy Await.result(sut.personDetails(nino), testTimeout)
         thrown.getMessage must include("Failed to retrieve person details for nino")
@@ -74,9 +72,10 @@ class PersonServiceSpec extends PlaySpec
   val personConnector = mock[PersonConnector]
   val taiConnector = mock[TaiConnector]
 
-  class PersonServiceTest extends PersonService(
-    taiConnector,
-    personConnector
-  )
+  class PersonServiceTest
+      extends PersonService(
+        taiConnector,
+        personConnector
+      )
 
 }

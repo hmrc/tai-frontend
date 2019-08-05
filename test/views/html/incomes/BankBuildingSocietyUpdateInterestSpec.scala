@@ -28,32 +28,40 @@ class BankBuildingSocietyUpdateInterestSpec extends TaiViewSpec {
   "Update Interest view" should {
 
     behave like pageWithTitle(messages("tai.bbsi.update.captureInterest.title", bankName))
-    behave like pageWithCombinedHeader(messages("tai.bbsi.update.captureInterest.preHeading"),
+    behave like pageWithCombinedHeader(
+      messages("tai.bbsi.update.captureInterest.preHeading"),
       messages("tai.bbsi.update.captureInterest.title", bankName))
     behave like pageWithContinueButtonForm("/check-income-tax/income/bank-building-society-savings/1/update/interest")
     behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.income.bbsi.routes.BbsiController.accounts())
 
     "display description" in {
-      doc must haveParagraphWithText(messages("tai.bbsi.update.captureInterest.para1",
-        TaxYear().start.toString(dateFormat),
-        TaxYear().end.toString(dateFormat),
-        "£1,000"))
+      doc must haveParagraphWithText(
+        messages(
+          "tai.bbsi.update.captureInterest.para1",
+          TaxYear().start.toString(dateFormat),
+          TaxYear().end.toString(dateFormat),
+          "£1,000"))
 
-      doc must haveInputLabelWithText("untaxedInterest", messages("tai.bbsi.update.captureInterest.textBox.title") + " " + messages("tai.inPounds") )
+      doc must haveInputLabelWithText(
+        "untaxedInterest",
+        messages("tai.bbsi.update.captureInterest.textBox.title") + " " + messages("tai.inPounds"))
       doc must haveParagraphWithText(messages("tai.bbsi.update.captureInterest.para2"))
       doc must haveParagraphWithText(messages("tai.bbsi.update.captureInterest.para3"))
       doc must haveParagraphWithText(messages("tai.bbsi.update.captureInterest.accordion.desc1"))
       doc must haveParagraphWithText(messages("tai.bbsi.update.captureInterest.accordion.desc2"))
-      doc must haveParagraphWithText(messages("tai.bbsi.update.captureInterest.para4",
-        TaxYear().year.toString,
-        TaxYear().end.getYear.toString,
-        TaxYear().end.toString(dateFormat)))
+      doc must haveParagraphWithText(
+        messages(
+          "tai.bbsi.update.captureInterest.para4",
+          TaxYear().year.toString,
+          TaxYear().end.getYear.toString,
+          TaxYear().end.toString(dateFormat)))
     }
 
     "display error message" when {
       "untaxed interest is empty" in {
-        val view: Html = views.html.incomes.bbsi.update.bank_building_society_update_interest(model, untaxedInterestErrorForm)
+        val view: Html =
+          views.html.incomes.bbsi.update.bank_building_society_update_interest(model, untaxedInterestErrorForm)
 
         doc(view) must haveErrorLinkWithText(messages("tai.bbsi.update.form.interest.blank"))
       }
@@ -74,14 +82,16 @@ class BankBuildingSocietyUpdateInterestSpec extends TaiViewSpec {
 
   private lazy val model = BbsiUpdateAccountViewModel(id, interest, bankName)
 
-  private lazy val untaxedInterestForm: Form[String] = UpdateInterestForm.form.bind(Map(
-    "untaxedInterest" -> "1000"
-  ))
+  private lazy val untaxedInterestForm: Form[String] = UpdateInterestForm.form.bind(
+    Map(
+      "untaxedInterest" -> "1000"
+    ))
 
-  private lazy val untaxedInterestErrorForm: Form[String] = UpdateInterestForm.form.bind(Map(
-    "untaxedInterest" -> ""
-  ))
+  private lazy val untaxedInterestErrorForm: Form[String] = UpdateInterestForm.form.bind(
+    Map(
+      "untaxedInterest" -> ""
+    ))
 
-  override def view: Html = views.html.incomes.bbsi.update.bank_building_society_update_interest(model, untaxedInterestForm)
+  override def view: Html =
+    views.html.incomes.bbsi.update.bank_building_society_update_interest(model, untaxedInterestForm)
 }
-

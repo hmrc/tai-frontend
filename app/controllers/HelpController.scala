@@ -29,45 +29,45 @@ import uk.gov.hmrc.tai.config.{ApplicationConfig, ProxyHttpClient}
 
 import scala.concurrent.Future
 
-class HelpController @Inject()(val config: ApplicationConfig,
-                               val httpGet: ProxyHttpClient,
-                               authenticate: AuthAction,
-                               validatePerson: ValidatePerson,
-                               override implicit val partialRetriever: FormPartialRetriever,
-                               override implicit val templateRenderer: TemplateRenderer
-                              ) extends TaiBaseController {
+class HelpController @Inject()(
+  val config: ApplicationConfig,
+  val httpGet: ProxyHttpClient,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController {
 
   val webChatURL = config.webchatAvailabilityUrl
 
-  def helpPage() = (authenticate andThen validatePerson).async {
-    implicit request =>
+  def helpPage() = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
 
-      implicit val user = request.taiUser
-
-      try {
-        getEligibilityStatus map { status =>
-          Ok(views.html.help.getHelp(status))
-        } recover {
-          case _ => internalServerError("Could not get eligibility status")
-        }
-      } catch {
-        case _: Exception => {
-          Future.successful(Ok(views.html.help.getHelp(None)))
-        }
+    try {
+      getEligibilityStatus map { status =>
+        Ok(views.html.help.getHelp(status))
+      } recover {
+        case _ => internalServerError("Could not get eligibility status")
       }
+    } catch {
+      case _: Exception => {
+        Future.successful(Ok(views.html.help.getHelp(None)))
+      }
+    }
   }
 
   private def getEligibilityStatus()(implicit headerCarrier: HeaderCarrier): Future[Option[String]] = {
-    httpGet.GET[HttpResponse](webChatURL) map {
-      response =>
-        Logger.debug(s"Response Body: $response")
-        if (response.body.nonEmpty) {
-          scala.xml.XML.loadString(response.body).
-            attribute("responseType").fold[Option[String]](None)(x => Some(x.head.toString()))
-        } else {
-          Logger.warn(s"No content returned from call to webchat: $response")
-          None
-        }
+    httpGet.GET[HttpResponse](webChatURL) map { response =>
+      Logger.debug(s"Response Body: $response")
+      if (response.body.nonEmpty) {
+        scala.xml.XML
+          .loadString(response.body)
+          .attribute("responseType")
+          .fold[Option[String]](None)(x => Some(x.head.toString()))
+      } else {
+        Logger.warn(s"No content returned from call to webchat: $response")
+        None
+      }
     }
   }.recoverWith {
     case e: Exception => {

@@ -23,17 +23,17 @@ import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
 import uk.gov.hmrc.tai.model.domain.income.{BasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
-case class TaxCodeViewModel(title: String,
-                            mainHeading: String,
-                            ledeMessage: String,
-                            taxCodeDetails: Seq[DescriptionListViewModel],
-                            preHeader: String)
+case class TaxCodeViewModel(
+  title: String,
+  mainHeading: String,
+  ledeMessage: String,
+  taxCodeDetails: Seq[DescriptionListViewModel],
+  preHeader: String)
 
 object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
 
-  def apply(taxCodeIncomes: Seq[TaxCodeIncome],
-            scottishTaxRateBands: Map[String, BigDecimal])
-           (implicit messages: Messages): TaxCodeViewModel = {
+  def apply(taxCodeIncomes: Seq[TaxCodeIncome], scottishTaxRateBands: Map[String, BigDecimal])(
+    implicit messages: Messages): TaxCodeViewModel = {
 
     val descriptionListViewModels: Seq[DescriptionListViewModel] = taxCodeIncomes.map { income =>
       val taxCode = income.taxCodeWithEmergencySuffix
@@ -54,10 +54,11 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
     TaxCodeViewModel(title, mainHeading, introMessage, descriptions, preHeading)
   }
 
-  private def createDescriptionListViewModel(taxCode: String,
-                                     operation: BasisOfOperation,
-                                     scottishTaxRateBands: Map[String, BigDecimal],
-                                     employerName: String)(implicit messages: Messages): DescriptionListViewModel = {
+  private def createDescriptionListViewModel(
+    taxCode: String,
+    operation: BasisOfOperation,
+    scottishTaxRateBands: Map[String, BigDecimal],
+    employerName: String)(implicit messages: Messages): DescriptionListViewModel = {
 
     val explanation = describeTaxCode(taxCode, operation, scottishTaxRateBands, isCurrentYear = true)
 
@@ -65,17 +66,17 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
   }
 
   private def taxCodesTitle(numberOfRecords: Int, year: TaxYear)(implicit messages: Messages): String = {
-    val titleMessageKey = if (numberOfRecords > 1) "tai.taxCode.multiple.code.title" else "tai.taxCode.single.code.title"
+    val titleMessageKey =
+      if (numberOfRecords > 1) "tai.taxCode.multiple.code.title" else "tai.taxCode.single.code.title"
     val startOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.start))
     val endOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.end))
     messages(titleMessageKey, startOfTaxYearNonBroken, endOfTaxYearNonBroken)
   }
 
-  private def ledeMessage(numberOfRecords: Int)(implicit messages: Messages): String = {
+  private def ledeMessage(numberOfRecords: Int)(implicit messages: Messages): String =
     if (numberOfRecords > 1) {
       messages(s"tai.taxCode.multiple.info")
     } else {
       messages(s"tai.taxCode.single.info")
     }
-  }
 }

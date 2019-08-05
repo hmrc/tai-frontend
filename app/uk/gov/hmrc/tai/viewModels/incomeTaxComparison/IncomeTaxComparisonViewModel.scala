@@ -18,22 +18,23 @@ package uk.gov.hmrc.tai.viewModels.incomeTaxComparison
 
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
 
-case class IncomeTaxComparisonViewModel(username: String,
-                                        estimatedIncomeTaxComparisonViewModel: EstimatedIncomeTaxComparisonViewModel,
-                                        taxCodeComparisonViewModel: TaxCodeComparisonViewModel,
-                                        taxFreeAmountComparisonViewModel: TaxFreeAmountComparisonViewModel,
-                                        incomeSourceComparisonViewModel: IncomeSourceComparisonViewModel,
-                                        isEstimatedCYPlusOneJourneyCompleted: Boolean)
-
+case class IncomeTaxComparisonViewModel(
+  username: String,
+  estimatedIncomeTaxComparisonViewModel: EstimatedIncomeTaxComparisonViewModel,
+  taxCodeComparisonViewModel: TaxCodeComparisonViewModel,
+  taxFreeAmountComparisonViewModel: TaxFreeAmountComparisonViewModel,
+  incomeSourceComparisonViewModel: IncomeSourceComparisonViewModel,
+  isEstimatedCYPlusOneJourneyCompleted: Boolean)
 
 object IncomeTaxComparisonViewModel {
-  def apply(username: String,
-            estimatedIncomeTaxComparisonViewModel: EstimatedIncomeTaxComparisonViewModel,
-            taxCodeComparisonViewModel: TaxCodeComparisonViewModel,
-            taxFreeAmountComparisonViewModel: TaxFreeAmountComparisonViewModel,
-            incomeSourceComparisonViewModel: IncomeSourceComparisonViewModel,
-            confirmApiEnabled: Boolean,
-            isEstimatedCYPlusOneJourneyCompleted: Boolean): IncomeTaxComparisonViewModel = {
+  def apply(
+    username: String,
+    estimatedIncomeTaxComparisonViewModel: EstimatedIncomeTaxComparisonViewModel,
+    taxCodeComparisonViewModel: TaxCodeComparisonViewModel,
+    taxFreeAmountComparisonViewModel: TaxFreeAmountComparisonViewModel,
+    incomeSourceComparisonViewModel: IncomeSourceComparisonViewModel,
+    confirmApiEnabled: Boolean,
+    isEstimatedCYPlusOneJourneyCompleted: Boolean): IncomeTaxComparisonViewModel = {
 
     val showBanner = isEstimatedCYPlusOneJourneyCompleted && confirmApiEnabled
 

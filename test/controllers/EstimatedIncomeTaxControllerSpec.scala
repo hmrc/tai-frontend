@@ -16,7 +16,7 @@
 
 package controllers
 
-import builders.{UserBuilder, RequestBuilder}
+import builders.{RequestBuilder, UserBuilder}
 import controllers.actions.FakeValidatePerson
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
@@ -44,15 +44,26 @@ import uk.gov.hmrc.urls.Link
 import scala.concurrent.Future
 import scala.util.Random
 
-class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication
-  with BandTypesConstants with TaxRegionConstants {
+class EstimatedIncomeTaxControllerSpec
+    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with BandTypesConstants with TaxRegionConstants {
 
   "EstimatedIncomeTaxController" must {
     "return Ok" when {
       "loading the simple view" in {
 
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), BigDecimal(39107), "EmploymentIncome", "277L", "TestName",
-          OtherBasisOfOperation, Live, None, Some(new LocalDate(2015, 11, 26)), Some(new LocalDate(2015, 11, 26)))
+        val taxCodeIncome = TaxCodeIncome(
+          EmploymentIncome,
+          Some(1),
+          BigDecimal(39107),
+          "EmploymentIncome",
+          "277L",
+          "TestName",
+          OtherBasisOfOperation,
+          Live,
+          None,
+          Some(new LocalDate(2015, 11, 26)),
+          Some(new LocalDate(2015, 11, 26))
+        )
 
         val taxAccountSummary = TaxAccountSummary(7834, 2772, 0, 0, 0, 47835, 11500)
         val codingComponents = Seq(
@@ -70,64 +81,106 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
 
         val taxBands = List(basicRateBand, higherRateBand, additionalRateBand)
 
-        val totalTax = TotalTax(7834,
-          List(IncomeCategory(NonSavingsIncomeCategory, 7834, 36335, 99999, taxBands)), None, None, None, None, None)
+        val totalTax = TotalTax(
+          7834,
+          List(IncomeCategory(NonSavingsIncomeCategory, 7834, 36335, 99999, taxBands)),
+          None,
+          None,
+          None,
+          None,
+          None)
 
         val viewModelBands = List(
           Band("TaxFree", 24.04, 11500, 0, ZeroBand),
           Band("Band", 75.95, 36335, 7834, NonZeroBand)
         )
-        val viewModelBandedGraph = BandedGraph(TaxGraph, viewModelBands, 0, 150000, 47835, 24.04, 11500, 99.99, 7834,
-          Some("You can earn £102,165 more before your income reaches the next tax band."), Some(Swatch(16.37, 7834)))
+        val viewModelBandedGraph = BandedGraph(
+          TaxGraph,
+          viewModelBands,
+          0,
+          150000,
+          47835,
+          24.04,
+          11500,
+          99.99,
+          7834,
+          Some("You can earn £102,165 more before your income reaches the next tax band."),
+          Some(Swatch(16.37, 7834))
+        )
 
-        val viewModelTaxBands = List(
-          TaxBand("pa", "", 11500, 0, Some(0), None, 0),
-          basicRateBand,
-          higherRateBand)
+        val viewModelTaxBands = List(TaxBand("pa", "", 11500, 0, Some(0), None, 0), basicRateBand, higherRateBand)
 
-        val viewModel = SimpleEstimatedIncomeTaxViewModel(7834, 47835, 11500, viewModelBandedGraph, UkTaxRegion, viewModelTaxBands, messages("tax.on.your.employment.income"),
-          messages("your.total.income.from.employment.desc",
+        val viewModel = SimpleEstimatedIncomeTaxViewModel(
+          7834,
+          47835,
+          11500,
+          viewModelBandedGraph,
+          UkTaxRegion,
+          viewModelTaxBands,
+          messages("tax.on.your.employment.income"),
+          messages(
+            "your.total.income.from.employment.desc",
             pounds(47835),
-            Link.toInternalPage(
-              id = Some("taxFreeAmountLink"),
-              url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
-              value = Some("tai.estimatedIncome.taxFree.link")
-            ).toHtml,
-            pounds(11500)))
+            Link
+              .toInternalPage(
+                id = Some("taxFreeAmountLink"),
+                url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
+                value = Some("tai.estimatedIncome.taxFree.link")
+              )
+              .toHtml,
+            pounds(11500)
+          )
+        )
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            taxAccountSummary
-          )))
-        when(taxAccountService.totalTax(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            totalTax
-          )))
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).
-          thenReturn(Future.successful(codingComponents))
-        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            nonTaxCodeIncome
-          )))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            Seq(taxCodeIncome)
-          )))
-        when(partialService.getIncomeTaxPartial(any())).thenReturn(Future.successful[HtmlPartial]
-          (HtmlPartial.Success(Some("title"), Html("<title/>"))))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              taxAccountSummary
+            )))
+        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              totalTax
+            )))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+          .thenReturn(Future.successful(codingComponents))
+        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              nonTaxCodeIncome
+            )))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              Seq(taxCodeIncome)
+            )))
+        when(partialService.getIncomeTaxPartial(any()))
+          .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual views.html.estimatedIncomeTax.simpleEstimatedIncomeTax(viewModel, Html("<title/>")).toString()
+        contentAsString(result) mustEqual views.html.estimatedIncomeTax
+          .simpleEstimatedIncomeTax(viewModel, Html("<title/>"))
+          .toString()
       }
 
       "loading the complex view" in {
 
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), BigDecimal(15000), "EmploymentIncome", "1150L", "TestName",
-          OtherBasisOfOperation, Live, None, None, None)
+        val taxCodeIncome = TaxCodeIncome(
+          EmploymentIncome,
+          Some(1),
+          BigDecimal(15000),
+          "EmploymentIncome",
+          "1150L",
+          "TestName",
+          OtherBasisOfOperation,
+          Live,
+          None,
+          None,
+          None)
 
         val taxAccountSummary = TaxAccountSummary(700, 11500, 0, 0, 0, 16500, 11500)
 
@@ -145,62 +198,89 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
         val nonSavingsTaxBands = List(basicRateBand, higherRateBand, additionalRateBand)
         val untaxedInterestTaxBands = List(startingSaversRateBand)
 
-        val totalTax = TotalTax(700,
-          List(IncomeCategory(NonSavingsIncomeCategory, 700, 3500, 15000, nonSavingsTaxBands),
+        val totalTax = TotalTax(
+          700,
+          List(
+            IncomeCategory(NonSavingsIncomeCategory, 700, 3500, 15000, nonSavingsTaxBands),
             IncomeCategory(UntaxedInterestIncomeCategory, 0, 1500, 1500, untaxedInterestTaxBands)
           ),
           None,
           None,
           None,
           None,
-          None)
+          None
+        )
 
         val viewModelBands = List(
           Band(TaxFree, 78.78, 13000, 0, ZeroBand),
           Band("Band", 21.21, 3500, 700, NonZeroBand)
         )
-        val viewModelBandedGraph = BandedGraph("taxGraph", viewModelBands, 0, 45000, 16500, 78.78, 13000, 99.99, 700,
+        val viewModelBandedGraph = BandedGraph(
+          "taxGraph",
+          viewModelBands,
+          0,
+          45000,
+          16500,
+          78.78,
+          13000,
+          99.99,
+          700,
           Some("You can earn £28,500 more before your income reaches the next tax band."),
-          Some(Swatch(4.24, 700)))
+          Some(Swatch(4.24, 700))
+        )
 
         val expectedViewModel = ComplexEstimatedIncomeTaxViewModel(700, 16500, 11500, viewModelBandedGraph, UkTaxRegion)
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            taxAccountSummary
-          )))
-        when(taxAccountService.totalTax(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            totalTax
-          )))
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).
-          thenReturn(Future.successful(codingComponents))
-        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            nonTaxCodeIncome
-          )))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            Seq(taxCodeIncome)
-          )))
-        when(partialService.getIncomeTaxPartial(any())).thenReturn(Future.successful[HtmlPartial]
-          (HtmlPartial.Success(Some("title"), Html("<title/>"))))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              taxAccountSummary
+            )))
+        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              totalTax
+            )))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+          .thenReturn(Future.successful(codingComponents))
+        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              nonTaxCodeIncome
+            )))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              Seq(taxCodeIncome)
+            )))
+        when(partialService.getIncomeTaxPartial(any()))
+          .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual (views.html.estimatedIncomeTax.complexEstimatedIncomeTax(expectedViewModel
-          , Html("<title/>")).toString())
+        contentAsString(result) mustEqual (views.html.estimatedIncomeTax
+          .complexEstimatedIncomeTax(expectedViewModel, Html("<title/>"))
+          .toString())
 
       }
 
-
       "loading the zero tax view" in {
 
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), BigDecimal(8000), "EmploymentIncome", "1050L", "TestName",
-          OtherBasisOfOperation, Live, None, None, None)
+        val taxCodeIncome = TaxCodeIncome(
+          EmploymentIncome,
+          Some(2),
+          BigDecimal(8000),
+          "EmploymentIncome",
+          "1050L",
+          "TestName",
+          OtherBasisOfOperation,
+          Live,
+          None,
+          None,
+          None)
 
         val taxAccountSummary = TaxAccountSummary(0, 10500, 0, 0, 0, 9000, 11500)
 
@@ -208,7 +288,12 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
 
         val codingComponents = Seq(
           CodingComponent(PersonalAllowancePA, None, 11500, "Personal Allowance", Some(11500)),
-          CodingComponent(UntaxedInterestIncome, None, 1000, "interest without tax taken off (gross interest)", Some(1000))
+          CodingComponent(
+            UntaxedInterestIncome,
+            None,
+            1000,
+            "interest without tax taken off (gross interest)",
+            Some(1000))
         )
 
         val startingSaversRateBand = TaxBand("SR", "", 0, 0, Some(0), Some(5000), 0)
@@ -216,78 +301,89 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
 
         val untaxedInterestTaxBands = List(startingSaversRateBand, personalSaversRateBand)
 
-        val totalTax = TotalTax(0,
-          List(IncomeCategory(NonSavingsIncomeCategory, 0, 0, 8000, List.empty[TaxBand]),
-            IncomeCategory(UntaxedInterestIncomeCategory, 0, 0, 1000, untaxedInterestTaxBands)
-          ),
+        val totalTax = TotalTax(
+          0,
+          List(
+            IncomeCategory(NonSavingsIncomeCategory, 0, 0, 8000, List.empty[TaxBand]),
+            IncomeCategory(UntaxedInterestIncomeCategory, 0, 0, 1000, untaxedInterestTaxBands)),
           None,
           None,
           None,
           None,
-          None)
+          None
+        )
 
         val viewModelBands = List(
           Band(TaxFree, 78.26, 11500, 0, "pa")
         )
-        val viewModelBandedGraph = BandedGraph("taxGraph", viewModelBands, 0, 11500, 11500, 78.26, 11500, 78.26, 0, None, None)
+        val viewModelBandedGraph =
+          BandedGraph("taxGraph", viewModelBands, 0, 11500, 11500, 78.26, 11500, 78.26, 0, None, None)
 
         val expectedViewModel = ZeroTaxEstimatedIncomeTaxViewModel(0, 9000, 11500, viewModelBandedGraph, UkTaxRegion)
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            taxAccountSummary
-          )))
-        when(taxAccountService.totalTax(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            totalTax
-          )))
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).
-          thenReturn(Future.successful(codingComponents))
-        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            nonTaxCodeIncome
-          )))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            Seq(taxCodeIncome)
-          )))
-        when(partialService.getIncomeTaxPartial(any())).thenReturn(Future.successful[HtmlPartial]
-          (HtmlPartial.Success(Some("title"), Html("<title/>"))))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              taxAccountSummary
+            )))
+        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              totalTax
+            )))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+          .thenReturn(Future.successful(codingComponents))
+        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              nonTaxCodeIncome
+            )))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              Seq(taxCodeIncome)
+            )))
+        when(partialService.getIncomeTaxPartial(any()))
+          .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual (views.html.estimatedIncomeTax.zeroTaxEstimatedIncomeTax(expectedViewModel
-          , Html("<title/>")).toString())
+        contentAsString(result) mustEqual (views.html.estimatedIncomeTax
+          .zeroTaxEstimatedIncomeTax(expectedViewModel, Html("<title/>"))
+          .toString())
 
       }
-
 
       "loading the no income tax view" in {
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            TaxAccountSummary(0, 0, 0, 0, 0)
-          )))
-        when(taxAccountService.totalTax(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            TotalTax(0, List.empty[IncomeCategory], None, None, None, None, None)
-          )))
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).
-          thenReturn(Future.successful(Seq.empty[CodingComponent]))
-        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          )))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            Seq.empty[TaxCodeIncome]
-          )))
-        when(partialService.getIncomeTaxPartial(any())).thenReturn(Future.successful[HtmlPartial]
-          (HtmlPartial.Success(Some("title"), Html("<title/>"))))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              TaxAccountSummary(0, 0, 0, 0, 0)
+            )))
+        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              TotalTax(0, List.empty[IncomeCategory], None, None, None, None, None)
+            )))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+          .thenReturn(Future.successful(Seq.empty[CodingComponent]))
+        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+            )))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              Seq.empty[TaxCodeIncome]
+            )))
+        when(partialService.getIncomeTaxPartial(any()))
+          .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -301,22 +397,25 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
     "return error" when {
       "failed to fetch details" in {
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).
-          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-        when(taxAccountService.totalTax(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-          )))
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).
-          thenReturn(Future.successful(Seq.empty[CodingComponent]))
-        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          )))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            Seq.empty[TaxCodeIncome]
-          )))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
+            )))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+          .thenReturn(Future.successful(Seq.empty[CodingComponent]))
+        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+            )))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(
+            TaiSuccessResponseWithPayload(
+              Seq.empty[TaxCodeIncome]
+            )))
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -339,14 +438,15 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
   val taxAccountService = mock[TaxAccountService]
   val partialService = mock[HasFormPartialService]
 
-  class SUT extends EstimatedIncomeTaxController(
-    codingComponentService,
-    partialService,
-    taxAccountService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  )
+  class SUT
+      extends EstimatedIncomeTaxController(
+        codingComponentService,
+        partialService,
+        taxAccountService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      )
 
 }

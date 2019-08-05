@@ -33,18 +33,28 @@ class CheckYourAnswersSpec extends TaiViewSpec {
   val payPeriodInDays = Some("3")
 
   override def view = views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel)
-  
-  def viewModel = CheckYourAnswersViewModel(paymentFrequency, payPeriodInDays, totalPay, hasDeductions, taxablePay,
-    hasBonusOrOvertime, totalBonusOrOvertime, employer)
+
+  def viewModel =
+    CheckYourAnswersViewModel(
+      paymentFrequency,
+      payPeriodInDays,
+      totalPay,
+      hasDeductions,
+      taxablePay,
+      hasBonusOrOvertime,
+      totalBonusOrOvertime,
+      employer)
 
   "checkYourAnswers" should {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
-    behave like pageWithCombinedHeader(messages("tai.incomes.edit.preHeading",employer.name), messages("tai.checkYourAnswers.heading"))
+    behave like pageWithCombinedHeader(
+      messages("tai.incomes.edit.preHeading", employer.name),
+      messages("tai.checkYourAnswers.heading"))
     behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(employer.id))
     behave like pageWithBackLink
 
-    "display confirmation static text" in{
+    "display confirmation static text" in {
       doc must haveParagraphWithText(messages("tai.checkYourAnswers.confirmText"))
     }
 
@@ -55,23 +65,25 @@ class CheckYourAnswersSpec extends TaiViewSpec {
 
       doc must haveCheckYourAnswersSummaryLine(1, messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"))
       doc must haveCheckYourAnswersSummaryLineAnswer(1, monthlyPaymentFrequency)
-      doc must haveCheckYourAnswersSummaryLineChangeLink(1,
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        1,
         controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payPeriodPage().url)
-
 
       doc must haveCheckYourAnswersSummaryLine(2, messages("tai.estimatedPay.update.checkYourAnswers.grossPay.month"))
       doc must haveCheckYourAnswersSummaryLineAnswer(2, totalPay)
-      doc must haveCheckYourAnswersSummaryLineChangeLink(2,
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        2,
         controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipAmountPage().url)
 
     }
 
     "display a continue button" in {
-      doc must haveLinkElement("estimatedPayLink",
+      doc must haveLinkElement(
+        "estimatedPayLink",
         controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayPage().url,
-        messages("tai.WhatDoYouWantToDo.submit"))
+        messages("tai.WhatDoYouWantToDo.submit")
+      )
     }
-
 
   }
 }

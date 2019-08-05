@@ -20,19 +20,15 @@ import play.api.data.FormError
 
 trait FormValidator {
 
-  def validate[T](x: T, validations: Seq[((T) => Boolean, String)], formErrorKey: String): Seq[FormError] = {
-
+  def validate[T](x: T, validations: Seq[((T) => Boolean, String)], formErrorKey: String): Seq[FormError] =
     validations.foldLeft(Seq.empty[FormError]) { (errors, validator) =>
-
       if (validator._1(x)) {
         errors
-      }
-      else {
+      } else {
         errors :+ FormError(formErrorKey, validator._2)
       }
 
     }
-  }
 }
 
 object FormValidator extends FormValidator

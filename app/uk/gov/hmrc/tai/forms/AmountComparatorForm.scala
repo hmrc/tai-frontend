@@ -30,22 +30,22 @@ case class AmountComparatorForm(income: Option[String])
 object AmountComparatorForm {
   implicit val formats = Json.format[AmountComparatorForm]
 
-  def createForm(latestPayDate: Option[String] = None,
-                 taxablePayYTD: Option[BigDecimal] = None)
-                (implicit messages: Messages): Form[AmountComparatorForm] = {
+  def createForm(latestPayDate: Option[String] = None, taxablePayYTD: Option[BigDecimal] = None)(
+    implicit messages: Messages): Form[AmountComparatorForm] = {
 
     val fallbackDate = LocalDate.now().toString(MONTH_AND_YEAR)
 
     val latestPaymentDate = latestPayDate.fold(fallbackDate)(identity)
 
     Form[AmountComparatorForm](
-      mapping("income" -> TaiValidator.validateTaxAmounts(
-        messages("tai.irregular.error.blankValue"),
-        messages("error.tai.update.estimatedTaxableIncome.input.invalid"),
-        messages("error.tai.updateDataEmployment.maxLength"),
-        taxablePayYTD.fold("")(messages("tai.irregular.error.error.incorrectTaxableIncome",_ , latestPaymentDate)),
-        taxablePayYTD.getOrElse(0)
-      ))(customApply)(customUnapply)
+      mapping(
+        "income" -> TaiValidator.validateTaxAmounts(
+          messages("tai.irregular.error.blankValue"),
+          messages("error.tai.update.estimatedTaxableIncome.input.invalid"),
+          messages("error.tai.updateDataEmployment.maxLength"),
+          taxablePayYTD.fold("")(messages("tai.irregular.error.error.incorrectTaxableIncome", _, latestPaymentDate)),
+          taxablePayYTD.getOrElse(0)
+        ))(customApply)(customUnapply)
     )
   }
 

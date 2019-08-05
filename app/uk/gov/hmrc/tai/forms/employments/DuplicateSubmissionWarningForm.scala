@@ -21,7 +21,6 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.forms.YesNoForm
 
 object DuplicateSubmissionWarningForm {
-    def createForm(implicit messages: Messages): Form[YesNoForm] = {
-      YesNoForm.form(messages("tai.employment.warning.error"))
-    }
+  def createForm(implicit messages: Messages): Form[YesNoForm] =
+    YesNoForm.form(messages("tai.employment.warning.error"))
 }

@@ -26,11 +26,12 @@ class IncomeTaxComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
-  def createIncomeTaxComparisonViewModel(isEstimatedCYPlusOneJourneyCompleted: Boolean):
-  IncomeTaxComparisonViewModel = {
+  def createIncomeTaxComparisonViewModel(
+    isEstimatedCYPlusOneJourneyCompleted: Boolean): IncomeTaxComparisonViewModel = {
     val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
     val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 200)
-    val estimatedIncomeTaxComparisonViewModel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
+    val estimatedIncomeTaxComparisonViewModel = EstimatedIncomeTaxComparisonViewModel(
+      Seq(currentYearItem, nextYearItem))
 
     IncomeTaxComparisonViewModel(
       "USERNAME",
@@ -38,7 +39,8 @@ class IncomeTaxComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
       TaxCodeComparisonViewModel(Nil),
       TaxFreeAmountComparisonViewModel(Nil, Nil),
       IncomeSourceComparisonViewModel(Nil, Nil),
-      isEstimatedCYPlusOneJourneyCompleted)
+      isEstimatedCYPlusOneJourneyCompleted
+    )
   }
 
   "IncomeTaxComparisonViewModel" when {
@@ -52,7 +54,6 @@ class IncomeTaxComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
       val model = createIncomeTaxComparisonViewModel(isEstimatedCYPlusOneJourneyCompleted = true)
       model.isEstimatedCYPlusOneJourneyCompleted mustBe true
     }
-
 
   }
 }

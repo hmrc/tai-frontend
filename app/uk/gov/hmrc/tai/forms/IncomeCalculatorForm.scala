@@ -28,14 +28,14 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePayPeriod
 
 case class HowToUpdateForm(howToUpdate: Option[String])
 
-object HowToUpdateForm{
+object HowToUpdateForm {
   implicit val formats = Json.format[HowToUpdateForm]
 
   def createForm()(implicit messages: Messages): Form[HowToUpdateForm] = {
 
-    val howToUpdateValidation = Constraint[Option[String]]("Choose how to update"){
+    val howToUpdateValidation = Constraint[Option[String]]("Choose how to update") {
       case Some(txt) => Valid
-      case _ => Invalid(messages("tai.howToUpdate.error.form.incomes.radioButton.mandatory"))
+      case _         => Invalid(messages("tai.howToUpdate.error.form.incomes.radioButton.mandatory"))
     }
 
     Form[HowToUpdateForm](
@@ -53,10 +53,10 @@ object HoursWorkedForm extends EditIncomeIrregularPayConstants {
 
   def createForm()(implicit messages: Messages): Form[HoursWorkedForm] = {
 
-    val hoursWorkedValidation = Constraint[Option[String]]("Your working hours"){
-      case Some(REGULAR_HOURS) => Valid
+    val hoursWorkedValidation = Constraint[Option[String]]("Your working hours") {
+      case Some(REGULAR_HOURS)   => Valid
       case Some(IRREGULAR_HOURS) => Valid
-      case _ => Invalid(messages("tai.workingHours.error.form.incomes.radioButton.mandatory"))
+      case _                     => Invalid(messages("tai.workingHours.error.form.incomes.radioButton.mandatory"))
     }
 
     Form[HoursWorkedForm](
@@ -67,33 +67,33 @@ object HoursWorkedForm extends EditIncomeIrregularPayConstants {
   }
 }
 
-case class PayPeriodForm(payPeriod: Option[String],
-                         otherInDays: Option[String] = None) {
-}
+case class PayPeriodForm(payPeriod: Option[String], otherInDays: Option[String] = None) {}
 
-object PayPeriodForm extends EditIncomePayPeriodConstants{
+object PayPeriodForm extends EditIncomePayPeriodConstants {
   implicit val formats = Json.format[PayPeriodForm]
 
-  def createForm(howOftenError: Option[String], payPeriod : Option[String] = None)(implicit messages: Messages): Form[PayPeriodForm] = {
+  def createForm(howOftenError: Option[String], payPeriod: Option[String] = None)(
+    implicit messages: Messages): Form[PayPeriodForm] = {
 
-    val payPeriodValidation = Constraint[Option[String]]("Please select a period"){
-      case Some(txt) => txt match {
-        case OTHER | MONTHLY | WEEKLY | FORTNIGHTLY => Valid
-        case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
-      }
+    val payPeriodValidation = Constraint[Option[String]]("Please select a period") {
+      case Some(txt) =>
+        txt match {
+          case OTHER | MONTHLY | WEEKLY | FORTNIGHTLY => Valid
+          case _                                      => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
+        }
       case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
     }
 
-    def otherInDaysValidation(payPeriod : Option[String]) : Constraint[Option[String]] = {
+    def otherInDaysValidation(payPeriod: Option[String]): Constraint[Option[String]] = {
       val digitsOnly = """^\d*$""".r
 
-      Constraint[Option[String]]("days") {
-        days: Option[String] => {
+      Constraint[Option[String]]("days") { days: Option[String] =>
+        {
           (payPeriod, days) match {
             case (Some(OTHER), Some(digitsOnly())) => Valid
-            case (Some(OTHER), None) => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
-            case (Some(OTHER), _) => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
-            case _ => Valid
+            case (Some(OTHER), None)               => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
+            case (Some(OTHER), _)                  => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
+            case _                                 => Valid
           }
         }
       }
@@ -101,7 +101,7 @@ object PayPeriodForm extends EditIncomePayPeriodConstants{
 
     Form[PayPeriodForm](
       mapping(
-        PAY_PERIOD_KEY -> optional(text).verifying(payPeriodValidation),
+        PAY_PERIOD_KEY    -> optional(text).verifying(payPeriodValidation),
         OTHER_IN_DAYS_KEY -> optional(text).verifying(otherInDaysValidation(payPeriod))
       )(PayPeriodForm.apply)(PayPeriodForm.unapply)
     )
@@ -110,85 +110,89 @@ object PayPeriodForm extends EditIncomePayPeriodConstants{
 
 case class PayslipForm(totalSalary: Option[String] = None)
 
-object PayslipForm{
+object PayslipForm {
   implicit val formats = Json.format[PayslipForm]
 
-  def createForm(errorText: String)(implicit messages: Messages): Form[PayslipForm] = {
+  def createForm(errorText: String)(implicit messages: Messages): Form[PayslipForm] =
     Form[PayslipForm](
-      mapping("totalSalary" -> TaiValidator.validateNewAmounts(messages(errorText),
-                                                               messages("tai.payslip.error.form.totalPay.input.invalid"),
-                                                               messages("error.tai.updateDataEmployment.maxLength")))(PayslipForm.apply)(PayslipForm.unapply)
+      mapping(
+        "totalSalary" -> TaiValidator.validateNewAmounts(
+          messages(errorText),
+          messages("tai.payslip.error.form.totalPay.input.invalid"),
+          messages("error.tai.updateDataEmployment.maxLength")))(PayslipForm.apply)(PayslipForm.unapply)
     )
-  }
 }
-
-
 
 case class PayslipDeductionsForm(payslipDeductions: Option[String])
 
-object PayslipDeductionsForm{
+object PayslipDeductionsForm {
   implicit val formats = Json.format[PayslipDeductionsForm]
 
   def createForm()(implicit messages: Messages): Form[PayslipDeductionsForm] = {
 
-    val payslipDeductionsValidation = Constraint[Option[String]]("Your working hours"){
+    val payslipDeductionsValidation = Constraint[Option[String]]("Your working hours") {
       case Some(txt) => Valid
-      case _ => Invalid(messages("tai.payslipDeductions.error.form.incomes.radioButton.mandatory"))
+      case _         => Invalid(messages("tai.payslipDeductions.error.form.incomes.radioButton.mandatory"))
     }
 
     Form[PayslipDeductionsForm](
-      mapping("payslipDeductions" -> optional(text).verifying(payslipDeductionsValidation))
-        (PayslipDeductionsForm.apply)(PayslipDeductionsForm.unapply)
+      mapping("payslipDeductions" -> optional(text).verifying(payslipDeductionsValidation))(
+        PayslipDeductionsForm.apply)(PayslipDeductionsForm.unapply)
     )
   }
 }
-
 
 case class TaxablePayslipForm(taxablePay: Option[String] = None)
 
-object TaxablePayslipForm{
+object TaxablePayslipForm {
   implicit val formats = Json.format[TaxablePayslipForm]
 
-  def createForm(netSalary: Option[String] = None, payPeriod:Option[String] = None, payPeriodInDays: Option[String] = None)
-                (implicit messages: Messages): Form[TaxablePayslipForm] = {
+  def createForm(
+    netSalary: Option[String] = None,
+    payPeriod: Option[String] = None,
+    payPeriodInDays: Option[String] = None)(implicit messages: Messages): Form[TaxablePayslipForm] = {
 
     val validateErrorMessage = netSalary match {
       case Some(salary) => TaxablePayPeriod.errorMessage(payPeriod, payPeriodInDays)
-      case _ => messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory")
+      case _            => messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory")
     }
 
     Form[TaxablePayslipForm](
-      mapping("taxablePay" -> TaiValidator.validateNewAmounts(
-        validateErrorMessage,
-        messages("tai.taxablePayslip.error.form.incomes.input.invalid"),
-        messages("error.tai.updateDataEmployment.maxLength"),
-        netSalary
-      ))(TaxablePayslipForm.apply)(TaxablePayslipForm.unapply)
+      mapping(
+        "taxablePay" -> TaiValidator.validateNewAmounts(
+          validateErrorMessage,
+          messages("tai.taxablePayslip.error.form.incomes.input.invalid"),
+          messages("error.tai.updateDataEmployment.maxLength"),
+          netSalary
+        ))(TaxablePayslipForm.apply)(TaxablePayslipForm.unapply)
     )
   }
 }
 
-object BonusPaymentsForm{
-  def createForm(implicit messages: Messages): Form[YesNoForm] = {
-    YesNoForm.form(messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
-      TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
-  }
+object BonusPaymentsForm {
+  def createForm(implicit messages: Messages): Form[YesNoForm] =
+    YesNoForm.form(
+      messages(
+        "tai.bonusPayments.error.form.incomes.radioButton.mandatory",
+        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
 }
-
 
 case class BonusOvertimeAmountForm(amount: Option[String] = None)
 
-object BonusOvertimeAmountForm{
+object BonusOvertimeAmountForm {
   implicit val formats = Json.format[BonusOvertimeAmountForm]
 
-  def createForm(nonEmptyMessage: Option[String]=None, notAnAmountMessage: Option[String]=None)(implicit messages: Messages): Form[BonusOvertimeAmountForm] = {
+  def createForm(nonEmptyMessage: Option[String] = None, notAnAmountMessage: Option[String] = None)(
+    implicit messages: Messages): Form[BonusOvertimeAmountForm] =
     Form[BonusOvertimeAmountForm](
-      mapping("amount" -> TaiValidator.validateNewAmounts(messages("tai.bonusPaymentsAmount.error.form.mandatory",
-                                                            TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
-                                                          messages("tai.bonusPaymentsAmount.error.form.input.invalid"),
-                                                          messages("error.tai.updateDataEmployment.maxLength")))(
-                                                          BonusOvertimeAmountForm.apply)(BonusOvertimeAmountForm.unapply)
+      mapping(
+        "amount" -> TaiValidator.validateNewAmounts(
+          messages(
+            "tai.bonusPaymentsAmount.error.form.mandatory",
+            TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+          messages("tai.bonusPaymentsAmount.error.form.input.invalid"),
+          messages("error.tai.updateDataEmployment.maxLength")
+        ))(BonusOvertimeAmountForm.apply)(BonusOvertimeAmountForm.unapply)
     )
-  }
 
 }

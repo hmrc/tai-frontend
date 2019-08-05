@@ -29,7 +29,7 @@ class TaxAmountDueFromUnderpaymentSpec extends PlaySpec {
 
       val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), taxRate)
       val incomeCategories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-      val totalTax : TotalTax = TotalTax(1, Seq(incomeCategories), None, None, None)
+      val totalTax: TotalTax = TotalTax(1, Seq(incomeCategories), None, None, None)
 
       val actual = TaxAmountDueFromUnderpayment.amountDue(totalTaxOwed, totalTax)
       actual mustBe 20.0
@@ -40,7 +40,7 @@ class TaxAmountDueFromUnderpaymentSpec extends PlaySpec {
 
       val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), taxRate)
       val incomeCategories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-      val totalTax : TotalTax = TotalTax(1, Seq(incomeCategories), None, None, None)
+      val totalTax: TotalTax = TotalTax(1, Seq(incomeCategories), None, None, None)
 
       val actual = TaxAmountDueFromUnderpayment.amountDue(totalTaxOwed, totalTax)
       actual mustBe 40.0

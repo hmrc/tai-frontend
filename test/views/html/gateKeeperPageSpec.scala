@@ -58,4 +58,4 @@ class gateKeeperPageSpec extends TaiViewSpec {
     doc must haveLinkWithText(messages("tai.backToHome-link.upper"))
   }
 
-  }
+}

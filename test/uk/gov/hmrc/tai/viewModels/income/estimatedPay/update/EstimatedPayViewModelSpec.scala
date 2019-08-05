@@ -20,7 +20,6 @@ import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 
-
 class EstimatedPayViewModelSpec extends PlaySpec {
 
   val employer = IncomeSource(1, "employer1")
@@ -31,7 +30,8 @@ class EstimatedPayViewModelSpec extends PlaySpec {
       val grossAnnualPay = 20000
       val netAnnualPay = 20000
 
-      val viewModel = EstimatedPayViewModel(Some(grossAnnualPay), Some(netAnnualPay), false, Some(20000), None, employer)
+      val viewModel =
+        EstimatedPayViewModel(Some(grossAnnualPay), Some(netAnnualPay), false, Some(20000), None, employer)
 
       viewModel.isGrossPayEqualsNetPay mustBe true
     }
@@ -43,7 +43,13 @@ class EstimatedPayViewModelSpec extends PlaySpec {
       val annualSalary = 25000
       val employmentStartDate = TaxYear().start.plusMonths(2)
 
-      val viewModel = EstimatedPayViewModel(Some(grossAnnualPay), Some(netAnnualPay), false, Some(annualSalary), Some(employmentStartDate), employer)
+      val viewModel = EstimatedPayViewModel(
+        Some(grossAnnualPay),
+        Some(netAnnualPay),
+        false,
+        Some(annualSalary),
+        Some(employmentStartDate),
+        employer)
 
       viewModel.isGrossPayApportioned mustBe true
     }

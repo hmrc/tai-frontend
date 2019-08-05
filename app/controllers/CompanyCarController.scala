@@ -36,20 +36,20 @@ import uk.gov.hmrc.tai.viewModels.benefit.CompanyCarChoiceViewModel
 
 import scala.concurrent.Future
 
-class CompanyCarController @Inject()(companyCarService: CompanyCarService,
-                                     @Named("Company Car") journeyCacheService: JourneyCacheService,
-                                     sessionService: SessionService,
-                                     authenticate: AuthAction,
-                                     validatePerson: ValidatePerson,
-                                     override implicit val partialRetriever: FormPartialRetriever,
-                                     override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with JourneyCacheConstants
-  with FeatureTogglesConfig {
+class CompanyCarController @Inject()(
+  companyCarService: CompanyCarService,
+  @Named("Company Car") journeyCacheService: JourneyCacheService,
+  sessionService: SessionService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController with JourneyCacheConstants with FeatureTogglesConfig {
 
   def redirectCompanyCarSelection(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      journeyCacheService.cache(CompanyCar_EmployerIdKey, employmentId.toString) map {
-       _ => Redirect(controllers.routes.CompanyCarController.getCompanyCarDetails())
+      journeyCacheService.cache(CompanyCar_EmployerIdKey, employmentId.toString) map { _ =>
+        Redirect(controllers.routes.CompanyCarController.getCompanyCarDetails())
       }
   }
 
@@ -69,24 +69,24 @@ class CompanyCarController @Inject()(companyCarService: CompanyCarService,
       }
   }
 
-  def handleUserJourneyChoice: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      UpdateOrRemoveCarForm.createForm.bindFromRequest.fold(
-        formWithErrors => {
-          journeyCacheService.mandatoryValues(CompanyCar_CarModelKey, CompanyCar_CarProviderKey) flatMap { seq =>
-            implicit val user = request.taiUser
-            Future.successful(BadRequest(views.html.benefits.updateCompanyCar(formWithErrors, CompanyCarChoiceViewModel(seq(0), seq(1)))))
-          }
-        },
-        formData => {
-            formData.whatDoYouWantToDo match {
-              case Some("removeCar") if !companyCarForceRedirectEnabled =>
-                sessionService.invalidateCache() map (_ => Redirect(ApplicationConfig.companyCarDetailsUrl))
-              case _ =>
-                sessionService.invalidateCache() map (_ => Redirect(ApplicationConfig.companyCarServiceUrl))
-            }
-          }
-      )
+  def handleUserJourneyChoice: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    UpdateOrRemoveCarForm.createForm.bindFromRequest.fold(
+      formWithErrors => {
+        journeyCacheService.mandatoryValues(CompanyCar_CarModelKey, CompanyCar_CarProviderKey) flatMap { seq =>
+          implicit val user = request.taiUser
+          Future.successful(
+            BadRequest(views.html.benefits.updateCompanyCar(formWithErrors, CompanyCarChoiceViewModel(seq(0), seq(1)))))
+        }
+      },
+      formData => {
+        formData.whatDoYouWantToDo match {
+          case Some("removeCar") if !companyCarForceRedirectEnabled =>
+            sessionService.invalidateCache() map (_ => Redirect(ApplicationConfig.companyCarDetailsUrl))
+          case _ =>
+            sessionService.invalidateCache() map (_ => Redirect(ApplicationConfig.companyCarServiceUrl))
+        }
+      }
+    )
   }
 
 }

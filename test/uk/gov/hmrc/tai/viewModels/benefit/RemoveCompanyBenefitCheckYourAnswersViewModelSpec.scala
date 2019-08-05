@@ -30,7 +30,12 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends PlaySpec with Fa
     "return all journey lines" when {
       "both 'phone number' and 'benefit value' are present" in {
         baseModel.journeyConfirmationLines.size mustBe 5
-        baseModel.journeyConfirmationLines mustBe Seq(whatYouToldUsLine, stopDateLine, valueOfBenefitLine, contactByPhoneLine, phoneNumberLine)
+        baseModel.journeyConfirmationLines mustBe Seq(
+          whatYouToldUsLine,
+          stopDateLine,
+          valueOfBenefitLine,
+          contactByPhoneLine,
+          phoneNumberLine)
       }
     }
 
@@ -39,13 +44,20 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends PlaySpec with Fa
       "neither 'phone number' nor 'benefit value' are present" in {
         val model = baseModel.copy(valueOfBenefit = None, contactByPhone = "No", phoneNumber = None)
         model.journeyConfirmationLines.size mustBe 3
-        model.journeyConfirmationLines mustBe Seq(whatYouToldUsLine, stopDateLine, contactByPhoneLine.copy(answer = "No"))
+        model.journeyConfirmationLines mustBe Seq(
+          whatYouToldUsLine,
+          stopDateLine,
+          contactByPhoneLine.copy(answer = "No"))
       }
 
       "only 'phone number' is not present" in {
         val model = baseModel.copy(contactByPhone = "No", phoneNumber = None)
         model.journeyConfirmationLines.size mustBe 4
-        model.journeyConfirmationLines mustBe Seq(whatYouToldUsLine, stopDateLine, valueOfBenefitLine, contactByPhoneLine.copy(answer = "No"))
+        model.journeyConfirmationLines mustBe Seq(
+          whatYouToldUsLine,
+          stopDateLine,
+          valueOfBenefitLine,
+          contactByPhoneLine.copy(answer = "No"))
       }
 
       "only 'benefit value' is not present" in {

@@ -25,7 +25,8 @@ trait TrackedFormFormatters {
 
   val trackedFormReads: Reads[TrackedForm] = new Reads[TrackedForm] {
     override def reads(json: JsValue): JsResult[TrackedForm] = {
-      implicit val stringMapFormat: Format[Map[String, String]] = JsonExtra.mapFormat[String, String]("milestone", "status")
+      implicit val stringMapFormat: Format[Map[String, String]] =
+        JsonExtra.mapFormat[String, String]("milestone", "status")
 
       val id = (json \ "formId").as[String]
       val name = (json \ "formName").as[String]
@@ -36,10 +37,10 @@ trait TrackedFormFormatters {
         JsError("milestones list is empty")
       } else {
         milestones.filter(_._2 == "current").headOption match {
-          case Some(("Received", _)) => JsSuccess(TrackedForm(id, name, TrackedFormReceived))
+          case Some(("Received", _))   => JsSuccess(TrackedForm(id, name, TrackedFormReceived))
           case Some(("InProgress", _)) => JsSuccess(TrackedForm(id, name, TrackedFormInProgress))
-          case Some(("Acquired", _)) => JsSuccess(TrackedForm(id, name, TrackedFormAcquired))
-          case Some(("Done", _)) => JsSuccess(TrackedForm(id, name, TrackedFormDone))
+          case Some(("Acquired", _))   => JsSuccess(TrackedForm(id, name, TrackedFormAcquired))
+          case Some(("Done", _))       => JsSuccess(TrackedForm(id, name, TrackedFormDone))
           case None =>
             Logger.warn(s"no milestones with 'current' status for the form with reference: $submissionReference")
             JsError("there is no milestone with status 'current'")

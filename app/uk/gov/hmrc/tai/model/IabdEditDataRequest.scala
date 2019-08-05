@@ -22,24 +22,27 @@ import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import play.api.i18n.Messages
 
-case class EmploymentAmount(name: String, description: String,
-                            employmentId: Int,
-                            newAmount: Int,
-                            oldAmount: Int,
-                            worksNumber: Option[String] = None,
-                            jobTitle: Option[String] = None,
-                            startDate: Option[LocalDate] = None,
-                            endDate: Option[LocalDate] = None,
-                            isLive: Boolean = true,
-                            isOccupationalPension: Boolean = false)
+case class EmploymentAmount(
+  name: String,
+  description: String,
+  employmentId: Int,
+  newAmount: Int,
+  oldAmount: Int,
+  worksNumber: Option[String] = None,
+  jobTitle: Option[String] = None,
+  startDate: Option[LocalDate] = None,
+  endDate: Option[LocalDate] = None,
+  isLive: Boolean = true,
+  isOccupationalPension: Boolean = false)
 
 object EmploymentAmount {
   implicit val formats = Json.format[EmploymentAmount]
   def apply(taxCodeIncome: TaxCodeIncome, employment: Employment)(implicit messages: Messages): EmploymentAmount = {
     val description = taxCodeIncome.componentType match {
-      case EmploymentIncome if taxCodeIncome.status == Live => s"${Messages("tai.incomes.status-1")} ${Messages(s"tai.incomes.type-0")}"
+      case EmploymentIncome if taxCodeIncome.status == Live =>
+        s"${Messages("tai.incomes.status-1")} ${Messages(s"tai.incomes.type-0")}"
       case EmploymentIncome => s"${Messages("tai.incomes.status-2")} ${Messages(s"tai.incomes.type-0")}"
-      case _ => Messages(s"tai.incomes.type-1")
+      case _                => Messages(s"tai.incomes.type-1")
     }
 
     EmploymentAmount(

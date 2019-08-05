@@ -68,12 +68,33 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
 
       "connector returns multiple employment" in {
         val sut = createSUT
-        val employment1 = Employment("company name 1", Some("123"), new LocalDate("2016-05-26"),
-          Some(new LocalDate("2016-05-26")), Nil, "", "", 1, None, false, false)
-        val employment2 = Employment("company name 2", Some("123"), new LocalDate("2016-05-26"),
-          Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
+        val employment1 = Employment(
+          "company name 1",
+          Some("123"),
+          new LocalDate("2016-05-26"),
+          Some(new LocalDate("2016-05-26")),
+          Nil,
+          "",
+          "",
+          1,
+          None,
+          false,
+          false)
+        val employment2 = Employment(
+          "company name 2",
+          Some("123"),
+          new LocalDate("2016-05-26"),
+          Some(new LocalDate("2016-05-26")),
+          Nil,
+          "",
+          "",
+          2,
+          None,
+          false,
+          false)
 
-        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(List(employment1, employment2)))
+        when(employmentsConnector.employments(any(), any())(any()))
+          .thenReturn(Future.successful(List(employment1, employment2)))
 
         val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
 
@@ -132,8 +153,14 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
   "add employment" must {
     "return an envelope id" in {
       val sut = createSUT
-      val model = AddEmployment(employerName = "testEmployment", payrollNumber = "12345", startDate = new LocalDate(2017, 6, 6), telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      when(employmentsConnector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
+      val model = AddEmployment(
+        employerName = "testEmployment",
+        payrollNumber = "12345",
+        startDate = new LocalDate(2017, 6, 6),
+        telephoneContactAllowed = "Yes",
+        telephoneNumber = Some("123456789"))
+      when(employmentsConnector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any()))
+        .thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.addEmployment(nino, model), 5.seconds)
 
@@ -142,8 +169,14 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
-        val model = AddEmployment(employerName = "testEmployment", payrollNumber = "12345", startDate = new LocalDate(2017, 6, 6), telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-        when(employmentsConnector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
+        val model = AddEmployment(
+          employerName = "testEmployment",
+          payrollNumber = "12345",
+          startDate = new LocalDate(2017, 6, 6),
+          telephoneContactAllowed = "Yes",
+          telephoneNumber = Some("123456789"))
+        when(employmentsConnector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any()))
+          .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy (Await.result(sut.addEmployment(nino, model), 5.seconds))
         rte.getMessage mustBe s"No envelope id was generated when adding the new employment for ${nino.nino}"
@@ -154,8 +187,10 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
   "incorrect employment" must {
     "return an envelope id" in {
       val sut = createSUT
-      val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      when(employmentsConnector.incorrectEmployment(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
+      val model =
+        IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
+      when(employmentsConnector.incorrectEmployment(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any()))
+        .thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
 
@@ -165,8 +200,10 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
-        val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-        when(employmentsConnector.incorrectEmployment(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
+        val model =
+          IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
+        when(employmentsConnector.incorrectEmployment(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any()))
+          .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
         rte.getMessage mustBe s"No envelope id was generated when sending incorrect employment details for ${nino.nino}"
@@ -177,8 +214,18 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
   private val year: TaxYear = TaxYear(DateTime.now().getYear)
   private val nino: Nino = new Generator().nextNino
   private implicit val hc: HeaderCarrier = HeaderCarrier()
-  private val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
-    Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
+  private val employment = Employment(
+    "company name",
+    Some("123"),
+    new LocalDate("2016-05-26"),
+    Some(new LocalDate("2016-05-26")),
+    Nil,
+    "",
+    "",
+    2,
+    None,
+    false,
+    false)
   private val employmentDetails = List(employment)
   private val employments = employmentDetails.head :: employmentDetails.head :: Nil
 
@@ -186,8 +233,9 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
 
   val employmentsConnector = mock[EmploymentsConnector]
 
-  private class EmploymentServiceTest extends EmploymentService(
-    employmentsConnector
-  )
+  private class EmploymentServiceTest
+      extends EmploymentService(
+        employmentsConnector
+      )
 
 }

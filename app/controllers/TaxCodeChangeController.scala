@@ -36,64 +36,60 @@ import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 
 import scala.concurrent.Future
 
-class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeService,
-                                        taxAccountService: TaxAccountService,
-                                        describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService,
-                                        authenticate: AuthAction,
-                                        validatePerson: ValidatePerson,
-                                        yourTaxFreeAmountService: YourTaxFreeAmountService,
-                                        taxCodeChangeReasonsService: TaxCodeChangeReasonsService,
-                                        override implicit val partialRetriever: FormPartialRetriever,
-                                        override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with FeatureTogglesConfig
-  with YourTaxFreeAmount {
+class TaxCodeChangeController @Inject()(
+  taxCodeChangeService: TaxCodeChangeService,
+  taxAccountService: TaxAccountService,
+  describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  yourTaxFreeAmountService: YourTaxFreeAmountService,
+  taxCodeChangeReasonsService: TaxCodeChangeReasonsService,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController with FeatureTogglesConfig with YourTaxFreeAmount {
 
-  def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      val nino: Nino = request.taiUser.nino
+  def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    val nino: Nino = request.taiUser.nino
 
-      val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
-      val yourTaxFreeAmountComparisonFuture = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
+    val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
+    val yourTaxFreeAmountComparisonFuture = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
 
-      for {
-        yourTaxFreeAmountComparison <- yourTaxFreeAmountComparisonFuture
-        totalTax <- totalTaxFuture
-        taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
-        scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
-      } yield {
-        (totalTax) match {
-          case (TaiSuccessResponseWithPayload(totalTax: TotalTax)) =>
-            val iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons(totalTax)
-            val taxCodeChangeReasons = taxCodeChangeReasonsService.combineTaxCodeChangeReasons(
-              iabdTaxCodeChangeReasons,
-              yourTaxFreeAmountComparison.iabdPairs,
-              taxCodeChange)
-            val isAGenericReason = taxCodeChangeReasonsService.isAGenericReason(taxCodeChangeReasons)
+    for {
+      yourTaxFreeAmountComparison <- yourTaxFreeAmountComparisonFuture
+      totalTax                    <- totalTaxFuture
+      taxCodeChange               <- taxCodeChangeService.taxCodeChange(nino)
+      scottishTaxRateBands        <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
+    } yield {
+      (totalTax) match {
+        case (TaiSuccessResponseWithPayload(totalTax: TotalTax)) =>
+          val iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons(totalTax)
+          val taxCodeChangeReasons = taxCodeChangeReasonsService
+            .combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons, yourTaxFreeAmountComparison.iabdPairs, taxCodeChange)
+          val isAGenericReason = taxCodeChangeReasonsService.isAGenericReason(taxCodeChangeReasons)
 
-            val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
+          val viewModel =
+            TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
 
-            implicit val user = request.taiUser
-            Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
-          case _ => throw new RuntimeException("Failed to fetch total tax details for tax code comparison")
-        }
+          implicit val user = request.taiUser
+          Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
+        case _ => throw new RuntimeException("Failed to fetch total tax details for tax code comparison")
       }
+    }
   }
 
-  def yourTaxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      val nino: Nino = request.taiUser.nino
-      val taxFreeAmountViewModel = describedYourTaxFreeAmountService.taxFreeAmountComparison(nino)
+  def yourTaxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    val nino: Nino = request.taiUser.nino
+    val taxFreeAmountViewModel = describedYourTaxFreeAmountService.taxFreeAmountComparison(nino)
 
-      implicit val user = request.taiUser
+    implicit val user = request.taiUser
 
-      taxFreeAmountViewModel.map(viewModel => {
-        Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
-      })
+    taxFreeAmountViewModel.map(viewModel => {
+      Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
+    })
   }
 
-  def whatHappensNext: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
-      Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
+  def whatHappensNext: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
+    Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
   }
 }

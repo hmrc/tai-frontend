@@ -18,15 +18,15 @@ package uk.gov.hmrc.tai.model.domain
 
 import play.api.libs.json.Json
 
-case class TaxAccountSummary(totalEstimatedTax: BigDecimal,
-                             taxFreeAmount: BigDecimal,
-                             totalInYearAdjustmentIntoCY: BigDecimal,
-                             totalInYearAdjustment:BigDecimal,
-                             totalInYearAdjustmentIntoCYPlusOne:BigDecimal,
-                             totalEstimatedIncome: BigDecimal = 0,
-                             taxFreeAllowance: BigDecimal = 0)
+case class TaxAccountSummary(
+  totalEstimatedTax: BigDecimal,
+  taxFreeAmount: BigDecimal,
+  totalInYearAdjustmentIntoCY: BigDecimal,
+  totalInYearAdjustment: BigDecimal,
+  totalInYearAdjustmentIntoCYPlusOne: BigDecimal,
+  totalEstimatedIncome: BigDecimal = 0,
+  taxFreeAllowance: BigDecimal = 0)
 
-object TaxAccountSummary{
+object TaxAccountSummary {
   implicit val formats = Json.format[TaxAccountSummary]
 }
-

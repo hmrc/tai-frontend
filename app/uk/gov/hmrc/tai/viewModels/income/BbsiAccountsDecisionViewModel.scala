@@ -16,4 +16,4 @@
 
 package uk.gov.hmrc.tai.viewModels.income
 
-case class BbsiAccountsDecisionViewModel(id:Int, bankName:String)
+case class BbsiAccountsDecisionViewModel(id: Int, bankName: String)

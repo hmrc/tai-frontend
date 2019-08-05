@@ -25,11 +25,14 @@ object ConfigProperties extends DefaultRunMode {
 
   val postSignInRedirectUrl: Option[String] = Play.configuration.getString(s"govuk-tax.$env.login-callback.url")
 
-  val activatePaperless: Boolean = Play.configuration.getBoolean(s"govuk-tax.$env.activatePaperless")
+  val activatePaperless: Boolean = Play.configuration
+    .getBoolean(s"govuk-tax.$env.activatePaperless")
     .getOrElse(throw new IllegalStateException(s"Could not find configuration for govuk-tax.$env.activatePaperless"))
 
-  val activatePaperlessEvenIfGatekeeperFails: Boolean = Play.configuration.getBoolean(s"govuk-tax.$env.activatePaperlessEvenIfGatekeeperFails")
+  val activatePaperlessEvenIfGatekeeperFails: Boolean = Play.configuration
+    .getBoolean(s"govuk-tax.$env.activatePaperlessEvenIfGatekeeperFails")
     .getOrElse(throw new IllegalStateException(s"Could not find configuration for govuk-tax.$env.activatePaperless"))
 
-  val taxPlatformTaiRootUri: String = Play.configuration.getString(s"govuk-tax.$env.taxPlatformTaiRootUri").getOrElse("http://noConfigTaiRootUri")
+  val taxPlatformTaiRootUri: String =
+    Play.configuration.getString(s"govuk-tax.$env.taxPlatformTaiRootUri").getOrElse("http://noConfigTaiRootUri")
 }

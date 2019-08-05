@@ -16,7 +16,6 @@
 
 package views.html.employments
 
-
 import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.Messages
@@ -24,7 +23,6 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
-
 
 class endEmploymentSpec extends TaiViewSpec {
 
@@ -34,11 +32,12 @@ class endEmploymentSpec extends TaiViewSpec {
 
   private val globalErrorMessage: String = "day error message"
   private val formWithErrors: Form[LocalDate] = eedf.form.withError("", globalErrorMessage)
-  private lazy val employmentEndDateForm: Form[LocalDate] = eedf.form.bind(Map(
-    eedf.EmploymentFormDay -> "1",
-    "month" -> "1",
-    "year" -> "2017"
-  ))
+  private lazy val employmentEndDateForm: Form[LocalDate] = eedf.form.bind(
+    Map(
+      eedf.EmploymentFormDay -> "1",
+      "month"                -> "1",
+      "year"                 -> "2017"
+    ))
 
   private val viewmodel = EmploymentViewModel(employmentName, employmentId)
 
@@ -118,9 +117,9 @@ class endEmploymentSpec extends TaiViewSpec {
 
     "have a 'continue' button" in {
 
-        val continueButton = doc(view).select("button[type=submit]").text
+      val continueButton = doc(view).select("button[type=submit]").text
 
-        continueButton mustBe Messages("tai.submit")
+      continueButton mustBe Messages("tai.submit")
     }
   }
 }

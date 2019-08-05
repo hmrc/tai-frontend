@@ -41,7 +41,7 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlay
     }
     "return the string representation of the provided MoneyPounds with a pound symbol prefix and negative sign" when {
       "the value is negative" in {
-        withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"${encodedMinusSign}£1,000.00"
+        withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"$encodedMinusSign£1,000.00"
       }
     }
   }
@@ -99,14 +99,14 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlay
       val expectedNow = htmlNonBroken(Dates.formatDate(now))
       val expectedEnd = htmlNonBroken(Dates.formatDate(endOfTaxYear))
 
-      dynamicDateRangeHtmlNonBreak(now,endOfTaxYear) mustBe s"${expectedNow} to ${expectedEnd}"
+      dynamicDateRangeHtmlNonBreak(now, endOfTaxYear) mustBe s"$expectedNow to $expectedEnd"
     }
 
     "throw an exception if 'from' date is after the 'to' date" in {
       val now = new LocalDate()
       val yesterday = now.minusDays(1)
 
-      val caught = intercept[IllegalArgumentException]{
+      val caught = intercept[IllegalArgumentException] {
         dynamicDateRangeHtmlNonBreak(now, yesterday)
       }
 

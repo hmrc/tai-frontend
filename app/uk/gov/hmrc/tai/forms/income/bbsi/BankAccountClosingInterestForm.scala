@@ -25,51 +25,49 @@ import uk.gov.hmrc.tai.util.FormHelper.isValidCurrency
 import uk.gov.voa.play.form.ConditionalMappings._
 import uk.gov.hmrc.tai.util.constants.{BankAccountClosingInterestConstants, FormValuesConstants}
 
-
-case class BankAccountClosingInterestForm(closingBankAccountInterestChoice: Option[String], closingInterestEntry: Option[String])
+case class BankAccountClosingInterestForm(
+  closingBankAccountInterestChoice: Option[String],
+  closingInterestEntry: Option[String])
 
 object BankAccountClosingInterestForm extends BankAccountClosingInterestConstants with FormValuesConstants {
 
   private def yesNoChoiceValidation(implicit messages: Messages) = Constraint[Option[String]]("") {
     case Some(txt) if txt == YesValue || txt == NoValue => Valid
-    case _ => Invalid(Messages("tai.closeBankAccount.closingInterest.error.selectOption"))
+    case _                                              => Invalid(Messages("tai.closeBankAccount.closingInterest.error.selectOption"))
   }
 
   def form(implicit messages: Messages) = Form[BankAccountClosingInterestForm](
     mapping(
       ClosingInterestChoice -> optional(text).verifying(yesNoChoiceValidation),
-      ClosingInterestEntry -> mandatoryIfEqual(ClosingInterestChoice,
+      ClosingInterestEntry -> mandatoryIfEqual(
+        ClosingInterestChoice,
         YesValue,
         text.verifying(StopOnFirstFail(
-            nonEmptyText(Messages("tai.closeBankAccount.closingInterest.error.blank")),
-            isNumber(Messages("tai.bbsi.update.form.interest.isCurrency")),
-            validateWholeNumber(Messages("tai.bbsi.update.form.interest.wholeNumber"))
+          nonEmptyText(Messages("tai.closeBankAccount.closingInterest.error.blank")),
+          isNumber(Messages("tai.bbsi.update.form.interest.isCurrency")),
+          validateWholeNumber(Messages("tai.bbsi.update.form.interest.wholeNumber"))
         ))
       )
     )(BankAccountClosingInterestForm.apply)(BankAccountClosingInterestForm.unapply)
   )
 
-
-  def nonEmptyText(requiredErrMsg : String): Constraint[String] = {
+  def nonEmptyText(requiredErrMsg: String): Constraint[String] =
     Constraint[String]("required") {
-      case textValue:String if notBlank(textValue) => Valid
-      case _ => Invalid(requiredErrMsg)
+      case textValue: String if notBlank(textValue) => Valid
+      case _                                        => Invalid(requiredErrMsg)
     }
-  }
 
-  def isNumber(currencyErrorMsg : String): Constraint[String] = {
+  def isNumber(currencyErrorMsg: String): Constraint[String] =
     Constraint[String]("invalidCurrency") {
       case textValue if isValidCurrency(Some(textValue)) => Valid
-      case _ => Invalid(currencyErrorMsg)
+      case _                                             => Invalid(currencyErrorMsg)
     }
-  }
 
-  def validateWholeNumber(currencyErrorMsg : String): Constraint[String] = {
+  def validateWholeNumber(currencyErrorMsg: String): Constraint[String] =
     Constraint[String]("invalidCurrency") {
       case textValue if isValidCurrency(Some(textValue), isWholeNumRequired = true) => Valid
-      case _ => Invalid(currencyErrorMsg)
+      case _                                                                        => Invalid(currencyErrorMsg)
     }
-  }
 
   def notBlank(value: String): Boolean = !value.trim.isEmpty
 

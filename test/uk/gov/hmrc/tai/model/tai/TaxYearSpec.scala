@@ -20,7 +20,6 @@ import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.model.TaxYear
 
-
 class TaxYearSpec extends PlaySpec {
 
   "Tax Year" should {
@@ -42,7 +41,7 @@ class TaxYearSpec extends PlaySpec {
       ex.getMessage mustBe "requirement failed: Invalid year"
     }
 
-    "not thrown an exception when year is valid" in{
+    "not thrown an exception when year is valid" in {
       TaxYear("17") mustBe TaxYear(2017)
     }
 

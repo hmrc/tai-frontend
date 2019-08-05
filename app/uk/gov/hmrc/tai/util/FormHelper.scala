@@ -18,16 +18,13 @@ package uk.gov.hmrc.tai.util
 
 object FormHelper {
 
-
-  def stripNumber(stringValue: Option[String]): Option[String] = {
-
+  def stripNumber(stringValue: Option[String]): Option[String] =
     stringValue.map { value =>
       val toRemove = "£, ".toSet
       val newValue = value.filterNot(toRemove)
       val pos = newValue.indexOf(".")
       if (pos != -1) newValue.substring(0, pos) else newValue
     }
-  }
 
   def stripNumber(stringValue: String): String = {
     val toRemove = Set[Char]('£', ',', ' ')
@@ -35,17 +32,15 @@ object FormHelper {
     newValue.takeWhile(_ != '.')
   }
 
-  def areEqual(oldAmount: Option[String], newAmount: Option[String]): Boolean = {
+  def areEqual(oldAmount: Option[String], newAmount: Option[String]): Boolean =
     FormHelper.stripNumber(oldAmount) == FormHelper.stripNumber(newAmount)
-  }
 
-  def isValidCurrency(stringValue: Option[String], isWholeNumRequired: Boolean = false): Boolean = {
+  def isValidCurrency(stringValue: Option[String], isWholeNumRequired: Boolean = false): Boolean =
     stringValue match {
       case (Some(value)) =>
         FormHelper.isCurrency(value, isWholeNumRequired)
       case _ => true
     }
-  }
 
   def isCurrency(stringValue: String, isWholeNumRequired: Boolean): Boolean = {
     val currencyRegex: String = "^\\£?(([1-9]\\d{0,2}(,\\d{3})*)|(([1-9]\\d*)?\\d))?"
@@ -54,11 +49,10 @@ object FormHelper {
     stringValue matches regex.r.toString()
   }
 
-  def convertCurrencyToInt(value: Option[String]): Int = {
+  def convertCurrencyToInt(value: Option[String]): Int =
     try {
       stripNumber(value).getOrElse("0").toInt
     } catch {
       case e: Exception => 0
     }
-  }
 }

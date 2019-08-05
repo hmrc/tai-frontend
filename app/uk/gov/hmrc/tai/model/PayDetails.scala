@@ -19,12 +19,13 @@ package uk.gov.hmrc.tai.model
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
 
-case class PayDetails (paymentFrequency : String,
-                       pay : Option[BigDecimal] = None,
-                       taxablePay : Option[BigDecimal] = None,
-                       days : Option[Int] = None,
-                       bonus : Option[BigDecimal] = None,
-                       startDate : Option[LocalDate] = None)
+case class PayDetails(
+  paymentFrequency: String,
+  pay: Option[BigDecimal] = None,
+  taxablePay: Option[BigDecimal] = None,
+  days: Option[Int] = None,
+  bonus: Option[BigDecimal] = None,
+  startDate: Option[LocalDate] = None)
 
 object PayDetails {
   implicit val formats = Json.format[PayDetails]

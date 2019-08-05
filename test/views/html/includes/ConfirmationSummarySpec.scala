@@ -19,7 +19,7 @@ package views.html.includes
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class ConfirmationSummarySpec extends TaiViewSpec{
+class ConfirmationSummarySpec extends TaiViewSpec {
   override def view: Html = views.html.includes.confirmation_summary()
 
   "Confirmation View" must {

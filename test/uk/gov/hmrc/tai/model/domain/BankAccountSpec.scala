@@ -102,7 +102,7 @@ class BankAccountSpec extends PlaySpec {
       bankAccount1.sortCode mustBe Some(sortCode)
       bankAccount1.bankName mustBe Some(bankName)
       bankAccount1.grossInterest mustBe grossInterest1
-      bankAccount1.source mustBe  Some(source)
+      bankAccount1.source mustBe Some(source)
     }
   }
 
@@ -117,14 +117,14 @@ class BankAccountSpec extends PlaySpec {
   val source = "customer"
 
   val bankAccount = BankAccount(0, Some(accountNo), Some(sortCode), Some(bankName), 0, Some(source))
-  val grossInterest1 : BigDecimal = 123.45
-  val grossInterest2 : BigDecimal = 678.90
+  val grossInterest1: BigDecimal = 123.45
+  val grossInterest2: BigDecimal = 678.90
 
   val jsonBankAccount = Json.obj(
-    "id" -> id,
+    "id"            -> id,
     "accountNumber" -> accountNo,
-    "sortCode" -> sortCode,
-    "bankName" -> bankName,
+    "sortCode"      -> sortCode,
+    "bankName"      -> bankName,
     "grossInterest" -> 123.45,
-    "source" -> source)
+    "source"        -> source)
 }

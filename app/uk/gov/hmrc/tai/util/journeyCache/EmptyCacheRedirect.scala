@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.util.journeyCache
 
-trait EmptyCacheRedirect{
+trait EmptyCacheRedirect {
 
   lazy val taxAccountSummaryRedirect = controllers.routes.TaxAccountSummaryController.onPageLoad()
 }

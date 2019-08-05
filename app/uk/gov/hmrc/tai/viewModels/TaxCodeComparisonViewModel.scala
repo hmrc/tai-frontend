@@ -26,18 +26,22 @@ import uk.gov.hmrc.tai.util.ViewModelHelper
 import scala.collection.immutable.ListMap
 
 case class TaxCodeComparisonViewModel(employmentTaxCodes: Seq[TaxCodeDetail], pensionTaxCodes: Seq[TaxCodeDetail])
-  extends ViewModelHelper {
+    extends ViewModelHelper {
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
   def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
 
-  private val employmentHasNotScottishTaxCodeCurrentYear = !employmentTaxCodes.exists(_.taxCodes.head.startsWith(ScottishTaxCodePrefix))
-  private val employmentHasScottishTaxCodeNextYear = employmentTaxCodes.exists(_.taxCodes.last.startsWith(ScottishTaxCodePrefix))
+  private val employmentHasNotScottishTaxCodeCurrentYear =
+    !employmentTaxCodes.exists(_.taxCodes.head.startsWith(ScottishTaxCodePrefix))
+  private val employmentHasScottishTaxCodeNextYear =
+    employmentTaxCodes.exists(_.taxCodes.last.startsWith(ScottishTaxCodePrefix))
 
+  private val pensionHasNotScottishTaxCodeCurrentYear =
+    !pensionTaxCodes.exists(_.taxCodes.head.startsWith(ScottishTaxCodePrefix))
+  private val pensionHasScottishTaxCodeNextYear =
+    pensionTaxCodes.exists(_.taxCodes.last.startsWith(ScottishTaxCodePrefix))
 
-  private val pensionHasNotScottishTaxCodeCurrentYear = !pensionTaxCodes.exists(_.taxCodes.head.startsWith(ScottishTaxCodePrefix))
-  private val pensionHasScottishTaxCodeNextYear = pensionTaxCodes.exists(_.taxCodes.last.startsWith(ScottishTaxCodePrefix))
-
-  val hasScottishTaxCodeNextYear: Boolean = (employmentHasNotScottishTaxCodeCurrentYear && pensionHasNotScottishTaxCodeCurrentYear) &&
+  val hasScottishTaxCodeNextYear
+    : Boolean = (employmentHasNotScottishTaxCodeCurrentYear && pensionHasNotScottishTaxCodeCurrentYear) &&
     (employmentHasScottishTaxCodeNextYear || pensionHasScottishTaxCodeNextYear)
 }
 
@@ -50,38 +54,39 @@ object TaxCodeComparisonViewModel {
     TaxCodeComparisonViewModel(employmentTaxCodes, pensionTaxCodes)
   }
 
-  private def taxCodeDetails(taxCodeForYears: Seq[TaxCodeIncomesForYear], taxComponentType: TaxComponentType)(implicit messages: Messages): Seq[TaxCodeDetail] = {
+  private def taxCodeDetails(taxCodeForYears: Seq[TaxCodeIncomesForYear], taxComponentType: TaxComponentType)(
+    implicit messages: Messages): Seq[TaxCodeDetail] = {
 
     val filteredTaxCodeIncomes = filterTaxCodeIncomesForYear(taxCodeForYears, taxComponentType)
     val sortedTaxCodeIncomes = filteredTaxCodeIncomes.sortWith(_.year < _.year)
     val uniqueIncomeSourceNames = sortedTaxCodeIncomes.flatMap(_.taxCodeIncomeSources.map(_.name)).distinct
 
-    for{
+    for {
       incomeSourceName <- uniqueIncomeSourceNames
     } yield {
-      TaxCodeDetail(incomeSourceName,
-        taxCodesForIncomeSource(sortedTaxCodeIncomes, incomeSourceName))
+      TaxCodeDetail(incomeSourceName, taxCodesForIncomeSource(sortedTaxCodeIncomes, incomeSourceName))
     }
   }
 
-  private def taxCodesForIncomeSource(taxCodeForYears: Seq[TaxCodeIncomesForYear], incomeSourceName:String)(implicit messages: Messages) = {
+  private def taxCodesForIncomeSource(taxCodeForYears: Seq[TaxCodeIncomesForYear], incomeSourceName: String)(
+    implicit messages: Messages) =
     for {
       taxYear: TaxCodeIncomesForYear <- taxCodeForYears
     } yield {
       val incomeSources: Option[TaxCodeIncome] = taxYear.taxCodeIncomeSources.find(_.name == incomeSourceName)
       incomeSources.map(_.taxCode).getOrElse(Messages("tai.incomeTaxComparison.incomeSourceAbsent"))
     }
-  }
 
-  private def filterTaxCodeIncomesForYear(taxCodeForYears: Seq[TaxCodeIncomesForYear], taxComponentType: TaxComponentType): Seq[TaxCodeIncomesForYear] = {
+  private def filterTaxCodeIncomesForYear(
+    taxCodeForYears: Seq[TaxCodeIncomesForYear],
+    taxComponentType: TaxComponentType): Seq[TaxCodeIncomesForYear] =
     taxCodeForYears map { taxCodeForYear =>
-      TaxCodeIncomesForYear(taxCodeForYear.year, taxCodeForYear.taxCodeIncomeSources.filter(
-        incomeSource => filterIncomeSources(incomeSource, taxComponentType))
-      )
+      TaxCodeIncomesForYear(
+        taxCodeForYear.year,
+        taxCodeForYear.taxCodeIncomeSources.filter(incomeSource => filterIncomeSources(incomeSource, taxComponentType)))
     }
-  }
 
-  private def filterIncomeSources(incomeSource:TaxCodeIncome, taxComponentType: TaxComponentType): Boolean =
+  private def filterIncomeSources(incomeSource: TaxCodeIncome, taxComponentType: TaxComponentType): Boolean =
     incomeSource.componentType == taxComponentType && incomeSource.status == Live
 
 }

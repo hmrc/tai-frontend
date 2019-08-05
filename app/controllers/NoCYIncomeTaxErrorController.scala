@@ -34,16 +34,17 @@ import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
 
 import scala.concurrent.Future
 
+class NoCYIncomeTaxErrorController @Inject()(
+  employmentService: EmploymentService,
+  val auditConnector: AuditConnector,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController {
 
-class NoCYIncomeTaxErrorController @Inject()(employmentService: EmploymentService,
-                                             val auditConnector: AuditConnector,
-                                             authenticate: AuthAction,
-                                             validatePerson: ValidatePerson,
-                                             override implicit val partialRetriever: FormPartialRetriever,
-                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
-
-  def noCYIncomeTaxErrorPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request => {
+  def noCYIncomeTaxErrorPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    {
 
       for {
         emp <- previousYearEmployments(request.taiUser.nino)
@@ -54,10 +55,9 @@ class NoCYIncomeTaxErrorController @Inject()(employmentService: EmploymentServic
     }
   }
 
-  private def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
+  private def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     employmentService.employments(nino, TaxYear().prev) recover {
       case _ => Nil
     }
-  }
 
 }

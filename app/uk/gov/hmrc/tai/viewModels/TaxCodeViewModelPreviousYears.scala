@@ -23,25 +23,28 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
-
-case class TaxCodeViewModelPreviousYears(title: String,
-                            mainHeading: String,
-                            ledeMessage: String,
-                            taxCodeDetails: Seq[DescriptionListViewModel],
-                            preHeader: String)
+case class TaxCodeViewModelPreviousYears(
+  title: String,
+  mainHeading: String,
+  ledeMessage: String,
+  taxCodeDetails: Seq[DescriptionListViewModel],
+  preHeader: String)
 
 object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescriptor {
 
-  def apply(taxCodeRecords: Seq[TaxCodeRecord],
-            scottishTaxRateBands: Map[String, BigDecimal],
-            year: TaxYear = TaxYear())
-           (implicit messages: Messages): TaxCodeViewModelPreviousYears = {
+  def apply(
+    taxCodeRecords: Seq[TaxCodeRecord],
+    scottishTaxRateBands: Map[String, BigDecimal],
+    year: TaxYear = TaxYear())(implicit messages: Messages): TaxCodeViewModelPreviousYears = {
 
     val preHeader = messages(s"tai.taxCode.prev.preHeader")
 
-    val descriptionListViewModels = sortedTaxCodeRecords(taxCodeRecords).map { recordToDescriptionListViewModel(_, scottishTaxRateBands) }
+    val descriptionListViewModels = sortedTaxCodeRecords(taxCodeRecords).map {
+      recordToDescriptionListViewModel(_, scottishTaxRateBands)
+    }
 
-    val titleMessageKey = if (taxCodeRecords.size > 1) "tai.taxCode.prev.multiple.code.title" else "tai.taxCode.prev.single.code.title"
+    val titleMessageKey =
+      if (taxCodeRecords.size > 1) "tai.taxCode.prev.multiple.code.title" else "tai.taxCode.prev.single.code.title"
     val startOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.start))
     val endOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.end))
     val taxCodesTitle = messages(titleMessageKey, startOfTaxYearNonBroken, endOfTaxYearNonBroken)
@@ -59,12 +62,13 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
   }
 
   private def sortedTaxCodeRecords(records: Seq[TaxCodeRecord]): Seq[TaxCodeRecord] = {
-    val primarySecondaryPensionSort: TaxCodeRecord => (Boolean, Boolean) = (record: TaxCodeRecord) => (!record.primary, record.pensionIndicator)
+    val primarySecondaryPensionSort: TaxCodeRecord => (Boolean, Boolean) = (record: TaxCodeRecord) =>
+      (!record.primary, record.pensionIndicator)
     records.sortBy(primarySecondaryPensionSort)
   }
 
-  private def recordToDescriptionListViewModel(record: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal])
-                                              (implicit messages: Messages): DescriptionListViewModel = {
+  private def recordToDescriptionListViewModel(record: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal])(
+    implicit messages: Messages): DescriptionListViewModel = {
     val taxCode = record.taxCode
     val explanation = describeTaxCode(taxCode, record.basisOfOperation, scottishTaxRateBands, isCurrentYear = false)
 

@@ -126,13 +126,14 @@ class DescribedYourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar w
       implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
       val result = service.taxFreeAmountComparison(nino)
 
-      the [RuntimeException] thrownBy Await.result(result, 5.seconds) must have message "Failed to fetch total tax details"
+      the[RuntimeException] thrownBy Await
+        .result(result, 5.seconds) must have message "Failed to fetch total tax details"
     }
   }
 
   private val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
   private val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-  private val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
+  private val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private val nino: Nino = new Generator(new Random).nextNino
@@ -151,10 +152,11 @@ class DescribedYourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar w
   private val previousTaxFreeInfo = Some(TaxFreeInfo("Previous", 1000, 1000))
   private val currentTaxFreeInfo = TaxFreeInfo("Current", 100, 100)
 
-  private class TestService extends DescribedYourTaxFreeAmountService(
-    yourTaxFreeAmountService: YourTaxFreeAmountService,
-    companyCarService: CompanyCarService,
-    employmentService: EmploymentService,
-    taxAccountService: TaxAccountService
-  )
+  private class TestService
+      extends DescribedYourTaxFreeAmountService(
+        yourTaxFreeAmountService: YourTaxFreeAmountService,
+        companyCarService: CompanyCarService,
+        employmentService: EmploymentService,
+        taxAccountService: TaxAccountService
+      )
 }

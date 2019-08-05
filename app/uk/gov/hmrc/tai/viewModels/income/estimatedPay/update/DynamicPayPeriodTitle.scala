@@ -21,47 +21,45 @@ import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 
 trait DynamicPayPeriodTitle extends EditIncomePayPeriodConstants {
 
-  def dynamicTitle(payPeriod: Option[String], payPeriodInDays: Option[String], periodMessages: Map[String, String])(implicit message: Messages) = {
+  def dynamicTitle(payPeriod: Option[String], payPeriodInDays: Option[String], periodMessages: Map[String, String])(
+    implicit message: Messages) =
     payPeriod match {
-      case Some(MONTHLY) => message(periodMessages(MONTHLY))
-      case Some(WEEKLY) => message(periodMessages(WEEKLY))
+      case Some(MONTHLY)     => message(periodMessages(MONTHLY))
+      case Some(WEEKLY)      => message(periodMessages(WEEKLY))
       case Some(FORTNIGHTLY) => message(periodMessages(FORTNIGHTLY))
-      case Some(OTHER) => dayPeriodTitle(payPeriodInDays, periodMessages(OTHER))
-      case _ => throw new RuntimeException("No pay period found")
+      case Some(OTHER)       => dayPeriodTitle(payPeriodInDays, periodMessages(OTHER))
+      case _                 => throw new RuntimeException("No pay period found")
     }
-  }
 
-  private def dayPeriodTitle(payPeriodInDays: Option[String], messageKey: String)(implicit message: Messages): String = {
+  private def dayPeriodTitle(payPeriodInDays: Option[String], messageKey: String)(implicit message: Messages): String =
     payPeriodInDays match {
       case Some(days) => message(messageKey, days)
-      case _ => throw new RuntimeException("No days found for pay period")
+      case _          => throw new RuntimeException("No days found for pay period")
     }
-  }
 }
 
 object GrossPayPeriodTitle extends DynamicPayPeriodTitle {
-  def title(payPeriod: Option[String], payPeriodInDays: Option[String])
-           (implicit message: Messages): String= {
+  def title(payPeriod: Option[String], payPeriodInDays: Option[String])(implicit message: Messages): String = {
 
     val messages = Map(
-      MONTHLY -> "tai.payslip.title.month",
-      WEEKLY -> "tai.payslip.title.week",
+      MONTHLY     -> "tai.payslip.title.month",
+      WEEKLY      -> "tai.payslip.title.week",
       FORTNIGHTLY -> "tai.payslip.title.2week",
-      OTHER -> "tai.payslip.title.days")
+      OTHER       -> "tai.payslip.title.days")
 
     dynamicTitle(payPeriod, payPeriodInDays, messages)
   }
 }
 
 object TaxablePayPeriod extends DynamicPayPeriodTitle {
-  def errorMessage(payPeriod: Option[String], payPeriodInDays: Option[String])
-           (implicit message: Messages): String= {
+  def errorMessage(payPeriod: Option[String], payPeriodInDays: Option[String])(implicit message: Messages): String = {
 
     val taxableMessages = Map(
-      MONTHLY -> "tai.taxablePayslip.title.month",
-      WEEKLY -> "tai.taxablePayslip.title.week",
+      MONTHLY     -> "tai.taxablePayslip.title.month",
+      WEEKLY      -> "tai.taxablePayslip.title.week",
       FORTNIGHTLY -> "tai.taxablePayslip.title.2week",
-      OTHER -> "tai.taxablePayslip.title.days")
+      OTHER       -> "tai.taxablePayslip.title.days"
+    )
 
     dynamicTitle(payPeriod, payPeriodInDays, taxableMessages)
   }

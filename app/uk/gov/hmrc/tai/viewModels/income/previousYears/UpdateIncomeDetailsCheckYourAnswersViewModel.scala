@@ -24,12 +24,12 @@ import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
-
-
-case class UpdateIncomeDetailsCheckYourAnswersViewModel(tableHeader: String,
-                                                        whatYouToldUs: String,
-                                                        contactByPhone: String,
-                                                        phoneNumber: Option[String]) extends FormValuesConstants{
+case class UpdateIncomeDetailsCheckYourAnswersViewModel(
+  tableHeader: String,
+  whatYouToldUs: String,
+  contactByPhone: String,
+  phoneNumber: Option[String])
+    extends FormValuesConstants {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
@@ -61,14 +61,12 @@ case class UpdateIncomeDetailsCheckYourAnswersViewModel(tableHeader: String,
 
 }
 
-
 object UpdateIncomeDetailsCheckYourAnswersViewModel extends ViewModelHelper {
 
-  def apply(taxYear: TaxYear,
-            whatYouToldUs: String,
-            contactByPhone: String,
-            phoneNumber: Option[String])(implicit messages: Messages): UpdateIncomeDetailsCheckYourAnswersViewModel = {
-    val tablelHeader = Messages("tai.income.previousYears.decision.header",TaxPeriodLabelService.taxPeriodLabel(taxYear.year))
+  def apply(taxYear: TaxYear, whatYouToldUs: String, contactByPhone: String, phoneNumber: Option[String])(
+    implicit messages: Messages): UpdateIncomeDetailsCheckYourAnswersViewModel = {
+    val tablelHeader =
+      Messages("tai.income.previousYears.decision.header", TaxPeriodLabelService.taxPeriodLabel(taxYear.year))
     new UpdateIncomeDetailsCheckYourAnswersViewModel(tablelHeader, whatYouToldUs, contactByPhone, phoneNumber)
   }
 

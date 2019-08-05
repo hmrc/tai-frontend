@@ -38,24 +38,22 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
-class CompanyCarServiceSpec extends PlaySpec
-  with MockitoSugar
-  with JourneyCacheConstants
-  with BeforeAndAfterEach {
+class CompanyCarServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheConstants with BeforeAndAfterEach {
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(journeyCacheService, carConnector)
-  }
 
   "companyCarBenefits" must {
     "return empty seq of company car benefits" when {
       "connector returns empty seq" in {
         val sut = createSut
-        val codingComponents = Seq(CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
+        val codingComponents = Seq(
+          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
           CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
           CodingComponent(CarBenefit, None, 1000, "CarBenefit description")
         )
-        when(carConnector.companyCarsForCurrentYearEmployments(any())(any())).thenReturn(Future.successful(Seq.empty[CompanyCarBenefit]))
+        when(carConnector.companyCarsForCurrentYearEmployments(any())(any()))
+          .thenReturn(Future.successful(Seq.empty[CompanyCarBenefit]))
 
         val result = sut.companyCarOnCodingComponents(generateNino, codingComponents)
         Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
@@ -64,7 +62,8 @@ class CompanyCarServiceSpec extends PlaySpec
 
       "Coding components don't have company car benefit" in {
         val sut = createSut
-        val codingComponents = Seq(CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
+        val codingComponents = Seq(
+          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
           CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"))
 
         val result = sut.companyCarOnCodingComponents(generateNino, codingComponents)
@@ -76,7 +75,8 @@ class CompanyCarServiceSpec extends PlaySpec
     "return seq of company car by removing withdrawn company cars" when {
       "Coding components have company car benefit" in {
         val sut = createSut
-        val codingComponents = Seq(CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
+        val codingComponents = Seq(
+          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
           CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
           CodingComponent(CarBenefit, None, 1000, "CarBenefit description")
         )
@@ -92,16 +92,18 @@ class CompanyCarServiceSpec extends PlaySpec
     "update the journey cache" when {
       "there is complete company car information" in {
         val sut = createSut
-        when(carConnector.companyCarBenefitForEmployment(any(), any())(any())).thenReturn(Future.successful(Some(companyCar)))
+        when(carConnector.companyCarBenefitForEmployment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(companyCar)))
         when(employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
         val expectedMap = Map[String, String](
-          CompanyCar_Version -> "1",
-          CompanyCar_CarModelKey -> "Make Model",
-          CompanyCar_CarProviderKey -> "The Man Plc",
-          CompanyCar_CarSeqNoKey -> "10",
-          CompanyCar_DateStartedKey -> "2016-10-10",
+          CompanyCar_Version                   -> "1",
+          CompanyCar_CarModelKey               -> "Make Model",
+          CompanyCar_CarProviderKey            -> "The Man Plc",
+          CompanyCar_CarSeqNoKey               -> "10",
+          CompanyCar_DateStartedKey            -> "2016-10-10",
           CompanyCar_DateFuelBenefitStartedKey -> "2016-10-11",
-          CompanyCar_HasActiveFuelBenefitdKey -> "true")
+          CompanyCar_HasActiveFuelBenefitdKey  -> "true"
+        )
         val expectedResult = TaiSuccessResponseWithPayload(expectedMap)
 
         when(journeyCacheService.cache(Matchers.eq(expectedMap))(any())).thenReturn(Future.successful(expectedMap))
@@ -111,14 +113,16 @@ class CompanyCarServiceSpec extends PlaySpec
 
       "there is partial company car information, where optional values are absent from the domain model" in {
         val sut = createSut
-        when(carConnector.companyCarBenefitForEmployment(any(), any())(any())).thenReturn(Future.successful(Some(companyCarMissingStartDates)))
+        when(carConnector.companyCarBenefitForEmployment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(companyCarMissingStartDates)))
         when(employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
         val expectedMap = Map[String, String](
-          CompanyCar_Version -> "1",
-          CompanyCar_CarModelKey -> "Make Model",
-          CompanyCar_CarProviderKey -> "The Man Plc",
-          CompanyCar_CarSeqNoKey -> "10",
-          CompanyCar_HasActiveFuelBenefitdKey -> "true")
+          CompanyCar_Version                  -> "1",
+          CompanyCar_CarModelKey              -> "Make Model",
+          CompanyCar_CarProviderKey           -> "The Man Plc",
+          CompanyCar_CarSeqNoKey              -> "10",
+          CompanyCar_HasActiveFuelBenefitdKey -> "true"
+        )
         val expectedResult = TaiSuccessResponseWithPayload(expectedMap)
 
         when(journeyCacheService.cache(Matchers.eq(expectedMap))(any())).thenReturn(Future.successful(expectedMap))
@@ -128,9 +132,10 @@ class CompanyCarServiceSpec extends PlaySpec
     }
 
     "return TaiNoCompanyCarFoundResponse" when {
-      "there is a company car with date withdrawn" in{
+      "there is a company car with date withdrawn" in {
         val sut = createSut
-        when(carConnector.companyCarBenefitForEmployment(any(), any())(any())).thenReturn(Future.successful(Some(companyCarWithDateWithDrawn)))
+        when(carConnector.companyCarBenefitForEmployment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(companyCarWithDateWithDrawn)))
         when(employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
 
         val expectedResult = TaiNoCompanyCarFoundResponse("No company car found")
@@ -146,22 +151,24 @@ class CompanyCarServiceSpec extends PlaySpec
         Await.result(sut.beginJourney(generateNino, 1), 5 seconds) mustBe expectedResult
       }
 
-      "there are no company cars with in company benefits" in  {
+      "there are no company cars with in company benefits" in {
         val sut = createSut
         val companyCar = CompanyCarBenefit(10, 1000, Nil, Some(1))
 
-        when(carConnector.companyCarBenefitForEmployment(any(), any())(any())).thenReturn(Future.successful(Some(companyCar)))
+        when(carConnector.companyCarBenefitForEmployment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(companyCar)))
         when(employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
 
         val expectedResult = TaiNoCompanyCarFoundResponse("No company car found")
         Await.result(sut.beginJourney(generateNino, 1), 5 seconds) mustBe expectedResult
       }
     }
-    "return exception"when{
-      "there are no employments" in  {
+    "return exception" when {
+      "there are no employments" in {
         val sut = createSut
 
-        when(carConnector.companyCarBenefitForEmployment(any(), any())(any())).thenReturn(Future.successful(Some(companyCar)))
+        when(carConnector.companyCarBenefitForEmployment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(companyCar)))
         when(employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(None))
 
         the[RuntimeException] thrownBy Await.result(sut.beginJourney(generateNino, 1), 5 seconds)
@@ -169,17 +176,17 @@ class CompanyCarServiceSpec extends PlaySpec
     }
   }
 
-  "isCompanyCarDateWithdrawn" must{
-    "return false if there a company car without date withdrawn" in{
+  "isCompanyCarDateWithdrawn" must {
+    "return false if there a company car without date withdrawn" in {
       val sut = createSut
       sut.isCompanyCarDateWithdrawn(companyCar) mustBe false
     }
-    "return true" when{
-      "there is a car with dateWithdrawn" in{
+    "return true" when {
+      "there is a car with dateWithdrawn" in {
         val sut = createSut
         sut.isCompanyCarDateWithdrawn(companyCarWithDateWithDrawn) mustBe true
       }
-      "there is a list of cars and one of them has dateWithdrawn" in{
+      "there is a list of cars and one of them has dateWithdrawn" in {
         val sut = createSut
         sut.isCompanyCarDateWithdrawn(companyCarListWithDateWithDrawn) mustBe true
       }
@@ -190,14 +197,16 @@ class CompanyCarServiceSpec extends PlaySpec
 
     "return the employment id value from journey cache" in {
       val sut = createSut
-      when(journeyCacheService.mandatoryJourneyValueAsInt(CompanyCar_EmployerIdKey)(hc)).thenReturn(Future.successful(Right(1)))
+      when(journeyCacheService.mandatoryJourneyValueAsInt(CompanyCar_EmployerIdKey)(hc))
+        .thenReturn(Future.successful(Right(1)))
       Await.result(sut.companyCarEmploymentId, 5 seconds) mustBe Right(1)
     }
 
     "return an error message when a value is not present in the journey cache" in {
       val sut = createSut
       val errorMessage = "Mandatory value missing"
-      when(journeyCacheService.mandatoryJourneyValueAsInt(CompanyCar_EmployerIdKey)(hc)).thenReturn(Future.successful(Left(errorMessage)))
+      when(journeyCacheService.mandatoryJourneyValueAsInt(CompanyCar_EmployerIdKey)(hc))
+        .thenReturn(Future.successful(Left(errorMessage)))
       Await.result(sut.companyCarEmploymentId, 5 seconds) mustBe Left(errorMessage)
     }
   }
@@ -208,7 +217,8 @@ class CompanyCarServiceSpec extends PlaySpec
       val sut = createSut
       val nino = generateNino
       when(journeyCacheService.currentCache(hc)).thenReturn(Future.successful(Map[String, String]()))
-      val thrownErrorResponse = the[RuntimeException] thrownBy Await.result(sut.withdrawCompanyCarAndFuel(nino, "NA"), 5 seconds)
+      val thrownErrorResponse = the[RuntimeException] thrownBy Await
+        .result(sut.withdrawCompanyCarAndFuel(nino, "NA"), 5 seconds)
       thrownErrorResponse.getMessage mustBe "Empty value in Company Car cache"
     }
 
@@ -219,12 +229,14 @@ class CompanyCarServiceSpec extends PlaySpec
       val version = 1
       val nino = generateNino
 
-      val sampleCache = Map(CompanyCar_EmployerIdKey -> employmentSeqNum.toString,
-        CompanyCar_CarSeqNoKey -> carSeqNum.toString,
-        CompanyCar_Version -> version.toString)
+      val sampleCache = Map(
+        CompanyCar_EmployerIdKey -> employmentSeqNum.toString,
+        CompanyCar_CarSeqNoKey   -> carSeqNum.toString,
+        CompanyCar_Version       -> version.toString)
 
       when(journeyCacheService.currentCache(hc)).thenReturn(Future.successful(sampleCache))
-      val thrownErrorResponse = the[RuntimeException] thrownBy Await.result(sut.withdrawCompanyCarAndFuel(nino, "NA"), 5 seconds)
+      val thrownErrorResponse = the[RuntimeException] thrownBy Await
+        .result(sut.withdrawCompanyCarAndFuel(nino, "NA"), 5 seconds)
       thrownErrorResponse.getMessage mustBe "Empty value in Company Car cache"
     }
 
@@ -239,16 +251,22 @@ class CompanyCarServiceSpec extends PlaySpec
         val nino = generateNino
         val expectedResult = TaiSuccessResponse
 
-        val sampleCache = Map(CompanyCar_EmployerIdKey -> employmentSeqNum.toString,
-          CompanyCar_CarSeqNoKey -> carSeqNum.toString,
-          CompanyCar_DateGivenBackKey -> withdrawDate.toString,
+        val sampleCache = Map(
+          CompanyCar_EmployerIdKey             -> employmentSeqNum.toString,
+          CompanyCar_CarSeqNoKey               -> carSeqNum.toString,
+          CompanyCar_DateGivenBackKey          -> withdrawDate.toString,
           CompanyCar_DateFuelBenefitStoppedKey -> withdrawDate.toString,
-          CompanyCar_Version -> version.toString)
+          CompanyCar_Version                   -> version.toString
+        )
 
         when(journeyCacheService.currentCache(hc)).thenReturn(Future.successful(sampleCache))
 
-        when(carConnector.withdrawCompanyCarAndFuel(Matchers.eq(nino), Matchers.eq(employmentSeqNum), Matchers.eq(carSeqNum),
-          Matchers.eq(withdrawCarAndFuel))(any())).thenReturn(Future.successful(expectedResult))
+        when(
+          carConnector.withdrawCompanyCarAndFuel(
+            Matchers.eq(nino),
+            Matchers.eq(employmentSeqNum),
+            Matchers.eq(carSeqNum),
+            Matchers.eq(withdrawCarAndFuel))(any())).thenReturn(Future.successful(expectedResult))
 
         val result = Await.result(sut.withdrawCompanyCarAndFuel(nino, "NA"), 5 seconds)
         result mustBe expectedResult
@@ -265,16 +283,22 @@ class CompanyCarServiceSpec extends PlaySpec
         val nino = generateNino
         val expectedResult = TaiNotFoundResponse("Something went wrong")
 
-        val sampleCache = Map(CompanyCar_EmployerIdKey -> employmentSeqNum.toString,
-          CompanyCar_CarSeqNoKey -> carSeqNum.toString,
-          CompanyCar_DateGivenBackKey -> withdrawDate.toString,
+        val sampleCache = Map(
+          CompanyCar_EmployerIdKey             -> employmentSeqNum.toString,
+          CompanyCar_CarSeqNoKey               -> carSeqNum.toString,
+          CompanyCar_DateGivenBackKey          -> withdrawDate.toString,
           CompanyCar_DateFuelBenefitStoppedKey -> withdrawDate.toString,
-          CompanyCar_Version -> version.toString)
+          CompanyCar_Version                   -> version.toString
+        )
 
         when(journeyCacheService.currentCache(hc)).thenReturn(Future.successful(sampleCache))
 
-        when(carConnector.withdrawCompanyCarAndFuel(Matchers.eq(nino), Matchers.eq(employmentSeqNum), Matchers.eq(carSeqNum),
-          Matchers.eq(withdrawCarAndFuel))(any())).thenReturn(Future.successful(expectedResult))
+        when(
+          carConnector.withdrawCompanyCarAndFuel(
+            Matchers.eq(nino),
+            Matchers.eq(employmentSeqNum),
+            Matchers.eq(carSeqNum),
+            Matchers.eq(withdrawCarAndFuel))(any())).thenReturn(Future.successful(expectedResult))
 
         val result = Await.result(sut.withdrawCompanyCarAndFuel(nino, "NA"), 5 seconds)
         result mustBe expectedResult
@@ -292,15 +316,21 @@ class CompanyCarServiceSpec extends PlaySpec
         val nino = generateNino
         val expectedResult = TaiSuccessResponse
 
-        val sampleCache = Map(CompanyCar_EmployerIdKey -> employmentSeqNum.toString,
-          CompanyCar_CarSeqNoKey -> carSeqNum.toString,
+        val sampleCache = Map(
+          CompanyCar_EmployerIdKey    -> employmentSeqNum.toString,
+          CompanyCar_CarSeqNoKey      -> carSeqNum.toString,
           CompanyCar_DateGivenBackKey -> withdrawDate.toString,
-          CompanyCar_Version -> version.toString)
+          CompanyCar_Version          -> version.toString
+        )
 
         when(journeyCacheService.currentCache(hc)).thenReturn(Future.successful(sampleCache))
 
-        when(carConnector.withdrawCompanyCarAndFuel(Matchers.eq(nino), Matchers.eq(employmentSeqNum), Matchers.eq(carSeqNum),
-          Matchers.eq(withdrawCarAndFuel))(any())).thenReturn(Future.successful(expectedResult))
+        when(
+          carConnector.withdrawCompanyCarAndFuel(
+            Matchers.eq(nino),
+            Matchers.eq(employmentSeqNum),
+            Matchers.eq(carSeqNum),
+            Matchers.eq(withdrawCarAndFuel))(any())).thenReturn(Future.successful(expectedResult))
 
         val result = Await.result(sut.withdrawCompanyCarAndFuel(nino, "NA"), 5 seconds)
         result mustBe expectedResult
@@ -312,59 +342,77 @@ class CompanyCarServiceSpec extends PlaySpec
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val companyCar = CompanyCarBenefit(10, 1000, List(
-    CompanyCar(
-      10,
-      "Make Model",
-      hasActiveFuelBenefit = true,
-      dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-      dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
-      dateWithdrawn = None)),
+  val companyCar = CompanyCarBenefit(
+    10,
+    1000,
+    List(
+      CompanyCar(
+        10,
+        "Make Model",
+        hasActiveFuelBenefit = true,
+        dateMadeAvailable = Some(new LocalDate("2016-10-10")),
+        dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
+        dateWithdrawn = None
+      )),
     Some(1)
   )
 
-  val companyCarWithDateWithDrawn = CompanyCarBenefit(10, 1000, List(
-    CompanyCar(
-      10,
-      "Make Model",
-      hasActiveFuelBenefit = false,
-      dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-      dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
-      dateWithdrawn = Some(new LocalDate("2017-05-12")))),
+  val companyCarWithDateWithDrawn = CompanyCarBenefit(
+    10,
+    1000,
+    List(
+      CompanyCar(
+        10,
+        "Make Model",
+        hasActiveFuelBenefit = false,
+        dateMadeAvailable = Some(new LocalDate("2016-10-10")),
+        dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
+        dateWithdrawn = Some(new LocalDate("2017-05-12"))
+      )),
     Some(1)
   )
 
-  val companyCarListWithDateWithDrawn = CompanyCarBenefit(10, 1000, List(
-    CompanyCar(
-      10,
-      "Make Model",
-      hasActiveFuelBenefit = false,
-      dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-      dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
-      dateWithdrawn = Some(new LocalDate("2017-05-12"))),
-    CompanyCar(
-      11,
-      "Make Model2",
-      hasActiveFuelBenefit = true,
-      dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-      dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
-      dateWithdrawn = None)),
+  val companyCarListWithDateWithDrawn = CompanyCarBenefit(
+    10,
+    1000,
+    List(
+      CompanyCar(
+        10,
+        "Make Model",
+        hasActiveFuelBenefit = false,
+        dateMadeAvailable = Some(new LocalDate("2016-10-10")),
+        dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
+        dateWithdrawn = Some(new LocalDate("2017-05-12"))
+      ),
+      CompanyCar(
+        11,
+        "Make Model2",
+        hasActiveFuelBenefit = true,
+        dateMadeAvailable = Some(new LocalDate("2016-10-10")),
+        dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
+        dateWithdrawn = None
+      )
+    ),
     Some(1)
   )
 
-  val companyCarMissingStartDates = CompanyCarBenefit(10, 1000, List(
-    CompanyCar(
-      10,
-      "Make Model",
-      hasActiveFuelBenefit = true,
-      dateMadeAvailable = None,
-      dateActiveFuelBenefitMadeAvailable = None,
-      dateWithdrawn = None
-    )),
+  val companyCarMissingStartDates = CompanyCarBenefit(
+    10,
+    1000,
+    List(
+      CompanyCar(
+        10,
+        "Make Model",
+        hasActiveFuelBenefit = true,
+        dateMadeAvailable = None,
+        dateActiveFuelBenefitMadeAvailable = None,
+        dateWithdrawn = None
+      )),
     Some(1)
   )
 
-  val employment = Employment("The Man Plc", None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false, false)
+  val employment =
+    Employment("The Man Plc", None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false, false)
   val companyCars = Seq(companyCar, companyCarWithDateWithDrawn)
 
   def generateNino: Nino = new Generator(new Random).nextNino
@@ -375,11 +423,12 @@ class CompanyCarServiceSpec extends PlaySpec
   val journeyCacheService = mock[JourneyCacheService]
   val carConnector = mock[CompanyCarConnector]
 
-  private class SUT extends CompanyCarService(
-    carConnector,
-    employmentService,
-    mock[AuditService],
-    journeyCacheService
-  )
+  private class SUT
+      extends CompanyCarService(
+        carConnector,
+        employmentService,
+        mock[AuditService],
+        journeyCacheService
+      )
 
 }

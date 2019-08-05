@@ -22,18 +22,16 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 object DateHelper {
 
-  def toDisplayFormat(date: Option[LocalDate])(implicit messages: Messages): String = {
+  def toDisplayFormat(date: Option[LocalDate])(implicit messages: Messages): String =
     date match {
       case Some(dt) => Dates.formatDate(dt)
-      case _ => ""
+      case _        => ""
     }
-  }
 
   implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isAfter _)
 
-  def mostRecentDate(dates: Seq[LocalDate]): LocalDate = {
+  def mostRecentDate(dates: Seq[LocalDate]): LocalDate =
     dates.min
-  }
 
   def monthOfYear(date: String): String = {
     val monthRegex = "[A-Za-z]+".r

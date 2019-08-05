@@ -23,10 +23,8 @@ import uk.gov.hmrc.tai.forms.{PayslipForm, TaxablePayslipForm}
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 
-class TaxablePaySlipAmountViewModelSpec extends PlaySpec
-  with FakeTaiPlayApplication
-  with I18nSupport
-  with EditIncomePayPeriodConstants {
+class TaxablePaySlipAmountViewModelSpec
+    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with EditIncomePayPeriodConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -61,7 +59,7 @@ class TaxablePaySlipAmountViewModelSpec extends PlaySpec
     }
 
     "throw an exception if there is no pay period defined" in {
-      val exception = intercept[RuntimeException]{
+      val exception = intercept[RuntimeException] {
         val form = TaxablePayslipForm.createForm(None, None, None)
         TaxablePaySlipAmountViewModel(form, None, Some("123"), employer)
       }
@@ -70,7 +68,7 @@ class TaxablePaySlipAmountViewModelSpec extends PlaySpec
     }
 
     "throw an exception if there is no pay period in days defined" in {
-      val exception = intercept[RuntimeException]{
+      val exception = intercept[RuntimeException] {
         val payPeriod = Some(OTHER)
         val form = TaxablePayslipForm.createForm(None, payPeriod, None)
         TaxablePaySlipAmountViewModel(form, payPeriod, None, employer)

@@ -29,26 +29,28 @@ class IncomeTaxSpec extends TaiViewSpec {
     "display a higher estimated tax amount for next year" when {
       "a view model is supplied to the view with appropriate data" in {
 
-        val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(),100)
-        val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next,201.83)
+        val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
+        val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 201.83)
 
         val viewmodel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
         def view: Html = views.html.incomeTaxComparison.IncomeTax(viewmodel)
 
-        doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "&pound;101"))
+        doc(view) must haveH2HeadingWithText(
+          messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "&pound;101"))
       }
     }
 
     "display a lower estimated tax amount for next year" when {
       "a view model is supplied to the view with appropriate data" in {
 
-        val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(),200.83)
-        val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next,100)
+        val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 200.83)
+        val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 100)
 
         val viewmodel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
         def view: Html = views.html.incomeTaxComparison.IncomeTax(viewmodel)
 
-        doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.less", "&pound;100"))
+        doc(view) must haveH2HeadingWithText(
+          messages("tai.incomeTaxComparison.incomeTax.subHeading.less", "&pound;100"))
       }
     }
 
@@ -84,11 +86,11 @@ class IncomeTaxSpec extends TaiViewSpec {
     "display the comparison table column headers with correct values" ignore {
       "a view model is supplied to the view with appropriate data" in {
 
-        doc must haveThWithText(s"${messages("tai.CurrentTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column1",
-          TaxYear().end.toString("d MMMM"))}")
+        doc must haveThWithText(
+          s"${messages("tai.CurrentTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column1", TaxYear().end.toString("d MMMM"))}")
 
-        doc must haveThWithText(s"${messages("tai.NextTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column2",
-          TaxYear().next.start.toString("d MMMM yyyy"))}")
+        doc must haveThWithText(
+          s"${messages("tai.NextTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column2", TaxYear().next.start.toString("d MMMM yyyy"))}")
       }
     }
   }
@@ -96,8 +98,8 @@ class IncomeTaxSpec extends TaiViewSpec {
   private val yourPAYEIncomeTaxEstimate = "Your PAYE Income Tax estimate"
   val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().end)) + " "
   val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start)) + " "
-  private val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(),100.83)
-  private val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next,100.83)
+  private val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100.83)
+  private val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 100.83)
 
   private val viewmodel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
   override def view: Html = views.html.incomeTaxComparison.IncomeTax(viewmodel)

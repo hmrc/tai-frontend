@@ -18,15 +18,16 @@ package uk.gov.hmrc.tai.model.domain.tax
 
 import play.api.libs.json._
 
-case class TaxBand(bandType: String,
-                   code: String,
-                   income: BigDecimal,
-                   tax: BigDecimal,
-                   lowerBand: Option[BigDecimal] = None,
-                   upperBand: Option[BigDecimal] = None,
-                   rate: BigDecimal)
+case class TaxBand(
+  bandType: String,
+  code: String,
+  income: BigDecimal,
+  tax: BigDecimal,
+  lowerBand: Option[BigDecimal] = None,
+  upperBand: Option[BigDecimal] = None,
+  rate: BigDecimal)
 
-object TaxBand{
+object TaxBand {
   implicit val formats = Json.format[TaxBand]
 }
 
@@ -40,42 +41,41 @@ case object ForeignDividendsIncomeCategory extends IncomeCategoryType
 
 object IncomeCategoryType {
   implicit val incomeCategoryTypeFormats = new Format[IncomeCategoryType] {
-    override def reads(json: JsValue): JsResult[IncomeCategoryType] = {
+    override def reads(json: JsValue): JsResult[IncomeCategoryType] =
       json.as[String] match {
-        case "NonSavingsIncomeCategory" => JsSuccess(NonSavingsIncomeCategory)
-        case "UntaxedInterestIncomeCategory" => JsSuccess(UntaxedInterestIncomeCategory)
-        case "BankInterestIncomeCategory" => JsSuccess(BankInterestIncomeCategory)
-        case "UkDividendsIncomeCategory" => JsSuccess(UkDividendsIncomeCategory)
-        case "ForeignInterestIncomeCategory" => JsSuccess(ForeignInterestIncomeCategory)
+        case "NonSavingsIncomeCategory"       => JsSuccess(NonSavingsIncomeCategory)
+        case "UntaxedInterestIncomeCategory"  => JsSuccess(UntaxedInterestIncomeCategory)
+        case "BankInterestIncomeCategory"     => JsSuccess(BankInterestIncomeCategory)
+        case "UkDividendsIncomeCategory"      => JsSuccess(UkDividendsIncomeCategory)
+        case "ForeignInterestIncomeCategory"  => JsSuccess(ForeignInterestIncomeCategory)
         case "ForeignDividendsIncomeCategory" => JsSuccess(ForeignDividendsIncomeCategory)
-        case _ => throw new IllegalArgumentException("Invalid income category type")
+        case _                                => throw new IllegalArgumentException("Invalid income category type")
       }
-    }
 
     override def writes(o: IncomeCategoryType): JsValue = ???
   }
 }
 
-case class IncomeCategory(incomeCategoryType: IncomeCategoryType,
-                          totalTax: BigDecimal,
-                          totalTaxableIncome: BigDecimal,
-                          totalIncome: BigDecimal,
-                          taxBands: Seq[TaxBand]
-                         )
+case class IncomeCategory(
+  incomeCategoryType: IncomeCategoryType,
+  totalTax: BigDecimal,
+  totalTaxableIncome: BigDecimal,
+  totalIncome: BigDecimal,
+  taxBands: Seq[TaxBand])
 
-object IncomeCategory{
+object IncomeCategory {
   implicit val formats = Json.format[IncomeCategory]
 }
 
-case class TotalTax(amount: BigDecimal,
-                    incomeCategories: Seq[IncomeCategory],
-                    reliefsGivingBackTax: Option[TaxAdjustment],
-                    otherTaxDue: Option[TaxAdjustment],
-                    alreadyTaxedAtSource: Option[TaxAdjustment],
-                    taxOnOtherIncome: Option[BigDecimal] = None,
-                    taxReliefComponent: Option[TaxAdjustment] = None)
+case class TotalTax(
+  amount: BigDecimal,
+  incomeCategories: Seq[IncomeCategory],
+  reliefsGivingBackTax: Option[TaxAdjustment],
+  otherTaxDue: Option[TaxAdjustment],
+  alreadyTaxedAtSource: Option[TaxAdjustment],
+  taxOnOtherIncome: Option[BigDecimal] = None,
+  taxReliefComponent: Option[TaxAdjustment] = None)
 
-object TotalTax{
+object TotalTax {
   implicit val formats = Json.format[TotalTax]
 }
-

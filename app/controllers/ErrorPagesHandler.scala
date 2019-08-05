@@ -41,55 +41,52 @@ trait ErrorPagesHandler {
 
   type RecoveryLocation = Class[_]
 
-  def error4xxPageWithLink(pageTitle: String)
-                          (implicit request: Request[_], messages: Messages) = {
+  def error4xxPageWithLink(pageTitle: String)(implicit request: Request[_], messages: Messages) =
     views.html.error_template_noauth(
       pageTitle,
       Messages("tai.errorMessage.heading"),
       Messages("tai.errorMessage.frontend400.message1"),
-      Some(Messages("tai.errorMessage.frontend400.message2", Link.toInternalPage(
-        url = "#report-name",
-        cssClasses = Some("report-error__toggle"),
-        value = Some(Messages("tai.errorMessage.reportAProblem"))).toHtml
-      )))
-  }
+      Some(
+        Messages(
+          "tai.errorMessage.frontend400.message2",
+          Link
+            .toInternalPage(
+              url = "#report-name",
+              cssClasses = Some("report-error__toggle"),
+              value = Some(Messages("tai.errorMessage.reportAProblem")))
+            .toHtml
+        ))
+    )
 
-  def badRequestPageWrongVersion(implicit request: Request[_], messages: Messages) = {
+  def badRequestPageWrongVersion(implicit request: Request[_], messages: Messages) =
     views.html.error_template_noauth(
       Messages("global.error.badRequest400.title"),
       Messages("tai.errorMessage.heading"),
       Messages("tai.errorMessage.frontend400.message1.version"))
-  }
 
-  def error4xxFromNps(pageTitle: String)
-                     (implicit request: Request[_], messages: Messages) = {
+  def error4xxFromNps(pageTitle: String)(implicit request: Request[_], messages: Messages) =
     views.html.error_template_noauth(
       pageTitle,
       Messages("tai.errorMessage.heading.nps"),
       Messages("tai.errorMessage.frontend400.message1.nps"),
-      Some(Messages("tai.errorMessage.frontend400.message2.nps")))
-  }
+      Some(Messages("tai.errorMessage.frontend400.message2.nps"))
+    )
 
-  def error5xx(pageBody: String)
-              (implicit request: Request[_], messages: Messages) = {
+  def error5xx(pageBody: String)(implicit request: Request[_], messages: Messages) =
     views.html.error_template_noauth(
       Messages("global.error.InternalServerError500.title"),
       Messages("tai.technical.error.heading"),
       pageBody)
-  }
 
   @deprecated("Prefer chaining of named partial functions for clarity", "Introduction of new WDYWTD page")
-  def handleErrorResponse(methodName: String, nino: Nino)
-                         (implicit request: Request[_]):
-
-  PartialFunction[Throwable, Future[Result]] = PartialFunction[Throwable, Future[Result]] {
-    throwable: Throwable =>
+  def handleErrorResponse(methodName: String, nino: Nino)(
+    implicit request: Request[_]): PartialFunction[Throwable, Future[Result]] =
+    PartialFunction[Throwable, Future[Result]] { throwable: Throwable =>
       implicit val messages = play.api.i18n.Messages.Implicits.applicationMessages
       throwable match {
         case e: Upstream4xxResponse => {
           Logger.warn(s"<Upstream4xxResponse> - $methodName nino $nino")
-          Future.successful(BadRequest(error4xxPageWithLink(
-            Messages("global.error.badRequest400.title"))))
+          Future.successful(BadRequest(error4xxPageWithLink(Messages("global.error.badRequest400.title"))))
         }
 
         case e: BadRequestException => {
@@ -108,18 +105,19 @@ trait ErrorPagesHandler {
             case true =>
               Logger.warn(s"<Incorrect Version Number> - $methodName nino $nino")
               Future.successful(BadRequest(badRequestPageWrongVersion))
-            case _ => e.getMessage().contains("appStatusMessage") match {
-              case true =>
-                if (noPrimary) {
-                  Logger.warn(s"<Cannot complete a coding calculation without Primary Employment> - $methodName nino $nino")
-                  Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
-                } else {
-                  Future.successful(BadRequest(error4xxFromNps(
-                    Messages("global.error.badRequest400.title"))))
-                }
-              case _ => Future.successful(BadRequest(error4xxPageWithLink(
-                Messages("global.error.badRequest400.title"))))
-            }
+            case _ =>
+              e.getMessage().contains("appStatusMessage") match {
+                case true =>
+                  if (noPrimary) {
+                    Logger.warn(
+                      s"<Cannot complete a coding calculation without Primary Employment> - $methodName nino $nino")
+                    Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+                  } else {
+                    Future.successful(BadRequest(error4xxFromNps(Messages("global.error.badRequest400.title"))))
+                  }
+                case _ =>
+                  Future.successful(BadRequest(error4xxPageWithLink(Messages("global.error.badRequest400.title"))))
+              }
           }
         }
 
@@ -135,127 +133,162 @@ trait ErrorPagesHandler {
               if (noCyInfo) {
                 Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
               } else {
-                Future.successful(NotFound(error4xxFromNps(
-                  Messages("global.error.pageNotFound404.title"))))
+                Future.successful(NotFound(error4xxFromNps(Messages("global.error.pageNotFound404.title"))))
               }
             case _ =>
-              Future.successful(NotFound(error4xxPageWithLink(
-                Messages("global.error.pageNotFound404.title"))))
+              Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
           }
         }
 
         case e: InternalServerException => {
           Logger.warn(s"<InternalServerException> - $methodName nino $nino")
-          Future.successful(InternalServerError(error5xx(
-            Messages("tai.technical.error.npsdown.message"))))
+          Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.npsdown.message"))))
         }
 
         case e: Upstream5xxResponse => {
           Logger.warn(s"<Upstream5xxResponse> - $methodName nino $nino")
-          Future.successful(InternalServerError(error5xx(
-            Messages("tai.technical.error.npsdown.message"))))
+          Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.npsdown.message"))))
         }
 
         case e => {
           Logger.warn(s"<Unknown Exception> - $methodName nino $nino", e)
-          Future.successful(InternalServerError(error5xx(
-            Messages("tai.technical.error.message"))))
+          Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
         }
       }
-  }
+    }
 
-  def npsEmploymentAbsentResult(nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+  def npsEmploymentAbsentResult(nino: String)(
+    implicit request: Request[AnyContent],
+    messages: Messages,
+    rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: NotFoundException if e.getMessage.toLowerCase.contains(NpsAppStatusMsg) =>
       Logger.warn(s"<Not found response received from NPS> - for nino $nino @${rl.getName}")
       Future.successful(NotFound(error4xxFromNps(Messages("global.error.pageNotFound404.title"))))
   }
 
-  def rtiEmploymentAbsentResult(nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+  def rtiEmploymentAbsentResult(nino: String)(
+    implicit request: Request[AnyContent],
+    messages: Messages,
+    rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: NotFoundException =>
       Logger.warn(s"<Not found response received from rti> - for nino $nino @${rl.getName}")
       Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
   }
 
-  def hodInternalErrorResult(nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
-    case e @ (_:InternalServerException | _:HttpException) =>
+  def hodInternalErrorResult(nino: String)(
+    implicit request: Request[AnyContent],
+    messages: Messages,
+    rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+    case e @ (_: InternalServerException | _: HttpException) =>
       Logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
       Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
   }
 
-  def hodBadRequestResult(nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+  def hodBadRequestResult(nino: String)(
+    implicit request: Request[AnyContent],
+    messages: Messages,
+    rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: BadRequestException =>
-      Logger.warn(s"<Bad request exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass}", e)
+      Logger.warn(
+        s"<Bad request exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass}",
+        e)
       Future.successful(BadRequest(error4xxPageWithLink(Messages("global.error.badRequest400.title"))))
   }
 
-  def hodAnyErrorResult(nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+  def hodAnyErrorResult(nino: String)(
+    implicit request: Request[AnyContent],
+    messages: Messages,
+    rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e =>
       Logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
       Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
   }
 
-  def npsTaxAccountDeceasedResult(nino: String)(implicit request: Request[AnyContent],  messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
+  def npsTaxAccountDeceasedResult(nino: String)(
+    implicit request: Request[AnyContent],
+    messages: Messages,
+    rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.contains(TaiConstants.NpsTaxAccountDeceasedMsg) => {
       Logger.warn(s"<Deceased response received from nps tax account> - for nino $nino @${rl.getName}")
       Some(Redirect(routes.DeceasedController.deceased()))
     }
   }
-  def npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] ={
+  def npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(
+    implicit request: Request[AnyContent],
+    messages: Messages,
+    rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountCYDataAbsentMsg) => {
       prevYearEmployments match {
         case Nil => {
-          Logger.warn(s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
+          Logger.warn(
+            s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
           Some(BadRequest(views.html.error_no_primary()))
         }
         case _ => {
-          Logger.info(s"<No current year data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")
+          Logger.info(
+            s"<No current year data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")
           None
         }
       }
     }
   }
 
-  def npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] ={
+  def npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(
+    implicit request: Request[AnyContent],
+    messages: Messages,
+    rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) => {
       prevYearEmployments match {
         case Nil => {
-          Logger.warn(s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
+          Logger.warn(
+            s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
           Some(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
         }
         case _ => {
-          Logger.warn(s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")
+          Logger.warn(
+            s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")
           None
         }
       }
     }
   }
 
-  def npsNoEmploymentResult(nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
+  def npsNoEmploymentResult(nino: String)(
+    implicit request: Request[AnyContent],
+    messages: Messages,
+    rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentsRecorded) => {
       Logger.warn(s"<No data returned from nps employments> - for nino $nino @${rl.getName}")
       Some(BadRequest(views.html.error_no_primary()))
     }
   }
 
-  def npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(implicit request: Request[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
-    case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) => {
+  def npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(
+    implicit request: Request[AnyContent],
+    messages: Messages,
+    rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
+    case TaiTaxAccountFailureResponse(msg)
+        if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) => {
       prevYearEmployments match {
         case Nil => {
-          Logger.warn(s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
+          Logger.warn(
+            s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
           Some(BadRequest(views.html.error_no_primary()))
         }
         case _ => {
-          Logger.info(s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")
+          Logger.info(
+            s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")
           None
         }
       }
     }
   }
 
-  def internalServerError(logMessage: String, ex: Option[Throwable] = None)(implicit request: Request[_], messages: Messages): Result = {
+  def internalServerError(logMessage: String, ex: Option[Throwable] = None)(
+    implicit request: Request[_],
+    messages: Messages): Result = {
     Logger.warn(logMessage)
     ex.map(x => Logger.warn(x.getMessage()))
     InternalServerError(error5xx(Messages("tai.technical.error.message")))
   }
 }
-

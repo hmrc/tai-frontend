@@ -30,7 +30,9 @@ class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with Irregu
     behave like pageWithTitle(messages("tai.irregular.preHeadingText"))
     behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.empId))
-    behave like pageWithCombinedHeader(messages("tai.irregular.preHeadingText"), messages("tai.irregular.heading", model.employerName))
+    behave like pageWithCombinedHeader(
+      messages("tai.irregular.preHeadingText"),
+      messages("tai.irregular.heading", model.employerName))
     behave like pageWithContinueButtonForm("/check-income-tax/end-employment/handle-irregular-payment")
 
     "display paragraphs" in {
@@ -55,13 +57,15 @@ class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with Irregu
     }
   }
 
-  private lazy val formWithErrors: Form[IrregularPayFormData] = IrregularPayForm.createForm.bind(Map(
-    IrregularPayDecision -> ""
-  ))
+  private lazy val formWithErrors: Form[IrregularPayFormData] = IrregularPayForm.createForm.bind(
+    Map(
+      IrregularPayDecision -> ""
+    ))
 
-  private lazy val validForm: Form[IrregularPayFormData] = IrregularPayForm.createForm.bind(Map(
-    IrregularPayDecision -> ContactEmployer
-  ))
+  private lazy val validForm: Form[IrregularPayFormData] = IrregularPayForm.createForm.bind(
+    Map(
+      IrregularPayDecision -> ContactEmployer
+    ))
 
   private lazy val model = EmploymentViewModel("TEST", 1)
 

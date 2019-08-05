@@ -34,7 +34,9 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(Messages("taxCode.change.yourTaxFreeAmount.title"))
 
-    behave like pageWithCombinedHeader(Messages("taxCode.change.journey.preHeading"), Messages("taxCode.change.yourTaxFreeAmount.title"))
+    behave like pageWithCombinedHeader(
+      Messages("taxCode.change.journey.preHeading"),
+      Messages("taxCode.change.yourTaxFreeAmount.title"))
 
     "have explanation of tax-free amount" in {
       doc must haveParagraphWithText(Messages("taxCode.change.yourTaxFreeAmount.desc"))
@@ -79,19 +81,27 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       }
 
       "contains a heading for the addition section" in {
-        doc must haveElementAtPathWithText("h3.tax-free-amount-comparison-row-heading", Messages("tai.taxFreeAmount.table.additions.caption"))
+        doc must haveElementAtPathWithText(
+          "h3.tax-free-amount-comparison-row-heading",
+          Messages("tai.taxFreeAmount.table.additions.caption"))
       }
 
       "contains a heading for the deduction section" in {
-        doc must haveElementAtPathWithText("h3.tax-free-amount-comparison-row-heading", Messages("tai.taxFreeAmount.table.deductions.caption"))
+        doc must haveElementAtPathWithText(
+          "h3.tax-free-amount-comparison-row-heading",
+          Messages("tai.taxFreeAmount.table.deductions.caption"))
       }
 
       "contains heading for the personal allowance category" in {
-        doc must haveElementAtPathWithText(".tax-free-amount-comparison-row-title", Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""))
+        doc must haveElementAtPathWithText(
+          ".tax-free-amount-comparison-row-title",
+          Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""))
       }
 
       "contains heading for the total category" in {
-        doc must haveElementAtPathWithText("h3.tax-free-amount-comparison-row-heading", Messages("tai.taxFreeAmount.table.totals.label"))
+        doc must haveElementAtPathWithText(
+          "h3.tax-free-amount-comparison-row-heading",
+          Messages("tai.taxFreeAmount.table.totals.label"))
       }
 
       "visually formats the final table" when {
@@ -104,87 +114,115 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
     "have a 'see what happens next' button" in {
       doc must haveLinkElement(
-        "seeWhatHappensNext", routes.TaxCodeChangeController.whatHappensNext.url, messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link"))
+        "seeWhatHappensNext",
+        routes.TaxCodeChangeController.whatHappensNext.url,
+        messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link"))
     }
   }
 
   val personalAllowanceCategory = TaxFreeAmountSummaryCategoryViewModel(
-                                      Messages("tai.taxFreeAmount.table.columnOneHeader"),
-                                      Messages("tai.taxFreeAmount.table.columnTwoHeader"),
-                                      hideHeaders = false,
-                                      hideCaption = true,
-                                      Messages("tai.taxFreeAmount.table.allowances.caption"),
-                                      Seq(TaxFreeAmountSummaryRowViewModel(
-                                        Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
-                                        "£1150",
-                                        ChangeLinkViewModel(false, "", "")
-                                      )))
-
-  val emptyAdditionRows = Seq(TaxFreeAmountSummaryRowViewModel(
-    Messages("tai.taxFreeAmount.table.additions.noAddition"), "£0", ChangeLinkViewModel(false, "", "")
-  ))
-
-  val nonEmptyAdditionRows = Seq(
-      TaxFreeAmountSummaryRowViewModel(Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceReceived"), "£200", ChangeLinkViewModel(false, "", "")),
-      TaxFreeAmountSummaryRowViewModel(Messages("tai.taxFreeAmount.table.additions.total"), "£200", ChangeLinkViewModel(false, "", "")))
-
-  def createAdditionsCatetgory(additionRows: Seq[TaxFreeAmountSummaryRowViewModel]) = TaxFreeAmountSummaryCategoryViewModel(
-                                Messages("tai.taxFreeAmount.table.columnOneHeader"),
-                                Messages("tai.taxFreeAmount.table.columnTwoHeader"),
-                                hideHeaders = true,
-                                hideCaption = false,
-                                Messages("tai.taxFreeAmount.table.additions.caption"),
-                                additionRows)
-
-  val emptyDeductionsRows = Seq(TaxFreeAmountSummaryRowViewModel(
-    Messages("tai.taxFreeAmount.table.deductions.noDeduction"), "£0", ChangeLinkViewModel(false, "", "")
-  ))
-
-  val nonEmptyDeductionRows = Seq(
-    TaxFreeAmountSummaryRowViewModel(Messages("tai.taxFreeAmount.table.deductions.total"), "£100", ChangeLinkViewModel(false, "", "")),
-    TaxFreeAmountSummaryRowViewModel(Messages("tai.taxFreeAmount.table.taxComponent.DividendTax"), "£100", ChangeLinkViewModel(false, "", ""))
+    Messages("tai.taxFreeAmount.table.columnOneHeader"),
+    Messages("tai.taxFreeAmount.table.columnTwoHeader"),
+    hideHeaders = false,
+    hideCaption = true,
+    Messages("tai.taxFreeAmount.table.allowances.caption"),
+    Seq(
+      TaxFreeAmountSummaryRowViewModel(
+        Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
+        "£1150",
+        ChangeLinkViewModel(false, "", "")
+      ))
   )
 
-  def createDeductionsCategory(deductionRows: Seq[TaxFreeAmountSummaryRowViewModel]) = TaxFreeAmountSummaryCategoryViewModel(
-                                Messages("tai.taxFreeAmount.table.columnOneHeader"),
-                                Messages("tai.taxFreeAmount.table.columnTwoHeader"),
-                                hideHeaders = true,
-                                hideCaption = false,
-                                Messages("tai.taxFreeAmount.table.deductions.caption"),
-                                deductionRows)
+  val emptyAdditionRows = Seq(
+    TaxFreeAmountSummaryRowViewModel(
+      Messages("tai.taxFreeAmount.table.additions.noAddition"),
+      "£0",
+      ChangeLinkViewModel(false, "", "")
+    ))
 
-  def createTotalCategory(totalAmountFormatted: String) = TaxFreeAmountSummaryCategoryViewModel(
-                           Messages("tai.taxFreeAmount.table.columnOneHeader"),
-                           Messages("tai.taxFreeAmount.table.columnTwoHeader"),
-                           hideHeaders = true,
-                           hideCaption = true,
-                           Messages("tai.taxFreeAmount.table.totals.caption"),
-                           Seq(TaxFreeAmountSummaryRowViewModel(
-                             Messages("tai.taxFreeAmount.table.totals.label"),
-                             totalAmountFormatted,
-                             ChangeLinkViewModel(false, "", "")
-                           )))
+  val nonEmptyAdditionRows = Seq(
+    TaxFreeAmountSummaryRowViewModel(
+      Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceReceived"),
+      "£200",
+      ChangeLinkViewModel(false, "", "")),
+    TaxFreeAmountSummaryRowViewModel(
+      Messages("tai.taxFreeAmount.table.additions.total"),
+      "£200",
+      ChangeLinkViewModel(false, "", ""))
+  )
 
+  def createAdditionsCatetgory(additionRows: Seq[TaxFreeAmountSummaryRowViewModel]) =
+    TaxFreeAmountSummaryCategoryViewModel(
+      Messages("tai.taxFreeAmount.table.columnOneHeader"),
+      Messages("tai.taxFreeAmount.table.columnTwoHeader"),
+      hideHeaders = true,
+      hideCaption = false,
+      Messages("tai.taxFreeAmount.table.additions.caption"),
+      additionRows
+    )
 
-  def createTaxFreeAmountSummaryViewModel(additionRows: Seq[TaxFreeAmountSummaryRowViewModel] = nonEmptyAdditionRows,
-                                          deductionRows: Seq[TaxFreeAmountSummaryRowViewModel] = nonEmptyDeductionRows,
-                                          totalFormattedAmount: String = "£1250") = {
+  val emptyDeductionsRows = Seq(
+    TaxFreeAmountSummaryRowViewModel(
+      Messages("tai.taxFreeAmount.table.deductions.noDeduction"),
+      "£0",
+      ChangeLinkViewModel(false, "", "")
+    ))
 
-                                              TaxFreeAmountSummaryViewModel(Seq(
-                                                  personalAllowanceCategory,
-                                                  createAdditionsCatetgory(additionRows),
-                                                  createDeductionsCategory(deductionRows),
-                                                  createTotalCategory(totalFormattedAmount)
-                                              ))
+  val nonEmptyDeductionRows = Seq(
+    TaxFreeAmountSummaryRowViewModel(
+      Messages("tai.taxFreeAmount.table.deductions.total"),
+      "£100",
+      ChangeLinkViewModel(false, "", "")),
+    TaxFreeAmountSummaryRowViewModel(
+      Messages("tai.taxFreeAmount.table.taxComponent.DividendTax"),
+      "£100",
+      ChangeLinkViewModel(false, "", ""))
+  )
 
-  }
+  def createDeductionsCategory(deductionRows: Seq[TaxFreeAmountSummaryRowViewModel]) =
+    TaxFreeAmountSummaryCategoryViewModel(
+      Messages("tai.taxFreeAmount.table.columnOneHeader"),
+      Messages("tai.taxFreeAmount.table.columnTwoHeader"),
+      hideHeaders = true,
+      hideCaption = false,
+      Messages("tai.taxFreeAmount.table.deductions.caption"),
+      deductionRows
+    )
+
+  def createTotalCategory(totalAmountFormatted: String) =
+    TaxFreeAmountSummaryCategoryViewModel(
+      Messages("tai.taxFreeAmount.table.columnOneHeader"),
+      Messages("tai.taxFreeAmount.table.columnTwoHeader"),
+      hideHeaders = true,
+      hideCaption = true,
+      Messages("tai.taxFreeAmount.table.totals.caption"),
+      Seq(
+        TaxFreeAmountSummaryRowViewModel(
+          Messages("tai.taxFreeAmount.table.totals.label"),
+          totalAmountFormatted,
+          ChangeLinkViewModel(false, "", "")
+        ))
+    )
+
+  def createTaxFreeAmountSummaryViewModel(
+    additionRows: Seq[TaxFreeAmountSummaryRowViewModel] = nonEmptyAdditionRows,
+    deductionRows: Seq[TaxFreeAmountSummaryRowViewModel] = nonEmptyDeductionRows,
+    totalFormattedAmount: String = "£1250") =
+    TaxFreeAmountSummaryViewModel(
+      Seq(
+        personalAllowanceCategory,
+        createAdditionsCatetgory(additionRows),
+        createDeductionsCategory(deductionRows),
+        createTotalCategory(totalFormattedAmount)
+      ))
 
   val taxFreeAmountSummaryViewModel: TaxFreeAmountSummaryViewModel = createTaxFreeAmountSummaryViewModel()
 
-  private def createViewModel(taxCodeDateRange: String = "",
-                              annualTaxFreeAmount: BigDecimal = 1150,
-                              showPreviousTaxFreeInfo: Boolean = true
-                             ): YourTaxFreeAmountViewModel = {
+  private def createViewModel(
+    taxCodeDateRange: String = "",
+    annualTaxFreeAmount: BigDecimal = 1150,
+    showPreviousTaxFreeInfo: Boolean = true): YourTaxFreeAmountViewModel = {
 
     val previous = if (showPreviousTaxFreeInfo) {
       Some(TaxFreeInfo(taxCodeDateRange, 0, 0))
@@ -192,11 +230,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       None
     }
 
-    YourTaxFreeAmountViewModel(
-      previous,
-      TaxFreeInfo(taxCodeDateRange, annualTaxFreeAmount, 0),
-      Seq.empty,
-      Seq.empty)
+    YourTaxFreeAmountViewModel(previous, TaxFreeInfo(taxCodeDateRange, annualTaxFreeAmount, 0), Seq.empty, Seq.empty)
   }
 
   val taxFreeAmount: YourTaxFreeAmountViewModel = createViewModel()
@@ -208,4 +242,3 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
   override def view = createView()
   private lazy val currentOnlyView = createView(viewModel = currentOnlyTaxFreeAmount)
 }
-

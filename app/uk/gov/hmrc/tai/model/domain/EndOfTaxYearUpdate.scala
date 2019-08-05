@@ -19,9 +19,7 @@ package uk.gov.hmrc.tai.model.domain
 import org.joda.time.LocalDate
 import play.api.libs.json.{Format, Json}
 
-case class EndOfTaxYearUpdate(
-                               date: LocalDate,
-                               adjustments: Seq[Adjustment])
+case class EndOfTaxYearUpdate(date: LocalDate, adjustments: Seq[Adjustment])
 
 object EndOfTaxYearUpdate {
   implicit val endOfTaxYearUpdateFormat: Format[EndOfTaxYearUpdate] = Json.format[EndOfTaxYearUpdate]

@@ -29,31 +29,32 @@ trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguratio
   this: Suite =>
   override lazy val port = 12345
 
-    val additionalConfiguration = Map [String, Any] (
-                                          "govuk-tax.Test.services.contact-frontend.host" -> "localhost",
-                                          "govuk-tax.Test.services.contact-frontend.port" -> "12345",
-                                          "govuk-tax.Test.services.pertax-frontend.host" -> "localhost",
-                                          "govuk-tax.Test.services.pertax-frontend.port" -> "1111",
-                                          "govuk-tax.Test.services.personal-tax-summary.host" -> "localhost",
-                                          "govuk-tax.Test.services.personal-tax-summary.port" -> "2222",
-                                          "govuk-tax.Test.services.activity-logger.host" -> "localhost",
-                                          "govuk-tax.Test.services.activity-logger.port" -> "12345",
-                                          "tai.cy3.enabled" -> true,
-                                          "govuk-tax.Test.services.feedback-survey-frontend.host" -> "localhost",
-                                          "govuk-tax.Test.services.feedback-survey-frontend.port" -> "3333",
-                                          "govuk-tax.Test.services.company-auth.host" -> "localhost",
-                                          "govuk-tax.Test.services.company-auth.port" -> "4444",
-                                          "govuk-tax.Test.services.citizen-auth.host" -> "localhost",
-                                          "govuk-tax.Test.services.citizen-auth.port" -> "9999"
-                                          )
+  val additionalConfiguration = Map[String, Any](
+    "govuk-tax.Test.services.contact-frontend.host"         -> "localhost",
+    "govuk-tax.Test.services.contact-frontend.port"         -> "12345",
+    "govuk-tax.Test.services.pertax-frontend.host"          -> "localhost",
+    "govuk-tax.Test.services.pertax-frontend.port"          -> "1111",
+    "govuk-tax.Test.services.personal-tax-summary.host"     -> "localhost",
+    "govuk-tax.Test.services.personal-tax-summary.port"     -> "2222",
+    "govuk-tax.Test.services.activity-logger.host"          -> "localhost",
+    "govuk-tax.Test.services.activity-logger.port"          -> "12345",
+    "tai.cy3.enabled"                                       -> true,
+    "govuk-tax.Test.services.feedback-survey-frontend.host" -> "localhost",
+    "govuk-tax.Test.services.feedback-survey-frontend.port" -> "3333",
+    "govuk-tax.Test.services.company-auth.host"             -> "localhost",
+    "govuk-tax.Test.services.company-auth.port"             -> "4444",
+    "govuk-tax.Test.services.citizen-auth.host"             -> "localhost",
+    "govuk-tax.Test.services.citizen-auth.port"             -> "9999"
+  )
 
-    implicit override lazy val app: Application = new GuiceApplicationBuilder().configure(additionalConfiguration).build()
+  implicit override lazy val app: Application = new GuiceApplicationBuilder().configure(additionalConfiguration).build()
 
-  org.slf4j.LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)
+  org.slf4j.LoggerFactory
+    .getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)
     .asInstanceOf[ch.qos.logback.classic.Logger]
     .setLevel(ch.qos.logback.classic.Level.WARN)
 
-  def fakePerson(nino:Nino) = Person(nino, "firstname", "surname", false, false)
+  def fakePerson(nino: Nino) = Person(nino, "firstname", "surname", false, false)
   val fakeRequest = FakeRequest("GET", "/")
 
   abstract override def run(testName: Option[String], args: Args): Status = super[OneServerPerSuite].run(testName, args)

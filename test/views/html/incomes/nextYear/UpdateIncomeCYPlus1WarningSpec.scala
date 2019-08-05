@@ -59,7 +59,8 @@ class UpdateIncomeCYPlus1WarningSpec extends TaiViewSpec with FormValuesConstant
       s"$YesNoChoice-yes",
       s"$YesNoChoice-no",
       messages("tai.incomes.warning.employment.radio1", employmentName),
-      messages("tai.incomes.warning.cyPlus1.radio2"))
+      messages("tai.incomes.warning.cyPlus1.radio2")
+    )
 
     behave like pageWithContinueButtonForm(s"/check-income-tax/update-income/next-year/income/$empId/warning")
     behave like pageWithCancelLink(controllers.routes.IncomeTaxComparisonController.onPageLoad())
@@ -85,20 +86,26 @@ class UpdateIncomeCYPlus1WarningSpec extends TaiViewSpec with FormValuesConstant
       val invalidatedForm = duplicateSubmissionWarningForm.bind(invalidChoice)
       val emptySelectionErrorMessage = messages("tai.employment.warning.error")
 
-      val errorView = views.html.incomes.duplicateSubmissionWarning(invalidatedForm,employmentViewModel,empId)
+      val errorView = views.html.incomes.duplicateSubmissionWarning(invalidatedForm, employmentViewModel, empId)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
-      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage),"error-message")
+      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
     }
 
     "display the correct content when the income source is a pension" in {
       val pensionViewModel = DuplicateSubmissionCYPlus1PensionViewModel(employmentName, newAmount)
-      val pensionView: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Warning(duplicateSubmissionWarningForm, pensionViewModel, empId)
+      val pensionView: Html =
+        views.html.incomes.nextYear.updateIncomeCYPlus1Warning(duplicateSubmissionWarningForm, pensionViewModel, empId)
 
       doc(pensionView) must haveHeadingWithText(messages("tai.incomes.warning.cyPlus1.heading", employmentName))
-      doc(pensionView) must haveParagraphWithText(messages("tai.incomes.warning.cyPlus1.text1", MonetaryUtil.withPoundPrefix(newAmount),
-        TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)))
+      doc(pensionView) must haveParagraphWithText(
+        messages(
+          "tai.incomes.warning.cyPlus1.text1",
+          MonetaryUtil.withPoundPrefix(newAmount),
+          TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)))
 
-      doc(pensionView) must haveInputLabelWithText(s"$YesNoChoice-yes", messages("tai.incomes.warning.pension.radio1", employmentName))
+      doc(pensionView) must haveInputLabelWithText(
+        s"$YesNoChoice-yes",
+        messages("tai.incomes.warning.pension.radio1", employmentName))
       doc(pensionView) must haveInputLabelWithText(s"$YesNoChoice-no", messages("tai.incomes.warning.cyPlus1.radio2"))
       doc(pensionView).getElementById(s"$YesNoChoice-yes") must not be null
       doc(pensionView).getElementById(s"$YesNoChoice-no") must not be null
@@ -107,5 +114,6 @@ class UpdateIncomeCYPlus1WarningSpec extends TaiViewSpec with FormValuesConstant
 
   val newAmount = 20000
   val employmentViewModel = DuplicateSubmissionCYPlus1EmploymentViewModel(employmentName, newAmount)
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Warning(duplicateSubmissionWarningForm,employmentViewModel,empId)
+  override def view: Html =
+    views.html.incomes.nextYear.updateIncomeCYPlus1Warning(duplicateSubmissionWarningForm, employmentViewModel, empId)
 }

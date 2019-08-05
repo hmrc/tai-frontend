@@ -42,17 +42,12 @@ import views.html.paye.historicPayAsYouEarn
 import scala.concurrent.Future
 import scala.util.Random
 
-class PayeControllerHistoricSpec extends PlaySpec
-  with FakeTaiPlayApplication
-  with MockitoSugar
-  with I18nSupport
-  with JsoupMatchers
-  with ControllerViewTestHelper
-  with BeforeAndAfterEach {
+class PayeControllerHistoricSpec
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JsoupMatchers
+    with ControllerViewTestHelper with BeforeAndAfterEach {
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(employmentService)
-  }
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
@@ -70,7 +65,9 @@ class PayeControllerHistoricSpec extends PlaySpec
 
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result).getOrElse("") mustBe controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev).url
+        redirectLocation(result).getOrElse("") mustBe controllers.routes.PayeControllerHistoric
+          .payePage(TaxYear().prev)
+          .url
       }
     }
 
@@ -119,7 +116,8 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in a NotFoundException from NPS" in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new NotFoundException("appStatusMessage : not found")))
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.failed(new NotFoundException("appStatusMessage : not found")))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -135,7 +133,8 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in a NotFoundException from RTI" in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new NotFoundException("not found")))
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.failed(new NotFoundException("not found")))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -150,7 +149,8 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in a bad request" in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new BadRequestException("Bad request")))
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.failed(new BadRequestException("Bad request")))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -164,7 +164,8 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in a internal server error" in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new InternalServerException("Internal server error")))
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.failed(new InternalServerException("Internal server error")))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -178,7 +179,8 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in an exception" in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new HttpException("error", 502)))
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.failed(new HttpException("error", 502)))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -193,28 +195,33 @@ class PayeControllerHistoricSpec extends PlaySpec
 
   val fakeNino = new Generator(new Random).nextNino
 
-  def createTestController(employments: Seq[Employment] = Nil, previousYears: Int = 3, showTaxCodeDescriptionLink: Boolean = false) = {
+  def createTestController(
+    employments: Seq[Employment] = Nil,
+    previousYears: Int = 3,
+    showTaxCodeDescriptionLink: Boolean = false) =
     new PayeControllerHistoricTest(employments, previousYears, showTaxCodeDescriptionLink)
-  }
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val employmentService = mock[EmploymentService]
 
-  class PayeControllerHistoricTest(employments: Seq[Employment],
-                                   previousYears: Int,
-                                   showTaxCodeDescriptionLink: Boolean) extends PayeControllerHistoric(
-    mock[ApplicationConfig],
-    taxCodeChangeService,
-    employmentService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  ) {
+  class PayeControllerHistoricTest(
+    employments: Seq[Employment],
+    previousYears: Int,
+    showTaxCodeDescriptionLink: Boolean)
+      extends PayeControllerHistoric(
+        mock[ApplicationConfig],
+        taxCodeChangeService,
+        employmentService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      ) {
     override val numberOfPreviousYearsToShow: Int = previousYears
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
-    when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any())).thenReturn(Future.successful(showTaxCodeDescriptionLink))
+    when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
+      .thenReturn(Future.successful(showTaxCodeDescriptionLink))
   }
 
 }

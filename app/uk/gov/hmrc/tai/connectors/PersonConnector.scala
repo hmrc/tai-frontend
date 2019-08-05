@@ -33,15 +33,12 @@ class PersonConnector @Inject()(httpHandler: HttpHandler) extends DefaultService
 
   def personUrl(nino: String): String = s"$serviceUrl/tai/$nino/person"
 
-  def person(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-
+  def person(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApi(personUrl(nino.nino)) map (
-      json =>
-        TaiSuccessResponseWithPayload((json \ "data").as[Person])
-      ) recover {
+      json => TaiSuccessResponseWithPayload((json \ "data").as[Person])
+    ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
         TaiNotFoundResponse(e.getMessage)
     }
-  }
 }

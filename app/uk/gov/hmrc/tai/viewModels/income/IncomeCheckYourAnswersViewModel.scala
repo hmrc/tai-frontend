@@ -22,36 +22,55 @@ import play.api.Play.current
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
-case class IncomeCheckYourAnswersViewModel(preHeading: String,
-                                           backLinkUrl: String,
-                                           journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine],
-                                           postConfirmationText: Option[String],
-                                           submissionUrl: String,
-                                           cancelUrl: String)
+case class IncomeCheckYourAnswersViewModel(
+  preHeading: String,
+  backLinkUrl: String,
+  journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine],
+  postConfirmationText: Option[String],
+  submissionUrl: String,
+  cancelUrl: String)
 
 object IncomeCheckYourAnswersViewModel {
 
-  def apply(preHeading: String,
-            incomeSourceName: String,
-            incomeSourceStart: String,
-            incomeSourceRefNo: String,
-            contactableByPhone: String,
-            phoneNumber: Option[String],
-            backLinkUrl: String,
-            submissionUrl: String,
-            cancelUrl: String)(implicit messages: Messages): IncomeCheckYourAnswersViewModel = {
+  def apply(
+    preHeading: String,
+    incomeSourceName: String,
+    incomeSourceStart: String,
+    incomeSourceRefNo: String,
+    contactableByPhone: String,
+    phoneNumber: Option[String],
+    backLinkUrl: String,
+    submissionUrl: String,
+    cancelUrl: String)(implicit messages: Messages): IncomeCheckYourAnswersViewModel = {
 
     val journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 
       val mandatoryLines = Seq(
-        CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q1"), incomeSourceName, controllers.employments.routes.AddEmploymentController.addEmploymentName.url),
-        CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q2"), Dates.formatDate(new LocalDate(incomeSourceStart)), controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url),
-        CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q3"), incomeSourceRefNo, controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url),
-        CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q4"), contactableByPhone, controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url)
+        CheckYourAnswersConfirmationLine(
+          Messages("tai.addEmployment.cya.q1"),
+          incomeSourceName,
+          controllers.employments.routes.AddEmploymentController.addEmploymentName.url),
+        CheckYourAnswersConfirmationLine(
+          Messages("tai.addEmployment.cya.q2"),
+          Dates.formatDate(new LocalDate(incomeSourceStart)),
+          controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url
+        ),
+        CheckYourAnswersConfirmationLine(
+          Messages("tai.addEmployment.cya.q3"),
+          incomeSourceRefNo,
+          controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url),
+        CheckYourAnswersConfirmationLine(
+          Messages("tai.addEmployment.cya.q4"),
+          contactableByPhone,
+          controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url)
       )
 
       val optionalPhoneNoLine = phoneNumber map { phoneNo =>
-        Seq(CheckYourAnswersConfirmationLine(Messages("tai.phoneNumber"), phoneNo, controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url))
+        Seq(
+          CheckYourAnswersConfirmationLine(
+            Messages("tai.phoneNumber"),
+            phoneNo,
+            controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url))
       }
 
       if (optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
@@ -59,28 +78,45 @@ object IncomeCheckYourAnswersViewModel {
 
     val postConfirmationText = Messages("tai.checkYourAnswers.confirmText")
 
-    IncomeCheckYourAnswersViewModel(preHeading, backLinkUrl, journeyConfirmationLines, Some(postConfirmationText), submissionUrl,cancelUrl)
+    IncomeCheckYourAnswersViewModel(
+      preHeading,
+      backLinkUrl,
+      journeyConfirmationLines,
+      Some(postConfirmationText),
+      submissionUrl,
+      cancelUrl)
   }
 
-  def apply(employmentId: Int,
-            preHeading: String,
-            incomeSourceEnd: String,
-            contactableByPhone: String,
-            phoneNumber: Option[String],
-            backLinkUrl: String,
-            submissionUrl: String,
-            cancelUrl: String)(implicit messages: Messages): IncomeCheckYourAnswersViewModel = {
+  def apply(
+    employmentId: Int,
+    preHeading: String,
+    incomeSourceEnd: String,
+    contactableByPhone: String,
+    phoneNumber: Option[String],
+    backLinkUrl: String,
+    submissionUrl: String,
+    cancelUrl: String)(implicit messages: Messages): IncomeCheckYourAnswersViewModel = {
 
     val journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 
       val mandatoryLines = Seq(
-        CheckYourAnswersConfirmationLine(Messages("tai.checkYourAnswers.dateEmploymentEnded"), Dates.formatDate(new LocalDate(incomeSourceEnd)),
-          controllers.employments.routes.EndEmploymentController.endEmploymentPage().url),
-        CheckYourAnswersConfirmationLine(Messages("tai.checkYourAnswers.contactByPhone"), contactableByPhone, controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url)
+        CheckYourAnswersConfirmationLine(
+          Messages("tai.checkYourAnswers.dateEmploymentEnded"),
+          Dates.formatDate(new LocalDate(incomeSourceEnd)),
+          controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
+        ),
+        CheckYourAnswersConfirmationLine(
+          Messages("tai.checkYourAnswers.contactByPhone"),
+          contactableByPhone,
+          controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url)
       )
 
       val optionalPhoneNoLine = phoneNumber map { phoneNo =>
-        Seq(CheckYourAnswersConfirmationLine(Messages("tai.phoneNumber"), phoneNo, controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url))
+        Seq(
+          CheckYourAnswersConfirmationLine(
+            Messages("tai.phoneNumber"),
+            phoneNo,
+            controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url))
       }
 
       if (optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
@@ -88,6 +124,12 @@ object IncomeCheckYourAnswersViewModel {
 
     val postConfirmationText = Messages("tai.checkYourAnswers.confirmText")
 
-    IncomeCheckYourAnswersViewModel(preHeading, backLinkUrl, journeyConfirmationLines, Some(postConfirmationText), submissionUrl,cancelUrl)
+    IncomeCheckYourAnswersViewModel(
+      preHeading,
+      backLinkUrl,
+      journeyConfirmationLines,
+      Some(postConfirmationText),
+      submissionUrl,
+      cancelUrl)
   }
 }

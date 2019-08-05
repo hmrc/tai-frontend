@@ -47,10 +47,9 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).
-          thenReturn(Future.successful(Some(employment)))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = Await.result(sut.employmentAmount(nino, 1), 5.seconds)
 
@@ -76,10 +75,9 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-        when(employmentService.employment(any(), any())(any())).
-          thenReturn(Future.successful(Some(employment)))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
         ex.getMessage mustBe "Not able to found employment with id 1"
@@ -90,22 +88,19 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-        when(employmentService.employment(any(), any())(any())).
-          thenReturn(Future.successful(Some(employment)))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
         ex.getMessage mustBe "Exception while reading employment and tax code details"
       }
 
-
       "employment not found" in {
         val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-        when(employmentService.employment(any(), any())(any())).
-          thenReturn(Future.successful(None))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
         ex.getMessage mustBe "Exception while reading employment and tax code details"
@@ -120,18 +115,16 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(employmentService.employment(any(), any())(any())).
-          thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-       Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe Some(payment)
+        Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe Some(payment)
       }
     }
 
     "return none" when {
       "employment details are not found" in {
         val sut = createSUT
-        when(employmentService.employment(any(), any())(any())).
-          thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
       }
@@ -140,8 +133,7 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val sut = createSUT
         val annualAccount = AnnualAccount("", TaxYear(), Available, Seq.empty[Payment], Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(employmentService.employment(any(), any())(any())).
-          thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
       }
@@ -155,16 +147,19 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val payDetails = PayDetails("", Some(0), None, Some(0), None, None)
 
         when(taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
-        Await.result(sut.calculateEstimatedPay(Map.empty[String, String], None), 5.seconds) mustBe CalculatedPay(None, None)
+        Await.result(sut.calculateEstimatedPay(Map.empty[String, String], None), 5.seconds) mustBe CalculatedPay(
+          None,
+          None)
       }
 
       "cache is not empty" in {
         val sut = createSUT
 
-        val cache = Map(UpdateIncome_PayPeriodKey -> "monthly",
-          UpdateIncome_TotalSalaryKey -> "£100",
-          UpdateIncome_TaxablePayKey -> "£100",
-          UpdateIncome_OtherInDaysKey -> "10",
+        val cache = Map(
+          UpdateIncome_PayPeriodKey           -> "monthly",
+          UpdateIncome_TotalSalaryKey         -> "£100",
+          UpdateIncome_TaxablePayKey          -> "£100",
+          UpdateIncome_OtherInDaysKey         -> "10",
           UpdateIncome_BonusOvertimeAmountKey -> "£100"
         )
 
@@ -182,23 +177,119 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val sut = createSUT
 
         val taxCodeIncomes = Seq(
-          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live),
-          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOfOperation, Live),
-          TaxCodeIncome(JobSeekerAllowanceIncome, Some(5), 5555, "employment", "1150L", "employer5", OtherBasisOfOperation, Live),
-          TaxCodeIncome(JobSeekerAllowanceIncome, Some(6), 6666, "employment", "BR", "employer6", Week1Month1BasisOfOperation, Live),
+          TaxCodeIncome(
+            EmploymentIncome,
+            Some(1),
+            1111,
+            "employment",
+            "1150L",
+            "employer1",
+            OtherBasisOfOperation,
+            Live),
+          TaxCodeIncome(
+            PensionIncome,
+            Some(4),
+            4444,
+            "employment",
+            "BR",
+            "employer4",
+            Week1Month1BasisOfOperation,
+            Live),
+          TaxCodeIncome(
+            JobSeekerAllowanceIncome,
+            Some(5),
+            5555,
+            "employment",
+            "1150L",
+            "employer5",
+            OtherBasisOfOperation,
+            Live),
+          TaxCodeIncome(
+            JobSeekerAllowanceIncome,
+            Some(6),
+            6666,
+            "employment",
+            "BR",
+            "employer6",
+            Week1Month1BasisOfOperation,
+            Live),
           TaxCodeIncome(OtherIncome, Some(7), 7777, "employment", "1150L", "employer7", OtherBasisOfOperation, Live),
           TaxCodeIncome(OtherIncome, Some(8), 8888, "employment", "BR", "employer8", Week1Month1BasisOfOperation, Live),
-          TaxCodeIncome(EmploymentIncome, Some(9), 1111, "employment", "1150L", "employer9", OtherBasisOfOperation, PotentiallyCeased),
-          TaxCodeIncome(EmploymentIncome, Some(10), 2222, "employment", "BR", "employer10", Week1Month1BasisOfOperation, Ceased),
-          TaxCodeIncome(PensionIncome, Some(11), 1111, "employment", "1150L", "employer11", OtherBasisOfOperation, PotentiallyCeased),
-          TaxCodeIncome(PensionIncome, Some(12), 2222, "employment", "BR", "employer12", Week1Month1BasisOfOperation, Ceased)
+          TaxCodeIncome(
+            EmploymentIncome,
+            Some(9),
+            1111,
+            "employment",
+            "1150L",
+            "employer9",
+            OtherBasisOfOperation,
+            PotentiallyCeased),
+          TaxCodeIncome(
+            EmploymentIncome,
+            Some(10),
+            2222,
+            "employment",
+            "BR",
+            "employer10",
+            Week1Month1BasisOfOperation,
+            Ceased),
+          TaxCodeIncome(
+            PensionIncome,
+            Some(11),
+            1111,
+            "employment",
+            "1150L",
+            "employer11",
+            OtherBasisOfOperation,
+            PotentiallyCeased),
+          TaxCodeIncome(
+            PensionIncome,
+            Some(12),
+            2222,
+            "employment",
+            "BR",
+            "employer12",
+            Week1Month1BasisOfOperation,
+            Ceased)
         )
 
         val expectedTaxCodeIncomes = Seq(
-          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live),
-          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOfOperation, Live),
-          TaxCodeIncome(EmploymentIncome, Some(9), 1111, "employment", "1150L", "employer9", OtherBasisOfOperation, PotentiallyCeased),
-          TaxCodeIncome(PensionIncome, Some(11), 1111, "employment", "1150L", "employer11", OtherBasisOfOperation, PotentiallyCeased)
+          TaxCodeIncome(
+            EmploymentIncome,
+            Some(1),
+            1111,
+            "employment",
+            "1150L",
+            "employer1",
+            OtherBasisOfOperation,
+            Live),
+          TaxCodeIncome(
+            PensionIncome,
+            Some(4),
+            4444,
+            "employment",
+            "BR",
+            "employer4",
+            Week1Month1BasisOfOperation,
+            Live),
+          TaxCodeIncome(
+            EmploymentIncome,
+            Some(9),
+            1111,
+            "employment",
+            "1150L",
+            "employer9",
+            OtherBasisOfOperation,
+            PotentiallyCeased),
+          TaxCodeIncome(
+            PensionIncome,
+            Some(11),
+            1111,
+            "employment",
+            "1150L",
+            "employer11",
+            OtherBasisOfOperation,
+            PotentiallyCeased)
         )
 
         sut.editableIncomes(taxCodeIncomes) mustBe expectedTaxCodeIncomes
@@ -211,8 +302,24 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
       "income size is 1" in {
         val sut = createSUT
         val taxCodeIncomes = Seq(
-          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live),
-          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOfOperation, Ceased)
+          TaxCodeIncome(
+            EmploymentIncome,
+            Some(1),
+            1111,
+            "employment",
+            "1150L",
+            "employer1",
+            OtherBasisOfOperation,
+            Live),
+          TaxCodeIncome(
+            PensionIncome,
+            Some(4),
+            4444,
+            "employment",
+            "BR",
+            "employer4",
+            Week1Month1BasisOfOperation,
+            Ceased)
         )
 
         sut.singularIncomeId(taxCodeIncomes) mustBe Some(1)
@@ -223,8 +330,24 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
       "income size is not 1" in {
         val sut = createSUT
         val taxCodeIncomes = Seq(
-          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live),
-          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOfOperation, Live)
+          TaxCodeIncome(
+            EmploymentIncome,
+            Some(1),
+            1111,
+            "employment",
+            "1150L",
+            "employer1",
+            OtherBasisOfOperation,
+            Live),
+          TaxCodeIncome(
+            PensionIncome,
+            Some(4),
+            4444,
+            "employment",
+            "BR",
+            "employer4",
+            Week1Month1BasisOfOperation,
+            Live)
         )
 
         sut.singularIncomeId(taxCodeIncomes) mustBe None
@@ -257,19 +380,21 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
   )
 
-  def employmentWithAccounts(accounts: List[AnnualAccount]) = Employment("ABCD", Some("ABC123"), new LocalDate(2000, 5, 20),
-    None, accounts, "", "", 8, None, false, false)
+  def employmentWithAccounts(accounts: List[AnnualAccount]) =
+    Employment("ABCD", Some("ABC123"), new LocalDate(2000, 5, 20), None, accounts, "", "", 8, None, false, false)
 
-  def paymentOnDate(date: LocalDate) = Payment(
-    date = date,
-    amountYearToDate = 2000,
-    taxAmountYearToDate = 200,
-    nationalInsuranceAmountYearToDate = 100,
-    amount = 1000,
-    taxAmount = 100,
-    nationalInsuranceAmount = 50,
-    payFrequency = Monthly,
-    duplicate = None)
+  def paymentOnDate(date: LocalDate) =
+    Payment(
+      date = date,
+      amountYearToDate = 2000,
+      taxAmountYearToDate = 200,
+      nationalInsuranceAmountYearToDate = 100,
+      amount = 1000,
+      taxAmount = 100,
+      nationalInsuranceAmount = 50,
+      payFrequency = Monthly,
+      duplicate = None
+    )
 
   def createSUT = new SUT
 
@@ -277,10 +402,11 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
   val employmentService: EmploymentService = mock[EmploymentService]
   val taiConnector: TaiConnector = mock[TaiConnector]
 
-  class SUT extends IncomeService(
-    taxAccountService,
-    employmentService,
-    taiConnector
-  )
+  class SUT
+      extends IncomeService(
+        taxAccountService,
+        employmentService,
+        taiConnector
+      )
 
 }

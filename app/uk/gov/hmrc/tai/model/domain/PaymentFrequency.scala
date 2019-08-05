@@ -41,16 +41,16 @@ case object Irregular extends PaymentFrequency
 object PaymentFrequency {
   implicit val paymentFrequencyFormat = new Format[PaymentFrequency] {
     override def reads(json: JsValue): JsResult[PaymentFrequency] = json.as[String] match {
-      case "Weekly" => JsSuccess(Weekly)
+      case "Weekly"      => JsSuccess(Weekly)
       case "FortNightly" => JsSuccess(FortNightly)
-      case "FourWeekly" => JsSuccess(FourWeekly)
-      case "Monthly" => JsSuccess(Monthly)
-      case "Quarterly" => JsSuccess(Quarterly)
-      case "BiAnnually" => JsSuccess(BiAnnually)
-      case "Annually" => JsSuccess(Annually)
-      case "OneOff" => JsSuccess(OneOff)
-      case "Irregular" => JsSuccess(Irregular)
-      case _ => throw new IllegalArgumentException("Invalid payment frequency")
+      case "FourWeekly"  => JsSuccess(FourWeekly)
+      case "Monthly"     => JsSuccess(Monthly)
+      case "Quarterly"   => JsSuccess(Quarterly)
+      case "BiAnnually"  => JsSuccess(BiAnnually)
+      case "Annually"    => JsSuccess(Annually)
+      case "OneOff"      => JsSuccess(OneOff)
+      case "Irregular"   => JsSuccess(Irregular)
+      case _             => throw new IllegalArgumentException("Invalid payment frequency")
     }
 
     override def writes(paymentFrequency: PaymentFrequency): JsValue = JsString(paymentFrequency.toString)

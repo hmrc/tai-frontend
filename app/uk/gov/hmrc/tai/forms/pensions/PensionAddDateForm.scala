@@ -24,7 +24,6 @@ import play.api.i18n.Messages
 
 import scala.util.Try
 
-
 case class PensionAddDateForm(employerName: String) {
 
   def form(implicit messages: Messages) = {
@@ -38,25 +37,28 @@ case class PensionAddDateForm(employerName: String) {
         val yearErrors: Boolean = data.getOrElse(PensionFormYear, "").isEmpty
 
         val errors = if (dayErrors || monthErrors || yearErrors) {
-          Seq(FormError(key = PensionFormDay, message = Messages("tai.addPensionProvider.date.error.blank", employerName)))
+          Seq(
+            FormError(
+              key = PensionFormDay,
+              message = Messages("tai.addPensionProvider.date.error.blank", employerName)))
         } else {
           Nil
         }
 
-
         if (errors.isEmpty) {
           val inputDate: Option[LocalDate] = Try(
             for {
-              day <- data.get(PensionFormDay).map(Integer.parseInt)
+              day   <- data.get(PensionFormDay).map(Integer.parseInt)
               month <- data.get(PensionFormMonth).map(Integer.parseInt)
-              year <- data.get(PensionFormYear).map(Integer.parseInt)
+              year  <- data.get(PensionFormYear).map(Integer.parseInt)
             } yield new LocalDate(year, month, day)
           ).getOrElse(None)
 
           inputDate match {
-            case Some(date) if date.isAfter(LocalDate.now()) => Left(Seq(FormError(key = PensionFormDay, message = Messages("tai.date.error.future"))))
+            case Some(date) if date.isAfter(LocalDate.now()) =>
+              Left(Seq(FormError(key = PensionFormDay, message = Messages("tai.date.error.future"))))
             case Some(d) => Right(d)
-            case _ => Left(Seq(FormError(key = PensionFormDay, message = Messages("tai.date.error.invalid"))))
+            case _       => Left(Seq(FormError(key = PensionFormDay, message = Messages("tai.date.error.invalid"))))
           }
         } else {
           Left(errors)
@@ -64,9 +66,9 @@ case class PensionAddDateForm(employerName: String) {
       }
 
       override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
-        PensionFormDay -> value.getDayOfMonth.toString,
+        PensionFormDay   -> value.getDayOfMonth.toString,
         PensionFormMonth -> value.getMonthOfYear.toString,
-        PensionFormYear -> value.getYear.toString
+        PensionFormYear  -> value.getYear.toString
       )
     }
 

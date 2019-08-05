@@ -39,28 +39,31 @@ class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
     "return a Person model instance, wrapped in a TaiSuccessResponse" when {
       "the http call returns successfully" in {
         val sut = new SUT("/fakeUrl")
-        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any())).thenReturn(Future.successful(apiResponse(person)))
+        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+          .thenReturn(Future.successful(apiResponse(person)))
         val result = Await.result(sut.person(nino), 5 seconds)
-        result mustBe(TaiSuccessResponseWithPayload(person))
+        result mustBe (TaiSuccessResponseWithPayload(person))
       }
     }
 
     "return a TaiNotFoundResponse" when {
       "the http call returns a not found exception" in {
         val sut = new SUT("/fakeUrl")
-        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any())).thenReturn(Future.failed(new NotFoundException("downstream not found")))
+        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+          .thenReturn(Future.failed(new NotFoundException("downstream not found")))
         val result = Await.result(sut.person(nino), 5 seconds)
-        result mustBe(TaiNotFoundResponse("downstream not found"))
+        result mustBe (TaiNotFoundResponse("downstream not found"))
       }
 
       "the http call returns invalid json" in {
         val sut = new SUT("/fakeUrl")
         val invalidJson = Json.obj("data" -> Json.obj("notEven" -> "close"))
-        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any())).thenReturn(Future.successful(invalidJson))
+        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+          .thenReturn(Future.successful(invalidJson))
         val result = Await.result(sut.person(nino), 5 seconds)
         result match {
           case TaiNotFoundResponse(msg) => msg must include("JsResultException")
-          case _ => fail("A TaiNotFoundResponse was expected!")
+          case _                        => fail("A TaiNotFoundResponse was expected!")
         }
       }
     }
@@ -74,7 +77,7 @@ class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  class SUT(servUrl: String = "")  extends PersonConnector(httpHandler) {
+  class SUT(servUrl: String = "") extends PersonConnector(httpHandler) {
     override val serviceUrl: String = servUrl
   }
 

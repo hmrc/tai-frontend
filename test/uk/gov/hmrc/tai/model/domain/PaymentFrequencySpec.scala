@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.model.domain
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsString, Json}
 
-
 class PaymentFrequencySpec extends PlaySpec {
 
   "Payment Frequency" must {
@@ -57,6 +56,3 @@ class PaymentFrequencySpec extends PlaySpec {
     }
   }
 }
-
-
-

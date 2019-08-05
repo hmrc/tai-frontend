@@ -22,34 +22,32 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
-
 object UpdateEmploymentDetailsForm {
 
   val employmentDetailsCharacterLimit = 500
 
   def form(implicit messages: Messages): Form[String] = Form(
-
     single(
       "employmentDetails" ->
         text
           .verifying(
-            StopOnFirstFail(
-              nonEmptyText(Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.blank"))),
-              textExceedsCharacterLimit(Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.maximumExceeded", employmentDetailsCharacterLimit)
-          )))
+            StopOnFirstFail(nonEmptyText(Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.blank"))),
+            textExceedsCharacterLimit(
+              Messages(
+                "tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.maximumExceeded",
+                employmentDetailsCharacterLimit))
+          ))
   )
 
-  def nonEmptyText(requiredErrMsg : String)(implicit messages: Messages): Constraint[String] = {
+  def nonEmptyText(requiredErrMsg: String)(implicit messages: Messages): Constraint[String] =
     Constraint[String]("required") {
-      case textValue:String if textValue.trim.nonEmpty => Valid
-      case _ => Invalid(requiredErrMsg)
+      case textValue: String if textValue.trim.nonEmpty => Valid
+      case _                                            => Invalid(requiredErrMsg)
     }
-  }
 
-  def textExceedsCharacterLimit(exceedErrorMsg : String)(implicit messages: Messages): Constraint[String] = {
+  def textExceedsCharacterLimit(exceedErrorMsg: String)(implicit messages: Messages): Constraint[String] =
     Constraint[String]("characterLimitExceeded") {
       case textValue if textValue.trim.length <= employmentDetailsCharacterLimit => Valid
-      case _ => Invalid(exceedErrorMsg)
+      case _                                                                     => Invalid(exceedErrorMsg)
     }
-  }
 }

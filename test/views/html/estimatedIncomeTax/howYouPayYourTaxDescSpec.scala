@@ -28,16 +28,20 @@ class howYouPayYourTaxDescSpec extends TaiViewSpec {
 
     doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.howYouPay.heading"))
 
-    doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.howYouPay.desc",
-      messages("tai.estimatedIncome.taxCodes.link"))).body)
+    doc(view) must haveParagraphWithText(
+      Html(messages("tai.estimatedIncome.howYouPay.desc", messages("tai.estimatedIncome.taxCodes.link"))).body)
 
-    doc(view).select("#howYouPayDesc").html() mustBe Html(messages("tai.estimatedIncome.howYouPay.desc",
-      Link.toInternalPage(
-        id=Some("taxCodesLink"),
-        url=routes.YourTaxCodeController.taxCodes.url.toString,
-        value=Some(Messages("tai.estimatedIncome.taxCodes.link"))).toHtml)).body
+    doc(view).select("#howYouPayDesc").html() mustBe Html(
+      messages(
+        "tai.estimatedIncome.howYouPay.desc",
+        Link
+          .toInternalPage(
+            id = Some("taxCodesLink"),
+            url = routes.YourTaxCodeController.taxCodes.url.toString,
+            value = Some(Messages("tai.estimatedIncome.taxCodes.link")))
+          .toHtml
+      )).body
   }
-
 
   override def view: Html = views.html.estimatedIncomeTax.howYouPayYourTaxDesc()
 }

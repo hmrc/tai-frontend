@@ -29,18 +29,18 @@ case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxCo
     changeInTaxAmount match {
       case gt if gt > 0 => GT(gt)
       case lt if lt < 0 => LT(lt)
-      case _ => EQ
+      case _            => EQ
     }
   }
 
-  private def formatDate(date:LocalDate)(implicit messages: Messages) = htmlNonBroken(Dates.formatDate(date))
+  private def formatDate(date: LocalDate)(implicit messages: Messages) = htmlNonBroken(Dates.formatDate(date))
 
-  override def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
-
-   taxComparison.fold(_ => messages("tai.incomeTaxComparison.dateWithoutWelshAmendment", formatDate(TaxYear().next.start)),
-                      _ => messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start)),
-                           messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start)))
-  }
+  override def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String =
+    taxComparison.fold(
+      _ => messages("tai.incomeTaxComparison.dateWithoutWelshAmendment", formatDate(TaxYear().next.start)),
+      _ => messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start)),
+      messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start))
+    )
 
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
   def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
@@ -52,15 +52,13 @@ case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxCo
 
 case class EstimatedIncomeTaxComparisonItem(year: TaxYear, estimatedIncomeTax: BigDecimal)
 
-
-
 sealed trait TaxComparison[+A] {
 
   def fold[B](gt: A => B, lt: A => B, eq: => B): B =
     this match {
       case GT(value) => gt(value)
       case LT(value) => lt(value)
-      case EQ => eq
+      case EQ        => eq
     }
 
 }
@@ -68,5 +66,3 @@ sealed trait TaxComparison[+A] {
 case class GT[A](value: A) extends TaxComparison[A]
 case class LT[A](value: A) extends TaxComparison[A]
 case object EQ extends TaxComparison[Nothing]
-
-

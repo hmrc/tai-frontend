@@ -24,8 +24,8 @@ case class SameEstimatedPayViewModel(employerName: String, employerId: Int, amou
 }
 
 object SameEstimatedPayViewModel {
-  def apply(employerName: String, employerId: Int, amount: Int, isPension: Boolean)
-           (implicit messages: Messages): SameEstimatedPayViewModel = {
+  def apply(employerName: String, employerId: Int, amount: Int, isPension: Boolean)(
+    implicit messages: Messages): SameEstimatedPayViewModel = {
 
     val returnLink = {
       if (isPension)

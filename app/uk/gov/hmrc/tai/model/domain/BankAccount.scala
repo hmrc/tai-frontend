@@ -18,14 +18,15 @@ package uk.gov.hmrc.tai.model.domain
 
 import play.api.libs.json.Json
 
-case class BankAccount(id: Int,
-                       accountNumber: Option[String],
-                       sortCode: Option[String],
-                       bankName: Option[String],
-                       grossInterest: BigDecimal,
-                       source: Option[String]) {
+case class BankAccount(
+  id: Int,
+  accountNumber: Option[String],
+  sortCode: Option[String],
+  bankName: Option[String],
+  grossInterest: BigDecimal,
+  source: Option[String]) {
 
-  val formattedSortCode: Option[String] = sortCode.map(_.sliding(2,2).mkString(" "))
+  val formattedSortCode: Option[String] = sortCode.map(_.sliding(2, 2).mkString(" "))
 }
 
 object BankAccount {

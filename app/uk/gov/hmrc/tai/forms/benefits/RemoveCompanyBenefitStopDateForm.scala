@@ -21,9 +21,9 @@ import play.api.data.Forms._
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.constants.RemoveCompanyBenefitStopDateConstants
 
-object RemoveCompanyBenefitStopDateForm extends RemoveCompanyBenefitStopDateConstants{
+object RemoveCompanyBenefitStopDateForm extends RemoveCompanyBenefitStopDateConstants {
 
   def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
-    single(StopDateChoice -> optional(text).verifying(Messages("tai.error.chooseOneOption"), {_.isDefined}))
+    single(StopDateChoice -> optional(text).verifying(Messages("tai.error.chooseOneOption"), { _.isDefined }))
   )
 }

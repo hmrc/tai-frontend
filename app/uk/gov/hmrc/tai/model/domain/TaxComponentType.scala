@@ -20,13 +20,12 @@ import play.api.i18n.Messages
 import play.api.libs.json._
 
 sealed trait TaxComponentType {
-  def toMessage()(implicit messages: Messages): String = {
+  def toMessage()(implicit messages: Messages): String =
     s"${messages(s"tai.taxFreeAmount.table.taxComponent.${this.toString}")}"
-  }
 }
 
 sealed trait AllowanceComponentType extends TaxComponentType
-sealed trait BenefitComponentType  extends TaxComponentType
+sealed trait BenefitComponentType extends TaxComponentType
 sealed trait DeductionComponentType extends TaxComponentType
 sealed trait IncomeComponentType extends TaxComponentType
 
@@ -101,14 +100,20 @@ case object EducationalServices extends BenefitComponentType { val name = "Educa
 case object Entertaining extends BenefitComponentType { val name = "Entertaining" }
 case object Expenses extends BenefitComponentType { val name = "Expenses" }
 case object Mileage extends BenefitComponentType { val name = "Mileage" }
-case object NonQualifyingRelocationExpenses extends BenefitComponentType { val name = "NonQualifyingRelocationExpenses" }
+case object NonQualifyingRelocationExpenses extends BenefitComponentType {
+  val name = "NonQualifyingRelocationExpenses"
+}
 case object NurseryPlaces extends BenefitComponentType { val name = "NurseryPlaces" }
 case object OtherItems extends BenefitComponentType { val name = "OtherItems" }
 case object PaymentsOnEmployeesBehalf extends BenefitComponentType { val name = "PaymentsOnEmployeesBehalf" }
 case object PersonalIncidentalExpenses extends BenefitComponentType { val name = "PersonalIncidentalExpenses" }
 case object QualifyingRelocationExpenses extends BenefitComponentType { val name = "QualifyingRelocationExpenses" }
-case object EmployerProvidedProfessionalSubscription extends BenefitComponentType { val name = "EmployerProvidedProfessionalSubscription" }
-case object IncomeTaxPaidButNotDeductedFromDirectorsRemuneration extends BenefitComponentType { val name = "IncomeTaxPaidButNotDeductedFromDirectorsRemuneration" }
+case object EmployerProvidedProfessionalSubscription extends BenefitComponentType {
+  val name = "EmployerProvidedProfessionalSubscription"
+}
+case object IncomeTaxPaidButNotDeductedFromDirectorsRemuneration extends BenefitComponentType {
+  val name = "IncomeTaxPaidButNotDeductedFromDirectorsRemuneration"
+}
 case object TravelAndSubsistence extends BenefitComponentType { val name = "TravelAndSubsistence" }
 case object VouchersAndCreditCards extends BenefitComponentType { val name = "VouchersAndCreditCards" }
 case object NonCashBenefit extends BenefitComponentType { val name = "NonCashBenefit" }
@@ -116,36 +121,37 @@ case object EmployerProvidedServices extends BenefitComponentType { val name = "
 
 object BenefitComponentType {
   def apply(name: String): Option[BenefitComponentType] = name match {
-    case BenefitInKind.name => Some(BenefitInKind)
-    case CarFuelBenefit.name => Some(CarFuelBenefit)
-    case MedicalInsurance.name => Some(MedicalInsurance)
-    case CarBenefit.name => Some(CarBenefit)
-    case Telephone.name => Some(Telephone)
-    case ServiceBenefit.name => Some(ServiceBenefit)
-    case TaxableExpensesBenefit.name => Some(TaxableExpensesBenefit)
-    case VanBenefit.name => Some(VanBenefit)
-    case VanFuelBenefit.name => Some(VanFuelBenefit)
-    case BeneficialLoan.name => Some(BeneficialLoan)
-    case Accommodation.name => Some(Accommodation)
-    case Assets.name => Some(Assets)
-    case AssetTransfer.name => Some(AssetTransfer)
-    case EducationalServices.name => Some(EducationalServices)
-    case Entertaining.name => Some(Entertaining)
-    case Expenses.name => Some(Expenses)
-    case Mileage.name => Some(Mileage)
-    case NonQualifyingRelocationExpenses.name => Some(NonQualifyingRelocationExpenses)
-    case NurseryPlaces.name => Some(NurseryPlaces)
-    case OtherItems.name => Some(OtherItems)
-    case PaymentsOnEmployeesBehalf.name => Some(PaymentsOnEmployeesBehalf)
-    case PersonalIncidentalExpenses.name => Some(PersonalIncidentalExpenses)
-    case QualifyingRelocationExpenses.name => Some(QualifyingRelocationExpenses)
+    case BenefitInKind.name                            => Some(BenefitInKind)
+    case CarFuelBenefit.name                           => Some(CarFuelBenefit)
+    case MedicalInsurance.name                         => Some(MedicalInsurance)
+    case CarBenefit.name                               => Some(CarBenefit)
+    case Telephone.name                                => Some(Telephone)
+    case ServiceBenefit.name                           => Some(ServiceBenefit)
+    case TaxableExpensesBenefit.name                   => Some(TaxableExpensesBenefit)
+    case VanBenefit.name                               => Some(VanBenefit)
+    case VanFuelBenefit.name                           => Some(VanFuelBenefit)
+    case BeneficialLoan.name                           => Some(BeneficialLoan)
+    case Accommodation.name                            => Some(Accommodation)
+    case Assets.name                                   => Some(Assets)
+    case AssetTransfer.name                            => Some(AssetTransfer)
+    case EducationalServices.name                      => Some(EducationalServices)
+    case Entertaining.name                             => Some(Entertaining)
+    case Expenses.name                                 => Some(Expenses)
+    case Mileage.name                                  => Some(Mileage)
+    case NonQualifyingRelocationExpenses.name          => Some(NonQualifyingRelocationExpenses)
+    case NurseryPlaces.name                            => Some(NurseryPlaces)
+    case OtherItems.name                               => Some(OtherItems)
+    case PaymentsOnEmployeesBehalf.name                => Some(PaymentsOnEmployeesBehalf)
+    case PersonalIncidentalExpenses.name               => Some(PersonalIncidentalExpenses)
+    case QualifyingRelocationExpenses.name             => Some(QualifyingRelocationExpenses)
     case EmployerProvidedProfessionalSubscription.name => Some(EmployerProvidedProfessionalSubscription)
-    case IncomeTaxPaidButNotDeductedFromDirectorsRemuneration.name => Some(IncomeTaxPaidButNotDeductedFromDirectorsRemuneration)
-    case TravelAndSubsistence.name => Some(TravelAndSubsistence)
-    case VouchersAndCreditCards.name => Some(VouchersAndCreditCards)
-    case NonCashBenefit.name => Some(NonCashBenefit)
+    case IncomeTaxPaidButNotDeductedFromDirectorsRemuneration.name =>
+      Some(IncomeTaxPaidButNotDeductedFromDirectorsRemuneration)
+    case TravelAndSubsistence.name     => Some(TravelAndSubsistence)
+    case VouchersAndCreditCards.name   => Some(VouchersAndCreditCards)
+    case NonCashBenefit.name           => Some(NonCashBenefit)
     case EmployerProvidedServices.name => Some(EmployerProvidedServices)
-    case _ => None
+    case _                             => None
   }
 }
 
@@ -181,57 +187,59 @@ case object IncapacityBenefit extends NonTaxCodeIncomeComponentType with Taxable
 
 //Tax-code Incomes
 case object EmploymentIncome extends TaxCodeIncomeComponentType
-case object PensionIncome  extends TaxCodeIncomeComponentType
+case object PensionIncome extends TaxCodeIncomeComponentType
 case object JobSeekerAllowanceIncome extends TaxCodeIncomeComponentType
 case object OtherIncome extends TaxCodeIncomeComponentType
 
-object TaxComponentType{
+object TaxComponentType {
   implicit val formatTaxComponentType: Format[TaxComponentType] = new Format[TaxComponentType] {
-    override def reads(json: JsValue): JsResult[TaxComponentType] =  json.as[String] match {
-      case "EmploymentIncome" => JsSuccess(EmploymentIncome)
-      case "PensionIncome" => JsSuccess(PensionIncome)
+    override def reads(json: JsValue): JsResult[TaxComponentType] = json.as[String] match {
+      case "EmploymentIncome"         => JsSuccess(EmploymentIncome)
+      case "PensionIncome"            => JsSuccess(PensionIncome)
       case "JobSeekerAllowanceIncome" => JsSuccess(JobSeekerAllowanceIncome)
-      case "OtherIncome" => JsSuccess(OtherIncome)
-      case _ => JsError("Invalid Tax component type")
+      case "OtherIncome"              => JsSuccess(OtherIncome)
+      case _                          => JsError("Invalid Tax component type")
     }
     override def writes(taxComponentType: TaxComponentType) = JsString(taxComponentType.toString)
   }
 }
 
 object NonTaxCodeIncomeComponentType {
-  implicit val formatTaxComponentType: Format[NonTaxCodeIncomeComponentType] = new Format[NonTaxCodeIncomeComponentType] {
-    override def reads(json: JsValue): JsResult[NonTaxCodeIncomeComponentType] = json.as[String] match {
-      case "NonCodedIncome" => JsSuccess(NonCodedIncome)
-      case "Commission" => JsSuccess(Commission)
-      case "OtherIncomeEarned" => JsSuccess(OtherIncomeEarned)
-      case "OtherIncomeNotEarned" => JsSuccess(OtherIncomeNotEarned)
-      case "PartTimeEarnings" => JsSuccess(PartTimeEarnings)
-      case "Tips" => JsSuccess(Tips)
-      case "OtherEarnings" => JsSuccess(OtherEarnings)
-      case "CasualEarnings" => JsSuccess(CasualEarnings)
-      case "ForeignDividendIncome" => JsSuccess(ForeignDividendIncome)
-      case "ForeignPropertyIncome" => JsSuccess(ForeignPropertyIncome)
-      case "ForeignInterestAndOtherSavings" => JsSuccess(ForeignInterestAndOtherSavings)
-      case "ForeignPensionsAndOtherIncome" => JsSuccess(ForeignPensionsAndOtherIncome)
-      case "StatePension" => JsSuccess(StatePension)
-      case "OccupationalPension" => JsSuccess(OccupationalPension)
-      case "PublicServicesPension" => JsSuccess(PublicServicesPension)
-      case "ForcesPension" => JsSuccess(ForcesPension)
-      case "PersonalPensionAnnuity" => JsSuccess(PersonalPensionAnnuity)
-      case "Profit" => JsSuccess(Profit)
-      case "BankOrBuildingSocietyInterest" => JsSuccess(BankOrBuildingSocietyInterest)
-      case "UkDividend" => JsSuccess(UkDividend)
-      case "UnitTrust" => JsSuccess(UnitTrust)
-      case "StockDividend" => JsSuccess(StockDividend)
-      case "NationalSavings" => JsSuccess(NationalSavings)
-      case "SavingsBond" => JsSuccess(SavingsBond)
-      case "PurchasedLifeAnnuities" => JsSuccess(PurchasedLifeAnnuities)
-      case "UntaxedInterestIncome" => JsSuccess(UntaxedInterestIncome)
-      case "IncapacityBenefit" => JsSuccess(IncapacityBenefit)
-      case "JobSeekersAllowance" => JsSuccess(JobSeekersAllowance)
-      case "EmploymentAndSupportAllowance" => JsSuccess(EmploymentAndSupportAllowance)
-      case _ => JsError("Invalid Non tax code component type")
+  implicit val formatTaxComponentType: Format[NonTaxCodeIncomeComponentType] =
+    new Format[NonTaxCodeIncomeComponentType] {
+      override def reads(json: JsValue): JsResult[NonTaxCodeIncomeComponentType] = json.as[String] match {
+        case "NonCodedIncome"                 => JsSuccess(NonCodedIncome)
+        case "Commission"                     => JsSuccess(Commission)
+        case "OtherIncomeEarned"              => JsSuccess(OtherIncomeEarned)
+        case "OtherIncomeNotEarned"           => JsSuccess(OtherIncomeNotEarned)
+        case "PartTimeEarnings"               => JsSuccess(PartTimeEarnings)
+        case "Tips"                           => JsSuccess(Tips)
+        case "OtherEarnings"                  => JsSuccess(OtherEarnings)
+        case "CasualEarnings"                 => JsSuccess(CasualEarnings)
+        case "ForeignDividendIncome"          => JsSuccess(ForeignDividendIncome)
+        case "ForeignPropertyIncome"          => JsSuccess(ForeignPropertyIncome)
+        case "ForeignInterestAndOtherSavings" => JsSuccess(ForeignInterestAndOtherSavings)
+        case "ForeignPensionsAndOtherIncome"  => JsSuccess(ForeignPensionsAndOtherIncome)
+        case "StatePension"                   => JsSuccess(StatePension)
+        case "OccupationalPension"            => JsSuccess(OccupationalPension)
+        case "PublicServicesPension"          => JsSuccess(PublicServicesPension)
+        case "ForcesPension"                  => JsSuccess(ForcesPension)
+        case "PersonalPensionAnnuity"         => JsSuccess(PersonalPensionAnnuity)
+        case "Profit"                         => JsSuccess(Profit)
+        case "BankOrBuildingSocietyInterest"  => JsSuccess(BankOrBuildingSocietyInterest)
+        case "UkDividend"                     => JsSuccess(UkDividend)
+        case "UnitTrust"                      => JsSuccess(UnitTrust)
+        case "StockDividend"                  => JsSuccess(StockDividend)
+        case "NationalSavings"                => JsSuccess(NationalSavings)
+        case "SavingsBond"                    => JsSuccess(SavingsBond)
+        case "PurchasedLifeAnnuities"         => JsSuccess(PurchasedLifeAnnuities)
+        case "UntaxedInterestIncome"          => JsSuccess(UntaxedInterestIncome)
+        case "IncapacityBenefit"              => JsSuccess(IncapacityBenefit)
+        case "JobSeekersAllowance"            => JsSuccess(JobSeekersAllowance)
+        case "EmploymentAndSupportAllowance"  => JsSuccess(EmploymentAndSupportAllowance)
+        case _                                => JsError("Invalid Non tax code component type")
+      }
+      override def writes(nonTaxCodeIncomeComponentType: NonTaxCodeIncomeComponentType) =
+        JsString(nonTaxCodeIncomeComponentType.toString)
     }
-    override def writes(nonTaxCodeIncomeComponentType: NonTaxCodeIncomeComponentType) = JsString(nonTaxCodeIncomeComponentType.toString)
-  }
 }

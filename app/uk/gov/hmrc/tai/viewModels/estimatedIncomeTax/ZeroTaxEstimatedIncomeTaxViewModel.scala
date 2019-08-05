@@ -28,22 +28,31 @@ import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 import scala.math.BigDecimal
 
 case class ZeroTaxEstimatedIncomeTaxViewModel(
-                                        incomeTaxEstimate: BigDecimal,
-                                        incomeEstimate: BigDecimal,
-                                        taxFreeEstimate: BigDecimal,
-                                        graph: BandedGraph,
-                                        taxRegion: String
-                                      ) extends ViewModelHelper
+  incomeTaxEstimate: BigDecimal,
+  incomeEstimate: BigDecimal,
+  taxFreeEstimate: BigDecimal,
+  graph: BandedGraph,
+  taxRegion: String
+) extends ViewModelHelper
 
-object ZeroTaxEstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants{
+object ZeroTaxEstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants {
 
-  def apply(codingComponents: Seq[CodingComponent], taxAccountSummary: TaxAccountSummary, taxCodeIncomes: Seq[TaxCodeIncome],
-            taxBands:List[TaxBand])(implicit messages: Messages): ZeroTaxEstimatedIncomeTaxViewModel = {
+  def apply(
+    codingComponents: Seq[CodingComponent],
+    taxAccountSummary: TaxAccountSummary,
+    taxCodeIncomes: Seq[TaxCodeIncome],
+    taxBands: List[TaxBand])(implicit messages: Messages): ZeroTaxEstimatedIncomeTaxViewModel = {
 
     val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = EstimatedIncomeTaxService.retrieveTaxBands(taxBands :+ paBand)
-    val graph = BandedGraph(codingComponents,mergedTaxBands,taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedTax,
-      taxAccountSummary.totalEstimatedIncome, ZeroTaxView)
+    val graph = BandedGraph(
+      codingComponents,
+      mergedTaxBands,
+      taxAccountSummary.taxFreeAllowance,
+      taxAccountSummary.totalEstimatedTax,
+      taxAccountSummary.totalEstimatedIncome,
+      ZeroTaxView
+    )
     val taxRegion = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
 
     ZeroTaxEstimatedIncomeTaxViewModel(

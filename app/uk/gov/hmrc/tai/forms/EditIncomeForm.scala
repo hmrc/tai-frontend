@@ -28,21 +28,22 @@ import uk.gov.hmrc.tai.model.EmploymentAmount
 import uk.gov.hmrc.tai.util.{DateHelper, FormHelper}
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
+case class EditIncomeForm(
+  name: String,
+  description: String,
+  employmentId: Int = 0,
+  newAmount: Option[String] = None,
+  oldAmount: Int = 0,
+  worksNumber: Option[String] = None,
+  jobTitle: Option[String] = None,
+  startDate: Option[LocalDate] = None,
+  endDate: Option[LocalDate] = None,
+  isLive: Boolean = true,
+  isOccupationalPension: Boolean = false,
+  hasMultipleIncomes: Boolean = false,
+  payToDate: Option[String] = None) {
 
-case class EditIncomeForm(name : String, description : String,
-                            employmentId: Int = 0,
-                            newAmount : Option[String] = None,
-                            oldAmount : Int = 0,
-                            worksNumber : Option[String] = None,
-                            jobTitle : Option[String] = None,
-                            startDate : Option[LocalDate] = None,
-                            endDate : Option[LocalDate] = None,
-                            isLive : Boolean=true,
-                            isOccupationalPension : Boolean=false,
-                            hasMultipleIncomes : Boolean=false,
-                            payToDate : Option[String] = None) {
-
-  def toEmploymentAmount() : EmploymentAmount = {
+  def toEmploymentAmount(): EmploymentAmount =
     new EmploymentAmount(
       name = name,
       description = description,
@@ -56,13 +57,15 @@ case class EditIncomeForm(name : String, description : String,
       isLive = isLive,
       isOccupationalPension = isOccupationalPension
     )
-  }
 }
 
 object EditIncomeForm {
   implicit val formats = Json.format[EditIncomeForm]
 
-  def create(preFillData: EmploymentAmount, hasMultipleIncomes: Boolean=false, taxablePayYTD: BigDecimal=BigDecimal(0))(implicit messages: Messages) = {
+  def create(
+    preFillData: EmploymentAmount,
+    hasMultipleIncomes: Boolean = false,
+    taxablePayYTD: BigDecimal = BigDecimal(0))(implicit messages: Messages) = {
 
     val newAmount = if (preFillData.oldAmount != preFillData.newAmount) {
       Some(preFillData.newAmount.toString)
@@ -72,22 +75,21 @@ object EditIncomeForm {
     val editIncomeForm = new EditIncomeForm(
       name = preFillData.name,
       description = preFillData.description,
-      employmentId= preFillData.employmentId,
+      employmentId = preFillData.employmentId,
       newAmount = newAmount,
       oldAmount = preFillData.oldAmount,
       worksNumber = preFillData.worksNumber,
       jobTitle = preFillData.jobTitle,
       startDate = preFillData.startDate,
       endDate = preFillData.endDate,
-      isLive= preFillData.isLive,
+      isLive = preFillData.isLive,
       isOccupationalPension = preFillData.isOccupationalPension,
       hasMultipleIncomes = hasMultipleIncomes
     )
     EditIncomeForm.createForm(preFillData.name, taxablePayYTD).fill(editIncomeForm)
   }
 
-  def apply(employmentAmount: EmploymentAmount, newAmount: String,
-                                                payToDate: Option[String]): EditIncomeForm = {
+  def apply(employmentAmount: EmploymentAmount, newAmount: String, payToDate: Option[String]): EditIncomeForm =
     EditIncomeForm(
       employmentAmount.name,
       employmentAmount.description,
@@ -101,69 +103,91 @@ object EditIncomeForm {
       employmentAmount.isLive,
       employmentAmount.isOccupationalPension,
       false,
-      payToDate)
-  }
+      payToDate
+    )
 
+  def bind(
+    employerName: String,
+    taxablePayYTD: BigDecimal = BigDecimal(0),
+    payDate: Option[LocalDate] = None,
+    errMessage: Option[String] = None)(implicit request: Request[_], messages: Messages) =
+    createForm(employerName, taxablePayYTD, payDate, errMessage).bindFromRequest
 
-  def bind(employerName: String, taxablePayYTD: BigDecimal = BigDecimal(0), payDate: Option[LocalDate] = None,
-           errMessage: Option[String] = None)(implicit request: Request[_], messages: Messages) = createForm(employerName, taxablePayYTD, payDate, errMessage).bindFromRequest
+  private def createForm(
+    employerName: String,
+    taxablePayYTD: BigDecimal,
+    payDate: Option[LocalDate] = None,
+    errMessage: Option[String] = None)(implicit messages: Messages): Form[EditIncomeForm] = {
 
-  private def createForm (employerName: String, taxablePayYTD: BigDecimal, payDate: Option[LocalDate] = None, errMessage: Option[String] = None)(implicit messages: Messages) :Form[EditIncomeForm] = {
-
-    val monthAndYearName = payDate.map (date => DateHelper.getMonthAndYear(Dates.formatDate(date))).getOrElse("")
+    val monthAndYearName = payDate.map(date => DateHelper.getMonthAndYear(Dates.formatDate(date))).getOrElse("")
 
     val errMsg = errMessage.getOrElse("error.tai.updateDataEmployment.enterLargerValue")
     Form[EditIncomeForm](
       mapping(
-        "name" -> text,
-        "description" -> text,
+        "name"         -> text,
+        "description"  -> text,
         "employmentId" -> number,
-        "newAmount" -> TaiValidator.validateTaxAmounts(messages("error.tai.updateDataEmployment.blankValue"),
-           messages("error.tai.update.estimatedTaxableIncome.input.invalid"),
-           messages("error.tai.updateDataEmployment.maxLength"),
-           messages(errMsg, MoneyPounds(taxablePayYTD, 0, true).quantity, monthAndYearName, employerName),
-          taxablePayYTD),
-        "oldAmount" -> number,
-        "worksNumber" -> optional(text),
-        "jobTitle" -> optional(text),
-        "startDate" -> optional(jodaLocalDate),
-        "endDate" -> optional(jodaLocalDate),
-        "isLive" -> boolean,
+        "newAmount" -> TaiValidator.validateTaxAmounts(
+          messages("error.tai.updateDataEmployment.blankValue"),
+          messages("error.tai.update.estimatedTaxableIncome.input.invalid"),
+          messages("error.tai.updateDataEmployment.maxLength"),
+          messages(errMsg, MoneyPounds(taxablePayYTD, 0, true).quantity, monthAndYearName, employerName),
+          taxablePayYTD
+        ),
+        "oldAmount"             -> number,
+        "worksNumber"           -> optional(text),
+        "jobTitle"              -> optional(text),
+        "startDate"             -> optional(jodaLocalDate),
+        "endDate"               -> optional(jodaLocalDate),
+        "isLive"                -> boolean,
         "isOccupationalPension" -> boolean,
-        "hasMultipleIncomes" -> boolean,
-        "payToDate" -> optional(text)
+        "hasMultipleIncomes"    -> boolean,
+        "payToDate"             -> optional(text)
       )(customApply)(EditIncomeForm.unapply)
     )
   }
 
-  val customApply: (String, String, Int, Option[String], Int, Option[String], Option[String], Option[LocalDate],
-    Option[LocalDate], Boolean, Boolean, Boolean, Option[String])
-    => EditIncomeForm = (name: String,
-                        description : String,
-                        employmentId: Int,
-                        newAmount: Option[String],
-                        oldAmount: Int,
-                        worksNumber: Option[String],
-                        jobTitle: Option[String],
-                        startDate: Option[LocalDate],
-                        endDate: Option[LocalDate],
-                        isLive: Boolean,
-                        isOccupationalPension: Boolean,
-                        hasMultipleIncomes: Boolean,
-                        payToDate: Option[String])
-  => EditIncomeForm(name,
-                    description,
-                    employmentId,
-                    FormHelper.stripNumber(newAmount),
-                    oldAmount,
-                    worksNumber,
-                    jobTitle,
-                    startDate,
-                    endDate,
-                    isLive,
-                    isOccupationalPension,
-                    hasMultipleIncomes,
-                    payToDate)
+  val customApply: (
+    String,
+    String,
+    Int,
+    Option[String],
+    Int,
+    Option[String],
+    Option[String],
+    Option[LocalDate],
+    Option[LocalDate],
+    Boolean,
+    Boolean,
+    Boolean,
+    Option[String]) => EditIncomeForm = (
+    name: String,
+    description: String,
+    employmentId: Int,
+    newAmount: Option[String],
+    oldAmount: Int,
+    worksNumber: Option[String],
+    jobTitle: Option[String],
+    startDate: Option[LocalDate],
+    endDate: Option[LocalDate],
+    isLive: Boolean,
+    isOccupationalPension: Boolean,
+    hasMultipleIncomes: Boolean,
+    payToDate: Option[String]) =>
+    EditIncomeForm(
+      name,
+      description,
+      employmentId,
+      FormHelper.stripNumber(newAmount),
+      oldAmount,
+      worksNumber,
+      jobTitle,
+      startDate,
+      endDate,
+      isLive,
+      isOccupationalPension,
+      hasMultipleIncomes,
+      payToDate
+  )
 
 }
-

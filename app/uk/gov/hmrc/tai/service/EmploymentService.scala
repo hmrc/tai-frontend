@@ -26,43 +26,40 @@ import uk.gov.hmrc.tai.model.TaxYear
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
+class EmploymentService @Inject()(employmentsConnector: EmploymentsConnector) {
 
-  def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
+  def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     employmentsConnector.employments(nino, year)
-  }
 
-  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
+  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     employmentsConnector.ceasedEmployments(nino, year)
-  }
 
-  def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] = {
+  def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     employmentsConnector.employment(nino, id.toString)
-  }
 
-  def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] = {
+  def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     employmentsConnector.endEmployment(nino, id, endEmploymentData)
-  }
 
-  def addEmployment(nino: Nino, employment: AddEmployment)(implicit hc:HeaderCarrier): Future[String] = {
+  def addEmployment(nino: Nino, employment: AddEmployment)(implicit hc: HeaderCarrier): Future[String] =
     employmentsConnector.addEmployment(nino, employment) map {
       case Some(envId) => envId
-      case _ => throw new RuntimeException(s"No envelope id was generated when adding the new employment for ${nino.nino}")
+      case _ =>
+        throw new RuntimeException(s"No envelope id was generated when adding the new employment for ${nino.nino}")
     }
-  }
 
-  def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit hc: HeaderCarrier): Future[String] = {
+  def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(
+    implicit hc: HeaderCarrier): Future[String] =
     employmentsConnector.incorrectEmployment(nino, id, incorrectEmployment) map {
       case Some(envId) => envId
-      case _ => throw new RuntimeException(s"No envelope id was generated when sending incorrect employment details for ${nino.nino}")
+      case _ =>
+        throw new RuntimeException(
+          s"No envelope id was generated when sending incorrect employment details for ${nino.nino}")
     }
-  }
 
-  def employmentNames(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Map[Int, String]] =  {
-     for{
-       employments <- employments(nino, year)
-     } yield {
-       employments.map (employment => employment.sequenceNumber -> employment.name).toMap
-     }
-  }
+  def employmentNames(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Map[Int, String]] =
+    for {
+      employments <- employments(nino, year)
+    } yield {
+      employments.map(employment => employment.sequenceNumber -> employment.name).toMap
+    }
 }

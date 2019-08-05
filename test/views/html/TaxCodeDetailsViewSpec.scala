@@ -25,7 +25,7 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
 
   "Tax code view page" must {
     behave like pageWithTitle("main heading")
-    behave like pageWithCombinedHeader(messages("tai.taxCode.preHeader"),"main heading")
+    behave like pageWithCombinedHeader(messages("tai.taxCode.preHeader"), "main heading")
     behave like pageWithBackLink
 
     "display the provided lede message" in {
@@ -33,9 +33,18 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
     }
 
     "display navigational links to other pages in the service" in {
-      doc must haveLinkElement("taxFreeAmountLink", controllers.routes.TaxFreeAmountController.taxFreeAmount.url, messages("check.your.tax.free.amount"))
-      doc must haveLinkElement("incomeTaxEstimateLink", controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url, messages("check.your.income.tax.estimate"))
-      doc must haveLinkElement("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("return.to.your.income.tax.summary"))
+      doc must haveLinkElement(
+        "taxFreeAmountLink",
+        controllers.routes.TaxFreeAmountController.taxFreeAmount.url,
+        messages("check.your.tax.free.amount"))
+      doc must haveLinkElement(
+        "incomeTaxEstimateLink",
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+        messages("check.your.income.tax.estimate"))
+      doc must haveLinkElement(
+        "taxableIncomeLink",
+        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+        messages("return.to.your.income.tax.summary"))
     }
 
     "display an list of tax-code-part descriptions, for each tax code provided in the view model" in {
@@ -43,24 +52,38 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
       doc must haveH2HeadingWithIdAndText("taxCodeList1Heading", "Your tax code for employer1: BR")
       doc must haveElementAtPathWithText("#taxCodeTerm_1_1 span", messages("tai.taxCode.part.announce", "K"))
       doc must haveElementAtPathWithText("#taxCodeTerm_1_1 span", "K")
-      doc must haveElementAtPathWithText("#taxCodeDescription_1_1", s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.BR")}")
+      doc must haveElementAtPathWithText(
+        "#taxCodeDescription_1_1",
+        s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.BR")}")
 
       doc must haveUnorderedListWithId("taxCodeList2")
       doc must haveH2HeadingWithIdAndText("taxCodeList2Heading", "Your tax code for employer2: D0")
       doc must haveElementAtPathWithText("#taxCodeTerm_2_1 span", messages("tai.taxCode.part.announce", "D0"))
       doc must haveElementAtPathWithText("#taxCodeTerm_2_1 span", "D0")
-      doc must haveElementAtPathWithText("#taxCodeDescription_2_1", s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.DX", 40)}")
+      doc must haveElementAtPathWithText(
+        "#taxCodeDescription_2_1",
+        s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.DX", 40)}")
 
       doc must haveElementAtPathWithText("#taxCodeTerm_2_2 span", messages("tai.taxCode.part.announce", "K"))
       doc must haveElementAtPathWithText("#taxCodeTerm_2_2 span", "K")
-      doc must haveElementAtPathWithText("#taxCodeDescription_2_2", s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.BR")}")
+      doc must haveElementAtPathWithText(
+        "#taxCodeDescription_2_2",
+        s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.BR")}")
     }
   }
 
-  val taxCodeDescription1 = DescriptionListViewModel("Your tax code for employer1: BR", ListMap("K" -> messages("tai.taxCode.BR")))
-  val taxCodeDescription2 = DescriptionListViewModel("Your tax code for employer2: D0", ListMap( "D0" -> messages("tai.taxCode.DX", 40), "K" -> messages("tai.taxCode.BR") ))
+  val taxCodeDescription1 =
+    DescriptionListViewModel("Your tax code for employer1: BR", ListMap("K" -> messages("tai.taxCode.BR")))
+  val taxCodeDescription2 = DescriptionListViewModel(
+    "Your tax code for employer2: D0",
+    ListMap("D0" -> messages("tai.taxCode.DX", 40), "K" -> messages("tai.taxCode.BR")))
 
-  val viewModel: TaxCodeViewModel = TaxCodeViewModel("main heading", "main heading", "lede message", Seq(taxCodeDescription1, taxCodeDescription2), messages(s"tai.taxCode.preHeader"))
+  val viewModel: TaxCodeViewModel = TaxCodeViewModel(
+    "main heading",
+    "main heading",
+    "lede message",
+    Seq(taxCodeDescription1, taxCodeDescription2),
+    messages(s"tai.taxCode.preHeader"))
 
   override def view = views.html.taxCodeDetails(viewModel)
 }

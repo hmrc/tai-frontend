@@ -29,16 +29,16 @@ object AddEmploymentPayrollNumberForm extends AddEmploymentPayrollNumberConstant
 
   private def yesNoChoiceValidation(implicit messages: Messages) = Constraint[Option[String]]("") {
     case Some(txt) if txt == YesValue || txt == NoValue => Valid
-    case _ => Invalid(Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
+    case _                                              => Invalid(Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
   }
 
   def form(implicit messages: Messages) = Form[AddEmploymentPayrollNumberForm](
     mapping(
       PayrollNumberChoice -> optional(text).verifying(yesNoChoiceValidation),
-      PayrollNumberEntry -> mandatoryIfEqual(PayrollNumberChoice,
+      PayrollNumberEntry -> mandatoryIfEqual(
+        PayrollNumberChoice,
         YesValue,
-        text.verifying(Messages("tai.addEmployment.employmentPayrollNumber.error.blank"),
-          !_.isEmpty))
+        text.verifying(Messages("tai.addEmployment.employmentPayrollNumber.error.blank"), !_.isEmpty))
     )(AddEmploymentPayrollNumberForm.apply)(AddEmploymentPayrollNumberForm.unapply)
   )
 

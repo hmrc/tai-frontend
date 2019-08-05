@@ -27,41 +27,42 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-class CompanyCarConnector @Inject() (httpHandler: HttpHandler) extends DefaultServicesConfig {
+class CompanyCarConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
-  def companyCarEmploymentUrl(nino: Nino, empId: Int): String = s"$serviceUrl/tai/$nino/tax-account/tax-components/employments/$empId/benefits/company-car"
+  def companyCarEmploymentUrl(nino: Nino, empId: Int): String =
+    s"$serviceUrl/tai/$nino/tax-account/tax-components/employments/$empId/benefits/company-car"
   def companyCarUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/tax-account/tax-components/benefits/company-cars"
 
-  def companyCarBenefitForEmployment(nino: Nino, empId: Int)(implicit hc: HeaderCarrier): Future[Option[CompanyCarBenefit]] = {
+  def companyCarBenefitForEmployment(nino: Nino, empId: Int)(
+    implicit hc: HeaderCarrier): Future[Option[CompanyCarBenefit]] =
     httpHandler.getFromApi(companyCarEmploymentUrl(nino, empId)) map (
-      json =>
-        Some((json \ "data").as[CompanyCarBenefit])
-      ) recover {
-      case e:NotFoundException => {
+      json => Some((json \ "data").as[CompanyCarBenefit])
+    ) recover {
+      case e: NotFoundException => {
         Logger.warn(s"Couldn't retrieve company car benefits for nino: $nino employmentId:$empId")
         None
       }
     }
-  }
 
-  def withdrawCompanyCarAndFuel(nino: Nino, employmentSeqNum: Int, carSeqNum: Int, withdrawCarAndFuel: WithdrawCarAndFuel)
-                               (implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def withdrawCompanyCarAndFuel(
+    nino: Nino,
+    employmentSeqNum: Int,
+    carSeqNum: Int,
+    withdrawCarAndFuel: WithdrawCarAndFuel)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     val withdrawUrl = s"${companyCarEmploymentUrl(nino, employmentSeqNum)}/$carSeqNum/withdrawn"
-    httpHandler.putToApi(withdrawUrl,withdrawCarAndFuel) map (_ => TaiSuccessResponse)
+    httpHandler.putToApi(withdrawUrl, withdrawCarAndFuel) map (_ => TaiSuccessResponse)
   }
 
-  def companyCarsForCurrentYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] = {
+  def companyCarsForCurrentYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] =
     httpHandler.getFromApi(companyCarUrl(nino)) map (
-      json =>
-        (json \ "data" \ "companyCarBenefits").as[Seq[CompanyCarBenefit]]
-      ) recover {
+      json => (json \ "data" \ "companyCarBenefits").as[Seq[CompanyCarBenefit]]
+    ) recover {
       case NonFatal(_) => {
         Logger.warn(s"Couldn't retrieve company car benefits for nino: $nino")
         Seq.empty[CompanyCarBenefit]
       }
     }
-  }
 
 }

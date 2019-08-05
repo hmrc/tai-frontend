@@ -23,12 +23,13 @@ import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
-
-case class RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader: String,
-                                                         stopDate: String,
-                                                         valueOfBenefit: Option[String],
-                                                         contactByPhone: String,
-                                                         phoneNumber: Option[String]) extends FormValuesConstants {
+case class RemoveCompanyBenefitCheckYourAnswersViewModel(
+  tableHeader: String,
+  stopDate: String,
+  valueOfBenefit: Option[String],
+  contactByPhone: String,
+  phoneNumber: Option[String])
+    extends FormValuesConstants {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
@@ -46,7 +47,7 @@ case class RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader: String,
 
     val valueOfBenefitLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.valueOfBenefit"),
-      Money.pounds(BigDecimal(valueOfBenefit.getOrElse("0"))).toString().trim.replace("&pound;","\u00A3"),
+      Money.pounds(BigDecimal(valueOfBenefit.getOrElse("0"))).toString().trim.replace("&pound;", "\u00A3"),
       controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
     )
 
@@ -66,17 +67,15 @@ case class RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader: String,
     )
 
     if (contactByPhone == YesValue) {
-      if(valueOfBenefit.isEmpty){
+      if (valueOfBenefit.isEmpty) {
         Seq(whatYouToldUsLine, stopDateLine, contactByPhoneLine, phoneNumberLine)
-      }
-      else{
+      } else {
         Seq(whatYouToldUsLine, stopDateLine, valueOfBenefitLine, contactByPhoneLine, phoneNumberLine)
       }
     } else {
-      if(valueOfBenefit.isEmpty){
+      if (valueOfBenefit.isEmpty) {
         Seq(whatYouToldUsLine, stopDateLine, contactByPhoneLine)
-      }
-      else{
+      } else {
         Seq(whatYouToldUsLine, stopDateLine, valueOfBenefitLine, contactByPhoneLine)
       }
     }
@@ -87,15 +86,20 @@ case class RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader: String,
 
 object RemoveCompanyBenefitCheckYourAnswersViewModel extends ViewModelHelper {
 
-  def apply(benefitType: String,
-            employerName: String,
-            stopDate: String,
-            valueOfBenefit: Option[String],
-            contactByPhone: String,
-            phoneNumber: Option[String])(implicit messages: Messages): RemoveCompanyBenefitCheckYourAnswersViewModel = {
+  def apply(
+    benefitType: String,
+    employerName: String,
+    stopDate: String,
+    valueOfBenefit: Option[String],
+    contactByPhone: String,
+    phoneNumber: Option[String])(implicit messages: Messages): RemoveCompanyBenefitCheckYourAnswersViewModel = {
     val tableHeader = Messages("tai.benefits.ended.tableHeader", employerName, benefitType)
-    new RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader, stopDate, valueOfBenefit, contactByPhone, phoneNumber)
+    new RemoveCompanyBenefitCheckYourAnswersViewModel(
+      tableHeader,
+      stopDate,
+      valueOfBenefit,
+      contactByPhone,
+      phoneNumber)
   }
 
 }
-

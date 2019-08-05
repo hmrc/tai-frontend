@@ -36,14 +36,16 @@ import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, PaymentDe
 
 import scala.concurrent.Future
 
-class YourIncomeCalculationController @Inject()(personService: PersonService,
-                                                taxAccountService: TaxAccountService,
-                                                employmentService: EmploymentService,
-                                                paymentsService: PaymentsService,
-                                                authenticate: AuthAction,
-                                                validatePerson: ValidatePerson,
-                                                override implicit val partialRetriever: FormPartialRetriever,
-                                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
+class YourIncomeCalculationController @Inject()(
+  personService: PersonService,
+  taxAccountService: TaxAccountService,
+  employmentService: EmploymentService,
+  paymentsService: PaymentsService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController {
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -56,7 +58,8 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
 
   }
 
-  private def incomeCalculationPage(empId: Int, printPage: Boolean)(implicit request: AuthenticatedRequest[AnyContent]) = {
+  private def incomeCalculationPage(empId: Int, printPage: Boolean)(
+    implicit request: AuthenticatedRequest[AnyContent]) = {
     val nino = request.taiUser.nino
 
     val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
@@ -64,14 +67,16 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
 
     for {
       taxCodeIncomeDetails <- taxCodeIncomesFuture
-      employmentDetails <- employmentFuture
+      employmentDetails    <- employmentFuture
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-
           val paymentDetails = paymentsService.filterDuplicates(employment)
 
-          val model = YourIncomeCalculationViewModel(taxCodeIncomes.find(_.employmentId.contains(empId)), employment, paymentDetails)
+          val model = YourIncomeCalculationViewModel(
+            taxCodeIncomes.find(_.employmentId.contains(empId)),
+            employment,
+            paymentDetails)
           implicit val user = request.taiUser
           if (printPage) {
             Ok(views.html.print.yourIncomeCalculation(model))
@@ -83,33 +88,36 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
     }
   }
 
-  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request => {
-      if (year <= TaxYear().prev) {
-        val nino = request.taiUser.nino
-        implicit val user = request.taiUser
-        showHistoricIncomeCalculation(nino, empId, year = year)
-      } else {
-        Future.successful(internalServerError(s"yourIncomeCalculationHistoricYears: Doesn't support year $year"))
+  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] =
+    (authenticate andThen validatePerson).async { implicit request =>
+      {
+        if (year <= TaxYear().prev) {
+          val nino = request.taiUser.nino
+          implicit val user = request.taiUser
+          showHistoricIncomeCalculation(nino, empId, year = year)
+        } else {
+          Future.successful(internalServerError(s"yourIncomeCalculationHistoricYears: Doesn't support year $year"))
+        }
       }
     }
-  }
 
-  def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request => {
-      if (year <= TaxYear().prev) {
-        val nino = request.taiUser.nino
-        implicit val user = request.taiUser
+  def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] =
+    (authenticate andThen validatePerson).async { implicit request =>
+      {
+        if (year <= TaxYear().prev) {
+          val nino = request.taiUser.nino
+          implicit val user = request.taiUser
 
-        showHistoricIncomeCalculation(nino, empId, printPage = true, year = year)
-      } else {
-        Future.successful(internalServerError(s"printYourIncomeCalculationHistoricYears: Doesn't support year $year"))
+          showHistoricIncomeCalculation(nino, empId, printPage = true, year = year)
+        } else {
+          Future.successful(internalServerError(s"printYourIncomeCalculationHistoricYears: Doesn't support year $year"))
+        }
       }
     }
-  }
 
-  private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear)
-                                           (implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
+  private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear)(
+    implicit request: Request[AnyContent],
+    user: AuthedUser): Future[Result] =
     for {
       employment <- employmentService.employments(nino, year)
     } yield {
@@ -120,6 +128,5 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
         Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel))
       }
     }
-  }
 
 }

@@ -25,41 +25,48 @@ class BaseValidatorSpec extends PlaySpec {
 
   val taxablePayYTD = BigDecimal("10000")
   val validateTaxablePayYTDError = "testErrorMessage"
-  val invalidResult = Invalid(List(ValidationError(List(validateTaxablePayYTDError),"validateInputAmount")))
+  val invalidResult = Invalid(List(ValidationError(List(validateTaxablePayYTDError), "validateInputAmount")))
 
   "validateInputAmount" should {
     "return Valid " when {
       "the applied value is equal to taxablePayYTD" in {
-        val result = BaseValidator.validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
+        val result =
+          BaseValidator.validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
         result.apply(Some("10000")) mustBe Valid
       }
       "the applied value is greater than taxablePayYTD" in {
-        val result = BaseValidator.validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
+        val result =
+          BaseValidator.validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
         result.apply(Some("10001")) mustBe Valid
       }
       "the applied value is greater than taxablePayYTD and has commas" in {
-        val result = BaseValidator.validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
+        val result =
+          BaseValidator.validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
         result.apply(Some("10,001")) mustBe Valid
       }
     }
     "return Invalid " when {
       "the applied value is less than taxablePayYTD" in {
-        val result = BaseValidator.validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
+        val result =
+          BaseValidator.validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
         result.apply(Some("9999")) mustBe invalidResult
       }
 
       "the applied value is less than taxablePayYTD and has commas" in {
-        val result = BaseValidator.validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
+        val result =
+          BaseValidator.validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
         result.apply(Some("9,990")) mustBe invalidResult
       }
 
       "the applied value is empty" in {
-        val result = BaseValidator.validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError = "testErrorMessage")
+        val result = BaseValidator
+          .validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError = "testErrorMessage")
         result.apply(Some("")) mustBe invalidResult
       }
 
       "the applied value is not number" in {
-        val result = BaseValidator.validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError = "testErrorMessage")
+        val result = BaseValidator
+          .validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError = "testErrorMessage")
         result.apply(Some("aaa")) mustBe invalidResult
       }
     }

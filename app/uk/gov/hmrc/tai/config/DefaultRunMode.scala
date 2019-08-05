@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.config
 import play.api.Play
 import uk.gov.hmrc.play.config.RunMode
 
-trait DefaultRunMode extends RunMode{
+trait DefaultRunMode extends RunMode {
   override def mode = Play.current.mode
   override def runModeConfiguration = Play.current.configuration
 }

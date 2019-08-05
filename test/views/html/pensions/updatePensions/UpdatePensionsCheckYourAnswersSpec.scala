@@ -25,9 +25,7 @@ class UpdatePensionsCheckYourAnswersSpec extends TaiViewSpec {
 
   "check your answers page" must {
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
-    behave like pageWithCombinedHeader(
-      messages("tai.updatePension.preHeading"),
-      messages("tai.checkYourAnswers.title"))
+    behave like pageWithCombinedHeader(messages("tai.updatePension.preHeading"), messages("tai.checkYourAnswers.title"))
     behave like pageWithButtonForm(
       "/check-income-tax/incorrect-pension/check-your-answers",
       messages("tai.confirmAndSend"))
@@ -52,15 +50,21 @@ class UpdatePensionsCheckYourAnswersSpec extends TaiViewSpec {
 
       doc must haveCheckYourAnswersSummaryLine(2, messages("tai.checkYourAnswers.whatYouToldUs"))
       doc must haveCheckYourAnswersSummaryLineAnswer(2, viewModel.whatYouToldUs)
-      doc must haveCheckYourAnswersSummaryLineChangeLink(2, controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        2,
+        controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url)
 
       doc must haveCheckYourAnswersSummaryLine(3, messages("tai.checkYourAnswers.contactByPhone"))
       doc must haveCheckYourAnswersSummaryLineAnswer(3, viewModel.contactByPhone)
-      doc must haveCheckYourAnswersSummaryLineChangeLink(3, controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        3,
+        controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url)
 
       doc must haveCheckYourAnswersSummaryLine(4, messages("tai.phoneNumber"))
       doc must haveCheckYourAnswersSummaryLineAnswer(4, viewModel.phoneNumber.getOrElse(""))
-      doc must haveCheckYourAnswersSummaryLineChangeLink(4, controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        4,
+        controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url)
     }
 
     "display the last confirmation paragraph" in {
@@ -69,7 +73,8 @@ class UpdatePensionsCheckYourAnswersSpec extends TaiViewSpec {
   }
 
   lazy val pensionId = 1
-  val viewModel = UpdatePensionCheckYourAnswersViewModel(pensionId, "TEST", "Yes", "whatYouToldUs", "Yes", Some("123456789"))
+  val viewModel =
+    UpdatePensionCheckYourAnswersViewModel(pensionId, "TEST", "Yes", "whatYouToldUs", "Yes", Some("123456789"))
 
   override def view: Html = views.html.pensions.update.updatePensionCheckYourAnswers(viewModel)
 }

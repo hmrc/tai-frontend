@@ -25,7 +25,8 @@ import play.api.i18n.Messages
 
 import scala.util.Try
 
-case class DateForm(validations: Seq[((LocalDate) => Boolean, String)], blankDateMessage: String) extends FormValidator {
+case class DateForm(validations: Seq[((LocalDate) => Boolean, String)], blankDateMessage: String)
+    extends FormValidator {
 
   def form(implicit messages: Messages) = {
     implicit val dateFormatter = new Formatter[LocalDate] {
@@ -45,9 +46,9 @@ case class DateForm(validations: Seq[((LocalDate) => Boolean, String)], blankDat
         if (errors.isEmpty) {
           val inputDate: Option[LocalDate] = Try(
             for {
-              day <- data.get(DateFormDay).map(Integer.parseInt)
+              day   <- data.get(DateFormDay).map(Integer.parseInt)
               month <- data.get(DateFormMonth).map(Integer.parseInt)
-              year <- data.get(DateFormYear).map(Integer.parseInt)
+              year  <- data.get(DateFormYear).map(Integer.parseInt)
             } yield new LocalDate(year, month, day)
           ).getOrElse(None)
 
@@ -70,9 +71,9 @@ case class DateForm(validations: Seq[((LocalDate) => Boolean, String)], blankDat
       }
 
       override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
-        DateFormDay -> value.getDayOfMonth.toString,
+        DateFormDay   -> value.getDayOfMonth.toString,
         DateFormMonth -> value.getMonthOfYear.toString,
-        DateFormYear -> value.getYear.toString
+        DateFormYear  -> value.getYear.toString
       )
     }
 

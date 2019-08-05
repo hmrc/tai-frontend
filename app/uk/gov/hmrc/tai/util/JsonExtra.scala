@@ -19,22 +19,28 @@ package uk.gov.hmrc.tai.util
 import play.api.libs.json._
 
 object JsonExtra {
-  def mapFormat[K,V](keyLabel: String, valueLabel: String)
-    (implicit kf: Format[K], vf: Format[V]) =
-    new Format[Map[K,V]] {
-      def writes(m: Map[K,V]): JsValue =
+  def mapFormat[K, V](keyLabel: String, valueLabel: String)(implicit kf: Format[K], vf: Format[V]) =
+    new Format[Map[K, V]] {
+      def writes(m: Map[K, V]): JsValue =
         JsArray(
-          m.map{ case(t,v) => Json.obj(
-            keyLabel -> kf.writes(t),
-            valueLabel -> vf.writes(v)
-          )}.toSeq
+          m.map {
+            case (t, v) =>
+              Json.obj(
+                keyLabel   -> kf.writes(t),
+                valueLabel -> vf.writes(v)
+              )
+          }.toSeq
         )
 
-      def reads(jv: JsValue): JsResult[Map[K,V]] = jv match {
-        case JsArray(b) => JsSuccess(
-          b.map(x => (
-            (x \ keyLabel).as[K] -> (x \ valueLabel).as[V]
-          )).toMap)
+      def reads(jv: JsValue): JsResult[Map[K, V]] = jv match {
+        case JsArray(b) =>
+          JsSuccess(
+            b.map(
+                x =>
+                  (
+                    (x \ keyLabel).as[K] -> (x \ valueLabel).as[V]
+                ))
+              .toMap)
         case x => JsError(s"Expected JsArray(...), found $x")
       }
     }

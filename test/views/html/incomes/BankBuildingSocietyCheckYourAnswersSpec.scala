@@ -26,9 +26,7 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
 
   "End BBSI check your answers page" must {
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
-    behave like pageWithCombinedHeader(
-      messages("account.closed"),
-      messages("tai.checkYourAnswers.title"))
+    behave like pageWithCombinedHeader(messages("account.closed"), messages("tai.checkYourAnswers.title"))
 
     behave like pageWithButtonForm(
       "/check-income-tax/income/bank-building-society-savings/0/close/check-your-answers",
@@ -64,10 +62,14 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
     "display the first row of check your answers with the proposed date that the account closed" in {
       doc must haveCheckYourAnswersSummaryLine(1, messages("tai.checkYourAnswers.whatYouToldUs"))
       doc must haveCheckYourAnswersSummaryLineAnswer(1, messages("tai.bbsi.end.checkYourAnswers.rowOne.answer"))
-      doc must haveCheckYourAnswersSummaryLineChangeLink(1, controllers.income.bbsi.routes.BbsiController.decision(0).url + "?edit=true")
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        1,
+        controllers.income.bbsi.routes.BbsiController.decision(0).url + "?edit=true")
       doc must haveCheckYourAnswersSummaryLine(2, messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"))
       doc must haveCheckYourAnswersSummaryLineAnswer(2, displayedDate)
-      doc must haveCheckYourAnswersSummaryLineChangeLink(2, controllers.income.bbsi.routes.BbsiCloseAccountController.captureCloseDate(0).url + "?edit=true")
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        2,
+        controllers.income.bbsi.routes.BbsiCloseAccountController.captureCloseDate(0).url + "?edit=true")
     }
 
     "display the closing interest section with a closing interest amount" when {
@@ -76,9 +78,13 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
         val viewModel = BbsiClosedCheckYourAnswersViewModel(0, formattedDate, Some(account), Some("123"))
         def view: Html = views.html.incomes.bbsi.close.bank_building_society_check_your_answers(viewModel)
 
-        doc(view) must haveCheckYourAnswersSummaryLine(3, messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().year.toString))
+        doc(view) must haveCheckYourAnswersSummaryLine(
+          3,
+          messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().year.toString))
         doc(view) must haveCheckYourAnswersSummaryLineAnswer(3, "£123")
-        doc(view) must haveCheckYourAnswersSummaryLineChangeLink(3, controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(0).url)
+        doc(view) must haveCheckYourAnswersSummaryLineChangeLink(
+          3,
+          controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(0).url)
       }
     }
 
@@ -88,9 +94,15 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
         val viewModel = BbsiClosedCheckYourAnswersViewModel(0, formattedDate, Some(account), None)
         def view: Html = views.html.incomes.bbsi.close.bank_building_society_check_your_answers(viewModel)
 
-        doc(view) must haveCheckYourAnswersSummaryLine(3, messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().year.toString))
-        doc(view) must haveCheckYourAnswersSummaryLineAnswer(3, messages("tai.closeBankAccount.closingInterest.notKnown"))
-        doc(view) must haveCheckYourAnswersSummaryLineChangeLink(3, controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(0).url)
+        doc(view) must haveCheckYourAnswersSummaryLine(
+          3,
+          messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().year.toString))
+        doc(view) must haveCheckYourAnswersSummaryLineAnswer(
+          3,
+          messages("tai.closeBankAccount.closingInterest.notKnown"))
+        doc(view) must haveCheckYourAnswersSummaryLineChangeLink(
+          3,
+          controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(0).url)
       }
     }
 

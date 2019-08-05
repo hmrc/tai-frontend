@@ -19,11 +19,7 @@ package uk.gov.hmrc.tai.model.domain
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.Nino
 
-case class Person(nino: Nino,
-                  firstName: String,
-                  surname: String,
-                  isDeceased: Boolean,
-                  hasCorruptData: Boolean)
+case class Person(nino: Nino, firstName: String, surname: String, isDeceased: Boolean, hasCorruptData: Boolean)
 
 object Person {
   implicit val personFormat: Format[Person] = Json.format[Person]

@@ -29,10 +29,10 @@ import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 
 import scala.language.postfixOps
 
-class SimpleEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxRegionConstants with BandTypesConstants {
+class SimpleEstimatedIncomeTaxViewModelSpec
+    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxRegionConstants with BandTypesConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
 
   "Simple Estimated Income Tax View Model" must {
     "return a valid view model for valid input" in {
@@ -60,20 +60,35 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApp
         higherRateTaxBand
       )
 
-      val bandedGraph = BandedGraph(TaxGraph,
-        List(
-          Band(TaxFree, 24.04, 11500, 0, ZeroBand),
-          Band("Band", 75.95, 36335, 7834, NonZeroBand))
-        , 0, 150000, 47835, 24.04, 11500, 99.99, 7834,
+      val bandedGraph = BandedGraph(
+        TaxGraph,
+        List(Band(TaxFree, 24.04, 11500, 0, ZeroBand), Band("Band", 75.95, 36335, 7834, NonZeroBand)),
+        0,
+        150000,
+        47835,
+        24.04,
+        11500,
+        99.99,
+        7834,
         Some("You can earn £102,165 more before your income reaches the next tax band."),
-        Some(Swatch(16.37, 7834)))
+        Some(Swatch(16.37, 7834))
+      )
 
-      val expectedViewModel = SimpleEstimatedIncomeTaxViewModel(7834, 47835, 11500, bandedGraph, UkTaxRegion,
-        mergedTaxBands, Messages("tax.on.your.employment.income"),
-        Messages("your.total.income.from.employment.desc",
+      val expectedViewModel = SimpleEstimatedIncomeTaxViewModel(
+        7834,
+        47835,
+        11500,
+        bandedGraph,
+        UkTaxRegion,
+        mergedTaxBands,
+        Messages("tax.on.your.employment.income"),
+        Messages(
+          "your.total.income.from.employment.desc",
           pounds(47835),
           "<a id=\"taxFreeAmountLink\" href=\"/check-income-tax/tax-free-allowance\" target=\"_self\" data-sso=\"false\">tax-free amount</a>",
-          pounds(11500)))
+          pounds(11500)
+        )
+      )
 
       val result = SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncome, taxBands)
 
@@ -82,8 +97,19 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApp
   }
 
   val taxCodeIncome = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), BigDecimal(15000), "EmploymentIncome", "1150L", "TestName",
-      OtherBasisOfOperation, Live, None, Some(new LocalDate(2015, 11, 26)), Some(new LocalDate(2015, 11, 26)))
+    TaxCodeIncome(
+      EmploymentIncome,
+      Some(1),
+      BigDecimal(15000),
+      "EmploymentIncome",
+      "1150L",
+      "TestName",
+      OtherBasisOfOperation,
+      Live,
+      None,
+      Some(new LocalDate(2015, 11, 26)),
+      Some(new LocalDate(2015, 11, 26))
+    )
   )
 
 }

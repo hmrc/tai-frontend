@@ -28,7 +28,8 @@ object GenericBenefit {
       val benefitTypeKey = (json \ "benefitType").as[String]
       val employmentId = (json \ "employmentId").asOpt[Int]
       val amount = (json \ "amount").as[BigDecimal]
-      val benefitType = benefitComponentTypeMap.getOrElse(benefitTypeKey, throw new RuntimeException("Not able to parse benefit components"))
+      val benefitType = benefitComponentTypeMap
+        .getOrElse(benefitTypeKey, throw new RuntimeException("Not able to parse benefit components"))
       JsSuccess(GenericBenefit(benefitType, employmentId, amount))
     }
 
@@ -36,35 +37,35 @@ object GenericBenefit {
   }
 
   private val benefitComponentTypeMap: Map[String, BenefitComponentType] = Map(
-    "BenefitInKind" -> BenefitInKind,
-    "CarFuelBenefit" -> CarFuelBenefit,
-    "MedicalInsurance" -> MedicalInsurance,
-    "CarBenefit" -> CarBenefit,
-    "Telephone" -> Telephone,
-    "ServiceBenefit" -> ServiceBenefit,
-    "TaxableExpensesBenefit" -> TaxableExpensesBenefit,
-    "VanBenefit" -> VanBenefit,
-    "VanFuelBenefit" -> VanFuelBenefit,
-    "BeneficialLoan" -> BeneficialLoan,
-    "Accommodation" -> Accommodation,
-    "Assets" -> Assets,
-    "AssetTransfer" -> AssetTransfer,
-    "EducationalServices" -> EducationalServices,
-    "Entertaining" -> Entertaining,
-    "Expenses" -> Expenses,
-    "Mileage" -> Mileage,
-    "NonQualifyingRelocationExpenses" -> NonQualifyingRelocationExpenses,
-    "NurseryPlaces" -> NurseryPlaces,
-    "OtherItems" -> OtherItems,
-    "PaymentsOnEmployeesBehalf" -> PaymentsOnEmployeesBehalf,
-    "PersonalIncidentalExpenses" -> PersonalIncidentalExpenses,
-    "QualifyingRelocationExpenses" -> QualifyingRelocationExpenses,
-    "EmployerProvidedProfessionalSubscription" -> EmployerProvidedProfessionalSubscription,
+    "BenefitInKind"                                        -> BenefitInKind,
+    "CarFuelBenefit"                                       -> CarFuelBenefit,
+    "MedicalInsurance"                                     -> MedicalInsurance,
+    "CarBenefit"                                           -> CarBenefit,
+    "Telephone"                                            -> Telephone,
+    "ServiceBenefit"                                       -> ServiceBenefit,
+    "TaxableExpensesBenefit"                               -> TaxableExpensesBenefit,
+    "VanBenefit"                                           -> VanBenefit,
+    "VanFuelBenefit"                                       -> VanFuelBenefit,
+    "BeneficialLoan"                                       -> BeneficialLoan,
+    "Accommodation"                                        -> Accommodation,
+    "Assets"                                               -> Assets,
+    "AssetTransfer"                                        -> AssetTransfer,
+    "EducationalServices"                                  -> EducationalServices,
+    "Entertaining"                                         -> Entertaining,
+    "Expenses"                                             -> Expenses,
+    "Mileage"                                              -> Mileage,
+    "NonQualifyingRelocationExpenses"                      -> NonQualifyingRelocationExpenses,
+    "NurseryPlaces"                                        -> NurseryPlaces,
+    "OtherItems"                                           -> OtherItems,
+    "PaymentsOnEmployeesBehalf"                            -> PaymentsOnEmployeesBehalf,
+    "PersonalIncidentalExpenses"                           -> PersonalIncidentalExpenses,
+    "QualifyingRelocationExpenses"                         -> QualifyingRelocationExpenses,
+    "EmployerProvidedProfessionalSubscription"             -> EmployerProvidedProfessionalSubscription,
     "IncomeTaxPaidButNotDeductedFromDirectorsRemuneration" -> IncomeTaxPaidButNotDeductedFromDirectorsRemuneration,
-    "TravelAndSubsistence" -> TravelAndSubsistence,
-    "VouchersAndCreditCards" -> VouchersAndCreditCards,
-    "NonCashBenefit" -> NonCashBenefit,
-    "EmployerProvidedServices" -> EmployerProvidedServices
+    "TravelAndSubsistence"                                 -> TravelAndSubsistence,
+    "VouchersAndCreditCards"                               -> VouchersAndCreditCards,
+    "NonCashBenefit"                                       -> NonCashBenefit,
+    "EmployerProvidedServices"                             -> EmployerProvidedServices
   )
 }
 
@@ -80,13 +81,14 @@ object WithdrawCarAndFuel {
   implicit val formats = Json.format[WithdrawCarAndFuel]
 }
 
-case class EndedCompanyBenefit(benefitType: String,
-                               whatYouToldUs: String,
-                               stopDate: String,
-                               valueOfBenefit: Option[String],
-                               contactByPhone: String,
-                               phoneNumber: Option[String])
+case class EndedCompanyBenefit(
+  benefitType: String,
+  whatYouToldUs: String,
+  stopDate: String,
+  valueOfBenefit: Option[String],
+  contactByPhone: String,
+  phoneNumber: Option[String])
 
-object EndedCompanyBenefit{
+object EndedCompanyBenefit {
   implicit val formats: Format[EndedCompanyBenefit] = Json.format[EndedCompanyBenefit]
 }

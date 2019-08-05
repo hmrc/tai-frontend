@@ -42,30 +42,26 @@ import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, IncorrectPensionDeci
 
 import scala.concurrent.Future
 
-class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayApplication
-  with MockitoSugar
-  with I18nSupport
-  with JourneyCacheConstants
-  with FormValuesConstants
-  with IncorrectPensionDecisionConstants
-  with BeforeAndAfterEach {
+class UpdatePensionProviderControllerSpec
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JourneyCacheConstants
+    with FormValuesConstants with IncorrectPensionDecisionConstants with BeforeAndAfterEach {
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(journeyCacheService)
-  }
 
   val pensionName = "Pension 1"
   val pensionId = "1"
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-
   "doYouGetThisPension" must {
     "show the doYouGetThisPension view" in {
 
       val PensionQuestionKey = "yes"
 
-      when(journeyCacheService.collectedJourneyValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(any()))
+      when(
+        journeyCacheService.collectedJourneyValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(
+          any()))
         .thenReturn(Future.successful(Right(Seq(pensionId.toString, pensionName)), Seq(Some(PensionQuestionKey))))
 
       val result = createController.doYouGetThisPension()(fakeGetRequest)
@@ -79,7 +75,9 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       val PensionQuestionKey = "yes"
 
-      when(journeyCacheService.collectedJourneyValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(any()))
+      when(
+        journeyCacheService.collectedJourneyValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(
+          any()))
         .thenReturn(Future.successful(Left("Data missing from cache"), Seq(Some(PensionQuestionKey))))
 
       val result = createController.doYouGetThisPension()(fakeGetRequest)
@@ -89,18 +87,17 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
     }
 
-
   }
 
   "handleDoYouGetThisPension" must {
     "return bad request" when {
       "no options are selected" in {
 
-        when(journeyCacheService.mandatoryValues(any())(any())).
-          thenReturn(Future.successful(Seq(pensionId, pensionName)))
+        when(journeyCacheService.mandatoryValues(any())(any()))
+          .thenReturn(Future.successful(Seq(pensionId, pensionName)))
 
-        val result = createController.handleDoYouGetThisPension()(fakePostRequest.
-          withFormUrlEncodedBody(IncorrectPensionDecision -> ""))
+        val result = createController.handleDoYouGetThisPension()(
+          fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecision -> ""))
 
         status(result) mustBe BAD_REQUEST
       }
@@ -109,11 +106,11 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "redirect to tes-1 iform" when {
       "option NO is selected" in {
 
-        when(journeyCacheService.mandatoryValues(any())(any())).
-          thenReturn(Future.successful(Seq(pensionId, pensionName)))
+        when(journeyCacheService.mandatoryValues(any())(any()))
+          .thenReturn(Future.successful(Seq(pensionId, pensionName)))
 
-        val result = createController.handleDoYouGetThisPension()(fakePostRequest.
-          withFormUrlEncodedBody(IncorrectPensionDecision -> NoValue))
+        val result = createController.handleDoYouGetThisPension()(
+          fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecision -> NoValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe ApplicationConfig.incomeFromEmploymentPensionLinkUrl
@@ -123,17 +120,18 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "redirect to whatDoYouWantToTellUs" when {
       "option YES is selected" in {
 
-        when(journeyCacheService.mandatoryValues(any())(any())).
-          thenReturn(Future.successful(Seq(pensionId, pensionName)))
+        when(journeyCacheService.mandatoryValues(any())(any()))
+          .thenReturn(Future.successful(Seq(pensionId, pensionName)))
 
-        when(journeyCacheService.cache(any(), any())(any())).
-          thenReturn(Future.successful(Map.empty[String, String]))
+        when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = createController.handleDoYouGetThisPension()(fakePostRequest.
-          withFormUrlEncodedBody(IncorrectPensionDecision -> YesValue))
+        val result = createController.handleDoYouGetThisPension()(
+          fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecision -> YesValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
+          .whatDoYouWantToTellUs()
+          .url
       }
     }
 
@@ -143,8 +141,11 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "show the whatDoYouWantToTellUs page" when {
       "an authorised user calls the page" in {
 
-        when(journeyCacheService.collectedJourneyValues(Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
-          Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any())).thenReturn(Future.successful(Right(Seq(pensionName, pensionId)), Seq(None)))
+        when(
+          journeyCacheService.collectedJourneyValues(
+            Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
+            Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any()))
+          .thenReturn(Future.successful(Right(Seq(pensionName, pensionId)), Seq(None)))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
@@ -156,8 +157,11 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
         val cache = Seq(pensionName, pensionId)
         val optionalCache = Seq(Some("test1"))
-        when(journeyCacheService.collectedJourneyValues(Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
-          Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any())).thenReturn(Future.successful(Right(cache), optionalCache))
+        when(
+          journeyCacheService.collectedJourneyValues(
+            Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
+            Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any()))
+          .thenReturn(Future.successful(Right(cache), optionalCache))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
@@ -168,8 +172,11 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       "redirect to the tax summary page if a value is missing from the cache " in {
 
-        when(journeyCacheService.collectedJourneyValues(Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
-          Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any())).thenReturn(Future.successful(Left("Data missing from cache"), Seq(None)))
+        when(
+          journeyCacheService.collectedJourneyValues(
+            Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
+            Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any()))
+          .thenReturn(Future.successful(Left("Data missing from cache"), Seq(None)))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
@@ -185,11 +192,14 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
-        val result = createController.submitWhatDoYouWantToTellUs(fakePostRequest
-          .withFormUrlEncodedBody(("pensionDetails", "test details")))
+        val result = createController.submitWhatDoYouWantToTellUs(
+          fakePostRequest
+            .withFormUrlEncodedBody(("pensionDetails", "test details")))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
+          .addTelephoneNumber()
+          .url
       }
     }
 
@@ -201,9 +211,9 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String]())(any()))
           .thenReturn(Future.successful(Seq(pensionName, pensionId)))
 
-
-        val result = createController.submitWhatDoYouWantToTellUs(fakePostRequest
-          .withFormUrlEncodedBody(pensionDetailsFormData))
+        val result = createController.submitWhatDoYouWantToTellUs(
+          fakePostRequest
+            .withFormUrlEncodedBody(pensionDetailsFormData))
 
         status(result) mustBe BAD_REQUEST
       }
@@ -215,8 +225,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "show the contact by telephone page" when {
       "an authorised request is received" in {
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).
-          thenReturn(Future.successful(Right(pensionId.toInt)))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
+          .thenReturn(Future.successful(Right(pensionId.toInt)))
         when(journeyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(None, None)))
         val result = createController.addTelephoneNumber()(fakeGetRequest)
@@ -227,8 +237,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       }
       "an authorised request is received and we have cached data" in {
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).
-          thenReturn(Future.successful(Right(pensionId.toInt)))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
+          .thenReturn(Future.successful(Right(pensionId.toInt)))
         when(journeyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
         val result = createController.addTelephoneNumber()(fakeGetRequest)
@@ -241,8 +251,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       "redirect to the tax summary page if a value is missing from the cache " in {
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).
-          thenReturn(Future.successful(Left("Data missing from the cache")))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
+          .thenReturn(Future.successful(Left("Data missing from the cache")))
         when(journeyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
         val result = createController.addTelephoneNumber()(fakeGetRequest)
@@ -258,27 +268,36 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "redirect to the check your answers page" when {
       "the request has an authorised session, and a telephone number has been provided" in {
 
-        val expectedCache = Map(UpdatePensionProvider_TelephoneQuestionKey -> YesValue, UpdatePensionProvider_TelephoneNumberKey -> "12345678")
+        val expectedCache = Map(
+          UpdatePensionProvider_TelephoneQuestionKey -> YesValue,
+          UpdatePensionProvider_TelephoneNumberKey   -> "12345678")
         when(journeyCacheService.cache(mockEq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
 
-        val result = createController.submitTelephoneNumber()(fakePostRequest.withFormUrlEncodedBody(
-          YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
+        val result = createController.submitTelephoneNumber()(
+          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers().url
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
+          .checkYourAnswers()
+          .url
       }
 
     }
     "the request has an authorised session, and telephone number contact has not been approved" in {
 
-      val expectedCacheWithErasingNumber = Map(UpdatePensionProvider_TelephoneQuestionKey -> NoValue, UpdatePensionProvider_TelephoneNumberKey -> "")
-      when(journeyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any())).thenReturn(Future.successful(expectedCacheWithErasingNumber))
+      val expectedCacheWithErasingNumber =
+        Map(UpdatePensionProvider_TelephoneQuestionKey -> NoValue, UpdatePensionProvider_TelephoneNumberKey -> "")
+      when(journeyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any()))
+        .thenReturn(Future.successful(expectedCacheWithErasingNumber))
 
-      val result = createController.submitTelephoneNumber()(fakePostRequest.withFormUrlEncodedBody(
-        YesNoChoice -> NoValue, YesNoTextEntry -> "this value must not be cached"))
+      val result = createController.submitTelephoneNumber()(
+        fakePostRequest
+          .withFormUrlEncodedBody(YesNoChoice -> NoValue, YesNoTextEntry -> "this value must not be cached"))
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers().url
+      redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
+        .checkYourAnswers()
+        .url
     }
 
     "return BadRequest" when {
@@ -287,8 +306,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val cache = Map(UpdatePensionProvider_IdKey -> pensionId)
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
-        val result = createController.submitTelephoneNumber()(fakePostRequest.withFormUrlEncodedBody(
-          YesNoChoice -> YesValue, YesNoTextEntry -> ""))
+        val result = createController.submitTelephoneNumber()(
+          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -301,14 +320,15 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val cache = Map(UpdatePensionProvider_IdKey -> pensionId)
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
-        val tooFewCharsResult = controller.submitTelephoneNumber()(fakePostRequest.withFormUrlEncodedBody(
-          YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
+        val tooFewCharsResult = controller.submitTelephoneNumber()(
+          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
         status(tooFewCharsResult) mustBe BAD_REQUEST
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
-        val tooManyCharsResult = controller.submitTelephoneNumber()(fakePostRequest.withFormUrlEncodedBody(
-          YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
+        val tooManyCharsResult = controller.submitTelephoneNumber()(
+          fakePostRequest
+            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
@@ -335,15 +355,17 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       }
     }
 
-
     "redirect to the summary page if a value is missing from the cache " in {
 
-      when(journeyCacheService.collectedJourneyValues(any(classOf[scala.collection.immutable.List[String]]),
-        any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
-        Future.successful((
-          Left("An error has occurred"),
-          Seq[Option[String]](Some("123456789"))
-        ))
+      when(
+        journeyCacheService.collectedJourneyValues(
+          any(classOf[scala.collection.immutable.List[String]]),
+          any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
+        Future.successful(
+          (
+            Left("An error has occurred"),
+            Seq[Option[String]](Some("123456789"))
+          ))
       )
 
       val result = createController.checkYourAnswers()(fakeGetRequest)
@@ -361,21 +383,28 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val incorrectPensionProvider = IncorrectPensionProvider("some random info", "Yes", Some("123456789"))
         val empId = 1
         when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
-          Future.successful((
-            Seq[String](empId.toString, "some random info", "Yes"),
-            Seq[Option[String]](Some("123456789"))
-          ))
+          Future.successful(
+            (
+              Seq[String](empId.toString, "some random info", "Yes"),
+              Seq[Option[String]](Some("123456789"))
+            ))
         )
-        when(pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
+        when(
+          pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(
+            any()))
           .thenReturn(Future.successful("envelope_id_1"))
-        when(successfulJourneyCacheService.cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-${empId}"), Matchers.eq("true"))(any()))
+        when(
+          successfulJourneyCacheService
+            .cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId"), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = createController.submitYourAnswers()(fakePostRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.confirmation().url
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
+          .confirmation()
+          .url
         verify(journeyCacheService, times(1)).flush()(any())
       }
 
@@ -384,21 +413,28 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val incorrectPensionProvider = IncorrectPensionProvider("some random info", "No", None)
         val empId = 1
         when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
-          Future.successful((
-            Seq[String](empId.toString, "some random info", "No"),
-            Seq[Option[String]](None)
-          ))
+          Future.successful(
+            (
+              Seq[String](empId.toString, "some random info", "No"),
+              Seq[Option[String]](None)
+            ))
         )
-        when(pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
+        when(
+          pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(
+            any()))
           .thenReturn(Future.successful("envelope_id_1"))
-        when(successfulJourneyCacheService.cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-${empId}"), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdatePensionKey-${empId}" -> "true")))
+        when(
+          successfulJourneyCacheService
+            .cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId"), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = createController.submitYourAnswers()(fakePostRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.confirmation().url
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
+          .confirmation()
+          .url
         verify(journeyCacheService, times(1)).flush()(any())
       }
     }
@@ -420,16 +456,19 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
     def cacheMap = Map(UpdatePensionProvider_IdKey -> pensionId.toString, UpdatePensionProvider_NameKey -> pensionName)
 
-    def taxAccountServiceCall = when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-      thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
+    def taxAccountServiceCall =
+      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
-    def journeyCacheCall = when(journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
+    def journeyCacheCall =
+      when(journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
 
     "redirect to the Do You Get This Pension page when there is no update pension ID cache value present" in {
 
       taxAccountServiceCall
-      when(successfulJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$pensionId"))(any())).
-      thenReturn(Future.successful(None))
+      when(
+        successfulJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$pensionId"))(
+          any())).thenReturn(Future.successful(None))
       journeyCacheCall
 
       val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
@@ -441,8 +480,9 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "redirect to the Duplicate Submission Warning page when there is an Update pension ID cache value present" in {
 
       taxAccountServiceCall
-      when(successfulJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$pensionId"))(any())).
-      thenReturn(Future.successful(Some("true")))
+      when(
+        successfulJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$pensionId"))(
+          any())).thenReturn(Future.successful(Some("true")))
       journeyCacheCall
 
       val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
@@ -453,8 +493,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "return Internal Server error" when {
       "tax code income sources are not available" in {
 
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
 
         val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -462,8 +502,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       "an invalid id has been passed" in {
 
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
         val result = createController.UpdatePension(4)(fakeGetRequest)
 
@@ -499,18 +539,22 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
   "submitDuplicateSubmissionWarning" must {
 
-    def journeyCacheCall = when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-      .thenReturn(Future.successful(Seq(pensionName, pensionId.toString)))
+    def journeyCacheCall =
+      when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Seq(pensionName, pensionId.toString)))
 
     "redirect to the update remove employment decision page" when {
       "I want to update my employment is selected" in {
 
         journeyCacheCall
 
-        val result = createController.submitDuplicateSubmissionWarning(fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue))
+        val result = createController.submitDuplicateSubmissionWarning(
+          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension().url
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
+          .doYouGetThisPension()
+          .url
       }
     }
 
@@ -519,10 +563,13 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
         journeyCacheCall
 
-        val result = createController.submitDuplicateSubmissionWarning(fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> NoValue))
+        val result = createController.submitDuplicateSubmissionWarning(
+          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> NoValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId.toInt).url
+        redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController
+          .onPageLoad(pensionId.toInt)
+          .url
       }
     }
 
@@ -532,7 +579,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Seq(pensionName, pensionId.toString)))
 
-        val result = createController.submitDuplicateSubmissionWarning(fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> ""))
+        val result =
+          createController.submitDuplicateSubmissionWarning(fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> ""))
 
         status(result) mustBe BAD_REQUEST
       }
@@ -547,24 +595,25 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
   private def fakePostRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
 
   val generateNino: Nino = new Generator().nextNino
-  val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(pensionId.toInt), 100, "", "", pensionName, Week1Month1BasisOfOperation, Live)
+  val pensionTaxCodeIncome =
+    TaxCodeIncome(PensionIncome, Some(pensionId.toInt), 100, "", "", pensionName, Week1Month1BasisOfOperation, Live)
   val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "", "", Week1Month1BasisOfOperation, Live)
-
 
   val pensionProviderService = mock[PensionProviderService]
   val taxAccountService = mock[TaxAccountService]
   val journeyCacheService = mock[JourneyCacheService]
   val successfulJourneyCacheService = mock[JourneyCacheService]
 
-  class UpdatePensionProviderTestController extends UpdatePensionProviderController(
-    taxAccountService,
-    pensionProviderService,
-    mock[AuditService],
-    FakeAuthAction,
-    FakeValidatePerson,
-    journeyCacheService,
-    successfulJourneyCacheService,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  )
+  class UpdatePensionProviderTestController
+      extends UpdatePensionProviderController(
+        taxAccountService,
+        pensionProviderService,
+        mock[AuditService],
+        FakeAuthAction,
+        FakeValidatePerson,
+        journeyCacheService,
+        successfulJourneyCacheService,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      )
 }

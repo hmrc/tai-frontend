@@ -16,7 +16,4 @@
 
 package uk.gov.hmrc.tai.model.domain.tracking
 
-case class TrackedForm(id: String,
-                       name: String,
-                       status: TrackedFormStatus)
-
+case class TrackedForm(id: String, name: String, status: TrackedFormStatus)

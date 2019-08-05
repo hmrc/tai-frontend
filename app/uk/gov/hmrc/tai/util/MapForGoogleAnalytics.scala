@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.util
 
 object MapForGoogleAnalytics {
-  def format(map: Map[String, String]): String = {
+  def format(map: Map[String, String]): String =
     map.mkString(";").replace(" -> ", "=")
-  }
 }
