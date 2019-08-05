@@ -21,7 +21,8 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 
-class DynamicPayPeriodTitleSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with EditIncomePayPeriodConstants {
+class DynamicPayPeriodTitleSpec
+    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with EditIncomePayPeriodConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -43,7 +44,8 @@ class DynamicPayPeriodTitleSpec extends PlaySpec with FakeTaiPlayApplication wit
 
       "gross pay period is a number of days" in {
         val numberOfDays = "123"
-        GrossPayPeriodTitle.title(Some(OTHER), Some(numberOfDays)) mustBe messagesApi("tai.payslip.title.days", numberOfDays)
+        GrossPayPeriodTitle
+          .title(Some(OTHER), Some(numberOfDays)) mustBe messagesApi("tai.payslip.title.days", numberOfDays)
       }
 
     }
@@ -54,17 +56,19 @@ class DynamicPayPeriodTitleSpec extends PlaySpec with FakeTaiPlayApplication wit
         TaxablePayPeriod.errorMessage(Some(MONTHLY), None) mustBe messagesApi("tai.taxablePayslip.title.month")
       }
 
-      "taxable pay period is weekly" in{
+      "taxable pay period is weekly" in {
         TaxablePayPeriod.errorMessage(Some(WEEKLY), None) mustBe messagesApi("tai.taxablePayslip.title.week")
       }
 
-      "taxable pay period is fortnightly" in{
+      "taxable pay period is fortnightly" in {
         TaxablePayPeriod.errorMessage(Some(FORTNIGHTLY), None) mustBe messagesApi("tai.taxablePayslip.title.2week")
       }
 
       "taxable pay period is a number of days" in {
         val numberOfDays = "123"
-        TaxablePayPeriod.errorMessage(Some(OTHER), Some(numberOfDays)) mustBe messagesApi("tai.taxablePayslip.title.days", numberOfDays)
+        TaxablePayPeriod.errorMessage(Some(OTHER), Some(numberOfDays)) mustBe messagesApi(
+          "tai.taxablePayslip.title.days",
+          numberOfDays)
       }
     }
   }

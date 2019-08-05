@@ -26,16 +26,13 @@ import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
-class getHelpPageSpec extends PlaySpec
-  with FakeTaiPlayApplication
-  with JsoupMatchers {
+class getHelpPageSpec extends PlaySpec with FakeTaiPlayApplication with JsoupMatchers {
 
   implicit val request = FakeRequest("GET", "")
   implicit val user = UserBuilder()
   implicit val templateRenderer = MockTemplateRenderer
   implicit val partialRetriever = MockPartialRetriever
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
 
   "show get help page" must {
 
@@ -44,11 +41,12 @@ class getHelpPageSpec extends PlaySpec
       val html = views.html.help.getHelp(Some("0"))
 
       val doc = Jsoup.parseBodyFragment(html.toString)
-      doc must haveHeadingWithText( messagesApi("tai.getHelp.h1"))
+      doc must haveHeadingWithText(messagesApi("tai.getHelp.h1"))
       doc must haveParagraphWithText(messagesApi("tai.getHelp.p1"))
       doc must haveParagraphWithText(messagesApi("tai.getHelp.p2"))
       doc must haveHeadingH2WithText(messagesApi("tai.getHelp.webchat.h2"))
-      doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.available.p1", messagesApi("tai.getHelp.webchat.link")))
+      doc must haveParagraphWithText(
+        messagesApi("tai.getHelp.webchat.available.p1", messagesApi("tai.getHelp.webchat.link")))
       doc must haveHeadingH2WithText(messagesApi("tai.getHelp.form.h2"))
       val getHelpPara = messagesApi("tai.getHelp.form.p1.text.with.also", messagesApi("tai.getHelp.form.link.title"))
       doc must haveParagraphWithText(getHelpPara)
@@ -61,7 +59,7 @@ class getHelpPageSpec extends PlaySpec
       val html = views.html.help.getHelp(Some("1"))
 
       val doc = Jsoup.parseBodyFragment(html.toString)
-      doc must haveHeadingWithText( messagesApi("tai.getHelp.h1"))
+      doc must haveHeadingWithText(messagesApi("tai.getHelp.h1"))
       doc must haveParagraphWithText(messagesApi("tai.getHelp.p1.with.acronym"))
       doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.closed.p2"))
       doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.p2"))
@@ -78,7 +76,7 @@ class getHelpPageSpec extends PlaySpec
     "show the correct page title and content when the page is displayed and dynamic web chat status is webchat_busy" in {
       val html = views.html.help.getHelp(Some("2"))
       val doc = Jsoup.parseBodyFragment(html.toString)
-      doc must haveHeadingWithText( messagesApi("tai.getHelp.h1"))
+      doc must haveHeadingWithText(messagesApi("tai.getHelp.h1"))
       doc must haveParagraphWithText(messagesApi("tai.getHelp.p1.with.acronym"))
       doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.busy.p2"))
       doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.busy.error.p2"))
@@ -95,7 +93,7 @@ class getHelpPageSpec extends PlaySpec
     "show the correct page title and content when the page is displayed and dynamic web chat status is webchat_error" in {
       val html = views.html.help.getHelp(None)
       val doc = Jsoup.parseBodyFragment(html.toString)
-      doc must haveHeadingWithText( messagesApi("tai.getHelp.h1"))
+      doc must haveHeadingWithText(messagesApi("tai.getHelp.h1"))
       doc must haveParagraphWithText(messagesApi("tai.getHelp.p1.with.acronym"))
       doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.error.p2"))
       doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.busy.error.p2"))

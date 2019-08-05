@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class EditPensionSpec extends TaiViewSpec with MockitoSugar{
+class EditPensionSpec extends TaiViewSpec with MockitoSugar {
 
   private val empId = 1
   private val employerName = "fakeFieldValue"
@@ -54,5 +54,6 @@ class EditPensionSpec extends TaiViewSpec with MockitoSugar{
 
   when(editIncomeForm.errors(anyString())).thenReturn(Nil)
 
-  override def view: Html = views.html.incomes.editPension(editIncomeForm, hasMultipleIncomes = false, empId, "0",false)
+  override def view: Html =
+    views.html.incomes.editPension(editIncomeForm, hasMultipleIncomes = false, empId, "0", false)
 }

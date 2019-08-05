@@ -24,19 +24,21 @@ import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateHistoricIncomeDetailsViewModel
 
-class UpdateIncomeDetailsSpec extends TaiViewSpec{
+class UpdateIncomeDetailsSpec extends TaiViewSpec {
 
   private val taxYear: Int = 2016
   private val formattedTaxYear = TaxPeriodLabelService.taxPeriodLabelSingleLine(taxYear)
   private val givenTaxYear: TaxYear = TaxYear(taxYear)
 
-  override def view: Html = views.html.incomes.previousYears.UpdateIncomeDetails(UpdateHistoricIncomeDetailsViewModel(taxYear),
-    UpdateIncomeDetailsForm.form)
+  override def view: Html =
+    views.html.incomes.previousYears
+      .UpdateIncomeDetails(UpdateHistoricIncomeDetailsViewModel(taxYear), UpdateIncomeDetailsForm.form)
 
   "UpdateIncomeDetails" must {
     behave like pageWithTitle(Messages("tai.income.previousYears.details.title"))
-    behave like pageWithCombinedHeader(Messages("tai.income.previousYears.details.preHeading"),
-      Messages("tai.income.previousYears.details.heading",formattedTaxYear))
+    behave like pageWithCombinedHeader(
+      Messages("tai.income.previousYears.details.preHeading"),
+      Messages("tai.income.previousYears.details.heading", formattedTaxYear))
     behave like pageWithContinueButtonForm("/check-income-tax/update-income-details/what-do-you-want-to-tell-us")
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(givenTaxYear))
     behave like pageWithBackLink

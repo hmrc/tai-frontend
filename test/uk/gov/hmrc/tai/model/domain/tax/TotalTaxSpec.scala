@@ -24,27 +24,33 @@ class TotalTaxSpec extends PlaySpec {
   "IncomeCategoryType" must {
     "be able to parse json" when {
       "given a valid json with NonSavingsIncomeCategory" in {
-        incomeCategoryJson("NonSavingsIncomeCategory").as[IncomeCategory] mustBe IncomeCategory(NonSavingsIncomeCategory, 10, 10, 10, Nil)
+        incomeCategoryJson("NonSavingsIncomeCategory")
+          .as[IncomeCategory] mustBe IncomeCategory(NonSavingsIncomeCategory, 10, 10, 10, Nil)
       }
 
       "given a valid json with UntaxedInterestIncomeCategory" in {
-        incomeCategoryJson("UntaxedInterestIncomeCategory").as[IncomeCategory] mustBe IncomeCategory(UntaxedInterestIncomeCategory, 10, 10, 10, Nil)
+        incomeCategoryJson("UntaxedInterestIncomeCategory")
+          .as[IncomeCategory] mustBe IncomeCategory(UntaxedInterestIncomeCategory, 10, 10, 10, Nil)
       }
 
       "given a valid json with BankInterestIncomeCategory" in {
-        incomeCategoryJson("BankInterestIncomeCategory").as[IncomeCategory] mustBe IncomeCategory(BankInterestIncomeCategory, 10, 10, 10, Nil)
+        incomeCategoryJson("BankInterestIncomeCategory")
+          .as[IncomeCategory] mustBe IncomeCategory(BankInterestIncomeCategory, 10, 10, 10, Nil)
       }
 
       "given a valid json with UkDividendsIncomeCategory" in {
-        incomeCategoryJson("UkDividendsIncomeCategory").as[IncomeCategory] mustBe IncomeCategory(UkDividendsIncomeCategory, 10, 10, 10, Nil)
+        incomeCategoryJson("UkDividendsIncomeCategory")
+          .as[IncomeCategory] mustBe IncomeCategory(UkDividendsIncomeCategory, 10, 10, 10, Nil)
       }
 
       "given a valid json with ForeignInterestIncomeCategory" in {
-        incomeCategoryJson("ForeignInterestIncomeCategory").as[IncomeCategory] mustBe IncomeCategory(ForeignInterestIncomeCategory, 10, 10, 10, Nil)
+        incomeCategoryJson("ForeignInterestIncomeCategory")
+          .as[IncomeCategory] mustBe IncomeCategory(ForeignInterestIncomeCategory, 10, 10, 10, Nil)
       }
 
       "given a valid json with ForeignDividendsIncomeCategory" in {
-        incomeCategoryJson("ForeignDividendsIncomeCategory").as[IncomeCategory] mustBe IncomeCategory(ForeignDividendsIncomeCategory, 10, 10, 10, Nil)
+        incomeCategoryJson("ForeignDividendsIncomeCategory")
+          .as[IncomeCategory] mustBe IncomeCategory(ForeignDividendsIncomeCategory, 10, 10, 10, Nil)
       }
 
       "throw an exception" when {
@@ -59,10 +65,10 @@ class TotalTaxSpec extends PlaySpec {
   private def incomeCategoryJson(incomeCategoryType: String) =
     Json.obj(
       "incomeCategoryType" -> incomeCategoryType,
-      "totalTax" -> 10,
+      "totalTax"           -> 10,
       "totalTaxableIncome" -> 10,
-      "totalIncome" -> 10,
-      "taxBands" -> Json.arr()
+      "totalIncome"        -> 10,
+      "taxBands"           -> Json.arr()
     )
 
 }

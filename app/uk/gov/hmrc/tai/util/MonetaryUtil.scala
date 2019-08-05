@@ -23,12 +23,11 @@ object MonetaryUtil {
 
   def withPoundPrefixAndSign(moneyPounds: MoneyPounds): String = {
     val sign = if (moneyPounds.isNegative) encodedMinusSign else ""
-    s"${sign}£${moneyPounds.quantity}"
+    s"$sign£${moneyPounds.quantity}"
   }
 
   def withPoundPrefix(moneyPounds: MoneyPounds): String = s"£${moneyPounds.quantity}"
 
-  def withPoundPrefix(amount: Int, decimalplaces: Int = 0): String = {
+  def withPoundPrefix(amount: Int, decimalplaces: Int = 0): String =
     withPoundPrefix(MoneyPounds(amount, decimalplaces))
-  }
 }

@@ -26,57 +26,53 @@ import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, I
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class EmploymentsConnector @Inject() (httpHandler: HttpHandler) extends DefaultServicesConfig {
+class EmploymentsConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
   def employmentUrl(nino: Nino, id: String) = s"$serviceUrl/tai/$nino/employments/$id"
 
-  def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
-    httpHandler.getFromApi(employmentServiceUrl(nino, year)) map {
-      json =>
-        if ((json \ "data" \ "employments").validate[Seq[Employment]].isSuccess) {
-          (json \ "data" \ "employments").as[Seq[Employment]]
-        } else {
-          throw new RuntimeException("Invalid employment json")
-        }
+  def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
+    httpHandler.getFromApi(employmentServiceUrl(nino, year)) map { json =>
+      if ((json \ "data" \ "employments").validate[Seq[Employment]].isSuccess) {
+        (json \ "data" \ "employments").as[Seq[Employment]]
+      } else {
+        throw new RuntimeException("Invalid employment json")
+      }
     }
-  }
 
-  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
-    httpHandler.getFromApi(ceasedEmploymentServiceUrl(nino, year)).map {
-      json =>
-        (json \ "data").validate[Seq[Employment]].recoverTotal(_ => throw new RuntimeException("Invalid employment json"))
+  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
+    httpHandler.getFromApi(ceasedEmploymentServiceUrl(nino, year)).map { json =>
+      (json \ "data").validate[Seq[Employment]].recoverTotal(_ => throw new RuntimeException("Invalid employment json"))
     }
-  }
 
   def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    httpHandler.getFromApi(employmentUrl(nino, id)).map(
-      json => (json \ "data").asOpt[Employment]
-    )
+    httpHandler
+      .getFromApi(employmentUrl(nino, id))
+      .map(
+        json => (json \ "data").asOpt[Employment]
+      )
 
-  def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] = {
+  def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     httpHandler.putToApi[EndEmployment](endEmploymentServiceUrl(nino, id), endEmploymentData).map { response =>
-        if((response.json \ "data").validate[String].isSuccess){
-          (response.json \ "data").as[String]
-        } else {
-          throw new RuntimeException("Invalid json")
-        }
+      if ((response.json \ "data").validate[String].isSuccess) {
+        (response.json \ "data").as[String]
+      } else {
+        throw new RuntimeException("Invalid json")
+      }
     }
-  }
 
-  def addEmployment(nino: Nino, employment: AddEmployment)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def addEmployment(nino: Nino, employment: AddEmployment)(implicit hc: HeaderCarrier): Future[Option[String]] =
     httpHandler.postToApi[AddEmployment](addEmploymentServiceUrl(nino), employment).map { response =>
       (response.json \ "data").asOpt[String]
     }
-  }
 
-  def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    httpHandler.postToApi[IncorrectIncome](incorrectEmploymentServiceUrl(nino, id), incorrectEmployment).map { response =>
-      (response.json \ "data").asOpt[String]
+  def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(
+    implicit hc: HeaderCarrier): Future[Option[String]] =
+    httpHandler.postToApi[IncorrectIncome](incorrectEmploymentServiceUrl(nino, id), incorrectEmployment).map {
+      response =>
+        (response.json \ "data").asOpt[String]
     }
-  }
-
 
   def endEmploymentServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/employments/$id/end-date"
 
@@ -84,7 +80,8 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler) extends DefaultS
 
   def employmentServiceUrl(nino: Nino, year: TaxYear) = s"$serviceUrl/tai/$nino/employments/years/${year.year}"
 
-  def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear) = s"$serviceUrl/tai/$nino/employments/year/${year.year}/status/ceased"
+  def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear) =
+    s"$serviceUrl/tai/$nino/employments/year/${year.year}/status/ceased"
 
   def incorrectEmploymentServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/employments/$id/reason"
 }

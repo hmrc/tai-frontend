@@ -39,11 +39,15 @@ class CompanyCarUserChoiceSpec extends TaiViewSpec {
 
     "display radio buttons for user journey choice" in {
 
-      doc must haveElementAtPathWithText("form fieldset label[for=userChoice-changecardetails]",Messages("tai.changeCompanyCar.radioLabel1"))
-      doc must haveElementAtPathWithText("form fieldset label[for=userChoice-removecar]",Messages("tai.changeCompanyCar.radioLabel2"))
+      doc must haveElementAtPathWithText(
+        "form fieldset label[for=userChoice-changecardetails]",
+        Messages("tai.changeCompanyCar.radioLabel1"))
+      doc must haveElementAtPathWithText(
+        "form fieldset label[for=userChoice-removecar]",
+        Messages("tai.changeCompanyCar.radioLabel2"))
 
-      doc must haveElementAtPathWithId("form fieldset input","userChoice-changecardetails")
-      doc must haveElementAtPathWithId("form fieldset input","userChoice-removecar")
+      doc must haveElementAtPathWithId("form fieldset input", "userChoice-changecardetails")
+      doc must haveElementAtPathWithId("form fieldset input", "userChoice-removecar")
 
     }
 
@@ -54,7 +58,9 @@ class CompanyCarUserChoiceSpec extends TaiViewSpec {
 
     "display a cancel button" in {
 
-      doc(view).select("#cancelLink").get(0).attributes.get("href") mustBe routes.TaxFreeAmountController.taxFreeAmount().url
+      doc(view).select("#cancelLink").get(0).attributes.get("href") mustBe routes.TaxFreeAmountController
+        .taxFreeAmount()
+        .url
     }
 
     "correctly summarise form errors at the page level" in {

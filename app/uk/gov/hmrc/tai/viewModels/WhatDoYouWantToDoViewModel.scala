@@ -23,47 +23,44 @@ import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
 
 import scala.collection.immutable.ListMap
 
-case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: TimeToProcess,
-                                      isCyPlusOneEnabled: Boolean,
-                                      hasTaxCodeChanged: Boolean = false,
-                                      taxCodeMismatch: Option[TaxCodeMismatch] = None){
+case class WhatDoYouWantToDoViewModel(
+  isAnyIFormInProgress: TimeToProcess,
+  isCyPlusOneEnabled: Boolean,
+  hasTaxCodeChanged: Boolean = false,
+  taxCodeMismatch: Option[TaxCodeMismatch] = None) {
 
-  def showTaxCodeChangeTile(): Boolean = {
+  def showTaxCodeChangeTile(): Boolean =
     (hasTaxCodeChanged, taxCodeMismatch) match {
       case (_, Some(mismatch)) if mismatch.confirmedTaxCodes.isEmpty => false
-      case (true, Some(TaxCodeMismatch(false, _, _))) => true
-      case _ => false
+      case (true, Some(TaxCodeMismatch(false, _, _)))                => true
+      case _                                                         => false
     }
-  }
 
   def gaDimensions(): Map[String, String] = {
 
     val enabledMap = taxCodeChangeDimensions ++ ListMap(
-      GoogleAnalyticsConstants.taiLandingPageCYKey -> "true",
-      GoogleAnalyticsConstants.taiLandingPagePYKey -> "true",
+      GoogleAnalyticsConstants.taiLandingPageCYKey  -> "true",
+      GoogleAnalyticsConstants.taiLandingPagePYKey  -> "true",
       GoogleAnalyticsConstants.taiLandingPageCY1Key -> isCyPlusOneEnabled.toString
     )
 
     Map(GoogleAnalyticsConstants.taiLandingPageInformation -> MapForGoogleAnalytics.format(enabledMap))
   }
 
-  private def taxCodeChangeDimensions: ListMap[String, String] = {
+  private def taxCodeChangeDimensions: ListMap[String, String] =
     (taxCodeMismatch) match {
       case (Some(mismatch)) => {
         ListMap(
-          GoogleAnalyticsConstants.taiLandingPageTCCKey -> hasTaxCodeChanged.toString,
-          GoogleAnalyticsConstants.taiLandingPageTCMKey -> mismatch.mismatch.toString,
-          GoogleAnalyticsConstants.taiLandingPageConfirmedKey -> formatSeqToString(mismatch.confirmedTaxCodes),
+          GoogleAnalyticsConstants.taiLandingPageTCCKey         -> hasTaxCodeChanged.toString,
+          GoogleAnalyticsConstants.taiLandingPageTCMKey         -> mismatch.mismatch.toString,
+          GoogleAnalyticsConstants.taiLandingPageConfirmedKey   -> formatSeqToString(mismatch.confirmedTaxCodes),
           GoogleAnalyticsConstants.taiLandingPageUnconfirmedKey -> formatSeqToString(mismatch.unconfirmedTaxCodes)
         )
       }
       case _ => ListMap(GoogleAnalyticsConstants.taiLandingPageTCCKey -> hasTaxCodeChanged.toString)
     }
-  }
 
-  private def formatSeqToString(seq: Seq[String]): String = {
+  private def formatSeqToString(seq: Seq[String]): String =
     seq.mkString("[", ",", "]")
-  }
 
 }
-

@@ -16,7 +16,6 @@
 
 package controllers.income.bbsi
 
-
 import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
@@ -37,80 +36,86 @@ import uk.gov.hmrc.tai.viewModels.income.{BbsiUpdateAccountViewModel, BbsiUpdate
 
 import scala.concurrent.Future
 
+class BbsiUpdateAccountController @Inject()(
+  bbsiService: BbsiService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  @Named("Update Bank Account") journeyCacheService: JourneyCacheService,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController with JourneyCacheConstants {
 
-class BbsiUpdateAccountController @Inject()(bbsiService: BbsiService,
-                                            authenticate: AuthAction,
-                                            validatePerson: ValidatePerson,
-                                            @Named("Update Bank Account") journeyCacheService: JourneyCacheService,
-                                            override implicit val partialRetriever: FormPartialRetriever,
-                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with JourneyCacheConstants {
+  def captureInterest(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
 
-  def captureInterest(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
-
-      (for {
-          cachedData <- journeyCacheService.currentValue(UpdateBankAccountInterestKey)
-          untaxedInterest <- bbsiService.untaxedInterest(Nino(user.getNino))
-        } yield untaxedInterest.bankAccounts.find(_.id == id) match {
-          case Some(bankAccount) =>
-            val model = BbsiUpdateAccountViewModel(id,
-              untaxedInterest.amount, bankAccount.bankName.getOrElse(""))
-            val form = UpdateInterestForm.form.fill(cachedData.getOrElse(""))
-            Ok(views.html.incomes.bbsi.update.bank_building_society_update_interest(model, form))
-          case None => throw new RuntimeException(s"Not able to found account with id $id")
+    (for {
+      cachedData      <- journeyCacheService.currentValue(UpdateBankAccountInterestKey)
+      untaxedInterest <- bbsiService.untaxedInterest(Nino(user.getNino))
+    } yield
+      untaxedInterest.bankAccounts.find(_.id == id) match {
+        case Some(bankAccount) =>
+          val model = BbsiUpdateAccountViewModel(id, untaxedInterest.amount, bankAccount.bankName.getOrElse(""))
+          val form = UpdateInterestForm.form.fill(cachedData.getOrElse(""))
+          Ok(views.html.incomes.bbsi.update.bank_building_society_update_interest(model, form))
+        case None => throw new RuntimeException(s"Not able to found account with id $id")
       }).recover {
-        case e: Exception => internalServerError(e.getMessage)
-      }
+      case e: Exception => internalServerError(e.getMessage)
+    }
   }
 
+  def submitInterest(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
 
-  def submitInterest(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
-
-      (bbsiService.untaxedInterest(Nino(user.getNino)) flatMap { untaxedInterest =>
-        untaxedInterest.bankAccounts.find(_.id == id) match {
-          case Some(bankAccount) =>
-            UpdateInterestForm.form.bindFromRequest().fold(
+    (bbsiService.untaxedInterest(Nino(user.getNino)) flatMap { untaxedInterest =>
+      untaxedInterest.bankAccounts.find(_.id == id) match {
+        case Some(bankAccount) =>
+          UpdateInterestForm.form
+            .bindFromRequest()
+            .fold(
               formWithErrors => {
-                val model = BbsiUpdateAccountViewModel(id,
-                  untaxedInterest.amount, bankAccount.bankName.getOrElse(""))
-                Future.successful(BadRequest(views.html.incomes.bbsi.update.bank_building_society_update_interest(model, formWithErrors)))
+                val model = BbsiUpdateAccountViewModel(id, untaxedInterest.amount, bankAccount.bankName.getOrElse(""))
+                Future.successful(BadRequest(
+                  views.html.incomes.bbsi.update.bank_building_society_update_interest(model, formWithErrors)))
               },
               interest => {
-                journeyCacheService.cache(Map(UpdateBankAccountInterestKey -> interest, UpdateBankAccountNameKey -> bankAccount.bankName.getOrElse(""))).map(_ =>
-                  Redirect(controllers.income.bbsi.routes.BbsiUpdateAccountController.checkYourAnswers(id)))
+                journeyCacheService
+                  .cache(
+                    Map(
+                      UpdateBankAccountInterestKey -> interest,
+                      UpdateBankAccountNameKey     -> bankAccount.bankName.getOrElse("")))
+                  .map(_ => Redirect(controllers.income.bbsi.routes.BbsiUpdateAccountController.checkYourAnswers(id)))
               }
             )
-          case None => throw new RuntimeException(s"Not able to found account with id $id")
-        }
-      }).recover {
-        case e: Exception => internalServerError(e.getMessage)
+        case None => throw new RuntimeException(s"Not able to found account with id $id")
       }
+    }).recover {
+      case e: Exception => internalServerError(e.getMessage)
+    }
   }
 
-  def checkYourAnswers(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
+  def checkYourAnswers(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
 
-      journeyCacheService.mandatoryValues(UpdateBankAccountInterestKey, UpdateBankAccountNameKey) map { mandatory =>
-        val interest = FormHelper.stripNumber(mandatory.head)
-        val bankName = mandatory.last
-        Ok(views.html.incomes.bbsi.update.bank_building_society_check_your_answers(BbsiUpdateInterestViewModel(id, interest, bankName)))
-      }
+    journeyCacheService.mandatoryValues(UpdateBankAccountInterestKey, UpdateBankAccountNameKey) map { mandatory =>
+      val interest = FormHelper.stripNumber(mandatory.head)
+      val bankName = mandatory.last
+      Ok(
+        views.html.incomes.bbsi.update
+          .bank_building_society_check_your_answers(BbsiUpdateInterestViewModel(id, interest, bankName)))
+    }
   }
 
-  def submitYourAnswers(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
+  def submitYourAnswers(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
 
-      for {
-        mandatory <- journeyCacheService.mandatoryValues(UpdateBankAccountInterestKey, UpdateBankAccountNameKey)
-        _ <- bbsiService.updateBankAccountInterest(Nino(user.getNino), id, AmountRequest(BigDecimal(FormHelper.stripNumber(mandatory.head))))
-        _ <- journeyCacheService.flush()
-      } yield Redirect(controllers.income.bbsi.routes.BbsiController.updateConfirmation())
+    for {
+      mandatory <- journeyCacheService.mandatoryValues(UpdateBankAccountInterestKey, UpdateBankAccountNameKey)
+      _ <- bbsiService.updateBankAccountInterest(
+            Nino(user.getNino),
+            id,
+            AmountRequest(BigDecimal(FormHelper.stripNumber(mandatory.head))))
+      _ <- journeyCacheService.flush()
+    } yield Redirect(controllers.income.bbsi.routes.BbsiController.updateConfirmation())
   }
 
 }

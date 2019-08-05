@@ -19,17 +19,17 @@ package uk.gov.hmrc.tai.viewModels.benefit
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
-case class CompanyCarChoiceViewModel(carModel: String,
-                                     carProvider: String)
+case class CompanyCarChoiceViewModel(carModel: String, carProvider: String)
 
-object CompanyCarChoiceViewModel extends JourneyCacheConstants{
+object CompanyCarChoiceViewModel extends JourneyCacheConstants {
 
   val missingCarModelMessage = "No company car model found in supplied cache map"
   val missingCarProviderMessage = "No company car provider found in supplied cache map"
 
   def apply(carDetails: Map[String, String])(implicit messages: Messages): CompanyCarChoiceViewModel = {
     val carModel = carDetails.getOrElse(CompanyCar_CarModelKey, throw new RuntimeException(missingCarModelMessage))
-    val carProvider = carDetails.getOrElse(CompanyCar_CarProviderKey, throw new RuntimeException(missingCarProviderMessage))
+    val carProvider =
+      carDetails.getOrElse(CompanyCar_CarProviderKey, throw new RuntimeException(missingCarProviderMessage))
     CompanyCarChoiceViewModel(carModel, carProvider)
   }
 }

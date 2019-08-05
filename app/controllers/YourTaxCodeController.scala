@@ -33,20 +33,22 @@ import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYea
 
 import scala.util.control.NonFatal
 
-class YourTaxCodeController @Inject()(taxAccountService: TaxAccountService,
-                                      taxCodeChangeService: TaxCodeChangeService,
-                                      authenticate: AuthAction,
-                                      validatePerson: ValidatePerson,
-                                      override implicit val partialRetriever: FormPartialRetriever,
-                                      override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with FeatureTogglesConfig {
+class YourTaxCodeController @Inject()(
+  taxAccountService: TaxAccountService,
+  taxCodeChangeService: TaxCodeChangeService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController with FeatureTogglesConfig {
 
   def taxCodes(year: TaxYear = TaxYear()): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       val nino = request.taiUser.nino
 
       (for {
-        TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, year)
+        TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService
+                                                                              .taxCodeIncomes(nino, year)
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
       } yield {
         val taxCodeViewModel = TaxCodeViewModel.apply(taxCodeIncomes, scottishTaxRateBands)
@@ -64,7 +66,7 @@ class YourTaxCodeController @Inject()(taxAccountService: TaxAccountService,
       val nino = request.taiUser.nino
 
       (for {
-        taxCodeRecords <- taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(nino, year)
+        taxCodeRecords       <- taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(nino, year)
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeRecords.map(_.taxCode))
       } yield {
         val taxCodeViewModel = TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year)

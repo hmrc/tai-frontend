@@ -20,16 +20,16 @@ import org.joda.time.LocalDate
 import play.api.libs.json.{Format, Json}
 
 case class Payment(
-                    date: LocalDate,
-                    amountYearToDate: BigDecimal,
-                    taxAmountYearToDate: BigDecimal,
-                    nationalInsuranceAmountYearToDate: BigDecimal,
-                    amount: BigDecimal,
-                    taxAmount: BigDecimal,
-                    nationalInsuranceAmount: BigDecimal,
-                    payFrequency: PaymentFrequency,
-                    duplicate: Option[Boolean] = None
-                  )
+  date: LocalDate,
+  amountYearToDate: BigDecimal,
+  taxAmountYearToDate: BigDecimal,
+  nationalInsuranceAmountYearToDate: BigDecimal,
+  amount: BigDecimal,
+  taxAmount: BigDecimal,
+  nationalInsuranceAmount: BigDecimal,
+  payFrequency: PaymentFrequency,
+  duplicate: Option[Boolean] = None
+)
 
 object Payment {
   implicit val dateOrdering: Ordering[Payment] = Ordering.by(_.date.toDate())

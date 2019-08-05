@@ -25,23 +25,24 @@ import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvide
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PensionProviderConnector @Inject() (httpHandler: HttpHandler) extends DefaultServicesConfig {
+class PensionProviderConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
-  def addPensionProvider(nino: Nino, pensionProvider: AddPensionProvider)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def addPensionProvider(nino: Nino, pensionProvider: AddPensionProvider)(
+    implicit hc: HeaderCarrier): Future[Option[String]] =
     httpHandler.postToApi[AddPensionProvider](addPensionProviderServiceUrl(nino), pensionProvider).map { response =>
       (response.json \ "data").asOpt[String]
     }
-  }
 
   def addPensionProviderServiceUrl(nino: Nino) = s"$serviceUrl/tai/$nino/pensionProvider"
 
-  def incorrectPensionProvider(nino: Nino, id: Int, pensionProvider: IncorrectPensionProvider)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    httpHandler.postToApi[IncorrectPensionProvider](incorrectPensionProviderServiceUrl(nino, id), pensionProvider).map { response =>
-      (response.json \ "data").asOpt[String]
+  def incorrectPensionProvider(nino: Nino, id: Int, pensionProvider: IncorrectPensionProvider)(
+    implicit hc: HeaderCarrier): Future[Option[String]] =
+    httpHandler.postToApi[IncorrectPensionProvider](incorrectPensionProviderServiceUrl(nino, id), pensionProvider).map {
+      response =>
+        (response.json \ "data").asOpt[String]
     }
-  }
 
   def incorrectPensionProviderServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/pensionProvider/$id/reason"
 }

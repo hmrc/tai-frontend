@@ -20,19 +20,17 @@ import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 
 object CompanyCarMakeModel {
   def description(employmentId: Int, companyCarBenefits: Seq[CompanyCarBenefit]): Option[String] = {
-    def modelFromBenefits(employersCarBenefits: CompanyCarBenefit): Option[String] = {
-      if(employersCarBenefits.companyCars.size > 1){
+    def modelFromBenefits(employersCarBenefits: CompanyCarBenefit): Option[String] =
+      if (employersCarBenefits.companyCars.size > 1) {
         Some("Car Benefit")
-      }else{
+      } else {
         employersCarBenefits.companyCars.headOption.map(_.makeModel)
       }
-    }
 
     for {
       carBenefits: CompanyCarBenefit <- companyCarBenefits.find(_.employmentSeqNo == employmentId)
-      model <- modelFromBenefits(carBenefits)
+      model                          <- modelFromBenefits(carBenefits)
     } yield model
 
   }
 }
-

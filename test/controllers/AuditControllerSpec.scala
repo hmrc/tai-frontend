@@ -37,9 +37,11 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
         "redirects to appropriate url " in {
           val testAuditController = new TestAuditController
 
-          val result = testAuditController.auditLinksToIForm("any-iform")(RequestBuilder.buildFakeRequestWithAuth("GET")
-            .withHeaders("Referer" ->
-              redirectUri))
+          val result = testAuditController.auditLinksToIForm("any-iform")(
+            RequestBuilder
+              .buildFakeRequestWithAuth("GET")
+              .withHeaders("Referer" ->
+                redirectUri))
 
           status(result) mustBe SEE_OTHER
           verify(auditService, times(1))
@@ -54,13 +56,14 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
 
   val auditService = mock[AuditService]
 
-  class TestAuditController extends AuditController(
-    auditService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  ) {
+  class TestAuditController
+      extends AuditController(
+        auditService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      ) {
 
     when(auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any()))
       .thenReturn(Future.successful(redirectUri))

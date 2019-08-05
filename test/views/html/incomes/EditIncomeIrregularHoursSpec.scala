@@ -41,24 +41,24 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
       messages("tai.irregular.heading", currentTaxYearRangeHtmlNonBreak))
     behave like pageWithContinueButtonForm(s"/check-income-tax/update-income/edit-income-irregular-hours/$employmentId")
 
-
     "have the correct content" in {
       val document = doc(view)
       document must haveHeadingH2WithText(messages("tai.irregular.introduction", employerName))
-      document must haveParagraphWithText(messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRange))
+      document must haveParagraphWithText(
+        messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRange))
       document must haveHeadingH2WithText(messages("tai.incomes.edit.what.should.you.include"))
       document must haveParagraphWithText(messages("tai.irregular.instruction.wholePounds"))
     }
 
     "display the users current estimated income" in {
       doc(view) must haveClassWithText(messages("tai.irregular.currentAmount"), "form-label")
-      doc(view) must haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentAmount),0)))
+      doc(view) must haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentAmount), 0)))
     }
 
     "have an input box for user to enter new amount" in {
-      doc(view) must haveInputLabelWithText("income",
-        messages("tai.irregular.newAmount") + " " + messages("tai.inPounds")
-      )
+      doc(view) must haveInputLabelWithText(
+        "income",
+        messages("tai.irregular.newAmount") + " " + messages("tai.inPounds"))
       doc(view).getElementsByClass("form-control-currency").size() mustBe 1
     }
 

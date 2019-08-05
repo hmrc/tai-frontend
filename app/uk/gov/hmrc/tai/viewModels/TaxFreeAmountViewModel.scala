@@ -22,15 +22,16 @@ import uk.gov.hmrc.tai.model.TaxFreeAmountDetails
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.{TaxAccountCalculator, TaxAccountCalculatorImpl, ViewModelHelper}
 
-case class TaxFreeAmountViewModel(header: String,
-                                     title: String,
-                                     annualTaxFreeAmount: String,
-                                     taxFreeAmountSummary: TaxFreeAmountSummaryViewModel)
+case class TaxFreeAmountViewModel(
+  header: String,
+  title: String,
+  annualTaxFreeAmount: String,
+  taxFreeAmountSummary: TaxFreeAmountSummaryViewModel)
 
 object TaxFreeAmountViewModel extends ViewModelHelper {
 
-  def apply(codingComponents: Seq[CodingComponent],taxFreeAmountDetails: TaxFreeAmountDetails)
-           (implicit messages: Messages): TaxFreeAmountViewModel = {
+  def apply(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails)(
+    implicit messages: Messages): TaxFreeAmountViewModel = {
 
     val taxFreeAmountMsg = Messages("tai.taxFreeAmount.heading.pt1")
 
@@ -41,12 +42,13 @@ object TaxFreeAmountViewModel extends ViewModelHelper {
 
     val taxFreeAmountTotal: BigDecimal = taxAccountCalculator.taxFreeAmount(codingComponents)
 
-    val taxFreeAmountSummary  = TaxFreeAmountSummaryViewModel(
-      codingComponents,
-      taxFreeAmountDetails,
-      taxFreeAmountTotal)
+    val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(codingComponents, taxFreeAmountDetails, taxFreeAmountTotal)
 
-    TaxFreeAmountViewModel(headerWithAdditionalMarkup, title, withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0)), taxFreeAmountSummary)
+    TaxFreeAmountViewModel(
+      headerWithAdditionalMarkup,
+      title,
+      withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0)),
+      taxFreeAmountSummary)
   }
 
 }

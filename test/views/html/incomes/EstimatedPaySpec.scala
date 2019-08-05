@@ -26,14 +26,13 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
 
-
-class EstimatedPaySpec extends TaiViewSpec with MockitoSugar{
+class EstimatedPaySpec extends TaiViewSpec with MockitoSugar {
 
   override def view: Html = views.html.incomes.estimatedPay(createViewModel())
 
   val employer = IncomeSource(id = 1, name = "Employer")
 
-  def createViewModel(employmentStartDate:Option[LocalDate] = None) = {
+  def createViewModel(employmentStartDate: Option[LocalDate] = None) = {
 
     val grossAnnualPay = Some(BigDecimal(20000))
     val netAnnualPay = Some(BigDecimal(20000))
@@ -42,7 +41,8 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar{
 
   "Estimated Pay" must {
     behave like pageWithBackLink
-    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url))
+    behave like pageWithCancelLink(
+      Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url))
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employer.name),
       messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
@@ -93,9 +93,11 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar{
     }
 
     "confirm and send" in {
-      doc must haveLinkElement("confirmAndSend",
+      doc must haveLinkElement(
+        "confirmAndSend",
         controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult().url,
-        messages("tai.estimatedPay.checkTaxEstimate"))
+        messages("tai.estimatedPay.checkTaxEstimate")
+      )
     }
   }
 

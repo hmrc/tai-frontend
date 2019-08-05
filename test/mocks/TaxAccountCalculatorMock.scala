@@ -21,7 +21,6 @@ import uk.gov.hmrc.tai.util.TaxAccountCalculator
 
 trait TaxAccountCalculatorMock {
   this: TaxAccountCalculator =>
-  override def taxFreeAmount(codingComponents: Seq[CodingComponent]): BigDecimal = {
+  override def taxFreeAmount(codingComponents: Seq[CodingComponent]): BigDecimal =
     42
-  }
 }

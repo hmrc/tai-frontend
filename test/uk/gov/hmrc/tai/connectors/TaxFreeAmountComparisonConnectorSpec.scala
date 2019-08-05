@@ -55,21 +55,21 @@ class TaxFreeAmountComparisonConnectorSpec extends PlaySpec with MockitoSugar wi
             "previous" -> Json.arr(
               Json.obj(
                 "componentType" -> CarBenefit,
-                "employmentId" -> 1,
-                "amount" -> 1,
-                "description" -> "Car Benefit",
-                "iabdCategory" -> "Benefit",
-                "inputAmount" -> 1
+                "employmentId"  -> 1,
+                "amount"        -> 1,
+                "description"   -> "Car Benefit",
+                "iabdCategory"  -> "Benefit",
+                "inputAmount"   -> 1
               )
             ),
-            "current" ->  Json.arr(
+            "current" -> Json.arr(
               Json.obj(
                 "componentType" -> CarBenefit,
-                "employmentId" -> 1,
-                "amount" -> 1,
-                "description" -> "Car Benefit",
-                "iabdCategory" -> "Benefit",
-                "inputAmount" -> 1
+                "employmentId"  -> 1,
+                "amount"        -> 1,
+                "description"   -> "Car Benefit",
+                "iabdCategory"  -> "Benefit",
+                "inputAmount"   -> 1
               )
             )
           )

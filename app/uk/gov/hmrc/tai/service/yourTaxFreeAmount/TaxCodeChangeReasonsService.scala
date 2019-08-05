@@ -24,8 +24,10 @@ import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, Iabd
 
 class TaxCodeChangeReasonsService @Inject()(employmentTaxCodeChangeReasons: TaxCodeChangeReasons) {
 
-  def combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons, iabdPairs: AllowancesAndDeductionPairs, taxCodeChange: TaxCodeChange)
-                                 (implicit messages: Messages): Seq[String] = {
+  def combineTaxCodeChangeReasons(
+    iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons,
+    iabdPairs: AllowancesAndDeductionPairs,
+    taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
 
     val employmentReasons = employmentTaxCodeChangeReasons.reasons(taxCodeChange)
 
@@ -42,6 +44,6 @@ class TaxCodeChangeReasonsService @Inject()(employmentTaxCodeChangeReasons: TaxC
     val maxReasonsAllowed = 6
 
     genericReasonsForTaxCodeChange.nonEmpty ||
-      (reasons.size > maxReasonsAllowed || reasons.isEmpty)
+    (reasons.size > maxReasonsAllowed || reasons.isEmpty)
   }
 }

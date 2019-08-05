@@ -83,10 +83,22 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
         val date = new LocalDate("2017-06-09")
         val sampleEndOfTaxYearUpdate = EndOfTaxYearUpdate(date, Seq(Adjustment(NationalInsuranceAdjustment, -10.0)))
         val sampleAnnualAccount = AnnualAccount("1-2-3", previousYear, Available, Nil, List(sampleEndOfTaxYearUpdate))
-        val sampleEmployment = Employment("emp1", None, new LocalDate(2017, 6, 10), None, Seq(sampleAnnualAccount), "taxNumber", "payeNumber", 1, None, false, false)
+        val sampleEmployment = Employment(
+          "emp1",
+          None,
+          new LocalDate(2017, 6, 10),
+          None,
+          Seq(sampleAnnualAccount),
+          "taxNumber",
+          "payeNumber",
+          1,
+          None,
+          false,
+          false)
 
         val sut = createSUT(employments = List(sampleEmployment))
-        sut.endOfTaxYearUpdateMessages mustBe Seq(Messages("tai.income.calculation.eyu.single.nationalInsurance", date.toString(EYU_DATE_FORMAT), "10.0 less"))
+        sut.endOfTaxYearUpdateMessages mustBe Seq(
+          Messages("tai.income.calculation.eyu.single.nationalInsurance", date.toString(EYU_DATE_FORMAT), "10.0 less"))
       }
     }
   }
@@ -108,13 +120,15 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
   "fetchEmploymentAndAnnualAccount" should {
     "return matching annual account and employment" when {
       "matching employment sequence number is provided and employment has no annual account" in {
-        val (sutEmployment, sutAnnualAccount) = HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount(sampleEmployments, previousYear, 1)
+        val (sutEmployment, sutAnnualAccount) =
+          HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount(sampleEmployments, previousYear, 1)
         sutEmployment mustBe Some(sampleEmployment1)
         sutAnnualAccount mustBe None
       }
 
       "matching employment sequence number is provided with annual account" in {
-        val (sutEmployment, sutAnnualAccount) = HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount(sampleEmployments, previousYear, 2)
+        val (sutEmployment, sutAnnualAccount) =
+          HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount(sampleEmployments, previousYear, 2)
         sutEmployment mustBe Some(sampleEmployment2)
         sutAnnualAccount mustBe Some(sampleAnnualAccount)
       }
@@ -208,21 +222,24 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
         val eyu = EndOfTaxYearUpdate(date, Seq(Adjustment(TaxAdjustment, 100.0)))
         val annualAccount = AnnualAccount("1-2-3", previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
-        sut mustBe Seq(Messages("tai.income.calculation.eyu.single.taxPaid", date.toString(EYU_DATE_FORMAT) ,"100.0 more"))
+        sut mustBe Seq(
+          Messages("tai.income.calculation.eyu.single.taxPaid", date.toString(EYU_DATE_FORMAT), "100.0 more"))
       }
 
       "have only NationalInsuranceAdjustment message" in {
         val eyu = EndOfTaxYearUpdate(date, Seq(Adjustment(NationalInsuranceAdjustment, 100.0)))
         val annualAccount = AnnualAccount("1-2-3", previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
-        sut mustBe Seq(Messages("tai.income.calculation.eyu.single.nationalInsurance", date.toString(EYU_DATE_FORMAT), "100.0 more"))
+        sut mustBe Seq(
+          Messages("tai.income.calculation.eyu.single.nationalInsurance", date.toString(EYU_DATE_FORMAT), "100.0 more"))
       }
 
       "have only IncomeAdjustment message" in {
         val eyu = EndOfTaxYearUpdate(date, Seq(Adjustment(IncomeAdjustment, -100.0)))
         val annualAccount = AnnualAccount("1-2-3", previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
-        sut mustBe Seq(Messages("tai.income.calculation.eyu.single.taxableincome", date.toString(EYU_DATE_FORMAT), "100.0 less"))
+        sut mustBe Seq(
+          Messages("tai.income.calculation.eyu.single.taxableincome", date.toString(EYU_DATE_FORMAT), "100.0 less"))
       }
 
       "there are multiple valid EndOfYearTaxUpdate object with multiple received dates" in {
@@ -239,8 +256,10 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
         val annualAccount = AnnualAccount("1-2-3", previousYear, Available, Nil, Seq(eyu1, eyu2))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
 
-        sut mustBe Seq(Messages("tai.income.calculation.eyu.multi.nationalInsurance", date1.toString(EYU_DATE_FORMAT), "10.0 less"),
-          Messages("tai.income.calculation.eyu.multi.taxPaid", date2.toString(EYU_DATE_FORMAT), "100.0 more"))
+        sut mustBe Seq(
+          Messages("tai.income.calculation.eyu.multi.nationalInsurance", date1.toString(EYU_DATE_FORMAT), "10.0 less"),
+          Messages("tai.income.calculation.eyu.multi.taxPaid", date2.toString(EYU_DATE_FORMAT), "100.0 more")
+        )
       }
 
       "have multiple messages with same received date" in {
@@ -251,8 +270,10 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
         val eyu = EndOfTaxYearUpdate(date, Seq(adj1, adj2, adj3))
         val annualAccount = AnnualAccount("1-2-3", previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
-        sut mustBe Seq(Messages("tai.income.calculation.eyu.multi.nationalInsurance", date.toString(EYU_DATE_FORMAT), "10.0 less"),
-          Messages("tai.income.calculation.eyu.multi.taxableincome", date.toString(EYU_DATE_FORMAT), "100.0 more"))
+        sut mustBe Seq(
+          Messages("tai.income.calculation.eyu.multi.nationalInsurance", date.toString(EYU_DATE_FORMAT), "10.0 less"),
+          Messages("tai.income.calculation.eyu.multi.taxableincome", date.toString(EYU_DATE_FORMAT), "100.0 more")
+        )
       }
     }
   }
@@ -262,17 +283,39 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
   val sampleEmployeeId = 1
   val sampleRealTimeStatus = TemporarilyUnavailable
   val previousYear = uk.gov.hmrc.tai.model.TaxYear().prev
-  val samplePayment = Payment(date = new LocalDate(2017, 5, 26), amountYearToDate = 2000, taxAmountYearToDate = 1200,
-    nationalInsuranceAmountYearToDate = 1500, amount = 200, taxAmount = 100, nationalInsuranceAmount = 150, payFrequency = Monthly)
+  val samplePayment = Payment(
+    date = new LocalDate(2017, 5, 26),
+    amountYearToDate = 2000,
+    taxAmountYearToDate = 1200,
+    nationalInsuranceAmountYearToDate = 1500,
+    amount = 200,
+    taxAmount = 100,
+    nationalInsuranceAmount = 150,
+    payFrequency = Monthly
+  )
 
   val sampleAnnualAccount = AnnualAccount("1-2-3", previousYear, Available, List(samplePayment), Nil)
 
-  val sampleEmployment1 = Employment(empName, None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false)
-  val sampleEmployment2 = Employment("emp2", None, new LocalDate(2017, 6, 10), None, Seq(sampleAnnualAccount), "taxNumber", "payeNumber", 2, None, false, false)
+  val sampleEmployment1 =
+    Employment(empName, None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false)
+  val sampleEmployment2 = Employment(
+    "emp2",
+    None,
+    new LocalDate(2017, 6, 10),
+    None,
+    Seq(sampleAnnualAccount),
+    "taxNumber",
+    "payeNumber",
+    2,
+    None,
+    false,
+    false)
   val sampleEmployments = List(sampleEmployment1, sampleEmployment2)
 
-  def createSUT(employments: Seq[Employment] = sampleEmployments, employmentId: Int = 1, taxYear: TaxYear = previousYear) = {
+  def createSUT(
+    employments: Seq[Employment] = sampleEmployments,
+    employmentId: Int = 1,
+    taxYear: TaxYear = previousYear) =
     HistoricIncomeCalculationViewModel(employments, employmentId, taxYear)
-  }
 
 }

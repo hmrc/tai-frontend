@@ -31,9 +31,7 @@ import uk.gov.hmrc.domain.Generator
 
 import scala.util.Random
 
-trait TaiViewSpec extends PlaySpec
-  with JsoupMatchers
-  with FakeTaiPlayApplication {
+trait TaiViewSpec extends PlaySpec with JsoupMatchers with FakeTaiPlayApplication {
   implicit val request = FakeRequest()
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
   implicit val templateRenderer = MockTemplateRenderer
@@ -46,21 +44,22 @@ trait TaiViewSpec extends PlaySpec
 
   def doc(view: Html): Document = Jsoup.parse(view.toString())
 
-  def pageWithTitle(titleText: String): Unit = {
+  def pageWithTitle(titleText: String): Unit =
     "have a static title" in {
       doc.title must include(titleText)
     }
-  }
 
-  def pageWithHeader(headerText: String): Unit = {
+  def pageWithHeader(headerText: String): Unit =
     "have a static h1 header" in {
       doc must haveHeadingWithText(headerText)
     }
-  }
 
-  def pageWithCombinedHeader(preHeaderText: String, mainHeaderText: String, preHeaderAnnouncementText: Option[String] = None): Unit = {
+  def pageWithCombinedHeader(
+    preHeaderText: String,
+    mainHeaderText: String,
+    preHeaderAnnouncementText: Option[String] = None): Unit = {
     "have an accessible pre heading" in {
-      if(preHeaderAnnouncementText.isDefined){
+      if (preHeaderAnnouncementText.isDefined) {
         doc must havePreHeadingWithText(preHeaderText, expectedPreHeadingAnnouncement = preHeaderAnnouncementText.get)
       } else {
         doc must havePreHeadingWithText(preHeaderText)
@@ -71,27 +70,23 @@ trait TaiViewSpec extends PlaySpec
     }
   }
 
-  def pageWithH2Header(headerText: String): Unit = {
+  def pageWithH2Header(headerText: String): Unit =
     "have a static h2 header" in {
       doc must haveH2HeadingWithText(headerText)
     }
-  }
 
-  def pageWithBackLink: Unit = {
+  def pageWithBackLink: Unit =
     "have a back link" in {
       doc must haveBackLink
     }
-  }
 
-  def haveReturnToSummaryButtonWithUrl(previousPage: => Call): Unit = {
+  def haveReturnToSummaryButtonWithUrl(previousPage: => Call): Unit =
     "have a return to summary button with url" in {
       doc must haveReturnToSummaryButtonWithUrl(previousPage.url.toString)
     }
-  }
 
-  def pageWithContinueButtonForm(submitUrl: String): Unit = {
+  def pageWithContinueButtonForm(submitUrl: String): Unit =
     pageWithButtonForm(submitUrl, "Continue")
-  }
 
   def pageWithButtonForm(submitUrl: String, buttonText: String): Unit = {
     "have a form with a submit button or input labelled as buttonText" in {
@@ -111,17 +106,16 @@ trait TaiViewSpec extends PlaySpec
     }
   }
 
-  def pageWithCancelLink(call: Call): Unit = {
+  def pageWithCancelLink(call: Call): Unit =
     "have a cancel link with url" in {
       doc must haveCancelLinkWithUrl(call.url.toString)
     }
-  }
 
   def pageWithYesNoRadioButton(
-                                idYes:String,
-                                idNo:String,
-                                yesLabelText: String = Messages("tai.label.yes"),
-                                noLabelText: String = Messages("tai.label.no")): Unit = {
+    idYes: String,
+    idNo: String,
+    yesLabelText: String = Messages("tai.label.yes"),
+    noLabelText: String = Messages("tai.label.no")): Unit =
     "have a yes/no radio button" in {
       doc must haveInputLabelWithText(idYes, yesLabelText)
       doc must haveInputLabelWithText(idNo, noLabelText)
@@ -129,13 +123,11 @@ trait TaiViewSpec extends PlaySpec
       doc.getElementById(idNo) must not be null
 
     }
-  }
 
-  def pageWithCheckYourAnswersSummary(): Unit = {
+  def pageWithCheckYourAnswersSummary(): Unit =
     "have a 'check your answers' summary section" in {
       doc must haveCheckYourAnswersSummary
     }
-  }
 
   def nonBreakable(string: String): String = string.replace(" ", "\u00A0")
 }

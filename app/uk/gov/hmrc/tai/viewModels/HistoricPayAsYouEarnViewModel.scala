@@ -21,30 +21,48 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 
-case class HistoricPayAsYouEarnViewModel(taxYear: TaxYear,
-                                         pensions: Seq[EmploymentViewModel],
-                                         employments: Seq[EmploymentViewModel],
-                                         hasEmploymentsOrPensions: Boolean,
-                                         showTaxCodeDescriptionLink: Boolean) {
+case class HistoricPayAsYouEarnViewModel(
+  taxYear: TaxYear,
+  pensions: Seq[EmploymentViewModel],
+  employments: Seq[EmploymentViewModel],
+  hasEmploymentsOrPensions: Boolean,
+  showTaxCodeDescriptionLink: Boolean) {
 
   val p800ServiceIsAvailable: Boolean = taxYear == TaxYear().prev
 }
 
 object HistoricPayAsYouEarnViewModel {
 
-  def apply(taxYear: TaxYear, employments: Seq[Employment], showTaxCodeDescriptionLink: Boolean)(implicit messages: Messages): HistoricPayAsYouEarnViewModel = {
-    val incomeSources: Seq[EmploymentViewModel] = filterIncomeSources(taxYear, employments) sortBy(_.id)
-    val (pensionsVMs, employmentsVMs): (Seq[EmploymentViewModel], Seq[EmploymentViewModel]) = incomeSources.partition(_.isPension)
+  def apply(taxYear: TaxYear, employments: Seq[Employment], showTaxCodeDescriptionLink: Boolean)(
+    implicit messages: Messages): HistoricPayAsYouEarnViewModel = {
+    val incomeSources: Seq[EmploymentViewModel] = filterIncomeSources(taxYear, employments) sortBy (_.id)
+    val (pensionsVMs, employmentsVMs): (Seq[EmploymentViewModel], Seq[EmploymentViewModel]) =
+      incomeSources.partition(_.isPension)
 
-    HistoricPayAsYouEarnViewModel(taxYear, pensionsVMs, employmentsVMs, pensionsVMs.nonEmpty || employmentsVMs.nonEmpty, showTaxCodeDescriptionLink)
+    HistoricPayAsYouEarnViewModel(
+      taxYear,
+      pensionsVMs,
+      employmentsVMs,
+      pensionsVMs.nonEmpty || employmentsVMs.nonEmpty,
+      showTaxCodeDescriptionLink)
   }
 
-  private def filterIncomeSources(taxYear: TaxYear, employments: Seq[Employment]): Seq[EmploymentViewModel] = {
+  private def filterIncomeSources(taxYear: TaxYear, employments: Seq[Employment]): Seq[EmploymentViewModel] =
     for {
       employment <- employments
-      account <- employment.annualAccounts.find(_.taxYear.year == taxYear.year)
-    } yield EmploymentViewModel(employment.name, account.totalIncomeYearToDate, employment.sequenceNumber, employment.receivingOccupationalPension, employment.payrollNumber)
-  }
+      account    <- employment.annualAccounts.find(_.taxYear.year == taxYear.year)
+    } yield
+      EmploymentViewModel(
+        employment.name,
+        account.totalIncomeYearToDate,
+        employment.sequenceNumber,
+        employment.receivingOccupationalPension,
+        employment.payrollNumber)
 
-  case class EmploymentViewModel(name: String, taxablePayYTD: BigDecimal, id: Int, isPension: Boolean, payrollNumber:Option[String])
+  case class EmploymentViewModel(
+    name: String,
+    taxablePayYTD: BigDecimal,
+    id: Int,
+    isPension: Boolean,
+    payrollNumber: Option[String])
 }

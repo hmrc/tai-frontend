@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.tracking.formatter.TrackedFormFormatters
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TrackingConnector @Inject() (httpHandler: HttpHandler) extends TrackedFormFormatters with DefaultServicesConfig {
+class TrackingConnector @Inject()(httpHandler: HttpHandler) extends TrackedFormFormatters with DefaultServicesConfig {
 
   lazy val serviceUrl: String = baseUrl("tracking")
 
@@ -33,9 +33,7 @@ class TrackingConnector @Inject() (httpHandler: HttpHandler) extends TrackedForm
 
   def trackingUrl(id: String) = s"$serviceUrl/tracking-data/user/$IdType/$id"
 
-  def getUserTracking(nino: String)(implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] = {
-    httpHandler.getFromApi(trackingUrl(nino)) map (
-      _.as[Seq[TrackedForm]](trackedFormSeqReads))
-  }
+  def getUserTracking(nino: String)(implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] =
+    httpHandler.getFromApi(trackingUrl(nino)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))
 
 }

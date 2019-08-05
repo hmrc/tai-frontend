@@ -29,7 +29,6 @@ import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
 
-
 class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -48,7 +47,8 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(PersonalAllowancePA, Some(234), 11500, "Personal Allowance"),
             CodingComponent(EmployerProvidedServices, Some(12), 1000, "Benefit"),
             CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
-            CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
+            CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction")
+          )
           val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
 
           sut.annualTaxFreeAmount mustBe "£10,000"
@@ -59,7 +59,8 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(PersonalAllowanceAgedPAA, Some(234), 1000, "Personal Allowance"),
             CodingComponent(EmployerProvidedServices, Some(12), 1000, "Benefit"),
             CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
-            CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
+            CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction")
+          )
           val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
 
           sut.annualTaxFreeAmount mustBe "£11,000"
@@ -71,7 +72,8 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(PersonalAllowanceElderlyPAE, Some(234), 2000, "Personal Allowance"),
             CodingComponent(EmployerProvidedServices, Some(12), 1000, "Benefit"),
             CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
-            CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
+            CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction")
+          )
           val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
 
           sut.annualTaxFreeAmount mustBe "£13,000"
@@ -84,10 +86,11 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             CodingComponent(PersonalAllowancePA, Some(234), 100, "Personal Allowance"),
             CodingComponent(EmployerProvidedServices, Some(12), 100, "Benefit"),
             CodingComponent(ForeignDividendIncome, Some(12), 1000, "Income"),
-            CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
+            CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction")
+          )
           val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
 
-          sut.annualTaxFreeAmount mustBe s"${encodedMinusSign}£1,200"
+          sut.annualTaxFreeAmount mustBe s"$encodedMinusSign£1,200"
         }
       }
 
@@ -100,11 +103,9 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             expectedHeader,
             expectedTitle,
             "£0",
-            TaxFreeAmountSummaryViewModel(Seq(
-              emptyPersonalAllowanceItem,
-              emptyAdditionsItem,
-              emptyDeductionsItem,
-              emptyTotalsItem)))
+            TaxFreeAmountSummaryViewModel(
+              Seq(emptyPersonalAllowanceItem, emptyAdditionsItem, emptyDeductionsItem, emptyTotalsItem))
+          )
         }
       }
 
@@ -113,7 +114,8 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
           val taxComponents = Seq(
             CodingComponent(PersonalAllowancePA, Some(234), 11500, "Personal Allowance"),
             CodingComponent(PersonalAllowanceAgedPAA, Some(234), 1000, "Personal Allowance"),
-            CodingComponent(PersonalAllowanceElderlyPAE, Some(234), 2000, "Personal Allowance"))
+            CodingComponent(PersonalAllowanceElderlyPAE, Some(234), 2000, "Personal Allowance")
+          )
 
           val result = Seq(
             TaxFreeAmountSummaryRowViewModel(
@@ -149,11 +151,13 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                     Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
                     "£11,500",
                     ChangeLinkViewModel(isDisplayed = false)
-                  ))),
+                  ))
+              ),
               emptyAdditionsItem,
               emptyDeductionsItem,
               totalsItem("£11,500")
-            )))
+            ))
+          )
         }
       }
 
@@ -165,7 +169,8 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
           val taxComponents = Seq(
             CodingComponent(GiftAidPayments, Some(234), 100, "GiftAidPayments"),
             CodingComponent(GiftsSharesCharity, Some(234), 200, "GiftsSharesCharity"),
-            CodingComponent(PersonalPensionPayments, Some(234), 1000, "PersonalPensionPayments"))
+            CodingComponent(PersonalPensionPayments, Some(234), 1000, "PersonalPensionPayments")
+          )
 
           val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
           sut mustBe TaxFreeAmountViewModel(
@@ -186,7 +191,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                     "£100",
                     ChangeLinkViewModel(
                       isDisplayed = true,
-                      value =  Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
+                      value = Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
                       href = taxFreeAllowanceLinkUrl)
                   ),
                   TaxFreeAmountSummaryRowViewModel(
@@ -194,7 +199,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                     "£200",
                     ChangeLinkViewModel(
                       isDisplayed = true,
-                      value =  Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
+                      value = Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
                       href = taxFreeAllowanceLinkUrl)
                   ),
                   TaxFreeAmountSummaryRowViewModel(
@@ -202,18 +207,20 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                     "£1,000",
                     ChangeLinkViewModel(
                       isDisplayed = true,
-                      value =  Messages("tai.taxFreeAmount.table.taxComponent.PersonalPensionPayments"),
+                      value = Messages("tai.taxFreeAmount.table.taxComponent.PersonalPensionPayments"),
                       href = taxFreeAllowanceLinkUrl)
                   ),
                   TaxFreeAmountSummaryRowViewModel(
                     Messages("tai.taxFreeAmount.table.additions.total"),
                     "£1,300",
                     ChangeLinkViewModel(isDisplayed = false)
-                  ))),
+                  )
+                )
+              ),
               emptyDeductionsItem,
               totalsItem("£1,300")
-            )
-          ))
+            ))
+          )
         }
       }
 
@@ -222,13 +229,14 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
           val taxComponents = Seq(
             CodingComponent(MedicalInsurance, Some(234), 200, "MedicalInsurance"),
             CodingComponent(ChildBenefit, None, 1000, "ChildBenefit"),
-            CodingComponent(OtherEarnings, Some(234), 5000, "OtherEarnings"))
+            CodingComponent(OtherEarnings, Some(234), 5000, "OtherEarnings")
+          )
 
           val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails)
           sut mustBe TaxFreeAmountViewModel(
             expectedHeader,
             expectedTitle,
-            s"${encodedMinusSign}£6,200",
+            s"$encodedMinusSign£6,200",
             TaxFreeAmountSummaryViewModel(Seq(
               emptyPersonalAllowanceItem,
               emptyAdditionsItem,
@@ -245,7 +253,10 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                     ChangeLinkViewModel(
                       isDisplayed = true,
                       value = Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
-                      href = controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url)
+                      href = controllers.routes.ExternalServiceRedirectController
+                        .auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform)
+                        .url
+                    )
                   ),
                   TaxFreeAmountSummaryRowViewModel(
                     Messages("tai.taxFreeAmount.table.taxComponent.ChildBenefit"),
@@ -261,10 +272,12 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                     Messages("tai.taxFreeAmount.table.deductions.total"),
                     "£6,200",
                     ChangeLinkViewModel(isDisplayed = false)
-                  ))),
-              totalsItem(s"${encodedMinusSign}£6,200")
-            )
-          ))
+                  )
+                )
+              ),
+              totalsItem(s"$encodedMinusSign£6,200")
+            ))
+          )
         }
       }
 
@@ -292,7 +305,8 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                   Messages("tai.taxFreeAmount.table.totals.label"),
                   "£4,012",
                   ChangeLinkViewModel(isDisplayed = false)
-                )))
+                ))
+            )
         }
       }
 
@@ -318,9 +332,10 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
               Seq(
                 TaxFreeAmountSummaryRowViewModel(
                   Messages("tai.taxFreeAmount.table.totals.label"),
-                  s"${encodedMinusSign}£1,988",
+                  s"$encodedMinusSign£1,988",
                   ChangeLinkViewModel(isDisplayed = false)
-                )))
+                ))
+            )
         }
       }
 
@@ -348,7 +363,8 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                   Messages("tai.taxFreeAmount.table.totals.label"),
                   "£0",
                   ChangeLinkViewModel(isDisplayed = false)
-                )))
+                ))
+            )
         }
       }
 
@@ -379,7 +395,8 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                 Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
                 "£7,500",
                 ChangeLinkViewModel(isDisplayed = false)
-              )))
+              ))
+          )
 
           val expectedAdditionsItem = TaxFreeAmountSummaryCategoryViewModel(
             Messages("tai.taxFreeAmount.table.columnOneHeader"),
@@ -393,7 +410,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                 "£512",
                 ChangeLinkViewModel(
                   isDisplayed = true,
-                  value =  Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
+                  value = Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
                   href = taxFreeAllowanceLinkUrl)
               ),
               TaxFreeAmountSummaryRowViewModel(
@@ -401,14 +418,16 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                 "£1,000",
                 ChangeLinkViewModel(
                   isDisplayed = true,
-                  value =  Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
+                  value = Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
                   href = taxFreeAllowanceLinkUrl)
               ),
               TaxFreeAmountSummaryRowViewModel(
                 Messages("tai.taxFreeAmount.table.additions.total"),
                 "£1,512",
                 ChangeLinkViewModel(isDisplayed = false)
-              )))
+              )
+            )
+          )
 
           val expectedDeductionsItem = TaxFreeAmountSummaryCategoryViewModel(
             Messages("tai.taxFreeAmount.table.columnOneHeader"),
@@ -423,7 +442,10 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                 ChangeLinkViewModel(
                   isDisplayed = true,
                   value = Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
-                  href = controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url)
+                  href = controllers.routes.ExternalServiceRedirectController
+                    .auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform)
+                    .url
+                )
               ),
               TaxFreeAmountSummaryRowViewModel(
                 Messages("tai.taxFreeAmount.table.taxComponent.ChildBenefit"),
@@ -439,8 +461,9 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                 Messages("tai.taxFreeAmount.table.deductions.total"),
                 "£7,012",
                 ChangeLinkViewModel(isDisplayed = false)
-              )))
-
+              )
+            )
+          )
 
           val expectedTotalsItem = totalsItem("£2,000")
 
@@ -458,7 +481,8 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
     CodingComponent(PersonalAllowancePA, Some(234), 11500, "Personal Allowance"),
     CodingComponent(EmployerProvidedServices, Some(12), 100, "Benefit"),
     CodingComponent(ForeignDividendIncome, Some(12), 1000, "Income"),
-    CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
+    CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction")
+  )
 
   val emptyPersonalAllowanceItem = TaxFreeAmountSummaryCategoryViewModel(
     Messages("tai.taxFreeAmount.table.columnOneHeader"),
@@ -471,7 +495,8 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
         Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
         "£0",
         ChangeLinkViewModel(isDisplayed = false)
-      )))
+      ))
+  )
 
   val emptyAdditionsItem = TaxFreeAmountSummaryCategoryViewModel(
     Messages("tai.taxFreeAmount.table.columnOneHeader"),
@@ -484,7 +509,8 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
         Messages("tai.taxFreeAmount.table.additions.noAddition"),
         "£0",
         ChangeLinkViewModel(isDisplayed = false)
-      )))
+      ))
+  )
 
   val emptyDeductionsItem = TaxFreeAmountSummaryCategoryViewModel(
     Messages("tai.taxFreeAmount.table.columnOneHeader"),
@@ -497,7 +523,8 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
         Messages("tai.taxFreeAmount.table.deductions.noDeduction"),
         "£0",
         ChangeLinkViewModel(isDisplayed = false)
-      )))
+      ))
+  )
 
   val emptyTotalsItem = TaxFreeAmountSummaryCategoryViewModel(
     Messages("tai.taxFreeAmount.table.columnOneHeader"),
@@ -510,33 +537,36 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
         Messages("tai.taxFreeAmount.table.totals.label"),
         "£0",
         ChangeLinkViewModel(isDisplayed = false)
-      )))
+      ))
+  )
 
-  def totalsItem(formattedTotal: String) = TaxFreeAmountSummaryCategoryViewModel(
-    Messages("tai.taxFreeAmount.table.columnOneHeader"),
-    Messages("tai.taxFreeAmount.table.columnTwoHeader"),
-    hideHeaders = true,
-    hideCaption = true,
-    Messages("tai.taxFreeAmount.table.totals.caption"),
-    Seq(
-      TaxFreeAmountSummaryRowViewModel(
-        Messages("tai.taxFreeAmount.table.totals.label"),
-        formattedTotal,
-        ChangeLinkViewModel(isDisplayed = false)
-      )))
+  def totalsItem(formattedTotal: String) =
+    TaxFreeAmountSummaryCategoryViewModel(
+      Messages("tai.taxFreeAmount.table.columnOneHeader"),
+      Messages("tai.taxFreeAmount.table.columnTwoHeader"),
+      hideHeaders = true,
+      hideCaption = true,
+      Messages("tai.taxFreeAmount.table.totals.caption"),
+      Seq(
+        TaxFreeAmountSummaryRowViewModel(
+          Messages("tai.taxFreeAmount.table.totals.label"),
+          formattedTotal,
+          ChangeLinkViewModel(isDisplayed = false)
+        ))
+    )
 
   val emptyCodingComponents = Seq.empty[CodingComponent]
 
   val expectedHeader, expectedTitle = Messages("tai.taxFreeAmount.heading.pt1") + " " +
-    Messages("tai.taxYear",
+    Messages(
+      "tai.taxYear",
       HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
       HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy")))
 
   val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
   val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-  val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
+  val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
   val employmentNames = Map.empty[Int, String]
   val companyCarBenefits = Seq.empty[CompanyCarBenefit]
   val taxFreeAmountDetails = TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax)
 }
-

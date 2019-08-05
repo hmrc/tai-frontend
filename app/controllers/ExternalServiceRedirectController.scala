@@ -26,24 +26,27 @@ import uk.gov.hmrc.tai.service.{AuditService, SessionService}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 
-class ExternalServiceRedirectController @Inject()(sessionService: SessionService,
-                                                  auditService: AuditService,
-                                                  authenticate: AuthAction,
-                                                  validatePerson: ValidatePerson,
-                                                  override implicit val partialRetriever: FormPartialRetriever,
-                                                  override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
+class ExternalServiceRedirectController @Inject()(
+  sessionService: SessionService,
+  auditService: AuditService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController {
 
-  def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request => {
+  def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] =
+    (authenticate andThen validatePerson).async { implicit request =>
+      {
 
-      (for {
-        redirectUri <- auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName)
-        _ <- sessionService.invalidateCache()
-      } yield {
-        Redirect(redirectUri)
-      }) recover {
-        case _ => internalServerError("Unable to audit and redirect")
+        (for {
+          redirectUri <- auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName)
+          _           <- sessionService.invalidateCache()
+        } yield {
+          Redirect(redirectUri)
+        }) recover {
+          case _ => internalServerError("Unable to audit and redirect")
+        }
       }
     }
-  }
 }

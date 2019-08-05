@@ -33,68 +33,64 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
 import scala.concurrent.Future
 
-class UnauthorisedController @Inject()(override implicit val partialRetriever: FormPartialRetriever,
-                                       override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
+class UnauthorisedController @Inject()(
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController {
 
   def upliftUrl: String = ApplicationConfig.sa16UpliftUrl
   def failureUrl: String = ApplicationConfig.pertaxServiceUpliftFailedUrl
   def completionUrl: String = ApplicationConfig.taiFrontendServiceUrl
 
-  def onPageLoad: Action[AnyContent] = Action {
-    implicit request =>
-      Ok(unauthorisedView())
+  def onPageLoad: Action[AnyContent] = Action { implicit request =>
+    Ok(unauthorisedView())
   }
 
-  def loginGG: Action[AnyContent] = Action.async {
-    implicit request =>
-      ggRedirect
+  def loginGG: Action[AnyContent] = Action.async { implicit request =>
+    ggRedirect
   }
 
-  def loginVerify: Action[AnyContent] = Action.async {
-    implicit request =>
-      verifyRedirect
+  def loginVerify: Action[AnyContent] = Action.async { implicit request =>
+    verifyRedirect
   }
 
-  def upliftFailedUrl: Action[AnyContent] = Action.async {
-    implicit request =>
-      Future.successful(
-        Redirect(
-          upliftUrl,
-          Map(Origin -> Seq("TAI"),
-            ConfidenceLevel -> Seq("200"),
-            CompletionUrl -> Seq(completionUrl),
-            FailureUrl -> Seq(failureUrl)
-          )
-        )
+  def upliftFailedUrl: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(
+      Redirect(
+        upliftUrl,
+        Map(
+          Origin          -> Seq("TAI"),
+          ConfidenceLevel -> Seq("200"),
+          CompletionUrl   -> Seq(completionUrl),
+          FailureUrl      -> Seq(failureUrl))
       )
+    )
   }
 
   private def verifyRedirect(implicit request: Request[_]): Future[Result] = {
     lazy val idaSignIn = s"${ApplicationConfig.citizenAuthHost}/${ApplicationConfig.ida_web_context}/login"
-    Future.successful(Redirect(idaSignIn).withSession(
-      SessionKeys.loginOrigin -> "TAI",
-      SessionKeys.redirect -> ConfigProperties.postSignInRedirectUrl.getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
-    ))
+    Future.successful(
+      Redirect(idaSignIn).withSession(
+        SessionKeys.loginOrigin -> "TAI",
+        SessionKeys.redirect -> ConfigProperties.postSignInRedirectUrl.getOrElse(
+          controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+      ))
   }
 
   private def ggRedirect(implicit request: Request[_]): Future[Result] = {
-    val postSignInUpliftUrl = s"${ViewModelHelper.urlEncode(ApplicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${
-      ViewModelHelper.
-        urlEncode(ConfigProperties.postSignInRedirectUrl.
-          getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url))
-    }"
+    val postSignInUpliftUrl =
+      s"${ViewModelHelper.urlEncode(ApplicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${ViewModelHelper.urlEncode(ConfigProperties.postSignInRedirectUrl
+        .getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url))}"
 
-    lazy val ggSignIn = s"${
-      ApplicationConfig.
-        companyAuthUrl
-    }/${ApplicationConfig.gg_web_context}/sign-in?continue=${postSignInUpliftUrl}&accountType=individual"
+    lazy val ggSignIn =
+      s"${ApplicationConfig.companyAuthUrl}/${ApplicationConfig.gg_web_context}/sign-in?continue=$postSignInUpliftUrl&accountType=individual"
 
     Future.successful(Redirect(ggSignIn))
   }
 
-  private def unauthorisedView()(implicit request: Request[_])
-  = views.html.error_template_noauth(
-    Messages("global.error.InternalServerError500.title"),
-    Messages("tai.technical.error.heading"),
-    Messages("tai.technical.error.message"))
+  private def unauthorisedView()(implicit request: Request[_]) =
+    views.html.error_template_noauth(
+      Messages("global.error.InternalServerError500.title"),
+      Messages("tai.technical.error.heading"),
+      Messages("tai.technical.error.message"))
 }

@@ -41,7 +41,8 @@ class PensionProviderNameFormSpec extends PlaySpec with OneAppPerSuite with I18n
       "name is blank" in {
         val validatedFormNoDayError = form.bind(emptyName)
 
-        validatedFormNoDayError.errors must contain(FormError("pensionProviderName", List(Messages("tai.pensionProviderName.error.blank"))))
+        validatedFormNoDayError.errors must contain(
+          FormError("pensionProviderName", List(Messages("tai.pensionProviderName.error.blank"))))
       }
     }
   }

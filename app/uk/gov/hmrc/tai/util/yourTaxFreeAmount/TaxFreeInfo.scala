@@ -20,17 +20,17 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.TaxAccountCalculator
 
-case class TaxFreeInfo(date: String, annualTaxFreeAmount: BigDecimal, personalAllowance : BigDecimal)
+case class TaxFreeInfo(date: String, annualTaxFreeAmount: BigDecimal, personalAllowance: BigDecimal)
 
 object TaxFreeInfo {
-  def apply(date: String, codingComponents: Seq[CodingComponent], taxAccountCalculator: TaxAccountCalculator)(implicit messages: Messages): TaxFreeInfo = {
+  def apply(date: String, codingComponents: Seq[CodingComponent], taxAccountCalculator: TaxAccountCalculator)(
+    implicit messages: Messages): TaxFreeInfo = {
     val annualTaxFreeAmount = taxAccountCalculator.taxFreeAmount(codingComponents)
     val personalAllowanceAmount = sumOfPersonalAllowances(codingComponents)
 
     TaxFreeInfo(date, annualTaxFreeAmount, personalAllowanceAmount)
   }
 
-  private def sumOfPersonalAllowances(codingComponents: Seq[CodingComponent]): BigDecimal = {
+  private def sumOfPersonalAllowances(codingComponents: Seq[CodingComponent]): BigDecimal =
     codingComponents.filter(component => PersonalAllowance.isA(component.componentType)).map(_.amount).sum
-  }
 }

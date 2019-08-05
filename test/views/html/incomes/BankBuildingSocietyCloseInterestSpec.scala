@@ -23,16 +23,20 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.{BankAccountClosingInterestConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class BankBuildingSocietyCloseInterestSpec extends TaiViewSpec with FormValuesConstants with BankAccountClosingInterestConstants {
+class BankBuildingSocietyCloseInterestSpec
+    extends TaiViewSpec with FormValuesConstants with BankAccountClosingInterestConstants {
 
-  override def view: Html = views.html.incomes.bbsi.close.bank_building_society_closing_interest(id, bankAccountClosingInterestForm)
+  override def view: Html =
+    views.html.incomes.bbsi.close.bank_building_society_closing_interest(id, bankAccountClosingInterestForm)
 
   "Add bank account closing interest page" must {
     behave like pageWithTitle(messages("tai.closeBankAccount.closingInterest.heading", TaxYear().year.toString))
     behave like pageWithHeader(messages("tai.closeBankAccount.closingInterest.heading", TaxYear().year.toString))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm(s"/check-income-tax/income/bank-building-society-savings/$id/close/interest")
-    behave like pageWithYesNoRadioButton(BankAccountClosingInterestForm.ClosingInterestChoice+"-yes", BankAccountClosingInterestForm.ClosingInterestChoice+"-no")
+    behave like pageWithYesNoRadioButton(
+      BankAccountClosingInterestForm.ClosingInterestChoice + "-yes",
+      BankAccountClosingInterestForm.ClosingInterestChoice + "-no")
     behave like pageWithCancelLink(controllers.income.bbsi.routes.BbsiController.accounts())
 
     "have an input field for payroll number" in {
@@ -45,8 +49,8 @@ class BankBuildingSocietyCloseInterestSpec extends TaiViewSpec with FormValuesCo
 
         val closingInterestChoiceError = messages("tai.closeBankAccount.closingInterest.error.selectOption")
 
-        val formWithErrors: Form[BankAccountClosingInterestForm] = BankAccountClosingInterestForm.form.
-          withError(BankAccountClosingInterestForm.ClosingInterestChoice, closingInterestChoiceError)
+        val formWithErrors: Form[BankAccountClosingInterestForm] = BankAccountClosingInterestForm.form
+          .withError(BankAccountClosingInterestForm.ClosingInterestChoice, closingInterestChoiceError)
 
         def view: Html = views.html.incomes.bbsi.close.bank_building_society_closing_interest(id, formWithErrors)
 
@@ -59,8 +63,8 @@ class BankBuildingSocietyCloseInterestSpec extends TaiViewSpec with FormValuesCo
 
       val closingInterestEntryError = messages("tai.closeBankAccount.closingInterest.error.selectOption")
 
-      val formWithErrors: Form[BankAccountClosingInterestForm] = BankAccountClosingInterestForm.form.
-        withError(BankAccountClosingInterestForm.ClosingInterestEntry, closingInterestEntryError)
+      val formWithErrors: Form[BankAccountClosingInterestForm] = BankAccountClosingInterestForm.form
+        .withError(BankAccountClosingInterestForm.ClosingInterestEntry, closingInterestEntryError)
 
       def view: Html = views.html.incomes.bbsi.close.bank_building_society_closing_interest(0, formWithErrors)
 
@@ -69,8 +73,8 @@ class BankBuildingSocietyCloseInterestSpec extends TaiViewSpec with FormValuesCo
     }
   }
 
-  private lazy val bankAccountClosingInterestForm: Form[BankAccountClosingInterestForm] = BankAccountClosingInterestForm.form.bind(Map(
-    BankAccountClosingInterestForm.ClosingInterestChoice -> NoValue))
+  private lazy val bankAccountClosingInterestForm: Form[BankAccountClosingInterestForm] =
+    BankAccountClosingInterestForm.form.bind(Map(BankAccountClosingInterestForm.ClosingInterestChoice -> NoValue))
 
   private val id = 0
 }

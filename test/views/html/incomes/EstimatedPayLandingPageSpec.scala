@@ -28,7 +28,7 @@ class EstimatedPayLandingPageSpec extends TaiViewSpec {
 
   "Estimated Pay Landing Page" should {
     behave like pageWithBackLink
-    behave like pageWithCancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
     behave like pageWithCombinedHeader(
       messages("tai.howToUpdate.preHeading", employerName),
       messages("tai.incomes.landing.Heading", employerName))
@@ -36,20 +36,22 @@ class EstimatedPayLandingPageSpec extends TaiViewSpec {
     "contain the correct content when income is from employment" in {
       doc(view).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))
       doc(view) must haveLinkWithText(messages("tai.incomes.landing.employment.ended.link", employerName))
-      doc(view) must haveLinkWithUrlWithID("updateEmployer",
+      doc(view) must haveLinkWithUrlWithID(
+        "updateEmployer",
         controllers.employments.routes.EndEmploymentController.onPageLoad(empId).url)
-      doc(view).getElementsByClass("button").text must include(messages("tai.income.details.updateTaxableIncome.update"))
+      doc(view).getElementsByClass("button").text must include(
+        messages("tai.income.details.updateTaxableIncome.update"))
     }
 
     "contain the correct content when income is from pension" in {
       val testView: Html = views.html.incomes.estimatedPayLandingPage(employerName, empId, isPension = true)
-        doc(testView).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))
+      doc(testView).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))
       doc(testView) must haveLinkWithText(messages("tai.incomes.landing.pension.ended.link"))
       doc(testView) must haveLinkWithUrlWithID("updatePension", ApplicationConfig.incomeFromEmploymentPensionLinkUrl)
-      doc(testView).getElementsByClass("button").text must include(messages("tai.income.details.updateTaxableIncome.update"))
+      doc(testView).getElementsByClass("button").text must include(
+        messages("tai.income.details.updateTaxableIncome.update"))
     }
   }
-
 
   override def view: Html = views.html.incomes.estimatedPayLandingPage(employerName, empId, isPension = false)
 }

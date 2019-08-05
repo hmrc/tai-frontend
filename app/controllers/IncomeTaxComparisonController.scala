@@ -36,83 +36,91 @@ import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxCompari
 
 import scala.util.control.NonFatal
 
-class IncomeTaxComparisonController @Inject()(val auditConnector: AuditConnector,
-                                              taxAccountService: TaxAccountService,
-                                              employmentService: EmploymentService,
-                                              codingComponentService: CodingComponentService,
-                                              updateNextYearsIncomeService: UpdateNextYearsIncomeService,
-                                              authenticate: AuthAction,
-                                              validatePerson: ValidatePerson,
-                                              override implicit val partialRetriever: FormPartialRetriever,
-                                              override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with FeatureTogglesConfig {
+class IncomeTaxComparisonController @Inject()(
+  val auditConnector: AuditConnector,
+  taxAccountService: TaxAccountService,
+  employmentService: EmploymentService,
+  codingComponentService: CodingComponentService,
+  updateNextYearsIncomeService: UpdateNextYearsIncomeService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController with FeatureTogglesConfig {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
+  def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    val nino = request.taiUser.nino
+    val currentTaxYear = TaxYear()
+    val nextTaxYear = currentTaxYear.next
+    val taxSummaryCYFuture = taxAccountService.taxAccountSummary(nino, currentTaxYear)
+    val taxSummaryCYPlusOneFuture = taxAccountService.taxAccountSummary(nino, nextTaxYear)
+    val taxCodeIncomesCYFuture = taxAccountService.taxCodeIncomes(nino, currentTaxYear)
+    val taxCodeIncomesCYPlusOneFuture = taxAccountService.taxCodeIncomes(nino, nextTaxYear)
+    val taxComponentsCYFuture = codingComponentService.taxFreeAmountComponents(nino, currentTaxYear)
+    val taxComponentsCYPlusOneFuture = codingComponentService.taxFreeAmountComponents(nino, nextTaxYear)
+    val employmentsCYFuture = employmentService.employments(nino, currentTaxYear)
 
-      val nino = request.taiUser.nino
-      val currentTaxYear = TaxYear()
-      val nextTaxYear = currentTaxYear.next
-      val taxSummaryCYFuture = taxAccountService.taxAccountSummary(nino, currentTaxYear)
-      val taxSummaryCYPlusOneFuture = taxAccountService.taxAccountSummary(nino, nextTaxYear)
-      val taxCodeIncomesCYFuture = taxAccountService.taxCodeIncomes(nino, currentTaxYear)
-      val taxCodeIncomesCYPlusOneFuture = taxAccountService.taxCodeIncomes(nino, nextTaxYear)
-      val taxComponentsCYFuture = codingComponentService.taxFreeAmountComponents(nino, currentTaxYear)
-      val taxComponentsCYPlusOneFuture = codingComponentService.taxFreeAmountComponents(nino, nextTaxYear)
-      val employmentsCYFuture = employmentService.employments(nino, currentTaxYear)
+    (for {
+      taxSummaryCY                  <- taxSummaryCYFuture
+      taxSummaryCyPlusOne           <- taxSummaryCYPlusOneFuture
+      taxCodeIncomesForCy           <- taxCodeIncomesCYFuture
+      taxCodeIncomesForCyPlusOne    <- taxCodeIncomesCYPlusOneFuture
+      codingComponentsCY            <- taxComponentsCYFuture
+      codingComponentsCYPlusOne     <- taxComponentsCYPlusOneFuture
+      employmentsCY                 <- employmentsCYFuture
+      isEstimatedPayJourneyComplete <- updateNextYearsIncomeService.isEstimatedPayJourneyComplete
+    } yield {
+      (taxSummaryCY, taxSummaryCyPlusOne, taxCodeIncomesForCy, taxCodeIncomesForCyPlusOne) match {
+        case (
+            TaiSuccessResponseWithPayload(taxAccountSummaryCY: TaxAccountSummary),
+            TaiSuccessResponseWithPayload(taxAccountSummaryCYPlusOne: TaxAccountSummary),
+            TaiSuccessResponseWithPayload(taxCodeIncomesCY: Seq[TaxCodeIncome]),
+            TaiSuccessResponseWithPayload(taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome])) => {
 
-      (for {
-        taxSummaryCY <- taxSummaryCYFuture
-        taxSummaryCyPlusOne <- taxSummaryCYPlusOneFuture
-        taxCodeIncomesForCy <- taxCodeIncomesCYFuture
-        taxCodeIncomesForCyPlusOne <- taxCodeIncomesCYPlusOneFuture
-        codingComponentsCY <- taxComponentsCYFuture
-        codingComponentsCYPlusOne <- taxComponentsCYPlusOneFuture
-        employmentsCY <- employmentsCYFuture
-        isEstimatedPayJourneyComplete <- updateNextYearsIncomeService.isEstimatedPayJourneyComplete
-      } yield {
-        (taxSummaryCY, taxSummaryCyPlusOne, taxCodeIncomesForCy, taxCodeIncomesForCyPlusOne) match {
-          case (TaiSuccessResponseWithPayload(taxAccountSummaryCY: TaxAccountSummary),
-          TaiSuccessResponseWithPayload(taxAccountSummaryCYPlusOne: TaxAccountSummary),
-          TaiSuccessResponseWithPayload(taxCodeIncomesCY: Seq[TaxCodeIncome]),
-          TaiSuccessResponseWithPayload(taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome])
-            ) => {
-
-            val estimatedIncomeTaxComparisonViewModel = {
-              val cyEstimatedTax = EstimatedIncomeTaxComparisonItem(currentTaxYear, taxAccountSummaryCY.totalEstimatedTax)
-              val cyPlusOneEstimatedTax = EstimatedIncomeTaxComparisonItem(nextTaxYear, taxAccountSummaryCYPlusOne.totalEstimatedTax)
-              EstimatedIncomeTaxComparisonViewModel(Seq(cyEstimatedTax, cyPlusOneEstimatedTax))
-            }
-
-            val taxCodeComparisonModel = {
-              val cyTaxCodeIncomeSources = TaxCodeIncomesForYear(currentTaxYear, taxCodeIncomesCY)
-              val cyPlusOneTaxCodeIncomeSources = TaxCodeIncomesForYear(nextTaxYear, taxCodeIncomesCYPlusOne)
-              TaxCodeComparisonViewModel(Seq(cyTaxCodeIncomeSources, cyPlusOneTaxCodeIncomeSources))
-            }
-
-            val taxFreeAmountComparisonModel = {
-              val cyCodingComponents = CodingComponentForYear(currentTaxYear, codingComponentsCY)
-              val cyPlusOneTaxComponents = CodingComponentForYear(nextTaxYear, codingComponentsCYPlusOne)
-              val cyTaxSummary = TaxAccountSummaryForYear(currentTaxYear, taxAccountSummaryCY)
-              val cyPlusOneTaxSummary = TaxAccountSummaryForYear(currentTaxYear, taxAccountSummaryCYPlusOne)
-
-              TaxFreeAmountComparisonViewModel(Seq(cyCodingComponents, cyPlusOneTaxComponents),
-                Seq(cyTaxSummary, cyPlusOneTaxSummary))
-            }
-
-            val employmentViewModel = IncomeSourceComparisonViewModel(taxCodeIncomesCY, employmentsCY, taxCodeIncomesCYPlusOne)
-
-            val model = IncomeTaxComparisonViewModel(request.taiUser.getDisplayName, estimatedIncomeTaxComparisonViewModel,
-              taxCodeComparisonModel, taxFreeAmountComparisonModel, employmentViewModel, isEstimatedPayJourneyComplete)
-
-            implicit val user = request.taiUser
-            Ok(views.html.incomeTaxComparison.Main(model, cyPlus1EstimatedPayEnabled))
+          val estimatedIncomeTaxComparisonViewModel = {
+            val cyEstimatedTax = EstimatedIncomeTaxComparisonItem(currentTaxYear, taxAccountSummaryCY.totalEstimatedTax)
+            val cyPlusOneEstimatedTax =
+              EstimatedIncomeTaxComparisonItem(nextTaxYear, taxAccountSummaryCYPlusOne.totalEstimatedTax)
+            EstimatedIncomeTaxComparisonViewModel(Seq(cyEstimatedTax, cyPlusOneEstimatedTax))
           }
-          case _ => throw new RuntimeException("Not able to fetch income tax comparision details")
+
+          val taxCodeComparisonModel = {
+            val cyTaxCodeIncomeSources = TaxCodeIncomesForYear(currentTaxYear, taxCodeIncomesCY)
+            val cyPlusOneTaxCodeIncomeSources = TaxCodeIncomesForYear(nextTaxYear, taxCodeIncomesCYPlusOne)
+            TaxCodeComparisonViewModel(Seq(cyTaxCodeIncomeSources, cyPlusOneTaxCodeIncomeSources))
+          }
+
+          val taxFreeAmountComparisonModel = {
+            val cyCodingComponents = CodingComponentForYear(currentTaxYear, codingComponentsCY)
+            val cyPlusOneTaxComponents = CodingComponentForYear(nextTaxYear, codingComponentsCYPlusOne)
+            val cyTaxSummary = TaxAccountSummaryForYear(currentTaxYear, taxAccountSummaryCY)
+            val cyPlusOneTaxSummary = TaxAccountSummaryForYear(currentTaxYear, taxAccountSummaryCYPlusOne)
+
+            TaxFreeAmountComparisonViewModel(
+              Seq(cyCodingComponents, cyPlusOneTaxComponents),
+              Seq(cyTaxSummary, cyPlusOneTaxSummary))
+          }
+
+          val employmentViewModel =
+            IncomeSourceComparisonViewModel(taxCodeIncomesCY, employmentsCY, taxCodeIncomesCYPlusOne)
+
+          val model = IncomeTaxComparisonViewModel(
+            request.taiUser.getDisplayName,
+            estimatedIncomeTaxComparisonViewModel,
+            taxCodeComparisonModel,
+            taxFreeAmountComparisonModel,
+            employmentViewModel,
+            isEstimatedPayJourneyComplete
+          )
+
+          implicit val user = request.taiUser
+          Ok(views.html.incomeTaxComparison.Main(model, cyPlus1EstimatedPayEnabled))
         }
-      }) recover {
-        case NonFatal(e) => internalServerError("IncomeTaxComparisonController exception", Some(e))
+        case _ => throw new RuntimeException("Not able to fetch income tax comparision details")
       }
+    }) recover {
+      case NonFatal(e) => internalServerError("IncomeTaxComparisonController exception", Some(e))
+    }
   }
 
 }

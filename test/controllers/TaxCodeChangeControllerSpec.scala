@@ -45,12 +45,8 @@ import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTax
 import scala.concurrent.Future
 import scala.util.Random
 
-
-class TaxCodeChangeControllerSpec extends PlaySpec
-  with MockitoSugar
-  with FakeTaiPlayApplication
-  with I18nSupport
-  with ControllerViewTestHelper {
+class TaxCodeChangeControllerSpec
+    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with ControllerViewTestHelper {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -100,13 +96,17 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
       val scottishRates = Map.empty[String, BigDecimal]
 
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
-      when(taxAccountService.totalTax(Matchers.eq(FakeAuthAction.nino), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(TotalTax(0, Seq.empty, None, None, None))))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Map[String, BigDecimal]()))
+      when(taxAccountService.totalTax(Matchers.eq(FakeAuthAction.nino), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(TotalTax(0, Seq.empty, None, None, None))))
       when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
-      when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any())).thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
+      when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any()))
+        .thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
 
       val reasons = Seq("a reason")
-      when(taxCodeChangeReasonsService.combineTaxCodeChangeReasons(any(), any(), Matchers.eq(taxCodeChange))(any())).thenReturn(reasons)
+      when(taxCodeChangeReasonsService.combineTaxCodeChangeReasons(any(), any(), Matchers.eq(taxCodeChange))(any()))
+        .thenReturn(reasons)
       when(taxCodeChangeReasonsService.isAGenericReason(Matchers.eq(reasons))(any())).thenReturn(false)
 
       val result = createController.taxCodeComparison()(request)
@@ -124,7 +124,15 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   val startDate = TaxYear().start
 
-  val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
+  val taxCodeRecord1 = TaxCodeRecord(
+    "D0",
+    startDate,
+    startDate.plusDays(1),
+    OtherBasisOfOperation,
+    "Employer 1",
+    false,
+    Some("1234"),
+    true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
 
   val personService = mock[PersonService]
@@ -134,21 +142,20 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val yourTaxFreeAmountService = mock[YourTaxFreeAmountService]
   val taxCodeChangeReasonsService = mock[TaxCodeChangeReasonsService]
 
-
-
   private def createController() = new TaxCodeChangeTestController
 
-  private class TaxCodeChangeTestController extends TaxCodeChangeController (
-    taxCodeChangeService,
-    taxAccountService,
-    describedYourTaxFreeAmountService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    yourTaxFreeAmountService,
-    taxCodeChangeReasonsService,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  ) {
+  private class TaxCodeChangeTestController
+      extends TaxCodeChangeController(
+        taxCodeChangeService,
+        taxAccountService,
+        describedYourTaxFreeAmountService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        yourTaxFreeAmountService,
+        taxCodeChangeReasonsService,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      ) {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
   }

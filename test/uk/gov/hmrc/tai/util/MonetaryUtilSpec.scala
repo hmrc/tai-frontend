@@ -36,7 +36,7 @@ class MonetaryUtilSpec extends PlaySpec {
     }
     "return the string representation of the provided MoneyPounds with a pound symbol prefix and negative sign" when {
       "the value is negative" in {
-        MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"${encodedMinusSign}£1,000.00"
+        MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"$encodedMinusSign£1,000.00"
       }
     }
   }

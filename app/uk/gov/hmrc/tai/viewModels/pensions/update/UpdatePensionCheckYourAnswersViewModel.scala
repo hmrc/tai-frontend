@@ -19,13 +19,13 @@ package uk.gov.hmrc.tai.viewModels.pensions.update
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
-
-case class UpdatePensionCheckYourAnswersViewModel(id: Int,
-                                                  pensionProviderName: String,
-                                                  receivePension: String,
-                                                  whatYouToldUs: String,
-                                                  contactByPhone: String,
-                                                  phoneNumber: Option[String]) {
+case class UpdatePensionCheckYourAnswersViewModel(
+  id: Int,
+  pensionProviderName: String,
+  receivePension: String,
+  whatYouToldUs: String,
+  contactByPhone: String,
+  phoneNumber: Option[String]) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 

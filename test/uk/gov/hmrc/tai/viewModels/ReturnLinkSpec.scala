@@ -33,7 +33,7 @@ class ReturnLinkSpec extends PlaySpec with FakeTaiPlayApplication with I18nSuppo
       "refer is tax-free-amount" in {
         val returnLink = createReturnLinkTest
 
-        val result= returnLink.createReturnLink(referalPath, resourceName = "tax-free-allowance")
+        val result = returnLink.createReturnLink(referalPath, resourceName = "tax-free-allowance")
 
         result mustBe Link.toInternalPage(referalPath, Some(messagesApi("tai.iya.tax.free.amount.return.link"))).toHtml
       }
@@ -41,7 +41,7 @@ class ReturnLinkSpec extends PlaySpec with FakeTaiPlayApplication with I18nSuppo
       "refer is detailed-income-tax-estimate" in {
         val returnLink = createReturnLinkTest
 
-        val result= returnLink.createReturnLink(referalPath, resourceName = "detailed-income-tax-estimate")
+        val result = returnLink.createReturnLink(referalPath, resourceName = "detailed-income-tax-estimate")
 
         result mustBe Link.toInternalPage(referalPath, Some(messagesApi("tai.iya.detailed.paye.return.link"))).toHtml
       }
@@ -49,7 +49,7 @@ class ReturnLinkSpec extends PlaySpec with FakeTaiPlayApplication with I18nSuppo
       "refer is your-tax-free-amount" in {
         val returnLink = createReturnLinkTest
 
-        val result= returnLink.createReturnLink(referalPath, resourceName = "your-tax-free-amount")
+        val result = returnLink.createReturnLink(referalPath, resourceName = "your-tax-free-amount")
 
         result mustBe Link.toInternalPage(referalPath, Some(messagesApi("tai.iya.tax.code.change.return.link"))).toHtml
       }
@@ -57,9 +57,13 @@ class ReturnLinkSpec extends PlaySpec with FakeTaiPlayApplication with I18nSuppo
       "refer is anything else" in {
         val returnLink = createReturnLinkTest
 
-        val result= returnLink.createReturnLink(referalPath, resourceName = "anything else")
+        val result = returnLink.createReturnLink(referalPath, resourceName = "anything else")
 
-        result mustBe Link.toInternalPage(routes.TaxAccountSummaryController.onPageLoad.url, Some(messagesApi("return.to.your.income.tax.summary"))).toHtml
+        result mustBe Link
+          .toInternalPage(
+            routes.TaxAccountSummaryController.onPageLoad.url,
+            Some(messagesApi("return.to.your.income.tax.summary")))
+          .toHtml
       }
     }
   }

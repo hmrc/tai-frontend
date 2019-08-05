@@ -35,8 +35,9 @@ class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
   "add pension provider" must {
     "return an envelope id" in {
       val sut = createSUT
-      val model = AddPensionProvider("name", new LocalDate(2017, 6, 9),  "12345", "Yes", Some("123456789"))
-      when(pensionProviderConnector.addPensionProvider(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
+      val model = AddPensionProvider("name", new LocalDate(2017, 6, 9), "12345", "Yes", Some("123456789"))
+      when(pensionProviderConnector.addPensionProvider(Matchers.eq(nino), Matchers.eq(model))(any()))
+        .thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.addPensionProvider(nino, model), 5 seconds)
 
@@ -46,8 +47,9 @@ class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
-        val model = AddPensionProvider("name", new LocalDate(2017, 6, 9),  "12345", "Yes", Some("123456789"))
-        when(pensionProviderConnector.addPensionProvider(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
+        val model = AddPensionProvider("name", new LocalDate(2017, 6, 9), "12345", "Yes", Some("123456789"))
+        when(pensionProviderConnector.addPensionProvider(Matchers.eq(nino), Matchers.eq(model))(any()))
+          .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.addPensionProvider(nino, model), 5.seconds)
         rte.getMessage mustBe s"No envelope id was generated when adding the new pension provider for ${nino.nino}"
@@ -58,10 +60,15 @@ class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
   "incorrect pension provider" must {
     "return an envelope id" in {
       val sut = createSUT
-      val model = IncorrectPensionProvider(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      when(pensionProviderConnector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
+      val model = IncorrectPensionProvider(
+        whatYouToldUs = "TEST",
+        telephoneContactAllowed = "Yes",
+        telephoneNumber = Some("123456789"))
+      when(
+        pensionProviderConnector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any()))
+        .thenReturn(Future.successful(Some("123-456-789")))
 
-      val envId = Await.result(sut.incorrectPensionProvider(nino, 1,model), 5 seconds)
+      val envId = Await.result(sut.incorrectPensionProvider(nino, 1, model), 5 seconds)
 
       envId mustBe "123-456-789"
     }
@@ -69,10 +76,15 @@ class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
-        val model = IncorrectPensionProvider(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-        when(pensionProviderConnector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
+        val model = IncorrectPensionProvider(
+          whatYouToldUs = "TEST",
+          telephoneContactAllowed = "Yes",
+          telephoneNumber = Some("123456789"))
+        when(
+          pensionProviderConnector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(
+            any())).thenReturn(Future.successful(None))
 
-        val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectPensionProvider(nino, 1,model), 5.seconds)
+        val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectPensionProvider(nino, 1, model), 5.seconds)
         rte.getMessage mustBe s"No envelope id was generated when submitting incorrect pension for ${nino.nino}"
       }
     }
@@ -84,7 +96,8 @@ class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
 
   val pensionProviderConnector = mock[PensionProviderConnector]
 
-  private class PensionProviderServiceTest extends PensionProviderService(
-    pensionProviderConnector
-  )
+  private class PensionProviderServiceTest
+      extends PensionProviderService(
+        pensionProviderConnector
+      )
 }

@@ -32,9 +32,9 @@ class TaxCodeChangeReasons @Inject()() {
     employmentReasons ++ incomeSourceCountReason(employmentReasons, taxCodeChange)
   }
 
-  private def secondaryEmploymentsChanged(unMatchedPreviousCodes: Seq[TaxCodePair],
-                                          unMatchedCurrentCodes: Seq[TaxCodePair])
-                                         (implicit messages: Messages): Seq[String] = {
+  private def secondaryEmploymentsChanged(
+    unMatchedPreviousCodes: Seq[TaxCodePair],
+    unMatchedCurrentCodes: Seq[TaxCodePair])(implicit messages: Messages): Seq[String] = {
 
     val previous = unMatchedPreviousCodes.flatMap(_.previous).map(record => record.employerName)
 
@@ -44,7 +44,8 @@ class TaxCodeChangeReasons @Inject()() {
     val uniquePrevious = previous.distinct.sorted
     val uniqueCurrent = current.distinct.sorted
 
-    val currentAndPreviousEmployerNamesAreSame: Boolean = (uniquePrevious == uniqueCurrent) && (uniquePrevious ++ uniqueCurrent).nonEmpty
+    val currentAndPreviousEmployerNamesAreSame
+      : Boolean = (uniquePrevious == uniqueCurrent) && (uniquePrevious ++ uniqueCurrent).nonEmpty
 
     if (currentAndPreviousEmployerNamesAreSame) {
       genericMessage
@@ -53,7 +54,7 @@ class TaxCodeChangeReasons @Inject()() {
     }
   }
 
-  private def primaryEmploymentsChanged(primaryPairs: Seq[TaxCodePair])(implicit messages: Messages): Seq[String] = {
+  private def primaryEmploymentsChanged(primaryPairs: Seq[TaxCodePair])(implicit messages: Messages): Seq[String] =
     primaryPairs flatMap { primaryPair: TaxCodePair =>
       val current = primaryPair.current.map(_.employerName)
       val previous = primaryPair.previous.map(_.employerName)
@@ -68,7 +69,6 @@ class TaxCodeChangeReasons @Inject()() {
         case _ => Seq.empty[String]
       }
     }
-  }
 
   private def isDifferentPayRollWithSameEmployerName(primaryPair: TaxCodePair): Boolean = {
 
@@ -89,40 +89,34 @@ class TaxCodeChangeReasons @Inject()() {
     isEmployerNameSame && !isPayRollSame
   }
 
-  private def removeEmployerMessage(employerNames: Seq[String])(implicit messages: Messages): Seq[String] = {
+  private def removeEmployerMessage(employerNames: Seq[String])(implicit messages: Messages): Seq[String] =
     employerNames map (name => messages("tai.taxCodeComparison.removeEmployer", name))
-  }
 
-  private def addSingleEmployerMessage(taxCodeRecord: Option[TaxCodeRecord])(implicit messages: Messages): Seq[String] = {
-    taxCodeRecord.fold(Seq.empty[String]) {
-      record =>
-        if (record.pensionIndicator) {
-          Seq(messages("tai.taxCodeComparison.add.pension", record.employerName))
-        } else {
-          Seq(messages("tai.taxCodeComparison.add.employer", record.employerName))
-        }
+  private def addSingleEmployerMessage(taxCodeRecord: Option[TaxCodeRecord])(implicit messages: Messages): Seq[String] =
+    taxCodeRecord.fold(Seq.empty[String]) { record =>
+      if (record.pensionIndicator) {
+        Seq(messages("tai.taxCodeComparison.add.pension", record.employerName))
+      } else {
+        Seq(messages("tai.taxCodeComparison.add.employer", record.employerName))
+      }
     }
-  }
 
-  private def addEmployerMessages(taxCodeRecords: Seq[TaxCodeRecord])(implicit messages: Messages): Seq[String] = {
+  private def addEmployerMessages(taxCodeRecords: Seq[TaxCodeRecord])(implicit messages: Messages): Seq[String] =
     taxCodeRecords.flatMap(x => addSingleEmployerMessage(Some(x)))
-  }
 
-  private def genericMessage(implicit messages: Messages): Seq[String] = {
+  private def genericMessage(implicit messages: Messages): Seq[String] =
     Seq(messages("taxCode.change.yourTaxCodeChanged.paragraph"))
-  }
 
-  private def filterOutGenericMessage(reasons: Seq[String])(implicit messages: Messages): Seq[String] = {
+  private def filterOutGenericMessage(reasons: Seq[String])(implicit messages: Messages): Seq[String] =
     reasons.filterNot(_ == genericMessage.head)
-  }
 
-  private def incomeSourceCountReason(reasons: Seq[String], taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
+  private def incomeSourceCountReason(reasons: Seq[String], taxCodeChange: TaxCodeChange)(
+    implicit messages: Messages): Seq[String] =
     if (filterOutGenericMessage(reasons).nonEmpty) {
       Seq(incomeSourceCountMessage(taxCodeChange))
     } else {
       Seq.empty[String]
     }
-  }
 
   private def incomeSourceCountMessage(taxCodeChange: TaxCodeChange)(implicit messages: Messages): String = {
 
@@ -143,10 +137,12 @@ class TaxCodeChangeReasons @Inject()() {
     }
 
     (taxCodeChange.currentEmploymentCount > 0, taxCodeChange.currentPensionCount > 0) match {
-      case(true, true) => messages("tai.taxCodeComparison.incomeSources.count",
-        taxCodeChange.currentEmploymentCount + taxCodeChange.currentPensionCount)
-      case(true, false) => employmentMessage
-      case(false, true) => pensionMessage
+      case (true, true) =>
+        messages(
+          "tai.taxCodeComparison.incomeSources.count",
+          taxCodeChange.currentEmploymentCount + taxCodeChange.currentPensionCount)
+      case (true, false) => employmentMessage
+      case (false, true) => pensionMessage
     }
   }
 }

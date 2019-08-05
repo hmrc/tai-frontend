@@ -27,27 +27,35 @@ import uk.gov.hmrc.tai.util._
 import scala.math.BigDecimal
 
 case class SimpleEstimatedIncomeTaxViewModel(
-                                              incomeTaxEstimate: BigDecimal,
-                                              incomeEstimate: BigDecimal,
-                                              taxFreeAllowance: BigDecimal,
-                                              graph: BandedGraph,
-                                              taxRegion: String,
-                                              mergedTaxBands:List[TaxBand],
-                                              taxOnIncomeTypeHeading: String,
-                                              taxOnIncomeTypeDescription: String
-                                      ) extends ViewModelHelper
+  incomeTaxEstimate: BigDecimal,
+  incomeEstimate: BigDecimal,
+  taxFreeAllowance: BigDecimal,
+  graph: BandedGraph,
+  taxRegion: String,
+  mergedTaxBands: List[TaxBand],
+  taxOnIncomeTypeHeading: String,
+  taxOnIncomeTypeDescription: String
+) extends ViewModelHelper
 
 object SimpleEstimatedIncomeTaxViewModel extends IncomeTaxEstimateHelper {
 
-  def apply(codingComponents: Seq[CodingComponent], taxAccountSummary: TaxAccountSummary, taxCodeIncomes: Seq[TaxCodeIncome],
-            taxBands:List[TaxBand])(implicit messages: Messages): SimpleEstimatedIncomeTaxViewModel = {
+  def apply(
+    codingComponents: Seq[CodingComponent],
+    taxAccountSummary: TaxAccountSummary,
+    taxCodeIncomes: Seq[TaxCodeIncome],
+    taxBands: List[TaxBand])(implicit messages: Messages): SimpleEstimatedIncomeTaxViewModel = {
 
     val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = EstimatedIncomeTaxService.retrieveTaxBands(taxBands :+ paBand)
-    val graph = BandedGraph(codingComponents,mergedTaxBands, taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedTax, taxViewType = SimpleTaxView)
+    val graph = BandedGraph(
+      codingComponents,
+      mergedTaxBands,
+      taxAccountSummary.taxFreeAllowance,
+      taxAccountSummary.totalEstimatedTax,
+      taxViewType = SimpleTaxView)
     val taxRegion = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
     val taxOnIncomeTypeHeading = getTaxOnIncomeTypeHeading(taxCodeIncomes)
-    val taxOnIncomeTypeDescription = getTaxOnIncomeTypeDescription(taxCodeIncomes,taxAccountSummary)
+    val taxOnIncomeTypeDescription = getTaxOnIncomeTypeDescription(taxCodeIncomes, taxAccountSummary)
 
     SimpleEstimatedIncomeTaxViewModel(
       taxAccountSummary.totalEstimatedTax,

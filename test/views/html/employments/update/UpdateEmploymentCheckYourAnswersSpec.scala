@@ -51,15 +51,21 @@ class UpdateEmploymentCheckYourAnswersSpec extends TaiViewSpec {
 
       doc must haveCheckYourAnswersSummaryLine(2, messages("tai.checkYourAnswers.whatYouToldUs"))
       doc must haveCheckYourAnswersSummaryLineAnswer(2, viewModel.whatYouToldUs)
-      doc must haveCheckYourAnswersSummaryLineChangeLink(2, controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(viewModel.id).url)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        2,
+        controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(viewModel.id).url)
 
       doc must haveCheckYourAnswersSummaryLine(3, messages("tai.checkYourAnswers.contactByPhone"))
       doc must haveCheckYourAnswersSummaryLineAnswer(3, viewModel.contactByPhone)
-      doc must haveCheckYourAnswersSummaryLineChangeLink(3, controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        3,
+        controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url)
 
       doc must haveCheckYourAnswersSummaryLine(4, messages("tai.phoneNumber"))
       doc must haveCheckYourAnswersSummaryLineAnswer(4, viewModel.phoneNumber.getOrElse(""))
-      doc must haveCheckYourAnswersSummaryLineChangeLink(4, controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(
+        4,
+        controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url)
     }
 
     "display the last confirmation paragraph" in {
@@ -68,7 +74,8 @@ class UpdateEmploymentCheckYourAnswersSpec extends TaiViewSpec {
   }
 
   lazy val employmentId = 1
-  val viewModel = UpdateEmploymentCheckYourAnswersViewModel(employmentId, "TEST", "whatYouToldUs", "Yes", Some("123456789"))
+  val viewModel =
+    UpdateEmploymentCheckYourAnswersViewModel(employmentId, "TEST", "whatYouToldUs", "Yes", Some("123456789"))
 
   override def view: Html = views.html.employments.update.UpdateEmploymentCheckYourAnswers(viewModel)
 }

@@ -23,10 +23,9 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.HtmlFormatter
 
-class TaxPeriodLabelServiceSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport{
+class TaxPeriodLabelServiceSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
 
   "TaxPeriodLabelService " should {
 
@@ -39,7 +38,7 @@ class TaxPeriodLabelServiceSpec extends PlaySpec with FakeTaiPlayApplication wit
 
     "generate single line tax period label" in {
       val year = TaxYear()
-      val message= s"${Dates.formatDate(year.start)} to ${Dates.formatDate(year.end)}"
+      val message = s"${Dates.formatDate(year.start)} to ${Dates.formatDate(year.end)}"
       val expectedLabel = s"${HtmlFormatter.htmlNonBroken(message)}"
       TaxPeriodLabelService.taxPeriodLabelSingleLine(TaxYear().year) mustBe expectedLabel
     }

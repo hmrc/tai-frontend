@@ -26,8 +26,7 @@ case class TaxFreeAmountComparison(previous: Seq[CodingComponent], current: Seq[
 object TaxFreeAmountComparison extends CodingComponentFormatters {
 
   implicit lazy val reads: Reads[TaxFreeAmountComparison] = (
-
     (JsPath \ "previous").read(Reads.seq[CodingComponent](codingComponentReads)) and
       (JsPath \ "current").read(Reads.seq[CodingComponent](codingComponentReads))
-    )(TaxFreeAmountComparison.apply _)
+  )(TaxFreeAmountComparison.apply _)
 }

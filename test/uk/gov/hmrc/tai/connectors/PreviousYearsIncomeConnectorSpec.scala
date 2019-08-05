@@ -33,25 +33,25 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class PreviousYearsIncomeConnectorSpec extends PlaySpec
-  with MockitoSugar
-  with DefaultServicesConfig
-  with FakeTaiPlayApplication {
+class PreviousYearsIncomeConnectorSpec
+    extends PlaySpec with MockitoSugar with DefaultServicesConfig with FakeTaiPlayApplication {
 
   "PreviousYearsIncomeConnector" must {
 
     "return an envelope id on a successful invocation" in {
       val sut = createSUT()
-      val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
+      val model =
+        IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(httpHandler.postToApi(Matchers.eq(s"/tai/$nino/employments/years/2016/update"), Matchers.eq(model))
-      (any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      when(
+        httpHandler
+          .postToApi(Matchers.eq(s"/tai/$nino/employments/years/2016/update"), Matchers.eq(model))(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)
 
       result mustBe Some("123-456-789")
     }
-
 
   }
 
@@ -63,9 +63,8 @@ class PreviousYearsIncomeConnectorSpec extends PlaySpec
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  private class PreviousYearsIncomeConnectorTest(servUrl: String = "") extends PreviousYearsIncomeConnector(httpHandler) {
+  private class PreviousYearsIncomeConnectorTest(servUrl: String = "")
+      extends PreviousYearsIncomeConnector(httpHandler) {
     override val serviceUrl: String = servUrl
   }
 }
-
-

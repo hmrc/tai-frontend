@@ -41,105 +41,117 @@ import views.html.incomes.previousYears.CheckYourAnswers
 import scala.Function.tupled
 import scala.concurrent.Future
 
-class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: PreviousYearsIncomeService,
-                                              authenticate: AuthAction,
-                                              validatePerson: ValidatePerson,
-                                              @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
-                                              @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
-                                              override implicit val partialRetriever: FormPartialRetriever,
-                                              override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with JourneyCacheConstants
-  with FormValuesConstants {
+class UpdateIncomeDetailsController @Inject()(
+  previousYearsIncomeService: PreviousYearsIncomeService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
+  @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController with JourneyCacheConstants with FormValuesConstants {
 
-  def telephoneNumberViewModel(taxYear: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
-    messages("tai.income.previousYears.journey.preHeader"),
-    messages("tai.canWeContactByPhone.title"),
-    controllers.income.previousYears.routes.UpdateIncomeDetailsController.details.url,
-    controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitTelephoneNumber().url,
-    controllers.routes.PayeControllerHistoric.payePage(TaxYear(taxYear)).url
-  )
+  def telephoneNumberViewModel(taxYear: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel =
+    CanWeContactByPhoneViewModel(
+      messages("tai.income.previousYears.journey.preHeader"),
+      messages("tai.canWeContactByPhone.title"),
+      controllers.income.previousYears.routes.UpdateIncomeDetailsController.details.url,
+      controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitTelephoneNumber().url,
+      controllers.routes.PayeControllerHistoric.payePage(TaxYear(taxYear)).url
+    )
 
-  def decision(taxYear: TaxYear): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      journeyCacheService.cache(Map(UpdatePreviousYearsIncome_TaxYearKey -> taxYear.year.toString)) map { _ =>
-        implicit val user = request.taiUser
-        Ok(views.html.incomes.previousYears.UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear))
-      }
+  def decision(taxYear: TaxYear): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    journeyCacheService.cache(Map(UpdatePreviousYearsIncome_TaxYearKey -> taxYear.year.toString)) map { _ =>
+      implicit val user = request.taiUser
+      Ok(views.html.incomes.previousYears.UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear))
+    }
   }
 
-  def submitDecision(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
+  def submitDecision(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
 
-      UpdateIncomeDetailsDecisionForm.form.bindFromRequest.fold(
-        formWithErrors => {
-          Future.successful(BadRequest(views.html.incomes.previousYears.UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev)))
-        },
-        decision => {
-          decision match {
-            case Some(NoValue) => Future.successful(Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.details()))
-            case _ => Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
-          }
+    UpdateIncomeDetailsDecisionForm.form.bindFromRequest.fold(
+      formWithErrors => {
+        Future.successful(
+          BadRequest(views.html.incomes.previousYears.UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev)))
+      },
+      decision => {
+        decision match {
+          case Some(NoValue) =>
+            Future.successful(Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.details()))
+          case _ => Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
         }
-      )
-  }
-
-  def details(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
-
-      journeyCacheService.currentCache map {
-        currentCache =>
-          Ok(views.html.incomes.previousYears.UpdateIncomeDetails(UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
-            UpdateIncomeDetailsForm.form))
       }
+    )
   }
 
-  def submitDetails(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
+  def details(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
 
-      UpdateIncomeDetailsForm.form.bindFromRequest.fold(
-        formWithErrors => {
-          journeyCacheService.currentCache map {
-            currentCache =>
-              BadRequest(views.html.incomes.previousYears.UpdateIncomeDetails(
-                UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), formWithErrors))
-          }
-        },
-        incomeDetails => {
-          journeyCacheService.cache(Map(UpdatePreviousYearsIncome_IncomeDetailsKey -> incomeDetails))
-            .map(_ => Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber()))
+    journeyCacheService.currentCache map { currentCache =>
+      Ok(
+        views.html.incomes.previousYears.UpdateIncomeDetails(
+          UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
+          UpdateIncomeDetailsForm.form))
+    }
+  }
+
+  def submitDetails(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
+
+    UpdateIncomeDetailsForm.form.bindFromRequest.fold(
+      formWithErrors => {
+        journeyCacheService.currentCache map { currentCache =>
+          BadRequest(
+            views.html.incomes.previousYears.UpdateIncomeDetails(
+              UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
+              formWithErrors))
         }
-      )
-  }
-
-  def telephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
-
-      journeyCacheService.currentCache map { currentCache =>
-        Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), YesNoTextEntryForm.form()))
+      },
+      incomeDetails => {
+        journeyCacheService
+          .cache(Map(UpdatePreviousYearsIncome_IncomeDetailsKey -> incomeDetails))
+          .map(_ => Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber()))
       }
+    )
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
+  def telephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
 
-      YesNoTextEntryForm.form(
+    journeyCacheService.currentCache map { currentCache =>
+      Ok(
+        views.html.can_we_contact_by_phone(
+          Some(user),
+          telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
+          YesNoTextEntryForm.form()))
+    }
+  }
+
+  def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
+
+    YesNoTextEntryForm
+      .form(
         Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
         Messages("tai.canWeContactByPhone.telephone.empty"),
-        Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
+        Some(telephoneNumberSizeConstraint))
+      .bindFromRequest()
+      .fold(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
-            BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), formWithErrors))
+            BadRequest(
+              views.html.can_we_contact_by_phone(
+                Some(user),
+                telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
+                formWithErrors))
           }
         },
         form => {
           val mandatoryData = Map(UpdatePreviousYearsIncome_TelephoneQuestionKey -> form.yesNoChoice.getOrElse(NoValue))
           val dataForCache = form.yesNoChoice match {
-            case Some(YesValue) => mandatoryData ++ Map(UpdatePreviousYearsIncome_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
+            case Some(YesValue) =>
+              mandatoryData ++ Map(UpdatePreviousYearsIncome_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
             case _ => mandatoryData ++ Map(UpdatePreviousYearsIncome_TelephoneNumberKey -> "")
           }
           journeyCacheService.cache(dataForCache) map { _ =>
@@ -149,53 +161,59 @@ class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: Previo
       )
   }
 
-  def checkYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
+  def checkYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
 
-      journeyCacheService.collectedJourneyValues(
-        Seq(
-          UpdatePreviousYearsIncome_TaxYearKey,
-          UpdatePreviousYearsIncome_IncomeDetailsKey,
-          UpdatePreviousYearsIncome_TelephoneQuestionKey),
-        Seq(
-          UpdatePreviousYearsIncome_TelephoneNumberKey
-        )) map tupled { (mandatorySeq, optionalSeq) => {
+    journeyCacheService.collectedJourneyValues(
+      Seq(
+        UpdatePreviousYearsIncome_TaxYearKey,
+        UpdatePreviousYearsIncome_IncomeDetailsKey,
+        UpdatePreviousYearsIncome_TelephoneQuestionKey),
+      Seq(
+        UpdatePreviousYearsIncome_TelephoneNumberKey
+      )
+    ) map tupled { (mandatorySeq, optionalSeq) =>
+      {
 
-          mandatorySeq match {
-            case Right(mandatoryValues) => Ok(CheckYourAnswers(UpdateIncomeDetailsCheckYourAnswersViewModel(
-              TaxYear(mandatoryValues.head.toInt),
-              mandatoryValues(1),
-              mandatoryValues(2),
-              optionalSeq.head)))
+        mandatorySeq match {
+          case Right(mandatoryValues) =>
+            Ok(
+              CheckYourAnswers(
+                UpdateIncomeDetailsCheckYourAnswersViewModel(
+                  TaxYear(mandatoryValues.head.toInt),
+                  mandatoryValues(1),
+                  mandatoryValues(2),
+                  optionalSeq.head)))
 
-            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-          }
+          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
         }
       }
+    }
   }
 
-  def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
-      val nino = user.nino
+  def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
+    val nino = user.nino
 
-      for {
-        (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedValues(Seq(UpdatePreviousYearsIncome_TaxYearKey,
-          UpdatePreviousYearsIncome_IncomeDetailsKey, UpdatePreviousYearsIncome_TelephoneQuestionKey),
-          Seq(UpdatePreviousYearsIncome_TelephoneNumberKey))
-        model = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
-        _ <- previousYearsIncomeService.incorrectIncome(nino, mandatoryCacheSeq.head.toInt, model)
-        _ <- trackingJourneyCacheService.cache(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey, true.toString)
-        _ <- journeyCacheService.flush
-      } yield Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation())
+    for {
+      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedValues(
+                                                Seq(
+                                                  UpdatePreviousYearsIncome_TaxYearKey,
+                                                  UpdatePreviousYearsIncome_IncomeDetailsKey,
+                                                  UpdatePreviousYearsIncome_TelephoneQuestionKey),
+                                                Seq(UpdatePreviousYearsIncome_TelephoneNumberKey)
+                                              )
+      model = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
+      _ <- previousYearsIncomeService.incorrectIncome(nino, mandatoryCacheSeq.head.toInt, model)
+      _ <- trackingJourneyCacheService.cache(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey, true.toString)
+      _ <- journeyCacheService.flush
+    } yield Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation())
   }
 
-  def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user = request.taiUser
+  def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user = request.taiUser
 
-      Future.successful(Ok(views.html.incomes.previousYears.UpdateIncomeDetailsConfirmation()))
+    Future.successful(Ok(views.html.incomes.previousYears.UpdateIncomeDetailsConfirmation()))
   }
 
 }

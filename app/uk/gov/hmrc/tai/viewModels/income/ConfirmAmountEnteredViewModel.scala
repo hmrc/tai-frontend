@@ -26,32 +26,35 @@ sealed trait PayType
 case object IrregularPay extends PayType
 case object NextYearPay extends PayType
 
-
-case class ConfirmAmountEnteredViewModel(yearRange: String,
-                                         employerName: String,
-                                         mainText: Option[String] = None,
-                                         onConfirm: String,
-                                         onCancel: String,
-                                         estimatedIncome: Int,
-                                         gaSettings: GoogleAnalyticsSettings)
+case class ConfirmAmountEnteredViewModel(
+  yearRange: String,
+  employerName: String,
+  mainText: Option[String] = None,
+  onConfirm: String,
+  onCancel: String,
+  estimatedIncome: Int,
+  gaSettings: GoogleAnalyticsSettings)
 
 object ConfirmAmountEnteredViewModel {
 
   private implicit def toMoneyPounds(amount: Int): MoneyPounds = MoneyPounds(amount, 0)
 
-
-  def apply(employmentId: Int, empName: String, currentAmount: Int, estIncome: Int, payType: PayType)
-           (implicit messages: Messages): ConfirmAmountEnteredViewModel = {
+  def apply(employmentId: Int, empName: String, currentAmount: Int, estIncome: Int, payType: PayType)(
+    implicit messages: Messages): ConfirmAmountEnteredViewModel = {
 
     val irregularPayCurrentYear = {
       ConfirmAmountEnteredViewModel(
         yearRange = TaxYearRangeUtil.currentTaxYearRangeSingleLine,
         employerName = empName,
         mainText = Some(messages("tai.incomes.confirm.save.message")),
-        onConfirm = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString,
+        onConfirm = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
+          .submitIncomeIrregularHours(employmentId)
+          .url
+          .toString,
         onCancel = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url,
         estimatedIncome = estIncome,
-        gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estIncome)
+        gaSettings = GoogleAnalyticsSettings
+          .createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estIncome)
       )
     }
 
@@ -62,28 +65,28 @@ object ConfirmAmountEnteredViewModel {
         onConfirm = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url,
         onCancel = controllers.routes.IncomeTaxComparisonController.onPageLoad.url,
         estimatedIncome = estIncome,
-        gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome , currentAmount, estIncome)
+        gaSettings = GoogleAnalyticsSettings
+          .createForAnnualIncome(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome, currentAmount, estIncome)
       )
     }
 
     payType match {
       case IrregularPay => irregularPayCurrentYear
-      case NextYearPay => nextYearEstimatedPay
+      case NextYearPay  => nextYearEstimatedPay
     }
 
   }
 
-  def apply(empName: String, currentAmount: Int, estIncome: Int)
-           (implicit messages: Messages): ConfirmAmountEnteredViewModel = {
-
+  def apply(empName: String, currentAmount: Int, estIncome: Int)(
+    implicit messages: Messages): ConfirmAmountEnteredViewModel =
     ConfirmAmountEnteredViewModel(
-        yearRange = TaxYearRangeUtil.currentTaxYearRangeSingleLine,
-        employerName = empName,
-        mainText = Some(messages("tai.incomes.confirm.save.message")),
-        onConfirm = controllers.routes.IncomeController.updateEstimatedIncome().url,
-        onCancel = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
-        estimatedIncome = estIncome,
-        gaSettings = GoogleAnalyticsSettings.createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estIncome)
-      )
-  }
+      yearRange = TaxYearRangeUtil.currentTaxYearRangeSingleLine,
+      employerName = empName,
+      mainText = Some(messages("tai.incomes.confirm.save.message")),
+      onConfirm = controllers.routes.IncomeController.updateEstimatedIncome().url,
+      onCancel = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
+      estimatedIncome = estIncome,
+      gaSettings = GoogleAnalyticsSettings
+        .createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estIncome)
+    )
 }

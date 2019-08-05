@@ -22,7 +22,8 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 
-class RemoveCompanyBenefitStopDateFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport with FormValuesConstants{
+class RemoveCompanyBenefitStopDateFormSpec
+    extends PlaySpec with OneAppPerSuite with I18nSupport with FormValuesConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val choice = RemoveCompanyBenefitStopDateForm.StopDateChoice

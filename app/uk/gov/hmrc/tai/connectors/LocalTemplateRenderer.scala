@@ -33,9 +33,6 @@ class LocalTemplateRenderer @Inject()(http: DefaultHttpClient) extends TemplateR
   private implicit val hc = HeaderCarrier()
   import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-
-  override def fetchTemplate(path: String): Future[String] =  {
+  override def fetchTemplate(path: String): Future[String] =
     http.GET(path).map(_.body)
-  }
 }
-

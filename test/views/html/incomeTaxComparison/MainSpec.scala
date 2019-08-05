@@ -40,7 +40,6 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
       doc(viewWithMore(welshMessage)).title must include(welshMessage("tai.incomeTaxComparison.heading.more"))
     }
 
-
     "show the correct heading when the user is estimated to pay more tax in CY plus 1" in {
 
       doc(viewWithMore(welshMessage)) must haveHeadingWithText(welshMessage("tai.incomeTaxComparison.heading.more"))
@@ -59,48 +58,64 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
 
     "show the correct h2 when user pays more tax next year" in {
 
-      doc(viewWithMore(welshMessage)) must haveH2HeadingWithText (welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.more","&pound;1"))
+      doc(viewWithMore(welshMessage)) must haveH2HeadingWithText(
+        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.more", "&pound;1"))
     }
 
     "show the correct h2 when user pays less tax next year" in {
 
-      doc(viewWithSame(welshMessage)) must haveH2HeadingWithText (welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.same"))
+      doc(viewWithSame(welshMessage)) must haveH2HeadingWithText(
+        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.same"))
     }
 
     "show the correct h2 when user pays same tax next year" in {
 
-      doc(viewWithLess(welshMessage)) must haveH2HeadingWithText (welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.less","&pound;1"))
+      doc(viewWithLess(welshMessage)) must haveH2HeadingWithText(
+        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.less", "&pound;1"))
     }
 
     "show the correct table heading in welsh when user pays more tax next year" in {
 
-      doc(viewWithMore(welshMessage)).text() must include (welshMessage("tai.incomeTaxComparison.dateWithoutWelshAmendment", Dates.formatDate(TaxYear().next.start)(welshMessage)))
+      doc(viewWithMore(welshMessage)).text() must include(
+        welshMessage(
+          "tai.incomeTaxComparison.dateWithoutWelshAmendment",
+          Dates.formatDate(TaxYear().next.start)(welshMessage)))
     }
 
     "show the correct table heading in welsh when user pays less tax next year" in {
 
-      doc(viewWithLess(welshMessage)).text() must include (welshMessage("tai.incomeTaxComparison.welshAmendmentToDate", Dates.formatDate(TaxYear().next.start)(welshMessage)))
+      doc(viewWithLess(welshMessage)).text() must include(
+        welshMessage(
+          "tai.incomeTaxComparison.welshAmendmentToDate",
+          Dates.formatDate(TaxYear().next.start)(welshMessage)))
     }
 
     "show the correct table heading in welsh when user pays same tax next year" in {
 
-      doc(viewWithSame(welshMessage)).text() must include (welshMessage("tai.incomeTaxComparison.welshAmendmentToDate", Dates.formatDate(TaxYear().next.start)(welshMessage)))
+      doc(viewWithSame(welshMessage)).text() must include(
+        welshMessage(
+          "tai.incomeTaxComparison.welshAmendmentToDate",
+          Dates.formatDate(TaxYear().next.start)(welshMessage)))
     }
 
-    behave like pageWithCombinedHeader(preHeaderText = "USERNAME",
+    behave like pageWithCombinedHeader(
+      preHeaderText = "USERNAME",
       mainHeaderText = messages("tai.incomeTaxComparison.heading.same"),
-      preHeaderAnnouncementText = Some(messages("tai.incomeTaxComparison.preHeading.screenReader")))
+      preHeaderAnnouncementText = Some(messages("tai.incomeTaxComparison.preHeading.screenReader"))
+    )
 
     "show the income tax section with heading" in {
       doc(viewWithMore) must haveSectionWithId("incomeTax")
-      doc(viewWithMore) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "&pound;1"))
+      doc(viewWithMore) must haveH2HeadingWithText(
+        messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "&pound;1"))
     }
 
     "display a link to return to choose tax year page" in {
-      doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+      doc must haveLinkWithUrlWithID(
+        "returnToChooseTaxYearLink",
+        controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
       doc must haveLinkWithText(messages("your.paye.income.tax.overview"))
     }
-
 
     "show the tax codes section" in {
       doc(view) must haveSectionWithId("taxCodes")
@@ -125,33 +140,43 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
     }
 
     "have the what happens next section with paragraph - estimation apply date" in {
-      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text",startOfNextTaxYear))
+      doc(view) must haveParagraphWithText(
+        messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text", startOfNextTaxYear))
     }
 
     "have the what happens next section with paragraph - calculation may change" in {
-      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text"))
+      doc(view) must haveParagraphWithText(
+        messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text"))
     }
 
     "have the if information is wrong or incomplete title" in {
-      doc(view) must haveHeadingH3WithText(messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading"))
+      doc(view) must haveHeadingH3WithText(
+        messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading"))
     }
 
     "have the tell us about a change paragraph" in {
-      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description",startOfNextTaxYear))
+      doc(view) must haveParagraphWithText(
+        messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description", startOfNextTaxYear))
     }
 
     "have the tell us about a change links" in {
-      doc(view) must haveLinkElement(id = "companyBenefitsLink",
+      doc(view) must haveLinkElement(
+        id = "companyBenefitsLink",
         href = ApplicationConfig.companyBenefitsLinkUrl,
-        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText"))
+        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText")
+      )
 
-      doc(view) must haveLinkElement(id = "allowancesTaxReliefsLink",
+      doc(view) must haveLinkElement(
+        id = "allowancesTaxReliefsLink",
         href = ApplicationConfig.taxFreeAllowanceLinkUrl,
-        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText"))
+        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText")
+      )
 
-      doc(view) must haveLinkElement(id = "otherIncomeLink",
+      doc(view) must haveLinkElement(
+        id = "otherIncomeLink",
         href = ApplicationConfig.otherIncomeLinkUrl,
-        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText"))
+        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText")
+      )
     }
 
     "display a link to return to PAYE Income Tax overview" in {
@@ -176,26 +201,30 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
   private lazy val nextYearItemLess = EstimatedIncomeTaxComparisonItem(TaxYear().next, 99)
 
   def buildIncomeTaxComparisonViewModel(
-                                         currentYearItem: EstimatedIncomeTaxComparisonItem,
-                                         nextYearItem: EstimatedIncomeTaxComparisonItem,
-                                         cyPlusOneComplete: Boolean = false): IncomeTaxComparisonViewModel = {
+    currentYearItem: EstimatedIncomeTaxComparisonItem,
+    nextYearItem: EstimatedIncomeTaxComparisonItem,
+    cyPlusOneComplete: Boolean = false): IncomeTaxComparisonViewModel =
     IncomeTaxComparisonViewModel(
       "USERNAME",
-      EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem,nextYearItem)),
+      EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem)),
       TaxCodeComparisonViewModel(Nil),
       TaxFreeAmountComparisonViewModel(Nil, Nil),
       IncomeSourceComparisonViewModel(Nil, Nil),
       cyPlusOneComplete
     )
-  }
 
-  private lazy val incomeTaxComparisonViewModelMore = buildIncomeTaxComparisonViewModel(currentYearItem, nextYearItemMore)
-  private lazy val incomeTaxComparisonViewModelLess = buildIncomeTaxComparisonViewModel(currentYearItem, nextYearItemLess, true)
-  private lazy val incomeTaxComparisonViewModelSame = buildIncomeTaxComparisonViewModel(currentYearItem, currentYearItem)
+  private lazy val incomeTaxComparisonViewModelMore =
+    buildIncomeTaxComparisonViewModel(currentYearItem, nextYearItemMore)
+  private lazy val incomeTaxComparisonViewModelLess =
+    buildIncomeTaxComparisonViewModel(currentYearItem, nextYearItemLess, true)
+  private lazy val incomeTaxComparisonViewModelSame =
+    buildIncomeTaxComparisonViewModel(currentYearItem, currentYearItem)
 
-
-  def viewWithMore(implicit messages: Messages): Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelMore, true)
-  def viewWithLess(implicit messages: Messages): Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelLess, true)
-  def viewWithSame(implicit messages: Messages): Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelSame, true)
+  def viewWithMore(implicit messages: Messages): Html =
+    views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelMore, true)
+  def viewWithLess(implicit messages: Messages): Html =
+    views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelLess, true)
+  def viewWithSame(implicit messages: Messages): Html =
+    views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelSame, true)
   override def view: Html = viewWithSame
 }

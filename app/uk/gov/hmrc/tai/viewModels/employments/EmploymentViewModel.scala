@@ -22,7 +22,11 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 case class EmploymentViewModel(employerName: String, empId: Int)
 
-case class WithinSixWeeksViewModel(earliestUpdateDate: LocalDate, employerName: String, latestPayDate: LocalDate, empId: Int) {
-  def earliestUpdateDateInHtml(implicit messages : Messages): String = Dates.formatDate(earliestUpdateDate)
-  def latestPayDateInHtml(implicit messages : Messages): String = Dates.formatDate(latestPayDate)
+case class WithinSixWeeksViewModel(
+  earliestUpdateDate: LocalDate,
+  employerName: String,
+  latestPayDate: LocalDate,
+  empId: Int) {
+  def earliestUpdateDateInHtml(implicit messages: Messages): String = Dates.formatDate(earliestUpdateDate)
+  def latestPayDateInHtml(implicit messages: Messages): String = Dates.formatDate(latestPayDate)
 }

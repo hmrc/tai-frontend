@@ -24,10 +24,7 @@ import uk.gov.hmrc.tai.model.CodingComponentPair
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 
-class IabdTaxCodeChangeReasonsSpec extends PlaySpec
-  with MockitoSugar
-  with FakeTaiPlayApplication
-  with I18nSupport {
+class IabdTaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
 
   implicit val messagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -38,7 +35,7 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
 
   val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
   val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-  val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
+  val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
   val iabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons(totalTax)
 
@@ -84,16 +81,28 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
       val newDeduction = CodingComponentPair(CarBenefit, None, None, Some(123))
       val changedDeduction = CodingComponentPair(MedicalInsurance, None, Some(200), Some(123))
 
-      val pairs = AllowancesAndDeductionPairs(Seq(changedAllowance, newAllowance), Seq(changedDeduction, newDebt, newDeduction))
+      val pairs =
+        AllowancesAndDeductionPairs(Seq(changedAllowance, newAllowance), Seq(changedDeduction, newDebt, newDeduction))
 
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
       reasons mustBe Seq(
         messagesApi("tai.taxCodeComparison.iabd.added", "Job expenses", "£123"),
-        messagesApi("tai.taxCodeComparison.iabd.ammended", "Vehicle expenses", messagesApi("tai.taxCodeComparison.iabd.increased"), "£100", "£123"),
+        messagesApi(
+          "tai.taxCodeComparison.iabd.ammended",
+          "Vehicle expenses",
+          messagesApi("tai.taxCodeComparison.iabd.increased"),
+          "£100",
+          "£123"),
         messagesApi("tai.taxCodeComparison.iabd.added", "Car benefit", "£123"),
-        messagesApi("tai.taxCodeComparison.iabd.ammended", "Medical insurance", messagesApi("tai.taxCodeComparison.iabd.reduced"), "£200", "£123"),
-        messagesApi("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid", "£24"))
+        messagesApi(
+          "tai.taxCodeComparison.iabd.ammended",
+          "Medical insurance",
+          messagesApi("tai.taxCodeComparison.iabd.reduced"),
+          "£200",
+          "£123"),
+        messagesApi("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid", "£24")
+      )
     }
 
     "give a reason for an earlier year's adjustment" in {

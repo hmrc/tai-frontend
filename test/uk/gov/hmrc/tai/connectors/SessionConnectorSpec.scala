@@ -28,14 +28,10 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
-class SessionConnectorSpec extends PlaySpec
-  with MockitoSugar
-  with FakeTaiPlayApplication
-  with BeforeAndAfterEach {
+class SessionConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with BeforeAndAfterEach {
 
-    override def beforeEach: Unit = {
-      Mockito.reset(httpHandler)
-    }
+  override def beforeEach: Unit =
+    Mockito.reset(httpHandler)
 
   private implicit val hc = HeaderCarrier()
 
@@ -62,8 +58,8 @@ class SessionConnectorSpec extends PlaySpec
   class SUT extends SessionConnector(httpHandler) {
     override lazy val baseURL: String = "localhost"
 
-  when(httpHandler.deleteFromApi(any())(any(), any()))
-    .thenReturn(Future.successful(HttpResponse(200)))
+    when(httpHandler.deleteFromApi(any())(any(), any()))
+      .thenReturn(Future.successful(HttpResponse(200)))
   }
 
 }

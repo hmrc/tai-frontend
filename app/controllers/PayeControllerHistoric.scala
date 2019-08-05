@@ -34,13 +34,15 @@ import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 
 import scala.concurrent.Future
 
-class PayeControllerHistoric @Inject()(val config: ApplicationConfig,
-                                       taxCodeChangeService: TaxCodeChangeService,
-                                       employmentService: EmploymentService,
-                                       authenticate: AuthAction,
-                                       validatePerson: ValidatePerson,
-                                       override implicit val partialRetriever: FormPartialRetriever,
-                                       override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
+class PayeControllerHistoric @Inject()(
+  val config: ApplicationConfig,
+  taxCodeChangeService: TaxCodeChangeService,
+  employmentService: EmploymentService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController {
 
   val numberOfPreviousYearsToShow: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(3)
 
@@ -48,12 +50,12 @@ class PayeControllerHistoric @Inject()(val config: ApplicationConfig,
     Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
   }
 
-  def payePage(year: TaxYear): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      getHistoricPayePage(year)
+  def payePage(year: TaxYear): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    getHistoricPayePage(year)
   }
 
-  private def getHistoricPayePage(taxYear: TaxYear)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] = {
+  private def getHistoricPayePage(taxYear: TaxYear)(
+    implicit request: AuthenticatedRequest[AnyContent]): Future[Result] = {
     val nino = request.taiUser.nino
 
     if (taxYear >= TaxYear()) {
@@ -63,18 +65,20 @@ class PayeControllerHistoric @Inject()(val config: ApplicationConfig,
       val hasTaxCodeRecordsFuture = taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear)
 
       for {
-        employments <- employmentsFuture
+        employments                          <- employmentsFuture
         hasTaxCodeRecordsInYearPerEmployment <- hasTaxCodeRecordsFuture
       } yield {
         implicit val user = request.taiUser
-        Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(
-          taxYear, employments, hasTaxCodeRecordsInYearPerEmployment), numberOfPreviousYearsToShow))
+        Ok(
+          views.html.paye.historicPayAsYouEarn(
+            HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
+            numberOfPreviousYearsToShow))
       }
     }
   } recoverWith hodStatusRedirect
 
-
-  def hodStatusRedirect(implicit request: AuthenticatedRequest[AnyContent]): PartialFunction[Throwable, Future[Result]] = {
+  def hodStatusRedirect(
+    implicit request: AuthenticatedRequest[AnyContent]): PartialFunction[Throwable, Future[Result]] = {
 
     implicit val rl: RecoveryLocation = classOf[WhatDoYouWantToDoController]
     val nino = request.taiUser.getNino

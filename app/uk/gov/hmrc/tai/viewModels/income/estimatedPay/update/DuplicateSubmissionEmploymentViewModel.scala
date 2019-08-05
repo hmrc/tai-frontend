@@ -26,9 +26,10 @@ trait DuplicateSubmissionEstimatedPay {
   val optionTwo: String
 }
 
-case class DuplicateSubmissionEmploymentViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages) extends DuplicateSubmissionEstimatedPay {
+case class DuplicateSubmissionEmploymentViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages)
+    extends DuplicateSubmissionEstimatedPay {
 
-  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount)
+  private val formattedNewAmount: String = MonetaryUtil.withPoundPrefix(newAmount)
 
   override val heading: String = messages("tai.incomes.warning.employment.heading", incomeName)
   override val paragraphOne: String = messages("tai.incomes.warning.employment.text1", formattedNewAmount, incomeName)
@@ -36,9 +37,10 @@ case class DuplicateSubmissionEmploymentViewModel(incomeName: String, newAmount:
   override val optionTwo: String = messages("tai.incomes.warning.employment.radio2", incomeName)
 }
 
-case class DuplicateSubmissionPensionViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages) extends DuplicateSubmissionEstimatedPay {
+case class DuplicateSubmissionPensionViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages)
+    extends DuplicateSubmissionEstimatedPay {
 
-  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount)
+  private val formattedNewAmount: String = MonetaryUtil.withPoundPrefix(newAmount)
 
   override val heading: String = messages("tai.incomes.warning.pension.heading", incomeName)
   override val paragraphOne: String = messages("tai.incomes.warning.pension.text1", formattedNewAmount, incomeName)
@@ -46,22 +48,31 @@ case class DuplicateSubmissionPensionViewModel(incomeName: String, newAmount: In
   override val optionTwo: String = messages("tai.incomes.warning.pension.radio2", incomeName)
 }
 
-case class DuplicateSubmissionCYPlus1EmploymentViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages) extends DuplicateSubmissionEstimatedPay {
+case class DuplicateSubmissionCYPlus1EmploymentViewModel(incomeName: String, newAmount: Int)(
+  implicit messages: Messages)
+    extends DuplicateSubmissionEstimatedPay {
 
-  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount)
+  private val formattedNewAmount: String = MonetaryUtil.withPoundPrefix(newAmount)
 
   override val heading: String = messages("tai.incomes.warning.cyPlus1.heading", incomeName)
-  override val paragraphOne: String = messages("tai.incomes.warning.cyPlus1.text1", formattedNewAmount, TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
+  override val paragraphOne: String = messages(
+    "tai.incomes.warning.cyPlus1.text1",
+    formattedNewAmount,
+    TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
   override val optionOne: String = messages("tai.incomes.warning.employment.radio1", incomeName)
   override val optionTwo: String = messages("tai.incomes.warning.cyPlus1.radio2")
 }
 
-case class DuplicateSubmissionCYPlus1PensionViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages) extends DuplicateSubmissionEstimatedPay {
+case class DuplicateSubmissionCYPlus1PensionViewModel(incomeName: String, newAmount: Int)(implicit messages: Messages)
+    extends DuplicateSubmissionEstimatedPay {
 
-  private val formattedNewAmount: String =  MonetaryUtil.withPoundPrefix(newAmount)
+  private val formattedNewAmount: String = MonetaryUtil.withPoundPrefix(newAmount)
 
   override val heading: String = messages("tai.incomes.warning.cyPlus1.heading", incomeName)
-  override val paragraphOne: String = messages("tai.incomes.warning.cyPlus1.text1", formattedNewAmount, TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
+  override val paragraphOne: String = messages(
+    "tai.incomes.warning.cyPlus1.text1",
+    formattedNewAmount,
+    TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
   override val optionOne: String = messages("tai.incomes.warning.pension.radio1", incomeName)
   override val optionTwo: String = messages("tai.incomes.warning.cyPlus1.radio2")
 }

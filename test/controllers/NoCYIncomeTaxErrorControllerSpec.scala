@@ -41,16 +41,11 @@ import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 class NoCYIncomeTaxErrorControllerSpec
-  extends PlaySpec
-    with FakeTaiPlayApplication
-    with ScalaFutures
-    with I18nSupport
-    with MockitoSugar
+    extends PlaySpec with FakeTaiPlayApplication with ScalaFutures with I18nSupport with MockitoSugar
     with BeforeAndAfterEach {
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(employmentService)
-  }
 
   "Calling the Current Year Page method" should {
 
@@ -89,7 +84,6 @@ class NoCYIncomeTaxErrorControllerSpec
     }
   }
 
-
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val hc = HeaderCarrier()
 
@@ -97,23 +91,39 @@ class NoCYIncomeTaxErrorControllerSpec
 
   val defaultPerson = fakePerson(generateNino)
 
-  def createSUT(person: Person = defaultPerson, employmentDataFailure: Option[Throwable] = None) = new SUT(person, employmentDataFailure)
+  def createSUT(person: Person = defaultPerson, employmentDataFailure: Option[Throwable] = None) =
+    new SUT(person, employmentDataFailure)
 
   val employmentService = mock[EmploymentService]
 
-  class SUT(person: Person, employmentDataFailure: Option[Throwable]) extends NoCYIncomeTaxErrorController(
-    employmentService,
-    mock[AuditConnector],
-    FakeAuthAction,
-    FakeValidatePerson,
-    MockPartialRetriever,
-    MockTemplateRenderer){
+  class SUT(person: Person, employmentDataFailure: Option[Throwable])
+      extends NoCYIncomeTaxErrorController(
+        employmentService,
+        mock[AuditConnector],
+        FakeAuthAction,
+        FakeValidatePerson,
+        MockPartialRetriever,
+        MockTemplateRenderer) {
 
-    val sampleEmployment = Seq(Employment("empName", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false))
+    val sampleEmployment = Seq(
+      Employment(
+        "empName",
+        None,
+        new LocalDate(2017, 6, 9),
+        None,
+        Nil,
+        "taxNumber",
+        "payeNumber",
+        1,
+        None,
+        false,
+        false))
 
     employmentDataFailure match {
-      case None => when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
-      case Some(throwable) => when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(throwable))
+      case None =>
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
+      case Some(throwable) =>
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(throwable))
     }
 
   }

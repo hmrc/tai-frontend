@@ -26,29 +26,32 @@ import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service.TimeToProcess
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
 
+case class TaxAccountSummaryViewModel(
+  header: String,
+  title: String,
+  taxFreeAmount: String,
+  estimatedIncomeTaxAmount: String,
+  lastTaxYearEnd: String,
+  employments: Seq[IncomeSourceViewModel],
+  pensions: Seq[IncomeSourceViewModel],
+  ceasedEmployments: Seq[IncomeSourceViewModel],
+  displayIyaBanner: Boolean,
+  isAnyFormInProgress: TimeToProcess,
+  otherIncomeSources: Seq[IncomeSourceViewModel])
 
-case class TaxAccountSummaryViewModel(header: String,
-                                      title: String,
-                                      taxFreeAmount: String,
-                                      estimatedIncomeTaxAmount: String,
-                                      lastTaxYearEnd: String,
-                                      employments: Seq[IncomeSourceViewModel],
-                                      pensions: Seq[IncomeSourceViewModel],
-                                      ceasedEmployments: Seq[IncomeSourceViewModel],
-                                      displayIyaBanner: Boolean,
-                                      isAnyFormInProgress: TimeToProcess,
-                                      otherIncomeSources: Seq[IncomeSourceViewModel]
-                                     )
-
-case class IncomesSources(livePensionIncomeSources: Seq[TaxedIncome], liveEmploymentIncomeSources: Seq[TaxedIncome], ceasedEmploymentIncomeSources: Seq[TaxedIncome])
+case class IncomesSources(
+  livePensionIncomeSources: Seq[TaxedIncome],
+  liveEmploymentIncomeSources: Seq[TaxedIncome],
+  ceasedEmploymentIncomeSources: Seq[TaxedIncome])
 
 object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter {
 
-  def apply(taxAccountSummary: TaxAccountSummary,
-            isAnyFormInProgress: TimeToProcess,
-            nonTaxCodeIncome: NonTaxCodeIncome,
-            incomesSources: IncomesSources,
-            nonMatchingCeasedEmployments: Seq[Employment])(implicit messages: Messages): TaxAccountSummaryViewModel = {
+  def apply(
+    taxAccountSummary: TaxAccountSummary,
+    isAnyFormInProgress: TimeToProcess,
+    nonTaxCodeIncome: NonTaxCodeIncome,
+    incomesSources: IncomesSources,
+    nonMatchingCeasedEmployments: Seq[Employment])(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
     val header = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
     val title = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
@@ -76,6 +79,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter 
       ceasedEmployments = ceasedEmploymentViewModels,
       displayIyaBanner = taxAccountSummary.totalInYearAdjustmentIntoCY > 0,
       isAnyFormInProgress = isAnyFormInProgress,
-      otherIncomeSources = IncomeSourceViewModel(nonTaxCodeIncome))
+      otherIncomeSources = IncomeSourceViewModel(nonTaxCodeIncome)
+    )
   }
 }

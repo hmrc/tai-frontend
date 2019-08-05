@@ -20,14 +20,17 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
+case class EditIncomeIrregularHoursViewModel(
+  heading: String,
+  preHeading: String,
+  employmentId: Int,
+  employerName: String,
+  currentAmount: String)
 
-case class EditIncomeIrregularHoursViewModel(heading: String, preHeading: String, employmentId: Int, employerName: String, currentAmount: String)
+object EditIncomeIrregularHoursViewModel extends ViewModelHelper {
 
-object EditIncomeIrregularHoursViewModel  extends ViewModelHelper {
-
-  def apply(employmentId: Int,
-            employerName: String,
-            currentAmount: String)(implicit messages: Messages): EditIncomeIrregularHoursViewModel = {
+  def apply(employmentId: Int, employerName: String, currentAmount: String)(
+    implicit messages: Messages): EditIncomeIrregularHoursViewModel = {
 
     val taxYearMessage = currentTaxYearRangeHtmlNonBreak
 
@@ -37,16 +40,13 @@ object EditIncomeIrregularHoursViewModel  extends ViewModelHelper {
     new EditIncomeIrregularHoursViewModel(heading, preHeading, employmentId, employerName, currentAmount)
   }
 
-  def apply(employmentId: Int,
-            employerName: String,
-            currentAmount: BigDecimal)(implicit messages: Messages): EditIncomeIrregularHoursViewModel = {
+  def apply(employmentId: Int, employerName: String, currentAmount: BigDecimal)(
+    implicit messages: Messages): EditIncomeIrregularHoursViewModel = {
 
     val taxYearMessage = currentTaxYearRangeHtmlNonBreak
 
     val heading = messages("tai.irregular.heading", taxYearMessage)
     val preHeading = messages("tai.estimatedPay.preHeading", employerName)
-
-
 
     new EditIncomeIrregularHoursViewModel(heading, preHeading, employmentId, employerName, currentAmount.toString)
   }

@@ -23,26 +23,29 @@ import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm.D
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
-class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec{
-
+class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec {
 
   "decision" should {
     behave like pageWithTitle(messages("tai.benefits.updateOrRemove.decision.heading", benefitType, employerName))
-    behave like pageWithCombinedHeader(messages("tai.benefits.updateOrRemove.journey.preHeader"),
-      messages("tai.benefits.updateOrRemove.decision.heading",benefitType,employerName))
+    behave like pageWithCombinedHeader(
+      messages("tai.benefits.updateOrRemove.journey.preHeader"),
+      messages("tai.benefits.updateOrRemove.decision.heading", benefitType, employerName))
     behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
     behave like pageWithContinueButtonForm(s"/check-income-tax/company-benefit/decision")
 
     "have two radio buttons with relevant text" in {
       doc must haveInputLabelWithText(idYesIGetThisBenefit, messages("tai.benefits.updateOrRemove.decision.radio.yes"))
-      doc must haveInputLabelWithText(idNoIDontGetThisBenefit, messages("tai.benefits.updateOrRemove.decision.radio.no"))
+      doc must haveInputLabelWithText(
+        idNoIDontGetThisBenefit,
+        messages("tai.benefits.updateOrRemove.decision.radio.no"))
 
     }
 
     "have a legend" in {
-      doc must haveElementAtPathWithText("legend span[id=radioGroupLegendMain]",
-        Messages("tai.benefits.updateOrRemove.decision.heading", benefitType,employerName))
+      doc must haveElementAtPathWithText(
+        "legend span[id=radioGroupLegendMain]",
+        Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, employerName))
     }
 
     "display error message" when {
@@ -57,20 +60,20 @@ class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec{
       doc(errorView) must haveErrorLinkWithText(messages("tai.error.chooseOneOption"))
     }
 
-
   }
 
-  private lazy val formWithErrors: Form[Option[String]] = UpdateOrRemoveCompanyBenefitDecisionForm.form.bind(Map(
-    DecisionChoice -> ""
-  ))
+  private lazy val formWithErrors: Form[Option[String]] = UpdateOrRemoveCompanyBenefitDecisionForm.form.bind(
+    Map(
+      DecisionChoice -> ""
+    ))
 
   private val idYesIGetThisBenefit = "decisionChoice-yesigetthisbenefit"
-  private val idNoIDontGetThisBenefit= "decisionChoice-noidontgetthisbenefit"
+  private val idNoIDontGetThisBenefit = "decisionChoice-noidontgetthisbenefit"
   private lazy val benefitType = "Expenses"
   private lazy val employerName = "EmployerA"
-  private lazy val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form)
-  private lazy val viewModelWithErrors = CompanyBenefitDecisionViewModel(benefitType,employerName,formWithErrors)
+  private lazy val viewModel =
+    CompanyBenefitDecisionViewModel(benefitType, employerName, UpdateOrRemoveCompanyBenefitDecisionForm.form)
+  private lazy val viewModelWithErrors = CompanyBenefitDecisionViewModel(benefitType, employerName, formWithErrors)
 
   override def view = views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel)
 }
-

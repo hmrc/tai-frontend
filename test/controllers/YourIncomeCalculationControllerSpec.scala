@@ -38,18 +38,16 @@ import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonServic
 import scala.concurrent.Future
 import scala.util.Random
 
-class YourIncomeCalculationControllerSpec extends PlaySpec
-  with FakeTaiPlayApplication
-  with MockitoSugar
-  with I18nSupport {
+class YourIncomeCalculationControllerSpec
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
   override def messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "Your Income Calculation" must {
     "return rti details page" when {
       "rti details are present" in {
         val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -63,8 +61,8 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     "return internal server error" when {
       "employment details are not present" in {
         val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -74,19 +72,18 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
 
       "tax code details are not present" in {
         val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiTaxAccountFailureResponse("Error")))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
-
       "tax code details for passed employment is not present" in {
         val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiTaxAccountFailureResponse("Error")))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.yourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -100,7 +97,8 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
       "historic data has been passed" in {
         val sut = createSUT
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
-        val result = sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result =
+          sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -115,7 +113,8 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
       "next year has been passed" in {
         val sut = createSUT
 
-        val result = sut.yourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result =
+          sut.yourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
 
@@ -124,14 +123,14 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
 
   }
 
-
   "print Your income calculation" should {
 
     "show historic data" when {
       "historic data has been passed" in {
         val sut = createSUT
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
-        val result = sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result =
+          sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -146,7 +145,8 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
       "next year has been passed" in {
         val sut = createSUT
 
-        val result = sut.printYourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result =
+          sut.printYourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
 
@@ -159,8 +159,8 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     "return rti details page" when {
       "rti details are present" in {
         val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -175,8 +175,8 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     "return internal server error" when {
       "employment details are not present" in {
         val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -186,8 +186,8 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
 
       "tax code details are not present" in {
         val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiTaxAccountFailureResponse("Error")))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -196,22 +196,61 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     }
   }
 
-
   val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
   val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
   val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
-  val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
-  val employment = Employment("test employment", Some("EMPLOYER1"), LocalDate.now(),
-    None, Seq(annualAccount), "", "", 2, None, false, false)
+  val annualAccount = AnnualAccount(
+    "KEY",
+    uk.gov.hmrc.tai.model.TaxYear(),
+    Available,
+    Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
+    Nil)
+  val employment = Employment(
+    "test employment",
+    Some("EMPLOYER1"),
+    LocalDate.now(),
+    None,
+    Seq(annualAccount),
+    "",
+    "",
+    2,
+    None,
+    false,
+    false)
 
-  val sampleEmployment = Seq(Employment("employer1", None, new LocalDate(2016, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false),
-    Employment("employer2", None, new LocalDate(2016, 7, 9), None, Nil, "taxNumber", "payeNumber", 2, None, false, false))
+  val sampleEmployment = Seq(
+    Employment(
+      "employer1",
+      None,
+      new LocalDate(2016, 6, 9),
+      None,
+      Nil,
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      false,
+      false),
+    Employment(
+      "employer2",
+      None,
+      new LocalDate(2016, 7, 9),
+      None,
+      Nil,
+      "taxNumber",
+      "payeNumber",
+      2,
+      None,
+      false,
+      false)
+  )
 
   val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live))
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
+  )
 
   val nino = new Generator(new Random).nextNino
 
@@ -222,16 +261,17 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
   val taxAccountService = mock[TaxAccountService]
   val paymentsService = app.injector.instanceOf[PaymentsService]
 
-  class SUT extends YourIncomeCalculationController(
-    personService,
-    taxAccountService,
-    employmentService,
-    paymentsService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  ) {
+  class SUT
+      extends YourIncomeCalculationController(
+        personService,
+        taxAccountService,
+        employmentService,
+        paymentsService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      ) {
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
 }

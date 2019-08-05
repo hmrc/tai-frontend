@@ -47,7 +47,8 @@ class YourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar with FakeT
       val currentCodingComponents = Seq(codingComponent2)
       val taxFreeAmountComparison = TaxFreeAmountComparison(previousCodingComponents, currentCodingComponents)
 
-      when(codingComponentService.taxFreeAmountComparison(Matchers.eq(nino))(any())).thenReturn(Future.successful(taxFreeAmountComparison))
+      when(codingComponentService.taxFreeAmountComparison(Matchers.eq(nino))(any()))
+        .thenReturn(Future.successful(taxFreeAmountComparison))
       when(taxCodeChangeService.taxCodeChange(Matchers.eq(nino))(any()))
         .thenReturn(Future.successful(taxCodeChange))
 
@@ -65,13 +66,13 @@ class YourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar with FakeT
       Await.result(result, 5.seconds) mustBe expectedModel
     }
   }
-  
+
   trait YourTaxFreeAmountMock {
     this: YourTaxFreeAmount =>
-    override def buildTaxFreeAmount(unused1: LocalDate,
-                                    previous: Option[Seq[CodingComponent]],
-                                    unused3: Seq[CodingComponent])
-                                   (implicit messages: Messages): YourTaxFreeAmountComparison = {
+    override def buildTaxFreeAmount(
+      unused1: LocalDate,
+      previous: Option[Seq[CodingComponent]],
+      unused3: Seq[CodingComponent])(implicit messages: Messages): YourTaxFreeAmountComparison = {
 
       val previousTaxFreeInfo = previous.map(_ => TaxFreeInfo("previousTaxDate", 0, 0))
 
@@ -91,14 +92,23 @@ class YourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar with FakeT
   private val codingComponentService: CodingComponentService = mock[CodingComponentService]
 
   val startDate = TaxYear().start
-  val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
+  val taxCodeRecord1 = TaxCodeRecord(
+    "D0",
+    startDate,
+    startDate.plusDays(1),
+    OtherBasisOfOperation,
+    "Employer 1",
+    false,
+    Some("1234"),
+    true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
   val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
 
   private val codingComponent1 = CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description")
   private val codingComponent2 = CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description")
 
-  private class TestService extends YourTaxFreeAmountService(
-    taxCodeChangeService: TaxCodeChangeService,
-    codingComponentService: CodingComponentService) with YourTaxFreeAmountMock
+  private class TestService
+      extends YourTaxFreeAmountService(
+        taxCodeChangeService: TaxCodeChangeService,
+        codingComponentService: CodingComponentService) with YourTaxFreeAmountMock
 }

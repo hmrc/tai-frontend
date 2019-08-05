@@ -54,7 +54,8 @@ class manualCorrespondenceSpec extends TaiViewSpec {
   }
 
   "have paragraph with contact timings" in {
-    doc must haveParagraphWithText(messages("label.phone_lines_are_open_8am_to_8pm_monday_to_friday_and_8am_to_4pm_on_saturday"))
+    doc must haveParagraphWithText(
+      messages("label.phone_lines_are_open_8am_to_8pm_monday_to_friday_and_8am_to_4pm_on_saturday"))
     doc must haveParagraphWithText(messages("label.closed_sundays_and_bank_holidays"))
     doc must haveParagraphWithText(messages("label.phone_lines_are_less_busy_before_10am_monday-to_friday"))
   }

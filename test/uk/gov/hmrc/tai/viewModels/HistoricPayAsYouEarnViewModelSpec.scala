@@ -42,8 +42,18 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
         val multiYearAccounts = Seq(cyMinusOneAnnualAccount, cyMinusThreeAnnualAccount)
 
-        val employment = Employment("test employment", Some("111111"), empStartDateWithinCYMinusThree,
-          None, multiYearAccounts, "", "", 2, None, false, false)
+        val employment = Employment(
+          "test employment",
+          Some("111111"),
+          empStartDateWithinCYMinusThree,
+          None,
+          multiYearAccounts,
+          "",
+          "",
+          2,
+          None,
+          false,
+          false)
 
         val sut = createSut(cyMinusTwoTaxYear, Seq(employment))
 
@@ -54,8 +64,18 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
     "return one employment with zero YTD totalIncome from zero payments" when {
       "one employment is supplied which has an AnnualAccount but no payments or updates" in {
 
-        val employment = Employment("test employment", Some("111111"), empStartDateWithinCYMinusOne,
-          None, Seq(annualAccountWithNoPayments), "", "", 2, None, false, false)
+        val employment = Employment(
+          "test employment",
+          Some("111111"),
+          empStartDateWithinCYMinusOne,
+          None,
+          Seq(annualAccountWithNoPayments),
+          "",
+          "",
+          2,
+          None,
+          false,
+          false)
 
         val sut = createSut(Seq(employment))
 
@@ -74,8 +94,18 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
     "return one employment with YTD totalIncome from one payment" when {
       "one employment is supplied which has an AnnualAccount containing one payment" in {
 
-        val employment = Employment("test employment", Some("111111"), empStartDateWithinCYMinusOne,
-          None, Seq(annualAccountWithSinglePayment), "", "", 2, None, false, false)
+        val employment = Employment(
+          "test employment",
+          Some("111111"),
+          empStartDateWithinCYMinusOne,
+          None,
+          Seq(annualAccountWithSinglePayment),
+          "",
+          "",
+          2,
+          None,
+          false,
+          false)
 
         val sut = createSut(Seq(employment))
 
@@ -94,8 +124,18 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
     "return one employment with a YTD totalIncome from multiple payments" when {
       "one employment is supplied which has an AnnualAccount containing multiple payments" in {
 
-        val employment = Employment("test employment", Some("111111"), empStartDateWithinCYMinusOne,
-          None, Seq(annualAccountWithMultiplePayments), "", "", 2, None, false, false)
+        val employment = Employment(
+          "test employment",
+          Some("111111"),
+          empStartDateWithinCYMinusOne,
+          None,
+          Seq(annualAccountWithMultiplePayments),
+          "",
+          "",
+          2,
+          None,
+          false,
+          false)
 
         val sut = createSut(Seq(employment))
 
@@ -113,8 +153,18 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
     "return pensions" when {
       "the income sources receivingOccupationalPension is set to true" in {
-        val employment = Employment("test pension", Some("111111"), empStartDateWithinCYMinusOne,
-          None, Seq(annualAccountWithMultiplePayments), "", "", 2, None, false, true)
+        val employment = Employment(
+          "test pension",
+          Some("111111"),
+          empStartDateWithinCYMinusOne,
+          None,
+          Seq(annualAccountWithMultiplePayments),
+          "",
+          "",
+          2,
+          None,
+          false,
+          true)
 
         val sut = createSut(Seq(employment))
 
@@ -135,10 +185,30 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
     "return multiple employments sorted with an Id and with a YTD totalIncome from multiple payments" when {
       "multiple employments are supplied containing an AnnualAccount which has multiple payments" in {
 
-        val employment1 = Employment("test employment1", Some("111111"), empStartDateWithinCYMinusOne,
-          None, Seq(annualAccountWithMultiplePayments), "", "", 2, None, false, false)
-        val employment2 = Employment("test employment2", Some("111112"), empStartDateWithinCYMinusOne,
-          None, Seq(annualAccountWithMultiplePayments), "", "", 3, None, false, false)
+        val employment1 = Employment(
+          "test employment1",
+          Some("111111"),
+          empStartDateWithinCYMinusOne,
+          None,
+          Seq(annualAccountWithMultiplePayments),
+          "",
+          "",
+          2,
+          None,
+          false,
+          false)
+        val employment2 = Employment(
+          "test employment2",
+          Some("111112"),
+          empStartDateWithinCYMinusOne,
+          None,
+          Seq(annualAccountWithMultiplePayments),
+          "",
+          "",
+          3,
+          None,
+          false,
+          false)
 
         val sut = createSut(Seq(employment2, employment1))
 
@@ -196,17 +266,20 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
   private val empStartDateWithinCYMinusOne = cyMinusOneTaxYear.start.plusMonths(2)
   private val empStartDateWithinCYMinusThree = cyMinusThreeTaxYear.start.plusMonths(2)
 
-  private val singleAnnualAccountsPayment = Seq(
-    Payment(cyMinusOneTaxYear.start, 10, 10, 0, 0, 0, 0, Monthly))
+  private val singleAnnualAccountsPayment = Seq(Payment(cyMinusOneTaxYear.start, 10, 10, 0, 0, 0, 0, Monthly))
 
   private val multipleAnnualAccountsPayments = Seq(
     Payment(cyMinusOneTaxYear.start, 10, 10, 0, 0, 0, 0, Weekly),
     Payment(cyMinusOneTaxYear.start.plusMonths(1), 20, 20, 0, 0, 0, 0, FourWeekly))
 
   private val annualAccountWithNoPayments = AnnualAccount("", cyMinusOneTaxYear, Available, Nil, Nil)
-  private val annualAccountWithSinglePayment = AnnualAccount("", cyMinusOneTaxYear, Available, singleAnnualAccountsPayment, Nil)
-  private val annualAccountWithMultiplePayments = AnnualAccount("", cyMinusOneTaxYear, Available, multipleAnnualAccountsPayments, Nil)
+  private val annualAccountWithSinglePayment =
+    AnnualAccount("", cyMinusOneTaxYear, Available, singleAnnualAccountsPayment, Nil)
+  private val annualAccountWithMultiplePayments =
+    AnnualAccount("", cyMinusOneTaxYear, Available, multipleAnnualAccountsPayments, Nil)
 
-  private def createSut(employments: Seq[Employment]) = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, employments, true)
-  private def createSut(taxYear: TaxYear, employments: Seq[Employment]) = HistoricPayAsYouEarnViewModel(taxYear, employments, true)
+  private def createSut(employments: Seq[Employment]) =
+    HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, employments, true)
+  private def createSut(taxYear: TaxYear, employments: Seq[Employment]) =
+    HistoricPayAsYouEarnViewModel(taxYear, employments, true)
 }

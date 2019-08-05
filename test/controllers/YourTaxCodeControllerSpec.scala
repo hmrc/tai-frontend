@@ -40,15 +40,11 @@ import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import scala.concurrent.Future
 import scala.util.Random
 
-class YourTaxCodeControllerSpec extends PlaySpec
-  with FakeTaiPlayApplication
-  with I18nSupport
-  with MockitoSugar
-  with BeforeAndAfterEach {
+class YourTaxCodeControllerSpec
+    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar with BeforeAndAfterEach {
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(taxAccountService)
-  }
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   private implicit val hc = HeaderCarrier()
@@ -58,8 +54,16 @@ class YourTaxCodeControllerSpec extends PlaySpec
       val testController = createTestController
       val startOfTaxYear: String = TaxYear().start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
       val endOfTaxYear: String = TaxYear().end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
-      val taxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L",
-        "employment", OtherBasisOfOperation, Live))
+      val taxCodeIncomes = Seq(
+        TaxCodeIncome(
+          EmploymentIncome,
+          Some(1),
+          1111,
+          "employment",
+          "1150L",
+          "employment",
+          OtherBasisOfOperation,
+          Live))
 
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
@@ -75,7 +79,8 @@ class YourTaxCodeControllerSpec extends PlaySpec
 
     "display error when there is TaiFailure in service" in {
       val testController = createTestController
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("error occurred")))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error occurred")))
       val result = testController.taxCodes()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -83,7 +88,8 @@ class YourTaxCodeControllerSpec extends PlaySpec
 
     "display any error" in {
       val testController = createTestController
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.failed(new InternalError("error occurred")))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.failed(new InternalError("error occurred")))
       val result = testController.taxCodes()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -100,7 +106,15 @@ class YourTaxCodeControllerSpec extends PlaySpec
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
       val startDate = TaxYear().start
-      val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation, "A Employer 1", false, Some("1234"), false)
+      val previousTaxCodeRecord1 = TaxCodeRecord(
+        "1185L",
+        startDate,
+        startDate.plusMonths(1),
+        OtherBasisOfOperation,
+        "A Employer 1",
+        false,
+        Some("1234"),
+        false)
 
       val taxCodeRecords = Seq(previousTaxCodeRecord1)
 
@@ -119,7 +133,8 @@ class YourTaxCodeControllerSpec extends PlaySpec
 
     "display error when there is TaiFailure in service" in {
       val testController = createTestController
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("error occurred")))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error occurred")))
       val result = testController.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -127,13 +142,13 @@ class YourTaxCodeControllerSpec extends PlaySpec
 
     "display any error" in {
       val testController = createTestController
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.failed(new InternalError("error occurred")))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.failed(new InternalError("error occurred")))
       val result = testController.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
   }
-
 
   val nino = new Generator(new Random).nextNino
 
@@ -142,12 +157,13 @@ class YourTaxCodeControllerSpec extends PlaySpec
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val taxAccountService = mock[TaxAccountService]
 
-  private class TestController extends YourTaxCodeController(
-    taxAccountService,
-    taxCodeChangeService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  )
+  private class TestController
+      extends YourTaxCodeController(
+        taxAccountService,
+        taxCodeChangeService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      )
 }

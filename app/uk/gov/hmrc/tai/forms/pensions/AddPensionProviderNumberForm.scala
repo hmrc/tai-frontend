@@ -29,16 +29,16 @@ object AddPensionProviderNumberForm extends AddPensionNumberConstants with FormV
 
   private def yesNoChoiceValidation(implicit messages: Messages) = Constraint[Option[String]]("") {
     case Some(txt) if txt == YesValue || txt == NoValue => Valid
-    case _ => Invalid(Messages("tai.addPensionProvider.pensionNumber.error.selectOption"))
+    case _                                              => Invalid(Messages("tai.addPensionProvider.pensionNumber.error.selectOption"))
   }
 
   def form(implicit messages: Messages) = Form[AddPensionProviderNumberForm](
     mapping(
       PayrollNumberChoice -> optional(text).verifying(yesNoChoiceValidation),
-      PayrollNumberEntry -> mandatoryIfEqual(PayrollNumberChoice,
+      PayrollNumberEntry -> mandatoryIfEqual(
+        PayrollNumberChoice,
         YesValue,
-        text.verifying(Messages("tai.addPensionProvider.pensionNumber.error.blank"),
-          !_.isEmpty))
+        text.verifying(Messages("tai.addPensionProvider.pensionNumber.error.blank"), !_.isEmpty))
     )(AddPensionProviderNumberForm.apply)(AddPensionProviderNumberForm.unapply)
   )
 

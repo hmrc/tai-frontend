@@ -26,102 +26,107 @@ import uk.gov.hmrc.tai.util.{FormHelper, ViewModelHelper}
 
 import scala.util.{Success, Try}
 
-
 trait BaseValidator extends DateValidator with ViewModelHelper {
   protected val MIN_LENGTH: Int = 0
   protected val MAX_LENGTH: Int = 100
 
-  def nonEmptyText(requiredErrMsg : String): Constraint[Option[String]] = {
+  def nonEmptyText(requiredErrMsg: String): Constraint[Option[String]] =
     Constraint[Option[String]]("required") {
-      case Some(textValue:String) if notBlank(textValue) => Valid
-      case _ => Invalid(requiredErrMsg)
+      case Some(textValue: String) if notBlank(textValue) => Valid
+      case _                                              => Invalid(requiredErrMsg)
     }
-  }
 
-  def validateCurrency(currencyErrorMsg : String): Constraint[Option[String]] = {
+  def validateCurrency(currencyErrorMsg: String): Constraint[Option[String]] =
     Constraint[Option[String]]("invalidCurrency") {
       case textValue if FormHelper.isValidCurrency(textValue) => Valid
-      case _ => Invalid(currencyErrorMsg)
+      case _                                                  => Invalid(currencyErrorMsg)
     }
-  }
 
-  def validateCurrencyWhole(currencyErrorMsg : String): Constraint[Option[String]] = {
+  def validateCurrencyWhole(currencyErrorMsg: String): Constraint[Option[String]] =
     Constraint[Option[String]]("invalidCurrency") {
       case textValue if FormHelper.isValidCurrency(textValue, isWholeNumRequired = true) => Valid
-      case _ => Invalid(currencyErrorMsg)
+      case _                                                                             => Invalid(currencyErrorMsg)
     }
-  }
 
-  def validateCurrencyLength(maxLength: Int, currencyErrorMsg : String): Constraint[Option[String]] = {
+  def validateCurrencyLength(maxLength: Int, currencyErrorMsg: String): Constraint[Option[String]] =
     Constraint[Option[String]]("invalidCurrency") {
       case textValue if isValidMaxLength(maxLength)(FormHelper.stripNumber(textValue)) => Valid
-      case _ => Invalid(currencyErrorMsg)
+      case _                                                                           => Invalid(currencyErrorMsg)
     }
-  }
 
-  def validateInputAmountComparisonWithTaxablePay(taxablePayYTD : BigDecimal, validateTaxablePayYTDError: String): Constraint[Option[String]] = {
+  def validateInputAmountComparisonWithTaxablePay(
+    taxablePayYTD: BigDecimal,
+    validateTaxablePayYTDError: String): Constraint[Option[String]] =
     Constraint[Option[String]]("invalidAmount") {
-      case Some(textValue) => Try(BigDecimal(FormHelper.stripNumber(textValue))) match {
-        case Success(value) if value >= taxablePayYTD => Valid
-        case _ => Invalid(validateTaxablePayYTDError, "validateInputAmount")
-      }
+      case Some(textValue) =>
+        Try(BigDecimal(FormHelper.stripNumber(textValue))) match {
+          case Success(value) if value >= taxablePayYTD => Valid
+          case _                                        => Invalid(validateTaxablePayYTDError, "validateInputAmount")
+        }
       case _ => Invalid(validateTaxablePayYTDError, "validateInputAmount")
     }
-  }
 
   def notBlank(value: String): Boolean = !value.trim.isEmpty
 
   def isValidMaxLength(maxLength: Int)(value: Option[String]): Boolean = value.getOrElse("").length <= maxLength
 
-  def validateNewAmounts(nonEmptyError: String, validateCurrencyError: String, validateCurrencyLengthError: String,
-                         netSalary: Option[String] = None)(implicit messages: Messages) : Mapping[Option[String]] = {
+  def validateNewAmounts(
+    nonEmptyError: String,
+    validateCurrencyError: String,
+    validateCurrencyLengthError: String,
+    netSalary: Option[String] = None)(implicit messages: Messages): Mapping[Option[String]] = {
     val INCOME_MAX_LENGTH = 9
 
-    optional(text).verifying(StopOnFirstFail(
-      nonEmptyText(nonEmptyError),
-      validateCurrency(validateCurrencyError),
-      validateCurrencyLength(INCOME_MAX_LENGTH, validateCurrencyLengthError),
-      validateNetGrossSalary(netSalary)
-    ))
+    optional(text).verifying(
+      StopOnFirstFail(
+        nonEmptyText(nonEmptyError),
+        validateCurrency(validateCurrencyError),
+        validateCurrencyLength(INCOME_MAX_LENGTH, validateCurrencyLengthError),
+        validateNetGrossSalary(netSalary)
+      ))
   }
 
-  def validateNetGrossSalary( netSalary: Option[String] = None)(implicit messages: Messages):  Constraint[Option[String]] = {
-      val netSalaryValue = BigDecimal(netSalary.getOrElse("0"))
+  def validateNetGrossSalary(netSalary: Option[String] = None)(
+    implicit messages: Messages): Constraint[Option[String]] = {
+    val netSalaryValue = BigDecimal(netSalary.getOrElse("0"))
 
-      val displayNetSalary = MoneyPounds(netSalaryValue, 0, roundUp = true)
+    val displayNetSalary = MoneyPounds(netSalaryValue, 0, roundUp = true)
 
-      Constraint[Option[String]]("taxablePay") {
-        case taxablePay if BigDecimal(FormHelper.stripNumber(taxablePay).getOrElse("0")) <= netSalaryValue => Valid
-        case _ if netSalary.isDefined =>
-          Invalid(messages("tai.taxablePayslip.error.form.payTooHigh", withPoundPrefixAndSign(displayNetSalary),0))
-        case _ => Valid
-      }
+    Constraint[Option[String]]("taxablePay") {
+      case taxablePay if BigDecimal(FormHelper.stripNumber(taxablePay).getOrElse("0")) <= netSalaryValue => Valid
+      case _ if netSalary.isDefined =>
+        Invalid(messages("tai.taxablePayslip.error.form.payTooHigh", withPoundPrefixAndSign(displayNetSalary), 0))
+      case _ => Valid
+    }
   }
 
-  def validateTaxAmounts(nonEmptyError: String, validateCurrencyError: String, validateCurrencyLengthError: String,
-                         validateTaxablePayYTDError : String, taxablePayYTD: BigDecimal) : Mapping[Option[String]] = {
+  def validateTaxAmounts(
+    nonEmptyError: String,
+    validateCurrencyError: String,
+    validateCurrencyLengthError: String,
+    validateTaxablePayYTDError: String,
+    taxablePayYTD: BigDecimal): Mapping[Option[String]] = {
     val INCOME_MAX_LENGTH = 9
-    optional(text).verifying(StopOnFirstFail(
-      nonEmptyText(nonEmptyError),
-      validateCurrencyWhole(validateCurrencyError),
-      validateCurrencyLength(INCOME_MAX_LENGTH, validateCurrencyLengthError),
-      validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
-    ))
+    optional(text).verifying(
+      StopOnFirstFail(
+        nonEmptyText(nonEmptyError),
+        validateCurrencyWhole(validateCurrencyError),
+        validateCurrencyLength(INCOME_MAX_LENGTH, validateCurrencyLengthError),
+        validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
+      ))
   }
 }
 
 object BaseValidator extends BaseValidator
 
 object StopOnFirstFail {
-  def apply[T](constraints: Constraint[T]*): Constraint[T] = Constraint {
-    field: T =>
-      constraints.toList dropWhile (_(field) == Valid) match {
-        case Nil => Valid
-        case constraint :: _ => constraint(field)
-      }
+  def apply[T](constraints: Constraint[T]*): Constraint[T] = Constraint { field: T =>
+    constraints.toList dropWhile (_(field) == Valid) match {
+      case Nil             => Valid
+      case constraint :: _ => constraint(field)
+    }
   }
 
-  def constraint[T](message: String, validator: (T) => Boolean): Constraint[T] = {
+  def constraint[T](message: String, validator: (T) => Boolean): Constraint[T] =
     Constraint((data: T) => if (validator(data)) Valid else Invalid(Seq(ValidationError(message))))
-  }
 }

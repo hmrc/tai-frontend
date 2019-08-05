@@ -22,7 +22,6 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.pensions.PensionProviderNameForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-
 class AddPensionNameSpec extends TaiViewSpec {
   "Add Pension Provider name form page" should {
     behave like pageWithTitle(messages("tai.addPensionProvider.addNameForm.title"))
@@ -42,14 +41,15 @@ class AddPensionNameSpec extends TaiViewSpec {
     }
   }
 
-  private lazy val formWithErrors: Form[String] = PensionProviderNameForm.form.bind(Map(
-    "pensionProviderName" -> ""
-  ))
+  private lazy val formWithErrors: Form[String] = PensionProviderNameForm.form.bind(
+    Map(
+      "pensionProviderName" -> ""
+    ))
 
-  private lazy val pensionProviderNameForm: Form[String] = PensionProviderNameForm.form.bind(Map(
-    "pensionProviderName" -> "the company"
-  ))
-
+  private lazy val pensionProviderNameForm: Form[String] = PensionProviderNameForm.form.bind(
+    Map(
+      "pensionProviderName" -> "the company"
+    ))
 
   override def view: Html = views.html.pensions.addPensionName(pensionProviderNameForm)
 }

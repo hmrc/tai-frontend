@@ -26,7 +26,7 @@ object TaxAmountDueFromUnderpayment extends BandTypesConstants {
     val taxBand = incomeCategories.flatMap(_.taxBands).find(_.bandType == BasicRate)
     val taxRate: BigDecimal = taxBand.map(_.rate / 100) match {
       case Some(x) => x
-      case _ => throw new RuntimeException("Failed to calculate the tax amount due")
+      case _       => throw new RuntimeException("Failed to calculate the tax amount due")
     }
 
     totalTaxDue * taxRate

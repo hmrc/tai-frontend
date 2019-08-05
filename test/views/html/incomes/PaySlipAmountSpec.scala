@@ -50,7 +50,6 @@ class PaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIncomePay
   when(payslipForm.errors(anyString())).thenReturn(Nil)
   when(payslipForm.hasErrors).thenReturn(false)
 
-
   val payslipViewModel = PaySlipAmountViewModel(payslipForm, Some(MONTHLY), None, employer)
 
   override def view: Html = views.html.incomes.payslipAmount(payslipViewModel)

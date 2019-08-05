@@ -24,8 +24,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels._
 
-
-class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper{
+class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
   "Tax free amount comparision view" must {
 
     val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().end))
@@ -38,8 +37,12 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper{
     "display personal allowance increase message when CY+1 PA is greater than CY PA" in {
       val startOfNextTaxYear = HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start))
       val PA_CY_PLUS_ONE_INDEX = 1
-      val personalAllowanceCYPlusOneAmount = MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(model.personalAllowance.values(PA_CY_PLUS_ONE_INDEX),0))
-      doc must haveStrongWithText(messages("tai.incomeTaxComparison.taxFreeAmount.PA.information1",personalAllowanceCYPlusOneAmount,
+      val personalAllowanceCYPlusOneAmount =
+        MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(model.personalAllowance.values(PA_CY_PLUS_ONE_INDEX), 0))
+      doc must haveStrongWithText(
+        messages(
+          "tai.incomeTaxComparison.taxFreeAmount.PA.information1",
+          personalAllowanceCYPlusOneAmount,
           startOfNextTaxYear))
 
     }
@@ -117,9 +120,10 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper{
   private lazy val footer = Footer(Seq(3000, 3300))
 
   private lazy val model = TaxFreeAmountComparisonViewModel(personalAllowance, additions, deductions, footer)
-  private lazy val modelWithOutAdditionsAndDeductions = TaxFreeAmountComparisonViewModel(personalAllowance, Additions(Nil, Total(Nil)),
-    Deductions(Nil, Total(Nil)), footer)
+  private lazy val modelWithOutAdditionsAndDeductions =
+    TaxFreeAmountComparisonViewModel(personalAllowance, Additions(Nil, Total(Nil)), Deductions(Nil, Total(Nil)), footer)
 
   override def view: Html = views.html.incomeTaxComparison.TaxFreeAmount(model)
-  def viewWithoutAdditionAndDeductions: Html = views.html.incomeTaxComparison.TaxFreeAmount(modelWithOutAdditionsAndDeductions)
+  def viewWithoutAdditionAndDeductions: Html =
+    views.html.incomeTaxComparison.TaxFreeAmount(modelWithOutAdditionsAndDeductions)
 }

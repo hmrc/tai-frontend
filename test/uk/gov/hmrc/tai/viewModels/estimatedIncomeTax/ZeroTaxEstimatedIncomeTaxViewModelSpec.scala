@@ -28,29 +28,40 @@ import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 
 import scala.language.postfixOps
 
-class ZeroTaxEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxRegionConstants with BandTypesConstants {
+class ZeroTaxEstimatedIncomeTaxViewModelSpec
+    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxRegionConstants with BandTypesConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
 
   "ZeroTaxEstimatedIncomeTaxViewModel" must {
     "return a valid view model" in {
 
-      val taxAccountSummary = TaxAccountSummary(0,10500,0,0,0,9000,11500)
+      val taxAccountSummary = TaxAccountSummary(0, 10500, 0, 0, 0, 9000, 11500)
 
       val codingComponents = Seq(
         CodingComponent(PersonalAllowancePA, None, 11500, "Personal Allowance", Some(11500))
       )
 
-      val bandedGraph = BandedGraph(TaxGraph,
-        List(Band(TaxFree,78.26,11500,0,"pa"))
-        , 0, 11500, 11500, 78.26, 11500, 78.26,0,
+      val bandedGraph = BandedGraph(
+        TaxGraph,
+        List(Band(TaxFree, 78.26, 11500, 0, "pa")),
+        0,
+        11500,
+        11500,
+        78.26,
+        11500,
+        78.26,
+        0,
         None,
         None)
 
       val expectedViewModel = ZeroTaxEstimatedIncomeTaxViewModel(0, 9000, 11500, bandedGraph, UkTaxRegion)
 
-      ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, Seq.empty[TaxCodeIncome], List.empty[TaxBand]) mustBe expectedViewModel
+      ZeroTaxEstimatedIncomeTaxViewModel(
+        codingComponents,
+        taxAccountSummary,
+        Seq.empty[TaxCodeIncome],
+        List.empty[TaxBand]) mustBe expectedViewModel
 
     }
   }

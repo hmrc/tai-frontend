@@ -21,7 +21,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.HtmlFormatter.htmlNonBroken
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class EditSuccessSpec extends TaiViewSpec with MockitoSugar{
+class EditSuccessSpec extends TaiViewSpec with MockitoSugar {
 
   private val employerId = 1
   private val employerName = "fakeFieldValue"

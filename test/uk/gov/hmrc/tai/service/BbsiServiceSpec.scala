@@ -94,7 +94,8 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
 
         val sut = createSUT
 
-        when(connector.bankAccount(any(), org.mockito.Matchers.eq(2))(any())).thenReturn(Future.successful(Some(bankAccount2)))
+        when(connector.bankAccount(any(), org.mockito.Matchers.eq(2))(any()))
+          .thenReturn(Future.successful(Some(bankAccount2)))
 
         val data = Await.result(sut.bankAccount(nino, 2), 5.seconds)
 
@@ -108,7 +109,8 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
       val sut = createSUT
       when(connector.closeBankAccount(any(), any(), any())(any())).thenReturn(Future.successful(Some("123-456-789")))
 
-      val data = Await.result(sut.closeBankAccount(nino, 1, CloseAccountRequest(new LocalDate(2017, 1, 1), None)), 5.seconds)
+      val data =
+        Await.result(sut.closeBankAccount(nino, 1, CloseAccountRequest(new LocalDate(2017, 1, 1), None)), 5.seconds)
 
       data mustBe "123-456-789"
     }
@@ -118,7 +120,8 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
         val sut = createSUT
         when(connector.closeBankAccount(any(), any(), any())(any())).thenReturn(Future.successful(None))
 
-        val ex = the[RuntimeException] thrownBy Await.result(sut.closeBankAccount(nino, 1, CloseAccountRequest(new LocalDate(2017, 1, 1), None)), 5.seconds)
+        val ex = the[RuntimeException] thrownBy Await
+          .result(sut.closeBankAccount(nino, 1, CloseAccountRequest(new LocalDate(2017, 1, 1), None)), 5.seconds)
 
         ex.getMessage mustBe "Failed while closing the bank account"
       }
@@ -180,7 +183,8 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
   "update bank account" should {
     "return envelope id" in {
       val sut = createSUT
-      when(connector.updateBankAccountInterest(any(), any(), any())(any())).thenReturn(Future.successful(Some("123-456-789")))
+      when(connector.updateBankAccountInterest(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some("123-456-789")))
 
       val data = Await.result(sut.updateBankAccountInterest(nino, 1, amountRequest), 5.seconds)
 
@@ -192,7 +196,8 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
         val sut = createSUT
         when(connector.updateBankAccountInterest(any(), any(), any())(any())).thenReturn(Future.successful(None))
 
-        val ex = the[RuntimeException] thrownBy Await.result(sut.updateBankAccountInterest(nino, 1, amountRequest), 5.seconds)
+        val ex = the[RuntimeException] thrownBy Await
+          .result(sut.updateBankAccountInterest(nino, 1, amountRequest), 5.seconds)
 
         ex.getMessage mustBe "Failed while updating the bank account"
       }
@@ -204,9 +209,21 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
   private val nino: Nino = new Generator().nextNino
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private val bankAccount1 = BankAccount(1, Some("TestAccountNumber1"), Some("TestSortCode1"), Some("TestBankName1"), 678.90, Some("TestSource1"))
+  private val bankAccount1 = BankAccount(
+    1,
+    Some("TestAccountNumber1"),
+    Some("TestSortCode1"),
+    Some("TestBankName1"),
+    678.90,
+    Some("TestSource1"))
 
-  private val bankAccount2 = BankAccount(2, Some("TestAccountNumber2"), Some("TestSortCode2"), Some("TestBankName2"), 123.45, Some("TestSource2"))
+  private val bankAccount2 = BankAccount(
+    2,
+    Some("TestAccountNumber2"),
+    Some("TestSortCode2"),
+    Some("TestBankName2"),
+    123.45,
+    Some("TestSource2"))
 
   private val oneBankAccount = Seq(bankAccount1)
 
@@ -215,7 +232,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
   private val untaxedInterest = UntaxedInterest(200, Nil)
 
   def createSUT = new SUT
-  
+
   val connector = mock[BbsiConnector]
 
   class SUT extends BbsiService(connector)

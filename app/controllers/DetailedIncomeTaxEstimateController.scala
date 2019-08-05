@@ -36,46 +36,51 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateVi
 
 import scala.util.control.NonFatal
 
-class DetailedIncomeTaxEstimateController @Inject()(taxAccountService: TaxAccountService,
-                                                    codingComponentService: CodingComponentService,
-                                                    authenticate: AuthAction,
-                                                    validatePerson: ValidatePerson,
-                                                    override implicit val partialRetriever: FormPartialRetriever,
-                                                    override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
+class DetailedIncomeTaxEstimateController @Inject()(
+  taxAccountService: TaxAccountService,
+  codingComponentService: CodingComponentService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)
+    extends TaiBaseController {
 
-  def taxExplanationPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
+  def taxExplanationPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    val nino = request.taiUser.nino
+    val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
+    val taxCodeIncomeFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
+    val taxSummaryFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
+    val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+    val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
 
-      val nino = request.taiUser.nino
-      val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
-      val taxCodeIncomeFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
-      val taxSummaryFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
-      val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-      val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
-
-      (for {
-        totalTax <- totalTaxFuture
-        taxCodeIncomes <- taxCodeIncomeFuture
-        taxSummary <- taxSummaryFuture
-        codingComponents <- codingComponentFuture
-        nonTaxCode <- nonTaxCodeIncomeFuture
-      } yield {
-        (totalTax, taxCodeIncomes, taxSummary, nonTaxCode) match {
-          case (
+    (for {
+      totalTax         <- totalTaxFuture
+      taxCodeIncomes   <- taxCodeIncomeFuture
+      taxSummary       <- taxSummaryFuture
+      codingComponents <- codingComponentFuture
+      nonTaxCode       <- nonTaxCodeIncomeFuture
+    } yield {
+      (totalTax, taxCodeIncomes, taxSummary, nonTaxCode) match {
+        case (
             TaiSuccessResponseWithPayload(totalTax: TotalTax),
             TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
             TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
             TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)
             ) =>
-            implicit val user = request.taiUser
-            val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxAccountSummary, codingComponents, nonTaxCodeIncome)
-            Ok(views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model))
-          case _ => {
-            internalServerError("Failed to fetch total tax details")
-          }
+          implicit val user = request.taiUser
+          val model = DetailedIncomeTaxEstimateViewModel(
+            totalTax,
+            taxCodeIncomes,
+            taxAccountSummary,
+            codingComponents,
+            nonTaxCodeIncome)
+          Ok(views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model))
+        case _ => {
+          internalServerError("Failed to fetch total tax details")
         }
-      }).recover {
-        case NonFatal(e) => internalServerError("Failed to fetch total tax details", Some(e))
       }
+    }).recover {
+      case NonFatal(e) => internalServerError("Failed to fetch total tax details", Some(e))
+    }
   }
 }

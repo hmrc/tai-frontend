@@ -26,7 +26,6 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.YourTaxFreeAmountComparison
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-
 class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with YourTaxFreeAmount {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
@@ -46,15 +45,14 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
     )
   }
 
-  def createFormattedDate(date: LocalDate): String = {
+  def createFormattedDate(date: LocalDate): String =
     TaxYearRangeUtil.dynamicDateRange(date, TaxYear().end)
-  }
 
   "buildTaxFreeAmount" should {
     "have the correct date formatting" in {
       val expected = createYourTaxFreeAmountComparison()
 
-       buildTaxFreeAmount(date, Some(Seq.empty), Seq.empty) mustBe expected
+      buildTaxFreeAmount(date, Some(Seq.empty), Seq.empty) mustBe expected
     }
   }
 }

@@ -26,32 +26,47 @@ import play.api.Play.current
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.urls.Link
 
-case class HistoricIncomeCalculationViewModel(employerName: Option[String], employmentId: Int, payments: Seq[Payment],
-                                              endOfTaxYearUpdateMessages: Seq[String], realTimeStatus: RealTimeStatus, taxYear: TaxYear)
+case class HistoricIncomeCalculationViewModel(
+  employerName: Option[String],
+  employmentId: Int,
+  payments: Seq[Payment],
+  endOfTaxYearUpdateMessages: Seq[String],
+  realTimeStatus: RealTimeStatus,
+  taxYear: TaxYear)
 
 object HistoricIncomeCalculationViewModel {
 
-  def apply(employments: Seq[Employment], employmentId: Int, taxYear: TaxYear)(implicit messages: Messages): HistoricIncomeCalculationViewModel = {
+  def apply(employments: Seq[Employment], employmentId: Int, taxYear: TaxYear)(
+    implicit messages: Messages): HistoricIncomeCalculationViewModel = {
     val (employment, annualAccount) = fetchEmploymentAndAnnualAccount(employments, taxYear, employmentId)
     val realTimeStatus = fetchRealTimeStatus(annualAccount)
     val (payments, endOfTaxYearUpdateMessages) = annualAccount match {
       case Some(annualAccnt) => (annualAccnt.payments, createEndOfYearTaxUpdateMessages(annualAccnt))
-      case _ => (Nil, Nil)
+      case _                 => (Nil, Nil)
     }
 
-    HistoricIncomeCalculationViewModel(employment.map(_.name), employmentId, payments, endOfTaxYearUpdateMessages, realTimeStatus, taxYear)
+    HistoricIncomeCalculationViewModel(
+      employment.map(_.name),
+      employmentId,
+      payments,
+      endOfTaxYearUpdateMessages,
+      realTimeStatus,
+      taxYear)
   }
 
-  def fetchRealTimeStatus(annualAccount: Option[AnnualAccount]): RealTimeStatus = {
+  def fetchRealTimeStatus(annualAccount: Option[AnnualAccount]): RealTimeStatus =
     annualAccount match {
       case Some(annualAccnt) => annualAccnt.realTimeStatus
-      case _ => TemporarilyUnavailable
+      case _                 => TemporarilyUnavailable
     }
-  }
 
-  def fetchEmploymentAndAnnualAccount(employments: Seq[Employment], taxYear: TaxYear, employmentId: Int): (Option[Employment], Option[AnnualAccount]) = {
+  def fetchEmploymentAndAnnualAccount(
+    employments: Seq[Employment],
+    taxYear: TaxYear,
+    employmentId: Int): (Option[Employment], Option[AnnualAccount]) = {
     val employment = employments.find(_.sequenceNumber == employmentId)
-    val annualAccount: Option[AnnualAccount] = employment.flatMap(emp => emp.annualAccounts.find(_.taxYear.year == taxYear.year))
+    val annualAccount: Option[AnnualAccount] =
+      employment.flatMap(emp => emp.annualAccounts.find(_.taxYear.year == taxYear.year))
     (employment, annualAccount)
   }
 
@@ -59,27 +74,24 @@ object HistoricIncomeCalculationViewModel {
     val lessOrMore = (amount: BigDecimal) => amount.abs.toString + (if (amount > 0) " more" else " less")
     val eyuObjectList = filterEndOfYearUpdateAdjustments(annualAccount)
 
-    eyuObjectList.map {
-      adjustmentsWithDate =>
-        val (adjustment, date) = adjustmentsWithDate
+    eyuObjectList.map { adjustmentsWithDate =>
+      val (adjustment, date) = adjustmentsWithDate
 
-        val messageKey = (adjustment.`type`, eyuObjectList.size) match {
-          case (IncomeAdjustment, 1)                            => "tai.income.calculation.eyu.single.taxableincome"
-          case (TaxAdjustment, 1)                               => "tai.income.calculation.eyu.single.taxPaid"
-          case (NationalInsuranceAdjustment, 1)                 => "tai.income.calculation.eyu.single.nationalInsurance"
-          case (IncomeAdjustment, size) if size > 1             => "tai.income.calculation.eyu.multi.taxableincome"
-          case (TaxAdjustment, size) if size > 1                => "tai.income.calculation.eyu.multi.taxPaid"
-          case (NationalInsuranceAdjustment, size) if size > 1  => "tai.income.calculation.eyu.multi.nationalInsurance"
-        }
+      val messageKey = (adjustment.`type`, eyuObjectList.size) match {
+        case (IncomeAdjustment, 1)                           => "tai.income.calculation.eyu.single.taxableincome"
+        case (TaxAdjustment, 1)                              => "tai.income.calculation.eyu.single.taxPaid"
+        case (NationalInsuranceAdjustment, 1)                => "tai.income.calculation.eyu.single.nationalInsurance"
+        case (IncomeAdjustment, size) if size > 1            => "tai.income.calculation.eyu.multi.taxableincome"
+        case (TaxAdjustment, size) if size > 1               => "tai.income.calculation.eyu.multi.taxPaid"
+        case (NationalInsuranceAdjustment, size) if size > 1 => "tai.income.calculation.eyu.multi.nationalInsurance"
+      }
 
-        Messages(messageKey, date.toString(EYU_DATE_FORMAT), lessOrMore(adjustment.amount))
+      Messages(messageKey, date.toString(EYU_DATE_FORMAT), lessOrMore(adjustment.amount))
     }
   }
 
-  def filterEndOfYearUpdateAdjustments(annualAccount: AnnualAccount): Seq[(Adjustment, LocalDate)] = {
-    annualAccount.endOfTaxYearUpdates.flatMap {
-      eyu =>
-        eyu.adjustments.filter(_.amount != 0).map((_, eyu.date))
+  def filterEndOfYearUpdateAdjustments(annualAccount: AnnualAccount): Seq[(Adjustment, LocalDate)] =
+    annualAccount.endOfTaxYearUpdates.flatMap { eyu =>
+      eyu.adjustments.filter(_.amount != 0).map((_, eyu.date))
     }
-  }
 }

@@ -33,4 +33,3 @@ case class TaiNotFoundResponse(message: String) extends TaiFailureResponse
 case class TaiNoCompanyCarFoundResponse(message: String) extends TaiFailureResponse
 
 case class TaiTaxAccountFailureResponse(message: String) extends TaiFailureResponse
-

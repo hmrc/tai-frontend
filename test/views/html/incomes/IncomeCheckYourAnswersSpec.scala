@@ -30,12 +30,9 @@ class IncomeCheckYourAnswersSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
 
-    behave like pageWithCombinedHeader(
-      preHeading,
-      messages("tai.checkYourAnswers.heading"))
+    behave like pageWithCombinedHeader(preHeading, messages("tai.checkYourAnswers.heading"))
 
-    behave like pageWithButtonForm("/fake/submission/url",
-      messages("tai.confirmAndSend"))
+    behave like pageWithButtonForm("/fake/submission/url", messages("tai.confirmAndSend"))
 
     behave like pageWithCheckYourAnswersSummary
 
@@ -55,7 +52,13 @@ class IncomeCheckYourAnswersSpec extends TaiViewSpec {
 
     "do no display confirm summary paragraph" when {
       "no text is present in view model" in {
-        val viewModel = IncomeCheckYourAnswersViewModel(preHeading, "fake/backlink/url", lines, None, "/fake/submission/url", "/fake/cancel/url")
+        val viewModel = IncomeCheckYourAnswersViewModel(
+          preHeading,
+          "fake/backlink/url",
+          lines,
+          None,
+          "/fake/submission/url",
+          "/fake/cancel/url")
         def view: Html = views.html.incomes.addIncomeCheckYourAnswers(viewModel)
         doc(view) must not(haveParagraphWithText(messages("tai.checkYourAnswers.confirmText")))
       }
@@ -88,7 +91,13 @@ class IncomeCheckYourAnswersSpec extends TaiViewSpec {
     CheckYourAnswersConfirmationLine(messages("tai.phoneNumber"), "some answer", "q5/url")
   )
 
-  val viewModel = IncomeCheckYourAnswersViewModel(preHeading, "fake/backlink/url", lines, Some(messages("tai.checkYourAnswers.confirmText")), "/fake/submission/url", "/fake/cancel/url")
+  val viewModel = IncomeCheckYourAnswersViewModel(
+    preHeading,
+    "fake/backlink/url",
+    lines,
+    Some(messages("tai.checkYourAnswers.confirmText")),
+    "/fake/submission/url",
+    "/fake/cancel/url")
 
   override def view: Html = views.html.incomes.addIncomeCheckYourAnswers(viewModel)
 }

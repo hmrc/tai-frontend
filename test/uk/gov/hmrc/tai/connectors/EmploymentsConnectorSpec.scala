@@ -36,15 +36,11 @@ import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 import scala.util.Random
 
-class EmploymentsConnectorSpec extends PlaySpec
-  with MockitoSugar
-  with DefaultServicesConfig
-  with FakeTaiPlayApplication
-  with BeforeAndAfterEach {
+class EmploymentsConnectorSpec
+    extends PlaySpec with MockitoSugar with DefaultServicesConfig with FakeTaiPlayApplication with BeforeAndAfterEach {
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(httpHandler)
-  }
 
   "EmploymentsConnector employments" must {
     "return a blank the service url" when {
@@ -179,7 +175,8 @@ class EmploymentsConnectorSpec extends PlaySpec
 
         result mustBe oneEmploymentDetails
 
-        verify(httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
+        verify(httpHandler).getFromApi(
+          Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
       }
 
       "api provides multiple employments" in {
@@ -194,7 +191,8 @@ class EmploymentsConnectorSpec extends PlaySpec
 
         result mustBe twoEmploymentsDetails
 
-        verify(httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
+        verify(httpHandler).getFromApi(
+          Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
       }
     }
 
@@ -209,7 +207,8 @@ class EmploymentsConnectorSpec extends PlaySpec
 
       result mustBe Nil
 
-      verify(httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
+      verify(httpHandler).getFromApi(
+        Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
     }
 
     "throw an exception" when {
@@ -229,7 +228,7 @@ class EmploymentsConnectorSpec extends PlaySpec
     "return service url" in {
       val sut = createSUT("test")
 
-      sut.employmentUrl(nino, "123") mustBe s"test/tai/${nino}/employments/123"
+      sut.employmentUrl(nino, "123") mustBe s"test/tai/$nino/employments/123"
     }
 
     "return an employment from current year" when {
@@ -259,9 +258,10 @@ class EmploymentsConnectorSpec extends PlaySpec
       "we send a PUT request to backend" in {
         val sut = createSUT()
         val json = Json.obj("data" -> JsString("123-456-789"))
-        when(httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        when(httpHandler.putToApi(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
-        val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15),"YES", Some("EXT-TEST"))
+        val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15), "YES", Some("EXT-TEST"))
 
         val result = Await.result(sut.endEmployment(nino, 1, endEmploymentData), 5.seconds)
 
@@ -273,8 +273,9 @@ class EmploymentsConnectorSpec extends PlaySpec
       "json is invalid" in {
         val sut = createSUT()
         val json = Json.obj("test" -> JsString("123-456-789"))
-        when(httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
-        val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15),"YES", Some("EXT-TEST"))
+        when(httpHandler.putToApi(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15), "YES", Some("EXT-TEST"))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.endEmployment(nino, 1, endEmploymentData), 5.seconds)
 
@@ -286,9 +287,17 @@ class EmploymentsConnectorSpec extends PlaySpec
   "EmploymentsConnector addEmployment" must {
     "return an envelope id on a successful invocation" in {
       val sut = createSUT()
-      val addEmployment = AddEmployment(employerName = "testEmployment", payrollNumber = "12345", startDate = new LocalDate(2017, 6, 6), telephoneContactAllowed = "Yes", telephoneNumber=Some("123456789"))
+      val addEmployment = AddEmployment(
+        employerName = "testEmployment",
+        payrollNumber = "12345",
+        startDate = new LocalDate(2017, 6, 6),
+        telephoneContactAllowed = "Yes",
+        telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(httpHandler.postToApi(Matchers.eq(sut.addEmploymentServiceUrl(nino)), Matchers.eq(addEmployment))(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      when(
+        httpHandler
+          .postToApi(Matchers.eq(sut.addEmploymentServiceUrl(nino)), Matchers.eq(addEmployment))(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.addEmployment(nino, addEmployment), 5.seconds)
 
@@ -299,10 +308,12 @@ class EmploymentsConnectorSpec extends PlaySpec
   "EmploymentsConnector incorrectEmployment" must {
     "return an envelope id on a successful invocation" in {
       val sut = createSUT()
-      val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
+      val model =
+        IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(httpHandler.postToApi(Matchers.eq(s"/tai/$nino/employments/1/reason"), Matchers.eq(model))
-      (any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      when(
+        httpHandler.postToApi(Matchers.eq(s"/tai/$nino/employments/1/reason"), Matchers.eq(model))(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
 
@@ -310,13 +321,25 @@ class EmploymentsConnectorSpec extends PlaySpec
     }
   }
 
-
-  private val anEmploymentObject = Employment("company name", Some("123"),
-    new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "123", "321", 2, None, false, false)
+  private val anEmploymentObject = Employment(
+    "company name",
+    Some("123"),
+    new LocalDate("2016-05-26"),
+    Some(new LocalDate("2016-05-26")),
+    Nil,
+    "123",
+    "321",
+    2,
+    None,
+    false,
+    false)
 
   private val oneEmploymentDetails = List(anEmploymentObject)
-  private val twoEmploymentsDetails = oneEmploymentDetails.head :: oneEmploymentDetails.head.copy(taxDistrictNumber = "1234",
-    payeNumber = "4321", sequenceNumber = 3, receivingOccupationalPension = true) :: Nil
+  private val twoEmploymentsDetails = oneEmploymentDetails.head :: oneEmploymentDetails.head.copy(
+    taxDistrictNumber = "1234",
+    payeNumber = "4321",
+    sequenceNumber = 3,
+    receivingOccupationalPension = true) :: Nil
 
   private val zeroEmployments =
     """|{
@@ -334,7 +357,6 @@ class EmploymentsConnectorSpec extends PlaySpec
        |      ]
        |
        |}""".stripMargin
-
 
   private val anEmployment =
     """{
@@ -374,34 +396,34 @@ class EmploymentsConnectorSpec extends PlaySpec
 
   private val twoEmployments =
     """{
- |       "data" : {
- |           "employments": [
- |         {
- |            "name": "company name",
- |            "payrollNumber": "123",
- |            "startDate": "2016-05-26",
- |            "endDate": "2016-05-26",
- |            "annualAccounts": [],
- |            "taxDistrictNumber": "123",
- |            "payeNumber": "321",
- |            "sequenceNumber": 2,
- |            "isPrimary": true,
- |            "hasPayrolledBenefit" : false,
- |            "receivingOccupationalPension" : false
- |          },
- |          {
- |            "name": "company name",
- |            "payrollNumber": "123",
- |            "startDate": "2016-05-26",
- |            "endDate": "2016-05-26",
- |            "annualAccounts": [],
- |            "taxDistrictNumber": "1234",
- |            "payeNumber": "4321",
- |            "sequenceNumber": 3,
- |            "isPrimary": true,
- |            "hasPayrolledBenefit" : false,
- |            "receivingOccupationalPension" : true
- |          }]}
+      |       "data" : {
+      |           "employments": [
+      |         {
+      |            "name": "company name",
+      |            "payrollNumber": "123",
+      |            "startDate": "2016-05-26",
+      |            "endDate": "2016-05-26",
+      |            "annualAccounts": [],
+      |            "taxDistrictNumber": "123",
+      |            "payeNumber": "321",
+      |            "sequenceNumber": 2,
+      |            "isPrimary": true,
+      |            "hasPayrolledBenefit" : false,
+      |            "receivingOccupationalPension" : false
+      |          },
+      |          {
+      |            "name": "company name",
+      |            "payrollNumber": "123",
+      |            "startDate": "2016-05-26",
+      |            "endDate": "2016-05-26",
+      |            "annualAccounts": [],
+      |            "taxDistrictNumber": "1234",
+      |            "payeNumber": "4321",
+      |            "sequenceNumber": 3,
+      |            "isPrimary": true,
+      |            "hasPayrolledBenefit" : false,
+      |            "receivingOccupationalPension" : true
+      |          }]}
         }""".stripMargin
 
   private val oneCeasedEmployment =
@@ -423,34 +445,33 @@ class EmploymentsConnectorSpec extends PlaySpec
 
   private val twoCeasedEmployments =
     """{
- |       "data" : [{
- |            "name": "company name",
- |            "payrollNumber": "123",
- |            "startDate": "2016-05-26",
- |            "endDate": "2016-05-26",
- |            "annualAccounts": [],
- |            "taxDistrictNumber": "123",
- |            "payeNumber": "321",
- |            "sequenceNumber": 2,
- |            "isPrimary": true,
- |            "hasPayrolledBenefit" : false,
- |            "receivingOccupationalPension" : false
- |          },
- |          {
- |            "name": "company name",
- |            "payrollNumber": "123",
- |            "startDate": "2016-05-26",
- |            "endDate": "2016-05-26",
- |            "annualAccounts": [],
- |            "taxDistrictNumber": "1234",
- |            "payeNumber": "4321",
- |            "sequenceNumber": 3,
- |            "isPrimary": true,
- |            "hasPayrolledBenefit" : false,
- |            "receivingOccupationalPension" : true
- |          }]
+      |       "data" : [{
+      |            "name": "company name",
+      |            "payrollNumber": "123",
+      |            "startDate": "2016-05-26",
+      |            "endDate": "2016-05-26",
+      |            "annualAccounts": [],
+      |            "taxDistrictNumber": "123",
+      |            "payeNumber": "321",
+      |            "sequenceNumber": 2,
+      |            "isPrimary": true,
+      |            "hasPayrolledBenefit" : false,
+      |            "receivingOccupationalPension" : false
+      |          },
+      |          {
+      |            "name": "company name",
+      |            "payrollNumber": "123",
+      |            "startDate": "2016-05-26",
+      |            "endDate": "2016-05-26",
+      |            "annualAccounts": [],
+      |            "taxDistrictNumber": "1234",
+      |            "payeNumber": "4321",
+      |            "sequenceNumber": 3,
+      |            "isPrimary": true,
+      |            "hasPayrolledBenefit" : false,
+      |            "receivingOccupationalPension" : true
+      |          }]
         }""".stripMargin
-
 
   private val year: TaxYear = TaxYear(DateTime.now().getYear)
   private val nino: Nino = new Generator(new Random).nextNino
@@ -459,8 +480,8 @@ class EmploymentsConnectorSpec extends PlaySpec
   private def createSUT(servUrl: String = "") = new EmploymentsConnectorTest(servUrl)
 
   val httpHandler: HttpHandler = mock[HttpHandler]
-  
-  private class EmploymentsConnectorTest(servUrl: String = "") extends EmploymentsConnector (httpHandler) {
+
+  private class EmploymentsConnectorTest(servUrl: String = "") extends EmploymentsConnector(httpHandler) {
     override val serviceUrl: String = servUrl
   }
 

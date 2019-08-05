@@ -29,7 +29,8 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
-class EstimatedPayJourneyCompletionServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheConstants with BeforeAndAfterEach {
+class EstimatedPayJourneyCompletionServiceSpec
+    extends PlaySpec with MockitoSugar with JourneyCacheConstants with BeforeAndAfterEach {
 
   private def createTestService = new EstimatedPayJourneyCompletionServiceTest
 
@@ -38,24 +39,25 @@ class EstimatedPayJourneyCompletionServiceSpec extends PlaySpec with MockitoSuga
 
   val incomeId = "1"
   val trueValue = "true"
-  val idKey=s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId"
+  val idKey = s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId"
   val failedCacheCall = Future.failed(new Exception)
 
-  private class EstimatedPayJourneyCompletionServiceTest extends EstimatedPayJourneyCompletionService(
-    successfulJourneyCacheService
-  )
+  private class EstimatedPayJourneyCompletionServiceTest
+      extends EstimatedPayJourneyCompletionService(
+        successfulJourneyCacheService
+      )
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(successfulJourneyCacheService)
-  }
 
   "Estimated Pay Journey Completed Service" must {
 
     "add a successful journey completion" in {
 
-      when(successfulJourneyCacheService.cache(meq(idKey), meq(trueValue))(any())).thenReturn(Future.successful(Map(idKey -> trueValue)))
+      when(successfulJourneyCacheService.cache(meq(idKey), meq(trueValue))(any()))
+        .thenReturn(Future.successful(Map(idKey -> trueValue)))
       Await.result(createTestService.journeyCompleted(incomeId)(hc), 5 seconds)
-      verify(successfulJourneyCacheService, times(1)).cache(meq(idKey),meq(trueValue))(any())
+      verify(successfulJourneyCacheService, times(1)).cache(meq(idKey), meq(trueValue))(any())
     }
 
     "return an empty collection upon failing to add a journey completion" in {

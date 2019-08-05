@@ -19,10 +19,9 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 import uk.gov.hmrc.tai.model.domain.{PersonalAllowanceAgedPAA, PersonalAllowanceElderlyPAE, PersonalAllowancePA, TaxComponentType}
 
 object PersonalAllowance {
-  def isA(codingComponentType: TaxComponentType): Boolean = {
+  def isA(codingComponentType: TaxComponentType): Boolean =
     codingComponentType match {
       case PersonalAllowancePA | PersonalAllowanceAgedPAA | PersonalAllowanceElderlyPAE => true
-      case _ => false
+      case _                                                                            => false
     }
-  }
 }

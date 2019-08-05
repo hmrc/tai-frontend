@@ -16,26 +16,24 @@
 
 package uk.gov.hmrc.tai.forms
 
-
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 
-
 case class WhatDoYouWantToDoFormData(whatDoYouWantToDo: Option[String])
 
 object WhatDoYouWantToDoForm {
-  def whatDoYouWantToDoValidation(implicit messages: Messages): Constraint[Option[String]] = Constraint[Option[String]]("Choose an option"){
-    case Some(_) => Valid
-    case _ => Invalid(Messages("tai.whatDoYouWantToDo.error.selectOption"))
-  }
+  def whatDoYouWantToDoValidation(implicit messages: Messages): Constraint[Option[String]] =
+    Constraint[Option[String]]("Choose an option") {
+      case Some(_) => Valid
+      case _       => Invalid(Messages("tai.whatDoYouWantToDo.error.selectOption"))
+    }
 
-  def createForm(implicit messages: Messages): Form[WhatDoYouWantToDoFormData] = {
+  def createForm(implicit messages: Messages): Form[WhatDoYouWantToDoFormData] =
     Form[WhatDoYouWantToDoFormData](
       mapping(
         "taxYears" -> optional(text).verifying(whatDoYouWantToDoValidation)
       )(WhatDoYouWantToDoFormData.apply)(WhatDoYouWantToDoFormData.unapply)
     )
-  }
 }

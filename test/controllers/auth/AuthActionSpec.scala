@@ -39,17 +39,19 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
   )
 
   class Harness(authAction: AuthAction) extends Controller {
-    def onPageLoad() = authAction { request => BadRequest }
+    def onPageLoad() = authAction { request =>
+      BadRequest
+    }
   }
 
   class FakeFailingAuthConnector(exceptionToReturn: Throwable) extends AuthConnector {
     val serviceUrl: String = ""
 
-    override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
+    override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(
+      implicit hc: HeaderCarrier,
+      ec: ExecutionContext): Future[A] =
       Future.failed(exceptionToReturn)
   }
-
-
 
   "Auth Action" when {
     val authErrors = Seq[AuthorisationException](
@@ -87,9 +89,7 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
       )
 
       authErrors.foreach(error => {
-        s"there is an ${
-          error.toString
-        }" in {
+        s"there is an ${error.toString}" in {
           val authAction = new AuthActionImpl(new FakeFailingAuthConnector(error))
           val controller = new Harness(authAction)
 
@@ -110,9 +110,7 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
       )
 
       authErrors.foreach(error => {
-        s"there is an ${
-          error.toString
-        }" in {
+        s"there is an ${error.toString}" in {
           val authAction = new AuthActionImpl(new FakeFailingAuthConnector(error))
           val controller = new Harness(authAction)
 
@@ -135,4 +133,3 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
     }
   }
 }
-

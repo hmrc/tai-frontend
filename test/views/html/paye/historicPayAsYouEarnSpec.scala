@@ -26,7 +26,6 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 
-
 class historicPayAsYouEarnSpec extends TaiViewSpec {
 
   private val currentYear: Int = TaxYear().year
@@ -35,11 +34,14 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
   private val cyMinusThreeTaxYear: TaxYear = TaxYear(currentYear - 3)
   private val cyMinusFourTaxYear: TaxYear = TaxYear(currentYear - 4)
 
-  private val employment: EmploymentViewModel = EmploymentViewModel("test employment", 123.32, 1, false, Some("payrollNumber"))
+  private val employment: EmploymentViewModel =
+    EmploymentViewModel("test employment", 123.32, 1, false, Some("payrollNumber"))
 
-  override def view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), 3)
+  override def view: Html =
+    views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), 3)
 
-  private def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html = views.html.paye.historicPayAsYouEarn(vm, noOfPreviousYears)
+  private def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html =
+    views.html.paye.historicPayAsYouEarn(vm, noOfPreviousYears)
 
   "historicPayAsYouEarn view" should {
 
@@ -47,60 +49,77 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
       messages("tai.paye.lastTaxYear.preHeading"),
       messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(cyMinusOneTaxYear.year)))
 
-    behave like pageWithTitle(messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(cyMinusOneTaxYear.year)))
+    behave like pageWithTitle(
+      messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(cyMinusOneTaxYear.year)))
 
     "contain correct header" in {
       val taxYear = cyMinusOneTaxYear
       val vm = HistoricPayAsYouEarnViewModel(taxYear, Nil, Nil, false, true)
-      val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), 3)
+      val view: Html =
+        views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), 3)
       val newDoc = doc(view)
 
       newDoc.body.text must include(messages("tai.paye.lastTaxYear.preHeading"))
-      newDoc.body.text must include(messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(taxYear.year)))
+      newDoc.body.text must include(
+        messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(taxYear.year)))
     }
 
     "display a link to view the tax code at the end of the year" when {
       "taxCodeChangeEnabled is true && showTaxCodeDescription is true" in {
-        val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
-        val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true), 1)
+        val employment: EmploymentViewModel =
+          EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
+        val view: Html = views.html.paye
+          .historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true), 1)
 
-        doc(view) must haveLinkWithUrlWithID("taxCodeDescription", controllers.routes.YourTaxCodeController.prevTaxCodes(cyMinusOneTaxYear).url)
+        doc(view) must haveLinkWithUrlWithID(
+          "taxCodeDescription",
+          controllers.routes.YourTaxCodeController.prevTaxCodes(cyMinusOneTaxYear).url)
       }
     }
 
     "showTaxCodeDescription is false" in {
-      val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
-      val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, false), 1)
+      val employment: EmploymentViewModel =
+        EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
+      val view: Html = views.html.paye
+        .historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, false), 1)
 
       doc(view).toString mustNot include(messages("tai.taxCode.description.link"))
     }
   }
 
   "display a link to return to choose tax year page" in {
-    doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+    doc must haveLinkWithUrlWithID(
+      "returnToChooseTaxYearLink",
+      controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
   }
 
   "income from employment section" must {
 
-      "have a heading for your income" when {
-        "when you have a employment" in {
-          val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
-          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true), 1)
-          doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
-          doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
-        }
+    "have a heading for your income" when {
+      "when you have a employment" in {
+        val employment: EmploymentViewModel =
+          EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
+        val view: Html = views.html.paye
+          .historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true), 1)
+        doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
+        doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
+      }
 
       "when you have a pension" in {
         val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true, Some("payrollNumber"))
-        val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true, true), 1)
+        val view: Html = views.html.paye
+          .historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true, true), 1)
         doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
 
       "when you have a pension and employment" in {
-        val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
+        val employment: EmploymentViewModel =
+          EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
         val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true, Some("payrollNumber"))
-        val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Seq(employment), true, true), 1)
+        val view: Html = views.html.paye.historicPayAsYouEarn(
+          HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Seq(employment), true, true),
+          1)
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
@@ -132,7 +151,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
 
         doc must haveLinkElement(
           "employment1-checkDetailsLink",
-          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(vm.taxYear, employment.id).url,
+          controllers.routes.YourIncomeCalculationController
+            .yourIncomeCalculationHistoricYears(vm.taxYear, employment.id)
+            .url,
           messages("tai.paye.lastTaxYear.table.link")
         )
         doc must haveLinkElement(
@@ -194,7 +215,6 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
       }
     }
 
-
     "show one pension" when {
       "the viewmodel contains one pension" in {
 
@@ -209,7 +229,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         doc must haveParagraphWithText("£0.00")
         doc must haveLinkElement(
           "pension1-checkDetailsLink",
-          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(vm.taxYear, employment.id).url,
+          controllers.routes.YourIncomeCalculationController
+            .yourIncomeCalculationHistoricYears(vm.taxYear, employment.id)
+            .url,
           messages("tai.paye.lastTaxYear.table.link")
         )
         doc must haveLinkElement(
@@ -233,7 +255,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         val doc: Document = Jsoup.parse(sut.toString)
 
         doc must haveLinkWithText(messages("tai.paye.lastTaxYear.incorrectInformation.link"))
-        doc must haveLinkWithUrlWithID("updateEmployment", controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(vm.taxYear).url)
+        doc must haveLinkWithUrlWithID(
+          "updateEmployment",
+          controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(vm.taxYear).url)
       }
     }
 
@@ -250,7 +274,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         doc must haveParagraphWithText("£123.32")
         doc must haveLinkElement(
           "employment1-checkDetailsLink",
-          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(vm.taxYear, employment.id).url,
+          controllers.routes.YourIncomeCalculationController
+            .yourIncomeCalculationHistoricYears(vm.taxYear, employment.id)
+            .url,
           messages("tai.paye.lastTaxYear.table.link")
         )
         doc must haveLinkElement(
@@ -264,8 +290,10 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
     "show multiple employments with YTD totalIncome" when {
       "multiple employments exist containing an AnnualAccount which has payments" in {
 
-        val employment1: EmploymentViewModel = EmploymentViewModel("test employment 1", 123.32, 1, false, Some("payrollNumber"))
-        val employment2: EmploymentViewModel = EmploymentViewModel("test employment 2", 345.54, 2, false, Some("payrollNumber"))
+        val employment1: EmploymentViewModel =
+          EmploymentViewModel("test employment 1", 123.32, 1, false, Some("payrollNumber"))
+        val employment2: EmploymentViewModel =
+          EmploymentViewModel("test employment 2", 345.54, 2, false, Some("payrollNumber"))
         val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment1, employment2), true, true)
 
         val sut: Html = createSut(vm)
@@ -276,7 +304,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         doc must haveParagraphWithText("£123.32")
         doc must haveLinkElement(
           "employment1-checkDetailsLink",
-          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(vm.taxYear, employment.id).url,
+          controllers.routes.YourIncomeCalculationController
+            .yourIncomeCalculationHistoricYears(vm.taxYear, employment.id)
+            .url,
           messages("tai.paye.lastTaxYear.table.link")
         )
 
@@ -285,7 +315,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         doc must haveParagraphWithText("£345.54")
         doc must haveLinkElement(
           "employment2-checkDetailsLink",
-          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(vm.taxYear, employment2.id).url,
+          controllers.routes.YourIncomeCalculationController
+            .yourIncomeCalculationHistoricYears(vm.taxYear, employment2.id)
+            .url,
           messages("tai.paye.lastTaxYear.table.link")
         )
 

@@ -47,7 +47,9 @@ class previousYearsSideNavSpec extends TaiViewSpec {
       doc.select(menu).size() mustBe 1
       doc.select(menu).text() mustBe TaxPeriodLabelService.taxPeriodLabel(currentYear - 2)
       doc.select(s"$menu a").hasAttr("href") mustBe true
-      doc.select(s"$menu a").attr("href") mustBe routes.PayeControllerHistoric.payePage(TaxYear(currentYear - 2)).toString
+      doc.select(s"$menu a").attr("href") mustBe routes.PayeControllerHistoric
+        .payePage(TaxYear(currentYear - 2))
+        .toString
     }
 
     "display cy-3 side menu as link" in {
@@ -57,7 +59,9 @@ class previousYearsSideNavSpec extends TaiViewSpec {
       doc.select(menu).size() mustBe 1
       doc.select(menu).text() mustBe TaxPeriodLabelService.taxPeriodLabel(currentYear - 3)
       doc.select(s"$menu a").hasAttr("href") mustBe true
-      doc.select(s"$menu a").attr("href") mustBe routes.PayeControllerHistoric.payePage(TaxYear(currentYear - 3)).toString
+      doc.select(s"$menu a").attr("href") mustBe routes.PayeControllerHistoric
+        .payePage(TaxYear(currentYear - 3))
+        .toString
     }
 
   }

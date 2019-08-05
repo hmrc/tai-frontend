@@ -26,5 +26,6 @@ object MockPartialRetriever extends FormPartialRetriever {
 
   override def httpGet: HttpGet = ???
 
-  override def getPartialContent(url: String, templateParameters: Map[String, String], errorMessage: Html)(implicit request: RequestHeader): Html = Html("")
+  override def getPartialContent(url: String, templateParameters: Map[String, String], errorMessage: Html)(
+    implicit request: RequestHeader): Html = Html("")
 }

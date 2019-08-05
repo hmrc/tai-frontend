@@ -25,10 +25,7 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 
-
-
 class previousYearUnderpaymentViewSpec extends TaiViewSpec {
-
 
   "previousYearUnderpaymentView" must {
 
@@ -42,17 +39,24 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
 
     "display paragraphs" in {
 
-      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p1", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(-1)))
+      doc must haveParagraphWithText(
+        Messages("tai.previous.year.underpayment.p1", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(-1)))
       doc must haveSpanWithText(poundedAmountDue)
       doc must haveH2HeadingWithText(Messages("tai.previous.year.underpayment.h1"))
 
-      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p2", allowanceReducedBy, Dates.formatDate(TaxYear().end), poundedAmountDue))
+      doc must haveParagraphWithText(
+        Messages(
+          "tai.previous.year.underpayment.p2",
+          allowanceReducedBy,
+          Dates.formatDate(TaxYear().end),
+          poundedAmountDue))
 
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p3"))
 
       doc must haveH2HeadingWithText(Messages("tai.previous.year.underpayment.h2"))
 
-      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      doc must haveParagraphWithText(
+        Messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p5"))
     }
   }
@@ -62,7 +66,7 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
 
   val test = Dates.formatDate(TaxYear().start)
 
-
-  override def view = previousYearUnderpayment(PreviousYearUnderpaymentViewModel(allowanceReducedBy, poundedAmountDue, Html("some-link")))
+  override def view =
+    previousYearUnderpayment(PreviousYearUnderpaymentViewModel(allowanceReducedBy, poundedAmountDue, Html("some-link")))
 
 }

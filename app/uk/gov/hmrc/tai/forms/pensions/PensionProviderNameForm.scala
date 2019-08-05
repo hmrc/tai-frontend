@@ -25,6 +25,6 @@ object PensionProviderNameForm {
   def form(implicit messages: Messages): Form[String] = Form(
     single(
       "pensionProviderName" ->
-        text.verifying(Messages("tai.pensionProviderName.error.blank"), {!_.isEmpty}))
+        text.verifying(Messages("tai.pensionProviderName.error.blank"), { !_.isEmpty }))
   )
 }

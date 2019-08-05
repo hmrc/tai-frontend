@@ -40,25 +40,25 @@ class JsonTestSpec extends UnitSpec with WithFakeApplication with ScalaFutures {
   override lazy val fakeApplication = FakeApplication()
   override def bindModules = Seq(new PlayModule)
 
-    "JSON serialization/deserialize" should {
+  "JSON serialization/deserialize" should {
 
-      s"Successfully serialize/deserialize Tuple2" in {
-        val rawJson = Json.parse("""{"a":[["a","b"],["c","d"]]}""")
-        val tuple2 = ExampleTuple2(Seq(("a","b"), ("c","d")).toList)
-        val jsonObject = Json.toJson(tuple2)
+    s"Successfully serialize/deserialize Tuple2" in {
+      val rawJson = Json.parse("""{"a":[["a","b"],["c","d"]]}""")
+      val tuple2 = ExampleTuple2(Seq(("a", "b"), ("c", "d")).toList)
+      val jsonObject = Json.toJson(tuple2)
 
-        jsonObject shouldBe rawJson
-        rawJson.as[ExampleTuple2] shouldBe tuple2
-      }
-
-      s"Successfully serialize/deserialize Tuple3" in {
-        val rawJson = Json.parse("""{"a":[["a","b","c"],["d","e","f"]]}""")
-        val tuple3 = ExampleTuple3(Seq(("a","b","c"), ("d","e","f")).toList)
-        val jsonObject = Json.toJson(tuple3)
-
-        jsonObject shouldBe rawJson
-        rawJson.as[ExampleTuple3] shouldBe tuple3
-      }
-
+      jsonObject shouldBe rawJson
+      rawJson.as[ExampleTuple2] shouldBe tuple2
     }
+
+    s"Successfully serialize/deserialize Tuple3" in {
+      val rawJson = Json.parse("""{"a":[["a","b","c"],["d","e","f"]]}""")
+      val tuple3 = ExampleTuple3(Seq(("a", "b", "c"), ("d", "e", "f")).toList)
+      val jsonObject = Json.toJson(tuple3)
+
+      jsonObject shouldBe rawJson
+      rawJson.as[ExampleTuple3] shouldBe tuple3
+    }
+
+  }
 }

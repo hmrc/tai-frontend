@@ -37,13 +37,15 @@ class UpdateIncomeCYPlus1SuccessSpec extends TaiViewSpec {
     }
 
     "contain the may change paragraph when income is from employment" in {
-      doc(view).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.success.employment.p2", employerName))
+      doc(view).getElementsByTag("p").text must include(
+        messages("tai.updateIncome.CYPlus1.success.employment.p2", employerName))
     }
 
     "contain the may change paragraph when income is from pension" in {
       val isPension = true
       val pensionView: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Success(employerName, isPension)
-      doc(pensionView).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.success.pension.p2", employerName))
+      doc(pensionView).getElementsByTag("p").text must include(
+        messages("tai.updateIncome.CYPlus1.success.pension.p2", employerName))
     }
   }
 }

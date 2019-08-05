@@ -29,7 +29,7 @@ class UpdateIncomeDetailsCheckYourAnswersViewModelSpec extends PlaySpec with Fak
   "Update income details check your answers view model" must {
     "return journey lines without phone number line" when {
       "contactByPhone is No" in {
-        val model = UpdateIncomeDetailsCheckYourAnswersViewModel("2016-2017","something","No",None)
+        val model = UpdateIncomeDetailsCheckYourAnswersViewModel("2016-2017", "something", "No", None)
 
         model.journeyConfirmationLines.size mustBe 2
         model.journeyConfirmationLines mustBe Seq(whatYouToldUsLine, contactByPhoneLine.copy(answer = "No"))
@@ -38,14 +38,14 @@ class UpdateIncomeDetailsCheckYourAnswersViewModelSpec extends PlaySpec with Fak
 
     "return journey lines with phone number line" when {
       "contactByPhone is Yes" in {
-        val model = UpdateIncomeDetailsCheckYourAnswersViewModel("2016-2017","something", "Yes", Some("1234567890"))
+        val model = UpdateIncomeDetailsCheckYourAnswersViewModel("2016-2017", "something", "Yes", Some("1234567890"))
 
         model.journeyConfirmationLines.size mustBe 3
         model.journeyConfirmationLines mustBe Seq(whatYouToldUsLine, contactByPhoneLine, phoneNumberLine)
       }
     }
     "return a view model with correct table header based on tax year" in {
-      val model = UpdateIncomeDetailsCheckYourAnswersViewModel(TaxYear(2016),"something", "Yes", Some("1234567890"))
+      val model = UpdateIncomeDetailsCheckYourAnswersViewModel(TaxYear(2016), "something", "Yes", Some("1234567890"))
       val dateRange = HtmlFormatter.htmlNonBroken("6 April 2016") + " to " + HtmlFormatter.htmlNonBroken("5 April 2017")
       model.tableHeader mustBe Messages("tai.income.previousYears.decision.header", dateRange)
     }

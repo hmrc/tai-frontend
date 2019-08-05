@@ -21,16 +21,13 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.{HtmlFormatter}
 
-
-
 object TaxPeriodLabelService {
 
-  def taxPeriodLabel(year: Int)(implicit messages: Messages) : String = {
+  def taxPeriodLabel(year: Int)(implicit messages: Messages): String =
     s"${HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear(year).start))} ${messages("language.to")} " +
       s"${HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear(year).end))}"
-  }
 
-  def taxPeriodLabelSingleLine(year: Int)(implicit messages: Messages) : String = {
+  def taxPeriodLabelSingleLine(year: Int)(implicit messages: Messages): String = {
 
     val dateFrom = Dates.formatDate(TaxYear(year).start)
     val dateTo = Dates.formatDate(TaxYear(year).end)

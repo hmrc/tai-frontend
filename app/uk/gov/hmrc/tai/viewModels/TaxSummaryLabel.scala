@@ -26,16 +26,19 @@ import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CompanyCarMakeModel, TaxAmountDue
 
 import scala.util.Try
 
-
 case class TaxSummaryLabel(value: String, link: Option[HelpLink] = None)
 
 case class HelpLink(value: String, href: String, id: String)
 
-
 object TaxSummaryLabel {
-  def apply(taxComponentType: TaxComponentType, employmentId: Option[Int], taxFreeAmountDetails: TaxFreeAmountDetails, amount: BigDecimal)(implicit messages: Messages): TaxSummaryLabel = {
+  def apply(
+    taxComponentType: TaxComponentType,
+    employmentId: Option[Int],
+    taxFreeAmountDetails: TaxFreeAmountDetails,
+    amount: BigDecimal)(implicit messages: Messages): TaxSummaryLabel = {
 
-    val labelString = describe(taxComponentType,
+    val labelString = describe(
+      taxComponentType,
       employmentId,
       taxFreeAmountDetails.companyCarBenefits,
       taxFreeAmountDetails.employmentIdNameMap)
@@ -45,22 +48,34 @@ object TaxSummaryLabel {
     TaxSummaryLabel(labelString, labelLink)
   }
 
-
-  private def createLabelLink(taxComponentType: TaxComponentType, amount: BigDecimal, totalTax: TotalTax)(implicit messages: Messages): Option[HelpLink] = {
+  private def createLabelLink(taxComponentType: TaxComponentType, amount: BigDecimal, totalTax: TotalTax)(
+    implicit messages: Messages): Option[HelpLink] = {
 
     lazy val underpaymentAmount = TaxAmountDueFromUnderpayment.amountDue(amount, totalTax)
 
-    Try{
+    Try {
       taxComponentType match {
         case UnderPaymentFromPreviousYear =>
           val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
           val id = "underPaymentFromPreviousYear"
-          Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromPreviousYear.link", MonetaryUtil.withPoundPrefix(underpaymentAmount.toInt)), href, id))
+          Some(
+            HelpLink(
+              Messages(
+                "tai.taxFreeAmount.table.underpaymentFromPreviousYear.link",
+                MonetaryUtil.withPoundPrefix(underpaymentAmount.toInt)),
+              href,
+              id))
 
         case EstimatedTaxYouOweThisYear =>
           val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
           val id = "estimatedTaxOwedLink"
-          Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", MonetaryUtil.withPoundPrefix(underpaymentAmount.toInt,2)), href, id))
+          Some(
+            HelpLink(
+              Messages(
+                "tai.taxFreeAmount.table.underpaymentFromCurrentYear.link",
+                MonetaryUtil.withPoundPrefix(underpaymentAmount.toInt, 2)),
+              href,
+              id))
 
         case _ =>
           None
@@ -68,13 +83,16 @@ object TaxSummaryLabel {
     }.getOrElse(None)
   }
 
-  private def describe(componentType: TaxComponentType, employmentId: Option[Int], companyCarBenefits: Seq[CompanyCarBenefit], employmentIdNameMap: Map[Int, String])
-  (implicit messages: Messages): String = {
+  private def describe(
+    componentType: TaxComponentType,
+    employmentId: Option[Int],
+    companyCarBenefits: Seq[CompanyCarBenefit],
+    employmentIdNameMap: Map[Int, String])(implicit messages: Messages): String =
     (componentType, employmentId) match {
       case (CarBenefit, Some(id)) if employmentIdNameMap.contains(id) =>
-
-        val makeModel = CompanyCarMakeModel.description(id, companyCarBenefits).
-          getOrElse(messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
+        val makeModel = CompanyCarMakeModel
+          .description(id, companyCarBenefits)
+          .getOrElse(messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
 
         s"${messages("tai.taxFreeAmount.table.taxComponent.CarBenefitMakeModel", makeModel)}" + " " +
           s"${messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIdNameMap(id))}"
@@ -86,5 +104,4 @@ object TaxSummaryLabel {
       case _ =>
         messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}")
     }
-  }
 }

@@ -31,10 +31,10 @@ object BasisOfOperation {
   implicit val formatBasisOperation = new Format[BasisOfOperation] {
     override def reads(json: JsValue): JsSuccess[BasisOfOperation] = json.as[String] match {
       case "Week1Month1BasisOperation" => JsSuccess(Week1Month1BasisOfOperation)
-      case "Week1/Month1" => JsSuccess(Week1Month1BasisOfOperation)
-      case "OtherBasisOperation" => JsSuccess(OtherBasisOfOperation)
-      case "Cumulative" => JsSuccess(OtherBasisOfOperation)
-      case _ => throw new IllegalArgumentException("Invalid basis of operation")
+      case "Week1/Month1"              => JsSuccess(Week1Month1BasisOfOperation)
+      case "OtherBasisOperation"       => JsSuccess(OtherBasisOfOperation)
+      case "Cumulative"                => JsSuccess(OtherBasisOfOperation)
+      case _                           => throw new IllegalArgumentException("Invalid basis of operation")
     }
 
     override def writes(adjustmentType: BasisOfOperation) = JsString(adjustmentType.toString)
@@ -52,17 +52,19 @@ case object PotentiallyCeased extends TaxCodeIncomeSourceStatus
 case object Ceased extends TaxCodeIncomeSourceStatus
 
 object TaxCodeIncomeSourceStatus {
-  implicit val formatTaxCodeIncomeSourceStatus: Format[TaxCodeIncomeSourceStatus] = new Format[TaxCodeIncomeSourceStatus] {
-    override def reads(json: JsValue): JsResult[TaxCodeIncomeSourceStatus] = json.as[String] match {
-      case "Live" => JsSuccess(Live)
-      case "NotLive" => JsSuccess(NotLive)
-      case "PotentiallyCeased" => JsSuccess(PotentiallyCeased)
-      case "Ceased" => JsSuccess(Ceased)
-      case _ => JsError("Invalid Tax component type")
-    }
+  implicit val formatTaxCodeIncomeSourceStatus: Format[TaxCodeIncomeSourceStatus] =
+    new Format[TaxCodeIncomeSourceStatus] {
+      override def reads(json: JsValue): JsResult[TaxCodeIncomeSourceStatus] = json.as[String] match {
+        case "Live"              => JsSuccess(Live)
+        case "NotLive"           => JsSuccess(NotLive)
+        case "PotentiallyCeased" => JsSuccess(PotentiallyCeased)
+        case "Ceased"            => JsSuccess(Ceased)
+        case _                   => JsError("Invalid Tax component type")
+      }
 
-    override def writes(taxCodeIncomeSourceStatus: TaxCodeIncomeSourceStatus) = JsString(taxCodeIncomeSourceStatus.toString)
-  }
+      override def writes(taxCodeIncomeSourceStatus: TaxCodeIncomeSourceStatus) =
+        JsString(taxCodeIncomeSourceStatus.toString)
+    }
 }
 
 sealed trait IabdUpdateSource
@@ -84,31 +86,32 @@ case object InformationLetter extends IabdUpdateSource
 object IabdUpdateSource extends IabdUpdateSource {
   implicit val formatIabdUpdateSource: Format[IabdUpdateSource] = new Format[IabdUpdateSource] {
     override def reads(json: JsValue): JsSuccess[IabdUpdateSource] = json.as[String] match {
-      case "ManualTelephone" => JsSuccess(ManualTelephone)
-      case "Letter" => JsSuccess(Letter)
-      case "Email" => JsSuccess(Email)
-      case "AgentContact" => JsSuccess(AgentContact)
-      case "OtherForm" => JsSuccess(OtherForm)
-      case "Internet" => JsSuccess(Internet)
+      case "ManualTelephone"   => JsSuccess(ManualTelephone)
+      case "Letter"            => JsSuccess(Letter)
+      case "Email"             => JsSuccess(Email)
+      case "AgentContact"      => JsSuccess(AgentContact)
+      case "OtherForm"         => JsSuccess(OtherForm)
+      case "Internet"          => JsSuccess(Internet)
       case "InformationLetter" => JsSuccess(InformationLetter)
-      case _ => throw new RuntimeException("Invalid Iabd Update Source")
+      case _                   => throw new RuntimeException("Invalid Iabd Update Source")
     }
 
     override def writes(iabdUpdateSource: IabdUpdateSource) = JsString(iabdUpdateSource.toString)
   }
 }
 
-case class TaxCodeIncome(componentType: TaxComponentType,
-                         employmentId: Option[Int],
-                         amount: BigDecimal,
-                         description: String,
-                         taxCode: String,
-                         name: String,
-                         basisOperation: BasisOfOperation,
-                         status: TaxCodeIncomeSourceStatus,
-                         iabdUpdateSource: Option[IabdUpdateSource] = None,
-                         updateNotificationDate: Option[LocalDate] = None,
-                         updateActionDate: Option[LocalDate] = None)
+case class TaxCodeIncome(
+  componentType: TaxComponentType,
+  employmentId: Option[Int],
+  amount: BigDecimal,
+  description: String,
+  taxCode: String,
+  name: String,
+  basisOperation: BasisOfOperation,
+  status: TaxCodeIncomeSourceStatus,
+  iabdUpdateSource: Option[IabdUpdateSource] = None,
+  updateNotificationDate: Option[LocalDate] = None,
+  updateActionDate: Option[LocalDate] = None)
 
 object TaxCodeIncome {
   implicit val format: Format[TaxCodeIncome] = Json.format[TaxCodeIncome]

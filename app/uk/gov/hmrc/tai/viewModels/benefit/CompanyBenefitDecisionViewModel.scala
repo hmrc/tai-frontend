@@ -20,19 +20,18 @@ import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages
 
+class CompanyBenefitDecisionViewModel(
+  val benefitName: String,
+  val employerName: String,
+  val decisionForm: Form[Option[String]])
 
-class CompanyBenefitDecisionViewModel(val benefitName:String,
-                                      val employerName:String,
-                                      val decisionForm: Form[Option[String]])
+object CompanyBenefitDecisionViewModel {
 
-object CompanyBenefitDecisionViewModel{
-
-  def apply(benefitType:String,
-            employerName:String,
-            decisionForm: Form[Option[String]])(implicit messages: Messages): CompanyBenefitDecisionViewModel = {
-    val formattedBenefitName = (raw"(B|b)enefit(s)?".r replaceAllIn(
-      messages(s"tai.taxFreeAmount.table.taxComponent.${benefitType}"),"")).trim
-    new CompanyBenefitDecisionViewModel(formattedBenefitName,employerName,decisionForm)
+  def apply(benefitType: String, employerName: String, decisionForm: Form[Option[String]])(
+    implicit messages: Messages): CompanyBenefitDecisionViewModel = {
+    val formattedBenefitName =
+      (raw"(B|b)enefit(s)?".r replaceAllIn (messages(s"tai.taxFreeAmount.table.taxComponent.$benefitType"), "")).trim
+    new CompanyBenefitDecisionViewModel(formattedBenefitName, employerName, decisionForm)
   }
 
 }

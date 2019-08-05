@@ -18,9 +18,7 @@ package uk.gov.hmrc.tai.model.domain.income.previousYears
 
 import play.api.libs.json.{Format, Json}
 
-case class PreviousYearsIncomeDetails(whatYouToldUs: String,
-                                      contactByPhone: String,
-                                      phoneNumber: Option[String])
+case class PreviousYearsIncomeDetails(whatYouToldUs: String, contactByPhone: String, phoneNumber: Option[String])
 
 object PreviousYearsIncomeDetails {
   implicit val format: Format[PreviousYearsIncomeDetails] = Json.format[PreviousYearsIncomeDetails]

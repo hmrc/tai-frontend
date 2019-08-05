@@ -24,31 +24,30 @@ import play.api.libs.json.Json
 import play.api.mvc.Request
 import uk.gov.hmrc.tai.model.EmploymentAmount
 
-case class CalculateIncomeForm(name : String,
-                            employmentId: Int,
-                            ytdAmount : Option[String] = None,
-                            paymentDate : Option[LocalDate] = None)
+case class CalculateIncomeForm(
+  name: String,
+  employmentId: Int,
+  ytdAmount: Option[String] = None,
+  paymentDate: Option[LocalDate] = None)
 
-object CalculateIncomeForm  {
+object CalculateIncomeForm {
   implicit val formats = Json.format[CalculateIncomeForm]
 
   def create(preFillData: EmploymentAmount) = {
 
-    val calculateIncomeForm = new CalculateIncomeForm(name = preFillData.name,
-                                    employmentId = preFillData.employmentId)
+    val calculateIncomeForm = new CalculateIncomeForm(name = preFillData.name, employmentId = preFillData.employmentId)
     CalculateIncomeForm.createForm.fill(calculateIncomeForm)
   }
 
   def bind(implicit request: Request[_]) = createForm.bindFromRequest
 
-  def createForm () :Form[CalculateIncomeForm] = {
+  def createForm(): Form[CalculateIncomeForm] =
     Form[CalculateIncomeForm](
       mapping(
-        "name" -> text,
+        "name"         -> text,
         "employmentId" -> number,
-        "ytdAmount" -> optional(text),
-        "paymentDate" -> TaiValidator.validateOptionalDate
+        "ytdAmount"    -> optional(text),
+        "paymentDate"  -> TaiValidator.validateOptionalDate
       )(CalculateIncomeForm.apply)(CalculateIncomeForm.unapply)
     )
-  }
 }

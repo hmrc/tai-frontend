@@ -46,33 +46,31 @@ case object PersonalPensionPaymentRelief extends TaxReliefComponent
 case object GiftAidPayments extends TaxReliefComponent
 case object GiftAidPaymentsRelief extends TaxReliefComponent
 
-
 object TaxAdjustmentType {
   implicit val formatTaxAdjustmentType = new Format[TaxAdjustmentType] {
     override def writes(taxAdjustmentType: TaxAdjustmentType): JsValue = ???
 
-    override def reads(json: JsValue): JsResult[TaxAdjustmentType] = {
+    override def reads(json: JsValue): JsResult[TaxAdjustmentType] =
       json.as[String] match {
-        case "EnterpriseInvestmentSchemeRelief" => JsSuccess(EnterpriseInvestmentSchemeRelief)
-        case "ConcessionalRelief" => JsSuccess(ConcessionalRelief)
-        case "MaintenancePayments" => JsSuccess(MaintenancePayments)
-        case "MarriedCouplesAllowance" => JsSuccess(MarriedCouplesAllowance)
-        case "DoubleTaxationRelief" => JsSuccess(DoubleTaxationRelief)
-        case "ExcessGiftAidTax" => JsSuccess(ExcessGiftAidTax)
-        case "ExcessWidowsAndOrphans" => JsSuccess(ExcessWidowsAndOrphans)
-        case "PensionPaymentsAdjustment" => JsSuccess(PensionPaymentsAdjustment)
-        case "ChildBenefit" => JsSuccess(ChildBenefit)
-        case "TaxOnBankBSInterest" => JsSuccess(TaxOnBankBSInterest)
-        case "TaxCreditOnUKDividends" => JsSuccess(TaxCreditOnUKDividends)
-        case "TaxCreditOnForeignInterest" => JsSuccess(TaxCreditOnForeignInterest)
+        case "EnterpriseInvestmentSchemeRelief"  => JsSuccess(EnterpriseInvestmentSchemeRelief)
+        case "ConcessionalRelief"                => JsSuccess(ConcessionalRelief)
+        case "MaintenancePayments"               => JsSuccess(MaintenancePayments)
+        case "MarriedCouplesAllowance"           => JsSuccess(MarriedCouplesAllowance)
+        case "DoubleTaxationRelief"              => JsSuccess(DoubleTaxationRelief)
+        case "ExcessGiftAidTax"                  => JsSuccess(ExcessGiftAidTax)
+        case "ExcessWidowsAndOrphans"            => JsSuccess(ExcessWidowsAndOrphans)
+        case "PensionPaymentsAdjustment"         => JsSuccess(PensionPaymentsAdjustment)
+        case "ChildBenefit"                      => JsSuccess(ChildBenefit)
+        case "TaxOnBankBSInterest"               => JsSuccess(TaxOnBankBSInterest)
+        case "TaxCreditOnUKDividends"            => JsSuccess(TaxCreditOnUKDividends)
+        case "TaxCreditOnForeignInterest"        => JsSuccess(TaxCreditOnForeignInterest)
         case "TaxCreditOnForeignIncomeDividends" => JsSuccess(TaxCreditOnForeignIncomeDividends)
-        case "PersonalPensionPayment" => JsSuccess(PersonalPensionPayment)
-        case "PersonalPensionPaymentRelief" => JsSuccess(PersonalPensionPaymentRelief)
-        case "GiftAidPayments" => JsSuccess(GiftAidPayments)
-        case "GiftAidPaymentsRelief" => JsSuccess(GiftAidPaymentsRelief)
-        case _ => throw new IllegalArgumentException("Invalid income category type")
+        case "PersonalPensionPayment"            => JsSuccess(PersonalPensionPayment)
+        case "PersonalPensionPaymentRelief"      => JsSuccess(PersonalPensionPaymentRelief)
+        case "GiftAidPayments"                   => JsSuccess(GiftAidPayments)
+        case "GiftAidPaymentsRelief"             => JsSuccess(GiftAidPaymentsRelief)
+        case _                                   => throw new IllegalArgumentException("Invalid income category type")
       }
-    }
   }
 }
 
@@ -87,4 +85,3 @@ case class TaxAdjustment(amount: BigDecimal, taxAdjustmentComponents: Seq[TaxAdj
 object TaxAdjustment {
   implicit val format: Format[TaxAdjustment] = Json.format[TaxAdjustment]
 }
-

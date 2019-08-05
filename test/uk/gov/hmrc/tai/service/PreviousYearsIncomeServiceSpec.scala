@@ -37,8 +37,11 @@ class PreviousYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
   "previous years income" must {
     "return an envelope id" in {
       val sut = createSUT
-      val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      when(previousYearsIncomeConnector.incorrectIncome(Matchers.eq(nino), Matchers.eq(2016), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
+      val model =
+        IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
+      when(
+        previousYearsIncomeConnector.incorrectIncome(Matchers.eq(nino), Matchers.eq(2016), Matchers.eq(model))(any()))
+        .thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)
 
@@ -48,8 +51,11 @@ class PreviousYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
-        val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-        when(previousYearsIncomeConnector.incorrectIncome(Matchers.eq(nino), Matchers.eq(2016), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
+        val model =
+          IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
+        when(
+          previousYearsIncomeConnector.incorrectIncome(Matchers.eq(nino), Matchers.eq(2016), Matchers.eq(model))(any()))
+          .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)
         rte.getMessage mustBe s"No envelope id was generated when sending previous years income details for ${nino.nino}"
@@ -65,7 +71,8 @@ class PreviousYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
 
   private def createSUT = new PreviousYearsIncomeDetailsServiceTest
 
-  private class PreviousYearsIncomeDetailsServiceTest extends PreviousYearsIncomeService(
-    previousYearsIncomeConnector
-  )
+  private class PreviousYearsIncomeDetailsServiceTest
+      extends PreviousYearsIncomeService(
+        previousYearsIncomeConnector
+      )
 }

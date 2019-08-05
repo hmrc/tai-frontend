@@ -27,15 +27,14 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil}
 
-
-
 class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
   implicit val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "Tax Free Amount comparison view model" must {
     "return empty model" when {
       "no coding components and taxSummary is present" in {
-        val model = TaxFreeAmountComparisonViewModel(Seq.empty[CodingComponentForYear], Seq.empty[TaxAccountSummaryForYear])
+        val model =
+          TaxFreeAmountComparisonViewModel(Seq.empty[CodingComponentForYear], Seq.empty[TaxAccountSummaryForYear])
         model.personalAllowance.values mustBe Seq(0, 0)
         model.deductions.deductions mustBe Seq.empty[Row]
         model.additions.additions mustBe Seq.empty[Row]
@@ -48,10 +47,10 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
         val component = CodingComponent(PersonalAllowancePA, None, 11500, "Personal Allowance")
         val deduction = CodingComponent(Tips, None, 11500, "Tips")
         val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(component, deduction))
-        val nextYearComponents = CodingComponentForYear(nextTaxYear,
-          Seq(component.copy(amount = 11850), deduction))
+        val nextYearComponents = CodingComponentForYear(nextTaxYear, Seq(component.copy(amount = 11850), deduction))
 
-        val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents, currentYearComponents),
+        val model = TaxFreeAmountComparisonViewModel(
+          Seq(nextYearComponents, currentYearComponents),
           Seq.empty[TaxAccountSummaryForYear])
 
         model.personalAllowance mustBe PersonalAllowance(Seq(11500, 11850))
@@ -61,10 +60,10 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
         val component = CodingComponent(GiftAidAdjustment, None, 11500, "Gift Adjustment")
         val deduction = CodingComponent(Tips, None, 11500, "Tips")
         val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(component, deduction))
-        val nextYearComponents = CodingComponentForYear(nextTaxYear,
-          Seq(component.copy(amount = 11850), deduction))
+        val nextYearComponents = CodingComponentForYear(nextTaxYear, Seq(component.copy(amount = 11850), deduction))
 
-        val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents, currentYearComponents),
+        val model = TaxFreeAmountComparisonViewModel(
+          Seq(nextYearComponents, currentYearComponents),
           Seq.empty[TaxAccountSummaryForYear])
 
         model.personalAllowance mustBe PersonalAllowance(Seq(0, 0))
@@ -74,10 +73,12 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
         val component = CodingComponent(GiftAidAdjustment, None, 11500, "Gift Adjustment")
         val deduction = CodingComponent(Tips, None, 11500, "Tips")
         val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(component, deduction))
-        val nextYearComponents = CodingComponentForYear(nextTaxYear,
+        val nextYearComponents = CodingComponentForYear(
+          nextTaxYear,
           Seq(component.copy(componentType = PersonalAllowancePA, amount = 11850), deduction))
 
-        val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents, currentYearComponents),
+        val model = TaxFreeAmountComparisonViewModel(
+          Seq(nextYearComponents, currentYearComponents),
           Seq.empty[TaxAccountSummaryForYear])
 
         model.personalAllowance mustBe PersonalAllowance(Seq(0, 11850))
@@ -87,47 +88,52 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
         val component = CodingComponent(PersonalAllowancePA, None, 11500, "Gift Adjustment")
         val deduction = CodingComponent(Tips, None, 11500, "Tips")
         val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(component, deduction))
-        val nextYearComponents = CodingComponentForYear(nextTaxYear,
+        val nextYearComponents = CodingComponentForYear(
+          nextTaxYear,
           Seq(component.copy(componentType = GiftAidAdjustment, amount = 11850), deduction))
 
-        val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents, currentYearComponents),
+        val model = TaxFreeAmountComparisonViewModel(
+          Seq(nextYearComponents, currentYearComponents),
           Seq.empty[TaxAccountSummaryForYear])
 
         model.personalAllowance mustBe PersonalAllowance(Seq(11500, 0))
       }
     }
 
-
-    "Personal Allowance increase information message" should{
-      "be shown if personal allowance is present for cy and cy+1" when{
-        "there is an increase" in{
-          val personalAllowanceCyPlusOne = MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(11850,0))
+    "Personal Allowance increase information message" should {
+      "be shown if personal allowance is present for cy and cy+1" when {
+        "there is an increase" in {
+          val personalAllowanceCyPlusOne = MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(11850, 0))
           val startOfNextTaxYear = HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start))
-          val expectedMessage = Some(messages("tai.incomeTaxComparison.taxFreeAmount.PA.information1",personalAllowanceCyPlusOne,startOfNextTaxYear))
-
+          val expectedMessage = Some(
+            messages(
+              "tai.incomeTaxComparison.taxFreeAmount.PA.information1",
+              personalAllowanceCyPlusOne,
+              startOfNextTaxYear))
 
           val component = CodingComponent(PersonalAllowancePA, None, 11500, "Personal Allowance")
           val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(component))
           val nextYearComponents = CodingComponentForYear(nextTaxYear, Seq(component.copy(amount = 11850)))
 
-          val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents,currentYearComponents),
+          val model = TaxFreeAmountComparisonViewModel(
+            Seq(nextYearComponents, currentYearComponents),
             Seq.empty[TaxAccountSummaryForYear])
 
           model.personalAllowanceIncreaseInfo mustBe expectedMessage
         }
       }
 
-
-      "not displayed if personal allowance is present for cy and cy +1" when{
-        "there is no increase" in{
-          val personalAllowanceCyPlusOne = MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(11500,0))
+      "not displayed if personal allowance is present for cy and cy +1" when {
+        "there is no increase" in {
+          val personalAllowanceCyPlusOne = MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(11500, 0))
           val startOfNextTaxYear = HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start))
           val expectedMessage = None
           val component = CodingComponent(PersonalAllowancePA, None, 11500, "Personal Allowance")
           val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(component))
           val nextYearComponents = CodingComponentForYear(nextTaxYear, Seq(component.copy(amount = 11500)))
 
-          val model = TaxFreeAmountComparisonViewModel(Seq(currentYearComponents,nextYearComponents),
+          val model = TaxFreeAmountComparisonViewModel(
+            Seq(currentYearComponents, nextYearComponents),
             Seq.empty[TaxAccountSummaryForYear])
 
           model.personalAllowanceIncreaseInfo mustBe expectedMessage
@@ -142,11 +148,13 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
         val giftAidAllowance = CodingComponent(ProfessionalSubscriptions, None, 100, "ProfessionalSubscriptions")
         val marriageAllowance = CodingComponent(MarriageAllowanceReceived, None, 1000, "Marriage Allowance Received")
 
-        val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(paAllowance, giftAidAllowance, marriageAllowance))
-        val nextYearComponents = CodingComponentForYear(nextTaxYear,
-          Seq(paAllowance, giftAidAllowance.copy(amount = 150)))
+        val currentYearComponents =
+          CodingComponentForYear(currentTaxYear, Seq(paAllowance, giftAidAllowance, marriageAllowance))
+        val nextYearComponents =
+          CodingComponentForYear(nextTaxYear, Seq(paAllowance, giftAidAllowance.copy(amount = 150)))
 
-        val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents, currentYearComponents),
+        val model = TaxFreeAmountComparisonViewModel(
+          Seq(nextYearComponents, currentYearComponents),
           Seq.empty[TaxAccountSummaryForYear])
 
         model.additions.additions mustBe Seq(
@@ -162,10 +170,10 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
         val marriageAllowance = CodingComponent(MarriageAllowanceReceived, None, 1000, "Marriage Allowance Received")
 
         val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(giftAidAllowance, marriageAllowance))
-        val nextYearComponents = CodingComponentForYear(nextTaxYear,
-          Seq(giftAidAllowance.copy(amount = 150)))
+        val nextYearComponents = CodingComponentForYear(nextTaxYear, Seq(giftAidAllowance.copy(amount = 150)))
 
-        val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents, currentYearComponents),
+        val model = TaxFreeAmountComparisonViewModel(
+          Seq(nextYearComponents, currentYearComponents),
           Seq.empty[TaxAccountSummaryForYear])
 
         model.additions.additions mustBe Seq(
@@ -181,10 +189,10 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
         val marriageAllowance = CodingComponent(MarriageAllowanceReceived, None, 1000, "Marriage Allowance Received")
 
         val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(giftAidAllowance, marriageAllowance))
-        val nextYearComponents = CodingComponentForYear(nextTaxYear,
-          Seq(giftAidAllowance.copy(amount = 150)))
+        val nextYearComponents = CodingComponentForYear(nextTaxYear, Seq(giftAidAllowance.copy(amount = 150)))
 
-        val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents, currentYearComponents),
+        val model = TaxFreeAmountComparisonViewModel(
+          Seq(nextYearComponents, currentYearComponents),
           Seq.empty[TaxAccountSummaryForYear])
 
         model.additions.totalRow.totals mustBe Seq(1100, 150)
@@ -195,7 +203,8 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
         val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq.empty[CodingComponent])
         val nextYearComponents = CodingComponentForYear(nextTaxYear, Seq.empty[CodingComponent])
 
-        val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents, currentYearComponents),
+        val model = TaxFreeAmountComparisonViewModel(
+          Seq(nextYearComponents, currentYearComponents),
           Seq.empty[TaxAccountSummaryForYear])
 
         model.additions.totalRow.totals mustBe Seq(0, 0)
@@ -208,10 +217,10 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
       val marriageDeduction = CodingComponent(MarriageAllowanceTransferred, None, 1000, "Marriage Allowance Received")
 
       val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(giftAidDeduction, marriageDeduction))
-      val nextYearComponents = CodingComponentForYear(nextTaxYear,
-        Seq(giftAidDeduction.copy(amount = 150)))
+      val nextYearComponents = CodingComponentForYear(nextTaxYear, Seq(giftAidDeduction.copy(amount = 150)))
 
-      val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents, currentYearComponents),
+      val model = TaxFreeAmountComparisonViewModel(
+        Seq(nextYearComponents, currentYearComponents),
         Seq.empty[TaxAccountSummaryForYear])
 
       model.deductions.deductions mustBe Seq(
@@ -226,10 +235,10 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
         val marriageDeduction = CodingComponent(MarriageAllowanceTransferred, None, 1000, "Marriage Allowance Received")
 
         val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(giftAidDeduction, marriageDeduction))
-        val nextYearComponents = CodingComponentForYear(nextTaxYear,
-          Seq(giftAidDeduction.copy(amount = 150)))
+        val nextYearComponents = CodingComponentForYear(nextTaxYear, Seq(giftAidDeduction.copy(amount = 150)))
 
-        val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents, currentYearComponents),
+        val model = TaxFreeAmountComparisonViewModel(
+          Seq(nextYearComponents, currentYearComponents),
           Seq.empty[TaxAccountSummaryForYear])
 
         model.deductions.totalRow mustBe Total(Seq(1100, 150))
@@ -240,7 +249,8 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
         val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq.empty[CodingComponent])
         val nextYearComponents = CodingComponentForYear(nextTaxYear, Seq.empty[CodingComponent])
 
-        val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents, currentYearComponents),
+        val model = TaxFreeAmountComparisonViewModel(
+          Seq(nextYearComponents, currentYearComponents),
           Seq.empty[TaxAccountSummaryForYear])
 
         model.deductions.totalRow mustBe Total(Seq(0, 0))
@@ -252,7 +262,8 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
       val currentYearComponents = TaxAccountSummaryForYear(currentTaxYear, TaxAccountSummary(100, 100, 100, 300, 200))
       val nextYearComponents = TaxAccountSummaryForYear(nextTaxYear, TaxAccountSummary(200, 200, 200, 200, 0))
 
-      val model = TaxFreeAmountComparisonViewModel(Seq.empty[CodingComponentForYear],
+      val model = TaxFreeAmountComparisonViewModel(
+        Seq.empty[CodingComponentForYear],
         Seq(currentYearComponents, nextYearComponents))
 
       model.footer mustBe Footer(Seq(100, 200))

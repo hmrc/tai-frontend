@@ -32,14 +32,16 @@ class AddEmploymentFirstPaySpec extends TaiViewSpec with FormValuesConstants {
       messages("tai.addEmployment.employmentFirstPay.title", employerName))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-first-pay")
-    behave like pageWithYesNoRadioButton(AddEmploymentFirstPayForm.FirstPayChoice+"-yes", AddEmploymentFirstPayForm.FirstPayChoice+"-no")
+    behave like pageWithYesNoRadioButton(
+      AddEmploymentFirstPayForm.FirstPayChoice + "-yes",
+      AddEmploymentFirstPayForm.FirstPayChoice + "-no")
     behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 
     "have an error message with the form inputs" when {
       "no first number choice is selected" in {
         val noPayrollNumberChooseError = messages("tai.error.chooseOneOption")
-        val formWithErrors: Form[Option[String]] = AddEmploymentFirstPayForm.form.
-          withError(AddEmploymentFirstPayForm.FirstPayChoice, noPayrollNumberChooseError)
+        val formWithErrors: Form[Option[String]] =
+          AddEmploymentFirstPayForm.form.withError(AddEmploymentFirstPayForm.FirstPayChoice, noPayrollNumberChooseError)
         def view: Html = views.html.employments.add_employment_first_pay_form(formWithErrors, employerName)
 
         val errorMessage = doc(view).select(".error-message").text
@@ -50,9 +52,10 @@ class AddEmploymentFirstPaySpec extends TaiViewSpec with FormValuesConstants {
 
   private lazy val employerName = "Employer"
 
-  private val employmentFirstPayForm: Form[Option[String]] = AddEmploymentFirstPayForm.form.bind(Map(
-    AddEmploymentFirstPayForm.FirstPayChoice -> YesValue
-  ))
+  private val employmentFirstPayForm: Form[Option[String]] = AddEmploymentFirstPayForm.form.bind(
+    Map(
+      AddEmploymentFirstPayForm.FirstPayChoice -> YesValue
+    ))
 
   override def view: Html = views.html.employments.add_employment_first_pay_form(employmentFirstPayForm, employerName)
 }

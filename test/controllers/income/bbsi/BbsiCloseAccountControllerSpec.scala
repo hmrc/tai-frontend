@@ -47,18 +47,12 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class BbsiCloseAccountControllerSpec extends PlaySpec
-  with FakeTaiPlayApplication
-  with MockitoSugar
-  with I18nSupport
-  with JourneyCacheConstants
-  with FormValuesConstants
-  with BankAccountClosingInterestConstants
-  with BeforeAndAfterEach {
+class BbsiCloseAccountControllerSpec
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JourneyCacheConstants
+    with FormValuesConstants with BankAccountClosingInterestConstants with BeforeAndAfterEach {
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(journeyCacheService)
-  }
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -118,19 +112,23 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         val sut = createSUT
 
         val validFormData = Json.obj(
-          sut.closeBankAccountDateForm.DateFormDay -> "01",
+          sut.closeBankAccountDateForm.DateFormDay   -> "01",
           sut.closeBankAccountDateForm.DateFormMonth -> "02",
-          sut.closeBankAccountDateForm.DateFormYear -> "2017"
+          sut.closeBankAccountDateForm.DateFormYear  -> "2017"
         )
         when(bbsiService.bankAccount(any(), any())(any()))
           .thenReturn(Future.successful(Some(bankAccount1)))
 
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map(CloseBankAccountDateKey -> "2017-02-01", CloseBankAccountNameKey -> "Test")))
+        when(journeyCacheService.cache(any())(any())).thenReturn(
+          Future.successful(Map(CloseBankAccountDateKey -> "2017-02-01", CloseBankAccountNameKey -> "Test")))
 
-        val result = sut.submitCloseDate(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
+        val result = sut.submitCloseDate(bankAccountId)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.income.bbsi.routes.BbsiCloseAccountController.checkYourAnswers(bankAccountId).url
+        redirectLocation(result).get mustBe controllers.income.bbsi.routes.BbsiCloseAccountController
+          .checkYourAnswers(bankAccountId)
+          .url
       }
     }
 
@@ -142,19 +140,23 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         val date = TaxYear().endPrev
 
         val validFormData = Json.obj(
-          sut.closeBankAccountDateForm.DateFormDay -> date.getDayOfMonth,
+          sut.closeBankAccountDateForm.DateFormDay   -> date.getDayOfMonth,
           sut.closeBankAccountDateForm.DateFormMonth -> date.getMonthOfYear,
-          sut.closeBankAccountDateForm.DateFormYear -> date.getYear
+          sut.closeBankAccountDateForm.DateFormYear  -> date.getYear
         )
         when(bbsiService.bankAccount(any(), any())(any()))
           .thenReturn(Future.successful(Some(bankAccount1)))
 
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map(CloseBankAccountDateKey -> date.toString("yyyy-MM-dd"), CloseBankAccountNameKey -> "Test")))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(
+          Map(CloseBankAccountDateKey -> date.toString("yyyy-MM-dd"), CloseBankAccountNameKey -> "Test")))
 
-        val result = sut.submitCloseDate(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
+        val result = sut.submitCloseDate(bankAccountId)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.income.bbsi.routes.BbsiCloseAccountController.checkYourAnswers(bankAccountId).url
+        redirectLocation(result).get mustBe controllers.income.bbsi.routes.BbsiCloseAccountController
+          .checkYourAnswers(bankAccountId)
+          .url
       }
     }
 
@@ -166,19 +168,23 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         val date = TaxYear().start
 
         val validFormData = Json.obj(
-          sut.closeBankAccountDateForm.DateFormDay -> date.getDayOfMonth,
+          sut.closeBankAccountDateForm.DateFormDay   -> date.getDayOfMonth,
           sut.closeBankAccountDateForm.DateFormMonth -> date.getMonthOfYear,
-          sut.closeBankAccountDateForm.DateFormYear -> date.getYear
+          sut.closeBankAccountDateForm.DateFormYear  -> date.getYear
         )
         when(bbsiService.bankAccount(any(), any())(any()))
           .thenReturn(Future.successful(Some(bankAccount1)))
 
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map(CloseBankAccountDateKey -> date.toString("yyyy-MM-dd"), CloseBankAccountNameKey -> "Test")))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(
+          Map(CloseBankAccountDateKey -> date.toString("yyyy-MM-dd"), CloseBankAccountNameKey -> "Test")))
 
-        val result = sut.submitCloseDate(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
+        val result = sut.submitCloseDate(bankAccountId)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(bankAccountId).url
+        redirectLocation(result).get mustBe controllers.income.bbsi.routes.BbsiCloseAccountController
+          .captureClosingInterest(bankAccountId)
+          .url
       }
     }
 
@@ -190,16 +196,18 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         val date = TaxYear().next.start
 
         val validFormData = Json.obj(
-          sut.closeBankAccountDateForm.DateFormDay -> date.getDayOfMonth,
+          sut.closeBankAccountDateForm.DateFormDay   -> date.getDayOfMonth,
           sut.closeBankAccountDateForm.DateFormMonth -> date.getMonthOfYear,
-          sut.closeBankAccountDateForm.DateFormYear -> date.getYear
+          sut.closeBankAccountDateForm.DateFormYear  -> date.getYear
         )
         when(bbsiService.bankAccount(any(), any())(any()))
           .thenReturn(Future.successful(Some(bankAccount1)))
 
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map(CloseBankAccountDateKey -> date.toString("yyyy-MM-dd"), CloseBankAccountNameKey -> "Test")))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(
+          Map(CloseBankAccountDateKey -> date.toString("yyyy-MM-dd"), CloseBankAccountNameKey -> "Test")))
 
-        val result = sut.submitCloseDate(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
+        val result = sut.submitCloseDate(bankAccountId)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
 
         status(result) mustBe BAD_REQUEST
       }
@@ -211,16 +219,17 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         val sut = createSUT
 
         val validFormData = Json.obj(
-          sut.closeBankAccountDateForm.DateFormDay -> "01",
+          sut.closeBankAccountDateForm.DateFormDay   -> "01",
           sut.closeBankAccountDateForm.DateFormMonth -> "02",
-          sut.closeBankAccountDateForm.DateFormYear -> "2017"
+          sut.closeBankAccountDateForm.DateFormYear  -> "2017"
         )
         when(journeyCacheService.currentValueAs[BigDecimal](any(), any())(any()))
           .thenReturn(Future.successful(None))
         when(bbsiService.bankAccount(any(), any())(any()))
           .thenReturn(Future.successful(Some(bankAccount1.copy(bankName = None))))
 
-        val result = sut.captureCloseDate(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
+        val result = sut.captureCloseDate(bankAccountId)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -230,9 +239,9 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         val sut = createSUT
 
         val validFormData = Json.obj(
-          sut.closeBankAccountDateForm.DateFormDay -> "01",
+          sut.closeBankAccountDateForm.DateFormDay   -> "01",
           sut.closeBankAccountDateForm.DateFormMonth -> "02",
-          sut.closeBankAccountDateForm.DateFormYear -> "2017"
+          sut.closeBankAccountDateForm.DateFormYear  -> "2017"
         )
 
         when(journeyCacheService.currentValueAs[BigDecimal](any(), any())(any()))
@@ -241,7 +250,8 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         when(bbsiService.bankAccount(any(), any())(any()))
           .thenReturn(Future.successful(None))
 
-        val result = sut.captureCloseDate(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
+        val result = sut.captureCloseDate(bankAccountId)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -270,7 +280,6 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         val closingInterestData = Seq(Some("123"), Some("Yes"))
 
-
         when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount1)))
         when(journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(closingInterestData))
 
@@ -289,7 +298,8 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         val sut = createSUT
 
         when(journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq.empty[Option[String]]))
-        when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount1.copy(bankName = None))))
+        when(bbsiService.bankAccount(any(), any())(any()))
+          .thenReturn(Future.successful(Some(bankAccount1.copy(bankName = None))))
 
         val result = sut.captureClosingInterest(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -318,12 +328,18 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         val sut = createSUT
         val closingInterest = "123"
 
-        val mapWithClosingInterest = Map(CloseBankAccountInterestKey -> closingInterest, CloseBankAccountInterestChoice -> YesValue)
+        val mapWithClosingInterest =
+          Map(CloseBankAccountInterestKey -> closingInterest, CloseBankAccountInterestChoice -> YesValue)
 
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(mapWithClosingInterest))
 
-        Await.result(sut.submitClosingInterest(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          ClosingInterestChoice -> YesValue, ClosingInterestEntry -> closingInterest)), 5.seconds)
+        Await.result(
+          sut.submitClosingInterest(bankAccountId)(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(ClosingInterestChoice -> YesValue, ClosingInterestEntry -> closingInterest)),
+          5.seconds
+        )
 
         verify(journeyCacheService, times(1)).cache(Matchers.eq(mapWithClosingInterest))(any())
       }
@@ -339,11 +355,15 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(mapWithClosingInterest))
 
-        val result = sut.submitClosingInterest(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          ClosingInterestChoice -> YesValue, ClosingInterestEntry -> closingInterest))
+        val result = sut.submitClosingInterest(bankAccountId)(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(ClosingInterestChoice -> YesValue, ClosingInterestEntry -> closingInterest))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.income.bbsi.routes.BbsiCloseAccountController.checkYourAnswers(bankAccountId).url
+        redirectLocation(result).get mustBe controllers.income.bbsi.routes.BbsiCloseAccountController
+          .checkYourAnswers(bankAccountId)
+          .url
       }
     }
 
@@ -357,8 +377,13 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(mapWithClosingInterest))
 
-        Await.result(sut.submitClosingInterest(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          ClosingInterestChoice -> NoValue, ClosingInterestEntry -> "")), 5 seconds)
+        Await.result(
+          sut.submitClosingInterest(bankAccountId)(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(ClosingInterestChoice -> NoValue, ClosingInterestEntry -> "")),
+          5 seconds
+        )
 
         verify(journeyCacheService, never()).cache(Matchers.eq(mapWithClosingInterest))(any())
       }
@@ -374,11 +399,15 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(mapWithClosingInterest))
 
-        val result = sut.submitClosingInterest(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          ClosingInterestChoice -> NoValue, ClosingInterestEntry -> ""))
+        val result = sut.submitClosingInterest(bankAccountId)(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(ClosingInterestChoice -> NoValue, ClosingInterestEntry -> ""))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.income.bbsi.routes.BbsiCloseAccountController.checkYourAnswers(bankAccountId).url
+        redirectLocation(result).get mustBe controllers.income.bbsi.routes.BbsiCloseAccountController
+          .checkYourAnswers(bankAccountId)
+          .url
       }
     }
 
@@ -387,8 +416,10 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         val sut = createSUT
 
-        val result = sut.submitClosingInterest(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          ClosingInterestChoice -> YesValue, ClosingInterestEntry -> ""))
+        val result = sut.submitClosingInterest(bankAccountId)(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(ClosingInterestChoice -> YesValue, ClosingInterestEntry -> ""))
 
         status(result) mustBe BAD_REQUEST
 
@@ -404,18 +435,21 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
       val sut = createSUT
 
       val formData = Json.obj(
-        sut.closeBankAccountDateForm.DateFormDay -> "01",
+        sut.closeBankAccountDateForm.DateFormDay   -> "01",
         sut.closeBankAccountDateForm.DateFormMonth -> "02",
-        sut.closeBankAccountDateForm.DateFormYear -> "2017"
+        sut.closeBankAccountDateForm.DateFormYear  -> "2017"
       )
 
       when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount1)))
       when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
+      val result = Await.result(
+        sut.submitCloseDate(2)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData)),
+        5.seconds)
 
-      val result = Await.result(sut.submitCloseDate(2)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData)), 5.seconds)
-
-      verify(journeyCacheService, times(1)).cache(Matchers.eq(Map(CloseBankAccountDateKey -> "2017-02-01", CloseBankAccountNameKey -> "Test Bank account name")))(any())
+      verify(journeyCacheService, times(1)).cache(
+        Matchers.eq(Map(CloseBankAccountDateKey -> "2017-02-01", CloseBankAccountNameKey -> "Test Bank account name")))(
+        any())
     }
   }
 
@@ -427,9 +461,9 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
       val year = LocalDate.now().getYear.toString
 
       val formData = Json.obj(
-        sut.closeBankAccountDateForm.DateFormDay -> year,
+        sut.closeBankAccountDateForm.DateFormDay   -> year,
         sut.closeBankAccountDateForm.DateFormMonth -> year,
-        sut.closeBankAccountDateForm.DateFormYear -> year
+        sut.closeBankAccountDateForm.DateFormYear  -> year
       )
       when(bbsiService.bankAccount(any(), any())(any()))
         .thenReturn(Future.successful(Some(bankAccount1)))
@@ -443,9 +477,9 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
       val sut = createSUT
 
       val formData = Json.obj(
-        sut.closeBankAccountDateForm.DateFormDay -> "",
+        sut.closeBankAccountDateForm.DateFormDay   -> "",
         sut.closeBankAccountDateForm.DateFormMonth -> "",
-        sut.closeBankAccountDateForm.DateFormYear -> ""
+        sut.closeBankAccountDateForm.DateFormYear  -> ""
       )
       when(bbsiService.bankAccount(any(), any())(any()))
         .thenReturn(Future.successful(Some(bankAccount1)))
@@ -463,9 +497,9 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
       val year = LocalDate.now().getYear.toString
 
       val formData = Json.obj(
-        sut.closeBankAccountDateForm.DateFormDay -> year,
+        sut.closeBankAccountDateForm.DateFormDay   -> year,
         sut.closeBankAccountDateForm.DateFormMonth -> year,
-        sut.closeBankAccountDateForm.DateFormYear -> year
+        sut.closeBankAccountDateForm.DateFormYear  -> year
       )
       when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount2)))
 
@@ -480,9 +514,9 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
       val year = LocalDate.now().getYear.toString
 
       val formData = Json.obj(
-        sut.closeBankAccountDateForm.DateFormDay -> year,
+        sut.closeBankAccountDateForm.DateFormDay   -> year,
         sut.closeBankAccountDateForm.DateFormMonth -> year,
-        sut.closeBankAccountDateForm.DateFormYear -> year
+        sut.closeBankAccountDateForm.DateFormYear  -> year
       )
       when(bbsiService.bankAccount(any(), any())(any()))
         .thenReturn(Future.successful(None))
@@ -493,7 +527,6 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
     }
   }
 
-
   "Submit your answers" must {
     "send request to close the bank account" in {
 
@@ -502,11 +535,17 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
       val closingDate = new LocalDate(2017, 10, 10)
       val closingInterest = BigDecimal(123.45)
 
-      when(journeyCacheService.mandatoryValueAsDate(Matchers.eq(CloseBankAccountDateKey))(any())).thenReturn(Future.successful(closingDate))
-      when(journeyCacheService.currentValueAs[BigDecimal](any(), any())(any())).thenReturn(Future.successful(Some(closingInterest)))
+      when(journeyCacheService.mandatoryValueAsDate(Matchers.eq(CloseBankAccountDateKey))(any()))
+        .thenReturn(Future.successful(closingDate))
+      when(journeyCacheService.currentValueAs[BigDecimal](any(), any())(any()))
+        .thenReturn(Future.successful(Some(closingInterest)))
 
-      when(bbsiService.closeBankAccount(any(), Matchers.eq(1), Matchers.eq(CloseAccountRequest(closingDate,
-        Some(closingInterest))))(any())).thenReturn(Future.successful("123456"))
+      when(
+        bbsiService.closeBankAccount(
+          any(),
+          Matchers.eq(1),
+          Matchers.eq(CloseAccountRequest(closingDate, Some(closingInterest))))(any()))
+        .thenReturn(Future.successful("123456"))
 
       when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
@@ -530,18 +569,21 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         val result = sut.checkYourAnswers(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
-        verify(journeyCacheService, times(1)).collectedValues(Matchers.eq(Seq(CloseBankAccountDateKey)),
+        verify(journeyCacheService, times(1)).collectedValues(
+          Matchers.eq(Seq(CloseBankAccountDateKey)),
           Matchers.eq(Seq(CloseBankAccountNameKey, CloseBankAccountInterestKey)))(any())
       }
 
       "bank name is not present" in {
         val sut = createSUT
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Tuple2(Seq("2017-07-21"), Seq(None, Some("123.45")))))
+        when(journeyCacheService.collectedValues(any(), any())(any()))
+          .thenReturn(Future.successful(Tuple2(Seq("2017-07-21"), Seq(None, Some("123.45")))))
 
         val result = sut.checkYourAnswers(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
-        verify(journeyCacheService, times(1)).collectedValues(Matchers.eq(Seq(CloseBankAccountDateKey)),
+        verify(journeyCacheService, times(1)).collectedValues(
+          Matchers.eq(Seq(CloseBankAccountDateKey)),
           Matchers.eq(Seq(CloseBankAccountNameKey, CloseBankAccountInterestKey)))(any())
       }
     }
@@ -549,7 +591,8 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
   private val nino = new Generator(new Random).nextNino
   private val bankAccountId = 1
-  private val bankAccount1 = BankAccount(bankAccountId, Some("****5678"), Some("123456"), Some("Test Bank account name"), 100, None)
+  private val bankAccount1 =
+    BankAccount(bankAccountId, Some("****5678"), Some("123456"), Some("Test Bank account name"), 100, None)
   private val bankAccount2 = BankAccount(bankAccountId, Some("****5678"), Some("123456"), None, 100, None)
 
   private def createSUT = new SUT
@@ -559,14 +602,15 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
   val bbsiService = mock[BbsiService]
   val journeyCacheService = mock[JourneyCacheService]
 
-  private class SUT extends BbsiCloseAccountController(
-    bbsiService,
-    FakeAuthAction,
-    FakeValidatePerson,
-    journeyCacheService,
-    mock[FormPartialRetriever],
-    MockTemplateRenderer
-  ) {
+  private class SUT
+      extends BbsiCloseAccountController(
+        bbsiService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        journeyCacheService,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      ) {
     val closeBankAccountDateForm = DateForm(Seq(futureDateValidation), "bankName")
   }
 

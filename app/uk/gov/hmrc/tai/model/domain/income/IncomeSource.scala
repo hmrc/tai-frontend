@@ -25,15 +25,16 @@ import scala.concurrent.{ExecutionContext, Future}
 final case class IncomeSource(id: Int, name: String)
 
 object IncomeSource extends JourneyCacheConstants {
-  def create(journeyCacheService: JourneyCacheService)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IncomeSource] = {
+  def create(journeyCacheService: JourneyCacheService)(
+    implicit hc: HeaderCarrier,
+    ec: ExecutionContext): Future[IncomeSource] = {
     val idFuture = journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
     val nameFuture = journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
     for {
-      id <- idFuture
+      id   <- idFuture
       name <- nameFuture
     } yield {
       IncomeSource(id, name)
     }
   }
 }
-

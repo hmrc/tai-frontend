@@ -23,30 +23,46 @@ import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, TaxAccountSumma
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants._
 
-case class PotentialUnderpaymentViewModel(iyaCYAmount: BigDecimal,
-                                          iyaTaxCodeChangeAmount: BigDecimal,
-                                          iyaCYPlusOneAmount: BigDecimal,
-                                          iyaTotalAmount: BigDecimal,
-                                          pageTitle: String,
-                                          returnLink: Html,
-                                          gaDimensions: Option[Map[String, String]] = None)
+case class PotentialUnderpaymentViewModel(
+  iyaCYAmount: BigDecimal,
+  iyaTaxCodeChangeAmount: BigDecimal,
+  iyaCYPlusOneAmount: BigDecimal,
+  iyaTotalAmount: BigDecimal,
+  pageTitle: String,
+  returnLink: Html,
+  gaDimensions: Option[Map[String, String]] = None)
 
 object PotentialUnderpaymentViewModel extends ViewModelHelper with ReturnLink {
 
-  def apply(taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent], referer: String, resourceName: String)(implicit messages:Messages): PotentialUnderpaymentViewModel = {
+  def apply(
+    taxAccountSummary: TaxAccountSummary,
+    codingComponents: Seq[CodingComponent],
+    referer: String,
+    resourceName: String)(implicit messages: Messages): PotentialUnderpaymentViewModel = {
 
-    val iyaTaxCodeChangeAmount = codingComponents.collectFirst {
-      case CodingComponent(EstimatedTaxYouOweThisYear, _, amount, _, _) => amount
-    }.getOrElse(BigDecimal(0))
+    val iyaTaxCodeChangeAmount = codingComponents
+      .collectFirst {
+        case CodingComponent(EstimatedTaxYouOweThisYear, _, amount, _, _) => amount
+      }
+      .getOrElse(BigDecimal(0))
 
     val gaDimensions =
       (taxAccountSummary.totalInYearAdjustmentIntoCY, taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) match {
         case (cy, ny) if cy > 0 && ny <= 0 =>
-          Some(Map(valueOfIycdcPayment -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), iycdcReconciliationStatus -> currentYear))
+          Some(
+            Map(
+              valueOfIycdcPayment       -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(),
+              iycdcReconciliationStatus -> currentYear))
         case (cy, ny) if cy == 0 && ny > 0 =>
-          Some(Map(valueOfIycdcPayment -> taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne.toString(), iycdcReconciliationStatus -> nextYear))
+          Some(
+            Map(
+              valueOfIycdcPayment       -> taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne.toString(),
+              iycdcReconciliationStatus -> nextYear))
         case (cy, ny) if cy > 0 && ny > 0 =>
-          Some(Map(valueOfIycdcPayment -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), iycdcReconciliationStatus -> currentAndNextYear))
+          Some(
+            Map(
+              valueOfIycdcPayment       -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(),
+              iycdcReconciliationStatus -> currentAndNextYear))
         case _ => None
       }
 

@@ -22,10 +22,9 @@ import uk.gov.hmrc.tai.config.TaiConfig
 
 import scala.concurrent.Future
 
-class SessionConnector @Inject() (httpHandler: HttpHandler) extends TaiUrls with TaiConfig {
+class SessionConnector @Inject()(httpHandler: HttpHandler) extends TaiUrls with TaiConfig {
 
-  def invalidateCache()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def invalidateCache()(implicit hc: HeaderCarrier): Future[HttpResponse] =
     httpHandler.deleteFromApi(invalidateCacheUrl())
-  }
 
 }

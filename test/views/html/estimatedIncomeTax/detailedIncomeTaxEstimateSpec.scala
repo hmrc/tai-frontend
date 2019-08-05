@@ -39,10 +39,10 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     behave like pageWithHeader(messages("tai.estimatedIncome.detailedEstimate.heading"))
     behave like pageWithBackLink
 
-
     "show correct header content" in {
 
-      val expectedTaxYearString = Messages("tai.taxYear",
+      val expectedTaxYearString = Messages(
+        "tai.taxYear",
         nonBreakable(Dates.formatDate(TaxYear().start)),
         nonBreakable(Dates.formatDate(TaxYear().end)))
 
@@ -57,7 +57,6 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalIncomeTaxEstimate") + " £18,573")
     }
 
-
     "paragraph with additional Income Tax payable not being included in estimate" should {
       "be shown when text is provided" in {
         val vm = defaultViewModel.copy(selfAssessmentAndPayeText = Some("Stub addition Income Payable Text"))
@@ -69,14 +68,18 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     "heading and text for non savings income section displays" should {
       "be 'Tax on your employment income' when income is only from employment" in {
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
-        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(EmploymentIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
+        val taxCodeIncome: Seq[TaxCodeIncome] =
+          List(TaxCodeIncome(EmploymentIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
         val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
         val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+        val viewModel = DetailedIncomeTaxEstimateViewModel(
+          totalTax,
+          taxCodeIncome,
+          taxAccountSummary,
+          Seq.empty[CodingComponent],
+          nonTaxCodeIncome)
         val document = doc(view(viewModel))
-        val message = Messages("your.total.income.from.employment.desc",
-          "£0",
-          "tax-free amount", "£0")
+        val message = Messages("your.total.income.from.employment.desc", "£0", "tax-free amount", "£0")
 
         document must haveH2HeadingWithText(messages("tax.on.your.employment.income"))
         document must haveParagraphWithText(message)
@@ -84,14 +87,18 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
       "be 'Tax on your private pension income' when income is only from pension" in {
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
-        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
+        val taxCodeIncome: Seq[TaxCodeIncome] =
+          List(TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
         val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
         val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+        val viewModel = DetailedIncomeTaxEstimateViewModel(
+          totalTax,
+          taxCodeIncome,
+          taxAccountSummary,
+          Seq.empty[CodingComponent],
+          nonTaxCodeIncome)
         val document = doc(view(viewModel))
-        val message = Messages("your.total.income.from.private.pension.desc",
-          "£0",
-          "tax-free amount", "£0")
+        val message = Messages("your.total.income.from.private.pension.desc", "£0", "tax-free amount", "£0")
 
         document must haveH2HeadingWithText(messages("tax.on.your.private.pension.income"))
         document must haveParagraphWithText(message)
@@ -100,14 +107,19 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       "be 'Tax on your PAYE income' when income is only from any other combination" when {
         "Employment and pension income" in {
           val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
-          val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOfOperation, Live), TaxCodeIncome(EmploymentIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
+          val taxCodeIncome: Seq[TaxCodeIncome] = List(
+            TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOfOperation, Live),
+            TaxCodeIncome(EmploymentIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
           val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
           val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+          val viewModel = DetailedIncomeTaxEstimateViewModel(
+            totalTax,
+            taxCodeIncome,
+            taxAccountSummary,
+            Seq.empty[CodingComponent],
+            nonTaxCodeIncome)
           val document = doc(view(viewModel))
-          val message = Messages("your.total.income.from.paye.desc",
-            "£0",
-            "tax-free amount", "£0")
+          val message = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0")
 
           document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
@@ -115,14 +127,18 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
         "JSA income" in {
           val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
-          val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(JobSeekerAllowanceIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
+          val taxCodeIncome: Seq[TaxCodeIncome] =
+            List(TaxCodeIncome(JobSeekerAllowanceIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
           val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
           val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+          val viewModel = DetailedIncomeTaxEstimateViewModel(
+            totalTax,
+            taxCodeIncome,
+            taxAccountSummary,
+            Seq.empty[CodingComponent],
+            nonTaxCodeIncome)
           val document = doc(view(viewModel))
-          val message = Messages("your.total.income.from.paye.desc",
-            "£0",
-            "tax-free amount", "£0", "PAYE")
+          val message = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
 
           document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
@@ -130,14 +146,18 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
         "Other income" in {
           val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
-          val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
+          val taxCodeIncome: Seq[TaxCodeIncome] =
+            List(TaxCodeIncome(OtherIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
           val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
           val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+          val viewModel = DetailedIncomeTaxEstimateViewModel(
+            totalTax,
+            taxCodeIncome,
+            taxAccountSummary,
+            Seq.empty[CodingComponent],
+            nonTaxCodeIncome)
           val document = doc(view(viewModel))
-          val message = Messages("your.total.income.from.paye.desc",
-            "£0",
-            "tax-free amount", "£0", "PAYE")
+          val message = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
 
           document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
@@ -159,9 +179,15 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
         val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
         val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
-        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "1150L", "", OtherBasisOfOperation, Live))
+        val taxCodeIncome: Seq[TaxCodeIncome] =
+          List(TaxCodeIncome(OtherIncome, None, 0, "", "1150L", "", OtherBasisOfOperation, Live))
 
-        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+        val viewModel = DetailedIncomeTaxEstimateViewModel(
+          totalTax,
+          taxCodeIncome,
+          taxAccountSummary,
+          Seq.empty[CodingComponent],
+          nonTaxCodeIncome)
 
         val viewWithNonSavings: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
         doc(viewWithNonSavings) must haveTdWithText("£32,010")
@@ -187,9 +213,15 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
         val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
         val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
-        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
+        val taxCodeIncome: Seq[TaxCodeIncome] =
+          List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
 
-        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+        val viewModel = DetailedIncomeTaxEstimateViewModel(
+          totalTax,
+          taxCodeIncome,
+          taxAccountSummary,
+          Seq.empty[CodingComponent],
+          nonTaxCodeIncome)
 
         val viewWithNonSavings: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
 
@@ -215,9 +247,15 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
         val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
         val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
-        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "1150L", "", OtherBasisOfOperation, Live))
+        val taxCodeIncome: Seq[TaxCodeIncome] =
+          List(TaxCodeIncome(OtherIncome, None, 0, "", "1150L", "", OtherBasisOfOperation, Live))
 
-        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+        val viewModel = DetailedIncomeTaxEstimateViewModel(
+          totalTax,
+          taxCodeIncome,
+          taxAccountSummary,
+          Seq.empty[CodingComponent],
+          nonTaxCodeIncome)
 
         val viewWithSavings: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
 
@@ -243,9 +281,15 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
         val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
         val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
-        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
+        val taxCodeIncome: Seq[TaxCodeIncome] =
+          List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
 
-        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+        val viewModel = DetailedIncomeTaxEstimateViewModel(
+          totalTax,
+          taxCodeIncome,
+          taxAccountSummary,
+          Seq.empty[CodingComponent],
+          nonTaxCodeIncome)
 
         val viewWithSavings: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
 
@@ -271,9 +315,15 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
         val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
         val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
-        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "1150L", "", OtherBasisOfOperation, Live))
+        val taxCodeIncome: Seq[TaxCodeIncome] =
+          List(TaxCodeIncome(OtherIncome, None, 0, "", "1150L", "", OtherBasisOfOperation, Live))
 
-        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+        val viewModel = DetailedIncomeTaxEstimateViewModel(
+          totalTax,
+          taxCodeIncome,
+          taxAccountSummary,
+          Seq.empty[CodingComponent],
+          nonTaxCodeIncome)
 
         val viewWithDividends: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
 
@@ -300,9 +350,15 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
         val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
         val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
-        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
+        val taxCodeIncome: Seq[TaxCodeIncome] =
+          List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
 
-        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+        val viewModel = DetailedIncomeTaxEstimateViewModel(
+          totalTax,
+          taxCodeIncome,
+          taxAccountSummary,
+          Seq.empty[CodingComponent],
+          nonTaxCodeIncome)
 
         val viewWithDividends: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
 
@@ -321,10 +377,13 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     "have tax on your employment income section" in {
 
       doc(view) must haveH2HeadingWithText(messages("tax.on.your.employment.income"))
-      doc(view) must haveParagraphWithText(Html(messages("your.total.income.from.employment.desc",
-        "£68,476",
-        messages("tai.estimatedIncome.taxFree.link"),
-        "£11,500")).body)
+      doc(view) must haveParagraphWithText(
+        Html(
+          messages(
+            "your.total.income.from.employment.desc",
+            "£68,476",
+            messages("tai.estimatedIncome.taxFree.link"),
+            "£11,500")).body)
     }
 
     "have tax on your dividend income section" in {
@@ -339,16 +398,18 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       val incomeFromSavingsId = "income-from-savings"
       val higherRateParaId = "higher-rate-para"
 
-
       "savings income does NOT include HSR1 or HSR2 bands" in {
-        val taxBandSR = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-        val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val taxBandSR =
+          TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val taxBandPSR =
+          TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
         val savingsBands = Seq(taxBandSR, taxBandPSR)
         val model = defaultViewModel.copy(savings = savingsBands)
 
         def view = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
 
-        doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading"))
+        doc(view) must haveH2HeadingWithText(
+          messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading"))
 
         doc(view) must haveElementWithId(incomeFromSavingsId)
         doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", "£600"))
@@ -357,15 +418,25 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       }
 
       "savings income does include HSR1 or HSR2 bands" in {
-        val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-        val taxBandSR = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-        val taxBandHSR1 = TaxBand(bandType = "HSR1", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val taxBandPSR =
+          TaxBand(bandType = "PSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val taxBandSR =
+          TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val taxBandHSR1 = TaxBand(
+          bandType = "HSR1",
+          code = "",
+          income = 500,
+          tax = 0,
+          lowerBand = None,
+          upperBand = Some(500),
+          rate = 0)
         val savingsBands = Seq(taxBandSR, taxBandPSR, taxBandHSR1)
         val model = defaultViewModel.copy(savings = savingsBands)
 
         def view = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
 
-        doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading"))
+        doc(view) must haveH2HeadingWithText(
+          messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading"))
 
         doc(view) must haveElementWithId(incomeFromSavingsId)
         doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", "£700"))
@@ -380,14 +451,29 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
   "have additional tax table" in {
 
     val additionalRows = Seq(
-      AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
-        Some(HelpLink(Messages("what.does.this.mean"),
-          controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
-          "underPaymentFromPreviousYear"))), 100),
-      AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxcode.deduction.type-45"),
-        Some(HelpLink(Messages("what.does.this.mean"),
-          controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
-          "estimatedTaxOwedLink"))), 50),
+      AdditionalTaxDetailRow(
+        TaxSummaryLabel(
+          Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
+          Some(
+            HelpLink(
+              Messages("what.does.this.mean"),
+              controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
+              "underPaymentFromPreviousYear"
+            ))
+        ),
+        100
+      ),
+      AdditionalTaxDetailRow(
+        TaxSummaryLabel(
+          Messages("tai.taxcode.deduction.type-45"),
+          Some(
+            HelpLink(
+              Messages("what.does.this.mean"),
+              controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+              "estimatedTaxOwedLink"))
+        ),
+        50
+      ),
       AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.OutstandingDebt.title")), 150),
       AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.childBenefit.title")), 300),
       AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.excessGiftAidTax.title")), 100),
@@ -399,8 +485,10 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     def additionalDetailView: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
 
     doc(additionalDetailView).select("#additionalTaxTable").size() mustBe 1
-    doc(additionalDetailView).select("#additionalTaxTable-heading").text mustBe Messages("tai.estimatedIncome.additionalTax.title")
-    doc(additionalDetailView).select("#additionalTaxTable-desc").text() mustBe Messages("tai.estimatedIncome.additionalTax.desc")
+    doc(additionalDetailView).select("#additionalTaxTable-heading").text mustBe Messages(
+      "tai.estimatedIncome.additionalTax.title")
+    doc(additionalDetailView).select("#additionalTaxTable-desc").text() mustBe Messages(
+      "tai.estimatedIncome.additionalTax.desc")
     doc(additionalDetailView).getElementsMatchingOwnText("TaxDescription").hasAttr("data-journey-click") mustBe false
     doc(additionalDetailView) must haveThWithText(messages("tax.adjustments"))
     doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.OutstandingDebt.title"))
@@ -408,27 +496,61 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.excessGiftAidTax.title"))
     doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.excessWidowsAndOrphans.title"))
     doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.pensionPaymentsAdjustment.title"))
-    doc(additionalDetailView) must haveTdWithText(s"${messages("tai.taxCalc.UnderpaymentPreviousYear.title")} ${messages("what.does.this.mean")}")
-    doc(additionalDetailView).select("#underPaymentFromPreviousYear").attr("href") mustBe controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
-    doc(additionalDetailView) must haveTdWithText(s"${messages("tai.taxcode.deduction.type-45")} ${messages("what.does.this.mean")}")
-    doc(additionalDetailView).select("#estimatedTaxOwedLink").attr("href") mustBe controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
+    doc(additionalDetailView) must haveTdWithText(
+      s"${messages("tai.taxCalc.UnderpaymentPreviousYear.title")} ${messages("what.does.this.mean")}")
+    doc(additionalDetailView)
+      .select("#underPaymentFromPreviousYear")
+      .attr("href") mustBe controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
+    doc(additionalDetailView) must haveTdWithText(
+      s"${messages("tai.taxcode.deduction.type-45")} ${messages("what.does.this.mean")}")
+    doc(additionalDetailView)
+      .select("#estimatedTaxOwedLink")
+      .attr("href") mustBe controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
   }
 
   "have reduction tax table" in {
-    val taxCodeLink = Link.toInternalPage(
-      url = routes.YourTaxCodeController.taxCodes().toString,
-      value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
-    ).toHtml.body
+    val taxCodeLink = Link
+      .toInternalPage(
+        url = routes.YourTaxCodeController.taxCodes().toString,
+        value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
+      )
+      .toHtml
+      .body
 
     val reductionTaxRows = Seq(
-      ReductionTaxRow(Messages("tai.taxCollected.atSource.otherIncome.description"), 100, Messages("tai.taxCollected.atSource.otherIncome.title")),
-      ReductionTaxRow(Messages("tai.taxCollected.atSource.dividends.description", 10), 200, Messages("tai.taxCollected.atSource.dividends.title")),
-      ReductionTaxRow(Messages("tai.taxCollected.atSource.bank.description", 20), 100, Messages("tai.taxCollected.atSource.bank.title")),
-      ReductionTaxRow(Messages("tai.taxCollected.atSource.marriageAllowance.description", 0, taxCodeLink), 135, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
-      ReductionTaxRow(Messages("tai.taxCollected.atSource.maintenancePayments.description"), 200, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
-      ReductionTaxRow(Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description"), 100, Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")),
-      ReductionTaxRow(Messages("tai.taxCollected.atSource.concessionalRelief.description"), 600, Messages("tai.taxCollected.atSource.concessionalRelief.title")),
-      ReductionTaxRow(Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"), 900, Messages("tai.taxCollected.atSource.doubleTaxationRelief.title")),
+      ReductionTaxRow(
+        Messages("tai.taxCollected.atSource.otherIncome.description"),
+        100,
+        Messages("tai.taxCollected.atSource.otherIncome.title")),
+      ReductionTaxRow(
+        Messages("tai.taxCollected.atSource.dividends.description", 10),
+        200,
+        Messages("tai.taxCollected.atSource.dividends.title")),
+      ReductionTaxRow(
+        Messages("tai.taxCollected.atSource.bank.description", 20),
+        100,
+        Messages("tai.taxCollected.atSource.bank.title")),
+      ReductionTaxRow(
+        Messages("tai.taxCollected.atSource.marriageAllowance.description", 0, taxCodeLink),
+        135,
+        Messages("tai.taxCollected.atSource.marriageAllowance.title")),
+      ReductionTaxRow(
+        Messages("tai.taxCollected.atSource.maintenancePayments.description"),
+        200,
+        Messages("tai.taxCollected.atSource.marriageAllowance.title")),
+      ReductionTaxRow(
+        Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description"),
+        100,
+        Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")
+      ),
+      ReductionTaxRow(
+        Messages("tai.taxCollected.atSource.concessionalRelief.description"),
+        600,
+        Messages("tai.taxCollected.atSource.concessionalRelief.title")),
+      ReductionTaxRow(
+        Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"),
+        900,
+        Messages("tai.taxCollected.atSource.doubleTaxationRelief.title")),
       ReductionTaxRow(Messages("gift.aid.tax.relief", 0, 1000), 1000, Messages("gift.aid.savings")),
       ReductionTaxRow(Messages("personal.pension.payment.relief", 0, 1100), 1100, Messages("personal.pension.payments"))
     )
@@ -438,29 +560,48 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     def reductionTaxDetailView: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
 
     doc(reductionTaxDetailView).select("#taxPaidElsewhereTable").size() mustBe 1
-    doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-heading").text() mustBe Messages("tai.estimatedIncome.reductionsTax.title")
-    doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-desc").text() mustBe Messages("tai.estimatedIncome.reductionsTax.desc")
-    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.otherIncome.title")} ${messages("tai.taxCollected.atSource.otherIncome.description")}")
-    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.dividends.title")} ${messages("tai.taxCollected.atSource.dividends.description", 10)}")
-    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.bank.title")} ${messages("tai.taxCollected.atSource.bank.description", 20)}")
-    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.marriageAllowance.title")} ${
-      messages("tai.taxCollected.atSource.marriageAllowance.description",
-        0, Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
-    }")
-    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.marriageAllowance.title")} ${messages("tai.taxCollected.atSource.maintenancePayments.description", 200)}")
-    doc(reductionTaxDetailView) must haveLinkWithText(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
-    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")} ${messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description", 100)}")
-    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.concessionalRelief.title")} ${messages("tai.taxCollected.atSource.concessionalRelief.description")}")
-    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.doubleTaxationRelief.title")} ${messages("tai.taxCollected.atSource.doubleTaxationRelief.description")}")
-    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("gift.aid.savings")} ${messages("gift.aid.tax.relief", 0, 1000)}")
-    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("personal.pension.payments")} ${messages("personal.pension.payment.relief", 0, 1100)}")
+    doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-heading").text() mustBe Messages(
+      "tai.estimatedIncome.reductionsTax.title")
+    doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-desc").text() mustBe Messages(
+      "tai.estimatedIncome.reductionsTax.desc")
+    doc(reductionTaxDetailView) must haveTdWithText(
+      s"${messages("tai.taxCollected.atSource.otherIncome.title")} ${messages("tai.taxCollected.atSource.otherIncome.description")}")
+    doc(reductionTaxDetailView) must haveTdWithText(
+      s"${messages("tai.taxCollected.atSource.dividends.title")} ${messages("tai.taxCollected.atSource.dividends.description", 10)}")
+    doc(reductionTaxDetailView) must haveTdWithText(
+      s"${messages("tai.taxCollected.atSource.bank.title")} ${messages("tai.taxCollected.atSource.bank.description", 20)}")
+    doc(reductionTaxDetailView) must haveTdWithText(
+      s"${messages("tai.taxCollected.atSource.marriageAllowance.title")} ${messages("tai.taxCollected.atSource.marriageAllowance.description", 0, Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))}")
+    doc(reductionTaxDetailView) must haveTdWithText(
+      s"${messages("tai.taxCollected.atSource.marriageAllowance.title")} ${messages("tai.taxCollected.atSource.maintenancePayments.description", 200)}")
+    doc(reductionTaxDetailView) must haveLinkWithText(
+      Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
+    doc(reductionTaxDetailView) must haveTdWithText(
+      s"${messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")} ${messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description", 100)}")
+    doc(reductionTaxDetailView) must haveTdWithText(
+      s"${messages("tai.taxCollected.atSource.concessionalRelief.title")} ${messages("tai.taxCollected.atSource.concessionalRelief.description")}")
+    doc(reductionTaxDetailView) must haveTdWithText(
+      s"${messages("tai.taxCollected.atSource.doubleTaxationRelief.title")} ${messages("tai.taxCollected.atSource.doubleTaxationRelief.description")}")
+    doc(reductionTaxDetailView) must haveTdWithText(
+      s"${messages("gift.aid.savings")} ${messages("gift.aid.tax.relief", 0, 1000)}")
+    doc(reductionTaxDetailView) must haveTdWithText(
+      s"${messages("personal.pension.payments")} ${messages("personal.pension.payment.relief", 0, 1100)}")
   }
 
   "display navigational links to other pages in the service" in {
     doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
-    doc must haveLinkElement("taxCodesSideLink", routes.YourTaxCodeController.taxCodes.url, messages("check.your.tax.codes"))
-    doc must haveLinkElement("taxFreeAmountSideLink", routes.TaxFreeAmountController.taxFreeAmount.url, messages("check.your.tax.free.amount"))
-    doc must haveLinkElement("taxSummarySideLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("return.to.your.income.tax.summary"))
+    doc must haveLinkElement(
+      "taxCodesSideLink",
+      routes.YourTaxCodeController.taxCodes.url,
+      messages("check.your.tax.codes"))
+    doc must haveLinkElement(
+      "taxFreeAmountSideLink",
+      routes.TaxFreeAmountController.taxFreeAmount.url,
+      messages("check.your.tax.free.amount"))
+    doc must haveLinkElement(
+      "taxSummarySideLink",
+      controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+      messages("return.to.your.income.tax.summary"))
   }
 
   val ukTaxBands = List(
@@ -469,18 +610,34 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     TaxBand("D0", "", 36466, 14586.4, None, None, 40))
 
   val defaultViewModel = DetailedIncomeTaxEstimateViewModel(
-    ukTaxBands, Seq.empty[TaxBand], List(TaxBand("LDR", "", 32010, 6402, None, None, 20))
-    , "UK", 18573, 68476, 11500, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow], 20000, 5000, None, messages("tax.on.your.employment.income"),
-    messages("your.total.income.from.employment.desc",
+    ukTaxBands,
+    Seq.empty[TaxBand],
+    List(TaxBand("LDR", "", 32010, 6402, None, None, 20)),
+    "UK",
+    18573,
+    68476,
+    11500,
+    Seq.empty[AdditionalTaxDetailRow],
+    Seq.empty[ReductionTaxRow],
+    20000,
+    5000,
+    None,
+    messages("tax.on.your.employment.income"),
+    messages(
+      "your.total.income.from.employment.desc",
       "£68,476",
       messages("tai.estimatedIncome.taxFree.link"),
-      "£11,500"))
+      "£11,500")
+  )
 
-  def view(vm: DetailedIncomeTaxEstimateViewModel = defaultViewModel): Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(vm)
+  def view(vm: DetailedIncomeTaxEstimateViewModel = defaultViewModel): Html =
+    views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(vm)
 
   override def view: Html = view(defaultViewModel)
 
-  def createViewModel(additionalTaxTable: Seq[AdditionalTaxDetailRow], reductionTaxTable: Seq[ReductionTaxRow]): DetailedIncomeTaxEstimateViewModel = {
+  def createViewModel(
+    additionalTaxTable: Seq[AdditionalTaxDetailRow],
+    reductionTaxTable: Seq[ReductionTaxRow]): DetailedIncomeTaxEstimateViewModel =
     DetailedIncomeTaxEstimateViewModel(
       nonSavings = List.empty[TaxBand],
       savings = Seq.empty[TaxBand],
@@ -497,6 +654,5 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       taxOnIncomeTypeHeading = "",
       taxOnIncomeTypeDescription = ""
     )
-  }
 
 }

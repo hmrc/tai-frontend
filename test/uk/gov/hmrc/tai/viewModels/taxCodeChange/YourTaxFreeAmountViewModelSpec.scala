@@ -23,7 +23,8 @@ import uk.gov.hmrc.tai.model.CodingComponentPairModel
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
 
-class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication with ViewModelHelper with I18nSupport {
+class YourTaxFreeAmountViewModelSpec
+    extends PlaySpec with FakeTaiPlayApplication with ViewModelHelper with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 

@@ -22,7 +22,7 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.benefits.CompanyBenefitTotalValueForm
 
-class CompanyBenefitTotalValueFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport  {
+class CompanyBenefitTotalValueFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "Company Benefit Total Value Form" must {

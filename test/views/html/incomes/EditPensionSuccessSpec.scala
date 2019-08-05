@@ -21,7 +21,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.HtmlFormatter.htmlNonBroken
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class EditPensionSuccessSpec extends TaiViewSpec with MockitoSugar{
+class EditPensionSuccessSpec extends TaiViewSpec with MockitoSugar {
 
   private val employerId = 1
   private val employerName = "fakeFieldValue"
@@ -42,7 +42,8 @@ class EditPensionSuccessSpec extends TaiViewSpec with MockitoSugar{
     }
 
     "contain the may change paragraph" in {
-      doc(view).getElementsByTag("p").text must include(messages("tai.incomes.updated.pension.seeChanges.text", employerName))
+      doc(view).getElementsByTag("p").text must include(
+        messages("tai.incomes.updated.pension.seeChanges.text", employerName))
     }
   }
 

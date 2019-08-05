@@ -24,7 +24,6 @@ import play.api.i18n.Messages
 
 import scala.util.Try
 
-
 case class EmploymentEndDateForm(employerName: String) {
 
   def form(implicit messages: Messages) = {
@@ -38,31 +37,32 @@ case class EmploymentEndDateForm(employerName: String) {
 
         val yearErrors: Boolean = data.getOrElse(EmploymentFormYear, "").length == 0
 
-        val errors = if(dayErrors || monthErrors || yearErrors) {
+        val errors = if (dayErrors || monthErrors || yearErrors) {
           Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.blank", employerName)))
         } else { Nil }
 
-        if(errors.isEmpty) {
+        if (errors.isEmpty) {
           val inputDate: Option[LocalDate] = Try(
             for {
-              day <- data.get(EmploymentFormDay).map(Integer.parseInt)
+              day   <- data.get(EmploymentFormDay).map(Integer.parseInt)
               month <- data.get(EmploymentFormMonth).map(Integer.parseInt)
-              year <- data.get(EmploymentFormYear).map(Integer.parseInt)
+              year  <- data.get(EmploymentFormYear).map(Integer.parseInt)
             } yield new LocalDate(year, month, day)
           ).getOrElse(None)
 
           inputDate match {
-            case Some(date) if date.isAfter(LocalDate.now()) => Left(Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.future"))))
+            case Some(date) if date.isAfter(LocalDate.now()) =>
+              Left(Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.future"))))
             case Some(d) => Right(d)
-            case _ => Left(Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.invalid"))))
+            case _       => Left(Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.invalid"))))
           }
         } else { Left(errors) }
       }
 
       override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
-        EmploymentFormDay -> value.getDayOfMonth.toString,
+        EmploymentFormDay   -> value.getDayOfMonth.toString,
         EmploymentFormMonth -> value.getMonthOfYear.toString,
-        EmploymentFormYear -> value.getYear.toString
+        EmploymentFormYear  -> value.getYear.toString
       )
     }
 

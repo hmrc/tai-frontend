@@ -25,12 +25,13 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BankBuildingSocietyCloseDateSpec extends TaiViewSpec {
 
-  private val bankName:String = "TestBank"
+  private val bankName: String = "TestBank"
   private val globalErrorMessage: String = "day error message"
   private val closeBankAccountDateForm = DateForm(Nil, bankName)
   private val formWithErrors: Form[LocalDate] = closeBankAccountDateForm.form.withError("", globalErrorMessage)
 
-  override def view: Html = views.html.incomes.bbsi.close.bank_building_society_close_date(closeBankAccountDateForm.form, bankName, 1)
+  override def view: Html =
+    views.html.incomes.bbsi.close.bank_building_society_close_date(closeBankAccountDateForm.form, bankName, 1)
 
   "Close bank account date form" should {
 

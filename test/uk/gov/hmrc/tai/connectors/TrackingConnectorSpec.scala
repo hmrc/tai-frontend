@@ -31,14 +31,10 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import uk.gov.hmrc.http.HeaderCarrier
 
-class TrackingConnectorSpec extends PlaySpec
-  with MockitoSugar
-  with FakeTaiPlayApplication
-  with BeforeAndAfterEach {
+class TrackingConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with BeforeAndAfterEach {
 
-  override def beforeEach: Unit = {
+  override def beforeEach: Unit =
     Mockito.reset(httpHandler)
-  }
 
   "Tracking Url" should {
     "fetch the correct service url" when {
@@ -76,7 +72,8 @@ class TrackingConnectorSpec extends PlaySpec
   val nino: String = new Generator().nextNino.nino
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val trackedFormSeqJson =  """{"submissions":[{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
+  val trackedFormSeqJson =
+    """{"submissions":[{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
                         "receivedDate":"01 Apr 2016","completionDate":"06 May 2016",
                         "milestones":[
                           {"milestone": "Received","status": "current"},
@@ -93,13 +90,13 @@ class TrackingConnectorSpec extends PlaySpec
                            {"milestone": "Done","status": "incomplete"}
                          ]}]}"""
 
-  val trackedFormSeq = Seq(TrackedForm("R39_EN","TES1",TrackedFormReceived),
-    TrackedForm("R38_EN", "TES2",TrackedFormAcquired))
+  val trackedFormSeq =
+    Seq(TrackedForm("R39_EN", "TES1", TrackedFormReceived), TrackedForm("R38_EN", "TES2", TrackedFormAcquired))
 
   private def createSUT() = new SUT
 
   val httpHandler: HttpHandler = mock[HttpHandler]
-  
+
   private class SUT extends TrackingConnector(httpHandler) {
     override lazy val serviceUrl: String = "mockUrl"
   }

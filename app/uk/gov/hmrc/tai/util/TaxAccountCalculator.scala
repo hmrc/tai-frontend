@@ -24,11 +24,10 @@ trait TaxAccountCalculator {
 }
 
 class TaxAccountCalculatorImpl extends TaxAccountCalculator {
-  override def taxFreeAmount(codingComponents: Seq[CodingComponent]): BigDecimal = {
+  override def taxFreeAmount(codingComponents: Seq[CodingComponent]): BigDecimal =
     codingComponents.foldLeft(BigDecimal(0))((total: BigDecimal, component: CodingComponent) =>
       component.componentType match {
         case _: AllowanceComponentType => total + component.amount
-        case _ => total - component.amount
-      })
-  }
+        case _                         => total - component.amount
+    })
 }

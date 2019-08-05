@@ -26,21 +26,21 @@ import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
 class SameEstimatedPaySpec extends TaiViewSpec with MockitoSugar {
 
-
   val employerName = "Employer"
   val amount = "£20,000"
   val employerId = 1
 
   override def view: Html = views.html.incomes.sameEstimatedPay(createViewModel())
 
-  def createViewModel(employmentStartDate: Option[LocalDate] = None) = {
+  def createViewModel(employmentStartDate: Option[LocalDate] = None) =
     SameEstimatedPayViewModel(employerName, employerId, amount = 20000, false)
-  }
 
   "Same estimated pay page" must {
     behave like pageWithBackLink
-    behave like pageWithTitle(messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
-    behave like pageWithHeader(messages("tai.updateEmployemnt.incomeSame.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+    behave like pageWithTitle(
+      messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+    behave like pageWithHeader(
+      messages("tai.updateEmployemnt.incomeSame.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
 
     "display the new estimated income" in {
       val newEstimateMessage = messages("tai.updateEmployment.incomeSame.newEstimate.text")
@@ -49,13 +49,19 @@ class SameEstimatedPaySpec extends TaiViewSpec with MockitoSugar {
 
     "display a paragraph" in {
 
-      doc must haveParagraphWithText(messages("tai.updateEmployment.incomeSame.description", employerName, TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      doc must haveParagraphWithText(
+        messages(
+          "tai.updateEmployment.incomeSame.description",
+          employerName,
+          TaxYearRangeUtil.currentTaxYearRangeSingleLine))
     }
 
     "display return to employment details link" in {
-      doc must haveLinkElement("returnToEmploymentDetails",
+      doc must haveLinkElement(
+        "returnToEmploymentDetails",
         routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString,
-        messages("tai.updateEmployment.incomeSame.employment.return.link"))
+        messages("tai.updateEmployment.incomeSame.employment.return.link")
+      )
     }
   }
 }

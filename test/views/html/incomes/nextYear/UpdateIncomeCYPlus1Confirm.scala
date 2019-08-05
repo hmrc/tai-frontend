@@ -40,7 +40,8 @@ class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
     behave like pageWithTitle(messages("tai.irregular.title"))
     behave like pageWithCombinedHeader(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+    )
 
     "display the users current estimated income" in {
       doc(view) must haveParagraphWithText(messages("tai.updateIncome.CYPlus1.confirm.paragraph") + " £1,000")
@@ -53,8 +54,7 @@ class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
 
     "display a message explaining when change will take effect" in {
       doc(view) must haveParagraphWithText(
-        messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom",
-                 toDisplayFormat(Some(TaxYear().next.start)))
+        messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom", toDisplayFormat(Some(TaxYear().next.start)))
       )
     }
 
@@ -68,7 +68,7 @@ class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
 
     "display a cancel link" in {
       doc(view) must haveLinkWithText(messages("tai.cancel.noSave"))
-      
+
     }
   }
 
