@@ -67,13 +67,8 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
       val sut = createSUT
       val employmentId = 1
       val nino = generateNino
-      val endedCompanyBenefit = EndedCompanyBenefit(
-        "Accommodation",
-        Messages("tai.noLongerGetBenefit"),
-        "Before 6th April",
-        Some("1000000"),
-        "Yes",
-        Some("0123456789"))
+      val endedCompanyBenefit =
+        EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler.postToApi(

@@ -247,7 +247,6 @@ class RemoveCompanyBenefitController @Inject()(
                                               )
       model = EndedCompanyBenefit(
         mandatoryCacheSeq(2),
-        Messages("tai.noLongerGetBenefit"),
         mandatoryCacheSeq(3),
         optionalCacheSeq(0),
         mandatoryCacheSeq(4),

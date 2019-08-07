@@ -36,14 +36,13 @@ abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCa
         Map.empty[String, String]
     }
 
-  protected def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  protected def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     successfulJourneyCacheService.currentValue(key) map (_.isDefined) recover {
       case NonFatal(exception) =>
         Logger.warn(
           s"Failed to retrieve Journey Completion service value for key:$key caused by ${exception.getStackTrace}")
         false
     }
-  }
 
   def journeyCompleted(incomeId: String)(implicit hc: HeaderCarrier): Future[Map[String, String]]
 
