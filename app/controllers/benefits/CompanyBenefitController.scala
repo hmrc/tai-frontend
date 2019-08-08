@@ -74,7 +74,8 @@ class CompanyBenefitController @Inject()(
           }
 
           val form = {
-            val decision = currentCache.get(DecisionChoice)
+            val benefitType = currentCache.get(EndCompanyBenefit_BenefitTypeKey)
+            val decision = currentCache.get(getBenefitDecisionKey(benefitType, DecisionChoice))
             UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
           }
 
@@ -113,20 +114,35 @@ class CompanyBenefitController @Inject()(
         }
       },
       success => {
-        success match {
-          case Some(NoIDontGetThisBenefit) =>
-            journeyCacheService.cache(DecisionChoice, NoIDontGetThisBenefit) map { _ =>
-              Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
+        val benefitType = journeyCacheService.mandatoryJourneyValueAs[String](
+          EndCompanyBenefit_BenefitTypeKey,
+          x => x
+        )
+
+        benefitType.flatMap {
+          case Right(name) =>
+            success match {
+              case Some(NoIDontGetThisBenefit) =>
+                journeyCacheService
+                  .cache(getBenefitDecisionKey(Some(name), DecisionChoice), NoIDontGetThisBenefit) map { _ =>
+                  Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
+                }
+              case Some(YesIGetThisBenefit) =>
+                journeyCacheService.cache(getBenefitDecisionKey(Some(name), DecisionChoice), YesIGetThisBenefit) map {
+                  _ =>
+                    Redirect(
+                      controllers.routes.ExternalServiceRedirectController
+                        .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform)
+                        .url)
+                }
             }
-          case Some(YesIGetThisBenefit) =>
-            journeyCacheService.cache(DecisionChoice, YesIGetThisBenefit) map { _ =>
-              Redirect(
-                controllers.routes.ExternalServiceRedirectController
-                  .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform)
-                  .url)
-            }
+
+          case Left(e) => throw new NoSuchElementException(e)
         }
       }
     )
   }
+
+  def getBenefitDecisionKey(benefitType: Option[String], decision: String): String =
+    s"$benefitType $decision"
 }
