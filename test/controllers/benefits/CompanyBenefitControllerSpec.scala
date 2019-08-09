@@ -16,6 +16,8 @@
 
 package controllers.benefits
 
+import java.util.NoSuchElementException
+
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
@@ -32,7 +34,7 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment}
@@ -126,7 +128,7 @@ class CompanyBenefitControllerSpec
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val expectedForm: Form[Option[String]] =
-          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(YesIGetThisBenefit))
+          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(s"$benefitType $YesIGetThisBenefit"))
         val expectedViewModel = CompanyBenefitDecisionViewModel(benefitType, empName, expectedForm)
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -157,9 +159,15 @@ class CompanyBenefitControllerSpec
   "submit decision" must {
 
     "redirect to the 'When did you stop getting benefits from company?' page" when {
-      "the form has the value noIDontGetThisBenefit" in {
+      "the form has the value noIDontGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is cached" in {
 
         val SUT = createSUT
+
+        val benefitType = "Telephone"
+        when(
+          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+            any()))
+          .thenReturn(Future.successful(Right(benefitType)))
 
         val result = SUT.submitDecision(
           RequestBuilder
@@ -175,10 +183,35 @@ class CompanyBenefitControllerSpec
       }
     }
 
+    "throw a NotFoundException" when {
+      "the form has the value noIDontGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
+        val SUT = createSUT
+
+        when(
+          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+            any()))
+          .thenReturn(Future.failed(new NotFoundException("")))
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+
+        assertThrows[NotFoundException](status(result))
+
+      }
+    }
+
     "redirect to the appropriate IFORM update page" when {
-      "the form has the value yesIGetThisBenefit" in {
+      "the form has the value yesIGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is cached" in {
 
         val SUT = createSUT
+
+        val benefitType = "Telephone"
+        when(
+          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+            any()))
+          .thenReturn(Future.successful(Right(benefitType)))
 
         val result = SUT.submitDecision()(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
@@ -191,6 +224,24 @@ class CompanyBenefitControllerSpec
           .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform)
           .url
 
+      }
+    }
+
+    "throw a NotFoundException" when {
+      "the form has the value YesIGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
+        val SUT = createSUT
+
+        when(
+          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+            any()))
+          .thenReturn(Future.failed(new NotFoundException("")))
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
+
+        assertThrows[NotFoundException](status(result))
       }
     }
 
@@ -218,6 +269,12 @@ class CompanyBenefitControllerSpec
       "it is a NoIDontGetThisBenefit" in {
         val SUT = createSUT
 
+        val benefitType = "Telephone"
+        when(
+          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+            any()))
+          .thenReturn(Future.successful(Right(benefitType)))
+
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
@@ -226,18 +283,25 @@ class CompanyBenefitControllerSpec
         Await.result(result, 5.seconds)
 
         verify(journeyCacheService, times(1))
-          .cache(Matchers.eq(DecisionChoice), Matchers.eq(NoIDontGetThisBenefit))(any())
+          .cache(Matchers.eq(s"${Some(benefitType)} $DecisionChoice"), Matchers.eq(NoIDontGetThisBenefit))(any())
       }
 
       "it is a YesIGetThisBenefit" in {
         val SUT = createSUT
 
+        val benefitType = "Telephone"
+        when(
+          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+            any()))
+          .thenReturn(Future.successful(Right(benefitType)))
+
         val result = SUT.submitDecision(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
 
         Await.result(result, 5.seconds)
-
-        verify(journeyCacheService, times(1)).cache(Matchers.eq(DecisionChoice), Matchers.eq(YesIGetThisBenefit))(any())
+        s"$benefitType $DecisionChoice"
+        verify(journeyCacheService, times(1))
+          .cache(Matchers.eq(s"${Some(benefitType)} $DecisionChoice"), Matchers.eq(YesIGetThisBenefit))(any())
       }
     }
   }
