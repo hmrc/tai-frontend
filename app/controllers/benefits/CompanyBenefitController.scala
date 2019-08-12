@@ -21,9 +21,10 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.Inject
+import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Call}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -34,6 +35,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
+import scala.concurrent.Future
 import scala.util.control.NonFatal
 
 class CompanyBenefitController @Inject()(
@@ -44,6 +46,8 @@ class CompanyBenefitController @Inject()(
   override implicit val templateRenderer: TemplateRenderer,
   override implicit val partialRetriever: FormPartialRetriever)
     extends TaiBaseController with JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants {
+
+  private val logger = Logger(this.getClass)
 
   def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
@@ -105,7 +109,7 @@ class CompanyBenefitController @Inject()(
 
     UpdateOrRemoveCompanyBenefitDecisionForm.form.bindFromRequest.fold(
       formWithErrors => {
-        journeyCacheService.currentCache map { currentCache =>
+        journeyCacheService.currentCache.map { currentCache =>
           val viewModel = CompanyBenefitDecisionViewModel(
             currentCache(EndCompanyBenefit_BenefitTypeKey),
             currentCache(EndCompanyBenefit_EmploymentNameKey),
@@ -114,7 +118,7 @@ class CompanyBenefitController @Inject()(
         }
       },
       success => {
-        val benefitType = journeyCacheService.mandatoryJourneyValueAs[String](
+        val benefitType = journeyCacheService.mandatoryJourneyValueAs(
           EndCompanyBenefit_BenefitTypeKey,
           x => x
         )
@@ -124,20 +128,26 @@ class CompanyBenefitController @Inject()(
             success match {
               case Some(NoIDontGetThisBenefit) =>
                 journeyCacheService
-                  .cache(getBenefitDecisionKey(Some(name), DecisionChoice), NoIDontGetThisBenefit) map { _ =>
-                  Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
-                }
+                  .cache(getBenefitDecisionKey(Some(name), DecisionChoice), NoIDontGetThisBenefit)
+                  .map { _ =>
+                    Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
+                  }
               case Some(YesIGetThisBenefit) =>
-                journeyCacheService.cache(getBenefitDecisionKey(Some(name), DecisionChoice), YesIGetThisBenefit) map {
+                journeyCacheService.cache(getBenefitDecisionKey(Some(name), DecisionChoice), YesIGetThisBenefit).map {
                   _ =>
-                    Redirect(
-                      controllers.routes.ExternalServiceRedirectController
-                        .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform)
-                        .url)
+                    Redirect(controllers.routes.ExternalServiceRedirectController
+                      .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform))
                 }
+              case e => {
+                logger.error(s"Data in incorrect format: $e")
+                Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+              }
             }
 
-          case Left(e) => throw new NoSuchElementException(e)
+          case Left(e) => {
+            logger.error(s"Data not found in cache: $e")
+            Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+          }
         }
       }
     )

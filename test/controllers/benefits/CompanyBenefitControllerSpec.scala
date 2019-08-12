@@ -183,25 +183,6 @@ class CompanyBenefitControllerSpec
       }
     }
 
-    "throw a NotFoundException" when {
-      "the form has the value noIDontGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
-        val SUT = createSUT
-
-        when(
-          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
-            any()))
-          .thenReturn(Future.failed(new NotFoundException("")))
-
-        val result = SUT.submitDecision(
-          RequestBuilder
-            .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
-
-        assertThrows[NotFoundException](status(result))
-
-      }
-    }
-
     "redirect to the appropriate IFORM update page" when {
       "the form has the value yesIGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is cached" in {
 
@@ -227,21 +208,59 @@ class CompanyBenefitControllerSpec
       }
     }
 
-    "throw a NotFoundException" when {
+    "redirect to the Tax Account Summary Page (start of journey)" when {
+      "the form has the value noIDontGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
+        val SUT = createSUT
+        when(
+          journeyCacheService.mandatoryJourneyValueAs(Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+            any()))
+          .thenReturn(Future.successful(Left("")))
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+
+        val redirectUrl = redirectLocation(result)
+
+        redirectUrl mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+
+      }
       "the form has the value YesIGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
         val SUT = createSUT
-
         when(
-          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+          journeyCacheService.mandatoryJourneyValueAs(Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
             any()))
-          .thenReturn(Future.failed(new NotFoundException("")))
+          .thenReturn(Future.successful(Left("")))
 
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
 
-        assertThrows[NotFoundException](status(result))
+        val redirectUrl = redirectLocation(result).getOrElse("")
+
+        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad()
+
+      }
+      "the form has no valid value" in{
+        val SUT = createSUT
+        val benefitType = "Telephone"
+        when(
+          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+            any()))
+          .thenReturn(Future.successful(Right(benefitType)))
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> Random.alphanumeric.take(10).mkString))
+
+        status(result) mustBe SEE_OTHER
+
+        val redirectUrl = redirectLocation(result).getOrElse("")
+
+        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
 
