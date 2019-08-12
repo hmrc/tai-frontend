@@ -55,6 +55,24 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
     }
   }
 
+  "External Service Redirect controller" must {
+    "redirect to external url and not clear the cache" when {
+      "a valid service and i-form name has been passed" in {
+        val sut = createSut
+
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
+
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), Matchers.eq("Test"))(any(), any()))
+          .thenReturn(Future.successful(redirectUri))
+
+        val result = sut.auditAndRedirectService("Test")(request)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe redirectUri
+      }
+    }
+  }
+
   private val redirectUri = "redirectUri"
   private implicit val hc = HeaderCarrier()
 
