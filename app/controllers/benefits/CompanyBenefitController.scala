@@ -145,7 +145,6 @@ class CompanyBenefitController @Inject()(
             }
 
           case Left(e) => {
-            logger.error(s"Data not found in cache: $e")
             Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
           }
         }

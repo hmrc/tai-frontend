@@ -27,6 +27,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
+import org.mockito.Matchers.{eq=>eqTo}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -48,6 +49,7 @@ import views.html.benefits.updateOrRemoveCompanyBenefitDecision
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
+
 
 class CompanyBenefitControllerSpec
     extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with FormValuesConstants
@@ -165,7 +167,7 @@ class CompanyBenefitControllerSpec
 
         val benefitType = "Telephone"
         when(
-          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+          journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
             any()))
           .thenReturn(Future.successful(Right(benefitType)))
 
@@ -190,7 +192,7 @@ class CompanyBenefitControllerSpec
 
         val benefitType = "Telephone"
         when(
-          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+          journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
             any()))
           .thenReturn(Future.successful(Right(benefitType)))
 
@@ -212,7 +214,7 @@ class CompanyBenefitControllerSpec
       "the form has the value noIDontGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
         val SUT = createSUT
         when(
-          journeyCacheService.mandatoryJourneyValueAs(Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+          journeyCacheService.mandatoryJourneyValueAs(eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
             any()))
           .thenReturn(Future.successful(Left("")))
 
@@ -226,10 +228,11 @@ class CompanyBenefitControllerSpec
         redirectUrl mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
       }
+
       "the form has the value YesIGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
         val SUT = createSUT
         when(
-          journeyCacheService.mandatoryJourneyValueAs(Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+          journeyCacheService.mandatoryJourneyValueAs(eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
             any()))
           .thenReturn(Future.successful(Left("")))
 
@@ -243,11 +246,12 @@ class CompanyBenefitControllerSpec
         redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad()
 
       }
+
       "the form has no valid value" in{
         val SUT = createSUT
         val benefitType = "Telephone"
         when(
-          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+          journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
             any()))
           .thenReturn(Future.successful(Right(benefitType)))
 
@@ -290,7 +294,7 @@ class CompanyBenefitControllerSpec
 
         val benefitType = "Telephone"
         when(
-          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+          journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
             any()))
           .thenReturn(Future.successful(Right(benefitType)))
 
@@ -302,7 +306,7 @@ class CompanyBenefitControllerSpec
         Await.result(result, 5.seconds)
 
         verify(journeyCacheService, times(1))
-          .cache(Matchers.eq(s"${Some(benefitType)} $DecisionChoice"), Matchers.eq(NoIDontGetThisBenefit))(any())
+          .cache(eqTo(s"${Some(benefitType)} $DecisionChoice"), eqTo(NoIDontGetThisBenefit))(any())
       }
 
       "it is a YesIGetThisBenefit" in {
@@ -310,7 +314,7 @@ class CompanyBenefitControllerSpec
 
         val benefitType = "Telephone"
         when(
-          journeyCacheService.mandatoryJourneyValueAs[String](Matchers.eq(EndCompanyBenefit_BenefitTypeKey), any())(
+          journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
             any()))
           .thenReturn(Future.successful(Right(benefitType)))
 
@@ -318,9 +322,8 @@ class CompanyBenefitControllerSpec
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
 
         Await.result(result, 5.seconds)
-        s"$benefitType $DecisionChoice"
         verify(journeyCacheService, times(1))
-          .cache(Matchers.eq(s"${Some(benefitType)} $DecisionChoice"), Matchers.eq(YesIGetThisBenefit))(any())
+          .cache(eqTo(s"${Some(benefitType)} $DecisionChoice"), eqTo(YesIGetThisBenefit))(any())
       }
     }
   }
