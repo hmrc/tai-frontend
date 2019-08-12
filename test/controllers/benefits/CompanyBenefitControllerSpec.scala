@@ -175,7 +175,7 @@ class CompanyBenefitControllerSpec
       }
     }
 
-    "redirect to the appropriate IFORM update page" when {
+    "redirect to the appropriate IFORM update page and do not clear the cache" when {
       "the form has the value yesIGetThisBenefit" in {
 
         val SUT = createSUT
@@ -183,14 +183,11 @@ class CompanyBenefitControllerSpec
         val result = SUT.submitDecision()(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
 
-        status(result) mustBe SEE_OTHER
-
         val redirectUrl = redirectLocation(result).getOrElse("")
 
         redirectUrl mustBe controllers.routes.ExternalServiceRedirectController
-          .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform)
+          .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
           .url
-
       }
     }
 

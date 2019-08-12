@@ -122,7 +122,7 @@ class CompanyBenefitController @Inject()(
             journeyCacheService.cache(DecisionChoice, YesIGetThisBenefit) map { _ =>
               Redirect(
                 controllers.routes.ExternalServiceRedirectController
-                  .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform)
+                  .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
                   .url)
             }
         }
