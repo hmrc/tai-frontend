@@ -256,9 +256,12 @@ class IncomeUpdateCalculatorController @Inject()(
 
     val employerFuture = IncomeSource.create(journeyCacheService)
     for {
-      employer <- employerFuture
+      employer     <- employerFuture
+      workingHours <- journeyCacheService.currentValue(UpdateIncome_WorkingHoursKey)
     } yield {
-      Ok(views.html.incomes.workingHours(HoursWorkedForm.createForm(), employer.id, employer.name))
+      Ok(
+        views.html.incomes
+          .workingHours(HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)), employer.id, employer.name))
     }
   }
 
@@ -280,15 +283,14 @@ class IncomeUpdateCalculatorController @Inject()(
         (formData: HoursWorkedForm) => {
           for {
             id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-          } yield
+          } yield {
+            journeyCacheService.cache(UpdateIncome_WorkingHoursKey, formData.workingHours.getOrElse(""))
             formData.workingHours match {
-
-              //Looks like we don't cache before we redirect. Cache Here?
-
               case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage())
               case Some(IRREGULAR_HOURS) =>
                 Redirect(routes.IncomeUpdateCalculatorController.editIncomeIrregularHours(id))
             }
+          }
         }
       )
   }

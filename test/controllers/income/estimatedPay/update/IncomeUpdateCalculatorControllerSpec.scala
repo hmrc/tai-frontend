@@ -450,6 +450,8 @@ class IncomeUpdateCalculatorControllerSpec
     "display workingHours page" when {
       "journey cache returns employment name and id" in {
         val testController = createTestIncomeUpdateCalculatorController
+        when(journeyCacheService.currentValue(eqTo(UpdateIncome_WorkingHoursKey))(any()))
+          .thenReturn(Future.successful(Option(REGULAR_HOURS)))
         val result = testController.workingHoursPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
