@@ -180,8 +180,10 @@ class IncomeUpdateCalculatorController @Inject()(
           incomeToEdit: EmploymentAmount <- incomeToEditFuture
           taxCodeIncomeDetails           <- taxCodeIncomeDetailsFuture
           _                              <- cacheEmploymentDetailsFuture
+          result                         <- processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
+
         } yield {
-          processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
+          result
         }
       case None => throw new RuntimeException("Not able to find employment")
     }).recover {
@@ -193,21 +195,31 @@ class IncomeUpdateCalculatorController @Inject()(
     id: Int,
     employmentName: String,
     incomeToEdit: EmploymentAmount,
-    taxCodeIncomeDetails: TaiResponse)(implicit request: Request[AnyContent], user: AuthedUser) =
+    taxCodeIncomeDetails: TaiResponse)(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] =
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, taxCodeIncomeDetails) match {
       case (true, false, TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) => {
-        if (incomeService.editableIncomes(taxCodeIncomes).size > 1) {
-          Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), id, employmentName))
-        } else {
-          incomeService.singularIncomeId(taxCodeIncomes) match {
-            case Some(incomeId) =>
-              Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), incomeId, employmentName))
-            case None => throw new RuntimeException("Employment id not present")
+
+        for {
+          howToUpdate <- journeyCacheService.currentValue(UpdateIncome_HowToUpdateKey)
+        } yield {
+          val form = HowToUpdateForm.createForm().fill(HowToUpdateForm(howToUpdate))
+
+          if (incomeService.editableIncomes(taxCodeIncomes).size > 1) {
+            Ok(views.html.incomes.howToUpdate(form, id, employmentName))
+          } else {
+            incomeService.singularIncomeId(taxCodeIncomes) match {
+
+              case Some(incomeId) => Ok(views.html.incomes.howToUpdate(form, incomeId, employmentName))
+
+              case None => throw new RuntimeException("Employment id not present")
+            }
           }
+
         }
+
       }
-      case (false, false, _) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-      case _                 => Redirect(controllers.routes.IncomeController.pensionIncome())
+      case (false, false, _) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+      case _                 => Future.successful(Redirect(controllers.routes.IncomeController.pensionIncome()))
     }
 
   def handleChooseHowToUpdate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -226,10 +238,14 @@ class IncomeUpdateCalculatorController @Inject()(
           }
         },
         formData => {
+          journeyCacheService.cache(UpdateIncome_HowToUpdateKey, formData.howToUpdate.getOrElse(""))
           formData.howToUpdate match {
-            case Some("incomeCalculator") =>
+            case Some("incomeCalculator") => {
               Future.successful(Redirect(routes.IncomeUpdateCalculatorController.workingHoursPage()))
-            case _ => Future.successful(Redirect(controllers.routes.IncomeController.viewIncomeForEdit()))
+            }
+            case _ => {
+              Future.successful(Redirect(controllers.routes.IncomeController.viewIncomeForEdit()))
+            }
           }
         }
       )
@@ -266,6 +282,9 @@ class IncomeUpdateCalculatorController @Inject()(
             id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           } yield
             formData.workingHours match {
+
+              //Looks like we don't cache before we redirect. Cache Here?
+
               case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage())
               case Some(IRREGULAR_HOURS) =>
                 Redirect(routes.IncomeUpdateCalculatorController.editIncomeIrregularHours(id))

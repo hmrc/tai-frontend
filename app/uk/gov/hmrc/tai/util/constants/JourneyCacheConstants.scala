@@ -107,6 +107,9 @@ trait JourneyCacheConstants {
   val UpdateIncome_DateKey = "updateIncomeDateKey"
   val UpdateIncome_NewAmountKey = "updateIncomeNewAmountKey"
   val UpdateIncome_ConfirmedNewAmountKey = "updateIncomeConfirmedAmountKey"
+
+  val UpdateIncome_HowToUpdateKey = "updateIncomeHowToUpdate"
+
   val UpdateIncome_PayPeriodKey = "updateIncomePayPeriodKey"
   val UpdateIncome_OtherInDaysKey = "updateIncomeOtherInDaysKey"
   val UpdateIncome_TotalSalaryKey = "updateIncomeTotalSalaryKey"

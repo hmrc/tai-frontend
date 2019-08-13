@@ -25,6 +25,7 @@ import org.jsoup.Jsoup
 import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
@@ -44,13 +45,13 @@ import uk.gov.hmrc.tai.util.constants.{EditIncomePayPeriodConstants, _}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
 import views.html.incomes.{bonusPaymentAmount, bonusPayments, payslipAmount, taxablePayslipAmount}
-
+import org.mockito.Matchers.{eq => eqTo}
 import scala.concurrent.Future
 
 class IncomeUpdateCalculatorControllerSpec
     extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JsoupMatchers with JourneyCacheConstants
     with EditIncomeIrregularPayConstants with FormValuesConstants with ControllerViewTestHelper
-    with EditIncomePayPeriodConstants {
+    with EditIncomePayPeriodConstants with ScalaFutures {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
   val employer = IncomeSource(id = 1, name = "sample employer")
@@ -305,7 +306,7 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect user for non live employment " when {
       "employment amount is occupation income" in {
         val testController = createTestIncomeUpdateCalculatorController
-        val result: Result = testController.processHowToUpdatePage(
+        val result: Future[Result] = testController.processHowToUpdatePage(
           1,
           "name",
           employmentAmount(false, true),
@@ -313,13 +314,15 @@ class IncomeUpdateCalculatorControllerSpec
           RequestBuilder.buildFakeRequestWithAuth("GET"),
           FakeAuthAction.user)
 
-        result.header.status mustBe SEE_OTHER
-        result.header.headers.get(LOCATION) mustBe Some(controllers.routes.IncomeController.pensionIncome().url)
+        whenReady(result) { r =>
+          r.header.status mustBe SEE_OTHER
+          r.header.headers.get(LOCATION) mustBe Some(controllers.routes.IncomeController.pensionIncome().url)
+        }
       }
 
       "employment amount is not occupation income" in {
         val testController = createTestIncomeUpdateCalculatorController
-        val result: Result = testController.processHowToUpdatePage(
+        val result: Future[Result] = testController.processHowToUpdatePage(
           1,
           "name",
           employmentAmount(false, false),
@@ -327,8 +330,10 @@ class IncomeUpdateCalculatorControllerSpec
           RequestBuilder.buildFakeRequestWithAuth("GET"),
           FakeAuthAction.user)
 
-        result.header.status mustBe SEE_OTHER
-        result.header.headers.get(LOCATION) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+        whenReady(result) { r =>
+          r.header.status mustBe SEE_OTHER
+          r.header.headers.get(LOCATION) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+        }
       }
     }
 
@@ -340,8 +345,10 @@ class IncomeUpdateCalculatorControllerSpec
         val taxCodeIncome2 =
           TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
         when(incomeService.editableIncomes(any())).thenReturn(Seq(taxCodeIncome1, taxCodeIncome2))
+        when(journeyCacheService.currentValue(eqTo(UpdateIncome_HowToUpdateKey))(any()))
+          .thenReturn(Future.successful(Option("incomeCalculator")))
 
-        val result: Result = testController.processHowToUpdatePage(
+        val result: Future[Result] = testController.processHowToUpdatePage(
           1,
           "name",
           employmentAmount(true, false),
@@ -349,9 +356,11 @@ class IncomeUpdateCalculatorControllerSpec
           RequestBuilder.buildFakeRequestWithAuth("GET"),
           FakeAuthAction.user)
 
-        result.header.status mustBe OK
-        val doc = Jsoup.parse(contentAsString(Future.successful(result)))
-        doc.title() must include(messages("tai.howToUpdate.title", "name"))
+        whenReady(result) { r =>
+          r.header.status mustBe OK
+          val doc = Jsoup.parse(contentAsString(Future.successful(r)))
+          doc.title() must include(messages("tai.howToUpdate.title", "name"))
+        }
       }
 
       "editable income is singular" in {
@@ -360,8 +369,10 @@ class IncomeUpdateCalculatorControllerSpec
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
         when(incomeService.editableIncomes(any())).thenReturn(Seq(taxCodeIncome1))
         when(incomeService.singularIncomeId(any())).thenReturn(Some(1))
+        when(journeyCacheService.currentValue(eqTo(UpdateIncome_HowToUpdateKey))(any()))
+          .thenReturn(Future.successful(Option("incomeCalculator")))
 
-        val result: Result = testController.processHowToUpdatePage(
+        val result: Future[Result] = testController.processHowToUpdatePage(
           1,
           "name",
           employmentAmount(true, false),
@@ -369,16 +380,21 @@ class IncomeUpdateCalculatorControllerSpec
           RequestBuilder.buildFakeRequestWithAuth("GET"),
           FakeAuthAction.user)
 
-        result.header.status mustBe OK
-        val doc = Jsoup.parse(contentAsString(Future.successful(result)))
-        doc.title() must include(messages("tai.howToUpdate.title", "name"))
+        whenReady(result) { r =>
+          r.header.status mustBe OK
+          val doc = Jsoup.parse(contentAsString(Future.successful(r)))
+          doc.title() must include(messages("tai.howToUpdate.title", "name"))
+        }
       }
 
       "editable income is none" in {
         val testController = createTestIncomeUpdateCalculatorController
         when(incomeService.editableIncomes(any())).thenReturn(Nil)
         when(incomeService.singularIncomeId(any())).thenReturn(None)
-        val ex = the[RuntimeException] thrownBy testController.processHowToUpdatePage(
+        when(journeyCacheService.currentValue(eqTo(UpdateIncome_HowToUpdateKey))(any()))
+          .thenReturn(Future.successful(Option("incomeCalculator")))
+
+        val result = testController.processHowToUpdatePage(
           1,
           "name",
           employmentAmount(true, false),
@@ -386,10 +402,13 @@ class IncomeUpdateCalculatorControllerSpec
           RequestBuilder.buildFakeRequestWithAuth("GET"),
           FakeAuthAction.user)
 
-        ex.getMessage mustBe "Employment id not present"
+        val ex = the[RuntimeException] thrownBy whenReady(result) { r =>
+          r
+        }
+
+        assert(ex.getMessage.contains("Employment id not present"))
       }
     }
-
   }
 
   "handleChooseHowToUpdate" must {
