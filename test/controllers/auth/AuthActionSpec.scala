@@ -28,7 +28,7 @@ import uk.gov.hmrc.auth.core.{Nino => _, _}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name, Retrieval, ~}
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
@@ -106,26 +106,28 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
     "return the users nino in an Ok response" when {
 
       val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
+      val nino = new Generator().nextNino.nino
       val baseRetrieval =
-        creds ~ Some("AA000000A") ~ Some(Name(Some("mainUser"), Some(""))) ~ Some("000111222") ~ ConfidenceLevel.L200
+        creds ~ Some(nino) ~ Some(Name(Some("mainUser"), Some(""))) ~ Some("000111222") ~ ConfidenceLevel.L200
 
       "no trusted helper data is returned" in {
 
         val controller = Harness.successful(baseRetrieval ~ None)
         val result = controller.onPageLoad()(fakeRequest)
 
-        val expectedTaiUser = AuthedUser("mainUser", "AA000000A", "000111222", TaiConstants.AuthProviderGG, "200")
+        val expectedTaiUser = AuthedUser("mainUser", nino, "000111222", TaiConstants.AuthProviderGG, "200")
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }
 
       "trusted helper data is returned" in {
 
-        val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", Nino("AA000001A"))
+        val nino = new Generator().nextNino
+        val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", nino)
         val controller = Harness.successful(baseRetrieval ~ Some(trustedHelper))
         val result = controller.onPageLoad()(fakeRequest)
 
-        val expectedTaiUser = AuthedUser("principalName", "AA000001A", "", TaiConstants.AuthProviderGG, "200")
+        val expectedTaiUser = AuthedUser("principalName", nino.nino, "", TaiConstants.AuthProviderGG, "200")
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }
