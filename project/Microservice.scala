@@ -6,6 +6,7 @@ import sbt._
 import scoverage.ScoverageKeys
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 import com.lucidchart.sbt.scalafmt.ScalafmtCorePlugin.autoImport.scalafmtOnCompile
+import play.sbt.PlayImport.PlayKeys
 
 trait MicroService {
 
@@ -79,7 +80,8 @@ trait MicroService {
       libraryDependencies ++= appDependencies,
       retrieveManaged := true,
       routesGenerator := StaticRoutesGenerator,
-      scalafmtOnCompile := true)
+      scalafmtOnCompile := true,
+      PlayKeys.playDefaultPort := 9230)
     .settings(inConfig(ITTestPhases.TemplateTest)(Defaults.testSettings): _*)
     .configs(IntegrationTest)
     .settings(inConfig(ITTestPhases.TemplateItTest)(Defaults.itSettings): _*)
