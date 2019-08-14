@@ -54,9 +54,21 @@ object AuthedUser {
     val validNino = nino.getOrElse("")
     val validName = name.flatMap(_.name).getOrElse("")
     val validUtr = saUtr.getOrElse("")
-    val validPoviderType = providerType.getOrElse("")
+    val validProviderType = providerType.getOrElse("")
 
-    AuthedUser(validName, validNino, validUtr, validPoviderType, confidenceLevel.toString)
+    AuthedUser(validName, validNino, validUtr, validProviderType, confidenceLevel.toString)
+  }
+
+  def apply(
+    name: String,
+    nino: Nino,
+    saUtr: Option[String],
+    providerType: Option[String],
+    confidenceLevel: ConfidenceLevel): AuthedUser = {
+    val validUtr = saUtr.getOrElse("")
+    val validProviderType = providerType.getOrElse("")
+
+    AuthedUser(name, nino.nino, validUtr, validProviderType, confidenceLevel.toString)
   }
 }
 
@@ -69,9 +81,14 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implic
       HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised().retrieve(
-      Retrievals.credentials and Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.confidenceLevel) {
-      case credentials ~ nino ~ name ~ saUtr ~ confidenceLevel => {
+      Retrievals.credentials and Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper) {
+      case credentials ~ _ ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) => {
+        val providerType = credentials.map(_.providerType)
+        val user = AuthedUser(helper.principalName, helper.principalNino, saUtr, providerType, confidenceLevel)
 
+        authWithCredentials(request, block, credentials, user)
+      }
+      case credentials ~ nino ~ name ~ saUtr ~ confidenceLevel ~ _ => {
         val providerType = credentials.map(_.providerType)
         val user = AuthedUser(name, nino, saUtr, providerType, confidenceLevel)
 
