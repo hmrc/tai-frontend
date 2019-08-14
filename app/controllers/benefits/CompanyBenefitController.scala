@@ -118,40 +118,48 @@ class CompanyBenefitController @Inject()(
         }
       },
       success => {
-        val benefitType = journeyCacheService.mandatoryJourneyValueAs(
-          EndCompanyBenefit_BenefitTypeKey,
-          x => x
-        )
+        val benefitType = journeyCacheService.mandatoryJourneyValueAs(EndCompanyBenefit_BenefitTypeKey, x => x)
+
+        val decision = success.getOrElse("")
+
+        val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
 
         benefitType.flatMap {
-          case Right(name) =>
-            success match {
-              case Some(NoIDontGetThisBenefit) =>
-                journeyCacheService
-                  .cache(getBenefitDecisionKey(Some(name), DecisionChoice), NoIDontGetThisBenefit)
-                  .map { _ =>
-                    Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
+          case Right(bt) => {
+            journeyCacheService.cache(getBenefitDecisionKey(Some(bt), DecisionChoice), decision).map {
+              _ =>
+                {
+                  decision match {
+                    case NoIDontGetThisBenefit => {
+                      Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
+                    }
+                    case YesIGetThisBenefit => {
+                      Redirect(controllers.routes.ExternalServiceRedirectController
+                        .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform))
+                    }
+                    case e => {
+                      logger.error(s"Bad Option provided in submitDecision form: $e")
+                      journeyStartRedirection
+                    }
                   }
-              case Some(YesIGetThisBenefit) =>
-                journeyCacheService.cache(getBenefitDecisionKey(Some(name), DecisionChoice), YesIGetThisBenefit).map {
-                  _ =>
-                    Redirect(controllers.routes.ExternalServiceRedirectController
-                      .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform))
                 }
-              case e => {
-                logger.error(s"Data in incorrect format: $e")
-                Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
-              }
             }
-
-          case Left(e) => {
-            Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+          }
+          case Left(_) => {
+            Future.successful(journeyStartRedirection)
           }
         }
       }
     )
   }
 
-  def getBenefitDecisionKey(benefitType: Option[String], decision: String): String =
-    s"$benefitType $decision"
+  def getBenefitDecisionKey(benefitType: Option[String], decision: String): String = {
+    val prefix = benefitType.getOrElse("")
+    val suffix = decision
+    if (prefix.equals("")) {
+      suffix
+    } else {
+      s"$prefix $suffix"
+    }
+  }
 }

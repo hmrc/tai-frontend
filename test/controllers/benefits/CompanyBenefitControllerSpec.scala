@@ -27,7 +27,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
-import org.mockito.Matchers.{eq=>eqTo}
+import org.mockito.Matchers.{eq => eqTo}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -35,10 +35,10 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
-import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment}
+import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment, TaxComponentType, Telephone}
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
@@ -49,7 +49,6 @@ import views.html.benefits.updateOrRemoveCompanyBenefitDecision
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
-
 
 class CompanyBenefitControllerSpec
     extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with FormValuesConstants
@@ -160,16 +159,22 @@ class CompanyBenefitControllerSpec
 
   "submit decision" must {
 
+    def ensureBenefitTypeInCache() :Unit = {
+      val benefitType = Telephone.name
+      when(journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(any()))
+        .thenReturn(Future.successful(Right(benefitType)))
+    }
+
+    def ensureBenefitTypeOutOfCache() :Unit = {
+      when(journeyCacheService.mandatoryJourneyValueAs(eqTo(EndCompanyBenefit_BenefitTypeKey), any())(any()))
+        .thenReturn(Future.successful(Left("")))
+    }
+
     "redirect to the 'When did you stop getting benefits from company?' page" when {
       "the form has the value noIDontGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is cached" in {
 
         val SUT = createSUT
-
-        val benefitType = "Telephone"
-        when(
-          journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
-            any()))
-          .thenReturn(Future.successful(Right(benefitType)))
+        ensureBenefitTypeInCache()
 
         val result = SUT.submitDecision(
           RequestBuilder
@@ -189,12 +194,7 @@ class CompanyBenefitControllerSpec
       "the form has the value yesIGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is cached" in {
 
         val SUT = createSUT
-
-        val benefitType = "Telephone"
-        when(
-          journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
-            any()))
-          .thenReturn(Future.successful(Right(benefitType)))
+        ensureBenefitTypeInCache()
 
         val result = SUT.submitDecision()(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
@@ -213,10 +213,7 @@ class CompanyBenefitControllerSpec
     "redirect to the Tax Account Summary Page (start of journey)" when {
       "the form has the value noIDontGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
         val SUT = createSUT
-        when(
-          journeyCacheService.mandatoryJourneyValueAs(eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
-            any()))
-          .thenReturn(Future.successful(Left("")))
+        ensureBenefitTypeOutOfCache()
 
         val result = SUT.submitDecision(
           RequestBuilder
@@ -231,10 +228,7 @@ class CompanyBenefitControllerSpec
 
       "the form has the value YesIGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
         val SUT = createSUT
-        when(
-          journeyCacheService.mandatoryJourneyValueAs(eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
-            any()))
-          .thenReturn(Future.successful(Left("")))
+        ensureBenefitTypeOutOfCache()
 
         val result = SUT.submitDecision(
           RequestBuilder
@@ -243,17 +237,13 @@ class CompanyBenefitControllerSpec
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
-        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad()
+        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
       }
 
-      "the form has no valid value" in{
+      "the form has no valid value" in {
         val SUT = createSUT
-        val benefitType = "Telephone"
-        when(
-          journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
-            any()))
-          .thenReturn(Future.successful(Right(benefitType)))
+        ensureBenefitTypeInCache()
 
         val result = SUT.submitDecision(
           RequestBuilder
@@ -293,9 +283,7 @@ class CompanyBenefitControllerSpec
         val SUT = createSUT
 
         val benefitType = "Telephone"
-        when(
-          journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
-            any()))
+        when(journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(any()))
           .thenReturn(Future.successful(Right(benefitType)))
 
         val result = SUT.submitDecision(
@@ -313,9 +301,7 @@ class CompanyBenefitControllerSpec
         val SUT = createSUT
 
         val benefitType = "Telephone"
-        when(
-          journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(
-            any()))
+        when(journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(any()))
           .thenReturn(Future.successful(Right(benefitType)))
 
         val result = SUT.submitDecision(
