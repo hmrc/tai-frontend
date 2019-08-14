@@ -125,7 +125,7 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
         val controller = Harness.successful(baseRetrieval ~ Some(trustedHelper))
         val result = controller.onPageLoad()(fakeRequest)
 
-        val expectedTaiUser = AuthedUser("principalName", "AA000001A", "000111222", TaiConstants.AuthProviderGG, "200")
+        val expectedTaiUser = AuthedUser("principalName", "AA000001A", "", TaiConstants.AuthProviderGG, "200")
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }

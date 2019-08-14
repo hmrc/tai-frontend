@@ -59,16 +59,10 @@ object AuthedUser {
     AuthedUser(validName, validNino, validUtr, validProviderType, confidenceLevel.toString)
   }
 
-  def apply(
-    name: String,
-    nino: Nino,
-    saUtr: Option[String],
-    providerType: Option[String],
-    confidenceLevel: ConfidenceLevel): AuthedUser = {
-    val validUtr = saUtr.getOrElse("")
+  def apply(name: String, nino: Nino, providerType: Option[String], confidenceLevel: ConfidenceLevel): AuthedUser = {
     val validProviderType = providerType.getOrElse("")
 
-    AuthedUser(name, nino.nino, validUtr, validProviderType, confidenceLevel.toString)
+    AuthedUser(name, nino.nino, "", validProviderType, confidenceLevel.toString)
   }
 }
 
@@ -84,7 +78,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implic
       Retrievals.credentials and Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper) {
       case credentials ~ _ ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) => {
         val providerType = credentials.map(_.providerType)
-        val user = AuthedUser(helper.principalName, helper.principalNino, saUtr, providerType, confidenceLevel)
+        val user = AuthedUser(helper.principalName, helper.principalNino, providerType, confidenceLevel)
 
         authWithCredentials(request, block, credentials, user)
       }
