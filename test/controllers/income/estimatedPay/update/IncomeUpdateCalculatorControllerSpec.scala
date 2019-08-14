@@ -136,7 +136,6 @@ class IncomeUpdateCalculatorControllerSpec
     }
 
     "generate an internal server error " when {
-
       "no employments are found" in {
 
         val testController = createTestIncomeUpdateCalculatorController
@@ -150,9 +149,7 @@ class IncomeUpdateCalculatorControllerSpec
         val result = testController.onPageLoad(employer.id)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
-
     }
-
   }
 
   "estimatedPayLandingPage" must {
@@ -338,12 +335,13 @@ class IncomeUpdateCalculatorControllerSpec
     }
 
     "redirect user for is live employment " when {
-      "editable incomes are greater than one" in {
+      "editable incomes are greater than one and UpdateIncome_HowToUpdateKey has a cached value" in {
         val testController = createTestIncomeUpdateCalculatorController
         val taxCodeIncome1 =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
         val taxCodeIncome2 =
           TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
+
         when(incomeService.editableIncomes(any())).thenReturn(Seq(taxCodeIncome1, taxCodeIncome2))
         when(journeyCacheService.currentValue(eqTo(UpdateIncome_HowToUpdateKey))(any()))
           .thenReturn(Future.successful(Option("incomeCalculator")))
@@ -363,7 +361,33 @@ class IncomeUpdateCalculatorControllerSpec
         }
       }
 
-      "editable income is singular" in {
+      "editable incomes are greater than one and no cached UpdateIncome_HowToUpdateKey" in {
+        val testController = createTestIncomeUpdateCalculatorController
+        val taxCodeIncome1 =
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
+        val taxCodeIncome2 =
+          TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
+
+        when(incomeService.editableIncomes(any())).thenReturn(Seq(taxCodeIncome1, taxCodeIncome2))
+        when(journeyCacheService.currentValue(eqTo(UpdateIncome_HowToUpdateKey))(any()))
+          .thenReturn(Future.successful(Option("")))
+
+        val result: Future[Result] = testController.processHowToUpdatePage(
+          1,
+          "name",
+          employmentAmount(true, false),
+          TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome]))(
+          RequestBuilder.buildFakeRequestWithAuth("GET"),
+          FakeAuthAction.user)
+
+        whenReady(result) { r =>
+          r.header.status mustBe OK
+          val doc = Jsoup.parse(contentAsString(Future.successful(r)))
+          doc.title() must include(messages("tai.howToUpdate.title", "name"))
+        }
+      }
+
+      "editable income is singular and UpdateIncome_HowToUpdateKey has a cached value" in {
         val testController = createTestIncomeUpdateCalculatorController
         val taxCodeIncome1 =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
@@ -387,12 +411,58 @@ class IncomeUpdateCalculatorControllerSpec
         }
       }
 
-      "editable income is none" in {
+      "editable income is singular and no cached UpdateIncome_HowToUpdateKey" in {
+        val testController = createTestIncomeUpdateCalculatorController
+        val taxCodeIncome1 =
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
+        when(incomeService.editableIncomes(any())).thenReturn(Seq(taxCodeIncome1))
+        when(incomeService.singularIncomeId(any())).thenReturn(Some(1))
+        when(journeyCacheService.currentValue(eqTo(UpdateIncome_HowToUpdateKey))(any()))
+          .thenReturn(Future.successful(Option("")))
+
+        val result: Future[Result] = testController.processHowToUpdatePage(
+          1,
+          "name",
+          employmentAmount(true, false),
+          TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome]))(
+          RequestBuilder.buildFakeRequestWithAuth("GET"),
+          FakeAuthAction.user)
+
+        whenReady(result) { r =>
+          r.header.status mustBe OK
+          val doc = Jsoup.parse(contentAsString(Future.successful(r)))
+          doc.title() must include(messages("tai.howToUpdate.title", "name"))
+        }
+      }
+
+      "editable income is none and UpdateIncome_HowToUpdateKey has a cached value" in {
         val testController = createTestIncomeUpdateCalculatorController
         when(incomeService.editableIncomes(any())).thenReturn(Nil)
         when(incomeService.singularIncomeId(any())).thenReturn(None)
         when(journeyCacheService.currentValue(eqTo(UpdateIncome_HowToUpdateKey))(any()))
           .thenReturn(Future.successful(Option("incomeCalculator")))
+
+        val result = testController.processHowToUpdatePage(
+          1,
+          "name",
+          employmentAmount(true, false),
+          TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome]))(
+          RequestBuilder.buildFakeRequestWithAuth("GET"),
+          FakeAuthAction.user)
+
+        val ex = the[RuntimeException] thrownBy whenReady(result) { r =>
+          r
+        }
+
+        assert(ex.getMessage.contains("Employment id not present"))
+      }
+
+      "editable income is none and no cached UpdateIncome_HowToUpdateKey" in {
+        val testController = createTestIncomeUpdateCalculatorController
+        when(incomeService.editableIncomes(any())).thenReturn(Nil)
+        when(incomeService.singularIncomeId(any())).thenReturn(None)
+        when(journeyCacheService.currentValue(eqTo(UpdateIncome_HowToUpdateKey))(any()))
+          .thenReturn(Future.successful(Option("")))
 
         val result = testController.processHowToUpdatePage(
           1,
