@@ -16,6 +16,8 @@
 
 package controllers.benefits
 
+import akka.dispatch.japi
+import akka.stream.impl.fusing.MapAsync
 import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
@@ -24,8 +26,11 @@ import javax.inject.Inject
 import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Call}
-import uk.gov.hmrc.domain.Nino
+import play.api.inject.guice.BinderOption
+import play.api.mvc.{Action, AnyContent, BodyParser, Call, EssentialAction, Result}
+import play.filters.cors.CORSConfig
+import uk.gov.hmrc.crypto.Crypted
+import uk.gov.hmrc.domain.{AgentBusinessUtr, AgentCode, AgentUserId, AtedUtr, AwrsUtr, CtUtr, HmrcMtdVat, HmrcObtdsOrg, Nino, Org, PayeAgentReference, PsaId, PspId, SaAgentReference, SaUtr, Uar, Vrn}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
@@ -35,8 +40,19 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
+import scala.collection.GenSetLike
+import scala.compat.java8.JFunction1
+import scala.compat.java8.functionConverterImpls.{FromJavaConsumer, FromJavaDoubleConsumer, FromJavaDoubleFunction, FromJavaDoublePredicate, FromJavaDoubleToIntFunction, FromJavaDoubleToLongFunction, FromJavaDoubleUnaryOperator, FromJavaFunction, FromJavaIntConsumer, FromJavaIntFunction, FromJavaIntPredicate, FromJavaIntToDoubleFunction, FromJavaIntToLongFunction, FromJavaIntUnaryOperator, FromJavaLongConsumer, FromJavaLongFunction, FromJavaLongPredicate, FromJavaLongToDoubleFunction, FromJavaLongToIntFunction, FromJavaLongUnaryOperator, FromJavaPredicate, FromJavaToDoubleFunction, FromJavaToIntFunction, FromJavaToLongFunction, FromJavaUnaryOperator}
 import scala.concurrent.Future
+import scala.concurrent.java8.FuturesConvertersImpl
+import scala.reflect.internal.Precedence
+import scala.reflect.internal.util.WeakHashSet
+import scala.runtime.{AbstractFunction1, AbstractPartialFunction}
+import scala.util.MurmurHash
 import scala.util.control.NonFatal
+import scala.xml.dtd.ElementValidator
+import scala.xml.persistent.Index
+import scala.xml.transform.BasicTransformer
 
 class CompanyBenefitController @Inject()(
   employmentService: EmploymentService,
@@ -79,8 +95,14 @@ class CompanyBenefitController @Inject()(
 
           val form = {
             val benefitType = currentCache.get(EndCompanyBenefit_BenefitTypeKey)
-            val decision = currentCache.get(getBenefitDecisionKey(benefitType))
-            UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
+            val benefitDecisionKey = getBenefitDecisionKey(benefitType)
+            benefitDecisionKey match {
+              case Some(bdk) => {
+                val decision = currentCache.get(bdk)
+                UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
+              }
+              case _ => UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(None)
+            }
           }
 
           val viewModel = CompanyBenefitDecisionViewModel(
@@ -118,48 +140,53 @@ class CompanyBenefitController @Inject()(
         }
       },
       success => {
+        val decision = success.getOrElse("")
+        val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
         val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefit_BenefitTypeKey)
 
-        val decision = success.getOrElse("")
-
-        val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-
-        benefitType.flatMap {
+        benefitType.flatMap[Result] {
+          //Cache if successful
           case Right(bt) => {
-            journeyCacheService.cache(getBenefitDecisionKey(Some(bt)), decision).map {
-              _ =>
-                {
-                  decision match {
-                    case NoIDontGetThisBenefit => {
-                      Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
-                    }
-                    case YesIGetThisBenefit => {
-                      Redirect(controllers.routes.ExternalServiceRedirectController
-                        .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform))
-                    }
-                    case e => {
-                      logger.error(s"Bad Option provided in submitDecision form: $e")
-                      journeyStartRedirection
+            //Get the Key
+            getBenefitDecisionKey(Some(bt)) match {
+              case Some(bdk) => //Good Key
+              {
+                //Store the value
+                journeyCacheService.cache(bdk, decision).map {
+                  //Complete Redirect
+                  _ => {
+                    decision match {
+                      case NoIDontGetThisBenefit => {
+                        Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
+                      }
+                      case YesIGetThisBenefit => {
+                        Redirect(controllers.routes.ExternalServiceRedirectController
+                          .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform))
+                      }
+                      case e => {
+                        logger.error(s"Bad Option provided in submitDecision form: $e")
+                        journeyStartRedirection
+                      }
                     }
                   }
                 }
+              }
+              case _ => { //Default Case - no formable key.
+                logger.error(s"Unable to form key for $DecisionChoice using $benefitType")
+                Future.successful(journeyStartRedirection)
+              }
             }
           }
-          case Left(_) => {
+          case Left(_) => //Otherwise we can't and need to redirect to start of the journey
+          {
+            logger.error(s"Unable to find $EndCompanyBenefit_BenefitTypeKey when submitting decision")
             Future.successful(journeyStartRedirection)
           }
         }
       }
-    )
   }
 
-  def getBenefitDecisionKey(benefitType: Option[String]): String = {
-    val prefix = benefitType.getOrElse("")
-    val suffix = DecisionChoice
-    if (prefix.equals("")) {
-      suffix
-    } else {
-      s"$prefix $suffix"
-    }
+  def getBenefitDecisionKey(benefitType: Option[String]): Option[String] = {
+    benefitType.map(x => s"$x $DecisionChoice")
   }
 }
