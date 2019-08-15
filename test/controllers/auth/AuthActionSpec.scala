@@ -17,14 +17,18 @@
 package controllers.auth
 
 import controllers.{FakeTaiPlayApplication, routes}
+import org.mockito.Matchers._
+import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Controller
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.{Nino => _, _}
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name, Retrieval, ~}
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
@@ -38,19 +42,39 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
     SessionKeys.authProvider -> TaiConstants.AuthProviderVerify
   )
 
-  class Harness(authAction: AuthAction) extends Controller {
+  abstract class Harness(authAction: AuthAction) extends Controller {
+
     def onPageLoad() = authAction { request =>
-      BadRequest
+      Ok(request.taiUser.toString)
     }
   }
 
+  object Harness {
+
+    def fromAction(authAction: AuthAction): Harness =
+      new Harness(authAction) {}
+
+    def successful[A](a: A): Harness = {
+      val mocked = mock[AuthConnector]
+      when(mocked.authorise[A](any(), any())(any(), any())).thenReturn(Future.successful(a))
+
+      fromAction(new AuthActionImpl(mocked))
+    }
+
+    def failure(ex: Throwable): Harness =
+      fromAction(new AuthActionImpl(new FakeFailingAuthConnector(ex)))
+  }
+
   class FakeFailingAuthConnector(exceptionToReturn: Throwable) extends AuthConnector {
-    val serviceUrl: String = ""
 
     override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(
       implicit hc: HeaderCarrier,
       ec: ExecutionContext): Future[A] =
       Future.failed(exceptionToReturn)
+  }
+
+  private implicit class HelperOps[A](a: A) {
+    def ~[B](b: B) = new ~(a, b)
   }
 
   "Auth Action" when {
@@ -67,8 +91,7 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
     authErrors.foreach(error => {
       s"the user has ${error.toString}" must {
         "redirect the user to an unauthorised page " in {
-          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(error))
-          val controller = new Harness(authAction)
+          val controller = Harness.failure(error)
           val result = controller.onPageLoad()(fakeRequest)
 
           status(result) mustBe SEE_OTHER
@@ -76,6 +99,40 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
         }
       }
     })
+  }
+
+  "Given the user is authorised" should {
+
+    "return the users nino in an Ok response" when {
+
+      val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
+      val nino = new Generator().nextNino.nino
+      val baseRetrieval =
+        creds ~ Some(nino) ~ Some(Name(Some("mainUser"), Some(""))) ~ Some("000111222") ~ ConfidenceLevel.L200
+
+      "no trusted helper data is returned" in {
+
+        val controller = Harness.successful(baseRetrieval ~ None)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        val expectedTaiUser = AuthedUser("mainUser", nino, "000111222", TaiConstants.AuthProviderGG, "200")
+
+        contentAsString(result) mustBe expectedTaiUser.toString
+      }
+
+      "trusted helper data is returned" in {
+
+        val nino = new Generator().nextNino
+        val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", nino)
+        val controller = Harness.successful(baseRetrieval ~ Some(trustedHelper))
+        val result = controller.onPageLoad()(fakeRequest)
+
+        val expectedTaiUser = AuthedUser("principalName", nino.nino, "", TaiConstants.AuthProviderGG, "200")
+
+        contentAsString(result) mustBe expectedTaiUser.toString
+      }
+    }
+
   }
 
   "Given the user is unauthorised" should {
@@ -90,8 +147,7 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
 
       authErrors.foreach(error => {
         s"there is an ${error.toString}" in {
-          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(error))
-          val controller = new Harness(authAction)
+          val controller = Harness.failure(error)
 
           val result = controller.onPageLoad()(fakeRequest)
 
@@ -111,8 +167,7 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
 
       authErrors.foreach(error => {
         s"there is an ${error.toString}" in {
-          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(error))
-          val controller = new Harness(authAction)
+          val controller = Harness.failure(error)
 
           val result = controller.onPageLoad()(fakeVerifyRequest)
 
@@ -125,8 +180,7 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
 
   "Given an unexpected exception occurred" should {
     "return the exception" in {
-      val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new Exception("Help")))
-      val controller = new Harness(authAction)
+      val controller = Harness.failure(new Exception("Help"))
 
       val ex: Exception = the[Exception] thrownBy Await.result(controller.onPageLoad()(fakeRequest), 5.seconds)
       ex.getMessage mustBe "Help"
