@@ -16,8 +16,6 @@
 
 package controllers.benefits
 
-import java.util.NoSuchElementException
-
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
@@ -159,16 +157,16 @@ class CompanyBenefitControllerSpec
 
   "submit decision" must {
 
-    def ensureBenefitTypeInCache() :Unit = {
+    def ensureBenefitTypeInCache(): String = {
       val benefitType = Telephone.name
-      when(journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(any()))
+      when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefit_BenefitTypeKey))(any()))
         .thenReturn(Future.successful(Right(benefitType)))
+      benefitType
     }
 
-    def ensureBenefitTypeOutOfCache() :Unit = {
-      when(journeyCacheService.mandatoryJourneyValueAs(eqTo(EndCompanyBenefit_BenefitTypeKey), any())(any()))
+    def ensureBenefitTypeOutOfCache(): Unit =
+      when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefit_BenefitTypeKey))(any()))
         .thenReturn(Future.successful(Left("")))
-    }
 
     "redirect to the 'When did you stop getting benefits from company?' page" when {
       "the form has the value noIDontGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is cached" in {
@@ -282,10 +280,7 @@ class CompanyBenefitControllerSpec
       "it is a NoIDontGetThisBenefit" in {
         val SUT = createSUT
 
-        val benefitType = "Telephone"
-        when(journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(any()))
-          .thenReturn(Future.successful(Right(benefitType)))
-
+        val benefitType = ensureBenefitTypeInCache()
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
@@ -294,22 +289,20 @@ class CompanyBenefitControllerSpec
         Await.result(result, 5.seconds)
 
         verify(journeyCacheService, times(1))
-          .cache(eqTo(s"${Some(benefitType)} $DecisionChoice"), eqTo(NoIDontGetThisBenefit))(any())
+          .cache(eqTo(s"$benefitType $DecisionChoice"), eqTo(NoIDontGetThisBenefit))(any())
       }
 
       "it is a YesIGetThisBenefit" in {
         val SUT = createSUT
 
-        val benefitType = "Telephone"
-        when(journeyCacheService.mandatoryJourneyValueAs[String](eqTo(EndCompanyBenefit_BenefitTypeKey), any())(any()))
-          .thenReturn(Future.successful(Right(benefitType)))
+        val benefitType = ensureBenefitTypeInCache()
 
         val result = SUT.submitDecision(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
 
         Await.result(result, 5.seconds)
         verify(journeyCacheService, times(1))
-          .cache(eqTo(s"${Some(benefitType)} $DecisionChoice"), eqTo(YesIGetThisBenefit))(any())
+          .cache(eqTo(s"$benefitType $DecisionChoice"), eqTo(YesIGetThisBenefit))(any())
       }
     }
   }

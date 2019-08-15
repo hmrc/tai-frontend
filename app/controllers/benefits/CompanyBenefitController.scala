@@ -79,7 +79,7 @@ class CompanyBenefitController @Inject()(
 
           val form = {
             val benefitType = currentCache.get(EndCompanyBenefit_BenefitTypeKey)
-            val decision = currentCache.get(getBenefitDecisionKey(benefitType, DecisionChoice))
+            val decision = currentCache.get(getBenefitDecisionKey(benefitType))
             UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
           }
 
@@ -118,7 +118,7 @@ class CompanyBenefitController @Inject()(
         }
       },
       success => {
-        val benefitType = journeyCacheService.mandatoryJourneyValueAs(EndCompanyBenefit_BenefitTypeKey, x => x)
+        val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefit_BenefitTypeKey)
 
         val decision = success.getOrElse("")
 
@@ -126,7 +126,7 @@ class CompanyBenefitController @Inject()(
 
         benefitType.flatMap {
           case Right(bt) => {
-            journeyCacheService.cache(getBenefitDecisionKey(Some(bt), DecisionChoice), decision).map {
+            journeyCacheService.cache(getBenefitDecisionKey(Some(bt)), decision).map {
               _ =>
                 {
                   decision match {
@@ -153,9 +153,9 @@ class CompanyBenefitController @Inject()(
     )
   }
 
-  def getBenefitDecisionKey(benefitType: Option[String], decision: String): String = {
+  def getBenefitDecisionKey(benefitType: Option[String]): String = {
     val prefix = benefitType.getOrElse("")
-    val suffix = decision
+    val suffix = DecisionChoice
     if (prefix.equals("")) {
       suffix
     } else {
