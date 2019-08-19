@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.tai
 
-import com.google.inject.name.Named
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc.Result
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}

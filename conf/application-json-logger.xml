@@ -8,7 +8,7 @@
     <logger name="uk.gov" level="${logger.uk.gov:-WARN}"/>
     <logger name="controllers.auth.TaiAuthenticationProvider" level="${logger.auth:-WARN}"/>
     <logger name="controllers.benefits.CompanyBenefitController" level="${logger.benefits:-WARN}"/>
-
+    <logger name="uk.gov.hmrc.tai.DecisionCacheWrapper" level="${logger.benefits:-WARN"/>
     <root level="${logger.application:-WARN}">
         <appender-ref ref="STDOUT"/>
     </root>
