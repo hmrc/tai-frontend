@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package uk.gov.hmrc.tai
 
 import controllers.FakeTaiPlayApplication
@@ -22,13 +38,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DecisionCacheWrapperSpec
-  extends PlaySpec
-    with MockitoSugar
-    with BeforeAndAfterEach
-    with FakeTaiPlayApplication
-    with JourneyCacheConstants
-    with UpdateOrRemoveCompanyBenefitDecisionConstants
-    with ScalaFutures{
+    extends PlaySpec with MockitoSugar with BeforeAndAfterEach with FakeTaiPlayApplication with JourneyCacheConstants
+    with UpdateOrRemoveCompanyBenefitDecisionConstants with ScalaFutures {
 
   val journeyCacheService = mock[JourneyCacheService]
 
@@ -56,7 +67,7 @@ class DecisionCacheWrapperSpec
           .thenReturn(Future.successful(None))
 
         val result = DecisionCacheWrapper.getDecision(journeyCacheService)
-        whenReady(result){ r =>
+        whenReady(result) { r =>
           r mustBe None
         }
       }
@@ -80,24 +91,27 @@ class DecisionCacheWrapperSpec
   "cacheDecision" must {
     "cache the result and return the function" when {
       "we are able to generate a benefitDecisionKey" in {
-        when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Right(Telephone.name)))
-        when(journeyCacheService.cache(any(),any())(any())).thenReturn(Future.successful(Map("" -> "")))
-        val redirect = Result
+        when(journeyCacheService.mandatoryJourneyValue(any())(any()))
+          .thenReturn(Future.successful(Right(Telephone.name)))
+        when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map("" -> "")))
         val function = (a: String, b: Result) => b
         val result = DecisionCacheWrapper.cacheDecision(journeyCacheService, YesIGetThisBenefit, function)
 
-        verify(journeyCacheService, times(1)).cache(any(), any())(any())
+        whenReady(result) { r =>
+          verify(journeyCacheService, times(1)).cache(any(), any())(any())
+        }
       }
     }
     "return the default redirection" when {
       "we have no benefit type cached" in {
         when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Left("")))
 
-        val result = DecisionCacheWrapper.cacheDecision(journeyCacheService, YesIGetThisBenefit, (a: String, b:Result) => b)
+        val result =
+          DecisionCacheWrapper.cacheDecision(journeyCacheService, YesIGetThisBenefit, (a: String, b: Result) => b)
 
-        verify(journeyCacheService, times(0)).cache(any(), eqTo(YesIGetThisBenefit))(any())
 
         whenReady(result) { r =>
+          verify(journeyCacheService, times(0)).cache(any(), eqTo(YesIGetThisBenefit))(any())
           r mustBe Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
         }
       }
