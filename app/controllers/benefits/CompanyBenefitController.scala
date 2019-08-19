@@ -33,6 +33,7 @@ import uk.gov.hmrc.crypto.Crypted
 import uk.gov.hmrc.domain.{AgentBusinessUtr, AgentCode, AgentUserId, AtedUtr, AwrsUtr, CtUtr, HmrcMtdVat, HmrcObtdsOrg, Nino, Org, PayeAgentReference, PsaId, PspId, SaAgentReference, SaUtr, Uar, Vrn}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.BenefitComponentType
 import uk.gov.hmrc.tai.service.EmploymentService
@@ -84,6 +85,7 @@ class CompanyBenefitController @Inject()(
       currentCache <- journeyCacheService.currentCache
       employment <- employmentService
                      .employment(Nino(user.getNino), currentCache(EndCompanyBenefit_EmploymentIdKey).toInt)
+      decision <- DecisionCacheWrapper.getDecision(journeyCacheService)
     } yield {
       employment match {
         case Some(employment) =>
@@ -93,17 +95,8 @@ class CompanyBenefitController @Inject()(
               request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
           }
 
-          val form = {
-            val benefitType = currentCache.get(EndCompanyBenefit_BenefitTypeKey)
-            val benefitDecisionKey = getBenefitDecisionKey(benefitType)
-            benefitDecisionKey match {
-              case Some(bdk) => {
-                val decision = currentCache.get(bdk)
-                UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
-              }
-              case _ => UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(None)
-            }
-          }
+          val form =
+            UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
 
           val viewModel = CompanyBenefitDecisionViewModel(
             currentCache(EndCompanyBenefit_BenefitTypeKey),
@@ -126,6 +119,22 @@ class CompanyBenefitController @Inject()(
     }
   }
 
+  def submitDecisionRedirect(decision: String, failureRoute: Result) =
+    decision match {
+      case NoIDontGetThisBenefit => {
+        Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
+      }
+      case YesIGetThisBenefit => {
+        Redirect(
+          controllers.routes.ExternalServiceRedirectController
+            .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform))
+      }
+      case e => {
+        logger.error(s"Bad Option provided in submitDecision form: $e")
+        failureRoute
+      }
+    }
+
   def submitDecision: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
@@ -140,53 +149,11 @@ class CompanyBenefitController @Inject()(
         }
       },
       success => {
-        val decision = success.getOrElse("")
-        val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-        val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefit_BenefitTypeKey)
-
-        benefitType.flatMap[Result] {
-          //Cache if successful
-          case Right(bt) => {
-            //Get the Key
-            getBenefitDecisionKey(Some(bt)) match {
-              case Some(bdk) => //Good Key
-              {
-                //Store the value
-                journeyCacheService.cache(bdk, decision).map {
-                  //Complete Redirect
-                  _ => {
-                    decision match {
-                      case NoIDontGetThisBenefit => {
-                        Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
-                      }
-                      case YesIGetThisBenefit => {
-                        Redirect(controllers.routes.ExternalServiceRedirectController
-                          .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform))
-                      }
-                      case e => {
-                        logger.error(s"Bad Option provided in submitDecision form: $e")
-                        journeyStartRedirection
-                      }
-                    }
-                  }
-                }
-              }
-              case _ => { //Default Case - no formable key.
-                logger.error(s"Unable to form key for $DecisionChoice using $benefitType")
-                Future.successful(journeyStartRedirection)
-              }
-            }
-          }
-          case Left(_) => //Otherwise we can't and need to redirect to start of the journey
-          {
-            logger.error(s"Unable to find $EndCompanyBenefit_BenefitTypeKey when submitting decision")
-            Future.successful(journeyStartRedirection)
-          }
-        }
+        DecisionCacheWrapper.cacheDecision(journeyCacheService, success.getOrElse(""), submitDecisionRedirect)
       }
+    )
   }
 
-  def getBenefitDecisionKey(benefitType: Option[String]): Option[String] = {
+  def getBenefitDecisionKey(benefitType: Option[String]): Option[String] =
     benefitType.map(x => s"$x $DecisionChoice")
-  }
 }

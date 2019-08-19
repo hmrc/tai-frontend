@@ -92,6 +92,7 @@ class CompanyBenefitControllerSpec
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Left("")))
 
         val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -125,6 +126,8 @@ class CompanyBenefitControllerSpec
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Right(benefitType)))
+        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(Some(s"$benefitType $YesIGetThisBenefit")))
 
         val expectedForm: Form[Option[String]] =
           UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(s"$benefitType $YesIGetThisBenefit"))
