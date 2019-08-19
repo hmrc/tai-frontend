@@ -269,7 +269,7 @@ class RemoveCompanyBenefitController @Inject()(
     Future.successful(Ok(views.html.benefits.removeCompanyBenefitConfirmation()))
   }
 
-  private def extractViewModelFromCache(cache: Map[String, String]) = {
+  private def extractViewModelFromCache(cache: Map[String, String])(implicit messages: Messages) = {
     val backUrl =
       if (cache.contains(EndCompanyBenefit_BenefitValueKey)) {
         controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
@@ -278,8 +278,8 @@ class RemoveCompanyBenefitController @Inject()(
       }
 
     CanWeContactByPhoneViewModel(
-      Messages("tai.benefits.ended.journey.preHeader"),
-      Messages("tai.canWeContactByPhone.title"),
+      messages("tai.benefits.ended.journey.preHeader"),
+      messages("tai.canWeContactByPhone.title"),
       backUrl,
       controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url,
       controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
