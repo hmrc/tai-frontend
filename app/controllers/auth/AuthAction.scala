@@ -20,7 +20,6 @@ import javax.inject.{Inject, Singleton}
 import com.google.inject.ImplementedBy
 import controllers.routes
 import play.Logger
-import play.api.Logger
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
@@ -71,7 +70,7 @@ object AuthedUser {
 class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implicit ec: ExecutionContext)
     extends AuthAction with AuthorisedFunctions {
 
-  private val logger = Logger(this.getClass)
+  private val logger = play.api.Logger(this.getClass)
 
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier =
