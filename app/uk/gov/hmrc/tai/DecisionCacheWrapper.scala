@@ -81,6 +81,6 @@ object DecisionCacheWrapper
     }
   }
 
-  def getBenefitDecisionKey(benefitType: Option[String]): Option[String] =
+  private def getBenefitDecisionKey(benefitType: Option[String]): Option[String] =
     benefitType.map(x => s"$x $DecisionChoice")
 }

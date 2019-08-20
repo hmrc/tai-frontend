@@ -109,29 +109,10 @@ class DecisionCacheWrapperSpec
         val result =
           DecisionCacheWrapper.cacheDecision(journeyCacheService, YesIGetThisBenefit, (a: String, b: Result) => b)
 
-
         whenReady(result) { r =>
           verify(journeyCacheService, times(0)).cache(any(), eqTo(YesIGetThisBenefit))(any())
           r mustBe Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
         }
-      }
-    }
-  }
-
-  "getBenefitDecisionKey" must {
-    "create a compound key of the input and DecisionChoice" when {
-      "given a Some" in {
-        val result = DecisionCacheWrapper.getBenefitDecisionKey(Some("abc"))
-
-        result mustBe Some("abc decisionChoice")
-      }
-    }
-
-    "return a None" when {
-      "given a none" in {
-        val result = DecisionCacheWrapper.getBenefitDecisionKey(None)
-
-        result mustBe None
       }
     }
   }
