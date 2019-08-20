@@ -20,6 +20,7 @@ import javax.inject.{Inject, Singleton}
 import com.google.inject.ImplementedBy
 import controllers.routes
 import play.Logger
+import play.api.Logger
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
@@ -70,6 +71,8 @@ object AuthedUser {
 class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implicit ec: ExecutionContext)
     extends AuthAction with AuthorisedFunctions {
 
+  private val logger = Logger(this.getClass)
+
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
@@ -77,12 +80,18 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implic
     authorised().retrieve(
       Retrievals.credentials and Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper) {
       case credentials ~ _ ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) => {
+
+        logger.warn(s"Authorised via trusted helper: $helper")
+
         val providerType = credentials.map(_.providerType)
         val user = AuthedUser(helper.principalName, helper.principalNino, providerType, confidenceLevel)
 
         authWithCredentials(request, block, credentials, user)
       }
       case credentials ~ nino ~ name ~ saUtr ~ confidenceLevel ~ _ => {
+
+        logger.warn(s"Authorised: $nino")
+
         val providerType = credentials.map(_.providerType)
         val user = AuthedUser(name, nino, saUtr, providerType, confidenceLevel)
 
