@@ -30,18 +30,17 @@ import org.mockito.Matchers.{eq => eqTo}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.DecisionCacheWrapper.Redirect
 import uk.gov.hmrc.tai.model.domain.Telephone
-import play.api.test.{ResultExtractors}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import play.api.test.Helpers.{contentAsString, status, _}
 
 class DecisionCacheWrapperSpec
-    extends PlaySpec with MockitoSugar with BeforeAndAfterEach with FakeTaiPlayApplication with JourneyCacheConstants
-    with UpdateOrRemoveCompanyBenefitDecisionConstants with ScalaFutures {
+    extends PlaySpec with MockitoSugar with BeforeAndAfterEach with JourneyCacheConstants
+    with UpdateOrRemoveCompanyBenefitDecisionConstants with ScalaFutures with Results {
 
   val journeyCacheService = mock[JourneyCacheService]
+  val wrapper = new DecisionCacheWrapper(journeyCacheService)
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -54,7 +53,7 @@ class DecisionCacheWrapperSpec
         when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefit_BenefitTypeKey))(any()))
           .thenReturn(Future.successful(Left("")))
 
-        val result = DecisionCacheWrapper.getDecision(journeyCacheService)
+        val result = wrapper.getDecision()
         whenReady(result) { r =>
           r mustBe None
         }
@@ -66,7 +65,7 @@ class DecisionCacheWrapperSpec
         when(journeyCacheService.currentValue(any())(any()))
           .thenReturn(Future.successful(None))
 
-        val result = DecisionCacheWrapper.getDecision(journeyCacheService)
+        val result = wrapper.getDecision()
         whenReady(result) { r =>
           r mustBe None
         }
@@ -80,7 +79,7 @@ class DecisionCacheWrapperSpec
         when(journeyCacheService.currentValue(any())(any()))
           .thenReturn(Future.successful(Option(YesIGetThisBenefit)))
 
-        val result = DecisionCacheWrapper.getDecision(journeyCacheService)
+        val result = wrapper.getDecision()
         whenReady(result) { r =>
           r mustBe Some(YesIGetThisBenefit)
         }
@@ -95,7 +94,7 @@ class DecisionCacheWrapperSpec
           .thenReturn(Future.successful(Right(Telephone.name)))
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map("" -> "")))
         val function = (a: String, b: Result) => b
-        val result = DecisionCacheWrapper.cacheDecision(journeyCacheService, YesIGetThisBenefit, function)
+        val result = wrapper.cacheDecision(YesIGetThisBenefit, function)
 
         whenReady(result) { r =>
           verify(journeyCacheService, times(1)).cache(any(), any())(any())
@@ -107,11 +106,11 @@ class DecisionCacheWrapperSpec
         when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Left("")))
 
         val result =
-          DecisionCacheWrapper.cacheDecision(journeyCacheService, YesIGetThisBenefit, (a: String, b: Result) => b)
+          wrapper.cacheDecision(YesIGetThisBenefit, (a: String, b: Result) => b)
 
         whenReady(result) { r =>
+          r mustBe Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
           verify(journeyCacheService, times(0)).cache(any(), eqTo(YesIGetThisBenefit))(any())
-          r mustBe Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
         }
       }
     }

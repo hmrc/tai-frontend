@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai
 
+import javax.inject.{Inject, Named, Singleton}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import play.api.Logger
 import play.api.mvc.Result
@@ -25,15 +26,14 @@ import scala.concurrent.{ExecutionContext, Future}
 import play.api.mvc.Results
 import uk.gov.hmrc.http.HeaderCarrier
 
-object DecisionCacheWrapper
+@Singleton
+class DecisionCacheWrapper @Inject()(@Named("End Company Benefit") journeyCacheService: JourneyCacheService)
     extends JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants with Results {
 
-  private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+  private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
   private val logger = Logger(this.getClass)
 
-  def getDecision(journeyCacheService: JourneyCacheService)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[Option[String]] = {
+  def getDecision()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefit_BenefitTypeKey)
     benefitType.flatMap[Option[String]] {
       case Right(bt) => {
@@ -55,7 +55,7 @@ object DecisionCacheWrapper
     }
   }
 
-  def cacheDecision(journeyCacheService: JourneyCacheService, decision: String, f: (String, Result) => Result)(
+  def cacheDecision(decision: String, f: (String, Result) => Result)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext): Future[Result] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefit_BenefitTypeKey)

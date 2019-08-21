@@ -39,6 +39,7 @@ import scala.util.control.NonFatal
 
 class CompanyBenefitController @Inject()(
   employmentService: EmploymentService,
+  decisionCacheWrapper: DecisionCacheWrapper,
   @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
@@ -67,7 +68,7 @@ class CompanyBenefitController @Inject()(
       currentCache <- journeyCacheService.currentCache
       employment <- employmentService
                      .employment(Nino(user.getNino), currentCache(EndCompanyBenefit_EmploymentIdKey).toInt)
-      decision <- DecisionCacheWrapper.getDecision(journeyCacheService)
+      decision <- decisionCacheWrapper.getDecision()
     } yield {
       employment match {
         case Some(employment) =>
@@ -131,7 +132,7 @@ class CompanyBenefitController @Inject()(
         }
       },
       success => {
-        DecisionCacheWrapper.cacheDecision(journeyCacheService, success.getOrElse(""), submitDecisionRedirect)
+        decisionCacheWrapper.cacheDecision(success.getOrElse(""), submitDecisionRedirect)
       }
     )
   }

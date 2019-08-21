@@ -35,6 +35,7 @@ import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment, TaxComponentType, Telephone}
 import uk.gov.hmrc.tai.service.EmploymentService
@@ -127,10 +128,11 @@ class CompanyBenefitControllerSpec
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
         when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Right(benefitType)))
-        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(Some(s"$benefitType $YesIGetThisBenefit")))
+        when(journeyCacheService.currentValue(any())(any()))
+          .thenReturn(Future.successful(Some(YesIGetThisBenefit)))
 
         val expectedForm: Form[Option[String]] =
-          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(s"$benefitType $YesIGetThisBenefit"))
+          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some("YesIGetThisBenefit"))
         val expectedViewModel = CompanyBenefitDecisionViewModel(benefitType, empName, expectedForm)
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -331,15 +333,18 @@ class CompanyBenefitControllerSpec
 
   val employmentService = mock[EmploymentService]
   val journeyCacheService = mock[JourneyCacheService]
+  val decisionCacheWrapper = mock[DecisionCacheWrapper]
 
   class SUT
       extends CompanyBenefitController(
         employmentService,
+        new DecisionCacheWrapper(journeyCacheService),
         journeyCacheService,
         FakeAuthAction,
         FakeValidatePerson,
         MockTemplateRenderer,
-        mock[FormPartialRetriever]) {
+        mock[FormPartialRetriever]
+      ) {
     when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
   }
 }
