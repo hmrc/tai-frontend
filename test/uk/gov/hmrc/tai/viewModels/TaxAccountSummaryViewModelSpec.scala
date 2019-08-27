@@ -388,10 +388,6 @@ class TaxAccountSummaryViewModelSpec
         val sut = IncomeSourceViewModel(taxCodeIncomeZero, employment)
         sut.amount mustBe "£0"
       }
-      "has the taxCode field coming from taxCodeWithEmergencySuffix in taxCodeIncome model" in {
-        val sut = IncomeSourceViewModel(taxCodeIncome.copy(basisOperation = Week1Month1BasisOfOperation), employment)
-        sut.taxCode mustBe "1150LX"
-      }
       "has the displayTaxCode field as true" when {
         "employment status is live" in {
           val sut = IncomeSourceViewModel(taxCodeIncome, employment)
