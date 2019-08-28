@@ -1448,9 +1448,9 @@ tai.updateIncome.CYPlus1.edit.wholePounds=Nodwch y swm mewn punnoedd cyfan – a
 tai.updateIncome.CYPlus1.success.heading.p1=Mae’ch diweddariad wedi dod i law.
 tai.updateIncome.CYPlus1.success.heading.p2=Bydd eich cyfrif yn cael ei ddiweddaru cyn pen 48 awr.
 tai.updateIncome.CYPlus1.success.title=Eich incwm amcangyfrifedig wedi''i ddiweddaru ar gyfer {0}
-tai.updateIncome.CYPlus1.success.p1=Gallwch wirio''ch cyfrif ar ôl yr amser hwn i weld eich manylion cyflog newydd amcangyfrifedig ar gyfer y flwyddyn dreth nesaf.
+tai.updateIncome.CYPlus1.success.p1=Gallwch wirio’ch cyfrif ar ôl hyn i weld eich manylion cyflog amcangyfrifedig newydd ar gyfer y flwyddyn dreth nesaf.
 tai.updateIncome.CYPlus1.success.pension.p2=Gall yr incwm amcangyfrifedig hwn newid pan fyddwn yn cael eich datganiad pensiwn terfynol ar gyfer y flwyddyn gyfredol {0}.
-tai.updateIncome.CYPlus1.success.employment.p2=Gall yr incwm amcangyfrifedig hwn newid pan gawn ni eich diweddariad cyflogres terfynol ar gyfer y flwyddyn dreth gyfredol gan {0}.
+tai.updateIncome.CYPlus1.success.employment.p2=Mae’n bosibl y bydd yr incwm amcangyfrifedig hwn yn newid pan fyddwn yn cael eich diweddariad cyflogres terfynol ar gyfer y flwyddyn dreth bresennol oddi wrth {0}.
 
 tai.updateIncome.CYPlus1.same.heading=Eich incwm amcangyfrifedig ar gyfer {0}
 tai.updateIncome.CYPlus1.same.title=Diweddarwch eich incwm amcangyfrifedig
