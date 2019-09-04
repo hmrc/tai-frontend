@@ -51,13 +51,8 @@ class BenefitsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
     "return an envelope id" in {
       val sut = createSut
       val nino = generateNino
-      val endedCompanyBenefit = EndedCompanyBenefit(
-        "Accommodation",
-        Messages("tai.noLongerGetBenefit"),
-        "Before 6th April",
-        Some("1000000"),
-        "Yes",
-        Some("0123456789"))
+      val endedCompanyBenefit =
+        EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
       when(
         benefitsConnector.endedCompanyBenefit(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(endedCompanyBenefit))(
           any())).thenReturn(Future.successful(Some("123-456-789")))
@@ -71,13 +66,8 @@ class BenefitsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
       "no envelope id was returned from the connector layer" in {
         val sut = createSut
         val nino = generateNino
-        val endedCompanyBenefit = EndedCompanyBenefit(
-          "Accommodation",
-          Messages("tai.noLongerGetBenefit"),
-          "Before 6th April",
-          Some("1000000"),
-          "Yes",
-          Some("0123456789"))
+        val endedCompanyBenefit =
+          EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
         when(
           benefitsConnector.endedCompanyBenefit(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(endedCompanyBenefit))(
             any())).thenReturn(Future.successful(None))

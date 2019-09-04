@@ -111,13 +111,7 @@ case class TaxCodeIncome(
   status: TaxCodeIncomeSourceStatus,
   iabdUpdateSource: Option[IabdUpdateSource] = None,
   updateNotificationDate: Option[LocalDate] = None,
-  updateActionDate: Option[LocalDate] = None) {
-
-  lazy val taxCodeWithEmergencySuffix: String = basisOperation match {
-    case Week1Month1BasisOfOperation => taxCode + TaiConstants.EmergencyTaxCodeSuffix
-    case _                           => taxCode
-  }
-}
+  updateActionDate: Option[LocalDate] = None)
 
 object TaxCodeIncome {
   implicit val format: Format[TaxCodeIncome] = Json.format[TaxCodeIncome]
