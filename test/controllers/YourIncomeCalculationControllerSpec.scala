@@ -112,7 +112,8 @@ class YourIncomeCalculationControllerSpec
     "throw bad gateway" when {
       "RTI throws service unavailable" in {
         val sut = createSUT
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
         val result =
           sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -156,7 +157,8 @@ class YourIncomeCalculationControllerSpec
     "throw bad gateway" when {
       "RTI throws service unavailable" in {
         val sut = createSUT
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
         val result =
           sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -250,7 +252,7 @@ class YourIncomeCalculationControllerSpec
       None,
       new LocalDate(2016, 6, 9),
       None,
-      Seq(AnnualAccount("key",TaxYear().prev,Available,Nil,Nil)),
+      Seq(AnnualAccount("key", TaxYear().prev, Available, Nil, Nil)),
       "taxNumber",
       "payeNumber",
       1,
@@ -262,7 +264,7 @@ class YourIncomeCalculationControllerSpec
       None,
       new LocalDate(2016, 7, 9),
       None,
-      Seq(AnnualAccount("key",TaxYear().prev,Available,Nil,Nil)),
+      Seq(AnnualAccount("key", TaxYear().prev, Available, Nil, Nil)),
       "taxNumber",
       "payeNumber",
       2,
@@ -276,25 +278,27 @@ class YourIncomeCalculationControllerSpec
       None,
       new LocalDate(2016, 6, 9),
       None,
-      Seq(AnnualAccount("key",TaxYear().prev,TemporarilyUnavailable,Nil,Nil)),
+      Seq(AnnualAccount("key", TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
       "taxNumber",
       "payeNumber",
       1,
       None,
       false,
-      false),
+      false
+    ),
     Employment(
       "employer2",
       None,
       new LocalDate(2016, 7, 9),
       None,
-      Seq(AnnualAccount("key",TaxYear().prev,TemporarilyUnavailable,Nil,Nil)),
+      Seq(AnnualAccount("key", TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
       "taxNumber",
       "payeNumber",
       2,
       None,
       false,
-      false)
+      false
+    )
   )
 
   val taxCodeIncomes = Seq(

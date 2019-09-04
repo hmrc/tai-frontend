@@ -122,13 +122,10 @@ class YourIncomeCalculationController @Inject()(
       employment <- employmentService.employments(nino, year)
     } yield {
       val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employment, empId, year)
-      val printablePage = views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel)
-      val incomePage = views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel)
       (printPage, historicIncomeCalculationViewModel.realTimeStatus.toString) match {
-        case (true, "Available") => Ok(printablePage)
-        case (true, _) => BadGateway(printablePage)
-        case (_, "Available") => Ok(incomePage)
-        case (_, _) => BadGateway(incomePage)
+        case (_, "TemporarilyUnavailable") => BadGateway(views.html.serviceUnavailable())
+        case (true, _)                     => Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel))
+        case (_, _)                        => Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel))
       }
     }
 }
