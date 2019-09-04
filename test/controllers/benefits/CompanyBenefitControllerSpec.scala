@@ -121,7 +121,7 @@ class CompanyBenefitControllerSpec
           EndCompanyBenefit_EmploymentIdKey -> "1",
           EndCompanyBenefit_BenefitTypeKey  -> benefitType,
           EndCompanyBenefit_RefererKey      -> referer,
-          DecisionChoice                    -> YesIGetThisBenefit
+          s"$benefitType $DecisionChoice"   -> YesIGetThisBenefit
         )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
@@ -132,7 +132,7 @@ class CompanyBenefitControllerSpec
           .thenReturn(Future.successful(Some(YesIGetThisBenefit)))
 
         val expectedForm: Form[Option[String]] =
-          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some("YesIGetThisBenefit"))
+          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(YesIGetThisBenefit))
         val expectedViewModel = CompanyBenefitDecisionViewModel(benefitType, empName, expectedForm)
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
