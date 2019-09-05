@@ -50,7 +50,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     }
 
     "have informative text when payment data is not available" when {
-           "there is no RTI data for previous year" in {
+      "there is no RTI data for previous year" in {
         val view: Html = customView(realTimeStatus = Unavailable, year = TaxYear().prev)
         val doc: Document = Jsoup.parse(view.toString)
         doc must haveParagraphWithText(
