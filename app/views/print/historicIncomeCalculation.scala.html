@@ -105,11 +105,6 @@
     </section>
     }
 
-    case TemporarilyUnavailable => {
-    <p>@Messages("tai.income.calculation.rtiUnavailablePreviousYear.message",Dates.formatDate(TaxYear(historicIncomeCalculationViewModel.taxYear.year).end))</p>
-    <p>@Messages("tai.income.calculation.rtiUnavailablePreviousYear.message.contact")</p>
-    }
-
     case _ => {
     <p>@Messages("tai.income.calculation.noRtiDataPreviousYear" ,Dates.formatDate(TaxYear(historicIncomeCalculationViewModel.taxYear.year).end))</p>
     }

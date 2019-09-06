@@ -110,15 +110,6 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
         )
       }
 
-      "rti is down" in {
-        val model = incomeCalculationViewModel(realTimeStatus = TemporarilyUnavailable)
-
-        def liveView = views.html.incomes.yourIncomeCalculation(model)
-
-        doc(liveView) must haveParagraphWithText(messages("tai.income.calculation.rtiUnavailableCurrentYear.message"))
-        doc(liveView) must haveParagraphWithText(
-          messages("tai.income.calculation.rtiUnavailableCurrentYear.message.contact"))
-      }
 
       "employment type is pension" in {
         val model = incomeCalculationViewModel(employmentType = PensionIncome)
@@ -184,17 +175,6 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
       }
     }
 
-    "show income calculation message" when {
-      "employment is live" in {
-        val model = incomeCalculationViewModel(
-          incomeCalculationMessage = "TEST",
-          incomeCalculationEstimateMessage = Some("ESTIMATE"))
-
-        def incomeMessagesView = views.html.incomes.yourIncomeCalculation(model)
-
-        doc(incomeMessagesView) must haveParagraphWithText(model.incomeCalculationMessage)
-      }
-    }
 
     "show income calculation estimate message" when {
 
