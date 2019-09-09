@@ -69,13 +69,13 @@ class PayeControllerHistoric @Inject()(
         hasTaxCodeRecordsInYearPerEmployment <- hasTaxCodeRecordsFuture
       } yield {
         implicit val user = request.taiUser
-        if(isRtiUnavailable(employments)){
+        if (isRtiUnavailable(employments)) {
           BadGateway(views.html.serviceUnavailable())
-        } else{
-            Ok(
-              views.html.paye.historicPayAsYouEarn(
-                HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-                numberOfPreviousYearsToShow))
+        } else {
+          Ok(
+            views.html.paye.historicPayAsYouEarn(
+              HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
+              numberOfPreviousYearsToShow))
         }
       }
     }
@@ -83,7 +83,6 @@ class PayeControllerHistoric @Inject()(
 
   private def isRtiUnavailable(employments: Seq[Employment]): Boolean =
     (employments.head.annualAccounts.head.realTimeStatus.toString == "TemporarilyUnavailable")
-
 
   def hodStatusRedirect(
     implicit request: AuthenticatedRequest[AnyContent]): PartialFunction[Throwable, Future[Result]] = {
