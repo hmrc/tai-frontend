@@ -108,17 +108,6 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
           messages("tai.income.calculation.heading.withRti", model.latestPayment.get.date.toString(dateFormatPattern))
         )
       }
-
-      "rti is down" in {
-        val model = incomeCalculationViewModel(realTimeStatus = TemporarilyUnavailable)
-
-        def liveView = views.html.print.yourIncomeCalculation(model)
-
-        doc(liveView) must haveParagraphWithText(messages("tai.income.calculation.rtiUnavailableCurrentYear.message"))
-        doc(liveView) must haveParagraphWithText(
-          messages("tai.income.calculation.rtiUnavailableCurrentYear.message.contact"))
-      }
-
     }
 
     "show payment details" in {
@@ -148,18 +137,6 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
 
         doc(totalNotEqualView) must haveParagraphWithText(model.messageWhenTotalNotEqual.get)
         doc(totalNotEqualView) must haveParagraphWithText(messages("tai.income.calculation.totalNotMatching.message"))
-      }
-    }
-
-    "show income calculation message" when {
-      "employment is live" in {
-        val model = incomeCalculationViewModel(
-          incomeCalculationMessage = "TEST",
-          incomeCalculationEstimateMessage = Some("ESTIMATE"))
-
-        def incomeMessagesView = views.html.print.yourIncomeCalculation(model)
-
-        doc(incomeMessagesView) must haveParagraphWithText(model.incomeCalculationMessage)
       }
     }
 
