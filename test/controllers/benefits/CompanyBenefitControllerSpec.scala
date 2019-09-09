@@ -25,6 +25,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
+import org.mockito.Matchers.{eq => eqTo}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -34,8 +35,9 @@ import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
-import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment}
+import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment, TaxComponentType, Telephone}
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
@@ -91,6 +93,7 @@ class CompanyBenefitControllerSpec
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Left("")))
 
         val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -118,12 +121,15 @@ class CompanyBenefitControllerSpec
           EndCompanyBenefit_EmploymentIdKey -> "1",
           EndCompanyBenefit_BenefitTypeKey  -> benefitType,
           EndCompanyBenefit_RefererKey      -> referer,
-          DecisionChoice                    -> YesIGetThisBenefit
+          s"$benefitType $DecisionChoice"   -> YesIGetThisBenefit
         )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Right(benefitType)))
+        when(journeyCacheService.currentValue(any())(any()))
+          .thenReturn(Future.successful(Some(YesIGetThisBenefit)))
 
         val expectedForm: Form[Option[String]] =
           UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(YesIGetThisBenefit))
@@ -156,10 +162,22 @@ class CompanyBenefitControllerSpec
 
   "submit decision" must {
 
+    def ensureBenefitTypeInCache(): String = {
+      val benefitType = Telephone.name
+      when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefit_BenefitTypeKey))(any()))
+        .thenReturn(Future.successful(Right(benefitType)))
+      benefitType
+    }
+
+    def ensureBenefitTypeOutOfCache(): Unit =
+      when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefit_BenefitTypeKey))(any()))
+        .thenReturn(Future.successful(Left("")))
+
     "redirect to the 'When did you stop getting benefits from company?' page" when {
-      "the form has the value noIDontGetThisBenefit" in {
+      "the form has the value noIDontGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is cached" in {
 
         val SUT = createSUT
+        ensureBenefitTypeInCache()
 
         val result = SUT.submitDecision(
           RequestBuilder
@@ -176,9 +194,10 @@ class CompanyBenefitControllerSpec
     }
 
     "redirect to the appropriate IFORM update page" when {
-      "the form has the value yesIGetThisBenefit" in {
+      "the form has the value yesIGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is cached" in {
 
         val SUT = createSUT
+        ensureBenefitTypeInCache()
 
         val result = SUT.submitDecision()(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
@@ -191,6 +210,54 @@ class CompanyBenefitControllerSpec
           .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform)
           .url
 
+      }
+    }
+
+    "redirect to the Tax Account Summary Page (start of journey)" when {
+      "the form has the value noIDontGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
+        val SUT = createSUT
+        ensureBenefitTypeOutOfCache()
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+
+        val redirectUrl = redirectLocation(result)
+
+        redirectUrl mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+
+      }
+
+      "the form has the value YesIGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
+        val SUT = createSUT
+        ensureBenefitTypeOutOfCache()
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
+
+        val redirectUrl = redirectLocation(result).getOrElse("")
+
+        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
+      }
+
+      "the form has no valid value" in {
+        val SUT = createSUT
+        ensureBenefitTypeInCache()
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> Random.alphanumeric.take(10).mkString))
+
+        status(result) mustBe SEE_OTHER
+
+        val redirectUrl = redirectLocation(result).getOrElse("")
+
+        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
 
@@ -218,6 +285,7 @@ class CompanyBenefitControllerSpec
       "it is a NoIDontGetThisBenefit" in {
         val SUT = createSUT
 
+        val benefitType = ensureBenefitTypeInCache()
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
@@ -226,18 +294,20 @@ class CompanyBenefitControllerSpec
         Await.result(result, 5.seconds)
 
         verify(journeyCacheService, times(1))
-          .cache(Matchers.eq(DecisionChoice), Matchers.eq(NoIDontGetThisBenefit))(any())
+          .cache(eqTo(s"$benefitType $DecisionChoice"), eqTo(NoIDontGetThisBenefit))(any())
       }
 
       "it is a YesIGetThisBenefit" in {
         val SUT = createSUT
 
+        val benefitType = ensureBenefitTypeInCache()
+
         val result = SUT.submitDecision(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
 
         Await.result(result, 5.seconds)
-
-        verify(journeyCacheService, times(1)).cache(Matchers.eq(DecisionChoice), Matchers.eq(YesIGetThisBenefit))(any())
+        verify(journeyCacheService, times(1))
+          .cache(eqTo(s"$benefitType $DecisionChoice"), eqTo(YesIGetThisBenefit))(any())
       }
     }
   }
@@ -263,15 +333,18 @@ class CompanyBenefitControllerSpec
 
   val employmentService = mock[EmploymentService]
   val journeyCacheService = mock[JourneyCacheService]
+  val decisionCacheWrapper = mock[DecisionCacheWrapper]
 
   class SUT
       extends CompanyBenefitController(
         employmentService,
+        new DecisionCacheWrapper(journeyCacheService),
         journeyCacheService,
         FakeAuthAction,
         FakeValidatePerson,
         MockTemplateRenderer,
-        mock[FormPartialRetriever]) {
+        mock[FormPartialRetriever]
+      ) {
     when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
   }
 }

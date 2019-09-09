@@ -46,6 +46,8 @@
     </logger>
 
     <logger name="controllers.auth.TaiAuthenticationProvider" level="${logger.auth:-INFO}"/>
+    <logger name="controllers.benefits.CompanyBenefitController" level="${logger.benefits:-WARN}"/>
+    <logger name="uk.gov.hmrc.tai.DecisionCacheWrapper" level="${logger.benefits:-WARN"/>
 
     <root level="WARN">
         <appender-ref ref="FILE"/>
