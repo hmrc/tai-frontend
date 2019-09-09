@@ -238,13 +238,14 @@ class IncomeUpdateCalculatorController @Inject()(
           }
         },
         formData => {
-          journeyCacheService.cache(UpdateIncome_HowToUpdateKey, formData.howToUpdate.getOrElse(""))
-          formData.howToUpdate match {
-            case Some("incomeCalculator") => {
-              Future.successful(Redirect(routes.IncomeUpdateCalculatorController.workingHoursPage()))
-            }
-            case _ => {
-              Future.successful(Redirect(controllers.routes.IncomeController.viewIncomeForEdit()))
+          journeyCacheService.cache(UpdateIncome_HowToUpdateKey, formData.howToUpdate.getOrElse("")).map { _ =>
+            formData.howToUpdate match {
+              case Some("incomeCalculator") => {
+                Redirect(routes.IncomeUpdateCalculatorController.workingHoursPage())
+              }
+              case _ => {
+                Redirect(controllers.routes.IncomeController.viewIncomeForEdit())
+              }
             }
           }
         }
@@ -283,8 +284,8 @@ class IncomeUpdateCalculatorController @Inject()(
         (formData: HoursWorkedForm) => {
           for {
             id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+            _  <- journeyCacheService.cache(UpdateIncome_WorkingHoursKey, formData.workingHours.getOrElse(""))
           } yield {
-            journeyCacheService.cache(UpdateIncome_WorkingHoursKey, formData.workingHours.getOrElse(""))
             formData.workingHours match {
               case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage())
               case Some(IRREGULAR_HOURS) =>
