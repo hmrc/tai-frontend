@@ -90,13 +90,6 @@ partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
                             } else {
                                 <h2 class="heading-medium">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
                             }
-
-                            @if(model.rtiStatus == TemporarilyUnavailable) {
-                                <p id="rtiUnavailableCurrentYear">@Messages("tai.income.calculation.rtiUnavailableCurrentYear.message")</p>
-                                <p id="rtiUnavailableCurrentYearContact">@Messages("tai.income.calculation.rtiUnavailableCurrentYear.message.contact")</p>
-                            } else {
-                                <p id="incomeCalculationMsg@model.empId">@model.incomeCalculationMessage</p>
-                            }
                         }
                     }
                 </div>
