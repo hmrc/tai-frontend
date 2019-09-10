@@ -200,6 +200,28 @@ class PayeControllerHistoricSpec
 
         status(result) mustBe BAD_GATEWAY
       }
+
+      "payePage call when employee sequence is empty " in {
+
+        val testController = createTestController()
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.successful(sampleEmptyEmployment))
+
+        val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+      }
+
+      "payePage call when annual accounts sequence is empty" in {
+
+        val testController = createTestController()
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
+
+        val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe BAD_GATEWAY
+      }
     }
   }
 
@@ -233,6 +255,38 @@ class PayeControllerHistoricSpec
     when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
       .thenReturn(Future.successful(showTaxCodeDescriptionLink))
   }
+
+  val sampleEmptyEmployment = Seq(
+    )
+
+  val sampleEmploymentForEmptyAnnualAccounts = Seq(
+    Employment(
+      "employer1",
+      None,
+      new LocalDate(2016, 6, 9),
+      None,
+      Seq(),
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      false,
+      false
+    ),
+    Employment(
+      "employer2",
+      None,
+      new LocalDate(2016, 7, 9),
+      None,
+      Seq(),
+      "taxNumber",
+      "payeNumber",
+      2,
+      None,
+      false,
+      false
+    )
+  )
 
   val sampleEmploymentForRtiUnavailable = Seq(
     Employment(

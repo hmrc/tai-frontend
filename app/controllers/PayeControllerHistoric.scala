@@ -82,9 +82,7 @@ class PayeControllerHistoric @Inject()(
   } recoverWith hodStatusRedirect
 
   private def isRtiUnavailable(employments: Seq[Employment]): Boolean =
-    if (!employments.isEmpty && !employments.head.annualAccounts.isEmpty) {
-      (employments.head.annualAccounts.head.realTimeStatus.toString == "TemporarilyUnavailable")
-    } else { false }
+    (!employments.isEmpty && !employments.head.annualAccounts.isEmpty && (employments.head.annualAccounts.head.realTimeStatus.toString == "TemporarilyUnavailable"))
 
   def hodStatusRedirect(
     implicit request: AuthenticatedRequest[AnyContent]): PartialFunction[Throwable, Future[Result]] = {
