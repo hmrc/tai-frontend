@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.Person
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 
@@ -69,13 +69,20 @@ class PayeControllerHistoric @Inject()(
         hasTaxCodeRecordsInYearPerEmployment <- hasTaxCodeRecordsFuture
       } yield {
         implicit val user = request.taiUser
-        Ok(
-          views.html.paye.historicPayAsYouEarn(
-            HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-            numberOfPreviousYearsToShow))
+        if (isRtiUnavailable(employments)) {
+          BadGateway(views.html.serviceUnavailable())
+        } else {
+          Ok(
+            views.html.paye.historicPayAsYouEarn(
+              HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
+              numberOfPreviousYearsToShow))
+        }
       }
     }
   } recoverWith hodStatusRedirect
+
+  private def isRtiUnavailable(employments: Seq[Employment]): Boolean =
+    (employments.head.annualAccounts.head.realTimeStatus.toString == "TemporarilyUnavailable")
 
   def hodStatusRedirect(
     implicit request: AuthenticatedRequest[AnyContent]): PartialFunction[Throwable, Future[Result]] = {
