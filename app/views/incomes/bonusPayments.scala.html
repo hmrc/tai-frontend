@@ -45,7 +45,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     employerName = Some(employer.name),
     gaCustomTitle = None
     ) {
-    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
+    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
 
         @{inputRadioGroupStyling(
             field=yesNoForm(YesNoForm.YesNoChoice),

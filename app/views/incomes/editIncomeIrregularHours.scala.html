@@ -56,7 +56,7 @@
 
     <p>@messages("tai.irregular.instruction.wholePounds")</p>
 
-    @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleIncomeIrregularHours(viewModel.employmentId)) {
+    @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController.handleIncomeIrregularHours(viewModel.employmentId)) {
         <div class="form-field-group @if(incomeUpdateForm.hasErrors) {form-group-error}">
             @incomeUpdateForm.errors(incomeUpdateForm("income").name).map{ error =>
                 <span class="error-notification error-message">@messages(error.message)</span>

@@ -56,7 +56,7 @@ user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.Templa
         </ul>
         @includes.link(
             copy=messages("tai.estimatedPay.error.incorrectTaxableIncome.button"),
-            url = income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(id).toString,
+            url = income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).toString,
             isButton=true,
             isSecondary=true
         )

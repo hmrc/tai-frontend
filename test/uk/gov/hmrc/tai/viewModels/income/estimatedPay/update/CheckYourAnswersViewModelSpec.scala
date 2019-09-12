@@ -149,19 +149,19 @@ class CheckYourAnswersViewModelSpec
   lazy val totalPayAnswer = CheckYourAnswersConfirmationLine(
     messagesApi("tai.estimatedPay.update.checkYourAnswers.grossPay.month"),
     withPoundPrefixAndSign(MoneyPounds(BigDecimal(totalPay), zeroDecimalPlaces)),
-    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipAmountPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage().url
   )
 
   lazy val hasDeductionAnswer = CheckYourAnswersConfirmationLine(
     messagesApi("tai.estimatedPay.update.checkYourAnswers.hasDeduction"),
     hasDeductions,
-    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipDeductionsPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url
   )
 
   lazy val taxablePayAnswer = CheckYourAnswersConfirmationLine(
     messagesApi("tai.estimatedPay.update.checkYourAnswers.taxablePay.month"),
     withPoundPrefixAndSign(MoneyPounds(BigDecimal(taxablePay), zeroDecimalPlaces)),
-    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage().url
   )
 
   lazy val hasBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
@@ -169,7 +169,7 @@ class CheckYourAnswersViewModelSpec
       "tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime",
       TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     hasBonusOrOvertime,
-    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
   )
 
   lazy val totalYearlyBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
@@ -177,14 +177,14 @@ class CheckYourAnswersViewModelSpec
       "tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime",
       TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     withPoundPrefixAndSign(MoneyPounds(BigDecimal(totalBonusOrOvertime), zeroDecimalPlaces)),
-    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url
   )
 
   def createPaymentFrequencyConfirmationLine(answer: String = MONTHLY.capitalize) =
     CheckYourAnswersConfirmationLine(
       messagesApi("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"),
       answer,
-      controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payPeriodPage().url
+      controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage().url
     )
 
   def createViewModel(

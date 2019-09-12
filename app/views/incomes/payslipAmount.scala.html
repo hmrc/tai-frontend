@@ -47,7 +47,7 @@
     <p>@messages("tai.payslip.p1")</p>
     <p>@messages("tai.payslip.p2")</p>
 
-    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayslipAmount) {
+    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipAmount) {
         @includes.forms.input(
             field = viewModel.payslipForm("totalSalary"),
             bold = true,

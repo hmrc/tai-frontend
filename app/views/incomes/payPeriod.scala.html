@@ -66,7 +66,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     employerName = Some(employerName)
 ){
     <div class="section flush--bottom">
-        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
+        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
             @{inputRadioGroupStyling(
                 field=payPeriodForm(PayPeriodForm.PAY_PERIOD_KEY),
                 radioOptions=Seq(

@@ -123,7 +123,8 @@ object RequestBuilder {
       )
       .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
 
-  def buildFakePostRequestWithAuth(formArgs: (String, String)*) = buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(formArgs: _*)
+  def buildFakePostRequestWithAuth(formArgs: (String, String)*) =
+    buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(formArgs: _*)
 
   def buildFakeGetRequestWithAuth() = buildFakeRequestWithAuth("GET")
 

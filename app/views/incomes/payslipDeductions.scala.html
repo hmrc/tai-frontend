@@ -47,7 +47,7 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     <div>
         <p>@messages("tai.payslipDeductions.tellUs")</p>
 
-        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayslipDeductions){
+        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipDeductions){
 
             @{inputRadioGroupStyling(
                 field=payslipDeductionsForm("payslipDeductions"),
