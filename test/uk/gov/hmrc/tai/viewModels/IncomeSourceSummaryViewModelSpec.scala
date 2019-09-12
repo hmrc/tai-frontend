@@ -49,7 +49,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
     "Pension",
     100,
     400,
-    "1100LX",
+    "1100L",
     "PENSION-1122",
     true,
     estimatedPayJourneyCompleted = false)
