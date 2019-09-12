@@ -70,7 +70,7 @@ class YourIncomeCalculationController @Inject()(
       employmentDetails    <- employmentFuture
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
-        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>{
+        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) => {
           val paymentDetails = paymentsService.filterDuplicates(employment)
 
           val model = YourIncomeCalculationViewModel(
@@ -80,10 +80,10 @@ class YourIncomeCalculationController @Inject()(
           implicit val user = request.taiUser
           (printPage, model.rtiStatus.toString) match {
             case (_, "TemporarilyUnavailable") => BadGateway(views.html.serviceUnavailable())
-            case (true, _) => Ok(views.html.print.yourIncomeCalculation(model))
-            case (false, _) => Ok(views.html.incomes.yourIncomeCalculation(model))
+            case (true, _)                     => Ok(views.html.print.yourIncomeCalculation(model))
+            case (false, _)                    => Ok(views.html.incomes.yourIncomeCalculation(model))
           }
-      }
+        }
         case _ => internalServerError("Error while fetching RTI details")
       }
     }

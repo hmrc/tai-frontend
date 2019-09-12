@@ -44,13 +44,11 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
 
         when(auditService.sendAuditEventAndGetRedirectUri(any(), Matchers.eq("Test"))(any(), any()))
           .thenReturn(Future.successful(redirectUri))
-        when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
-        val result = sut.auditInvalidateCacheAndRedirectService("Test")(request)
+        val result = sut.auditAndRedirectService("Test")(request)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe redirectUri
-        verify(sessionService, times(1)).invalidateCache()(any())
       }
     }
   }

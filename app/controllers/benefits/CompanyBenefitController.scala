@@ -110,7 +110,7 @@ class CompanyBenefitController @Inject()(
       case YesIGetThisBenefit => {
         Redirect(
           controllers.routes.ExternalServiceRedirectController
-            .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform))
+            .auditAndRedirectService(TaiConstants.CompanyBenefitsIform))
       }
       case _ => {
         logger.error(s"Bad Option provided in submitDecision form: $decision")
