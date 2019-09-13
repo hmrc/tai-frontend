@@ -35,8 +35,44 @@ import scala.util.Random
 
 class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
 
-  "External Service Redirect controller" must {
+  "External Service Redirect controller - auditInvalidateCacheAndRedirectService" must {
     "redirect to external url" when {
+      "a valid service and i-form name has been passed" in {
+        val sut = createSut
+
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
+
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), Matchers.eq("Test"))(any(), any()))
+          .thenReturn(Future.successful(redirectUri))
+        when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
+
+        val result = sut.auditInvalidateCacheAndRedirectService("Test")(request)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe redirectUri
+        verify(sessionService, times(1)).invalidateCache()(any())
+      }
+    }
+
+    "give an internal server error" when {
+      "an invalid service and i-form name has been passed" in {
+
+        val sut = createSut
+
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
+
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), Matchers.eq("Test"))(any(), any()))
+          .thenReturn(Future.failed(new IllegalArgumentException))
+
+        val result = sut.auditInvalidateCacheAndRedirectService("Test")(request)
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "External Service Redirect controller - auditAndRedirectService" must {
+    "redirect to external url - " when {
       "a valid service and i-form name has been passed" in {
         val sut = createSut
 
@@ -49,6 +85,22 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe redirectUri
+      }
+    }
+
+    "give an internal server error" when {
+      "an invalid service and i-form name has been passed" in {
+
+        val sut = createSut
+
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
+
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), Matchers.eq("Test"))(any(), any()))
+          .thenReturn(Future.failed(new IllegalArgumentException))
+
+        val result = sut.auditAndRedirectService("Test")(request)
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
   }
