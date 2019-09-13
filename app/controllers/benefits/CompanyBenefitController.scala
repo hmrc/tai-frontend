@@ -101,8 +101,7 @@ class CompanyBenefitController @Inject()(
       }
     }).flatMap(identity) recover {
       case NonFatal(e) => {
-        throw new Exception(e.getMessage)
-      //  internalServerError(e.getMessage)
+        internalServerError("CompanyBenefitController exception", Some(e))
       }
     }
   }
