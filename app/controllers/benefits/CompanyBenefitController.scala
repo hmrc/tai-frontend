@@ -71,6 +71,7 @@ class CompanyBenefitController @Inject()(
       decision <- decisionCacheWrapper.getDecision()
     } yield {
       employment match {
+
         case Some(employment) =>
           val referer = currentCache.get(EndCompanyBenefit_RefererKey) match {
             case Some(value) => value
@@ -78,8 +79,7 @@ class CompanyBenefitController @Inject()(
               request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
           }
 
-          val form =
-            UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
+          val form = UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
 
           val viewModel = CompanyBenefitDecisionViewModel(
             currentCache(EndCompanyBenefit_BenefitTypeKey),
@@ -90,15 +90,20 @@ class CompanyBenefitController @Inject()(
           val cache = Map(
             EndCompanyBenefit_EmploymentNameKey -> employment.name,
             EndCompanyBenefit_BenefitNameKey    -> viewModel.benefitName,
-            EndCompanyBenefit_RefererKey        -> referer)
+            EndCompanyBenefit_RefererKey        -> referer
+          )
 
           journeyCacheService.cache(cache).map { _ =>
             Ok(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel))
           }
         case None => throw new RuntimeException("No employment found")
+
       }
     }).flatMap(identity) recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => {
+        throw new Exception(e.getMessage)
+      //  internalServerError(e.getMessage)
+      }
     }
   }
 
