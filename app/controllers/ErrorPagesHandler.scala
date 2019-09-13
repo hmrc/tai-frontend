@@ -287,10 +287,8 @@ trait ErrorPagesHandler {
   def internalServerError(logMessage: String, ex: Option[Throwable] = None)(
     implicit request: Request[_],
     messages: Messages): Result = {
-    println("internalServerError")
     Logger.warn(logMessage)
-    ex.map(x => Logger.warn(x.getMessage()))
+    ex.map(x => Logger.error(x.getMessage(), x))
     InternalServerError(error5xx(Messages("tai.technical.error.message")))
-    throw new RuntimeException(Messages("tai.technical.error.message"))
   }
 }

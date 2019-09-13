@@ -73,7 +73,6 @@ class CompanyBenefitController @Inject()(
       employment match {
 
         case Some(employment) =>
-          println("some employment")
           val referer = currentCache.get(EndCompanyBenefit_RefererKey) match {
             case Some(value) => value
             case None =>
@@ -99,14 +98,12 @@ class CompanyBenefitController @Inject()(
           }
 
         case None => {
-          println("none employment")
           throw new RuntimeException("No employment found")
         }
 
       }
     }).flatMap(identity) recover {
       case NonFatal(e) => {
-        println("NonFatal(e)")
         internalServerError("CompanyBenefitController exception", Some(e))
       }
     }
