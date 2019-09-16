@@ -22,9 +22,9 @@ import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplica
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
+import org.mockito.{Matchers}
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{when}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -32,10 +32,8 @@ import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live, OtherBasisOfOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{IncomeSource}
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -43,8 +41,6 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{EditIncomePayPeriodConstants, _}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
-import views.html.incomes.{bonusPaymentAmount, bonusPayments, payslipAmount, taxablePayslipAmount}
 import org.mockito.Matchers.{eq => eqTo}
 import play.api.test.FakeRequest
 

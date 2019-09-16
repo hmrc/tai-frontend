@@ -33,7 +33,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{EditIncomePayPeriodConstants, _}
+import uk.gov.hmrc.tai.util.constants._
 
 import scala.concurrent.Future
 
