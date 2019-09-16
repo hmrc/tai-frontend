@@ -288,7 +288,7 @@ trait ErrorPagesHandler {
     implicit request: Request[_],
     messages: Messages): Result = {
     Logger.warn(logMessage)
-    ex.map(x => Logger.warn(x.getMessage()))
+    ex.map(x => Logger.error(x.getMessage(), x))
     InternalServerError(error5xx(Messages("tai.technical.error.message")))
   }
 }

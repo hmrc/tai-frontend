@@ -90,15 +90,17 @@ class CompanyBenefitController @Inject()(
           val cache = Map(
             EndCompanyBenefit_EmploymentNameKey -> employment.name,
             EndCompanyBenefit_BenefitNameKey    -> viewModel.benefitName,
-            EndCompanyBenefit_RefererKey        -> referer)
+            EndCompanyBenefit_RefererKey        -> referer
+          )
 
           journeyCacheService.cache(cache).map { _ =>
             Ok(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel))
           }
+
         case None => throw new RuntimeException("No employment found")
       }
     }).flatMap(identity) recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => internalServerError("CompanyBenefitController exception", Some(e))
     }
   }
 

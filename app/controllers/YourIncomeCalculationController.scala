@@ -83,7 +83,7 @@ class YourIncomeCalculationController @Inject()(
             case (true, _) => Ok(views.html.print.yourIncomeCalculation(model))
             case (false, _) => Ok(views.html.incomes.yourIncomeCalculation(model))
           }
-      }
+        }
         case _ => internalServerError("Error while fetching RTI details")
       }
     }

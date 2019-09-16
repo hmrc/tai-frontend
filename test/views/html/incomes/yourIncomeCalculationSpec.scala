@@ -110,7 +110,6 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
         )
       }
 
-
       "employment type is pension" in {
         val model = incomeCalculationViewModel(employmentType = PensionIncome)
 
@@ -174,7 +173,6 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
         doc(totalNotEqualView) must haveParagraphWithText(messages("tai.income.calculation.totalNotMatching.message"))
       }
     }
-
 
     "show income calculation estimate message" when {
 
