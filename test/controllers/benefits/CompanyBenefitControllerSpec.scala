@@ -207,7 +207,7 @@ class CompanyBenefitControllerSpec
         val redirectUrl = redirectLocation(result).getOrElse("")
 
         redirectUrl mustBe controllers.routes.ExternalServiceRedirectController
-          .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform)
+          .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
           .url
 
       }
