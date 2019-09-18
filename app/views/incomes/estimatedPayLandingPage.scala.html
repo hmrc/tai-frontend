@@ -65,7 +65,7 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     <div>
         @includes.link(
             copy=messages("tai.income.details.updateTaxableIncome.update"),
-            url = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(id).toString,
+            url = controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).toString,
             attributes = Seq(("data-journey-click", s"button - click:${gaEventActionString}:${messages("tai.income.details.updateTaxableIncome.update")}")),
             isButton=true
         )

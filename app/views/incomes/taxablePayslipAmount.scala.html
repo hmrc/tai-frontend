@@ -50,7 +50,7 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     </div>
 
     <div>
-        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
+        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handleTaxablePayslipAmount){
             @input(
                 field = viewModel.form("taxablePay"),
                 bold = true,

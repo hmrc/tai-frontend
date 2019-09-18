@@ -47,7 +47,7 @@ object ConfirmAmountEnteredViewModel {
         yearRange = TaxYearRangeUtil.currentTaxYearRangeSingleLine,
         employerName = empName,
         mainText = Some(messages("tai.incomes.confirm.save.message")),
-        onConfirm = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
+        onConfirm = controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController
           .submitIncomeIrregularHours(employmentId)
           .url
           .toString,

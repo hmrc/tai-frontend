@@ -44,7 +44,7 @@ case class CheckYourAnswersViewModel(
     val paymentFrequencyConfirmationLine = createCheckYourAnswerConfirmationLine(
       messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"),
       Some(paymentFrequencyAnswer),
-      controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payPeriodPage().url
+      controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage().url
     )
 
     val grossPayMessages = Map(
@@ -57,14 +57,14 @@ case class CheckYourAnswersViewModel(
     val totalPayConfirmationLine = createCheckYourAnswerConfirmationLine(
       messages(dynamicTitle(Some(paymentFrequency), payPeriodInDays, grossPayMessages)),
       Some(totalPay),
-      controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipAmountPage().url,
+      controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage().url,
       isMonetaryValue
     )
 
     val hasDeductionConfirmationLine = createCheckYourAnswerConfirmationLine(
       messages("tai.estimatedPay.update.checkYourAnswers.hasDeduction"),
       Some(messages(s"tai.label.${hasDeductions.toLowerCase}")),
-      controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipDeductionsPage().url
+      controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url
     )
 
     val taxablePayMessages = Map(
@@ -77,7 +77,7 @@ case class CheckYourAnswersViewModel(
     val taxablePayConfirmationLine = createCheckYourAnswerConfirmationLine(
       messages(dynamicTitle(Some(paymentFrequency), payPeriodInDays, taxablePayMessages)),
       taxablePay,
-      controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url,
+      controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage().url,
       isMonetaryValue
     )
 
@@ -86,7 +86,7 @@ case class CheckYourAnswersViewModel(
         "tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime",
         TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
       Some(messages(s"tai.label.${hasBonusOrOvertime.toLowerCase}")),
-      controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
+      controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
     )
 
     val totalBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
@@ -94,7 +94,7 @@ case class CheckYourAnswersViewModel(
         "tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime",
         TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
       totalBonusOrOvertime,
-      controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url,
+      controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url,
       isMonetaryValue
     )
 

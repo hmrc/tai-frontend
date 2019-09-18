@@ -47,7 +47,7 @@
 
     <p>@messages("tai.bonusPaymentsAmount.hint")</p>
     <div class="section flush--bottom soft--top">
-        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
+        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusOvertimeAmount){
             @includes.forms.input(
                 field = bonusOvertimeAmountForm("amount"),
                 labelText = "",
