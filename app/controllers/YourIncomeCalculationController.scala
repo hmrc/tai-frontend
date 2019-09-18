@@ -70,7 +70,7 @@ class YourIncomeCalculationController @Inject()(
       employmentDetails    <- employmentFuture
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
-        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) => {
           val paymentDetails = paymentsService.filterDuplicates(employment)
 
           val model = YourIncomeCalculationViewModel(
@@ -78,55 +78,47 @@ class YourIncomeCalculationController @Inject()(
             employment,
             paymentDetails)
           implicit val user = request.taiUser
-          if (printPage) {
-            Ok(views.html.print.yourIncomeCalculation(model))
-          } else {
-            Ok(views.html.incomes.yourIncomeCalculation(model))
+          (printPage, model.rtiStatus.toString) match {
+            case (_, "TemporarilyUnavailable") => BadGateway(views.html.serviceUnavailable())
+            case (true, _)                     => Ok(views.html.print.yourIncomeCalculation(model))
+            case (false, _)                    => Ok(views.html.incomes.yourIncomeCalculation(model))
           }
+        }
         case _ => internalServerError("Error while fetching RTI details")
       }
     }
   }
 
   def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] =
+    yourIncomeCalculationHistoricYears(year, empId, false)
+
+  def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] =
+    yourIncomeCalculationHistoricYears(year, empId, true)
+
+  private def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int, printPage: Boolean): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
       {
         if (year <= TaxYear().prev) {
           val nino = request.taiUser.nino
           implicit val user = request.taiUser
-          showHistoricIncomeCalculation(nino, empId, year = year)
+          showHistoricIncomeCalculation(nino, empId, printPage, year = year)
         } else {
           Future.successful(internalServerError(s"yourIncomeCalculationHistoricYears: Doesn't support year $year"))
         }
       }
     }
 
-  def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] =
-    (authenticate andThen validatePerson).async { implicit request =>
-      {
-        if (year <= TaxYear().prev) {
-          val nino = request.taiUser.nino
-          implicit val user = request.taiUser
-
-          showHistoricIncomeCalculation(nino, empId, printPage = true, year = year)
-        } else {
-          Future.successful(internalServerError(s"printYourIncomeCalculationHistoricYears: Doesn't support year $year"))
-        }
-      }
-    }
-
-  private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear)(
+  private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean, year: TaxYear)(
     implicit request: Request[AnyContent],
     user: AuthedUser): Future[Result] =
     for {
       employment <- employmentService.employments(nino, year)
     } yield {
       val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employment, empId, year)
-      if (printPage) {
-        Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel))
-      } else {
-        Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel))
+      (printPage, historicIncomeCalculationViewModel.realTimeStatus.toString) match {
+        case (_, "TemporarilyUnavailable") => BadGateway(views.html.serviceUnavailable())
+        case (true, _)                     => Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel))
+        case (false, _)                    => Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel))
       }
     }
-
 }

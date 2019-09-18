@@ -525,13 +525,8 @@ class RemoveCompanyBenefitControllerSpec
       "the request has an authorised session and a telephone number and benefit value have been provided" in {
         val SUT = createSUT
         val employmentId: String = "1234"
-        val endedCompanyBenefit = EndedCompanyBenefit(
-          "Accommodation",
-          Messages("tai.noLongerGetBenefit"),
-          "Before 6th April",
-          Some("1000000"),
-          "Yes",
-          Some("0123456789"))
+        val endedCompanyBenefit =
+          EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
 
         when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful(
@@ -562,7 +557,7 @@ class RemoveCompanyBenefitControllerSpec
         val SUT = createSUT
         val employmentId: String = "1234"
         val endedCompanyBenefit =
-          EndedCompanyBenefit("Accommodation", Messages("tai.noLongerGetBenefit"), "Before 6th April", None, "No", None)
+          EndedCompanyBenefit("Accommodation", "Before 6th April", None, "No", None)
 
         when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful(
@@ -592,13 +587,7 @@ class RemoveCompanyBenefitControllerSpec
       "the request has an authorised session and telephone number has not been provided but benefit value has been provided" in {
         val SUT = createSUT
         val employmentId: String = "1234"
-        val endedCompanyBenefit = EndedCompanyBenefit(
-          "Accommodation",
-          Messages("tai.noLongerGetBenefit"),
-          "Before 6th April",
-          Some("1000000"),
-          "No",
-          None)
+        val endedCompanyBenefit = EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "No", None)
 
         when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful(
@@ -628,13 +617,8 @@ class RemoveCompanyBenefitControllerSpec
       "the request has an authorised session and telephone number has been provided but benefit value has not been provided" in {
         val SUT = createSUT
         val employmentId: String = "1234"
-        val endedCompanyBenefit = EndedCompanyBenefit(
-          "Accommodation",
-          Messages("tai.noLongerGetBenefit"),
-          "Before 6th April",
-          None,
-          "Yes",
-          Some("0123456789"))
+        val endedCompanyBenefit =
+          EndedCompanyBenefit("Accommodation", "Before 6th April", None, "Yes", Some("0123456789"))
 
         when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful(

@@ -215,6 +215,8 @@ GET         /audit/link-to-iform/:iformName                                     
 ## Audit and invalidate cache url
 GET         /audit-invalidate-cache/link-to-service/:serviceName                       @controllers.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(serviceName: String)
 
+GET         /audit-cache/link-to-service/:serviceName                                  @controllers.ExternalServiceRedirectController.auditAndRedirectService(serviceName: String)
+
 GET         /assets/*file                                                              @controllers.AssetsController.versioned(path="/public", file: Asset)
 
 ## Update Income Details - Previous Years

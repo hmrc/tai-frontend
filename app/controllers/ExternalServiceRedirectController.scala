@@ -49,4 +49,18 @@ class ExternalServiceRedirectController @Inject()(
         }
       }
     }
+
+  def auditAndRedirectService(serviceAndIFormName: String): Action[AnyContent] =
+    (authenticate andThen validatePerson).async { implicit request =>
+      {
+
+        (for {
+          redirectUri <- auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName)
+        } yield {
+          Redirect(redirectUri)
+        }) recover {
+          case _ => internalServerError("Unable to audit and redirect")
+        }
+      }
+    }
 }

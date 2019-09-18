@@ -43,7 +43,6 @@ articleClasses = None,
 gaCustomTitle = Some(Messages("tai.benefits.updateOrRemove.decision.customGaTitle"))){
 
     @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
-
         @{inputRadioGroupStyling(
             viewModel.decisionForm(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice),
             Seq(

@@ -19,6 +19,7 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
 import org.mockito.Mockito
@@ -33,7 +34,7 @@ import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerExcep
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
@@ -75,14 +76,12 @@ class PayeControllerHistoricSpec
       val testController = createTestController()
 
       implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+      when(employmentService.employments(any(), any())(any()))
+        .thenReturn(Future.successful(sampleEmployment))
 
       val result = testController.payePage(TaxYear().prev)(request)
 
       status(result) mustBe OK
-
-      val viewModel = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq.empty[Employment], true)
-
-      result rendersTheSameViewAs historicPayAsYouEarn(viewModel, 3)
     }
 
     "Redirect to the paye controller" when {
@@ -190,6 +189,39 @@ class PayeControllerHistoricSpec
         doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
         doc must haveParagraphWithText(Messages("tai.technical.error.message"))
       }
+
+      "payePage call results in a bad gateway" in {
+
+        val testController = createTestController()
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
+
+        val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe BAD_GATEWAY
+      }
+
+      "payePage call when employee sequence is empty " in {
+
+        val testController = createTestController()
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.successful(sampleEmptyEmployment))
+
+        val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+      }
+
+      "payePage call when annual accounts sequence is empty" in {
+
+        val testController = createTestController()
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
+
+        val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe BAD_GATEWAY
+      }
     }
   }
 
@@ -223,5 +255,95 @@ class PayeControllerHistoricSpec
     when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
       .thenReturn(Future.successful(showTaxCodeDescriptionLink))
   }
+
+  val sampleEmptyEmployment = Seq(
+    )
+
+  val sampleEmploymentForEmptyAnnualAccounts = Seq(
+    Employment(
+      "employer1",
+      None,
+      new LocalDate(2016, 6, 9),
+      None,
+      Seq(),
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      false,
+      false
+    ),
+    Employment(
+      "employer2",
+      None,
+      new LocalDate(2016, 7, 9),
+      None,
+      Seq(),
+      "taxNumber",
+      "payeNumber",
+      2,
+      None,
+      false,
+      false
+    )
+  )
+
+  val sampleEmploymentForRtiUnavailable = Seq(
+    Employment(
+      "employer1",
+      None,
+      new LocalDate(2016, 6, 9),
+      None,
+      Seq(AnnualAccount("key", TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      false,
+      false
+    ),
+    Employment(
+      "employer2",
+      None,
+      new LocalDate(2016, 7, 9),
+      None,
+      Seq(AnnualAccount("key", TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      2,
+      None,
+      false,
+      false
+    )
+  )
+
+  val sampleEmployment = Seq(
+    Employment(
+      "employer1",
+      None,
+      new LocalDate(2018, 6, 9),
+      None,
+      Seq(AnnualAccount("key", TaxYear().prev, Available, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      false,
+      false
+    ),
+    Employment(
+      "employer2",
+      None,
+      new LocalDate(2017, 7, 9),
+      None,
+      Seq(AnnualAccount("key", TaxYear().prev, Available, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      2,
+      None,
+      false,
+      false
+    )
+  )
 
 }

@@ -79,7 +79,7 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
 
       "BasisOperations is Week1Month1BasisOperation" in {
         val result = testViewModel(Seq(taxCodeIncomes2))
-        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.subheading", "employer2", "BRX")
+        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.subheading", "employer2", "BR")
       }
     }
 
@@ -188,7 +188,7 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
           Week1Month1BasisOfOperation,
           Live)
         val result = testViewModel(Seq(taxCodeIncome))
-        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.subheading", "employer", "1150LX")
+        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.subheading", "employer", "1150L")
       }
 
       "provide taxCodeExplanation" in {
