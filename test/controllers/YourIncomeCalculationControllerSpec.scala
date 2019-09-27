@@ -45,12 +45,12 @@ class YourIncomeCalculationControllerSpec
   "Your Income Calculation" must {
     "return rti details page" when {
       "rti details are present" in {
-        val sut = createSUT
+
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = createTest.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -60,33 +60,31 @@ class YourIncomeCalculationControllerSpec
 
     "return internal server error" when {
       "employment details are not present" in {
-        val sut = createSUT
+
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = createTest.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
 
       }
 
       "tax code details are not present" in {
-        val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = createTest.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "tax code details for passed employment is not present" in {
-        val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.yourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = createTest.yourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
@@ -95,10 +93,10 @@ class YourIncomeCalculationControllerSpec
 
     "show historic data" when {
       "historic data has been passed" in {
-        val sut = createSUT
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
         val result =
-          sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+          createTest.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(
+            RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -111,11 +109,11 @@ class YourIncomeCalculationControllerSpec
 
     "throw bad gateway" when {
       "RTI throws service unavailable" in {
-        val sut = createSUT
         when(employmentService.employments(any(), any())(any()))
           .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
         val result =
-          sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+          createTest.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(
+            RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe BAD_GATEWAY
 
@@ -124,10 +122,9 @@ class YourIncomeCalculationControllerSpec
 
     "throw bad request" when {
       "next year has been passed" in {
-        val sut = createSUT
-
         val result =
-          sut.yourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+          createTest.yourIncomeCalculationHistoricYears(TaxYear().next, 1)(
+            RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
 
@@ -140,10 +137,10 @@ class YourIncomeCalculationControllerSpec
 
     "show historic data" when {
       "historic data has been passed" in {
-        val sut = createSUT
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
         val result =
-          sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+          createTest.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(
+            RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -156,11 +153,11 @@ class YourIncomeCalculationControllerSpec
 
     "throw bad gateway" when {
       "RTI throws service unavailable" in {
-        val sut = createSUT
         when(employmentService.employments(any(), any())(any()))
           .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
         val result =
-          sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+          createTest.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(
+            RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe BAD_GATEWAY
 
@@ -169,11 +166,8 @@ class YourIncomeCalculationControllerSpec
 
     "throw bad request" when {
       "next year has been passed" in {
-        val sut = createSUT
-
-        val result =
-          sut.printYourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
+        val result = createTest.printYourIncomeCalculationHistoricYears(TaxYear().next, 1)(
+          RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
 
       }
@@ -184,12 +178,11 @@ class YourIncomeCalculationControllerSpec
   "Print Your Income Calculation" must {
     "return rti details page" when {
       "rti details are present" in {
-        val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = createTest.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -200,23 +193,21 @@ class YourIncomeCalculationControllerSpec
 
     "return internal server error" when {
       "employment details are not present" in {
-        val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = createTest.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
 
       }
 
       "tax code details are not present" in {
-        val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = createTest.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
@@ -308,14 +299,14 @@ class YourIncomeCalculationControllerSpec
 
   val nino = new Generator(new Random).nextNino
 
-  def createSUT = new SUT
+  def createTest = new YourIncomeCalculationControllerTest
 
   val personService: PersonService = mock[PersonService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
   val paymentsService = app.injector.instanceOf[PaymentsService]
 
-  class SUT
+  class YourIncomeCalculationControllerTest
       extends YourIncomeCalculationController(
         personService,
         taxAccountService,
