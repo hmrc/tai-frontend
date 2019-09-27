@@ -69,7 +69,7 @@ class PayeControllerHistoric @Inject()(
       } yield {
         implicit val user = request.taiUser
         if (isRtiUnavailable(employments)) {
-          BadGateway(views.html.serviceUnavailable())
+          badGatewayError
         } else {
           Ok(
             views.html.paye.historicPayAsYouEarn(
