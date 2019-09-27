@@ -56,6 +56,9 @@ class EmploymentService @Inject()(employmentsConnector: EmploymentsConnector) {
           s"No envelope id was generated when sending incorrect employment details for ${nino.nino}")
     }
 
+  def stubbedAccountsExist(employments: Seq[Employment]): Boolean =
+    employments.headOption.exists(_.annualAccounts.headOption.exists(_.realTimeStatus == TemporarilyUnavailable))
+
   def employmentNames(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Map[Int, String]] =
     for {
       employments <- employments(nino, year)

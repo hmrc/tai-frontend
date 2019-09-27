@@ -68,7 +68,7 @@ class PayeControllerHistoric @Inject()(
         hasTaxCodeRecordsInYearPerEmployment <- hasTaxCodeRecordsFuture
       } yield {
         implicit val user = request.taiUser
-        if (isRtiUnavailable(employments)) {
+        if (employmentService.stubbedAccountsExist(employments)) {
           badGatewayError
         } else {
           Ok(
@@ -79,9 +79,6 @@ class PayeControllerHistoric @Inject()(
       }
     }
   } recoverWith hodStatusRedirect
-
-  private def isRtiUnavailable(employments: Seq[Employment]): Boolean =
-    employments.headOption.exists(_.annualAccounts.headOption.exists(_.realTimeStatus == TemporarilyUnavailable))
 
   def hodStatusRedirect(
     implicit request: AuthenticatedRequest[AnyContent]): PartialFunction[Throwable, Future[Result]] = {

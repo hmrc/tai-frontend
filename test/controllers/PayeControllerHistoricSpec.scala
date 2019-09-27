@@ -196,6 +196,8 @@ class PayeControllerHistoricSpec
         when(employmentService.employments(any(), any())(any()))
           .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
 
+        when(employmentService.stubbedAccountsExist(any())).thenReturn(true)
+
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe BAD_GATEWAY
@@ -210,17 +212,6 @@ class PayeControllerHistoricSpec
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
-      }
-
-      "payePage call when annual accounts sequence is empty" in {
-
-        val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
-
-        val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe BAD_GATEWAY
       }
     }
   }
