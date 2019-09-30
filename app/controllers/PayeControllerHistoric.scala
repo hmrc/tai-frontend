@@ -69,7 +69,7 @@ class PayeControllerHistoric @Inject()(
       } yield {
         implicit val user = request.taiUser
         if (employmentService.stubbedAccountsExist(employments)) {
-          badGatewayError
+          badGatewayError("Stubbed Annual Account found meaning payment information can't be displayed")
         } else {
           Ok(
             views.html.paye.historicPayAsYouEarn(
