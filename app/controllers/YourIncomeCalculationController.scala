@@ -108,7 +108,8 @@ class YourIncomeCalculationController @Inject()(
 
             (printPage, historicIncomeCalculationViewModel.realTimeStatus.toString) match {
               case (_, "TemporarilyUnavailable") =>
-                badGatewayError("Stubbed Annual Account found meaning payment information can't be displayed")
+                badGatewayError(
+                  "Employment contains stub annual account data found meaning payment information can't be displayed")
               case (true, _)  => Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel))
               case (false, _) => Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel))
             }
