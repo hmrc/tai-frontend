@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service.ThreeWeeks
-import uk.gov.hmrc.tai.util.{HtmlFormatter, TaxYearRangeUtil}
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import utils.TaxAccountSummaryTestData
 
@@ -34,13 +34,6 @@ class TaxAccountSummaryViewModelSpec
 
   "TaxAccountSummaryViewModel apply method" must {
     "return a view model" which {
-
-      val currentTaxYearRange = Messages(
-        "tai.heading.taxYear.interval",
-        HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy"))
-      )
-
       "has header relating to current tax year" in {
         val expectedHeader =
           Messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
@@ -110,7 +103,6 @@ class TaxAccountSummaryViewModelSpec
         }
 
         "taxCodeIncomes doesn't have the corresponding element as employments, and none of the employments have an end date" in {
-          val employmentsWithNoEndDate = employments.map(_.copy(endDate = None))
           val sut = TaxAccountSummaryViewModel(
             TaxAccountSummary(0, 0, 0, 0, 0),
             ThreeWeeks,
@@ -363,199 +355,9 @@ class TaxAccountSummaryViewModelSpec
         detailsLinkLabel = Messages("tai.incomeTaxSummary.employment.link"),
         detailsLinkUrl =
           controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(nonMatchingSequenceNumber).url,
+        taxCodeUrl = controllers.routes.YourTaxCodeController.taxCode(nonMatchingSequenceNumber).url,
         true
       )
-    }
-  }
-
-  "IncomeSourceViewModel apply method (two parameter version)" must {
-    "return a viewmodel" which {
-      "has the name field coming from employment model" in {
-        val sut = IncomeSourceViewModel(taxCodeIncome, employment)
-        sut.name mustBe employment.name
-      }
-      "has the amount field as positive formatted value coming from taxCodeIncome model" in {
-        val sut = IncomeSourceViewModel(taxCodeIncome, employment)
-        sut.amount mustBe "£1,111"
-      }
-      "has the amount field as negative formatted value coming from taxCodeIncome model" in {
-        val taxCodeIncomeNegative = taxCodeIncome.copy(amount = -1111)
-        val sut = IncomeSourceViewModel(taxCodeIncomeNegative, employment)
-        sut.amount mustBe s"$encodedMinusSign£1,111"
-      }
-      "has the amount field as zero formatted value coming from taxCodeIncome model" in {
-        val taxCodeIncomeZero = taxCodeIncome.copy(amount = 0)
-        val sut = IncomeSourceViewModel(taxCodeIncomeZero, employment)
-        sut.amount mustBe "£0"
-      }
-      "has the displayTaxCode field as true" when {
-        "employment status is live" in {
-          val sut = IncomeSourceViewModel(taxCodeIncome, employment)
-          sut.displayTaxCode mustBe true
-        }
-      }
-      "has the displayTaxCode field as false" when {
-        "employment status is not live" in {
-          val ceasedTaxCodeIncome = taxCodeIncome.copy(status = Ceased)
-          val potantiallyCasedTaxCodeIncome = taxCodeIncome.copy(status = PotentiallyCeased)
-          val sut1 = IncomeSourceViewModel(ceasedTaxCodeIncome, employment)
-          val sut2 = IncomeSourceViewModel(potantiallyCasedTaxCodeIncome, employment)
-          sut1.displayTaxCode mustBe false
-          sut2.displayTaxCode mustBe false
-        }
-      }
-      "has the payrollNumber field as empty and displayPayrollNumber as false" when {
-        "employment model doesn't have payrollNo" in {
-          val employmentWithoutPayrollNo = employment.copy(payrollNumber = None)
-          val sut = IncomeSourceViewModel(taxCodeIncome, employmentWithoutPayrollNo)
-          sut.payrollNumber mustBe ""
-          sut.displayPayrollNumber mustBe false
-        }
-      }
-      "has the payrollNumber field as the same as employment model and displayPayrollNumber as true" when {
-        "employment model has payrollNo" in {
-          val sut = IncomeSourceViewModel(taxCodeIncome, employment)
-          sut.payrollNumber mustBe "123ABC"
-          sut.displayPayrollNumber mustBe true
-        }
-      }
-      "has the endDate field as empty and displayEndDate as false" when {
-        "employment model doesn't have endDate and employment status is live" in {
-          val employmentWithoutPayrollNo = employment.copy(endDate = None)
-          val sut = IncomeSourceViewModel(taxCodeIncome, employmentWithoutPayrollNo)
-          sut.endDate mustBe ""
-          sut.displayEndDate mustBe false
-        }
-        "employment model has endDate and employment status is live" in {
-          val employmentWithoutPayrollNo = employment.copy(endDate = Some(new LocalDate(2018, 4, 21)))
-          val sut = IncomeSourceViewModel(taxCodeIncome, employmentWithoutPayrollNo)
-          sut.endDate mustBe "21 April 2018"
-          sut.displayEndDate mustBe false
-        }
-        "employment model doesn't have endDate and employment status is ceased" in {
-          val employmentWithoutPayrollNo = employment.copy(endDate = None)
-          val taxCodeIncomeCeased = taxCodeIncome.copy(status = Ceased)
-          val sut = IncomeSourceViewModel(taxCodeIncomeCeased, employmentWithoutPayrollNo)
-          sut.endDate mustBe ""
-          sut.displayEndDate mustBe false
-        }
-        "employment model doesn't have endDate and employment status is potentially ceased" in {
-          val employmentWithoutPayrollNo = employment.copy(endDate = None)
-          val taxCodeIncomePotentiallyCeased = taxCodeIncome.copy(status = PotentiallyCeased)
-          val sut = IncomeSourceViewModel(taxCodeIncomePotentiallyCeased, employmentWithoutPayrollNo)
-          sut.endDate mustBe ""
-          sut.displayEndDate mustBe false
-        }
-      }
-      "has formatted endDate field as same as employment model and displayEndDate as true" when {
-        "employment model has endDate and employment status is ceased" in {
-          val taxCodeIncomeCeased = taxCodeIncome.copy(status = Ceased)
-          val sut = IncomeSourceViewModel(taxCodeIncomeCeased, employment)
-          sut.endDate mustBe "21 April 2018"
-          sut.displayEndDate mustBe true
-        }
-        "employment model has endDate and employment status is potentially ceased" in {
-          val taxCodeIncomePotentiallyCeased = taxCodeIncome.copy(status = PotentiallyCeased)
-          val sut = IncomeSourceViewModel(taxCodeIncomePotentiallyCeased, employment)
-          sut.endDate mustBe "21 April 2018"
-          sut.displayEndDate mustBe true
-        }
-      }
-      "has details link with employment and benefits label" when {
-        "income source type is employment" in {
-          val sut = IncomeSourceViewModel(taxCodeIncome, employment)
-          sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.employmentAndBenefits.link")
-          sut.detailsLinkUrl mustBe controllers.routes.IncomeSourceSummaryController
-            .onPageLoad(employment.sequenceNumber)
-            .url
-        }
-      }
-      "has details link with employment only label for ceased employment" when {
-        "income source type is employment" in {
-          val sut = IncomeSourceViewModel(taxCodeIncomeCeased, ceasedEmployment)
-          sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.employment.link")
-          sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(1).url
-        }
-      }
-      "has details link with pension label" when {
-        "income source type is pension" in {
-          val pension = taxCodeIncome.copy(componentType = PensionIncome)
-          val sut = IncomeSourceViewModel(pension, employment)
-          sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.pension.link")
-          sut.detailsLinkUrl mustBe controllers.routes.IncomeSourceSummaryController
-            .onPageLoad(employment.sequenceNumber)
-            .url
-        }
-      }
-      "has details link with income label" when {
-        "income source type is not pension or employment" in {
-          val pension = taxCodeIncome.copy(componentType = JobSeekerAllowanceIncome)
-          val sut = IncomeSourceViewModel(pension, employment)
-          sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.income.link")
-        }
-      }
-    }
-  }
-
-  "IncomeSourceViewModel single parameter apply method (Employment instance only)" must {
-    "return a viewmodel" which {
-      "has the name field coming from employment model" in {
-        val sut = IncomeSourceViewModel(ceasedEmployment)
-        sut.name mustBe ceasedEmployment.name
-      }
-      "has the amount field as the latest payment 'amountYearToDate' value" in {
-        val sut = IncomeSourceViewModel(ceasedEmployment)
-        sut.amount mustBe "£123"
-      }
-      "does not display any message" when {
-        "the latest annual account is absent" in {
-          val sut = IncomeSourceViewModel(ceasedEmployment.copy(annualAccounts = Nil))
-          sut.amount mustBe ""
-        }
-        "the latest payment is None" in {
-          val sut =
-            IncomeSourceViewModel(ceasedEmployment.copy(annualAccounts = Seq(annualAccount.copy(payments = Nil))))
-          sut.amount mustBe ""
-        }
-      }
-      "has an empty taxCode field, and a 'false' value corrresponding boolean set to instruct non display" in {
-        val sut = IncomeSourceViewModel(employment)
-        sut.taxCode mustBe ""
-        sut.displayTaxCode mustBe false
-      }
-      "has a payrollNumber field and the corresponding boolean set to instruct display" when {
-        "employment model has payrollNo" in {
-          val sut = IncomeSourceViewModel(ceasedEmployment)
-          sut.payrollNumber mustBe "123ABC"
-          sut.displayPayrollNumber mustBe true
-        }
-      }
-      "has no payrollNumber field and the corresponding boolean set to instruct non display" when {
-        "employment model has payrollNo" in {
-          val sut = IncomeSourceViewModel(ceasedEmployment.copy(payrollNumber = None))
-          sut.payrollNumber mustBe ""
-          sut.displayPayrollNumber mustBe false
-        }
-      }
-      "has the endDate field as empty and the corresponding boolean set to instruct non display" when {
-        "employment model doesn't have endDate" in {
-          val sut = IncomeSourceViewModel(ceasedEmployment.copy(endDate = None))
-          sut.endDate mustBe ""
-          sut.displayEndDate mustBe false
-        }
-      }
-      "has a formatted endDate field and the corresponding boolean set to instruct display" when {
-        "employment model has  endDate" in {
-          val sut = IncomeSourceViewModel(ceasedEmployment)
-          sut.endDate mustBe "21 April 2018"
-          sut.displayEndDate mustBe true
-        }
-      }
-      "has details link with employment only label " in {
-        val sut = IncomeSourceViewModel(ceasedEmployment)
-        sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.employment.link")
-        sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(1).url
-      }
     }
   }
 

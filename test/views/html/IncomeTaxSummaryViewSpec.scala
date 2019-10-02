@@ -287,10 +287,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithText(
         "#employment1TaxCodeLink",
         messages("tai.incomeTaxSummary.taxCode.prefix", activeEmployment.taxCode))
-      doc must haveElementAtPathWithAttribute(
-        "#employment1TaxCodeLink",
-        "href",
-        controllers.routes.YourTaxCodeController.taxCodes().url)
+      doc must haveElementAtPathWithAttribute("#employment1TaxCodeLink", "href", activeEmployment.taxCodeUrl)
     }
 
     "omit a tax code when instructed" in {
@@ -464,7 +461,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       "",
       false,
       "view employment details",
-      "fake/active/url")
+      "fake/active/url",
+      "fake/taxcode/url")
   val endedEmployment =
     IncomeSourceViewModel(
       "Company2",

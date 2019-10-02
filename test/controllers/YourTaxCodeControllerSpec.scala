@@ -43,62 +43,96 @@ import scala.util.Random
 class YourTaxCodeControllerSpec
     extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar with BeforeAndAfterEach {
 
+  val nino = new Generator(new Random).nextNino
+
+  lazy val testController = new TestController
+
+  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+  val taxAccountService = mock[TaxAccountService]
+
+  class TestController
+      extends YourTaxCodeController(
+        taxAccountService,
+        taxCodeChangeService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        mock[FormPartialRetriever],
+        MockTemplateRenderer
+      )
+
   override def beforeEach: Unit =
     Mockito.reset(taxAccountService)
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   private implicit val hc = HeaderCarrier()
 
-  "viewTaxCode" must {
-    "display tax code page" in {
-      val testController = createTestController
-      val startOfTaxYear: String = TaxYear().start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
-      val endOfTaxYear: String = TaxYear().end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
-      val taxCodeIncomes = Seq(
-        TaxCodeIncome(
-          EmploymentIncome,
-          Some(1),
-          1111,
-          "employment",
-          "1150L",
-          "employment",
-          OtherBasisOfOperation,
-          Live))
+  "renderTaxCodes" must {
+    "display error when there is TaiFailure in service" in {
+      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error occurred")))
+      val result = testController.renderTaxCodes(None)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+
+    "display any error" in {
+      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.failed(new InternalError("error occurred")))
+      val result = testController.renderTaxCodes(None)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "tax code pages" must {
+    val empId = 1
+    val taxCodeIncomes = Seq(
+      TaxCodeIncome(
+        EmploymentIncome,
+        Some(empId),
+        1111,
+        "employment",
+        "1150L",
+        "employment",
+        OtherBasisOfOperation,
+        Live))
+
+    "display tax code page containing all tax codes" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
+      when(taxAccountService.filterTaxCodes(any(), any()))
+        .thenReturn(taxCodeIncomes)
 
-      val result = testController.taxCodes()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val startOfTaxYear: String = TaxYear().start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+      val endOfTaxYear: String = TaxYear().end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+
+      val result = testController.taxCodes(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
       doc.title must include(Messages("tai.taxCode.single.code.title", startOfTaxYear, endOfTaxYear))
     }
 
-    "display error when there is TaiFailure in service" in {
-      val testController = createTestController
+    "display tax code page containing the relevant tax codes" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error occurred")))
-      val result = testController.taxCodes()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
+      when(taxAccountService.filterTaxCodes(any(), any()))
+        .thenReturn(taxCodeIncomes)
 
-      status(result) mustBe INTERNAL_SERVER_ERROR
-    }
+      val result = testController.taxCode(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-    "display any error" in {
-      val testController = createTestController
-      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.failed(new InternalError("error occurred")))
-      val result = testController.taxCodes()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-      status(result) mustBe INTERNAL_SERVER_ERROR
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.body().toString must include(Messages("tai.taxCode.wrong"))
     }
   }
 
   "prevTaxCodes" must {
     "display tax code page" in {
-      val testController = createTestController
       val startOfTaxYear: String = TaxYear().prev.start.toString("d MMMM yyyy")
       val endOfTaxYear: String = TaxYear().prev.end.toString("d MMMM yyyy")
 
@@ -132,7 +166,6 @@ class YourTaxCodeControllerSpec
     }
 
     "display error when there is TaiFailure in service" in {
-      val testController = createTestController
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error occurred")))
       val result = testController.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -141,7 +174,6 @@ class YourTaxCodeControllerSpec
     }
 
     "display any error" in {
-      val testController = createTestController
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.failed(new InternalError("error occurred")))
       val result = testController.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -149,21 +181,4 @@ class YourTaxCodeControllerSpec
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
   }
-
-  val nino = new Generator(new Random).nextNino
-
-  private def createTestController = new TestController
-
-  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val taxAccountService = mock[TaxAccountService]
-
-  private class TestController
-      extends YourTaxCodeController(
-        taxAccountService,
-        taxCodeChangeService,
-        FakeAuthAction,
-        FakeValidatePerson,
-        mock[FormPartialRetriever],
-        MockTemplateRenderer
-      )
 }

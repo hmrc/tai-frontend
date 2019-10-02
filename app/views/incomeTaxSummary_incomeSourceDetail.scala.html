@@ -43,7 +43,7 @@
                 @if(incomeSource.displayTaxCode){
                 @Link.toInternalPage(
                     id=Some(s"${typeLabel}${idx}TaxCodeLink"),
-                    url=routes.YourTaxCodeController.taxCodes.toString,
+                    url=incomeSource.taxCodeUrl,
                     value=Some(Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode)),
                     cssClasses=Some(""),
                     dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${typeLabel}${idx}TaxCodeLink"))).toHtml

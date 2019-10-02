@@ -286,7 +286,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
         MoneyPounds(marriageAllowanceNpsComponent).quantity,
         Link
           .toInternalPage(
-            url = routes.YourTaxCodeController.taxCodes().toString,
+            url = routes.YourTaxCodeController.taxCodes.toString,
             value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
           )
           .toHtml

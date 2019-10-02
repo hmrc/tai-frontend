@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 
-@(taxCodeViewModel: TaxCodeViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(taxCodeViewModel: TaxCodeViewModel, employmentId: Option[Int])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax codes"}
 
@@ -74,6 +74,17 @@
                     </ul>
 
                 </section>
+                }
+
+                @employmentId.map { empId =>
+                    <div class="section flush--bottom">
+                        <p>@Messages("tai.taxCode.wrong")
+                            @Link.toInternalPage(
+                                id = Some("employmentDetails"),
+                                url = routes.IncomeSourceSummaryController.onPageLoad(empId).url,
+                                value = Some(Messages("tai.taxCode.check_link")),
+                                dataAttributes = Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.taxCode.check_link")}"))).toHtml</p>
+                    </div>
                 }
 
             </div>

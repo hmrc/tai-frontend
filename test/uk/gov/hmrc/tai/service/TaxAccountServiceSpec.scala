@@ -35,6 +35,18 @@ import scala.util.Random
 
 class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
+  "filterTaxCodes" must {
+    "do nothing when there is no employment id" in {
+      val testService = createSut
+      testService.filterTaxCodes(taxCodeIncomes, None) mustBe taxCodeIncomes
+    }
+
+    "filter out taxCodeIncomes that match the employment id" in {
+      val testService = createSut
+      testService.filterTaxCodes(taxCodeIncomes, Some(1)) mustBe Seq(taxCodeIncome1)
+    }
+  }
+
   "taxCodeIncomes" must {
     "return seq of tax codes" in {
       val testService = createSut

@@ -42,24 +42,32 @@ class YourTaxCodeController @Inject()(
   override implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController with FeatureTogglesConfig {
 
-  def taxCodes(year: TaxYear = TaxYear()): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
+  private[controllers] def renderTaxCodes(employmentId: Option[Int]): Action[AnyContent] =
+    (authenticate andThen validatePerson).async { implicit request =>
       val nino = request.taiUser.nino
+      val year = TaxYear()
 
       (for {
         TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService
                                                                               .taxCodeIncomes(nino, year)
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
       } yield {
-        val taxCodeViewModel = TaxCodeViewModel.apply(taxCodeIncomes, scottishTaxRateBands)
+
+        val filteredTaxCodes = taxAccountService.filterTaxCodes(taxCodeIncomes, employmentId)
+        val taxCodeViewModel = TaxCodeViewModel(filteredTaxCodes, scottishTaxRateBands)
+
         implicit val user = request.taiUser
-        Ok(views.html.taxCodeDetails(taxCodeViewModel))
+
+        Ok(views.html.taxCodeDetails(taxCodeViewModel, employmentId))
       }) recover {
         case NonFatal(e) => {
           internalServerError(s"Exception: ${e.getClass()}")
         }
       }
-  }
+    }
+
+  def taxCode(employmentId: Int): Action[AnyContent] = renderTaxCodes(Some(employmentId))
+  def taxCodes: Action[AnyContent] = renderTaxCodes(None)
 
   def prevTaxCodes(year: TaxYear): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>

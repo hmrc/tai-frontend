@@ -16,6 +16,7 @@
 
 package views.html
 
+import org.jsoup.Jsoup
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeViewModel}
 
@@ -70,6 +71,17 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
         "#taxCodeDescription_2_2",
         s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.BR")}")
     }
+
+    "contain a link to the income details for this employer" in {
+      val employerId = 987654321
+      val view = views.html.taxCodeDetails(viewModel, Some(employerId))
+      val doc = Jsoup.parse(view.toString())
+
+      doc must haveLinkElement(
+        "employmentDetails",
+        controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url,
+        messages("tai.taxCode.check_link"))
+    }
   }
 
   val taxCodeDescription1 =
@@ -85,5 +97,5 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
     Seq(taxCodeDescription1, taxCodeDescription2),
     messages(s"tai.taxCode.preHeader"))
 
-  override def view = views.html.taxCodeDetails(viewModel)
+  override def view = views.html.taxCodeDetails(viewModel, None)
 }
