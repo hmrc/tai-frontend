@@ -102,8 +102,6 @@ class YourTaxCodeControllerSpec
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
-      when(taxAccountService.filterTaxCodes(any(), any()))
-        .thenReturn(taxCodeIncomes)
 
       val startOfTaxYear: String = TaxYear().start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
       val endOfTaxYear: String = TaxYear().end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
@@ -120,8 +118,6 @@ class YourTaxCodeControllerSpec
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
-      when(taxAccountService.filterTaxCodes(any(), any()))
-        .thenReturn(taxCodeIncomes)
 
       val result = testController.taxCode(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

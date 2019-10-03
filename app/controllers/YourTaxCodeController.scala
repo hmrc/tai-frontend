@@ -53,7 +53,11 @@ class YourTaxCodeController @Inject()(
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
       } yield {
 
-        val filteredTaxCodes = taxAccountService.filterTaxCodes(taxCodeIncomes, employmentId)
+        val filteredTaxCodes =
+          employmentId.fold(taxCodeIncomes) { employmentId =>
+            taxCodeIncomes.filter(_.employmentId == employmentId)
+          }
+
         val taxCodeViewModel = TaxCodeViewModel(filteredTaxCodes, scottishTaxRateBands)
 
         implicit val user = request.taiUser

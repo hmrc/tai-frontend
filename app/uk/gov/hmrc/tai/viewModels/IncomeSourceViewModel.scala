@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
+import play.api.mvc.Call
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
@@ -35,7 +36,7 @@ case class IncomeSourceViewModel(
   displayEndDate: Boolean,
   detailsLinkLabel: String,
   detailsLinkUrl: String,
-  taxCodeUrl: String = "",
+  taxCodeUrl: Option[Call] = None,
   displayDetailsLink: Boolean = true)
 
 object IncomeSourceViewModel extends ViewModelHelper {
@@ -63,7 +64,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
       displayEndDate = endDate.isDefined,
       messages("tai.incomeTaxSummary.employment.link"),
       controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url,
-      controllers.routes.YourTaxCodeController.taxCode(employment.sequenceNumber).url
+      Some(controllers.routes.YourTaxCodeController.taxCode(employment.sequenceNumber))
     )
   }
 
@@ -99,7 +100,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
       taxedIncome.taxCodeIncome.status != Live && endDate.isDefined,
       detailsLinkLabel,
       detailsLinkUrl,
-      controllers.routes.YourTaxCodeController.taxCode(taxedIncome.employment.sequenceNumber).url
+      Some(controllers.routes.YourTaxCodeController.taxCode(taxedIncome.employment.sequenceNumber))
     )
   }
 
@@ -133,7 +134,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
       taxCodeIncome.status != Live && endDate.isDefined,
       detailsLinkLabel,
       incomeSourceSummaryUrl,
-      controllers.routes.YourTaxCodeController.taxCode(employment.sequenceNumber).url
+      Some(controllers.routes.YourTaxCodeController.taxCode(employment.sequenceNumber))
     )
   }
 

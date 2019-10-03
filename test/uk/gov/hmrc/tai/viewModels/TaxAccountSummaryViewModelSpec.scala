@@ -355,7 +355,7 @@ class TaxAccountSummaryViewModelSpec
         detailsLinkLabel = Messages("tai.incomeTaxSummary.employment.link"),
         detailsLinkUrl =
           controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(nonMatchingSequenceNumber).url,
-        taxCodeUrl = controllers.routes.YourTaxCodeController.taxCode(nonMatchingSequenceNumber).url,
+        taxCodeUrl = Some(controllers.routes.YourTaxCodeController.taxCode(nonMatchingSequenceNumber)),
         true
       )
     }

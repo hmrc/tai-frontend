@@ -115,7 +115,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "display tax code" in {
       doc must haveHeadingH2WithText(messages("tai.taxCode"))
       doc must haveSpanWithText(model.taxCode)
-      doc must haveLinkWithUrlWithID("understandTaxCode", routes.YourTaxCodeController.taxCodes().toString)
+      doc must haveLinkWithUrlWithID("understandTaxCode", routes.YourTaxCodeController.taxCode(model.empId).url)
     }
 
     "display payroll number" when {

@@ -31,12 +31,6 @@ import scala.concurrent.Future
 
 class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
 
-  def filterTaxCodes(taxCodeIncomes: Seq[TaxCodeIncome], employmentId: Option[Int]): Seq[TaxCodeIncome] =
-    employmentId match {
-      case Some(_) => taxCodeIncomes.filter(_.employmentId == employmentId)
-      case None    => taxCodeIncomes
-    }
-
   def incomeSources(
     nino: Nino,
     year: TaxYear,

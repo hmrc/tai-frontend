@@ -30,7 +30,7 @@ class IncomeSourceViewModelSpec
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  "IncomeSourceViewModel apply method (two parameter version)" must {
+  "IncomeSourceViewModel apply method" must {
     "return a viewmodel" which {
       "has the name field coming from employment model" in {
         val sut = IncomeSourceViewModel(taxCodeIncome, employment)
@@ -238,7 +238,7 @@ class IncomeSourceViewModelSpec
           false,
           messagesApi("tai.incomeTaxSummary.employmentAndBenefits.link"),
           controllers.routes.IncomeSourceSummaryController.onPageLoad(taxedIncome.employment.sequenceNumber).url,
-          controllers.routes.YourTaxCodeController.taxCode(taxedIncome.employment.sequenceNumber).url,
+          Some(controllers.routes.YourTaxCodeController.taxCode(taxedIncome.employment.sequenceNumber)),
           true
         )
 
