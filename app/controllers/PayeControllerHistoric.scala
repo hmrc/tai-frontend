@@ -68,8 +68,9 @@ class PayeControllerHistoric @Inject()(
         hasTaxCodeRecordsInYearPerEmployment <- hasTaxCodeRecordsFuture
       } yield {
         implicit val user = request.taiUser
-        if (isRtiUnavailable(employments)) {
-          BadGateway(views.html.serviceUnavailable())
+        if (employmentService.stubbedAccountsExist(employments)) {
+          badGatewayError(
+            "Employment contains stub annual account data found meaning payment information can't be displayed")
         } else {
           Ok(
             views.html.paye.historicPayAsYouEarn(
@@ -79,9 +80,6 @@ class PayeControllerHistoric @Inject()(
       }
     }
   } recoverWith hodStatusRedirect
-
-  private def isRtiUnavailable(employments: Seq[Employment]): Boolean =
-    employments.headOption.exists(_.annualAccounts.headOption.exists(_.realTimeStatus == TemporarilyUnavailable))
 
   def hodStatusRedirect(
     implicit request: AuthenticatedRequest[AnyContent]): PartialFunction[Throwable, Future[Result]] = {

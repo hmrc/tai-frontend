@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.service
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 
@@ -56,10 +56,14 @@ class EmploymentService @Inject()(employmentsConnector: EmploymentsConnector) {
           s"No envelope id was generated when sending incorrect employment details for ${nino.nino}")
     }
 
+  def stubbedAccountsExist(employments: Seq[Employment]): Boolean =
+    employments.headOption.exists(_.annualAccounts.headOption.exists(_.realTimeStatus == TemporarilyUnavailable))
+
   def employmentNames(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Map[Int, String]] =
     for {
       employments <- employments(nino, year)
     } yield {
       employments.map(employment => employment.sequenceNumber -> employment.name).toMap
     }
+
 }
