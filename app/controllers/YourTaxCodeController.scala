@@ -54,8 +54,8 @@ class YourTaxCodeController @Inject()(
       } yield {
 
         val filteredTaxCodes =
-          employmentId.fold(taxCodeIncomes) { employmentId =>
-            taxCodeIncomes.filter(_.employmentId == employmentId)
+          employmentId.fold(taxCodeIncomes) { id =>
+            taxCodeIncomes.filter(_.employmentId == Some(id))
           }
 
         val taxCodeViewModel = TaxCodeViewModel(filteredTaxCodes, scottishTaxRateBands)

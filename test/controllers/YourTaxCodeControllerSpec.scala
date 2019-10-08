@@ -124,6 +124,8 @@ class YourTaxCodeControllerSpec
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
       doc.body().toString must include(Messages("tai.taxCode.wrong"))
+      doc.body().toString must include(
+        Messages("tai.taxCode.subheading", taxCodeIncomes.head.name, taxCodeIncomes.head.taxCode))
     }
   }
 
