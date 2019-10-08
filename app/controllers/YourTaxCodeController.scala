@@ -16,9 +16,9 @@
 
 package controllers
 
-import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+import javax.inject.Inject
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, TaxCodeChangeService}
+import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
 
 import scala.util.control.NonFatal
@@ -58,11 +58,11 @@ class YourTaxCodeController @Inject()(
             taxCodeIncomes.filter(_.employmentId == Some(id))
           }
 
-        val taxCodeViewModel = TaxCodeViewModel(filteredTaxCodes, scottishTaxRateBands)
+        val taxCodeViewModel = TaxCodeViewModel(filteredTaxCodes, scottishTaxRateBands, employmentId)
 
         implicit val user = request.taiUser
 
-        Ok(views.html.taxCodeDetails(taxCodeViewModel, employmentId))
+        Ok(views.html.taxCodeDetails(taxCodeViewModel))
       }) recover {
         case NonFatal(e) => {
           internalServerError(s"Exception: ${e.getClass()}")
