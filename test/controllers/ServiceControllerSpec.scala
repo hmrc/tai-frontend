@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.util.UUID
-
 import controllers.actions.FakeValidatePerson
 import controllers.auth.AuthAction
 import mocks.MockTemplateRenderer
@@ -26,8 +24,7 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.tai.config.ApplicationConfig
