@@ -56,7 +56,7 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
     "be able to form view model object with single TaxCodeIncome" when {
       "provided with valid input" in {
         val result = testViewModel(Seq(taxCodeIncomes1))
-        result.mainHeading mustBe Messages("tai.taxCode.single.code.title", taxYearStartNonBreak, taxYearEndNonBreak)
+        result.title mustBe Messages("tai.taxCode.single.code.title", taxYearStartNonBreak, taxYearEndNonBreak)
         result.ledeMessage mustBe Messages("tai.taxCode.single.info")
         result.title mustBe Messages("tai.taxCode.single.code.title", taxYearStartNonBreak, taxYearEndNonBreak)
       }
@@ -65,7 +65,7 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
     "be able to form view model object with multiple TaxCodeIncome" when {
       "provided with valid input" in {
         val result = testViewModel(Seq(taxCodeIncomes1, taxCodeIncomes2))
-        result.mainHeading mustBe Messages("tai.taxCode.multiple.code.title", taxYearStartNonBreak, taxYearEndNonBreak)
+        result.title mustBe Messages("tai.taxCode.multiple.code.title", taxYearStartNonBreak, taxYearEndNonBreak)
         result.ledeMessage mustBe Messages("tai.taxCode.multiple.info")
         result.title mustBe Messages("tai.taxCode.multiple.code.title", taxYearStartNonBreak, taxYearEndNonBreak)
       }
@@ -307,6 +307,19 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
         )
       }
     }
+
+    "contain the income details message for employments" in {
+      val result = testViewModel(Seq(taxCodeIncomes1))
+
+      result.incomeDetailsMessage == Messages("tai.taxCode.check_employment")
+    }
+
+    "contain the income details message for pension" in {
+      val pensionIncome = taxCodeIncomes1.copy(componentType = PensionIncome)
+      val result = testViewModel(Seq(pensionIncome))
+
+      result.incomeDetailsMessage == Messages("tai.taxCode.check_pension")
+    }
   }
 
   val taxYearStartNonBreak = taxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
@@ -322,5 +335,5 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
   private val nino = new Generator().nextNino
   private val scottishTaxRateBands = Map.empty[String, BigDecimal]
 
-  def testViewModel(taxCodeIncomes: Seq[TaxCodeIncome]) = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands)
+  def testViewModel(taxCodeIncomes: Seq[TaxCodeIncome]) = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands, None)
 }

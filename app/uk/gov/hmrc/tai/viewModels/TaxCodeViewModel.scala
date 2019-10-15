@@ -19,38 +19,52 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
+import uk.gov.hmrc.tai.model.domain.{Employment, PensionIncome, TaxCodeRecord}
 import uk.gov.hmrc.tai.model.domain.income.{BasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class TaxCodeViewModel(
   title: String,
-  mainHeading: String,
   ledeMessage: String,
   taxCodeDetails: Seq[DescriptionListViewModel],
-  preHeader: String)
+  preHeader: String,
+  incomeDetailsMessage: String,
+  employmentId: Option[Int])
 
 object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
 
-  def apply(taxCodeIncomes: Seq[TaxCodeIncome], scottishTaxRateBands: Map[String, BigDecimal])(
-    implicit messages: Messages): TaxCodeViewModel = {
+  def apply(
+    taxCodeIncomes: Seq[TaxCodeIncome],
+    scottishTaxRateBands: Map[String, BigDecimal],
+    employmentId: Option[Int])(implicit messages: Messages): TaxCodeViewModel = {
 
     val descriptionListViewModels: Seq[DescriptionListViewModel] = taxCodeIncomes.map { income =>
       createDescriptionListViewModel(income.taxCode, income.basisOperation, scottishTaxRateBands, income.name)
     }
 
-    TaxCodeViewModel(descriptionListViewModels)
+    val size = descriptionListViewModels.size
+    val title = taxCodesTitle(size, TaxYear())
+    val introMessage = ledeMessage(size)
+    val preHeading = messages("tai.taxCode.preHeader")
+
+    TaxCodeViewModel(
+      title,
+      introMessage,
+      descriptionListViewModels,
+      preHeading,
+      incomeDetailsMessage(taxCodeIncomes, employmentId),
+      employmentId)
   }
 
-  def apply(descriptions: Seq[DescriptionListViewModel])(implicit messages: Messages): TaxCodeViewModel = {
+  private def incomeDetailsMessage(taxCodeIncomes: Seq[TaxCodeIncome], employmentId: Option[Int])(
+    implicit messages: Messages): String = {
+    val isPension =
+      taxCodeIncomes
+        .filter(_.employmentId == employmentId)
+        .filter(_.componentType == PensionIncome)
+        .nonEmpty
 
-    val size = descriptions.size
-    val title = taxCodesTitle(size, TaxYear())
-    val mainHeading = title
-    val introMessage = ledeMessage(size)
-    val preHeading = messages(s"tai.taxCode.preHeader")
-
-    TaxCodeViewModel(title, mainHeading, introMessage, descriptions, preHeading)
+    if (isPension) messages("tai.taxCode.check_pension") else messages("tai.taxCode.check_employment")
   }
 
   private def createDescriptionListViewModel(
