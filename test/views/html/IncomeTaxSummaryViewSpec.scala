@@ -17,6 +17,7 @@
 package views.html
 
 import builders.UserBuilder
+import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.service.{NoTimeToProcess, ThreeWeeks}
@@ -283,14 +284,15 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         s"${messages("tai.incomeTaxSummary.incomeAmount.prefix")} ${activeEmployment.amount}")
     }
 
-    "show a tax code in link form whem instructed" in {
+    "show a tax code in link form when instructed" in {
       doc must haveElementAtPathWithText(
         "#employment1TaxCodeLink",
         messages("tai.incomeTaxSummary.taxCode.prefix", activeEmployment.taxCode))
+
       doc must haveElementAtPathWithAttribute(
         "#employment1TaxCodeLink",
         "href",
-        controllers.routes.YourTaxCodeController.taxCodes().url)
+        controllers.routes.YourTaxCodeController.taxCode(1).url)
     }
 
     "omit a tax code when instructed" in {
@@ -306,7 +308,9 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         false,
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel))
+
       val document = doc(views.html.incomeTaxSummary(vm))
+
       document must not(haveElementWithId("employment1TaxCodeLink"))
     }
 
@@ -329,7 +333,9 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         false,
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel))
+
       val document = doc(views.html.incomeTaxSummary(vm))
+
       document must not(haveElementWithId("employment1PayrollNumber"))
     }
 
@@ -464,7 +470,9 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       "",
       false,
       "view employment details",
-      "fake/active/url")
+      "fake/active/url",
+      Some(controllers.routes.YourTaxCodeController.taxCode(1))
+    )
   val endedEmployment =
     IncomeSourceViewModel(
       "Company2",

@@ -43,16 +43,6 @@ trait TaxAccountSummaryTestData {
 
   val taxAccountSummary: TaxAccountSummary = TaxAccountSummary(1111, 2222, 333.32, 444.44, 111.11)
 
-  val employmentIncomeLive =
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
-  val pensionIncomeLive =
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
-
-  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
-    employmentIncomeLive,
-    pensionIncomeLive
-  )
-
   val nonMatchingSequenceNumber = 998
 
   val nonTaxCodeIncome = NonTaxCodeIncome(

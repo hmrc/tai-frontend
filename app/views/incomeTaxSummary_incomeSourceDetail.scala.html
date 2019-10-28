@@ -40,13 +40,15 @@
             </p>
 
             <p class="flush--top">
-                @if(incomeSource.displayTaxCode){
-                @Link.toInternalPage(
-                    id=Some(s"${typeLabel}${idx}TaxCodeLink"),
-                    url=routes.YourTaxCodeController.taxCodes.toString,
-                    value=Some(Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode)),
-                    cssClasses=Some(""),
-                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${typeLabel}${idx}TaxCodeLink"))).toHtml
+                @if(incomeSource.displayTaxCode) {
+                    @incomeSource.taxCodeUrl.map { taxCodeUrl =>
+                    @Link.toInternalPage(
+                        id = Some(s"${typeLabel}${idx}TaxCodeLink"),
+                        url = taxCodeUrl.url,
+                        value = Some(Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode)),
+                        cssClasses = Some(""),
+                        dataAttributes = Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${typeLabel}${idx}TaxCodeLink"))).toHtml
+                    }
                 }
                 @if(incomeSource.displayPayrollNumber){
                 <span id="@{typeLabel}@{idx}PayrollNumber" class="carry-over display-block">@Messages("tai.incomeTaxSummary.payrollNumber.prefix", incomeSource.payrollNumber)</span>

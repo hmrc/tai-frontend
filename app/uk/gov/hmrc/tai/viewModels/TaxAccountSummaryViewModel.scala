@@ -59,12 +59,14 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter 
     val taxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
     val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
 
-    val employmentViewModels = incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel(_))
+    val employmentViewModels =
+      incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome(_))
 
-    val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel(_))
+    val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome(_))
 
-    val ceasedEmploymentViewModels = incomesSources.ceasedEmploymentIncomeSources.map(IncomeSourceViewModel(_)) ++
-      nonMatchingCeasedEmployments.map(IncomeSourceViewModel(_))
+    val ceasedEmploymentViewModels = incomesSources.ceasedEmploymentIncomeSources.map(
+      IncomeSourceViewModel.createFromTaxedIncome(_)) ++
+      nonMatchingCeasedEmployments.map(IncomeSourceViewModel.createFromEmployment(_))
 
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
 

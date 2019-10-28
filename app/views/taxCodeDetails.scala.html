@@ -29,7 +29,7 @@
     ptaHeader(
     displayBackLink = true,
     backLinkGaEventAction = Some(gaEventActionString),
-    mainHeadingText = taxCodeViewModel.mainHeading,
+    mainHeadingText = taxCodeViewModel.title,
     preHeadingText = taxCodeViewModel.preHeader)
 }
 
@@ -74,6 +74,17 @@
                     </ul>
 
                 </section>
+                }
+
+                @taxCodeViewModel.employmentId.map { empId =>
+                    <div class="section flush--bottom">
+                        <p>@Messages("tai.taxCode.wrong")
+                            @Link.toInternalPage(
+                                id = Some("employmentDetails"),
+                                url = routes.IncomeSourceSummaryController.onPageLoad(empId).url,
+                                value = Some(taxCodeViewModel.incomeDetailsMessage),
+                                dataAttributes = Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${taxCodeViewModel.incomeDetailsMessage}"))).toHtml</p>
+                    </div>
                 }
 
             </div>

@@ -129,6 +129,7 @@ GET         /tax-free-allowance                                                 
 GET         /taxable-income                                                            @controllers.TaxFreeAmountController.taxFreeAmount
 GET         /your-tax-free-amount                                                      @controllers.TaxFreeAmountController.taxFreeAmount
 
+GET         /tax-code/:employmentId                                                    @controllers.YourTaxCodeController.taxCode(employmentId: Int)
 GET         /tax-codes                                                                 @controllers.YourTaxCodeController.taxCodes()
 GET         /tax-codes/:year                                                           @controllers.YourTaxCodeController.prevTaxCodes(year: uk.gov.hmrc.tai.model.TaxYear)
 
