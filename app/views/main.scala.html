@@ -75,9 +75,8 @@
 }
 
 @signOutUrl = @{
-    mustacheCheck{
-        val signOutLink = routes.ServiceController.serviceSignout().url
-        authedUser.fold("")(_ => signOutLink)
+    mustacheCheck {
+        routes.ServiceController.serviceSignout().url
     }
 }
 
