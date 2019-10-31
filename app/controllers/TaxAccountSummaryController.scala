@@ -63,10 +63,11 @@ class TaxAccountSummaryController @Inject()(
           taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
             Ok(views.html.incomeTaxSummary(vm))
           }
-        case _ => throw new RuntimeException("Failed to fetch tax account summary details")
+        case (TaiTaxAccountFailureResponse(message)) =>
+          throw new RuntimeException(s"Failed to fetch tax account summary details with exception: $message")
       })
-      .recover {
-        case NonFatal(e) => internalServerError(e.getMessage)
+      .recover{
+        case NonFatal(e) => internalServerError(e.getMessage, Some(e))
       }
   }
 }
