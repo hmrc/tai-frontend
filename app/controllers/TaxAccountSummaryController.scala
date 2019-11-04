@@ -66,7 +66,7 @@ class TaxAccountSummaryController @Inject()(
         case (TaiTaxAccountFailureResponse(message)) =>
           throw new RuntimeException(s"Failed to fetch tax account summary details with exception: $message")
       })
-      .recover{
+      .recover {
         case NonFatal(e) => internalServerError(e.getMessage, Some(e))
       }
   }
