@@ -2,6 +2,15 @@ global.error.InternalServerError500.title = Mae’n ddrwg gennym, mae problem gy
 global.error.InternalServerError500.heading = Mae’n ddrwg gennym, mae problem gyda’r gwasanaeth
 global.error.InternalServerError500.message = Rhowch gynnig arall arni yn nes ymlaen.
 
+tai.page_not_found.tabtitle = Heb ddod o hyd i’r dudalen - Gwirio‘ch Treth Incwm - GOV.UK
+tai.page_not_found.heading = Heb ddod o hyd i’r dudalen
+tai.page.not.found.error.check.web.address.correct = Os gwnaethoch deipio’r cyfeiriad gwe, gwiriwch ei fod yn gywir.
+tai.page.not.found.error.check.web.address.full = Os gwnaethoch ludo’r cyfeiriad gwe, gwiriwch eich bod wedi copïo’r cyfeiriad yn llawn.
+tai.page.not.found.error.contact = Os yw’r cyfeiriad gwe yn gywir neu os ydych wedi dewis cysylltiad neu fotwm,
+tai.page.not.found.error.pension.scheme.url = https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees
+tai.page.not.found.error.contact.end = os oes angen i chi siarad â rhywun am eich trethi.
+tai.page.not.found.error.service = cysylltwch â Gwasanaeth Cwsmeriaid Cymraeg CThEM
+
 add.missing.company.benefit=Ychwanegu buddiant cwmni sydd ar goll
 add.missing.employment=Ychwanegu Cyflogaeth sydd ar goll
 add.missing.pension=Ychwanegu pensiwn sydd ar goll

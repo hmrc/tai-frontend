@@ -1459,6 +1459,16 @@ tai.updateIncome.CYPlus1.same.paragraph1=You have entered {0}
 tai.updateIncome.CYPlus1.same.paragraph2=This is the same as the amount already estimated for {0} for next year, so you do not need to update your income.
 tai.updateIncome.CYPlus1.same.cancel=Return to your Income Tax Summary
 
+tai.page_not_found.tabtitle = Page not found - Check your Income Tax - GOV.UK
+tai.page_not_found.heading = Page not found
+tai.page.not.found.error.check.web.address.correct = If you typed the web address, check it is correct.
+tai.page.not.found.error.check.web.address.full = If you pasted the web address, check you copied the entire address
+tai.page.not.found.error.contact = If the web address is correct or you selected a link or button,
+tai.page.not.found.error.pension.scheme.url = https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees
+tai.page.not.found.error.contact.end = if you need to speak to someone about your taxes.
+tai.page.not.found.error.service =  contact the Income Tax helpline
+
+
 tai.taxCodeComparison.add.employer=you have a new employment with {0}
 tai.taxCodeComparison.add.pension=you have a new private pension with {0}
 tai.taxCodeComparison.removeEmployer=your employment with {0} has ended

@@ -1,0 +1,51 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import play.api.Play.current
+@import uk.gov.hmrc.play.config.RunMode._
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+
+@import layouts.{govuk_template => hmrcGovUkTemplate}
+@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
+@import play.api.i18n.Messages
+
+@()(implicit messages: Messages, request: Request[_], templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@anchor(serviceName: String, url: String) = {
+<a href="@url">@serviceName</a>
+}
+
+@main(
+    title = Messages("tai.page_not_found.tabtitle")
+){
+<div class="grid-row">
+    <div class="content">
+
+        <div class="row">
+            <h1 id="header" class="heading-xlarge">@Messages("tai.page_not_found.heading")</h1>
+        </div>
+
+        <div class="row">
+            <p>@messages("tai.page.not.found.error.check.web.address.correct")</p>
+            <p>@messages("tai.page.not.found.error.check.web.address.full")</p>
+            <p>@messages("tai.page.not.found.error.contact")
+                @anchor(Messages("tai.page.not.found.error.service"), Messages("tai.page.not.found.error.pension.scheme.url"))
+                @messages("tai.page.not.found.error.contact.end")
+            </p>
+        </div>
+    </div>
+</div>
+}

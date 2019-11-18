@@ -63,19 +63,8 @@ class TaiErrorHandler @Inject()(
       ))
   )
 
-  override def notFoundTemplate(implicit request: Request[_]): Html = standardErrorTemplate(
-    Messages("global.error.pageNotFound404.title"),
-    Messages("tai.errorMessage.heading"),
-    Messages(
-      "tai.errorMessage.frontend404",
-      Link
-        .toInternalPage(
-          url = routes.TaxAccountSummaryController.onPageLoad().url,
-          value = Some(Messages("tai.errorMessage.startAgain"))
-        )
-        .toHtml
-    )
-  )
+  override def notFoundTemplate(implicit request: Request[_]): Html =
+    views.html.page_not_found()
 }
 
 object ControllerConfiguration extends ControllerConfig {
