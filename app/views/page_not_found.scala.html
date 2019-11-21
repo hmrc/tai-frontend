@@ -14,10 +14,6 @@
  * limitations under the License.
  *@
 
-@import play.api.Play.current
-@import uk.gov.hmrc.play.config.RunMode._
-@import uk.gov.hmrc.tai.config.ApplicationConfig
-
 @()(implicit messages: Messages, request: Request[_], templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @anchor(serviceName: String, url: String) = {
@@ -25,16 +21,14 @@
 }
 
 @main(
-    title = Messages("tai.page_not_found.tabtitle")
+    title = Messages("tai.page_not_found.heading")
 ){
-
-<div class="grid-row">
-    <div class="content">
-        <div class="column-two-thirds">
+    <div class="content column-two-thirds">
+        <div>
             <h1>@Messages("tai.page_not_found.heading")</h1>
         </div>
 
-        <div class="column-two-thirds">
+        <div>
             <p>@messages("tai.page.not.found.error.check.web.address.correct")</p>
             <p>@messages("tai.page.not.found.error.check.web.address.full")</p>
             <p>@messages("tai.page.not.found.error.contact")
@@ -43,5 +37,4 @@
             </p>
         </div>
     </div>
-</div>
 }
