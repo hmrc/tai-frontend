@@ -2,7 +2,7 @@ global.error.InternalServerError500.title = Mae’n ddrwg gennym, mae problem gy
 global.error.InternalServerError500.heading = Mae’n ddrwg gennym, mae problem gyda’r gwasanaeth
 global.error.InternalServerError500.message = Rhowch gynnig arall arni yn nes ymlaen.
 
-tai.page_not_found.tabtitle = Heb ddod o hyd i’r dudalen - Gwirio‘ch Treth Incwm - GOV.UK
+tai.page_not_found.tabtitle = Heb ddod o hyd i’r dudalen
 tai.page_not_found.heading = Heb ddod o hyd i’r dudalen
 tai.page.not.found.error.check.web.address.correct = Os gwnaethoch deipio’r cyfeiriad gwe, gwiriwch ei fod yn gywir.
 tai.page.not.found.error.check.web.address.full = Os gwnaethoch ludo’r cyfeiriad gwe, gwiriwch eich bod wedi copïo’r cyfeiriad yn llawn.
