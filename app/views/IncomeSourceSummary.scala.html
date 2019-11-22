@@ -76,7 +76,7 @@
     title = title,
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = Some("incomeSourceSummary"),
+    articleClasses = None,
     gaCustomTitle = Some(title)
 ) {
 
@@ -123,7 +123,7 @@
         <div class="column-one-half subsection--wide">
                 <h2 class="flush">@messages("tai.income.details.estimatedTaxableIncome")</h2>
                 <p class="break-word">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>
-                <span class="heading-xlarge flush--bottom faded-text-dark" aria-hidden="true">@pounds(model.estimatedTaxableIncome)</span>
+                <span class="bold-xlarge faded-text-dark" aria-hidden="true">@pounds(model.estimatedTaxableIncome)</span>
                 <span class="visuallyhidden">@Html(messages("tai.income.details.yourEstimatedTaxableIncome.screenReader", pounds(model.estimatedTaxableIncome)))</span>
                 <p  aria-hidden="true">
                     @Link.toInternalPage(
@@ -143,7 +143,7 @@
         <div class="column-one-half subsection--wide">
             <h2 class="flush">@messages("tai.income.details.incomeReceivedToDate")</h2>
             <p class="break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
-            <span class="heading-xlarge flush--bottom faded-text-dark" aria-hidden="true">@pounds(model.incomeReceivedToDate)</span>
+            <span class="bold-xlarge faded-text-dark" aria-hidden="true">@pounds(model.incomeReceivedToDate)</span>
             <span class="visuallyhidden">@Html(messages("tai.income.details.incomeReceivedToDate.screenReader", pounds(model.incomeReceivedToDate)))</span>
             <p  aria-hidden="true">
                 @Link.toInternalPage(
@@ -164,7 +164,7 @@
     <div class="grid-row">
         <div class="column-one-half">
             <h2 class="flush--top">@messages("tai.taxCode")</h2>
-            <span class="heading-xlarge flush--bottom faded-text-dark" aria-hidden="true">@model.taxCode</span>
+            <span class="bold-xlarge faded-text-dark" aria-hidden="true">@model.taxCode</span>
             <span class="visuallyhidden">@messages("tai.income.details.yourTaxCode", model.taxCode)</span>
             <p>
                 @Link.toInternalPage(
