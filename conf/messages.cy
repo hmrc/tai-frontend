@@ -324,9 +324,8 @@ tai.deceased.bereavement.helpline=Llinell gymorth trethi yn dilyn profedigaeth
 tai.deceased.best.times.p1=Mae llinellau ffôn yn llai prysur cyn 10:00, ddydd Llun i ddydd Gwener.
 tai.deceased.best.times=Yr amser gorau i alw:
 tai.deceased.call.charges=Gwybodaeth am gostau galwadau
-tai.deceased.heading=Ni allwch gyrchu gwybodaeth {0}
-tai.deceased.information.p1=Cawsom wybod bod {0} wedi marw felly ni allwn ddangos yr wybodaeth rydych yn ei disgwyl.
-tai.deceased.information.p2=Gallwch gysylltu â ni am help gyda threth ar ôl i rywun farw.
+
+
 tai.deceased.opening.times.p1=08:30 – 17:00, Dydd Llun – Dydd Gwener
 tai.deceased.opening.times.p2=n/a
 tai.deceased.opening.times.p3=08:30 – 17:00, Dydd Llun - Dydd Gwener

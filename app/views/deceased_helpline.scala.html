@@ -26,58 +26,32 @@
 ){
 
     <header class="page-header">
-        <h1 id="deceased-header" class="flush--bottom">@Messages("tai.deceased.heading", user.getDisplayName)</h1>
+        <h1 id="deceased-header" class="flush--bottom">@Messages("tai.deceased.heading")</h1>
     </header>
 
-    <p id="deceased-p1">@Messages("tai.deceased.information.p1", user.getDisplayName)</p>
+    <div class="grid-row">
+        <div class="grid grid-2-3">
+            <div class="inner-block">
 
-    <p id="deceased-p2">@Messages("tai.deceased.information.p2")</p>
+                <h2 class="heading-large">@Messages("tai.deceased.bereavement.question")</h2>
+                <p id="deceased-p1">@Messages("tai.deceased.callHmrc.paragraph")</p>
 
-    <section class="section flush--bottom">
-        <h2 class="heading-large">@Messages("tai.deceased.bereavement.helpline")</h2>
-        <ul class="bullets">
-            <li>@Messages("tai.deceased.telephone") <b>@Messages("tai.deceased.telephone.number")</b></li>
-            <li>@Messages("tai.deceased.textphone") <b>@Messages("tai.deceased.textphone.number")</b></li>
-            <li>@Messages("tai.deceased.outsideUK") <b>@Messages("tai.deceased.outsideUK.number")</b></li>
-        </ul>
+                <h3 class="font-small push-half--bottom">@Messages("tai.deceased.telephone.title")</h3>
+                <p class="bold-small push-half--ends">@Messages("tai.deceased.telephone.number")</p>
+                <p class="push-half--top">@Messages("tai.deceased.telephone.advice")</p>
 
-        <p id="call-charges">
-            @Link.toInternalPage(id=Some("callCharges"), url="https://www.gov.uk/call-charges",value=Some(Messages("tai.deceased.call.charges"))).toHtml
-        </p>
-        <div class="section flush--bottom">
-            <h3 class="h2-heading">@Messages("tai.deceased.opening.times")</h3>
-            <ul>
-                <li>@Messages("tai.deceased.opening.times.p1")</li>
-                <li>@Messages("tai.deceased.opening.times.p2")</li>
-                <li>@Messages("tai.deceased.opening.times.p3")</li>
-            </ul>
-            <p>@Messages("tai.deceased.opening.times.p4")</p>
+                <h3 class="font-small push-half--bottom">@Messages("tai.deceased.textphone.title")</h3>
+                <p class="bold-small push-half--top">@Messages("tai.deceased.textphone.number")</p>
+
+                <h3 class="font-small push-half--bottom">@Messages("tai.deceased.outsideUK.title")</h3>
+                <p class="bold-small push-half--top">@Messages("tai.deceased.outsideUK.number")</p>
+
+                <h3 id="openingTimes" class="visually-hidden">@Messages("tai.deceased.opening.times")</h3>
+                <p class="push-half--bottom">@Messages("tai.deceased.openingTimes.mondayToFriday")</p>
+                <p class="push-half--top">@Messages("tai.deceased.openingTimes.saturday")</p>
+                <p>@Messages("tai.deceased.daysClosed")</p>
+
+            </div>
         </div>
-
-        <div class="section soft--top flush--top flush--bottom">
-            <h3 class="h2-heading">@Messages("tai.deceased.best.times")</h3>
-            <p>@Messages("tai.deceased.best.times.p1")</p>
-        </div>
-    </section>
-
-    <section class="section soft--top flush--top flush--bottom">
-        <h2 class="heading-large">@Messages("tai.deceased.post")</h2>
-        <p>@Messages("tai.deceased.post.p1")</p>
-        <p id="different-address">@Html(Messages("tai.deceased.post.p2",
-            Link.toInternalPage(url="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/couriers",value=Some(Messages("tai.deceased.post.p2.link.text"))).toHtml))
-        </p>
-        <p id="post-address">
-            @Messages("tai.deceased.post.address1")<br>
-            @Messages("tai.deceased.post.address2")<br>
-            @Messages("tai.deceased.post.address3")<br>
-            @Messages("tai.deceased.post.address4")
-        </p>
-    </section>
-
-    <section class="section flush--bottom">
-        <h2 class="heading-large">@Messages("tai.deceased.tell.us")</h2>
-        <p id="tell-us-once">@Html(Messages("tai.deceased.tell.us.p1",
-            Link.toInternalPage(url="https://www.gov.uk/after-a-death/organisations-you-need-to-contact-and-tell-us-once",value=Some(Messages("tai.deceased.tell.us.p1.link.text"))).toHtml))
-        </p>
-    </section>
-}
+    </div>
+ }
