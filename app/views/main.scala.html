@@ -197,7 +197,7 @@
 @mustacheMap = @{
     Map[String, Any](
         "nuanceWebChat" -> Map(
-            "isWebchatEnabled" -> true,
+            "isWebchatEnabled" -> FeatureTogglesConfig.webChatEnabled,
             "nuanceId" -> sessionId),
         "pageTitle" -> s"${title} ${serviceSuffix}",
         "linkElems" -> Map(
