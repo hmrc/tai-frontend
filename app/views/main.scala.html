@@ -126,6 +126,8 @@
 
 }
 
+@sessionId = @{ request.session.get("sessionId") }
+
 @inlineScript = {
   <script>
     var sessionId = new Date().getTime() + '.' + Math.random().toString(36).substring(5)
@@ -141,14 +143,6 @@
       }
     );
   </script>
-
-    <script type="text/javascript">
-        var nuanceData =
-        {
-            'sessionId': '@request.session.get("sessionId")'
-        }
-    </script>
-
 
     @if(webChat){
         <script type="text/javascript">
@@ -188,10 +182,6 @@
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
 
-    @if(FeatureTogglesConfig.webChatEnabled){
-      <script id="webchat-tag" type="text/javascript" src="https://hmrc-uk.digital.nuance.com/chatskins/launch/inqChatLaunch10006719.js"></script>
-    }
-
     @script
 }
 
@@ -206,6 +196,9 @@
 
 @mustacheMap = @{
     Map[String, Any](
+        "nuanceWebChat" -> Map(
+            "isWebchatEnabled" -> true,
+            "nuanceId" -> sessionId),
         "pageTitle" -> s"${title} ${serviceSuffix}",
         "linkElems" -> Map(
             "url" -> controllers.routes.AssetsController.versioned("stylesheets/tai19032019.min.css")
