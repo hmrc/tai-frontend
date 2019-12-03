@@ -14,27 +14,25 @@
  * limitations under the License.
  *@
 
-@()(implicit messages: Messages, request: Request[_], templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@()(
+    implicit messages: Messages, request: Request[_],
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
+)
 
 @anchor(serviceName: String, url: String) = {
 <a href="@url">@serviceName</a>
 }
 
 @main(
-    title = Messages("tai.page_not_found.heading")
+    title = Messages("tai.page_not_found.heading"),
+    articleClasses = Some("column-two-thirds")
 ){
-    <div class="content column-two-thirds">
-        <div>
-            <h1>@Messages("tai.page_not_found.heading")</h1>
-        </div>
-
-        <div>
-            <p>@messages("tai.page.not.found.error.check.web.address.correct")</p>
-            <p>@messages("tai.page.not.found.error.check.web.address.full")</p>
-            <p>@messages("tai.page.not.found.error.contact")
-                @anchor(Messages("tai.page.not.found.error.service"), Messages("tai.page.not.found.error.pension.scheme.url"))
-                @messages("tai.page.not.found.error.contact.end")
-            </p>
-        </div>
-    </div>
+    <h1 class="heading-xlarge">@Messages("tai.page_not_found.heading")</h1>
+    <p>@messages("tai.page.not.found.error.check.web.address.correct")</p>
+    <p>@messages("tai.page.not.found.error.check.web.address.full")</p>
+    <p>@messages("tai.page.not.found.error.contact")
+        @anchor(Messages("tai.page.not.found.error.service"), Messages("tai.page.not.found.error.pension.scheme.url"))
+        @messages("tai.page.not.found.error.contact.end")
+    </p>
 }

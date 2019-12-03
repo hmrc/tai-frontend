@@ -62,7 +62,6 @@ class TaiErrorHandler @Inject()(
           .toHtml
       ))
   )
-
   override def notFoundTemplate(implicit request: Request[_]): Html =
     views.html.page_not_found()
 }
