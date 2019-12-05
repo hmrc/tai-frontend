@@ -29,7 +29,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -218,11 +218,12 @@ class IncomeController @Inject()(
               respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
             }
           }
-          case _ => throw new RuntimeException("Failed to update estimated income")
+          case failure: TaiFailureResponse =>
+            throw new RuntimeException(s"Failed to update estimated income with exception: ${failure.message}")
         }
       })
       .recover {
-        case NonFatal(e) => internalServerError(e.getMessage)
+        case NonFatal(e) => internalServerError(e.getMessage, Some(e))
       }
   }
 

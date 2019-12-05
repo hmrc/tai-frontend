@@ -21,7 +21,7 @@ import javax.inject.Inject
 import net.ceedubs.ficus.Ficus._
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Request, RequestHeader, Result}
-import play.api.{Configuration, Logger, Play}
+import play.api.{Configuration, Play}
 import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.HeaderCarrier

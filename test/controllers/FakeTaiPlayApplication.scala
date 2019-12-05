@@ -16,7 +16,9 @@
 
 package controllers
 
+import com.kenshoo.play.metrics.{Metrics, MetricsFilter}
 import org.scalatest.concurrent.PatienceConfiguration
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Args, Status, Suite, TestSuite}
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.Application
@@ -24,8 +26,9 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.domain.Person
+import play.api.inject.bind
 
-trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguration with TestSuite {
+trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguration with TestSuite with MockitoSugar {
   this: Suite =>
   override lazy val port = 12345
 
@@ -44,10 +47,18 @@ trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguratio
     "govuk-tax.Test.services.company-auth.host"             -> "localhost",
     "govuk-tax.Test.services.company-auth.port"             -> "4444",
     "govuk-tax.Test.services.citizen-auth.host"             -> "localhost",
-    "govuk-tax.Test.services.citizen-auth.port"             -> "9999"
+    "govuk-tax.Test.services.citizen-auth.port"             -> "9999",
+    "microservice.metrics.graphite.enabled"                 -> false,
+    "metrics.jvm"                                           -> false
   )
 
-  implicit override lazy val app: Application = new GuiceApplicationBuilder().configure(additionalConfiguration).build()
+  implicit override lazy val app: Application = new GuiceApplicationBuilder()
+    .configure(additionalConfiguration)
+    .overrides(
+      bind[Metrics].toInstance(mock[Metrics]),
+      bind[MetricsFilter].toInstance(mock[MetricsFilter])
+    )
+    .build()
 
   org.slf4j.LoggerFactory
     .getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)

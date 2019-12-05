@@ -205,7 +205,7 @@ GET         /update-income/income/same-annual-estimated-pay                     
 GET         /update-income/pension/check-save                                          @controllers.IncomeController.confirmPensionIncome
 
 
-GET        /update-income/success-page                                                 @controllers.IncomeController.updateEstimatedIncome
+GET         /update-income/success-page                                                @controllers.IncomeController.updateEstimatedIncome
 
 
 ## Get Help Pages
@@ -298,3 +298,5 @@ GET         /update-income/next-year/income/:empId/no-change                    
 GET         /update-income/next-year/income/:empId/confirmed                           @controllers.income.UpdateIncomeNextYearController.handleConfirm(empId: Int)
 GET         /update-income/next-year/income/:empId/confirm                             @controllers.income.UpdateIncomeNextYearController.confirm(empId: Int)
 GET         /update-income/next-year/income/:empId/success                             @controllers.income.UpdateIncomeNextYearController.success(empId: Int)
+
+GET         /webchat-poc                                                               @controllers.Webchat.poc
