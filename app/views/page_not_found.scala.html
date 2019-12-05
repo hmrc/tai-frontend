@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@()(
+@(isAuthenticated: Boolean)(
     implicit messages: Messages, request: Request[_],
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -26,7 +26,8 @@
 
 @main(
     title = Messages("tai.page_not_found.heading"),
-    articleClasses = Some("column-two-thirds")
+    articleClasses = Some("column-two-thirds"),
+    isAuthenticated = isAuthenticated
 ){
     <h1 class="heading-xlarge">@Messages("tai.page_not_found.heading")</h1>
     <p>@messages("tai.page.not.found.error.check.web.address.correct")</p>

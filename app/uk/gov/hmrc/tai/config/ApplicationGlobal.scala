@@ -17,24 +17,31 @@
 package uk.gov.hmrc.tai.config
 
 import com.typesafe.config.Config
-import controllers.routes
 import javax.inject.Inject
 import net.ceedubs.ficus.Ficus._
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.Request
-import play.api.{Configuration, Play}
+import play.api.mvc.{Request, RequestHeader, Result}
+import play.api.{Configuration, Logger, Play}
 import play.twirl.api.Html
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 import uk.gov.hmrc.play.config.ControllerConfig
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.urls.Link
+import play.api.mvc.Results.NotFound
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class TaiErrorHandler @Inject()(
   localTemplateRenderer: LocalTemplateRenderer,
   taiHtmlPartialRetriever: TaiHtmlPartialRetriever,
   val messagesApi: MessagesApi,
-  val configuration: Configuration)
-    extends FrontendErrorHandler {
+  val configuration: Configuration,
+  override val authConnector: AuthConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendErrorHandler with AuthorisedFunctions {
 
   implicit val templateRenderer = localTemplateRenderer
   implicit val partialRetriever = taiHtmlPartialRetriever
@@ -62,8 +69,22 @@ class TaiErrorHandler @Inject()(
           .toHtml
       ))
   )
-  override def notFoundTemplate(implicit request: Request[_]): Html =
-    views.html.page_not_found()
+
+  override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
+    implicit val hc: HeaderCarrier =
+      HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit val req: Request[_] = Request(request, "")
+    statusCode match {
+      case play.mvc.Http.Status.NOT_FOUND =>
+        authorised() {
+          Future.successful(NotFound(views.html.page_not_found(isAuthenticated = true)))
+        } recover {
+          case _ =>
+            NotFound(views.html.page_not_found(isAuthenticated = false))
+        }
+      case _ => super.onClientError(request, statusCode, message)
+    }
+  }
 }
 
 object ControllerConfiguration extends ControllerConfig {

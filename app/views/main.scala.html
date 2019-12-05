@@ -38,7 +38,8 @@
   gaCustomTitle: Option[String] = None,
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None,
-  script: Option[Html] = None
+  script: Option[Html] = None,
+  isAuthenticated: Boolean = true
 )(mainContent: Html
 )(implicit request: Request[_],
   messages: Messages,
@@ -77,7 +78,9 @@
 @signOutUrl = @{
     mustacheCheck{
         val signOutLink = routes.ServiceController.serviceSignout().url
-        authedUser.fold("")(_ => signOutLink)
+        authedUser.fold{
+            if(isAuthenticated) signOutLink else ""
+        }(_ => signOutLink)
     }
 }
 
@@ -129,6 +132,8 @@
 
 @inlineScript = {
   <script>
+
+    console.log()
     var sessionId = new Date().getTime() + '.' + Math.random().toString(36).substring(5)
     var clientId = ga.getAll()[0].get('clientId');
 
