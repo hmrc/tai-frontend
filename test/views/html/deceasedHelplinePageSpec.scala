@@ -16,9 +16,7 @@
 
 package views.html
 
-import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.urls.Link
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class deceasedHelplinePageSpec extends TaiViewSpec {
@@ -26,12 +24,12 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
   override def view: Html = views.html.deceased_helpline()
 
   "Deceased helpline page" should {
-    behave like pageWithTitle(messages("tai.deceased.title"))
-    behave like pageWithHeader(messages("tai.deceased.heading", authedUser.getDisplayName))
+    behave like pageWithTitle(messages("tai.deceased.heading.title"))
+    behave like pageWithHeader(messages("tai.deceased.heading.title", authedUser.getDisplayName))
   }
 
   "contain an h2 heading concerning a bereavement question" in {
-    doc must haveHeadingH2WithText(messages("tai.deceased.bereavement.question"))
+    doc must haveHeadingH2WithText(messages("tai.deceased.question"))
   }
 
   "contain a paragraph stating to call hmrc" in {

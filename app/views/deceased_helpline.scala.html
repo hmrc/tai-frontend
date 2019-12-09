@@ -19,21 +19,21 @@
 @import uk.gov.hmrc.urls.Link
 
 @main(
-    title = Messages("tai.deceased.title"),
+    title = Messages("tai.deceased.heading.title"),
     articleClasses = Some("full-width"),
     authedUser = Some(user),
     gaCustomTitle = None
 ){
 
     <header class="page-header">
-        <h1 id="deceased-header" class="flush--bottom">@Messages("tai.deceased.heading")</h1>
+        <h1 id="deceased-header" class="flush--bottom">@Messages("tai.deceased.heading.title")</h1>
     </header>
 
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
 
-                <h2 class="heading-large">@Messages("tai.deceased.bereavement.question")</h2>
+                <h2 class="heading-large">@Messages("tai.deceased.question")</h2>
                 <p id="deceased-p1">@Messages("tai.deceased.callHmrc.paragraph")</p>
 
                 <h3 class="font-small push-half--bottom">@Messages("tai.deceased.telephone.title")</h3>
