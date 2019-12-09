@@ -1459,7 +1459,6 @@ tai.updateIncome.CYPlus1.same.paragraph1=You have entered {0}
 tai.updateIncome.CYPlus1.same.paragraph2=This is the same as the amount already estimated for {0} for next year, so you do not need to update your income.
 tai.updateIncome.CYPlus1.same.cancel=Return to your Income Tax Summary
 
-tai.page_not_found.tabtitle = Page not found
 tai.page_not_found.heading = Page not found
 tai.page.not.found.error.check.web.address.correct = If you typed the web address, check it is correct.
 tai.page.not.found.error.check.web.address.full = If you pasted the web address, check you copied the entire address
