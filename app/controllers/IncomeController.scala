@@ -198,28 +198,27 @@ class IncomeController @Inject()(
       }
     }
 
-    val updateJourneyCompletion: String => Future[Map[String, String]] = (incomeId: String) => {
-      estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
-    }
-
     journeyCacheService
       .mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
       .flatMap(cache => {
 
         val incomeName :: newAmount :: incomeId :: incomeType :: Nil = cache.toList
 
-        taxAccountService.updateEstimatedIncome(
-          user.nino,
-          FormHelper.stripNumber(newAmount).toInt,
-          TaxYear(),
-          incomeId.toInt) flatMap {
-          case TaiSuccessResponse => {
-            updateJourneyCompletion(incomeId) map { _ =>
-              respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
+        journeyCacheService.flush().flatMap {
+          _ =>
+            taxAccountService.updateEstimatedIncome(
+              user.nino,
+              FormHelper.stripNumber(newAmount).toInt,
+              TaxYear(),
+              incomeId.toInt) flatMap {
+              case TaiSuccessResponse => {
+                estimatedPayJourneyCompletionService.journeyCompleted(incomeId).map { _ =>
+                  respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
+                }
+              }
+              case failure: TaiFailureResponse =>
+                throw new RuntimeException(s"Failed to update estimated income with exception: ${failure.message}")
             }
-          }
-          case failure: TaiFailureResponse =>
-            throw new RuntimeException(s"Failed to update estimated income with exception: ${failure.message}")
         }
       })
       .recover {
@@ -329,11 +328,4 @@ class IncomeController @Inject()(
     }
   }
 
-  private def retrieveAmountAndDate(employment: Employment): (BigDecimal, Option[LocalDate]) = {
-    val amountAndDate = for {
-      latestAnnualAccount <- employment.latestAnnualAccount
-      latestPayment       <- latestAnnualAccount.latestPayment
-    } yield Tuple2(latestPayment.amountYearToDate, Some(latestPayment.date))
-    amountAndDate.getOrElse(0, None)
-  }
 }
