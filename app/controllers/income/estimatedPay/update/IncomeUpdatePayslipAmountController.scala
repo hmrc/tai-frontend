@@ -50,24 +50,29 @@ class IncomeUpdatePayslipAmountController @Inject()(
     val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
     val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TotalSalaryKey)
 
-    journeyCacheService.collectedValues(mandatoryKeys, optionalKeys) map
+    journeyCacheService.collectedJourneyValues(mandatoryKeys, optionalKeys) map
       tupled { (mandatorySeq, optionalSeq) =>
         {
-          val viewModel = {
-            val employer = IncomeSource(mandatorySeq(0).toInt, mandatorySeq(1))
+          mandatorySeq match {
+            case Right(mandotorySeq) =>
+              val viewModel = {
+                val employer = IncomeSource(mandotorySeq(0).toInt, mandotorySeq(1))
 
-            val payPeriod = optionalSeq(0)
-            val payPeriodInDays = optionalSeq(1)
-            val totalSalary = optionalSeq(2)
+                val payPeriod = optionalSeq(0)
+                val payPeriodInDays = optionalSeq(1)
+                val totalSalary = optionalSeq(2)
 
-            val errorMessage = "tai.payslip.error.form.totalPay.input.mandatory"
+                val errorMessage = "tai.payslip.error.form.totalPay.input.mandatory"
 
-            val paySlipForm = PayslipForm.createForm(errorMessage).fill(PayslipForm(totalSalary))
+                val paySlipForm = PayslipForm.createForm(errorMessage).fill(PayslipForm(totalSalary))
 
-            PaySlipAmountViewModel(paySlipForm, payPeriod, payPeriodInDays, employer)
+                PaySlipAmountViewModel(paySlipForm, payPeriod, payPeriodInDays, employer)
+              }
+
+              Ok(views.html.incomes.payslipAmount(viewModel))
+
+            case Left(_) => Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage())
           }
-
-          Ok(views.html.incomes.payslipAmount(viewModel))
         }
       }
   }
