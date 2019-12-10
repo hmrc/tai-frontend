@@ -16,12 +16,12 @@
 
 package json
 
-import com.kenshoo.play.metrics.PlayModule
-import org.scalatest.concurrent.ScalaFutures
-import play.api.libs.json.Json
-import play.api.test.FakeApplication
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import controllers.FakeTaiPlayApplication
 import controllers.viewModels.TupleFormats._
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Json
+import uk.gov.hmrc.play.test.UnitSpec
 
 case class ExampleTuple2(a: List[(String, String)])
 
@@ -35,10 +35,9 @@ object ExampleTuple3 {
   implicit val format = Json.format[ExampleTuple3]
 }
 
-class JsonTestSpec extends UnitSpec with WithFakeApplication with ScalaFutures {
+class JsonTestSpec extends UnitSpec with FakeTaiPlayApplication {
 
-  override lazy val fakeApplication = FakeApplication()
-  override def bindModules = Seq(new PlayModule)
+  override def fakeApplication(): Application = GuiceApplicationBuilder().build()
 
   "JSON serialization/deserialize" should {
 

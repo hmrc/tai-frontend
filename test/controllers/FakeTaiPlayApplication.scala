@@ -48,6 +48,8 @@ trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguratio
     "govuk-tax.Test.services.company-auth.port"             -> "4444",
     "govuk-tax.Test.services.citizen-auth.host"             -> "localhost",
     "govuk-tax.Test.services.citizen-auth.port"             -> "9999",
+    "govuk-tax.Test.services.auth.port"                     -> "9999",
+    "govuk-tax.Test.services.auth.host"                     -> "localhost",
     "microservice.metrics.graphite.enabled"                 -> false,
     "metrics.jvm"                                           -> false
   )
