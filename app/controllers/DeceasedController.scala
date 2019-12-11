@@ -31,8 +31,6 @@ class DeceasedController @Inject()(
   override implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController {
 
-  def deceased() = authenticate.async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    Future.successful(Ok(views.html.deceased_helpline()))
-  }
+  def deceased() = authenticate.async(implicit request => Future.successful(Ok(views.html.deceased_helpline())))
+
 }

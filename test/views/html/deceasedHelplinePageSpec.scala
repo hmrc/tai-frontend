@@ -25,7 +25,7 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
 
   "Deceased helpline page" should {
     behave like pageWithTitle(messages("tai.deceased.heading.title"))
-    behave like pageWithHeader(messages("tai.deceased.heading.title", authedUser.getDisplayName))
+    behave like pageWithHeader(messages("tai.deceased.heading.title"))
   }
 
   "contain an h2 heading concerning a bereavement question" in {
