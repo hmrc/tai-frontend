@@ -16,8 +16,6 @@
 
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@import uk.gov.hmrc.urls.Link
-
 @main(
     title = Messages("tai.deceased.heading.title"),
     articleClasses = Some("full-width"),
@@ -25,30 +23,30 @@
 ){
 
     <header class="page-header">
-        <h1 id="deceased-header" class="flush--bottom">@Messages("tai.deceased.heading.title")</h1>
+        <h1 class="flush--bottom">@messages("tai.deceased.heading.title")</h1>
     </header>
 
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
 
-                <h2 class="heading-large">@Messages("tai.deceased.question")</h2>
-                <p id="deceased-p1">@Messages("tai.deceased.callHmrc.paragraph")</p>
+                <h2 class="heading-large">@messages("tai.deceased.question")</h2>
+                <p>@messages("tai.deceased.callHmrc.paragraph")</p>
 
-                <h3 class="font-small push-half--bottom">@Messages("tai.deceased.telephone.title")</h3>
-                <p class="bold-small push-half--ends">@Messages("tai.deceased.telephone.number")</p>
-                <p class="push-half--top">@Messages("tai.deceased.telephone.advice")</p>
+                <h3 class="font-small push-half--bottom">@messages("tai.deceased.telephone.title")</h3>
+                <p class="bold-small push-half--ends">@messages("tai.deceased.telephone.number")</p>
+                <p class="push-half--top">@messages("tai.deceased.telephone.advice")</p>
 
-                <h3 class="font-small push-half--bottom">@Messages("tai.deceased.textphone.title")</h3>
-                <p class="bold-small push-half--top">@Messages("tai.deceased.textphone.number")</p>
+                <h3 class="font-small push-half--bottom">@messages("tai.deceased.textphone.title")</h3>
+                <p class="bold-small push-half--top">@messages("tai.deceased.textphone.number")</p>
 
-                <h3 class="font-small push-half--bottom">@Messages("tai.deceased.outsideUK.title")</h3>
-                <p class="bold-small push-half--top">@Messages("tai.deceased.outsideUK.number")</p>
+                <h3 class="font-small push-half--bottom">@messages("tai.deceased.outsideUK.title")</h3>
+                <p class="bold-small push-half--top">@messages("tai.deceased.outsideUK.number")</p>
 
-                <h3 id="openingTimes" class="visually-hidden">@Messages("tai.deceased.opening.times")</h3>
-                <p class="push-half--bottom">@Messages("tai.deceased.openingTimes.mondayToFriday")</p>
-                <p class="push-half--top">@Messages("tai.deceased.openingTimes.saturday")</p>
-                <p>@Messages("tai.deceased.daysClosed")</p>
+                <h3 id="openingTimes" class="visually-hidden">@messages("tai.deceased.opening.times")</h3>
+                <p class="push-half--bottom">@messages("tai.deceased.openingTimes.mondayToFriday")</p>
+                <p class="push-half--top">@messages("tai.deceased.openingTimes.saturday")</p>
+                <p>@messages("tai.deceased.daysClosed")</p>
 
             </div>
         </div>
