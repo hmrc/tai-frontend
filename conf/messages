@@ -320,7 +320,6 @@ tai.currentYearSummary.heading=Check your Income Tax
 tai.date.error.blank=Enter the date you finished working for {0}
 tai.date.error.future=Date cannot be in the future
 tai.date.error.invalid=Enter a valid date
-
 tai.deceased.heading.title=The information you want is not available to view
 tai.deceased.question=Has this person died?
 tai.deceased.callHmrc.paragraph=Call HMRC for help with tax after someone dies.
@@ -334,8 +333,6 @@ tai.deceased.outsideUK.number=+44 135 535 9022
 tai.deceased.openingTimes.mondayToFriday=Monday to Friday: 8am to 8pm
 tai.deceased.openingTimes.saturday=Saturday: 8am to 4pm
 tai.deceased.daysClosed=Closed Sundays and bank holidays
-tai.deceased.opening.times=Opening times
-
 tai.employment.warning.heading=You have already sent an update about your employment with {0}
 tai.employment.warning.preHeading=Update received
 tai.employment.warning.customGaTitle=You have already sent an update about this employment

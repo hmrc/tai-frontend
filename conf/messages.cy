@@ -320,22 +320,19 @@ tai.currentYearSummary.heading=Gwirio''ch Treth Incwm
 tai.date.error.blank=Rhowch y dyddiad pan wnaethoch orffen gweithio i {0}
 tai.date.error.future=Ni all y dyddiad fod yn y dyfodol
 tai.date.error.invalid=Nodwch ddyddiad dilys
-
-tai.deceased.heading.title=
+tai.deceased.heading.title=Nid yw’r wybodaeth yr ydych ei heisiau ar gael i’w gweld
 tai.deceased.question=A yw’r person hwn wedi marw?
 tai.deceased.callHmrc.paragraph=Ffoniwch CThEM am help gyda threth ar ôl i rywun farw.
 tai.deceased.telephone.title=Ffôn:
 tai.deceased.telephone.number=0300 200 1900
-tai.deceased.telephone.advice=
+tai.deceased.telephone.advice=Dwedwch ‘profedigaeth’ pan ofynnir i chi pam yr ydych yn galw.
 tai.deceased.textphone.title=Ffôn testun:
 tai.deceased.textphone.number=0300 200 3319
 tai.deceased.outsideUK.title=Y tu allan i’r DU:
 tai.deceased.outsideUK.number=+44 300 200 1900
-tai.deceased.openingTimes.mondayToFriday=Dydd Llun i ddydd Gwener: 08:30 - 17:00
-tai.deceased.openingTimes.saturday=Ar gau ddydd Sadwrn: 08:30 - 17:00
+tai.deceased.openingTimes.mondayToFriday=Dydd Llun i ddydd Gwener: 08:30 – 17:00
+tai.deceased.openingTimes.saturday=Dydd Sadwrn: Ar gau
 tai.deceased.daysClosed=Ar gau ddydd Sul a gwyliau banc
-tai.deceased.opening.times=Oriau agor:
-
 tai.employment.warning.heading=Rydych eisoes wedi anfon diweddariad am eich cyflogaeth gyda {0}
 tai.employment.warning.preHeading=Diweddariad wedi dod i law
 tai.employment.warning.customGaTitle=Rydych eisoes wedi anfon diweddariad am y cyflogaeth hon
