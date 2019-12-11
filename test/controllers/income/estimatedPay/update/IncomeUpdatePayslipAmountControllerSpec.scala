@@ -67,11 +67,13 @@ class IncomeUpdatePayslipAmountControllerSpec
   "payslipAmountPage" must {
     object PayslipAmountPageHarness {
       sealed class PayslipAmountPageHarness(payPeriod: Option[String], cachedAmount: Option[String]) {
-        when(journeyCacheService.collectedValues(any(), any())(any()))
+
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
           .thenReturn(
             Future.successful(
-              Seq[String](employer.id.toString, employer.name),
-              Seq[Option[String]](payPeriod, None, cachedAmount)))
+              Right(Seq[String](employer.id.toString, employer.name)),
+              Seq[Option[String]](payPeriod, None, cachedAmount))
+          )
 
         def payslipAmountPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdatePayslipAmountController()
@@ -118,6 +120,26 @@ class IncomeUpdatePayslipAmountControllerSpec
         val expectedView = payslipAmount(expectedViewModel)
 
         result rendersTheSameViewAs expectedView
+      }
+    }
+
+    "Redirect user to /income-summary" when {
+      "there is no data in the cache" in {
+        implicit val request = RequestBuilder.buildFakeGetRequestWithAuth()
+
+        val cachedAmount = None
+        val payPeriod = None
+
+        val controller = PayslipAmountPageHarness
+          .setup(payPeriod, cachedAmount)
+
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+          .thenReturn(
+            Future.successful(Left("failed"), Seq[Option[String]](payPeriod, None, cachedAmount))
+          )
+
+        val result = controller.payslipAmountPage(request)
+        status(result) mustBe SEE_OTHER
       }
     }
   }
