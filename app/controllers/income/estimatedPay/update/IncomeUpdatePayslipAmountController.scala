@@ -71,7 +71,9 @@ class IncomeUpdatePayslipAmountController @Inject()(
 
               Ok(views.html.incomes.payslipAmount(viewModel))
 
-            case Left(_) => Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage())
+            case Left(_) =>
+              println("*" * 10000)
+              Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           }
         }
       }
