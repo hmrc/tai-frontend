@@ -70,13 +70,9 @@ class IncomeUpdateWorkingHoursController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val employerFuture = IncomeSource.create(journeyCacheService)
-          for {
-            employer <- employerFuture
-          } yield {
-
-
-            BadRequest(views.html.incomes.workingHours(formWithErrors, employer.id, employer.name))
+          IncomeSource.create(journeyCacheService).map {
+            case Right(incomeSource) =>
+              BadRequest(views.html.incomes.workingHours(formWithErrors, incomeSource.id, incomeSource.name))
           }
         },
         (formData: HoursWorkedForm) => {

@@ -51,12 +51,12 @@ class IncomeUpdatePayslipAmountController @Inject()(
     val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TotalSalaryKey)
 
     journeyCacheService.collectedJourneyValues(mandatoryKeys, optionalKeys) map
-      tupled { (mandatorySeq, optionalSeq) =>
+      tupled { (mandatorySeqEither, optionalSeq) =>
         {
-          mandatorySeq match {
-            case Right(mandotorySeq) =>
+          mandatorySeqEither match {
+            case Right(mandatorySeq) =>
               val viewModel = {
-                val employer = IncomeSource(mandotorySeq(0).toInt, mandotorySeq(1))
+                val employer = IncomeSource(mandatorySeq(0).toInt, mandatorySeq(1))
 
                 val payPeriod = optionalSeq(0)
                 val payPeriodInDays = optionalSeq(1)
@@ -72,7 +72,6 @@ class IncomeUpdatePayslipAmountController @Inject()(
               Ok(views.html.incomes.payslipAmount(viewModel))
 
             case Left(_) =>
-              println("*" * 10000)
               Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           }
         }
