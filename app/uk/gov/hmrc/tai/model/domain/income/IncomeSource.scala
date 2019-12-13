@@ -27,14 +27,14 @@ final case class IncomeSource(id: Int, name: String)
 object IncomeSource extends JourneyCacheConstants {
   def create(journeyCacheService: JourneyCacheService)(
     implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[IncomeSource] = {
-    val idFuture = journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-    val nameFuture = journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+    ec: ExecutionContext): Future[Either[String, IncomeSource]] = {
+    val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
+    val nameFuture = journeyCacheService.mandatoryJourneyValue(UpdateIncome_NameKey)
     for {
-      id   <- idFuture
-      name <- nameFuture
+      Right(id)   <- idFuture
+      Right(name) <- nameFuture
     } yield {
-      IncomeSource(id, name)
+      Right(IncomeSource(id, name))
     }
   }
 }

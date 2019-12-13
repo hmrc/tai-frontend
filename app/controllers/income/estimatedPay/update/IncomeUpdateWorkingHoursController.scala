@@ -41,14 +41,24 @@ class IncomeUpdateWorkingHoursController @Inject()(
   def workingHoursPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    val employerFuture = IncomeSource.create(journeyCacheService)
+    val incomeSourceFuture = IncomeSource.create(journeyCacheService)
+
     for {
-      employer     <- employerFuture
-      workingHours <- journeyCacheService.currentValue(UpdateIncome_WorkingHoursKey)
+      incomeSourceEither <- incomeSourceFuture
+      workingHours       <- journeyCacheService.currentValue(UpdateIncome_WorkingHoursKey)
     } yield {
-      Ok(
-        views.html.incomes
-          .workingHours(HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)), employer.id, employer.name))
+
+      incomeSourceEither.fold(
+        _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()),
+        incomeSource =>
+          Ok(
+            views.html.incomes
+              .workingHours(
+                HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
+                incomeSource.id,
+                incomeSource.name))
+      )
+
     }
   }
 
@@ -64,6 +74,8 @@ class IncomeUpdateWorkingHoursController @Inject()(
           for {
             employer <- employerFuture
           } yield {
+
+
             BadRequest(views.html.incomes.workingHours(formWithErrors, employer.id, employer.name))
           }
         },
