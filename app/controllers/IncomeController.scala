@@ -19,7 +19,7 @@ package controllers
 import com.google.inject.name.Named
 import javax.inject.Inject
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest}
+import controllers.auth.{AuthAction, AuthedUser}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.data.Form
