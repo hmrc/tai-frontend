@@ -81,6 +81,7 @@ trait MicroService {
       retrieveManaged := true,
       routesGenerator := StaticRoutesGenerator,
       scalafmtOnCompile := true,
+      scalacOptions += "-Ypartial-unification",
       PlayKeys.playDefaultPort := 9230)
     .settings(inConfig(ITTestPhases.TemplateTest)(Defaults.testSettings): _*)
     .configs(IntegrationTest)
