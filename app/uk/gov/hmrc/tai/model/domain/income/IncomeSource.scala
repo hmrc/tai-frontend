@@ -25,16 +25,24 @@ import scala.concurrent.{ExecutionContext, Future}
 final case class IncomeSource(id: Int, name: String)
 
 object IncomeSource extends JourneyCacheConstants {
+
+  implicit class EitherOps[A, B](e: Either[A, B]) {
+
+    def zip[C](other: Either[A, C]): Either[A, (B, C)] =
+      e.right.flatMap(b => other.right.map(c => (b, c)))
+  }
+
   def create(journeyCacheService: JourneyCacheService)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext): Future[Either[String, IncomeSource]] = {
     val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
     val nameFuture = journeyCacheService.mandatoryJourneyValue(UpdateIncome_NameKey)
+
     for {
-      Right(id)   <- idFuture
-      Right(name) <- nameFuture
+      id   <- idFuture
+      name <- nameFuture
     } yield {
-      Right(IncomeSource(id, name))
+      id.zip(name).right.map { case (a, b) => IncomeSource(a, b) }
     }
   }
 }
