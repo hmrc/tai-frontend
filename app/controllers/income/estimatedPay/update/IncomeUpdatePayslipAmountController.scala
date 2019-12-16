@@ -84,9 +84,9 @@ class IncomeUpdatePayslipAmountController @Inject()(
     val incomeSourceFuture = IncomeSource.create(journeyCacheService)
 
     val result: Future[Future[Result]] = for {
-      incomeSourceEither  <- incomeSourceFuture
-      payPeriod       <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
-      payPeriodInDays <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
+      incomeSourceEither <- incomeSourceFuture
+      payPeriod          <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
+      payPeriodInDays    <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
     } yield {
       val errorMessage = GrossPayPeriodTitle.title(payPeriod, payPeriodInDays)
       PayslipForm
@@ -149,10 +149,10 @@ class IncomeUpdatePayslipAmountController @Inject()(
     val futureTotalSalary = journeyCacheService.currentValue(UpdateIncome_TotalSalaryKey)
 
     (for {
-      incomeSourceEither  <- incomeSourceFuture
-      payPeriod       <- futurePayPeriod
-      payPeriodInDays <- futurePayPeriodInDays
-      totalSalary     <- futureTotalSalary
+      incomeSourceEither <- incomeSourceFuture
+      payPeriod          <- futurePayPeriod
+      payPeriodInDays    <- futurePayPeriodInDays
+      totalSalary        <- futureTotalSalary
     } yield {
       TaxablePayslipForm
         .createForm(FormHelper.stripNumber(totalSalary), payPeriod, payPeriodInDays)
@@ -185,8 +185,8 @@ class IncomeUpdatePayslipAmountController @Inject()(
     val incomeSourceFuture = IncomeSource.create(journeyCacheService)
 
     for {
-      incomeSourceEither          <- incomeSourceFuture
-      payslipDeductions <- journeyCacheService.currentValue(UpdateIncome_PayslipDeductionsKey)
+      incomeSourceEither <- incomeSourceFuture
+      payslipDeductions  <- journeyCacheService.currentValue(UpdateIncome_PayslipDeductionsKey)
     } yield {
       val form = PayslipDeductionsForm.createForm().fill(PayslipDeductionsForm(payslipDeductions))
       incomeSourceEither match {

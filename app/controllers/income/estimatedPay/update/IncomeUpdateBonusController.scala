@@ -43,14 +43,17 @@ class IncomeUpdateBonusController @Inject()(
   def bonusPaymentsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    val employerFuture = IncomeSource.create(journeyCacheService)
+    val incomeSourceFuture = IncomeSource.create(journeyCacheService)
 
     for {
-      employer     <- employerFuture
-      bonusPayment <- journeyCacheService.currentValue(UpdateIncome_BonusPaymentsKey)
+      incomeSourceEither <- incomeSourceFuture
+      bonusPayment       <- journeyCacheService.currentValue(UpdateIncome_BonusPaymentsKey)
     } yield {
       val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
-      Ok(views.html.incomes.bonusPayments(form, employer))
+      incomeSourceEither match {
+        case Right(incomeSource) => Ok(views.html.incomes.bonusPayments(form, incomeSource))
+        case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      }
     }
   }
 
@@ -61,11 +64,14 @@ class IncomeUpdateBonusController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val employerFuture = IncomeSource.create(journeyCacheService)
+          val incomeSourceFuture = IncomeSource.create(journeyCacheService)
           for {
-            employer <- employerFuture
+            incomeSourceEither <- incomeSourceFuture
           } yield {
-            BadRequest(views.html.incomes.bonusPayments(formWithErrors, employer))
+            incomeSourceEither match {
+              case Right(incomeSource) => BadRequest(views.html.incomes.bonusPayments(formWithErrors, incomeSource))
+              case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+            }
           }
         },
         formData => {
@@ -87,13 +93,17 @@ class IncomeUpdateBonusController @Inject()(
   def bonusOvertimeAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    val employerFuture = IncomeSource.create(journeyCacheService)
+    val incomeSourceFuture = IncomeSource.create(journeyCacheService)
     for {
-      employer            <- employerFuture
+      incomeSourceEither  <- incomeSourceFuture
       bonusOvertimeAmount <- journeyCacheService.currentValue(UpdateIncome_BonusOvertimeAmountKey)
     } yield {
       val form = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
-      Ok(views.html.incomes.bonusPaymentAmount(form, employer))
+      incomeSourceEither match {
+        case Right(incomeSource) => Ok(views.html.incomes.bonusPaymentAmount(form, incomeSource))
+        case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      }
+
     }
   }
 
@@ -105,11 +115,15 @@ class IncomeUpdateBonusController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val employerFuture = IncomeSource.create(journeyCacheService)
+          val incomeSourceFuture = IncomeSource.create(journeyCacheService)
           for {
-            employer <- employerFuture
+            incomeSourceEither <- incomeSourceFuture
           } yield {
-            BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, employer))
+            incomeSourceEither match {
+              case Right(incomeSource) =>
+                BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, incomeSource))
+              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+            }
           }
         },
         formData => {
