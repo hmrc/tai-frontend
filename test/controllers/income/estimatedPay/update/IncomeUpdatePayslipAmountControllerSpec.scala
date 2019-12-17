@@ -58,10 +58,10 @@ class IncomeUpdatePayslipAmountControllerSpec
         journeyCacheService,
         mock[FormPartialRetriever],
         MockTemplateRenderer) {
-    when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(employer.id))
-    when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(employer.name))
+    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+      .thenReturn(Future.successful(Right(employer.id)))
+    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+      .thenReturn(Future.successful(Right(employer.name)))
   }
 
   "payslipAmountPage" must {
