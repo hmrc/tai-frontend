@@ -34,12 +34,13 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
+import utils.DropMongo
 
 import scala.concurrent.Future
 
 class IncomeUpdateWorkingHoursControllerSpec
     extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JourneyCacheConstants
-    with EditIncomeIrregularPayConstants {
+    with EditIncomeIrregularPayConstants with DropMongo {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
@@ -90,6 +91,23 @@ class IncomeUpdateWorkingHoursControllerSpec
         doc.title() must include(messages("tai.workingHours.heading"))
       }
     }
+
+    "Redirect to /income-summary page" when {
+      "user reaches page with no data in cache" in {
+
+        dropMongo()
+
+        val result = WorkingHoursPageHarness
+          .setup()
+          .workingHoursPage()
+
+        status(result) mustBe SEE_OTHER
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messages("tai.incomeTaxSummary.heading.part1"))
+      }
+    }
+
   }
 
   "handleWorkingHours" must {
