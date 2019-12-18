@@ -40,7 +40,6 @@ private object AppDependencies {
     "uk.gov.hmrc"  %% "play-ui"                       % "7.40.0-play-25",
     "org.typelevel" %% "cats-core" % "2.0.0",
     "org.mongodb.scala" %% "mongo-scala-driver" % "2.6.0"
-
   )
 
   trait TestDependencies {
