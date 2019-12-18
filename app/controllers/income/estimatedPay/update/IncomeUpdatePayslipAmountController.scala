@@ -122,19 +122,25 @@ class IncomeUpdatePayslipAmountController @Inject()(
     val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
     val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TaxablePayKey)
 
-    journeyCacheService.collectedValues(mandatoryKeys, optionalKeys) map
-      tupled { (mandatorySeq, optionalSeq) =>
+    journeyCacheService.collectedJourneyValues(mandatoryKeys, optionalKeys) map
+      tupled { (mandatorySeqEither, optionalSeq) =>
         {
-          val viewModel = {
-            val incomeSource = IncomeSource(id = mandatorySeq(0).toInt, name = mandatorySeq(1))
-            val payPeriod = optionalSeq(0)
-            val payPeriodInDays = optionalSeq(1)
-            val taxablePayKey = optionalSeq(2)
+          mandatorySeqEither match {
+            case Right(mandotorySeq) =>
+              val viewModel = {
+                val incomeSource = IncomeSource(id = mandotorySeq(0).toInt, name = mandotorySeq(1))
+                val payPeriod = optionalSeq(0)
+                val payPeriodInDays = optionalSeq(1)
+                val taxablePayKey = optionalSeq(2)
 
-            val form = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(taxablePayKey))
-            TaxablePaySlipAmountViewModel(form, payPeriod, payPeriodInDays, incomeSource)
+                val form = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(taxablePayKey))
+                TaxablePaySlipAmountViewModel(form, payPeriod, payPeriodInDays, incomeSource)
+              }
+              Ok(views.html.incomes.taxablePayslipAmount(viewModel))
+
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+
           }
-          Ok(views.html.incomes.taxablePayslipAmount(viewModel))
         }
       }
   }

@@ -140,6 +140,7 @@ class IncomeUpdatePayslipAmountControllerSpec
 
         val result = controller.payslipAmountPage(request)
         status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some("/check-income-tax/income-summary")
       }
     }
   }
@@ -206,11 +207,11 @@ class IncomeUpdatePayslipAmountControllerSpec
         val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
         val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TaxablePayKey)
 
-        when(journeyCacheService.collectedValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any()))
+        when(journeyCacheService.collectedJourneyValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any()))
           .thenReturn(
             Future.successful(
-              (Seq[String](employer.id.toString, employer.name), Seq[Option[String]](payPeriod, None, cachedAmount))
-            )
+              Right(Seq[String](employer.id.toString, employer.name)),
+              Seq[Option[String]](payPeriod, None, cachedAmount))
           )
 
         def taxablePayslipAmountPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -238,6 +239,29 @@ class IncomeUpdatePayslipAmountControllerSpec
         val expectedForm = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(cachedAmount))
         val expectedViewModel = TaxablePaySlipAmountViewModel(expectedForm, payPeriod, None, employer)
         result rendersTheSameViewAs taxablePayslipAmount(expectedViewModel)
+      }
+    }
+
+    "Redirect to /income-summary page" when {
+      "user reaches page with no data in cache" in {
+
+        implicit val request = RequestBuilder.buildFakeGetRequestWithAuth()
+
+        val cachedAmount = None
+        val payPeriod = None
+
+        val result = TaxablePayslipAmountPageHarness
+          .setup(payPeriod, cachedAmount)
+          .taxablePayslipAmountPage(request)
+
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+          .thenReturn(
+            Future.successful(Left("failed"), Seq[Option[String]](payPeriod, None, cachedAmount))
+          )
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some("/check-income-tax/income-summary")
       }
     }
   }
