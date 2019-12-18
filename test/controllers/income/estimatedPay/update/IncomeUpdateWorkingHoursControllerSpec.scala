@@ -21,7 +21,7 @@ import controllers.actions.FakeValidatePerson
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -95,16 +95,18 @@ class IncomeUpdateWorkingHoursControllerSpec
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 
-        dropMongo()
-
         val result = WorkingHoursPageHarness
           .setup()
           .workingHoursPage()
 
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+
         status(result) mustBe SEE_OTHER
 
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomeTaxSummary.heading.part1"))
+        redirectLocation(result) mustBe (Some("/check-income-tax/income-summary"))
       }
     }
 

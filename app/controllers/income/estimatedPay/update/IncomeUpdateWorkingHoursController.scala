@@ -48,17 +48,16 @@ class IncomeUpdateWorkingHoursController @Inject()(
       workingHours       <- journeyCacheService.currentValue(UpdateIncome_WorkingHoursKey)
     } yield {
 
-      incomeSourceEither.fold(
-        _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()),
-        incomeSource =>
+      incomeSourceEither match {
+        case Right(incomeSource) =>
           Ok(
             views.html.incomes
               .workingHours(
                 HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
                 incomeSource.id,
                 incomeSource.name))
-      )
-
+        case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      }
     }
   }
 
@@ -77,13 +76,19 @@ class IncomeUpdateWorkingHoursController @Inject()(
         },
         (formData: HoursWorkedForm) => {
           for {
-            id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+            id <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
             _  <- journeyCacheService.cache(UpdateIncome_WorkingHoursKey, formData.workingHours.getOrElse(""))
           } yield {
-            formData.workingHours match {
-              case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage())
-              case Some(IRREGULAR_HOURS) =>
-                Redirect(routes.IncomeUpdateIrregularHoursController.editIncomeIrregularHours(id))
+
+            id match {
+              case Right(id) => {
+                formData.workingHours match {
+                  case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage())
+                  case Some(IRREGULAR_HOURS) =>
+                    Redirect(routes.IncomeUpdateIrregularHoursController.editIncomeIrregularHours(id))
+                }
+              }
+              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }
         }
