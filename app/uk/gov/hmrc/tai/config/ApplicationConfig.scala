@@ -116,7 +116,7 @@ trait FeatureTogglesConfig extends DefaultServicesConfig {
     configuration.getBoolean("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
   val cyPlus1EstimatedPayEnabled = configuration.getBoolean("tai.cyPlusOne.enabled").getOrElse(false)
   val webChatEnabled = configuration.getBoolean("tai.webChat.enabled").getOrElse(false)
-  val webChatUseCookie = configuration.getBoolean("tai.webchatUseCookie.enabled").getOrElse(false)
+  val webChatUseCookie = configuration.getBoolean("tai.webChatUseCookie.enabled").getOrElse(false)
 }
 
 object FeatureTogglesConfig extends FeatureTogglesConfig
