@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.model.domain.income
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.EitherOpsObject._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -26,11 +27,11 @@ final case class IncomeSource(id: Int, name: String)
 
 object IncomeSource extends JourneyCacheConstants {
 
-  implicit class EitherOps[A, B](e: Either[A, B]) {
-
-    def zip[C](other: Either[A, C]): Either[A, (B, C)] =
-      e.right.flatMap(b => other.right.map(c => (b, c)))
-  }
+//  implicit class EitherOps[A, B](e: Either[A, B]) {
+//
+//    def zip[C](other: Either[A, C]): Either[A, (B, C)] =
+//      e.right.flatMap(b => other.right.map(c => (b, c)))
+//  }
 
   def create(journeyCacheService: JourneyCacheService)(
     implicit hc: HeaderCarrier,
