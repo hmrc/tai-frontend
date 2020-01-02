@@ -129,21 +129,6 @@
 @sessionId = @{ request.session.get("sessionId") }
 
 @inlineScript = {
-  <script>
-    var sessionId = new Date().getTime() + '.' + Math.random().toString(36).substring(5)
-    var clientId = ga.getAll()[0].get('clientId');
-
-    window.dataLayer = window.dataLayer || []
-    window.dataLayer.push(
-      {
-        'Timestamp': new Date().toUTCString(),
-        'Session ID': sessionId,
-        'Client ID': clientId,
-        'Session-X-ID': '@request.session.get("sessionId")'
-      }
-    );
-  </script>
-
     @if(webChat){
         <script type="text/javascript">
             var EG_ACT_ID = "@Play.configuration.getString("webchat.id")";
