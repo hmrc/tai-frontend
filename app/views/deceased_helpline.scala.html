@@ -1,5 +1,5 @@
 @*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.tai.util.HtmlFormatter
+
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
@@ -22,7 +24,7 @@
 ){
 
     <header class="page-header">
-        <h1 class="flush--bottom">@messages("tai.deceased.heading.title")</h1>
+        <h1 class="flush--bottom">@Html(s"${messages("tai.deceased.heading.title.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.title.part2"))}") </h1>
     </header>
 
     <h2 class="heading-large">@messages("tai.deceased.question")</h2>
@@ -35,7 +37,10 @@
     <h3 class="font-small push-half--bottom">@messages("tai.deceased.textphone.title")</h3>
     <p class="bold-small push-half--top">@messages("tai.deceased.textphone.number")</p>
 
-    <h3 class="font-small push-half--bottom">@messages("tai.deceased.outsideUK.title")</h3>
+    <h3 id="outsideUk" class="font-small push-half--bottom">@messages("tai.deceased.outsideUK.title")
+        <span class="visually-hidden">@messages("tai.deceased.telephone")</span>
+    </h3>
+
     <p class="bold-small push-half--top">@messages("tai.deceased.outsideUK.number")</p>
 
     <h3 id="openingTimes" class="visually-hidden">@messages("tai.deceased.opening.times")</h3>

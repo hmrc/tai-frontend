@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package views.html
 
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class deceasedHelplinePageSpec extends TaiViewSpec {
@@ -25,7 +26,8 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
 
   "Deceased helpline page" should {
     behave like pageWithTitle(messages("tai.deceased.heading.title"))
-    behave like pageWithHeader(messages("tai.deceased.heading.title"))
+    behave like pageWithHeader(
+      s"${messages("tai.deceased.heading.title.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.title.part2"))}")
   }
 
   "contain an h2 heading concerning a bereavement question" in {
@@ -67,7 +69,14 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
   "contain an Outside UK section which " should {
 
     "include an outside uk title" in {
-      doc must haveHeadingH3WithText(messages("tai.deceased.outsideUK.title"))
+      val element = doc.getElementById("outsideUk")
+
+      element.text must include(messages("tai.deceased.outsideUK.title"))
+      element.tag().toString mustBe "h3"
+
+      val spanElement = element.children().first()
+      spanElement.text mustBe messages("tai.deceased.telephone")
+      spanElement.tag().toString mustBe "span"
     }
 
     "include an outside of uk telephone number" in {
