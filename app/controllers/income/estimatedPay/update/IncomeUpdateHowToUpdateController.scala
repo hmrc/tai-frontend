@@ -134,9 +134,8 @@ class IncomeUpdateHowToUpdateController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val incomeSourceFuture = IncomeSource.create(journeyCacheService)
           for {
-            incomeSourceEither <- incomeSourceFuture
+            incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
             incomeSourceEither match {
               case Right(incomeSource) =>

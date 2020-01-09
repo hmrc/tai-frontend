@@ -43,10 +43,8 @@ class IncomeUpdatePayPeriodController @Inject()(
   def payPeriodPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    val incomeSourceFuture = IncomeSource.create(journeyCacheService)
-
     for {
-      incomeSourceEither <- incomeSourceFuture
+      incomeSourceEither <- IncomeSource.create(journeyCacheService)
       payPeriod          <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
       payPeriodInDays    <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
     } yield {
@@ -68,9 +66,9 @@ class IncomeUpdatePayPeriodController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val incomeSourceFuture = IncomeSource.create(journeyCacheService)
+
           for {
-            incomeSourceEither <- incomeSourceFuture
+            incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
             val isDaysError = formWithErrors.errors.exists { error =>
               error.key == PayPeriodForm.OTHER_IN_DAYS_KEY

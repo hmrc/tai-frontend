@@ -43,10 +43,9 @@ class IncomeUpdateBonusController @Inject()(
   def bonusPaymentsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    val incomeSourceFuture = IncomeSource.create(journeyCacheService)
 
     for {
-      incomeSourceEither <- incomeSourceFuture
+      incomeSourceEither <- IncomeSource.create(journeyCacheService)
       bonusPayment       <- journeyCacheService.currentValue(UpdateIncome_BonusPaymentsKey)
     } yield {
       val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
@@ -64,9 +63,8 @@ class IncomeUpdateBonusController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val incomeSourceFuture = IncomeSource.create(journeyCacheService)
           for {
-            incomeSourceEither <- incomeSourceFuture
+            incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
             incomeSourceEither match {
               case Right(incomeSource) => BadRequest(views.html.incomes.bonusPayments(formWithErrors, incomeSource))
@@ -93,9 +91,8 @@ class IncomeUpdateBonusController @Inject()(
   def bonusOvertimeAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    val incomeSourceFuture = IncomeSource.create(journeyCacheService)
     for {
-      incomeSourceEither  <- incomeSourceFuture
+      incomeSourceEither  <- IncomeSource.create(journeyCacheService)
       bonusOvertimeAmount <- journeyCacheService.currentValue(UpdateIncome_BonusOvertimeAmountKey)
     } yield {
       val form = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
@@ -115,9 +112,8 @@ class IncomeUpdateBonusController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val incomeSourceFuture = IncomeSource.create(journeyCacheService)
           for {
-            incomeSourceEither <- incomeSourceFuture
+            incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
             incomeSourceEither match {
               case Right(incomeSource) =>

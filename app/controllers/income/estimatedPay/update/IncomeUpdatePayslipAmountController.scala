@@ -81,10 +81,8 @@ class IncomeUpdatePayslipAmountController @Inject()(
   def handlePayslipAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    val incomeSourceFuture = IncomeSource.create(journeyCacheService)
-
     val result: Future[Future[Result]] = for {
-      incomeSourceEither <- incomeSourceFuture
+      incomeSourceEither <- IncomeSource.create(journeyCacheService)
       payPeriod          <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
       payPeriodInDays    <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
     } yield {
@@ -188,10 +186,8 @@ class IncomeUpdatePayslipAmountController @Inject()(
   def payslipDeductionsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    val incomeSourceFuture = IncomeSource.create(journeyCacheService)
-
     for {
-      incomeSourceEither <- incomeSourceFuture
+      incomeSourceEither <- IncomeSource.create(journeyCacheService)
       payslipDeductions  <- journeyCacheService.currentValue(UpdateIncome_PayslipDeductionsKey)
     } yield {
       val form = PayslipDeductionsForm.createForm().fill(PayslipDeductionsForm(payslipDeductions))
@@ -210,10 +206,9 @@ class IncomeUpdatePayslipAmountController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val incomeSourceFuture = IncomeSource.create(journeyCacheService)
 
           for {
-            incomeSourceEither <- incomeSourceFuture
+            incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
             incomeSourceEither match {
               case Right(incomeSource) => BadRequest(views.html.incomes.payslipDeductions(formWithErrors, incomeSource))
