@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,17 +146,11 @@ class IncomeUpdatePayslipAmountController @Inject()(
   def handleTaxablePayslipAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    val incomeSourceFuture = IncomeSource.create(journeyCacheService)
-
-    val futurePayPeriod = journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
-    val futurePayPeriodInDays = journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
-    val futureTotalSalary = journeyCacheService.currentValue(UpdateIncome_TotalSalaryKey)
-
     (for {
-      incomeSourceEither <- incomeSourceFuture
-      payPeriod          <- futurePayPeriod
-      payPeriodInDays    <- futurePayPeriodInDays
-      totalSalary        <- futureTotalSalary
+      incomeSourceEither <- IncomeSource.create(journeyCacheService)
+      payPeriod          <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
+      payPeriodInDays    <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
+      totalSalary        <- journeyCacheService.currentValue(UpdateIncome_TotalSalaryKey)
     } yield {
       TaxablePayslipForm
         .createForm(FormHelper.stripNumber(totalSalary), payPeriod, payPeriodInDays)

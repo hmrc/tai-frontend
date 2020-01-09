@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,20 +27,14 @@ final case class IncomeSource(id: Int, name: String)
 
 object IncomeSource extends JourneyCacheConstants {
 
-//  implicit class EitherOps[A, B](e: Either[A, B]) {
-//
-//    def zip[C](other: Either[A, C]): Either[A, (B, C)] =
-//      e.right.flatMap(b => other.right.map(c => (b, c)))
-//  }
-
   def create(journeyCacheService: JourneyCacheService)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext): Future[Either[String, IncomeSource]] = {
-    val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
-    val nameFuture = journeyCacheService.mandatoryJourneyValue(UpdateIncome_NameKey)
+    val idFuture: Future[Either[String, Int]] = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
+    val nameFuture: Future[Either[String, String]] = journeyCacheService.mandatoryJourneyValue(UpdateIncome_NameKey)
 
     for {
-      id   <- idFuture
+      id: Either[String, Int] <- idFuture
       name <- nameFuture
     } yield {
       id.zip(name).right.map { case (a, b) => IncomeSource(a, b) }

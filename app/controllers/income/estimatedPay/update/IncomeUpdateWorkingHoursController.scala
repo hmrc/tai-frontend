@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,8 @@ class IncomeUpdateWorkingHoursController @Inject()(
   def workingHoursPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    val incomeSourceFuture = IncomeSource.create(journeyCacheService)
-
     for {
-      incomeSourceEither <- incomeSourceFuture
+      incomeSourceEither <- IncomeSource.create(journeyCacheService)
       workingHours       <- journeyCacheService.currentValue(UpdateIncome_WorkingHoursKey)
     } yield {
 
@@ -72,6 +70,7 @@ class IncomeUpdateWorkingHoursController @Inject()(
           IncomeSource.create(journeyCacheService).map {
             case Right(incomeSource) =>
               BadRequest(views.html.incomes.workingHours(formWithErrors, incomeSource.id, incomeSource.name))
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           }
         },
         (formData: HoursWorkedForm) => {
