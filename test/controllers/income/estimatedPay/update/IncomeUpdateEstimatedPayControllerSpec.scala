@@ -169,5 +169,22 @@ class IncomeUpdateEstimatedPayControllerSpec
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
       }
     }
+    "Redirect to /income-summary page" when {
+      "user reaches page with no data in cache" in {
+
+        val result = EstimatedPayPageHarness
+          .setup()
+          .estimatedPayPage(RequestBuilder.buildFakeGetRequestWithAuth())
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe (Some("/check-income-tax/income-summary"))
+      }
+    }
   }
 }

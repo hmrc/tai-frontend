@@ -34,7 +34,7 @@ object IncomeSource extends JourneyCacheConstants {
     val nameFuture: Future[Either[String, String]] = journeyCacheService.mandatoryJourneyValue(UpdateIncome_NameKey)
 
     for {
-      id: Either[String, Int] <- idFuture
+      id   <- idFuture
       name <- nameFuture
     } yield {
       id.zip(name).right.map { case (a, b) => IncomeSource(a, b) }

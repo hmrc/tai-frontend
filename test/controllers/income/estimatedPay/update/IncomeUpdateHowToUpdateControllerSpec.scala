@@ -374,5 +374,22 @@ class IncomeUpdateHowToUpdateControllerSpec
         doc.title() must include(messages("tai.howToUpdate.title", ""))
       }
     }
+
+    "Redirect to /income-summary page" when {
+      "IncomeSource.create returns a left" in {
+
+        val result = HandleChooseHowToUpdateHarness
+          .setup()
+          .handleChooseHowToUpdate(RequestBuilder
+            .buildFakePostRequestWithAuth("howToUpdate" -> "income"))
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+
+        status(result) mustBe SEE_OTHER
+      }
+    }
   }
 }
