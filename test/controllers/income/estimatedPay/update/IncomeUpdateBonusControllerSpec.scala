@@ -176,6 +176,26 @@ class IncomeUpdateBonusControllerSpec
         result rendersTheSameViewAs bonusPayments(BonusPaymentsForm.createForm.bindFromRequest()(fakeRequest), employer)
       }
     }
+
+    "Redirect to /income-summary page" when {
+      "IncomeSource.create returns a left" in {
+
+        implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
+
+        val result = HandleBonusPaymentsHarness
+          .setup()
+          .handleBonusPayments(fakeRequest)
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe (Some("/check-income-tax/income-summary"))
+      }
+    }
   }
 
   "bonusOvertimeAmountPage" must {
@@ -211,7 +231,6 @@ class IncomeUpdateBonusControllerSpec
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 
-        val cachedAmount = "313321"
         implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val result = BonusOvertimeAmountPageHarness
@@ -275,6 +294,27 @@ class IncomeUpdateBonusControllerSpec
         result rendersTheSameViewAs bonusPaymentAmount(
           BonusOvertimeAmountForm.createForm().bindFromRequest()(fakeRequest),
           employer)
+      }
+    }
+
+    "Redirect to /income-summary page" when {
+      "IncomeSource.create returns a left" in {
+
+        implicit val fakeRequest =
+          RequestBuilder.buildFakePostRequestWithAuth("" -> "")
+
+        val result = HandleBonusOvertimeAmountHarness
+          .setup()
+          .handleBonusOvertimeAmount(fakeRequest)
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe (Some("/check-income-tax/income-summary"))
+
       }
     }
   }

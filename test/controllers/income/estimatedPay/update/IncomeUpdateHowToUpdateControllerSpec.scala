@@ -381,7 +381,7 @@ class IncomeUpdateHowToUpdateControllerSpec
         val result = HandleChooseHowToUpdateHarness
           .setup()
           .handleChooseHowToUpdate(RequestBuilder
-            .buildFakePostRequestWithAuth("howToUpdate" -> "income"))
+            .buildFakePostRequestWithAuth("" -> ""))
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
           .thenReturn(Future.successful(Left("")))
@@ -389,6 +389,8 @@ class IncomeUpdateHowToUpdateControllerSpec
           .thenReturn(Future.successful(Left("")))
 
         status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some("/check-income-tax/income-summary")
+
       }
     }
   }
