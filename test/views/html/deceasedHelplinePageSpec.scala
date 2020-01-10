@@ -25,9 +25,9 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
   override def view: Html = views.html.deceased_helpline()
 
   "Deceased helpline page" should {
-    behave like pageWithTitle(messages("tai.deceased.heading.title"))
+    behave like pageWithTitle(messages("tai.deceased.title"))
     behave like pageWithHeader(
-      s"${messages("tai.deceased.heading.title.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.title.part2"))}")
+      s"${messages("tai.deceased.heading.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.part2"))}")
   }
 
   "contain an h2 heading concerning a bereavement question" in {

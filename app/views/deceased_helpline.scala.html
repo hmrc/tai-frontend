@@ -19,12 +19,12 @@
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
-    title = messages("tai.deceased.heading.title"),
+    title = messages("tai.deceased.title"),
     gaCustomTitle = None
 ){
 
     <header class="page-header">
-        <h1 class="flush--bottom">@Html(s"${messages("tai.deceased.heading.title.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.title.part2"))}") </h1>
+        <h1 class="flush--bottom">@Html(s"${messages("tai.deceased.heading.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.part2"))}") </h1>
     </header>
 
     <h2 class="heading-large">@messages("tai.deceased.question")</h2>

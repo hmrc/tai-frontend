@@ -39,7 +39,7 @@ class DeceasedControllerSpec extends PlaySpec with FakeTaiPlayApplication with I
           val result = sut.deceased()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           status(result) mustBe OK
           val doc = Jsoup.parse(contentAsString(result))
-          doc.title() must include(Messages("tai.deceased.heading.title"))
+          doc.title() must include(Messages("tai.deceased.title"))
         }
       }
     }
