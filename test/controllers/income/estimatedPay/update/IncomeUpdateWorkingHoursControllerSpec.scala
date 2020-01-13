@@ -18,7 +18,7 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
+import controllers.{FakeAuthAction, FakeTaiPlayApplication, routes}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.{Matchers, Mockito}
@@ -105,7 +105,7 @@ class IncomeUpdateWorkingHoursControllerSpec
 
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe (Some("/check-income-tax/income-summary"))
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
 
@@ -176,7 +176,7 @@ class IncomeUpdateWorkingHoursControllerSpec
 
         val result = HandleWorkingHoursHarness
           .setup()
-          .handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth("workingHours" -> "anything"))
+          .handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth())
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
           .thenReturn(Future.successful(Left("")))
@@ -184,7 +184,7 @@ class IncomeUpdateWorkingHoursControllerSpec
           .thenReturn(Future.successful(Left("")))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe (Some("/check-income-tax/income-summary"))
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
       }
     }

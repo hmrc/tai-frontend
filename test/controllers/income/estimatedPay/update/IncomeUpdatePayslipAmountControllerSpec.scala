@@ -140,7 +140,7 @@ class IncomeUpdatePayslipAmountControllerSpec
 
         val result = controller.payslipAmountPage(request)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/check-income-tax/income-summary")
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -261,7 +261,7 @@ class IncomeUpdatePayslipAmountControllerSpec
 
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some("/check-income-tax/income-summary")
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -333,7 +333,7 @@ class IncomeUpdatePayslipAmountControllerSpec
           .thenReturn(Future.successful(Left("")))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe (Some("/check-income-tax/income-summary"))
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
       }
     }

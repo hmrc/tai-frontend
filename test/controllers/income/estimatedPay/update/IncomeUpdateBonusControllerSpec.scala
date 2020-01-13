@@ -18,7 +18,7 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
+import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication, routes}
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
@@ -109,7 +109,7 @@ class IncomeUpdateBonusControllerSpec
 
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe (Some("/check-income-tax/income-summary"))
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -193,7 +193,7 @@ class IncomeUpdateBonusControllerSpec
 
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe (Some("/check-income-tax/income-summary"))
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -244,7 +244,7 @@ class IncomeUpdateBonusControllerSpec
 
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe (Some("/check-income-tax/income-summary"))
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -313,7 +313,7 @@ class IncomeUpdateBonusControllerSpec
           .thenReturn(Future.successful(Left("")))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe (Some("/check-income-tax/income-summary"))
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
       }
     }
