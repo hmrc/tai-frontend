@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,6 @@ class DeceasedController @Inject()(
   override implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController {
 
-  def deceased() = authenticate.async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    Future.successful(Ok(views.html.deceased_helpline()))
-  }
+  def deceased() = authenticate.async(implicit request => Future.successful(Ok(views.html.deceased_helpline())))
+
 }
