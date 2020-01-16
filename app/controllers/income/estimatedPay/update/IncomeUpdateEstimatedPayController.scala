@@ -16,6 +16,8 @@
 
 package controllers.income.estimatedPay.update
 
+import cats.data._
+import cats.implicits._
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
@@ -69,12 +71,12 @@ class IncomeUpdateEstimatedPayController @Inject()(
 
     val employerFuture = IncomeSource.create(journeyCacheService)
 
-    val result: Future[Future[Result]] = for {
-      employer      <- employerFuture
-      income        <- incomeService.employmentAmount(nino, employer.id)
-      cache         <- journeyCacheService.currentCache
-      calculatedPay <- incomeService.calculateEstimatedPay(cache, income.startDate)
-      payment       <- incomeService.latestPayment(nino, employer.id)
+    val result = for {
+      incomeSource  <- OptionT(employerFuture.map(_.toOption))
+      income        <- OptionT.liftF(incomeService.employmentAmount(nino, incomeSource.id))
+      cache         <- OptionT.liftF(journeyCacheService.currentCache)
+      calculatedPay <- OptionT.liftF(incomeService.calculateEstimatedPay(cache, income.startDate))
+      payment       <- OptionT.liftF(incomeService.latestPayment(nino, incomeSource.id))
     } yield {
 
       val payYearToDate: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
@@ -98,17 +100,20 @@ class IncomeUpdateEstimatedPayController @Inject()(
               isBonusPayment,
               calculatedPay.annualAmount,
               calculatedPay.startDate,
-              employer)
+              incomeSource)
 
             Ok(views.html.incomes.estimatedPay(viewModel))
           }
         case _ =>
           Future.successful(
             Ok(views.html.incomes
-              .incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), employer.id)))
+              .incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), incomeSource.id)))
       }
     }
 
-    result.flatMap(identity)
+    result.value.map(_.sequence).flatMap(identity).map {
+      case Some(result) => result
+      case None         => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    }
   }
 }

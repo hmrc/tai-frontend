@@ -54,10 +54,10 @@ class IncomeUpdatePayPeriodControllerSpec
         journeyCacheService,
         mock[FormPartialRetriever],
         MockTemplateRenderer) {
-    when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(employer.id))
-    when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(employer.name))
+    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+      .thenReturn(Future.successful(Right(employer.id)))
+    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+      .thenReturn(Future.successful(Right(employer.name)))
   }
 
   "payPeriodPage" must {
@@ -89,6 +89,24 @@ class IncomeUpdatePayPeriodControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.payPeriod.heading"))
+      }
+    }
+
+    "Redirect to /income-summary page" when {
+      "user reaches page with no data in cache" in {
+
+        val result = PayPeriodPageHarness
+          .setup()
+          .payPeriodPage()
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -131,6 +149,24 @@ class IncomeUpdatePayPeriodControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.payPeriod.heading"))
+      }
+    }
+
+    "Redirect to /income-summary page" when {
+      "IncomeSource.create returns a left" in {
+
+        val result = HandlePayPeriodHarness
+          .setup()
+          .handlePayPeriod(RequestBuilder.buildFakePostRequestWithAuth("payPeriod" -> "nonsense"))
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }

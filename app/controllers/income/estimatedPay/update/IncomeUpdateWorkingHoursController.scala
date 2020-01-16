@@ -41,14 +41,21 @@ class IncomeUpdateWorkingHoursController @Inject()(
   def workingHoursPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    val employerFuture = IncomeSource.create(journeyCacheService)
     for {
-      employer     <- employerFuture
-      workingHours <- journeyCacheService.currentValue(UpdateIncome_WorkingHoursKey)
+      incomeSourceEither <- IncomeSource.create(journeyCacheService)
+      workingHours       <- journeyCacheService.currentValue(UpdateIncome_WorkingHoursKey)
     } yield {
-      Ok(
-        views.html.incomes
-          .workingHours(HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)), employer.id, employer.name))
+
+      incomeSourceEither match {
+        case Right(incomeSource) =>
+          Ok(
+            views.html.incomes
+              .workingHours(
+                HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
+                incomeSource.id,
+                incomeSource.name))
+        case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      }
     }
   }
 
@@ -60,22 +67,27 @@ class IncomeUpdateWorkingHoursController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val employerFuture = IncomeSource.create(journeyCacheService)
-          for {
-            employer <- employerFuture
-          } yield {
-            BadRequest(views.html.incomes.workingHours(formWithErrors, employer.id, employer.name))
+          IncomeSource.create(journeyCacheService).map {
+            case Right(incomeSource) =>
+              BadRequest(views.html.incomes.workingHours(formWithErrors, incomeSource.id, incomeSource.name))
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           }
         },
         (formData: HoursWorkedForm) => {
           for {
-            id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+            id <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
             _  <- journeyCacheService.cache(UpdateIncome_WorkingHoursKey, formData.workingHours.getOrElse(""))
           } yield {
-            formData.workingHours match {
-              case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage())
-              case Some(IRREGULAR_HOURS) =>
-                Redirect(routes.IncomeUpdateIrregularHoursController.editIncomeIrregularHours(id))
+
+            id match {
+              case Right(id) => {
+                formData.workingHours match {
+                  case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage())
+                  case Some(IRREGULAR_HOURS) =>
+                    Redirect(routes.IncomeUpdateIrregularHoursController.editIncomeIrregularHours(id))
+                }
+              }
+              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }
         }

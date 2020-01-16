@@ -18,10 +18,10 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
+import controllers.{FakeAuthAction, FakeTaiPlayApplication, routes}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -54,10 +54,10 @@ class IncomeUpdateWorkingHoursControllerSpec
         journeyCacheService,
         mock[FormPartialRetriever],
         MockTemplateRenderer) {
-    when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(employer.id))
-    when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(employer.name))
+    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+      .thenReturn(Future.successful(Right(employer.id)))
+    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+      .thenReturn(Future.successful(Right(employer.name)))
   }
 
   "workingHoursPage" must {
@@ -90,6 +90,25 @@ class IncomeUpdateWorkingHoursControllerSpec
         doc.title() must include(messages("tai.workingHours.heading"))
       }
     }
+
+    "Redirect to /income-summary page" when {
+      "user reaches page with no data in cache" in {
+
+        val result = WorkingHoursPageHarness
+          .setup()
+          .workingHoursPage()
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+      }
+    }
+
   }
 
   "handleWorkingHours" must {
@@ -150,6 +169,23 @@ class IncomeUpdateWorkingHoursControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.workingHours.heading"))
+      }
+    }
+    "Redirect to /income-summary page" when {
+      "IncomeSource.create returns a left" in {
+
+        val result = HandleWorkingHoursHarness
+          .setup()
+          .handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth())
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+
       }
     }
   }

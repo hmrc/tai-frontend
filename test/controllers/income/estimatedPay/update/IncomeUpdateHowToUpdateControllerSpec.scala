@@ -68,10 +68,10 @@ class IncomeUpdateHowToUpdateControllerSpec
         mock[FormPartialRetriever],
         MockTemplateRenderer
       ) {
-    when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(employer.id))
-    when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(employer.name))
+    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+      .thenReturn(Future.successful(Right(employer.id)))
+    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+      .thenReturn(Future.successful(Right(employer.name)))
   }
 
   def BuildEmploymentAmount(isLive: Boolean = false, isOccupationPension: Boolean = true) =
@@ -372,6 +372,25 @@ class IncomeUpdateHowToUpdateControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.howToUpdate.title", ""))
+      }
+    }
+
+    "Redirect to /income-summary page" when {
+      "IncomeSource.create returns a left" in {
+
+        val result = HandleChooseHowToUpdateHarness
+          .setup()
+          .handleChooseHowToUpdate(RequestBuilder
+            .buildFakePostRequestWithAuth())
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+
       }
     }
   }

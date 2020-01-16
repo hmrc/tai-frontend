@@ -19,22 +19,25 @@ package uk.gov.hmrc.tai.model.domain.income
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.EitherOpsObject._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 final case class IncomeSource(id: Int, name: String)
 
 object IncomeSource extends JourneyCacheConstants {
+
   def create(journeyCacheService: JourneyCacheService)(
     implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[IncomeSource] = {
-    val idFuture = journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-    val nameFuture = journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+    ec: ExecutionContext): Future[Either[String, IncomeSource]] = {
+    val idFuture: Future[Either[String, Int]] = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
+    val nameFuture: Future[Either[String, String]] = journeyCacheService.mandatoryJourneyValue(UpdateIncome_NameKey)
+
     for {
       id   <- idFuture
       name <- nameFuture
     } yield {
-      IncomeSource(id, name)
+      id.zip(name).right.map { case (a, b) => IncomeSource(a, b) }
     }
   }
 }

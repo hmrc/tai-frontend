@@ -60,10 +60,10 @@ class IncomeUpdateEstimatedPayControllerSpec
         journeyCacheService,
         mock[FormPartialRetriever],
         MockTemplateRenderer) {
-    when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(employer.id))
-    when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(employer.name))
+    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+      .thenReturn(Future.successful(Right(employer.id)))
+    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+      .thenReturn(Future.successful(Right(employer.name)))
   }
 
   "estimatedPayLandingPage" must {
@@ -167,6 +167,23 @@ class IncomeUpdateEstimatedPayControllerSpec
         status(result) mustBe SEE_OTHER
 
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
+      }
+    }
+    "Redirect to /income-summary page" when {
+      "user reaches page with no data in cache" in {
+
+        val result = EstimatedPayPageHarness
+          .setup()
+          .estimatedPayPage(RequestBuilder.buildFakeGetRequestWithAuth())
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
