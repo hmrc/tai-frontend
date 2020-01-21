@@ -114,7 +114,7 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
           val row = TaxFreeAmountSummaryRowViewModel(
             CodingComponent(CarBenefit, Some(234), 11500, "CarBenefit"),
             taxFreeAmountDetails)
-          val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/234"
+          val url = ApplicationConfig.cocarFrontendUrl
           row.link mustBe ChangeLinkViewModel(true, Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), url)
         }
       }
@@ -123,7 +123,7 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
           val row = TaxFreeAmountSummaryRowViewModel(
             CodingComponent(CarBenefit, None, 11500, "CarBenefit"),
             taxFreeAmountDetails)
-          val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/0"
+          val url = ApplicationConfig.cocarFrontendUrl
           row.link mustBe ChangeLinkViewModel(true, Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), url)
         }
       }
@@ -148,11 +148,11 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
     "build a displayable Car Fuel Benefit LinkViewModel" which {
       "has the employment id added to it" when {
-        "tax component CarFuelBenefit and employment id is present" in {
+        "tax component is CarFuelBenefit and employment id is present" in {
           val row = TaxFreeAmountSummaryRowViewModel(
             CodingComponent(CarFuelBenefit, Some(234), 11500, "CarFuelBenefit"),
             taxFreeAmountDetails)
-          val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/234"
+          val url = ApplicationConfig.cocarFrontendUrl
           row.link mustBe ChangeLinkViewModel(
             true,
             Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"),
@@ -160,11 +160,11 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
         }
       }
       "has zero as employment id" when {
-        "tax component CarFuelBenefit and employment id is NOT present" in {
+        "tax component is CarFuelBenefit and employment id is NOT present" in {
           val row = TaxFreeAmountSummaryRowViewModel(
             CodingComponent(CarFuelBenefit, None, 11500, "CarFuelBenefit"),
             taxFreeAmountDetails)
-          val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/0"
+          val url = ApplicationConfig.cocarFrontendUrl
           row.link mustBe ChangeLinkViewModel(
             true,
             Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"),

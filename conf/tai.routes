@@ -117,13 +117,6 @@ GET         /income/bank-building-society-savings/:id/remove/check-your-answers 
 POST        /income/bank-building-society-savings/:id/remove/check-your-answers        @controllers.income.bbsi.BbsiRemoveAccountController.submitYourAnswers(id:Int)
 GET         /income/bank-building-society-savings/remove-success                       @controllers.income.bbsi.BbsiController.removeConfirmation
 
-
-## Company car pages
-GET         /redirect-company-car/:employmentId                                        @controllers.CompanyCarController.redirectCompanyCarSelection(employmentId: Int)
-
-GET         /end-company-car/decision                                                  @controllers.CompanyCarController.getCompanyCarDetails
-POST        /end-company-car/decision                                                  @controllers.CompanyCarController.handleUserJourneyChoice
-
 ## New Income and Tax Codes page
 GET         /tax-free-allowance                                                        @controllers.TaxFreeAmountController.taxFreeAmount
 GET         /taxable-income                                                            @controllers.TaxFreeAmountController.taxFreeAmount

@@ -224,11 +224,17 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
           Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceTransferred"),
           url)
       case CarBenefit =>
-        val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/${codingComponent.employmentId.getOrElse(0)}"
-        ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), url)
+        ChangeLinkViewModel(
+          isDisplayed = true,
+          Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"),
+          ApplicationConfig.cocarFrontendUrl
+        )
       case CarFuelBenefit =>
-        val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/${codingComponent.employmentId.getOrElse(0)}"
-        ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"), url)
+        ChangeLinkViewModel(
+          isDisplayed = true,
+          Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"),
+          ApplicationConfig.cocarFrontendUrl
+        )
       case companyBenefit: BenefitComponentType =>
         val url = controllers.benefits.routes.CompanyBenefitController
           .redirectCompanyBenefitSelection(codingComponent.employmentId.getOrElse(0), companyBenefit)

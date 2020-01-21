@@ -111,7 +111,7 @@ class AuditService @Inject()(val auditConnector: AuditConnector, personService: 
     val (redirectUri, auditEventName) = iformName match {
       case EmployeePensionIForm     => (ApplicationConfig.incomeFromEmploymentPensionLinkUrl, employmentPensionEvent)
       case CompanyBenefitsIform     => (ApplicationConfig.companyBenefitsLinkUrl, companyBenefitsEvent)
-      case CompanyCarsIform         => (ApplicationConfig.companyCarServiceUrl, companyCarEvent)
+      case CompanyCarsIform         => (ApplicationConfig.cocarFrontendUrl, companyCarEvent)
       case MedicalBenefitsIform     => (ApplicationConfig.medBenefitServiceUrl, medicalBenefitsEvent)
       case OtherIncomeIform         => (ApplicationConfig.otherIncomeLinkUrl, otherIncomeEvent)
       case InvestIncomeIform        => (ApplicationConfig.investmentIncomeLinkUrl, investIncomeEvent)
