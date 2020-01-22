@@ -27,5 +27,5 @@ object UserBuilder {
     lastName: String = "Surname",
     utr: String = "utr",
     providerType: String = TaiConstants.AuthProviderGG) =
-    AuthedUser(firstName + " " + lastName, nino.toString(), utr, providerType, "200")
+    AuthedUser(firstName + " " + lastName, nino.toString(), utr, providerType, "200", None)
 }
