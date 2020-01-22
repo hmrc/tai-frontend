@@ -84,7 +84,6 @@ object IncomeSourceSummaryViewModel {
     implicit messages: Messages): Seq[CompanyBenefitViewModel] = {
     val ccBenVMs = benefits.companyCarBenefits collect {
       case CompanyCarBenefit(`empId`, grossAmount, _, _) =>
-        println("Executing model")
         val changeUrl = ApplicationConfig.cocarFrontendUrl
         CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), grossAmount, changeUrl)
     }
