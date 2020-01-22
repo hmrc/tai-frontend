@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package views.html
 
-import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.urls.Link
+import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class deceasedHelplinePageSpec extends TaiViewSpec {
@@ -27,115 +26,85 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
 
   "Deceased helpline page" should {
     behave like pageWithTitle(messages("tai.deceased.title"))
-    behave like pageWithHeader(messages("tai.deceased.heading", authedUser.getDisplayName))
+    behave like pageWithHeader(
+      s"${messages("tai.deceased.heading.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.part2"))}")
   }
 
-  "the paragraph" should {
-    "show information about deceased user" in {
-      assertParagraph(messages("tai.deceased.information.p1", authedUser.getDisplayName))
-      assertParagraph(messages("tai.deceased.information.p2"))
-    }
+  "contain an h2 heading concerning a bereavement question" in {
+    doc must haveHeadingH2WithText(messages("tai.deceased.question"))
   }
 
-  "the bereavement helpline section" should {
-    "contain a h2 heading" in {
-      assertSubHeading("tai.deceased.bereavement.helpline")
-    }
-
-    "contain phone numbers" in {
-      assertTimings("tai.deceased.telephone", "tai.deceased.telephone.number")
-      assertTimings("tai.deceased.textphone", "tai.deceased.textphone.number")
-      assertTimings("tai.deceased.outsideUK", "tai.deceased.outsideUK.number")
-    }
-
-    "display call charges link" in {
-      val callChargesLink = doc.getElementById("callCharges")
-      callChargesLink must haveLinkURL("https://www.gov.uk/call-charges")
-      doc.getElementsByTag("a").toString must include(messages("tai.deceased.call.charges"))
-    }
+  "contain a paragraph stating to call hmrc" in {
+    doc must haveParagraphWithText(messages("tai.deceased.callHmrc.paragraph"))
   }
 
-  "the opening time" should {
-    "contain a h3 heading" in {
-      assertSubHeadingH3("tai.deceased.opening.times")
+  "contain a telephone section which " should {
+
+    "include a telephone title" in {
+      doc must haveHeadingH3WithText(messages("tai.deceased.telephone.title"))
     }
 
-    "display the static timings content" in {
-      assertBulletPoints(messages("tai.deceased.opening.times.p1"))
-      assertBulletPoints(messages("tai.deceased.opening.times.p2"))
-      assertBulletPoints(messages("tai.deceased.opening.times.p3"))
-      assertParagraph(messages("tai.deceased.opening.times.p4"))
-    }
-  }
-
-  "the best timings" should {
-    "contain a h3 heading" in {
-      assertSubHeadingH3("tai.deceased.best.times")
+    "include a telephone number" in {
+      doc must haveParagraphWithText(messages("tai.deceased.telephone.number"))
     }
 
-    "display static best time to call content" in {
-      assertParagraph(messages("tai.deceased.best.times.p1"))
-    }
-  }
-
-  "the post section" should {
-    "contain a h2 heading" in {
-      assertSubHeading("tai.deceased.post")
-    }
-
-    "display different address link" in {
-      assertElementById(
-        "different-address",
-        Html(
-          Messages(
-            "tai.deceased.post.p2",
-            Link
-              .toInternalPage(
-                url = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/couriers",
-                value = Some(Messages("tai.deceased.post.p2.link.text")))
-              .toHtml
-          )).body
-      )
-    }
-
-    "display static post content" in {
-      assertParagraph(messages("tai.deceased.post.p1"))
-      assertElementById("post-address", messages("tai.deceased.post.address1"))
-      assertElementById("post-address", messages("tai.deceased.post.address2"))
-      assertElementById("post-address", messages("tai.deceased.post.address3"))
-      assertElementById("post-address", messages("tai.deceased.post.address4"))
-    }
-  }
-
-  "the tell us once section" should {
-    "contain a h2 heading" in {
-      assertSubHeading("tai.deceased.tell.us")
-    }
-
-    "display tell us once link" in {
-      assertElementById(
-        "tell-us-once",
-        Html(
-          Messages(
-            "tai.deceased.tell.us.p1",
-            Link
-              .toInternalPage(
-                url = "https://www.gov.uk/after-a-death/organisations-you-need-to-contact-and-tell-us-once",
-                value = Some(Messages("tai.deceased.tell.us.p1.link.text")))
-              .toHtml
-          )).body
-      )
+    "include a telephone description section " in {
+      doc must haveParagraphWithText(messages("tai.deceased.telephone.advice"))
     }
 
   }
 
-  val assertSubHeading = (subHeadingKey: String) => doc must haveHeadingH2WithText(messages(subHeadingKey))
-  val assertSubHeadingH3 = (subHeadingKey: String) => doc must haveHeadingH3WithText(messages(subHeadingKey))
-  val assertParagraph = (message: String) => doc must haveParagraphWithText(message)
-  val assertElementById = (id: String, message: String) =>
-    doc.getElementById(id).toString must include(messages(message))
-  val assertBulletPoints = (message: String) => doc must haveBulletPointWithText(message)
-  val assertTimings = (message1: String, message2: String) =>
-    assertBulletPoints(messages(message1) + " " + messages(message2))
+  "contain a textphone section which " should {
+
+    "include a textphone title" in {
+      doc must haveHeadingH3WithText(messages("tai.deceased.textphone.title"))
+
+    }
+
+    "include a textphone number" in {
+      doc must haveParagraphWithText(messages("tai.deceased.textphone.number"))
+    }
+  }
+
+  "contain an Outside UK section which " should {
+
+    "include an outside uk title" in {
+      val element = doc.getElementById("outsideUk")
+
+      element.text must include(messages("tai.deceased.outsideUK.title"))
+      element.tag().toString mustBe "h3"
+
+      val spanElement = element.children().first()
+      spanElement.text mustBe messages("tai.deceased.telephone")
+      spanElement.tag().toString mustBe "span"
+      spanElement.attr("class") mustBe "visually-hidden"
+    }
+
+    "include an outside of uk telephone number" in {
+      doc must haveParagraphWithText(messages("tai.deceased.outsideUK.number"))
+    }
+
+  }
+
+  "contain an opening times section which" should {
+
+    "include the hidden heading opening times" in {
+      doc must haveHeadingH3WithText(messages("tai.deceased.opening.times"))
+      doc must haveElementAtPathWithClass("h3[id=openingTimes]", "visually-hidden")
+    }
+
+    "include a time for Monday to Friday" in {
+      doc must haveParagraphWithText(messages("tai.deceased.openingTimes.mondayToFriday"))
+    }
+
+    "include a time for Saturday" in {
+      doc must haveParagraphWithText(messages("tai.deceased.openingTimes.saturday"))
+    }
+
+    "state daysClosed" in {
+      doc must haveParagraphWithText(messages("tai.deceased.daysClosed"))
+    }
+
+  }
 
 }

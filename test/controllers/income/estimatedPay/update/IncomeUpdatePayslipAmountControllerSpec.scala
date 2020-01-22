@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,20 +58,22 @@ class IncomeUpdatePayslipAmountControllerSpec
         journeyCacheService,
         mock[FormPartialRetriever],
         MockTemplateRenderer) {
-    when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(employer.id))
-    when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(employer.name))
+    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+      .thenReturn(Future.successful(Right(employer.id)))
+    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+      .thenReturn(Future.successful(Right(employer.name)))
   }
 
   "payslipAmountPage" must {
     object PayslipAmountPageHarness {
       sealed class PayslipAmountPageHarness(payPeriod: Option[String], cachedAmount: Option[String]) {
-        when(journeyCacheService.collectedValues(any(), any())(any()))
+
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
           .thenReturn(
             Future.successful(
-              Seq[String](employer.id.toString, employer.name),
-              Seq[Option[String]](payPeriod, None, cachedAmount)))
+              Right(Seq[String](employer.id.toString, employer.name)),
+              Seq[Option[String]](payPeriod, None, cachedAmount))
+          )
 
         def payslipAmountPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdatePayslipAmountController()
@@ -118,6 +120,27 @@ class IncomeUpdatePayslipAmountControllerSpec
         val expectedView = payslipAmount(expectedViewModel)
 
         result rendersTheSameViewAs expectedView
+      }
+    }
+
+    "Redirect user to /income-summary" when {
+      "there is no data in the cache" in {
+        implicit val request = RequestBuilder.buildFakeGetRequestWithAuth()
+
+        val cachedAmount = None
+        val payPeriod = None
+
+        val controller = PayslipAmountPageHarness
+          .setup(payPeriod, cachedAmount)
+
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+          .thenReturn(
+            Future.successful(Left("failed"), Seq[Option[String]](payPeriod, None, cachedAmount))
+          )
+
+        val result = controller.payslipAmountPage(request)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -184,11 +207,11 @@ class IncomeUpdatePayslipAmountControllerSpec
         val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
         val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TaxablePayKey)
 
-        when(journeyCacheService.collectedValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any()))
+        when(journeyCacheService.collectedJourneyValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any()))
           .thenReturn(
             Future.successful(
-              (Seq[String](employer.id.toString, employer.name), Seq[Option[String]](payPeriod, None, cachedAmount))
-            )
+              Right(Seq[String](employer.id.toString, employer.name)),
+              Seq[Option[String]](payPeriod, None, cachedAmount))
           )
 
         def taxablePayslipAmountPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -216,6 +239,29 @@ class IncomeUpdatePayslipAmountControllerSpec
         val expectedForm = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(cachedAmount))
         val expectedViewModel = TaxablePaySlipAmountViewModel(expectedForm, payPeriod, None, employer)
         result rendersTheSameViewAs taxablePayslipAmount(expectedViewModel)
+      }
+    }
+
+    "Redirect to /income-summary page" when {
+      "user reaches page with no data in cache" in {
+
+        implicit val request = RequestBuilder.buildFakeGetRequestWithAuth()
+
+        val cachedAmount = None
+        val payPeriod = None
+
+        val result = TaxablePayslipAmountPageHarness
+          .setup(payPeriod, cachedAmount)
+          .taxablePayslipAmountPage(request)
+
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+          .thenReturn(
+            Future.successful(Left("failed"), Seq[Option[String]](payPeriod, None, cachedAmount))
+          )
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -272,6 +318,23 @@ class IncomeUpdatePayslipAmountControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.taxablePayslip.title.month"))
+      }
+    }
+    "Redirect to /income-summary page" when {
+      "IncomeSource.create returns a left" in {
+
+        val result = HandleTaxablePayslipAmountPageHarness
+          .setup()
+          .handleTaxablePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth())
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+
       }
     }
   }

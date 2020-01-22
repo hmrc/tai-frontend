@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,15 +43,16 @@ class IncomeUpdatePayPeriodController @Inject()(
   def payPeriodPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    val employerFuture = IncomeSource.create(journeyCacheService)
-
     for {
-      employer        <- employerFuture
-      payPeriod       <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
-      payPeriodInDays <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
+      incomeSourceEither <- IncomeSource.create(journeyCacheService)
+      payPeriod          <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
+      payPeriodInDays    <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
     } yield {
       val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
-      Ok(views.html.incomes.payPeriod(form, employer.id, employer.name))
+      incomeSourceEither match {
+        case Right(incomeSource) => Ok(views.html.incomes.payPeriod(form, incomeSource.id, incomeSource.name))
+        case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      }
     }
   }
 
@@ -65,14 +66,19 @@ class IncomeUpdatePayPeriodController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val employerFuture = IncomeSource.create(journeyCacheService)
+
           for {
-            employer <- employerFuture
+            incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
             val isDaysError = formWithErrors.errors.exists { error =>
               error.key == PayPeriodForm.OTHER_IN_DAYS_KEY
             }
-            BadRequest(views.html.incomes.payPeriod(formWithErrors, employer.id, employer.name, !isDaysError))
+            incomeSourceEither match {
+              case Right(incomeSource) =>
+                BadRequest(
+                  views.html.incomes.payPeriod(formWithErrors, incomeSource.id, incomeSource.name, !isDaysError))
+              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+            }
           }
         },
         formData => {

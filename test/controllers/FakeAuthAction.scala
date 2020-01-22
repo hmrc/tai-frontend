@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import scala.util.Random
 
 object FakeAuthAction extends AuthAction {
   val nino = new Generator(new Random).nextNino
-  val user = AuthedUser("person name", nino.toString(), "userDetailsUri", TaiConstants.AuthProviderGG, "200")
+  val user = AuthedUser("person name", nino.toString(), "userDetailsUri", TaiConstants.AuthProviderGG, "200", None)
 
   override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
     block(AuthenticatedRequest(request, user))
@@ -35,7 +35,7 @@ object FakeAuthAction extends AuthAction {
 object FakeAuthActionVerify extends AuthAction {
 
   val nino = new Generator(new Random).nextNino
-  val user = AuthedUser("person name", nino.toString(), "userDetailsUri", TaiConstants.AuthProviderVerify, "200")
+  val user = AuthedUser("person name", nino.toString(), "userDetailsUri", TaiConstants.AuthProviderVerify, "200", None)
 
   override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
     block(AuthenticatedRequest(request, user))

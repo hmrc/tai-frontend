@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package views.html.incomes.previousYears
+package uk.gov.hmrc.tai.util
 
-import play.twirl.api.Html
-import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+object EitherOpsObject {
 
-class UpdateIncomeDetailsConfirmationSpec extends TaiViewSpec {
-  override def view: Html = views.html.incomes.previousYears.UpdateIncomeDetailsConfirmation()
+  implicit class EitherOps[A, B](e: Either[A, B]) {
 
-  "Update Income Details Confirmation View" must {
-
-    behave like pageWithTitle(messages("tai.income.previousYears.confirmation.heading"))
-    behave like haveReturnToSummaryButtonWithUrl(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev))
-
+    def zip[C](other: Either[A, C]): Either[A, (B, C)] =
+      e.right.flatMap(b => other.right.map(c => (b, c)))
   }
+
 }

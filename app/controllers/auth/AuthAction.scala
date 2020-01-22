@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import play.Logger
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.retrieve.v2.{Retrievals, TrustedHelper}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name, ~}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
@@ -34,14 +34,21 @@ import scala.concurrent.{ExecutionContext, Future}
 
 case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser) extends WrappedRequest[A](request)
 
-case class AuthedUser(name: String, validNino: String, utr: String, providerType: String, confidenceLevel: String) {
-  def getDisplayName = name
+case class AuthedUser(
+  name: String,
+  validNino: String,
+  utr: String,
+  providerType: String,
+  confidenceLevel: String,
+  trustedHelper: Option[TrustedHelper]) {
 
-  def getNino = validNino
+  def getDisplayName: String = name
+
+  def getNino: String = validNino
 
   def nino: Nino = Nino(validNino)
 
-  def getUTR = utr
+  def getUTR: String = utr
 }
 
 object AuthedUser {
@@ -56,14 +63,24 @@ object AuthedUser {
     val validUtr = saUtr.getOrElse("")
     val validProviderType = providerType.getOrElse("")
 
-    AuthedUser(validName, validNino, validUtr, validProviderType, confidenceLevel.toString)
+    AuthedUser(validName, validNino, validUtr, validProviderType, confidenceLevel.toString, None)
   }
 
   def apply(name: String, nino: Nino, providerType: Option[String], confidenceLevel: ConfidenceLevel): AuthedUser = {
     val validProviderType = providerType.getOrElse("")
 
-    AuthedUser(name, nino.nino, "", validProviderType, confidenceLevel.toString)
+    AuthedUser(name, nino.nino, "", validProviderType, confidenceLevel.toString, None)
   }
+
+  def apply(trustedHelper: TrustedHelper, providerType: Option[String], confidenceLevel: ConfidenceLevel): AuthedUser =
+    AuthedUser(
+      trustedHelper.principalName,
+      trustedHelper.principalNino.nino,
+      "",
+      providerType.getOrElse(""),
+      confidenceLevel.toString,
+      Some(trustedHelper)
+    )
 }
 
 @Singleton
@@ -78,7 +95,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implic
       Retrievals.credentials and Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper) {
       case credentials ~ _ ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) => {
         val providerType = credentials.map(_.providerType)
-        val user = AuthedUser(helper.principalName, helper.principalNino, providerType, confidenceLevel)
+        val user = AuthedUser(helper, providerType, confidenceLevel)
 
         authWithCredentials(request, block, credentials, user)
       }

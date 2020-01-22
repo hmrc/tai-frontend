@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,11 +134,14 @@ class IncomeUpdateHowToUpdateController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val employerFuture = IncomeSource.create(journeyCacheService)
           for {
-            employer <- employerFuture
+            incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
-            BadRequest(views.html.incomes.howToUpdate(formWithErrors, employer.id, employer.name))
+            incomeSourceEither match {
+              case Right(incomeSource) =>
+                BadRequest(views.html.incomes.howToUpdate(formWithErrors, incomeSource.id, incomeSource.name))
+              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+            }
           }
         },
         formData => {

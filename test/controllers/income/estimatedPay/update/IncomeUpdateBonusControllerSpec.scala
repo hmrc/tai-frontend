@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
+import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication, routes}
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
@@ -56,10 +56,10 @@ class IncomeUpdateBonusControllerSpec
         journeyCacheService,
         mock[FormPartialRetriever],
         MockTemplateRenderer) {
-    when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(employer.id))
-    when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(employer.name))
+    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+      .thenReturn(Future.successful(Right(employer.id)))
+    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+      .thenReturn(Future.successful(Right(employer.name)))
   }
 
   "bonusPaymentsPage" must {
@@ -91,6 +91,26 @@ class IncomeUpdateBonusControllerSpec
       val expectedView = bonusPayments(expectedForm, employer)
 
       result rendersTheSameViewAs expectedView
+    }
+    "Redirect to /income-summary page" when {
+      "user reaches page with no data in cache" in {
+
+        implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
+        val cachedAmount = "1231231"
+
+        val result = BonusPaymentsPageHarness
+          .setup(cachedAmount)
+          .bonusPaymentsPage(fakeRequest)
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+      }
     }
   }
 
@@ -156,6 +176,26 @@ class IncomeUpdateBonusControllerSpec
         result rendersTheSameViewAs bonusPayments(BonusPaymentsForm.createForm.bindFromRequest()(fakeRequest), employer)
       }
     }
+
+    "Redirect to /income-summary page" when {
+      "IncomeSource.create returns a left" in {
+
+        implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
+
+        val result = HandleBonusPaymentsHarness
+          .setup()
+          .handleBonusPayments(fakeRequest)
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+      }
+    }
   }
 
   "bonusOvertimeAmountPage" must {
@@ -186,6 +226,26 @@ class IncomeUpdateBonusControllerSpec
 
       val expectedForm = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(Some(cachedAmount)))
       result rendersTheSameViewAs bonusPaymentAmount(expectedForm, employer)
+    }
+
+    "Redirect to /income-summary page" when {
+      "user reaches page with no data in cache" in {
+
+        implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
+
+        val result = BonusOvertimeAmountPageHarness
+          .setup()
+          .bonusOvertimeAmountPage(fakeRequest)
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+      }
     }
   }
 
@@ -234,6 +294,27 @@ class IncomeUpdateBonusControllerSpec
         result rendersTheSameViewAs bonusPaymentAmount(
           BonusOvertimeAmountForm.createForm().bindFromRequest()(fakeRequest),
           employer)
+      }
+    }
+
+    "Redirect to /income-summary page" when {
+      "IncomeSource.create returns a left" in {
+
+        implicit val fakeRequest =
+          RequestBuilder.buildFakePostRequestWithAuth("" -> "")
+
+        val result = HandleBonusOvertimeAmountHarness
+          .setup()
+          .handleBonusOvertimeAmount(fakeRequest)
+
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+
       }
     }
   }
