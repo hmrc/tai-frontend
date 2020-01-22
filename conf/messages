@@ -1448,7 +1448,7 @@ tai.updateIncome.CYPlus1.same.cancel=Return to your Income Tax Summary
 
 tai.page_not_found.heading = Page not found
 tai.page.not.found.error.check.web.address.correct = If you typed the web address, check it is correct.
-tai.page.not.found.error.check.web.address.full = If you pasted the web address, check you copied the entire address
+tai.page.not.found.error.check.web.address.full = If you pasted the web address, check you copied the entire address.
 tai.page.not.found.error.contact = If the web address is correct or you selected a link or button,
 tai.page.not.found.error.pension.scheme.url = https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees
 tai.page.not.found.error.contact.end = if you need to speak to someone about your taxes.
