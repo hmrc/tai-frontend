@@ -59,7 +59,7 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
     "show the correct h2 when user pays more tax next year" in {
 
       doc(viewWithMore(welshMessage)) must haveH2HeadingWithText(
-        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.more", "&pound;1"))
+        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.more", "£1"))
     }
 
     "show the correct h2 when user pays less tax next year" in {
@@ -71,7 +71,7 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
     "show the correct h2 when user pays same tax next year" in {
 
       doc(viewWithLess(welshMessage)) must haveH2HeadingWithText(
-        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.less", "&pound;1"))
+        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.less", "£1"))
     }
 
     "show the correct table heading in welsh when user pays more tax next year" in {
@@ -106,8 +106,7 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
 
     "show the income tax section with heading" in {
       doc(viewWithMore) must haveSectionWithId("incomeTax")
-      doc(viewWithMore) must haveH2HeadingWithText(
-        messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "&pound;1"))
+      doc(viewWithMore) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "£1"))
     }
 
     "display a link to return to choose tax year page" in {
