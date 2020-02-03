@@ -39,13 +39,13 @@ class IncomeSummarySpec extends TaiViewSpec {
     "display employment income summary information" in {
       val document = doc(view)
 
-      document must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
-        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1", TaxYear().end.toString("d MMMM YYYY")))}")
+      document must haveThWithText(
+        s"${messages("tai.CurrentTaxYear")} " +
+          s"${messages("tai.incomeTaxComparison.incomeTax.column1", TaxYear().end.toString("d MMMM YYYY"))}")
 
       document must haveThWithText(
-        s"${nonBreakable(messages("tai.NextTaxYear"))} " +
-          s"${nonBreakable(
-            messages("tai.incomeTaxComparison.incomeTax.column2", TaxYear().next.start.toString("d MMMM YYYY")))}")
+        s"${messages("tai.NextTaxYear")} " +
+          s"${messages("tai.incomeTaxComparison.incomeTax.column2", TaxYear().next.start.toString("d MMMM YYYY"))}")
 
       document must haveTdWithText(employerNameHeading + employmentOneIncomeSourceDetail.name)
       document must haveTdWithText(taxYearEnds + employmentOneIncomeSourceDetail.amountCY)
@@ -66,13 +66,13 @@ class IncomeSummarySpec extends TaiViewSpec {
     "display pensions income summary information" in {
       val document = doc(viewPensionsOnly)
 
-      document must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
-        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1", TaxYear().end.toString("d MMMM YYYY")))}")
+      document must haveThWithText(
+        s"${messages("tai.CurrentTaxYear")} " +
+          s"${messages("tai.incomeTaxComparison.incomeTax.column1", TaxYear().end.toString("d MMMM YYYY"))}")
 
       document must haveThWithText(
-        s"${nonBreakable(messages("tai.NextTaxYear"))} " +
-          s"${nonBreakable(
-            messages("tai.incomeTaxComparison.incomeTax.column2", TaxYear().next.start.toString("d MMMM YYYY")))}")
+        s"${messages("tai.NextTaxYear")} " +
+          s"${messages("tai.incomeTaxComparison.incomeTax.column2", TaxYear().next.start.toString("d MMMM YYYY"))}")
 
       document must haveTdWithText(pensionNameHeading + pensionOneIncomeSourceDetail.name)
       document must haveTdWithText(taxYearEnds + pensionOneIncomeSourceDetail.amountCY)
@@ -94,13 +94,13 @@ class IncomeSummarySpec extends TaiViewSpec {
     "display combined employment and private pensions income summary information" in {
       val document = doc(viewCombined)
 
-      document must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
-        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1", TaxYear().end.toString("d MMMM YYYY")))}")
+      document must haveThWithText(
+        s"${messages("tai.CurrentTaxYear")} " +
+          s"${messages("tai.incomeTaxComparison.incomeTax.column1", TaxYear().end.toString("d MMMM YYYY"))}")
 
       document must haveThWithText(
-        s"${nonBreakable(messages("tai.NextTaxYear"))} " +
-          s"${nonBreakable(
-            messages("tai.incomeTaxComparison.incomeTax.column2", TaxYear().next.start.toString("d MMMM YYYY")))}")
+        s"${messages("tai.NextTaxYear")} " +
+          s"${messages("tai.incomeTaxComparison.incomeTax.column2", TaxYear().next.start.toString("d MMMM YYYY"))}")
 
       document must haveTdWithText(employerNameHeading + employmentOneIncomeSourceDetail.name)
       document must haveTdWithText(taxYearEnds + employmentOneIncomeSourceDetail.amountCY)

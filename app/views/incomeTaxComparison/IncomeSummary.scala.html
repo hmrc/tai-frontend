@@ -47,12 +47,12 @@
             <tr role="row">
                 <th scope="col"><span class="visuallyhidden">@messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")</span></th>
                 <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="numeric">
-                    @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
-                    @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
+                    @Html(messages("tai.CurrentTaxYear"))
+                    @Html(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end)))
                 </th>
                 <th id="taxCodeComparisonTableHeaderCol2" scope="col" class="numeric">
-                    @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
-                    @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
+                    @Html(messages("tai.NextTaxYear"))
+                    @Html(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start)))
                 </th>
                 @if(estimatedPayEnabled) {
                     <th scope="col"></th>
