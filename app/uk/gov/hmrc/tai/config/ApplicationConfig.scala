@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.config
 
 import play.api.Play._
-import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import views.html.helper
 
@@ -58,9 +57,7 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val feedbackSurveyUrl = s"$feedbackHost/feedback/TES"
   lazy val feedbackHost =
     configuration.getString(s"govuk-tax.$env.external-url.feedback-survey-frontend.host").getOrElse("")
-  lazy val companyCarServiceUrl = s"${fetchUrl("paye-frontend")}/paye/company-car/service-landing-page"
-  lazy val companyCarDetailsUrl = s"${fetchUrl("cocar-frontend")}/paye/company-car/details"
-  lazy val companyCarFuelBenefitUrl = s"${fetchUrl("paye-frontend")}/paye/company-car/service-landing-page"
+  lazy val cocarFrontendUrl = s"${fetchUrl("cocar-frontend")}/paye/company-car/details"
   lazy val updateCompanyCarDetailsUrl = s"$personServiceUrl/redirect-company-car"
   lazy val personServiceUrl = s"${fetchUrl("tai-frontend")}/check-income-tax"
   lazy val marriageServiceUrl = s"${fetchUrl("tamc-frontend")}/marriage-allowance-application/history"

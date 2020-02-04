@@ -84,7 +84,7 @@ object IncomeSourceSummaryViewModel {
     implicit messages: Messages): Seq[CompanyBenefitViewModel] = {
     val ccBenVMs = benefits.companyCarBenefits collect {
       case CompanyCarBenefit(`empId`, grossAmount, _, _) =>
-        val changeUrl = controllers.routes.CompanyCarController.redirectCompanyCarSelection(empId).url
+        val changeUrl = ApplicationConfig.cocarFrontendUrl
         CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), grossAmount, changeUrl)
     }
 
@@ -98,11 +98,10 @@ object IncomeSourceSummaryViewModel {
 
       case GenericBenefit(CarFuelBenefit, Some(`empId`), amount) =>
         val benefitName = Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit")
-        val changeUrl = ApplicationConfig.companyCarFuelBenefitUrl
+        val changeUrl = ApplicationConfig.cocarFrontendUrl
         CompanyBenefitViewModel(benefitName, amount, changeUrl)
 
-      case GenericBenefit(benefitType, Some(`empId`), amount)
-          if benefitType != MedicalInsurance && benefitType != CarFuelBenefit =>
+      case GenericBenefit(benefitType, Some(`empId`), amount) =>
         val benefitName = Messages(s"tai.taxFreeAmount.table.taxComponent.${benefitType.toString}")
         val changeUrl =
           controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(empId, benefitType).url

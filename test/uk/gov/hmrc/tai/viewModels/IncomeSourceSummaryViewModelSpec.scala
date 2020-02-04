@@ -256,7 +256,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           CompanyBenefitViewModel(
             Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"),
             BigDecimal(200.22),
-            controllers.routes.CompanyCarController.redirectCompanyCarSelection(1).url
+            ApplicationConfig.cocarFrontendUrl
           ),
           CompanyBenefitViewModel(
             Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
@@ -310,12 +310,12 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           CompanyBenefitViewModel(
             Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"),
             BigDecimal(200.22),
-            controllers.routes.CompanyCarController.redirectCompanyCarSelection(1).url
+            ApplicationConfig.cocarFrontendUrl
           ),
           CompanyBenefitViewModel(
             Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"),
             BigDecimal(200.22),
-            ApplicationConfig.companyCarFuelBenefitUrl),
+            ApplicationConfig.cocarFrontendUrl),
           CompanyBenefitViewModel(
             Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
             BigDecimal(321.12),
