@@ -14,34 +14,51 @@
  * limitations under the License.
  *@
 
-@(status : Option[String] = None)(implicit request: Request[_], messages: Messages,
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.urls.Link
+@import includes.ptaHeader
+
+@()(implicit request: Request[_], messages: Messages,
 user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@import uk.gov.hmrc.urls.Link
+@gaEventActionString = @{"Get help"}
+
+@header = @{
+    ptaHeader(
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.getHelp.h1"),
+        preHeadingText = Messages("tai.iya.tax.you.owe.preHeading")
+    )
+}
 
 @main(
     title = Messages("tai.getHelp.h1"),
     articleClasses = Some("full-width"),
     authedUser = Some(user),
-    clickWebChat = true,
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    pageHeader = Some(header)
 ){
 
-<header class="page-header">
-    <h1 class="heading-xlarge" id="getHelpTitle">@Messages("tai.getHelp.h1")</h1>
-</header>
+<p>@Messages("tai.getHelp.p1")</p>
 
-@status match {
-    case Some("0") =>{<p>@Messages("tai.getHelp.p1")</p>}
-    case _ =>{<p>@Messages("tai.getHelp.p1.with.acronym")</p>}
-}
+<p>
+@Html(Messages("tai.getHelp.contact", Link.toExternalPage(
+    url = if (messages.lang.language == "cy") {
+        ApplicationConfig.contactHelplineWelshUrl
+    } else {
+        ApplicationConfig.contactHelplineUrl
+    },
+    value = Some(messages("tai.getHelp.contact.link"))
+).toHtml))
+</p>
 
-<h2 class="heading-medium">@Messages("tai.getHelp.webchat.h2")</h2>
-    @status match {
-        case Some("0") => {@webchat_available()}
-        case Some("1") => {@webchat_closed()}
-        case Some("2") => {@webchat_busy()}
-        case _ => {@webchat_error()}
-    }
+<p>
+@Html(Messages("tai.getHelp.form.p1",
+Link.toInternalPage(id=Some("get-help-iform-link"),
+    url=ApplicationConfig.hardshipHelpUrl,
+    value=Some(Messages("tai.getHelp.form.link.title"))).toHtml))
+</p>
+
 }

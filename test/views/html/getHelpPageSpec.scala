@@ -16,14 +16,15 @@
 
 package views.html
 
-import builders.{UserBuilder}
+import builders.UserBuilder
 import controllers.FakeTaiPlayApplication
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages.Implicits._
-import play.api.i18n.MessagesApi
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.test.FakeRequest
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
 class getHelpPageSpec extends PlaySpec with FakeTaiPlayApplication with JsoupMatchers {
@@ -32,80 +33,25 @@ class getHelpPageSpec extends PlaySpec with FakeTaiPlayApplication with JsoupMat
   implicit val user = UserBuilder()
   implicit val templateRenderer = MockTemplateRenderer
   implicit val partialRetriever = MockPartialRetriever
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "show get help page" must {
+    "show the correct page title and content when the page is displayed and show the english contact URL" in {
+      implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-    "show the correct page title and content when the page is displayed and dynamic web chat status is webchat_available" in {
-
-      val html = views.html.help.getHelp(Some("0"))
-
+      val html = views.html.help.getHelp()
       val doc = Jsoup.parseBodyFragment(html.toString)
       doc must haveHeadingWithText(messagesApi("tai.getHelp.h1"))
-      doc must haveParagraphWithText(messagesApi("tai.getHelp.p1"))
-      doc must haveParagraphWithText(messagesApi("tai.getHelp.p2"))
-      doc must haveHeadingH2WithText(messagesApi("tai.getHelp.webchat.h2"))
-      doc must haveParagraphWithText(
-        messagesApi("tai.getHelp.webchat.available.p1", messagesApi("tai.getHelp.webchat.link")))
-      doc must haveHeadingH2WithText(messagesApi("tai.getHelp.form.h2"))
-      val getHelpPara = messagesApi("tai.getHelp.form.p1.text.with.also", messagesApi("tai.getHelp.form.link.title"))
-      doc must haveParagraphWithText(getHelpPara)
-      val iformLinks = doc.select("#get-help-iform-link")
-      iformLinks.size() mustBe 1
-      iformLinks.first must haveLinkURL("/forms/form/tell-us-how-you-want-to-pay-estimated-tax/guide")
+      doc must haveBackLink
+
+      doc.toString must include(ApplicationConfig.contactHelplineUrl)
     }
 
-    "show the correct page title and content when the page is displayed and dynamic web chat status is webchat_closed" in {
-      val html = views.html.help.getHelp(Some("1"))
+    "show the welsh contact URL" in {
+      implicit val messages = Messages.apply(Lang("cy"), app.injector.instanceOf[MessagesApi])
 
+      val html = views.html.help.getHelp()(request, messages, user, templateRenderer, partialRetriever)
       val doc = Jsoup.parseBodyFragment(html.toString)
-      doc must haveHeadingWithText(messagesApi("tai.getHelp.h1"))
-      doc must haveParagraphWithText(messagesApi("tai.getHelp.p1.with.acronym"))
-      doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.closed.p2"))
-      doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.p2"))
-      doc must haveBulletPointWithText(messagesApi("tai.getHelp.webchat.li1"))
-      doc must haveBulletPointWithText(messagesApi("tai.getHelp.webchat.li2"))
-
-      val getHelpPara = messagesApi("tai.getHelp.form.p1.text.with.also", messagesApi("tai.getHelp.form.link.title"))
-      doc must haveParagraphWithText(getHelpPara)
-      val iformLinks = doc.select("#get-help-iform-link")
-      iformLinks.size() mustBe 1
-      iformLinks.first must haveLinkURL("/forms/form/tell-us-how-you-want-to-pay-estimated-tax/guide")
-    }
-
-    "show the correct page title and content when the page is displayed and dynamic web chat status is webchat_busy" in {
-      val html = views.html.help.getHelp(Some("2"))
-      val doc = Jsoup.parseBodyFragment(html.toString)
-      doc must haveHeadingWithText(messagesApi("tai.getHelp.h1"))
-      doc must haveParagraphWithText(messagesApi("tai.getHelp.p1.with.acronym"))
-      doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.busy.p2"))
-      doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.busy.error.p2"))
-      doc must haveBulletPointWithText(messagesApi("tai.getHelp.webchat.busy.error.li1"))
-      doc must haveBulletPointWithText(messagesApi("tai.getHelp.webchat.busy.error.li2"))
-
-      val getHelpPara = messagesApi("tai.getHelp.form.p1", messagesApi("tai.getHelp.form.link.title"))
-      doc must haveParagraphWithText(getHelpPara)
-      val iformLinks = doc.select("#get-help-iform-link")
-      iformLinks.size() mustBe 1
-      iformLinks.first must haveLinkURL("/forms/form/tell-us-how-you-want-to-pay-estimated-tax/guide")
-    }
-
-    "show the correct page title and content when the page is displayed and dynamic web chat status is webchat_error" in {
-      val html = views.html.help.getHelp(None)
-      val doc = Jsoup.parseBodyFragment(html.toString)
-      doc must haveHeadingWithText(messagesApi("tai.getHelp.h1"))
-      doc must haveParagraphWithText(messagesApi("tai.getHelp.p1.with.acronym"))
-      doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.error.p2"))
-      doc must haveParagraphWithText(messagesApi("tai.getHelp.webchat.busy.error.p2"))
-      doc must haveBulletPointWithText(messagesApi("tai.getHelp.webchat.busy.error.li1"))
-      doc must haveBulletPointWithText(messagesApi("tai.getHelp.webchat.busy.error.li2"))
-
-      val getHelpPara = messagesApi("tai.getHelp.form.p1", messagesApi("tai.getHelp.form.link.title"))
-      doc must haveParagraphWithText(getHelpPara)
-      val iformLinks = doc.select("#get-help-iform-link")
-      iformLinks.size() mustBe 1
-      iformLinks.first must haveLinkURL("/forms/form/tell-us-how-you-want-to-pay-estimated-tax/guide")
+      doc.toString must include(ApplicationConfig.contactHelplineWelshUrl)
     }
   }
-
 }
