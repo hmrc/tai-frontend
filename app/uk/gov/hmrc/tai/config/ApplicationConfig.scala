@@ -86,6 +86,10 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val scottishRateIncomeTaxUrl: String = "https://www.gov.uk/scottish-rate-income-tax"
   lazy val welshRateIncomeTaxUrl: String = "https://www.gov.uk/welsh-income-tax"
   lazy val welshRateIncomeTaxWelshUrl: String = "https://www.gov.uk/treth-incwm-cymru"
+  lazy val contactHelplineUrl: String =
+    "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees"
+  lazy val contactHelplineWelshUrl: String =
+    "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/welsh-language-helplines"
 
   lazy val frontendTemplatePath: String =
     configuration.getString(s"govuk-tax.$env.services.frontend-template-provider.path").getOrElse("/template/mustache")
