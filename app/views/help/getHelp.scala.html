@@ -55,7 +55,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 </p>
 
 <p>
-@Html(Messages("tai.getHelp.form.p1",
+@Html(Messages("tai.getHelp.form.p1.text.with.also",
 Link.toInternalPage(id=Some("get-help-iform-link"),
     url=ApplicationConfig.hardshipHelpUrl,
     value=Some(Messages("tai.getHelp.form.link.title"))).toHtml))
