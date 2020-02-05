@@ -469,7 +469,7 @@ tai.gatekeeper.textphone=Ffôn testun: 0300 200 3319
 
 tai.getHelp.h1=Methu talu''r dreth sydd arnoch eleni?
 tai.getHelp.p1=Cysylltwch â CThEM am help ac i drefnu ffyrdd o dalu.
-tai.getHelp.form.p1=Gallwch ddefnyddio''r {0}. Gall gymryd hyd at 15 diwrnod i gael ateb.
+tai.getHelp.form.p1.text.with.also=Gallwch hefyd ddefnyddio''r {0}. Gall gymryd hyd at 15 diwrnod i gael ateb.
 tai.getHelp.form.link.title=ffurflen ar-lein
 tai.getHelp.contact=Gallwch gysylltu {0}.
 tai.getHelp.contact.link=â Gwasanaeth Cwsmeriaid Cymraeg CThEM

@@ -469,7 +469,7 @@ tai.gatekeeper.textphone=textphone: 0300 200 3319
 
 tai.getHelp.h1=Cannot pay the tax you owe this year
 tai.getHelp.p1=Contact HMRC for help and to arrange ways to pay.
-tai.getHelp.form.p1=You can use the {0}. It can take up to 15 days to get a response.
+tai.getHelp.form.p1.text.with.also=You can also use the {0}. It can take up to 15 days to get a response.
 tai.getHelp.form.link.title=online form
 tai.getHelp.contact=You can {0}.
 tai.getHelp.contact.link=contact Income Tax general enquiries
