@@ -320,21 +320,20 @@ class IncomeUpdatePayslipAmountControllerSpec
         doc.title() must include(messages("tai.taxablePayslip.title.month"))
       }
     }
+
     "Redirect to /income-summary page" when {
       "IncomeSource.create returns a left" in {
-
-        val result = HandleTaxablePayslipAmountPageHarness
-          .setup()
-          .handleTaxablePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth())
+        val controller = new TestIncomeUpdatePayslipAmountController
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
           .thenReturn(Future.successful(Left("")))
         when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
           .thenReturn(Future.successful(Left("")))
 
+        val result = controller.handleTaxablePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth())
+
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
-
       }
     }
   }

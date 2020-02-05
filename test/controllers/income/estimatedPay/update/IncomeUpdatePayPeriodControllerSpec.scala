@@ -154,18 +154,16 @@ class IncomeUpdatePayPeriodControllerSpec
 
     "Redirect to /income-summary page" when {
       "IncomeSource.create returns a left" in {
-
-        val result = HandlePayPeriodHarness
-          .setup()
-          .handlePayPeriod(RequestBuilder.buildFakePostRequestWithAuth("payPeriod" -> "nonsense"))
+        val controller = new TestIncomeUpdatePayPeriodController
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
           .thenReturn(Future.successful(Left("")))
         when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
           .thenReturn(Future.successful(Left("")))
 
-        status(result) mustBe SEE_OTHER
+        val result = controller.handlePayPeriod(RequestBuilder.buildFakePostRequestWithAuth("payPeriod" -> "nonsense"))
 
+        status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
