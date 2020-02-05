@@ -40,9 +40,7 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     articleClasses = Some("full-width text"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName),
-    webChat = true
-){
+    employerName = Some(employerName)){
 
     <div class="section flush--bottom">
         @form(action=income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.handleChooseHowToUpdate){

@@ -123,7 +123,7 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
       "trusted helper data is returned" in {
 
         val nino = new Generator().nextNino
-        val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", nino)
+        val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", nino.nino)
         val controller = Harness.successful(baseRetrieval ~ Some(trustedHelper))
         val result = controller.onPageLoad()(fakeRequest)
 

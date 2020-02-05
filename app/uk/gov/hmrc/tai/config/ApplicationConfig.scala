@@ -77,12 +77,6 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val citizenAuthFrontendSignOutUrl = citizenAuthHost + "/ida/signout"
   lazy val assetsPath =
     s"${configuration.getString(s"$env.assets.url").getOrElse("")}${configuration.getString(s"$env.assets.version").getOrElse("")}/"
-  lazy val webchatTemplate =
-    configuration.getString(s"govuk-tax.$env.services.webchat-frontend.template").getOrElse("defaultTemplate")
-  lazy val webchatEntryPoint =
-    configuration.getString(s"govuk-tax.$env.services.webchat-frontend.entry-point").getOrElse("defaultEntryPoint")
-  lazy val webchatAvailabilityUrl =
-    s"${configuration.getString(s"govuk-tax.$env.services.webchat-frontend.url").getOrElse("")}/$webchatEntryPoint"
   lazy val scottishRateIncomeTaxUrl: String = "https://www.gov.uk/scottish-rate-income-tax"
   lazy val welshRateIncomeTaxUrl: String = "https://www.gov.uk/welsh-income-tax"
   lazy val welshRateIncomeTaxWelshUrl: String = "https://www.gov.uk/treth-incwm-cymru"
@@ -93,9 +87,6 @@ class ApplicationConfig extends DefaultServicesConfig {
 
   lazy val frontendTemplatePath: String =
     configuration.getString(s"govuk-tax.$env.services.frontend-template-provider.path").getOrElse("/template/mustache")
-
-  lazy val webchatIconUrl = configuration.getString("tai.webchat.iconUrl").getOrElse("not found")
-  lazy val webchatJsUrl = configuration.getString("tai.webchat.jsUrl").getOrElse("not found")
 
   def fetchUrl(service: String) =
     try {

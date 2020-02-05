@@ -19,8 +19,7 @@
     hasMultipleIncomes: Boolean,
     employmentId: Int,
     payToDate: String = "0",
-    payDate: Option[org.joda.time.LocalDate] = None,
-    webChat: Boolean = false
+    payDate: Option[org.joda.time.LocalDate] = None
 )(implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.AuthedUser,
@@ -54,9 +53,7 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = Some(""),
-    employerName = income("name").value,
-    webChat = webChat
-){
+    employerName = income("name").value){
 
     <div>
         <p>@messages("tai.incomes.edit.average.hours", TaxYearRangeUtil.currentTaxYearRange)</p>

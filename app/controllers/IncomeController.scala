@@ -131,9 +131,8 @@ class IncomeController @Inject()(
           .bind(employerName, payToDate, date)
           .fold(
             (formWithErrors: Form[EditIncomeForm]) => {
-              val webChat = true
               Future.successful(BadRequest(views.html.incomes
-                .editIncome(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head, webChat = webChat)))
+                .editIncome(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head)))
             },
             (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome)
           )
@@ -276,9 +275,8 @@ class IncomeController @Inject()(
           .bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date)
           .fold(
             formWithErrors => {
-              val webChat = true
               Future.successful(BadRequest(views.html.incomes
-                .editPension(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head, webChat = webChat)))
+                .editPension(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head)))
             },
             (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome)
           )

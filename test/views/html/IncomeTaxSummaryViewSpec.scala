@@ -458,7 +458,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     }
   }
 
-  val webChatEnabled = false
   val activeEmployment =
     IncomeSourceViewModel(
       "Company1",

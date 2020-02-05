@@ -141,7 +141,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
   "putToApi" should {
     "return OK" in {
       val sut = createSUT
-      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any()))
+      when(http.PUT[DateRequest, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK)))
 
       val result = Await.result(sut.putToApi[DateRequest]("", DateRequest(LocalDate.now())), 5.seconds)
@@ -152,7 +152,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
     "return Not Found exception" in {
       val sut = createSUT
-      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any()))
+      when(http.PUT[DateRequest, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND)))
 
       val result = the[NotFoundException] thrownBy Await
@@ -163,7 +163,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
     "return Internal Server exception" in {
       val sut = createSUT
-      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any()))
+      when(http.PUT[DateRequest, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
 
       val result = the[InternalServerException] thrownBy Await
@@ -174,7 +174,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
     "return Bad Request exception" in {
       val sut = createSUT
-      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any()))
+      when(http.PUT[DateRequest, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
 
       val result = the[BadRequestException] thrownBy Await
@@ -185,7 +185,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
     "return Http exception" in {
       val sut = createSUT
-      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any()))
+      when(http.PUT[DateRequest, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(GATEWAY_TIMEOUT)))
 
       val result = the[HttpException] thrownBy Await
@@ -243,7 +243,8 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
       "http DELETE returns OK" in {
 
         val sut = createSUT
-        when(http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(OK)))
+        when(http.DELETE[HttpResponse](any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(HttpResponse(OK)))
         val result = Await.result(sut.deleteFromApi(mockUrl), 5 seconds)
         result.status mustBe OK
       }
@@ -251,7 +252,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
       "http DELETE returns NO_CONTENT" in {
 
         val sut = createSUT
-        when(http.DELETE[HttpResponse](any())(any(), any(), any()))
+        when(http.DELETE[HttpResponse](any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
         val result = Await.result(sut.deleteFromApi(mockUrl), 5 seconds)
         result.status mustBe NO_CONTENT
@@ -259,7 +260,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
       "http DELETE returns ACCEPTED" in {
         val sut = createSUT
-        when(http.DELETE[HttpResponse](any())(any(), any(), any()))
+        when(http.DELETE[HttpResponse](any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(ACCEPTED)))
         val result = Await.result(sut.deleteFromApi(mockUrl), 5.seconds)
         result.status mustBe ACCEPTED
@@ -269,7 +270,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
     "return Http exception" when {
       "http response is NOT OK" in {
         val sut = createSUT
-        when(http.DELETE[HttpResponse](any())(any(), any(), any()))
+        when(http.DELETE[HttpResponse](any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(GATEWAY_TIMEOUT)))
 
         val result = the[HttpException] thrownBy Await.result(sut.deleteFromApi(mockUrl), 5 seconds)

@@ -75,7 +75,7 @@ object AuthedUser {
   def apply(trustedHelper: TrustedHelper, providerType: Option[String], confidenceLevel: ConfidenceLevel): AuthedUser =
     AuthedUser(
       trustedHelper.principalName,
-      trustedHelper.principalNino.nino,
+      trustedHelper.principalNino,
       "",
       providerType.getOrElse(""),
       confidenceLevel.toString,

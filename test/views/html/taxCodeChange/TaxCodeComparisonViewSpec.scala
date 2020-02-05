@@ -49,7 +49,6 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
   val taxCodeChange: TaxCodeChange =
     TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
   val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
-  val webChatEnabled = false
 
   override def view = views.html.taxCodeChange.taxCodeComparison(viewModel)
 
