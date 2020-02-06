@@ -101,13 +101,12 @@ class IncomeUpdateWorkingHoursControllerSpec
         when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
-        val result = controller.workingHoursPage()
+        val result = controller.workingHoursPage(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
-
   }
 
   "handleWorkingHours" must {

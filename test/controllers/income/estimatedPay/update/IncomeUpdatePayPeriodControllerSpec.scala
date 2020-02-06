@@ -102,7 +102,7 @@ class IncomeUpdatePayPeriodControllerSpec
         when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
-        val result = controller.payPeriodPage()
+        val result = controller.payPeriodPage(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
