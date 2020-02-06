@@ -250,17 +250,16 @@ class IncomeUpdatePayslipAmountControllerSpec
         val cachedAmount = None
         val payPeriod = None
 
-        val result = TaxablePayslipAmountPageHarness
-          .setup(payPeriod, cachedAmount)
-          .taxablePayslipAmountPage(request)
+        val controller = new TestIncomeUpdatePayslipAmountController
 
         when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
           .thenReturn(
             Future.successful(Left("failed"), Seq[Option[String]](payPeriod, None, cachedAmount))
           )
 
-        status(result) mustBe SEE_OTHER
+        val result = controller.taxablePayslipAmountPage(request)
 
+        status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }

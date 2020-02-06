@@ -94,21 +94,19 @@ class IncomeUpdateWorkingHoursControllerSpec
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 
-        val result = WorkingHoursPageHarness
-          .setup()
-          .workingHoursPage()
+        val controller = new TestIncomeUpdateWorkingHoursController
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
         when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
-        status(result) mustBe SEE_OTHER
+        val result = controller.workingHoursPage(fakeRequest)
 
+        status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
-
   }
 
   "handleWorkingHours" must {
@@ -172,7 +170,7 @@ class IncomeUpdateWorkingHoursControllerSpec
       }
     }
   }
-  
+
   "Redirect to /income-summary page" when {
     "IncomeSource.create returns a left" in {
 
