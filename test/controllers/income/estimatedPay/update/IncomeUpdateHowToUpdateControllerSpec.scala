@@ -100,6 +100,7 @@ class IncomeUpdateHowToUpdateControllerSpec
 
   "howToUpdatePage" must {
     object HowToUpdatePageHarness {
+
       sealed class HowToUpdatePageHarness(cacheMap: Map[String, String], employment: Option[Employment]) {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -175,6 +176,7 @@ class IncomeUpdateHowToUpdateControllerSpec
 
   "processHowToUpdatePage" must {
     object ProcessHowToUpdatePageHarness {
+
       sealed class ProcessHowToUpdatePageHarness(incomeCount: Int, currentValue: Option[String]) {
 
         if (incomeCount >= 0) {
@@ -322,6 +324,7 @@ class IncomeUpdateHowToUpdateControllerSpec
 
   "handleChooseHowToUpdate" must {
     object HandleChooseHowToUpdateHarness {
+
       sealed class HandleChooseHowToUpdateHarness() {
 
         when(journeyCacheService.cache(Matchers.eq(UpdateIncome_HowToUpdateKey), any())(any()))
@@ -377,20 +380,17 @@ class IncomeUpdateHowToUpdateControllerSpec
 
     "Redirect to /income-summary page" when {
       "IncomeSource.create returns a left" in {
-
-        val result = HandleChooseHowToUpdateHarness
-          .setup()
-          .handleChooseHowToUpdate(RequestBuilder
-            .buildFakePostRequestWithAuth())
+        val controller = new TestIncomeUpdateHowToUpdateController
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
           .thenReturn(Future.successful(Left("")))
         when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
           .thenReturn(Future.successful(Left("")))
 
+        val result = controller.handleChooseHowToUpdate(RequestBuilder.buildFakePostRequestWithAuth())
+
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
-
       }
     }
   }
