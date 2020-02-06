@@ -171,23 +171,22 @@ class IncomeUpdateWorkingHoursControllerSpec
         doc.title() must include(messages("tai.workingHours.heading"))
       }
     }
-  }
-  
-  "Redirect to /income-summary page" when {
-    "IncomeSource.create returns a left" in {
+    "Redirect to /income-summary page" when {
+      "IncomeSource.create returns a left" in {
 
-      val controller = new TestIncomeUpdateWorkingHoursController()
+        val result = HandleWorkingHoursHarness
+          .setup()
+          .handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth())
 
-      when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-        .thenReturn(Future.successful(Left("")))
-      when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-        .thenReturn(Future.successful(Left("")))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+          .thenReturn(Future.successful(Left("")))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+          .thenReturn(Future.successful(Left("")))
 
-      val result = controller.handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth())
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
-
+      }
     }
   }
 }

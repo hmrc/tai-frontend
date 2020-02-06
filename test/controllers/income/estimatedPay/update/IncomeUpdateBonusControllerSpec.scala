@@ -182,16 +182,17 @@ class IncomeUpdateBonusControllerSpec
 
         implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
 
-        val controller = new TestIncomeUpdateBonusController
+        val result = HandleBonusPaymentsHarness
+          .setup()
+          .handleBonusPayments(fakeRequest)
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
         when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
-        val result = controller.handleBonusPayments(fakeRequest)
-
         status(result) mustBe SEE_OTHER
+
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
@@ -250,7 +251,6 @@ class IncomeUpdateBonusControllerSpec
 
   "handleBonusOvertimeAmount" must {
     object HandleBonusOvertimeAmountHarness {
-
       sealed class HandleBonusOvertimeAmountHarness() {
 
         when(journeyCacheService.cache(any())(any()))
@@ -303,18 +303,20 @@ class IncomeUpdateBonusControllerSpec
         implicit val fakeRequest =
           RequestBuilder.buildFakePostRequestWithAuth("" -> "")
 
-        val controller = new TestIncomeUpdateBonusController
+        val result = HandleBonusOvertimeAmountHarness
+          .setup()
+          .handleBonusOvertimeAmount(fakeRequest)
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
           .thenReturn(Future.successful(Left("")))
         when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
           .thenReturn(Future.successful(Left("")))
 
-        val result = controller.handleBonusOvertimeAmount(fakeRequest)
-
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+
       }
     }
   }
+
 }
