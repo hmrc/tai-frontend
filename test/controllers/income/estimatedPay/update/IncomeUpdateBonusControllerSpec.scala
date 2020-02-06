@@ -92,23 +92,21 @@ class IncomeUpdateBonusControllerSpec
 
       result rendersTheSameViewAs expectedView
     }
+
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 
         implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
-        val cachedAmount = "1231231"
 
-        val result = BonusPaymentsPageHarness
-          .setup(cachedAmount)
-          .bonusPaymentsPage(fakeRequest)
+        val controller = new TestIncomeUpdateBonusController
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
         when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
+        val result = controller.bonusPaymentsPage(fakeRequest)
         status(result) mustBe SEE_OTHER
-
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
@@ -232,17 +230,16 @@ class IncomeUpdateBonusControllerSpec
 
         implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
 
-        val result = BonusOvertimeAmountPageHarness
-          .setup()
-          .bonusOvertimeAmountPage(fakeRequest)
+        val controller = new TestIncomeUpdateBonusController
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
         when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
-        status(result) mustBe SEE_OTHER
+        val result = controller.bonusOvertimeAmountPage(fakeRequest)
 
+        status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
