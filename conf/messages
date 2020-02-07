@@ -383,6 +383,14 @@ tai.errorMessage.frontend400.message1.version=The page you want cannot be displa
 tai.errorMessage.frontend400.message1=The page you want cannot be displayed.
 tai.errorMessage.frontend400.message2.nps=You do not need to contact us about this.
 tai.errorMessage.frontend400.message2=Please tell us what you were trying to do using {0}.
+
+tai.errorMessage.pageNotFound.title=Page not found – Check your income Tax – GOV.UK
+tai.errorMessage.pageNotFound.heading=Page not found
+tai.errorMessage.pageNotFound.ifYouTyped=If you typed the web address, check it is correct.
+tai.errorMessage.pageNotFound.ifYouPasted=If you pasted the web address, check you copied the entire address.
+tai.errorMessage.pageNotFound.contactHelpline.text=If the web address is correct or you selected a link or button, {0} if you need to speak to someone about your taxes.
+tai.errorMessage.pageNotFound.contactHelpline.link=contact the Income Tax helpline
+
 tai.errorMessage.frontend404=Please check the URL used or {0}.
 tai.errorMessage.heading.nps=Service unavailable
 tai.errorMessage.heading=There is a problem

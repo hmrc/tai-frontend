@@ -92,5 +92,6 @@ class UnauthorisedController @Inject()(
     views.html.error_template_noauth(
       Messages("global.error.InternalServerError500.title"),
       Messages("tai.technical.error.heading"),
-      Messages("tai.technical.error.message"))
+      Messages("tai.technical.error.message"),
+      List.empty)
 }
