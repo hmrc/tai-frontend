@@ -18,7 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -54,7 +54,7 @@ class HelpControllerSpec extends PlaySpec with JsoupMatchers with MockitoSugar w
       extends HelpController(
         FakeAuthAction,
         FakeValidatePerson,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       )
 

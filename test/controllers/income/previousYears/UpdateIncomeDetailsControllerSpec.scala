@@ -16,10 +16,10 @@
 
 package controllers.income.previousYears
 
-import builders.{RequestBuilder}
+import builders.RequestBuilder
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import controllers.actions.FakeValidatePerson
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => mockEq}
@@ -405,7 +405,7 @@ class UpdateIncomeDetailsControllerSpec
         FakeValidatePerson,
         trackingjourneyCacheService,
         journeyCacheService,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       )
 }

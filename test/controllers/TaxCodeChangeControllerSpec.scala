@@ -18,7 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -153,7 +153,7 @@ class TaxCodeChangeControllerSpec
         FakeValidatePerson,
         yourTaxFreeAmountService,
         taxCodeChangeReasonsService,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       ) {
     implicit val hc: HeaderCarrier = HeaderCarrier()

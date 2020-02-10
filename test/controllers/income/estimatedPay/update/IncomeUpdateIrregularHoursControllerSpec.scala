@@ -19,19 +19,19 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers}
+import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{when}
+import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse}
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service._
@@ -64,7 +64,7 @@ class IncomeUpdateIrregularHoursControllerSpec
         taxAccountService,
         estimatedPayJourneyCompletionService,
         journeyCacheService,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       ) {
     when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))

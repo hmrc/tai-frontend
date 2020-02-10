@@ -17,7 +17,7 @@
 package controllers
 
 import builders.RequestBuilder
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -50,7 +50,7 @@ class DeceasedControllerSpec extends PlaySpec with FakeTaiPlayApplication with I
   class SUT
       extends DeceasedController(
         FakeAuthAction,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       )
 

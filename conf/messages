@@ -1457,3 +1457,6 @@ tai.urbanner.reject=No thanks
 checkProgress.link=Check the progress of your update
 
 tai.information = Information
+
+tai.deskpro.link.text.original = Is there anything wrong with this page?
+tai.deskpro.link.text.replacement = Is this page not working properly?

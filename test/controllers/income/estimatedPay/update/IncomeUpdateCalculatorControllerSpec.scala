@@ -19,12 +19,12 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers}
+import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{when}
+import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -33,7 +33,7 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.tai.model.domain.income.{IncomeSource}
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -73,7 +73,7 @@ class IncomeUpdateCalculatorControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         journeyCacheService,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       ) {
     when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))

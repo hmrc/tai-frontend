@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels
 import controllers.actions.FakeValidatePerson
 import controllers.i18n.TaiLanguageController
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.scalatest.mockito.MockitoSugar._
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Lang, Messages, MessagesApi}
@@ -201,7 +201,7 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
 
   private class SUT(welshEnabled: Boolean = true)
       extends TaiLanguageController(
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       )
 }

@@ -18,7 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
@@ -314,7 +314,7 @@ class YourIncomeCalculationControllerSpec
         paymentsService,
         FakeAuthAction,
         FakeValidatePerson,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       ) {
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))

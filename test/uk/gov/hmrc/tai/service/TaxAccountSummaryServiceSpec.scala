@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import controllers.FakeTaiPlayApplication
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Matchers, Mockito}
@@ -27,7 +27,6 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -214,7 +213,7 @@ class TaxAccountSummaryServiceSpec
         trackingService = trackingService,
         employmentService = employmentService,
         taxAccountService = taxAccountService,
-        partialRetriever = mock[FormPartialRetriever],
+        partialRetriever = MockPartialRetriever,
         templateRenderer = MockTemplateRenderer
       ) {
 

@@ -19,7 +19,7 @@ package controllers.income
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -494,7 +494,7 @@ class UpdateIncomeNextYearControllerSpec
         mock[AuditConnector],
         FakeAuthAction,
         FakeValidatePerson,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       ) {
     override val cyPlusOneEnabled: Boolean = isCyPlusOneEnabled

@@ -18,7 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
@@ -61,7 +61,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       ) {
 

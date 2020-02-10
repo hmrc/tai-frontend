@@ -18,7 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito
@@ -56,7 +56,7 @@ class YourTaxCodeControllerSpec
         taxCodeChangeService,
         FakeAuthAction,
         FakeValidatePerson,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       )
 

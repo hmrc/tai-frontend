@@ -16,10 +16,10 @@
 
 package controllers.pensions
 
-import builders.{RequestBuilder}
+import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => mockEq}
@@ -613,7 +613,7 @@ class UpdatePensionProviderControllerSpec
         FakeValidatePerson,
         journeyCacheService,
         successfulJourneyCacheService,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       )
 }

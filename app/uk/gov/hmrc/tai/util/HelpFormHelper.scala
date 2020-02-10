@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-package mocks
+package uk.gov.hmrc.tai.util
 
-import play.api.mvc.RequestHeader
+import play.api.i18n.Messages
+import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.http.HttpGet
+import uk.gov.hmrc.tai.config.ApplicationConfig
 
-object MockPartialRetriever extends FormPartialRetriever {
-  override def crypto: (String) => String = ???
+object HelpFormHelper {
 
-  override def httpGet: HttpGet = ???
+  def replaceMessage(partialRetriever: FormPartialRetriever)(implicit request: Request[_], messages: Messages): Html = {
+    def partial = partialRetriever.getPartialContent(ApplicationConfig.reportAProblemPartialUrl)
 
-  override def getPartialContent(url: String, templateParameters: Map[String, String], errorMessage: Html)(
-    implicit request: RequestHeader): Html = Html("Is there anything wrong with this page?")
+    Html(
+      partial.toString
+        .replace(
+          messages("tai.deskpro.link.text.original"),
+          messages("tai.deskpro.link.text.replacement")
+        ))
+  }
 }
