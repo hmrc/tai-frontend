@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(pageTitle: String, heading: String, message1: String, message2: Option[String] = None)(implicit request: Request[_],
+@(pageTitle: String, heading: String, message1: String, additionalMessages: List[String])(implicit request: Request[_],
         messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
@@ -24,12 +24,9 @@
     <section class="section">
         <h1 class="h1-heading">@heading</h1>
         <div class="grid grid-2-3">
-            <p id="paraOne">@Html(message1)</p>
-            @message2 match {
-                case Some(message2) => {
-                    <p id="paraTwo">@Html(message2)</p>
-                }
-                case _ => {}
+            <p>@Html(message1)</p>
+            @additionalMessages.map{ message =>
+              <p>@Html(message)</p>
             }
         </div>
     </section>

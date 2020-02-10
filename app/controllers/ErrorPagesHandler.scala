@@ -46,7 +46,7 @@ trait ErrorPagesHandler {
       pageTitle,
       Messages("tai.errorMessage.heading"),
       Messages("tai.errorMessage.frontend400.message1"),
-      Some(
+      List(
         Messages(
           "tai.errorMessage.frontend400.message2",
           Link
@@ -62,21 +62,24 @@ trait ErrorPagesHandler {
     views.html.error_template_noauth(
       Messages("global.error.badRequest400.title"),
       Messages("tai.errorMessage.heading"),
-      Messages("tai.errorMessage.frontend400.message1.version"))
+      Messages("tai.errorMessage.frontend400.message1.version"),
+      List.empty
+    )
 
   def error4xxFromNps(pageTitle: String)(implicit request: Request[_], messages: Messages) =
     views.html.error_template_noauth(
       pageTitle,
       Messages("tai.errorMessage.heading.nps"),
       Messages("tai.errorMessage.frontend400.message1.nps"),
-      Some(Messages("tai.errorMessage.frontend400.message2.nps"))
+      List(Messages("tai.errorMessage.frontend400.message2.nps"))
     )
 
   def error5xx(pageBody: String)(implicit request: Request[_], messages: Messages) =
     views.html.error_template_noauth(
       Messages("global.error.InternalServerError500.title"),
       Messages("tai.technical.error.heading"),
-      pageBody)
+      pageBody,
+      List.empty)
 
   @deprecated("Prefer chaining of named partial functions for clarity", "Introduction of new WDYWTD page")
   def handleErrorResponse(methodName: String, nino: Nino)(

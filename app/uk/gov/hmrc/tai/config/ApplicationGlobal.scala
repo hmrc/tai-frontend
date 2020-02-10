@@ -41,17 +41,20 @@ class TaiErrorHandler @Inject()(
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(
     implicit request: Request[_]) =
-    views.html.error_template_noauth(pageTitle, heading, message)
+    views.html.error_template_noauth(pageTitle, heading, message, List.empty)
 
-  def badRequestErrorTemplate(pageTitle: String, heading: String, message1: String, message2: Option[String] = None)(
-    implicit request: Request[_]): Html =
-    views.html.error_template_noauth(pageTitle, heading, message1, message2)
+  def badRequestErrorTemplate(
+    pageTitle: String,
+    heading: String,
+    message1: String,
+    additionalMessages: List[String] = List.empty)(implicit request: Request[_]): Html =
+    views.html.error_template_noauth(pageTitle, heading, message1, additionalMessages)
 
   override def badRequestTemplate(implicit request: Request[_]): Html = badRequestErrorTemplate(
     Messages("global.error.badRequest400.title"),
     Messages("tai.errorMessage.heading"),
     Messages("tai.errorMessage.frontend400.message1"),
-    Some(
+    List(
       Messages(
         "tai.errorMessage.frontend400.message2",
         Link
@@ -63,19 +66,31 @@ class TaiErrorHandler @Inject()(
       ))
   )
 
-  override def notFoundTemplate(implicit request: Request[_]): Html = standardErrorTemplate(
-    Messages("global.error.pageNotFound404.title"),
-    Messages("tai.errorMessage.heading"),
-    Messages(
-      "tai.errorMessage.frontend404",
-      Link
-        .toInternalPage(
-          url = routes.TaxAccountSummaryController.onPageLoad().url,
-          value = Some(Messages("tai.errorMessage.startAgain"))
+  override def notFoundTemplate(implicit request: Request[_]): Html = {
+
+    val contactUrl = request2Messages.lang.code match {
+      case "cy" => ApplicationConfig.contactHelplineWelshUrl
+      case _    => ApplicationConfig.contactHelplineUrl
+    }
+
+    badRequestErrorTemplate(
+      Messages("tai.errorMessage.pageNotFound.title"),
+      Messages("tai.errorMessage.pageNotFound.heading"),
+      Messages("tai.errorMessage.pageNotFound.ifYouTyped"),
+      List(
+        Messages("tai.errorMessage.pageNotFound.ifYouPasted"),
+        Messages(
+          "tai.errorMessage.pageNotFound.contactHelpline.text",
+          Link
+            .toInternalPage(
+              url = contactUrl,
+              value = Some(Messages("tai.errorMessage.pageNotFound.contactHelpline.link"))
+            )
+            .toHtml
         )
-        .toHtml
+      )
     )
-  )
+  }
 }
 
 object ControllerConfiguration extends ControllerConfig {

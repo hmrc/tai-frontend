@@ -384,6 +384,14 @@ tai.errorMessage.frontend400.message1=Ni ellir dangos y dudalen rydych ei heisia
 tai.errorMessage.frontend400.message2.nps=Does dim rhaid i chi gysylltu â ni am hyn.
 tai.errorMessage.frontend400.message2=Rhowch wybod i ni beth oeddech yn ceisio''i wneud gan ddefnyddio {0}.
 tai.errorMessage.frontend404=Gwiriwch yr URL a ddefnyddir neu {0}.
+
+tai.errorMessage.pageNotFound.title=Heb ddod o hyd i’r dudalen – Gwirio''ch Treth Incwm – GOV.UK
+tai.errorMessage.pageNotFound.heading=Heb ddod o hyd i’r dudalen
+tai.errorMessage.pageNotFound.ifYouTyped=Os gwnaethoch deipio’r cyfeiriad gwe, gwiriwch ei fod yn gywir.
+tai.errorMessage.pageNotFound.ifYouPasted=Os gwnaethoch ludo’r cyfeiriad gwe, gwiriwch eich bod wedi copïo’r cyfeiriad yn llawn.
+tai.errorMessage.pageNotFound.contactHelpline.text=Os yw’r cyfeiriad gwe yn gywir neu os ydych wedi dewis cysylltiad neu fotwm, {0} os oes angen i chi siarad â rhywun am eich trethi.
+tai.errorMessage.pageNotFound.contactHelpline.link=cysylltwch â Gwasanaeth Cwsmeriaid Cymraeg CThEM
+
 tai.errorMessage.heading.nps=Nid yw''r gwasanaeth ar gael
 tai.errorMessage.heading=Mae problem wedi codi
 tai.errorMessage.reportAProblem=rhoi gwybod am broblem
