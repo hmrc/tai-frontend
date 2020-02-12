@@ -1469,3 +1469,6 @@ tai.urbanner.reject=Dim diolch
 checkProgress.link=Gwiriwch gynnydd eich diweddariad
 
 tai.information = Gwybodaeth
+
+tai.deskpro.link.text.original = A oes unrhyw beth o&#x27;i le gyda&#x27;r dudalen hon?
+tai.deskpro.link.text.replacement = A yw’r dudalen hon yn gweithio’n iawn?

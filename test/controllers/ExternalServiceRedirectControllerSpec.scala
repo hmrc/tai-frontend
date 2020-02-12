@@ -18,7 +18,7 @@ package controllers
 
 import builders.{RequestBuilder, UserBuilder}
 import controllers.actions.FakeValidatePerson
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
@@ -119,7 +119,7 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       )
 }

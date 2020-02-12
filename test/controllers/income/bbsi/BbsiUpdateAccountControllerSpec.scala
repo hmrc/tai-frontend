@@ -19,7 +19,7 @@ package controllers.income.bbsi
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
@@ -170,7 +170,7 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
         FakeAuthAction,
         FakeValidatePerson,
         journeyCacheService,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       ) {
     when(bbsiService.untaxedInterest(any())(any())).thenReturn(

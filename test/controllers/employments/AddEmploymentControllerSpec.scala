@@ -19,7 +19,7 @@ package controllers.employments
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.{Matchers, Mockito}
@@ -817,7 +817,7 @@ class AddEmploymentControllerSpec
         addEmploymentJourneyCacheService,
         trackSuccessJourneyCacheService,
         mock[AuditConnector],
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       ) {
 

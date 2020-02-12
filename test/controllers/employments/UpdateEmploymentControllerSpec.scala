@@ -19,7 +19,7 @@ package controllers.employments
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{eq => mockEq, _}
@@ -39,6 +39,7 @@ import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+
 import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.util.Random
@@ -487,7 +488,7 @@ class UpdateEmploymentControllerSpec
         FakeValidatePerson,
         journeyCacheService,
         successfulJourneyCacheService,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       ) {}
 

@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication, routes}
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
@@ -54,7 +54,7 @@ class IncomeUpdateBonusControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         journeyCacheService,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
       .thenReturn(Future.successful(Right(employer.id)))

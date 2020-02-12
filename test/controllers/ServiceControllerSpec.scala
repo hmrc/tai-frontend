@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.FakeValidatePerson
 import controllers.auth.AuthAction
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -86,7 +86,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
       extends ServiceController(
         authAction,
         FakeValidatePerson,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       )
 

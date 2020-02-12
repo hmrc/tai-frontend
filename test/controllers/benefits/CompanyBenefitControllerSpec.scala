@@ -19,7 +19,7 @@ package controllers.benefits
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
-import mocks.MockTemplateRenderer
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
@@ -343,7 +343,7 @@ class CompanyBenefitControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         MockTemplateRenderer,
-        mock[FormPartialRetriever]
+        MockPartialRetriever
       ) {
     when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
   }

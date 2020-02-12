@@ -445,7 +445,7 @@ class EstimatedIncomeTaxControllerSpec
         taxAccountService,
         FakeAuthAction,
         FakeValidatePerson,
-        mock[FormPartialRetriever],
+        MockPartialRetriever,
         MockTemplateRenderer
       )
 
