@@ -27,18 +27,22 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val citizenAuthHost = fetchUrl("citizen-auth")
   lazy val companyAuthUrl = fetchUrl("company-auth")
   lazy val urlEncode = helper.urlEncode(_: String)
-  lazy val incomeTaxFormPartialLinkUrl = s"${fetchUrl("iform-partial")}/forms/personal-tax/income-tax/catalogue"
+  lazy val incomeTaxFormPartialLinkUrl =
+    s"${fetchUrl("iform-partial")}/digital-forms/forms/personal-tax/income-tax/catalogue"
   lazy val incomeFromEmploymentPensionPartialLinkUrl =
-    s"${fetchUrl("iform-partial")}/forms/form/tell-us-about-income-from-employment-or-pension/guide"
+    s"${fetchUrl("iform-partial")}/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
   lazy val incomeFromEmploymentPensionLinkUrl =
-    s"${fetchUrl("dfs-frontend")}/forms/form/tell-us-about-income-from-employment-or-pension/guide"
-  lazy val companyBenefitsLinkUrl = s"${fetchUrl("dfs-frontend")}/forms/form/tell-us-about-company-benefits/guide"
+    s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
+  lazy val companyBenefitsLinkUrl =
+    s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/tell-us-about-company-benefits/draft/guide"
   lazy val taxableStateBenefitLinkUrl =
-    s"${fetchUrl("dfs-frontend")}/forms/form/tell-us-about-your-taxable-state-benefit/guide"
-  lazy val otherIncomeLinkUrl = s"${fetchUrl("dfs-frontend")}/forms/form/tell-us-about-other-income/guide"
-  lazy val investmentIncomeLinkUrl = s"${fetchUrl("dfs-frontend")}/forms/form/tell-us-about-investment-income/guide"
+    s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/tell-us-about-your-taxable-state-benefit/draft/guide"
+  lazy val otherIncomeLinkUrl =
+    s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/tell-us-about-other-income/draft/guide"
+  lazy val investmentIncomeLinkUrl =
+    s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/tell-us-about-investment-income/draft/guide"
   lazy val taxFreeAllowanceLinkUrl =
-    s"${fetchUrl("dfs-frontend")}/forms/form/check-income-tax-tell-us-your-tax-free-allowance/guide"
+    s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/check-income-tax-tell-us-your-tax-free-allowance/draft/guide"
   lazy val reportAProblemPartialUrl = s"${fetchUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
   lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
@@ -71,7 +75,8 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val gg_web_context = configuration.getString(s"$env.external-url.gg.web-context").getOrElse("gg")
   lazy val ida_web_context = configuration.getString(s"$env.external-url.ida.web-context").getOrElse("ida")
   lazy val hardshipHelpBase = configuration.getString(s"govuk-tax.$env.external-url.hardship-help.host").getOrElse("")
-  lazy val hardshipHelpUrl = s"$hardshipHelpBase/forms/form/tell-us-how-you-want-to-pay-estimated-tax/guide"
+  lazy val hardshipHelpUrl =
+    s"$hardshipHelpBase/digital-forms/form/tell-us-how-you-want-to-pay-estimated-tax/draft/guide"
   private val contactHost = configuration.getString(s"govuk-tax.$env.services.contact-frontend.host").getOrElse("")
   lazy val companyAuthFrontendSignOutUrl = s"$companyAuthUrl/gg/sign-out?continue=$feedbackSurveyUrl"
   lazy val citizenAuthFrontendSignOutUrl = citizenAuthHost + "/ida/signout"
