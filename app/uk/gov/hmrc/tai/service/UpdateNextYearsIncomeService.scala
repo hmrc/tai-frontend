@@ -67,9 +67,12 @@ class UpdateNextYearsIncomeService @Inject()(
       }
   }
 
+  private def shouldCache(cache: Map[String, String], employmentId: Int): Boolean =
+    cache.isEmpty || cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_ID).toInt != employmentId
+
   def get(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] =
     journeyCacheService.currentCache flatMap {
-      case cache: Map[String, String] if cache.isEmpty => setup(employmentId, nino)
+      case cache: Map[String, String] if shouldCache(cache, employmentId) => setup(employmentId, nino)
       case cache: Map[String, String] => {
         if (cache.contains(UpdateNextYearsIncomeConstants.NEW_AMOUNT)) {
           Future.successful(

@@ -53,13 +53,7 @@ class UpdateIncomeNextYearController @Inject()(
   def onPageLoad(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       preAction {
-        updateNextYearsIncomeService.isEstimatedPayJourneyComplete map { isEstimatedPayJourneyComplete =>
-          if (isEstimatedPayJourneyComplete) {
-            Redirect(routes.UpdateIncomeNextYearController.duplicateWarning(employmentId).url)
-          } else {
-            Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url)
-          }
-        }
+        Future.successful(Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url))
       }
   }
 
