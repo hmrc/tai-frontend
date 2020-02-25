@@ -140,7 +140,6 @@ class UpdateIncomeNextYearControllerSpec
 
         val testController = createTestIncomeController()
 
-        when(updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
         mockedGet(testController)
 
         implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
@@ -315,7 +314,6 @@ class UpdateIncomeNextYearControllerSpec
 
           val testController = createTestIncomeController()
 
-          when(updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
           mockedGet(testController)
 
           implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
@@ -348,7 +346,6 @@ class UpdateIncomeNextYearControllerSpec
 
           val testController = createTestIncomeController()
 
-          when(updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
           mockedGet(testController)
 
           implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =

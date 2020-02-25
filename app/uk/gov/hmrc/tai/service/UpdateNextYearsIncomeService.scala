@@ -39,9 +39,6 @@ class UpdateNextYearsIncomeService @Inject()(
   def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier): Future[Boolean] =
     successfulJourneyCacheService.currentCache map (_.get(UpdateNextYearsIncomeConstants.SUCCESSFUL).isDefined)
 
-  def reset(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    journeyCacheService.flush()
-
   private def setup(employmentId: Int, nino: Nino)(
     implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] = {
     val taxCodeIncomeFuture = taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId)
