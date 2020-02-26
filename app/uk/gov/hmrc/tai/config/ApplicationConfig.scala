@@ -31,18 +31,20 @@ class ApplicationConfig extends DefaultServicesConfig {
     s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/forms/personal-tax/income-tax/catalogue"
   lazy val incomeFromEmploymentPensionPartialLinkUrl =
     s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
+
   lazy val incomeFromEmploymentPensionLinkUrl =
-    s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
+    s"$taiRootUri/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
   lazy val companyBenefitsLinkUrl =
-    s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/tell-us-about-company-benefits/draft/guide"
+    s"$taiRootUri/digital-forms/form/tell-us-about-company-benefits/draft/guide"
   lazy val taxableStateBenefitLinkUrl =
-    s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/tell-us-about-your-taxable-state-benefit/draft/guide"
+    s"$taiRootUri/digital-forms/form/tell-us-about-your-taxable-state-benefit/draft/guide"
   lazy val otherIncomeLinkUrl =
-    s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/tell-us-about-other-income/draft/guide"
+    s"$taiRootUri/digital-forms/form/tell-us-about-other-income/draft/guide"
   lazy val investmentIncomeLinkUrl =
-    s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/tell-us-about-investment-income/draft/guide"
+    s"$taiRootUri/digital-forms/form/tell-us-about-investment-income/draft/guide"
   lazy val taxFreeAllowanceLinkUrl =
-    s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/form/check-income-tax-tell-us-your-tax-free-allowance/draft/guide"
+    s"$taiRootUri/digital-forms/form/check-income-tax-tell-us-your-tax-free-allowance/draft/guide"
+
   lazy val reportAProblemPartialUrl = s"${fetchUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
   lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
