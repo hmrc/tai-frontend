@@ -93,11 +93,13 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val frontendTemplatePath: String =
     configuration.getString(s"govuk-tax.$env.services.frontend-template-provider.path").getOrElse("/template/mustache")
 
+  lazy val taiRootUri: String = configuration.getString(s"govuk-tax.$env.taxPlatformTaiRootUri").getOrElse("")
+
   def fetchUrl(service: String) =
     try {
       baseUrl(service)
     } catch {
-      case ex: RuntimeException => ""
+      case ex: RuntimeException => taiRootUri
       case _: Throwable         => s"Unknown Exception: $service-url"
     }
 
