@@ -26,6 +26,7 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -67,24 +68,36 @@ class UpdateIncomeNextYearController @Inject()(
         implicit val user: AuthedUser = request.taiUser
         val nino = user.nino
 
-        updateNextYearsIncomeService.getNewAmount(employmentId).flatMap {
-          case Right(newAmount) =>
-            updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-              val vm = if (model.isPension) {
-                DuplicateSubmissionCYPlus1PensionViewModel(model.employmentName, newAmount)
-              } else {
-                DuplicateSubmissionCYPlus1EmploymentViewModel(model.employmentName, newAmount)
-              }
-
-              Ok(views.html.incomes.nextYear
+        duplicateWarningGet(
+          employmentId,
+          nino,
+          (employmentId: Int, vm: DuplicateSubmissionEstimatedPay) =>
+            Ok(
+              views.html.incomes.nextYear
                 .updateIncomeCYPlus1Warning(DuplicateSubmissionWarningForm.createForm, vm, employmentId))
-            }
-          case Left(error) =>
-            Logger.warn(s"[UpdateIncomeNextYearController.duplicateWarning]: $error")
-            Future.successful(Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url))
-        }
+        )
       }
   }
+
+  private def duplicateWarningGet(
+    employmentId: Int,
+    nino: Nino,
+    resultFunc: (Int, DuplicateSubmissionEstimatedPay) => Result)(implicit hc: HeaderCarrier) =
+    updateNextYearsIncomeService.getNewAmount(employmentId).flatMap {
+      case Right(newAmount) =>
+        updateNextYearsIncomeService.get(employmentId, nino) map { model =>
+          val vm = if (model.isPension) {
+            DuplicateSubmissionCYPlus1PensionViewModel(model.employmentName, newAmount)
+          } else {
+            DuplicateSubmissionCYPlus1EmploymentViewModel(model.employmentName, newAmount)
+          }
+
+          resultFunc(employmentId, vm)
+        }
+      case Left(error) =>
+        Logger.warn(s"[UpdateIncomeNextYearController]: $error")
+        Future.successful(Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url))
+    }
 
   def submitDuplicateWarning(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -94,23 +107,12 @@ class UpdateIncomeNextYearController @Inject()(
 
         DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
           formWithErrors => {
-
-            updateNextYearsIncomeService.getNewAmount(employmentId).flatMap {
-              case Right(newAmount) =>
-                updateNextYearsIncomeService.get(employmentId, nino) flatMap { model =>
-                  val vm = if (model.isPension) {
-                    DuplicateSubmissionCYPlus1PensionViewModel(model.employmentName, newAmount)
-                  } else {
-                    DuplicateSubmissionCYPlus1EmploymentViewModel(model.employmentName, newAmount)
-                  }
-
-                  Future.successful(BadRequest(
-                    views.html.incomes.nextYear.updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId)))
-                }
-              case Left(error) =>
-                Logger.warn(s"[UpdateIncomeNextYearController.submitDuplicateWarning]: $error")
-                Future.successful(Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url))
-            }
+            duplicateWarningGet(
+              employmentId,
+              nino,
+              (employmentId: Int, vm: DuplicateSubmissionEstimatedPay) =>
+                BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId))
+            )
           },
           success => {
             success.yesNoChoice match {
