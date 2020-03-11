@@ -40,9 +40,9 @@ class TaxYearObjectBinderSpec extends PlaySpec with FakeTaiPlayApplication {
         }
       }
 
-      "the supplied tax year isn't earlier than cy-4" in {
+      "the supplied tax year isn't earlier than cy-5" in {
 
-        val testTaxYear: TaxYear = TaxYear(currentYear - 4)
+        val testTaxYear: TaxYear = TaxYear(currentYear - 5)
 
         val taxYearBinder = createSut
 
@@ -73,10 +73,10 @@ class TaxYearObjectBinderSpec extends PlaySpec with FakeTaiPlayApplication {
       }
     }
 
-    "return a message stating that the tax year cannot be earlier than cy-4" when {
-      "the supplied tax year is earlier than cy-4" in {
+    "return a message stating that the tax year cannot be earlier than cy-5" when {
+      "the supplied tax year is earlier than cy-5" in {
 
-        val testTaxYear: TaxYear = TaxYear(currentYear - 5)
+        val testTaxYear: TaxYear = TaxYear(currentYear - 6)
 
         val taxYearBinder = createSut
 
