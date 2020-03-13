@@ -43,8 +43,6 @@ class PayeControllerHistoric @Inject()(
   override implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController {
 
-  val numberOfPreviousYearsToShow: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(5)
-
   def lastYearPaye(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
   }
@@ -75,7 +73,8 @@ class PayeControllerHistoric @Inject()(
           Ok(
             views.html.paye.historicPayAsYouEarn(
               HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-              numberOfPreviousYearsToShow))
+              ApplicationConfig.numberOfPreviousYearsToShow
+            ))
         }
       }
     }
