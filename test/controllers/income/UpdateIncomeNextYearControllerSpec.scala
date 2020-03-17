@@ -247,6 +247,19 @@ class UpdateIncomeNextYearControllerSpec
 
         redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.confirm(employmentID).url.toString)
       }
+
+      "redirect to the no change page" when {
+        "valid input is passed that matches the current estimated income" in {
+          val testController = createTestIncomeController()
+          val newEstPay = "1234"
+          val result = testController.update(employmentID)(
+            RequestBuilder
+              .buildFakeRequestWithOnlySession(POST)
+              .withFormUrlEncodedBody("income" -> newEstPay))
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url.toString)
+        }
+      }
     }
 
     "respond with a BAD_REQUEST" when {

@@ -225,30 +225,35 @@ class UpdateIncomeNextYearController @Inject()(
     val nino = user.nino
 
     preAction {
-
+      updateNextYearsIncomeService.get(employmentId, nino) flatMap { model =>
       AmountComparatorForm
         .createForm()
         .bindFromRequest()
         .fold(
+
           formWithErrors => {
-            updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-              BadRequest(
+            Future.successful(BadRequest(
                 views.html.incomes.nextYear.updateIncomeCYPlus1Edit(
                   model.employmentName,
                   employmentId,
                   model.isPension,
                   model.currentValue,
-                  formWithErrors))
-            }
+                  formWithErrors)))
           },
           validForm => {
-            validForm.income.fold(throw new RuntimeException) { income =>
-              updateNextYearsIncomeService.setNewAmount(income, employmentId, nino) map { _ =>
-                Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
+            validForm.income.fold(throw new RuntimeException) { newIncome =>
+              if (model.currentValue.toString == newIncome)
+                Future.successful(
+                  Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId)))
+              else {
+                updateNextYearsIncomeService.setNewAmount(newIncome, employmentId, nino) map { _ =>
+                  Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
+                }
               }
             }
           }
         )
+    }
     }
   }
 
