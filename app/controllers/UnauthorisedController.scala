@@ -22,11 +22,9 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.http.SessionKeys
-import uk.gov.hmrc.play.config
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.auth.ConfigProperties
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
@@ -43,7 +41,7 @@ class UnauthorisedController @Inject()(
   def completionUrl: String = ApplicationConfig.taiFrontendServiceUrl
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(unauthorisedView()).withNewSession
+    Unauthorized(unauthorisedView()).withNewSession
   }
 
   def loginGG: Action[AnyContent] = Action.async { implicit request =>

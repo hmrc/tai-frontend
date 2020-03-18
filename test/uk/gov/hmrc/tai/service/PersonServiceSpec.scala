@@ -25,7 +25,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
 
 import scala.concurrent.duration._
@@ -48,17 +48,31 @@ class PersonServiceSpec extends PlaySpec with MockitoSugar with I18nSupport with
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload(person)))
 
         val result = Await.result(sut.personDetails(nino), testTimeout)
-        result mustBe (person)
+        result mustBe Right(person)
       }
     }
-    "throw a runtime exception" when {
-      "copnnector did not return successfully" in {
+    "return a TaiUnauthorisedResponse" when {
+      "connector returns a TaiUnauthorisedResponse" in {
         val sut = createSut
+        val response = TaiUnauthorisedResponse("Unauthorised")
         when(personConnector.person(Matchers.eq(nino))(any()))
-          .thenReturn(Future.successful(TaiNotFoundResponse("downstream not found")))
+          .thenReturn(Future.successful(response))
 
-        val thrown = the[RuntimeException] thrownBy Await.result(sut.personDetails(nino), testTimeout)
-        thrown.getMessage must include("Failed to retrieve person details for nino")
+        val result = Await.result(sut.personDetails(nino), testTimeout)
+        result mustBe Left(response)
+      }
+    }
+
+    "throw a RuntimeException" when {
+      "connector returns a TaiFailureResponse" in {
+        val sut = createSut
+        val response = TaiNotFoundResponse("Not Found")
+        when(personConnector.person(Matchers.eq(nino))(any()))
+          .thenReturn(Future.successful(response))
+
+        the[RuntimeException] thrownBy {
+          Await.result(sut.personDetails(nino), testTimeout)
+        } must have message s"Failed to retrieve person details for nino $nino. Unable to proceed."
       }
     }
   }

@@ -34,10 +34,10 @@ class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
   }
 
   "onPageLoad" must {
-    "return OK for a GET request" in {
+    "return UNAUTHORIZED for a GET request" in {
       val result = controller.onPageLoad(fakeRequest)
 
-      status(result) mustBe OK
+      status(result) mustBe UNAUTHORIZED
     }
 
     "return the unauthorised error page" in {
