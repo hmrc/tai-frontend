@@ -34,10 +34,10 @@ class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
   }
 
   "onPageLoad" must {
-    "return UNAUTHORIZED for a GET request" in {
+    "return OK for a GET request" in {
       val result = controller.onPageLoad(fakeRequest)
 
-      status(result) mustBe UNAUTHORIZED
+      status(result) mustBe OK
     }
 
     "return the unauthorised error page" in {
@@ -47,7 +47,7 @@ class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
       val doc = Jsoup.parse(content)
 
       val title = doc.select("title").text()
-      title must include("You have been signed out for your security")
+      title must include("Sorry, there is a problem with the service")
     }
   }
 
