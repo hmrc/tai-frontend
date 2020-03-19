@@ -41,7 +41,6 @@ import play.api.mvc.Controller
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 
@@ -64,11 +63,11 @@ class ValidatePersonSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
   }
 
   "DeceasedActionFilter" when {
-    "a person is returned and they are deceased" must {
-      "redirect the user to a deceased page" in {
+    "the person is deceased" must {
+      "redirect the user to a deceased page " in {
 
         when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(Right(Person(personNino, "firstName", "Surname", personDeceased, false))))
+          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", personDeceased, false)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 
@@ -81,11 +80,11 @@ class ValidatePersonSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
       }
     }
 
-    "the person is returned and they are alive" must {
-      "not redirect the user to a deceased page" in {
+    "the person is alive" must {
+      "not redirect the user to a deceased page " in {
 
         when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(Right(Person(personNino, "firstName", "Surname", personAlive, false))))
+          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", personAlive, false)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 
@@ -96,10 +95,9 @@ class ValidatePersonSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
 
       }
 
-      "redirect to a corrupt page if user has corrupt data" in {
+      "redirect to a corrupt page if user has corrupt data " in {
         when(personService.personDetails(any())(any()))
-          .thenReturn(
-            Future.successful(Right(Person(personNino, "firstName", "Surname", personAlive, hasCorruptData = true))))
+          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", personAlive, hasCorruptData = true)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 
@@ -108,23 +106,6 @@ class ValidatePersonSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.ServiceController.gateKeeper().toString)
-      }
-    }
-
-    "a TaiUnauthorisedResponse is returned" must {
-      "redirect to Unauthorised page" in {
-        when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(Left(TaiUnauthorisedResponse("Failed"))))
-
-        val validatePerson = new ValidatePersonImpl(personService)
-
-        val controller = new Harness(validatePerson)
-
-        val result = controller.onPageLoad()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().toString)
-
       }
     }
   }

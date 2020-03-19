@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.service
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.{TaiFailureResponse, TaiResponse, TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
 import uk.gov.hmrc.tai.model.domain.Person
 
@@ -28,10 +28,9 @@ import scala.concurrent.Future
 
 class PersonService @Inject()(taiConnector: TaiConnector, personConnector: PersonConnector) {
 
-  def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Either[TaiResponse, Person]] =
+  def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] =
     personConnector.person(nino) map {
-      case TaiSuccessResponseWithPayload(person: Person) => Right(person)
-      case error: TaiUnauthorisedResponse                => Left(error)
+      case TaiSuccessResponseWithPayload(person: Person) => person
       case _ =>
         throw new RuntimeException(s"Failed to retrieve person details for nino ${nino.nino}. Unable to proceed.")
     }

@@ -38,10 +38,6 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) {
         case OK =>
           Future.successful(httpResponse.json)
 
-        case UNAUTHORIZED =>
-          Logger.warn("HttpHandler - Unauthorised was received")
-          Future.failed(new UnauthorizedException(httpResponse.body))
-
         case NOT_FOUND =>
           Logger.warn(s"HttpHandler - No data can be found")
           Future.failed(new NotFoundException(httpResponse.body))
@@ -73,10 +69,6 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) {
 
         case OK =>
           Future.successful(httpResponse)
-
-        case UNAUTHORIZED =>
-          Logger.warn("HttpHandler - Unauthorised was received")
-          Future.failed(new UnauthorizedException(httpResponse.body))
 
         case NOT_FOUND =>
           Logger.warn(s"HttpHandler - No data can be found")

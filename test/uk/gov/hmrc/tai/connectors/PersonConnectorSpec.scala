@@ -24,11 +24,10 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, Upstream4xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.Person
-
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
@@ -44,16 +43,6 @@ class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
           .thenReturn(Future.successful(apiResponse(person)))
         val result = Await.result(sut.person(nino), 5 seconds)
         result mustBe (TaiSuccessResponseWithPayload(person))
-      }
-    }
-
-    "return a TaiUnauthorisedResponse" when {
-      "the http call returns an Upstream4xxResponse when a status code is 401" in {
-        val sut = new SUT("/fakeUrl")
-        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
-          .thenReturn(Future.failed(new Upstream4xxResponse("Unauthorised", 401, 401)))
-        val result = Await.result(sut.person(nino), 5 seconds)
-        result mustBe TaiUnauthorisedResponse("Unauthorised")
       }
     }
 
