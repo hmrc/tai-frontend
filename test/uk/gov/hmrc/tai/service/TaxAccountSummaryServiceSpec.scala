@@ -245,7 +245,7 @@ class TaxAccountSummaryServiceSpec
 
     when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(ThreeWeeks))
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(Right(fakePerson(nino))))
   }
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()

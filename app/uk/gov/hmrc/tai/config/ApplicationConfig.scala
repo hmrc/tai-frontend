@@ -81,6 +81,8 @@ class ApplicationConfig extends DefaultServicesConfig {
     s"$hardshipHelpBase/digital-forms/form/tell-us-how-you-want-to-pay-estimated-tax/draft/guide"
   private val contactHost = configuration.getString(s"govuk-tax.$env.services.contact-frontend.host").getOrElse("")
   lazy val companyAuthFrontendSignOutUrl = s"$companyAuthUrl/gg/sign-out?continue=$feedbackSurveyUrl"
+  lazy val unauthorisedSignOutUrl =
+    configuration.getString(s"govuk-tax.$env.external-url.company-auth.unauthorised-url").getOrElse("")
   lazy val citizenAuthFrontendSignOutUrl = citizenAuthHost + "/ida/signout"
   lazy val assetsPath =
     s"${configuration.getString(s"$env.assets.url").getOrElse("")}${configuration.getString(s"$env.assets.version").getOrElse("")}/"

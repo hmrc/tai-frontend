@@ -317,6 +317,6 @@ class YourIncomeCalculationControllerSpec
         MockPartialRetriever,
         MockTemplateRenderer
       ) {
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(Right(fakePerson(nino))))
   }
 }

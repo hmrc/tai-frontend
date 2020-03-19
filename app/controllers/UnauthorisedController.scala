@@ -22,11 +22,9 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.http.SessionKeys
-import uk.gov.hmrc.play.config
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.auth.ConfigProperties
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
@@ -43,7 +41,7 @@ class UnauthorisedController @Inject()(
   def completionUrl: String = ApplicationConfig.taiFrontendServiceUrl
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(unauthorisedView())
+    Unauthorized(unauthorisedView()).withNewSession
   }
 
   def loginGG: Action[AnyContent] = Action.async { implicit request =>
@@ -90,8 +88,18 @@ class UnauthorisedController @Inject()(
 
   private def unauthorisedView()(implicit request: Request[_]) =
     views.html.error_template_noauth(
-      Messages("global.error.InternalServerError500.title"),
-      Messages("tai.technical.error.heading"),
-      Messages("tai.technical.error.message"),
-      List.empty)
+      Messages("tai.unauthorised.heading"),
+      Messages("tai.unauthorised.heading"),
+      Messages("tai.unauthorised.message"),
+      List(
+        views.html.includes
+          .link(
+            copy = Messages("tai.unauthorised.button-text"),
+            url = ApplicationConfig.unauthorisedSignOutUrl,
+            isButton = true,
+            id = Some("sign-in")
+          )
+          .toString()
+      )
+    )
 }
