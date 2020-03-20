@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
-import play.Logger
+import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Writes}
 import uk.gov.hmrc.http._
@@ -26,9 +26,19 @@ import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class HttpHandler @Inject()(val http: DefaultHttpClient) {
+class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFunctions {
+
+  private def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
+    response.status match {
+      case UNAUTHORIZED => response
+      case _            => handleResponse(http, url)(response)
+    }
 
   def getFromApi(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
+
+    implicit val httpRds = new HttpReads[HttpResponse] {
+      def read(http: String, url: String, res: HttpResponse) = customRead(http, url, res)
+    }
 
     val futureResponse = http.GET[HttpResponse](url)
 
@@ -53,6 +63,10 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) {
         case LOCKED =>
           Logger.warn(s"HttpHandler - Locked received")
           Future.failed(new LockedException(httpResponse.body))
+
+        case UNAUTHORIZED =>
+          Logger.warn(s"HttpHandler - Unauthorized received")
+          Future.successful(new UnauthorizedException(httpResponse.body))
 
         case _ =>
           Logger.warn(s"HttpHandler - Server error received")
