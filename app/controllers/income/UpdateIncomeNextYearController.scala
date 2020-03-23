@@ -96,7 +96,7 @@ class UpdateIncomeNextYearController @Inject()(
         }
       case Left(error) =>
         Logger.warn(s"[UpdateIncomeNextYearController]: $error")
-        Future.successful(Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url))
+        Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad))
     }
 
   def submitDuplicateWarning(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -198,7 +198,7 @@ class UpdateIncomeNextYearController @Inject()(
             }
         case Left(error) =>
           Logger.warn("Could not obtain new amount in confirm: " + error)
-          Future.successful(Redirect(routes.UpdateIncomeNextYearController.onPageLoad(employmentId).url))
+          Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad))
       }
     }
   }
@@ -226,34 +226,41 @@ class UpdateIncomeNextYearController @Inject()(
 
     preAction {
       updateNextYearsIncomeService.get(employmentId, nino) flatMap { model =>
-      AmountComparatorForm
-        .createForm()
-        .bindFromRequest()
-        .fold(
-
-          formWithErrors => {
-            Future.successful(BadRequest(
-                views.html.incomes.nextYear.updateIncomeCYPlus1Edit(
-                  model.employmentName,
-                  employmentId,
-                  model.isPension,
-                  model.currentValue,
-                  formWithErrors)))
-          },
-          validForm => {
-            validForm.income.fold(throw new RuntimeException) { newIncome =>
-              if (model.currentValue.toString == newIncome)
-                Future.successful(
-                  Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId)))
-              else {
-                updateNextYearsIncomeService.setNewAmount(newIncome, employmentId, nino) map { _ =>
-                  Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
-                }
+        AmountComparatorForm
+          .createForm()
+          .bindFromRequest()
+          .fold(
+            formWithErrors => {
+              Future.successful(
+                BadRequest(
+                  views.html.incomes.nextYear.updateIncomeCYPlus1Edit(
+                    model.employmentName,
+                    employmentId,
+                    model.isPension,
+                    model.currentValue,
+                    formWithErrors)))
+            },
+            validForm => {
+              validForm.income.fold(throw new RuntimeException) {
+                newIncome =>
+                  if (model.currentValue.toString == newIncome)
+                    Future.successful(
+                      Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId)))
+                  else {
+                    updateNextYearsIncomeService.getNewAmount(employmentId) flatMap {
+                      case Right(newAmount) if (newAmount == newIncome.toInt) =>
+                        Future.successful(
+                          Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId)))
+                      case _ =>
+                        updateNextYearsIncomeService.setNewAmount(newIncome, employmentId, nino) map { _ =>
+                          Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
+                        }
+                    }
+                  }
               }
             }
-          }
-        )
-    }
+          )
+      }
     }
   }
 

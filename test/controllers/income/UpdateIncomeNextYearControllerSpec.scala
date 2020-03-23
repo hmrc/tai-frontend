@@ -113,7 +113,7 @@ class UpdateIncomeNextYearControllerSpec
 
       val result = testController.duplicateWarning(employmentID)(fakeRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.start(employmentID).url)
+      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
     }
   }
 
@@ -158,7 +158,7 @@ class UpdateIncomeNextYearControllerSpec
           .buildFakeRequestWithAuth("POST"))
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.start(employmentID).url)
+      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
     }
   }
 
@@ -256,6 +256,44 @@ class UpdateIncomeNextYearControllerSpec
             RequestBuilder
               .buildFakeRequestWithOnlySession(POST)
               .withFormUrlEncodedBody("income" -> newEstPay))
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url.toString)
+        }
+
+        "valid input is passed and no current amount has been cached" in {
+          val testController = createTestIncomeController()
+          val newEstPay = "1234"
+
+          when(
+            updateNextYearsIncomeService.getNewAmount(meq(employmentID))(any())
+          ).thenReturn(
+            Future.successful(Left("no amount entered"))
+          )
+
+          val result = testController.update(employmentID)(
+            RequestBuilder
+              .buildFakeRequestWithOnlySession(POST)
+              .withFormUrlEncodedBody("income" -> newEstPay))
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url.toString)
+        }
+
+        "valid input is passed and the new amount is the same as the current cached amount" in {
+          val testController = createTestIncomeController()
+          val newEstPay = "999"
+
+          when(
+            updateNextYearsIncomeService.getNewAmount(meq(employmentID))(any())
+          ).thenReturn(
+            Future.successful(Right(newEstPay.toInt))
+          )
+
+          val result = testController.update(employmentID)(
+            RequestBuilder
+              .buildFakeRequestWithOnlySession(POST)
+              .withFormUrlEncodedBody("income" -> newEstPay))
+
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url.toString)
         }
@@ -397,7 +435,7 @@ class UpdateIncomeNextYearControllerSpec
           val result = controller.confirm(employmentID)(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.onPageLoad(employmentID).url)
+          redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
         }
       }
     }
