@@ -34,6 +34,47 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
       case _            => handleResponse(http, url)(response)
     }
 
+  def getFromApiv2(url: String)(implicit hc: HeaderCarrier): Future[Either[Int, JsValue]] = {
+
+    implicit val httpRds = new HttpReads[HttpResponse] {
+      def read(http: String, url: String, res: HttpResponse) = customRead(http, url, res)
+    }
+
+    val futureResponse = http.GET[HttpResponse](url)
+
+    futureResponse.flatMap { httpResponse =>
+      httpResponse.status match {
+
+        case OK =>
+          Future.successful(Right(httpResponse.json))
+
+        case NOT_FOUND =>
+          Logger.warn(s"HttpHandler - No data can be found")
+          Future.failed(new NotFoundException(httpResponse.body))
+
+        case INTERNAL_SERVER_ERROR =>
+          Logger.warn(s"HttpHandler - Internal Server Error received")
+          Future.failed(new InternalServerException(httpResponse.body))
+
+        case BAD_REQUEST =>
+          Logger.warn(s"HttpHandler - Bad Request received")
+          Future.failed(new BadRequestException(httpResponse.body))
+
+        case LOCKED =>
+          Logger.warn(s"HttpHandler - Locked received")
+          Future.failed(new LockedException(httpResponse.body))
+
+        case UNAUTHORIZED =>
+          Logger.warn(s"HttpHandler - Unauthorized received")
+          Future.successful(Left(httpResponse.status))
+
+        case _ =>
+          Logger.warn(s"HttpHandler - Server error received")
+          Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+      }
+    }
+  }
+
   def getFromApi(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
 
     implicit val httpRds = new HttpReads[HttpResponse] {
@@ -66,7 +107,7 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
 
         case UNAUTHORIZED =>
           Logger.warn(s"HttpHandler - Unauthorized received")
-          Future.successful(new UnauthorizedException(httpResponse.body))
+          Future.successful(httpResponse.json)
 
         case _ =>
           Logger.warn(s"HttpHandler - Server error received")

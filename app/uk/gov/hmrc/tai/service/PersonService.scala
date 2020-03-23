@@ -18,8 +18,8 @@ package uk.gov.hmrc.tai.service
 
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
 import uk.gov.hmrc.tai.model.domain.Person
 
@@ -31,6 +31,7 @@ class PersonService @Inject()(taiConnector: TaiConnector, personConnector: Perso
   def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] =
     personConnector.person(nino) map {
       case TaiSuccessResponseWithPayload(person: Person) => person
+      case TaiUnauthorisedResponse(msg)                  => throw new UnauthorizedException(msg)
       case _ =>
         throw new RuntimeException(s"Failed to retrieve person details for nino ${nino.nino}. Unable to proceed.")
     }

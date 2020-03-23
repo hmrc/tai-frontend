@@ -37,9 +37,12 @@ class CompanyCarConnector @Inject()(httpHandler: HttpHandler) extends DefaultSer
 
   def companyCarBenefitForEmployment(nino: Nino, empId: Int)(
     implicit hc: HeaderCarrier): Future[Option[CompanyCarBenefit]] =
-    httpHandler.getFromApi(companyCarEmploymentUrl(nino, empId)) map (
-      json => Some((json \ "data").as[CompanyCarBenefit])
-    ) recover {
+    httpHandler.getFromApiv2(companyCarEmploymentUrl(nino, empId)) map {
+      case Right(json) => (json \ "data").asOpt[CompanyCarBenefit]
+      case Left(_) =>
+        logUnauthorisedCall("get company car for employment")
+        None
+    } recover {
       case e: NotFoundException => {
         Logger.warn(s"Couldn't retrieve company car benefits for nino: $nino employmentId:$empId")
         None
@@ -56,13 +59,17 @@ class CompanyCarConnector @Inject()(httpHandler: HttpHandler) extends DefaultSer
   }
 
   def companyCarsForCurrentYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] =
-    httpHandler.getFromApi(companyCarUrl(nino)) map (
-      json => (json \ "data" \ "companyCarBenefits").as[Seq[CompanyCarBenefit]]
-    ) recover {
+    httpHandler.getFromApiv2(companyCarUrl(nino)) map {
+      case Right(json) => (json \ "data" \ "companyCarBenefits").as[Seq[CompanyCarBenefit]]
+      case Left(_) =>
+        logUnauthorisedCall(" get company cars for CY employment")
+        Seq.empty[CompanyCarBenefit]
+    } recover {
       case NonFatal(_) => {
         Logger.warn(s"Couldn't retrieve company car benefits for nino: $nino")
         Seq.empty[CompanyCarBenefit]
       }
     }
 
+  private def logUnauthorisedCall(caller: String) = Logger.warn(s"Call to $caller returned 401")
 }

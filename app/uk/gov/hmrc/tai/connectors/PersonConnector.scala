@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
 import play.api.Logger
+import play.api.mvc.Results
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -27,16 +28,17 @@ import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.Future
 
-class PersonConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesConfig {
+class PersonConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesConfig with Results {
 
   val serviceUrl: String = baseUrl("tai")
 
   def personUrl(nino: String): String = s"$serviceUrl/tai/$nino/person"
 
   def person(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.getFromApi(personUrl(nino.nino)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[Person])
-    ) recover {
+    httpHandler.getFromApiv2(personUrl(nino.nino)) map {
+      case Right(js)                 => TaiSuccessResponseWithPayload((js \ "data").as[Person])
+      case Left(code) if code == 401 => TaiUnauthorisedResponse("Connector returned 401")
+    } recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
         TaiNotFoundResponse(e.getMessage)

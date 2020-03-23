@@ -20,7 +20,7 @@ import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
 import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest}
@@ -34,16 +34,21 @@ class BbsiConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesC
   val serviceUrl: String = baseUrl("tai")
 
   def bankAccounts(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[BankAccount]] =
-    httpHandler.getFromApi(bbsiAccountsUrl(nino)) map (json => (json \ "data").as[Seq[BankAccount]]) recover {
+    httpHandler.getFromApiv2(bbsiAccountsUrl(nino)) map {
+      case Right(json) => (json \ "data").as[Seq[BankAccount]]
+      case Left(_)     => Seq.empty[BankAccount]
+    } recover {
       case _: Exception =>
         Logger.warn(s"Exception generated while reading bank-accounts for nino $nino")
         Seq.empty[BankAccount]
     }
 
   def bankAccount(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[BankAccount]] =
-    httpHandler.getFromApi(bbsiAccountUrl(nino, id)) map { json: JsValue =>
-      (json \ "data").asOpt[BankAccount]
-
+    httpHandler.getFromApiv2(bbsiAccountUrl(nino, id)) map {
+      case Right(json) => (json \ "data").asOpt[BankAccount]
+      case Left(_) =>
+        Logger.warn(s"Call to retrieve bank account returned 401")
+        None
     } recover {
       case NonFatal(_) =>
         Logger.warn(s"Could not find bank account for nino: $nino and id: $id")
@@ -57,8 +62,9 @@ class BbsiConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesC
       .map(response => (response.json \ "data").asOpt[String])
 
   def untaxedInterest(nino: Nino)(implicit hc: HeaderCarrier): Future[Option[UntaxedInterest]] =
-    httpHandler.getFromApi(bbsiSavingsInvestmentsUrl(nino)) map { json: JsValue =>
-      (json \ "data").asOpt[UntaxedInterest]
+    httpHandler.getFromApiv2(bbsiSavingsInvestmentsUrl(nino)) map {
+      case Right(json) => (json \ "data").asOpt[UntaxedInterest]
+      case Left(_)     => None
     }
 
   def removeBankAccount(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[String]] =

@@ -49,21 +49,31 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "fetch the company car details" when {
       "provided with valid nino" in {
         val sut = createSUT
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(companyCarForEmploymentJson))
+        when(httpHandler.getFromApiv2(any())(any()))
+          .thenReturn(Future.successful(Right(companyCarForEmploymentJson)))
 
         val result = sut.companyCarBenefitForEmployment(generateNino, employmentId)
         Await.result(result, 5 seconds) mustBe Some(companyCar)
       }
     }
 
-    "thrown exception" when {
+    "return None" when {
+      "company car service returns an unauthorised response" in {
+        val sut = createSUT
+        when(httpHandler.getFromApiv2(any())(any()))
+          .thenReturn(Future.successful(Left(401)))
+
+        val result = sut.companyCarBenefitForEmployment(generateNino, employmentId)
+        Await.result(result, 5 seconds) mustBe None
+      }
+
       "tai sends an invalid json" in {
         val sut = createSUT
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(corruptJsonResponse))
+        when(httpHandler.getFromApiv2(any())(any()))
+          .thenReturn(Future.successful(Right(corruptJsonResponse)))
 
-        val ex = the[JsResultException] thrownBy Await
-          .result(sut.companyCarBenefitForEmployment(generateNino, employmentId), 5 seconds)
-        ex.getMessage must include("List(ValidationError(List(error.path.missing)")
+        val result = sut.companyCarBenefitForEmployment(generateNino, employmentId)
+        Await.result(result, 5 seconds) mustBe None
       }
     }
   }
@@ -93,7 +103,7 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "return CompanyCarBenefit" when {
       "provided with valid nino" in {
         val sut = createSUT
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(companyCars))
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(Future.successful(Right(companyCars)))
 
         val result = sut.companyCarsForCurrentYearEmployments(generateNino)
         Await.result(result, 5 seconds) mustBe Seq(companyCar)
@@ -103,7 +113,16 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "return empty sequence of company car benefit" when {
       "company car service returns no car" in {
         val sut = createSUT
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(emptyCompanyCars))
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(Future.successful(Right(emptyCompanyCars)))
+
+        val result = sut.companyCarsForCurrentYearEmployments(generateNino)
+        Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
+      }
+
+      "company car service returns an unauthorised response" in {
+        val sut = createSUT
+        when(httpHandler.getFromApiv2(any())(any()))
+          .thenReturn(Future.successful(Left(401)))
 
         val result = sut.companyCarsForCurrentYearEmployments(generateNino)
         Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]

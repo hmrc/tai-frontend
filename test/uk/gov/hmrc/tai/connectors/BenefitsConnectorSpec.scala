@@ -26,7 +26,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.{JsObject, JsString, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UnauthorizedException}
 import uk.gov.hmrc.tai.model.domain.MedicalInsurance
 import uk.gov.hmrc.tai.model.domain.benefits._
 
@@ -42,7 +42,7 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
     "fetch the company car details" when {
       "provided with valid nino" in {
         val sut = createSUT
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(benefitsJson))
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(Future.successful(Right(benefitsJson)))
 
         val result = sut.benefits(generateNino, 2018)
         Await.result(result, 5 seconds) mustBe benefits
@@ -50,10 +50,20 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
     }
 
     "thrown exception" when {
+      "the api returns an unauthorised status" in {
+        val sut = createSUT
+        val nino = generateNino
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(Future.successful(Left(401)))
+
+        an[UnauthorizedException] mustBe thrownBy {
+          Await.result(sut.benefits(nino, 2018), 5 seconds)
+        }
+      }
+
       "benefit type is invalid" in {
         val sut = createSUT
         val nino = generateNino
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(invalidBenefitsJson))
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(Future.successful(Right(invalidBenefitsJson)))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.benefits(nino, 2018), 5 seconds)
         ex.getMessage must include(s"Couldn't retrieve benefits for nino: $nino")

@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.connectors
 import javax.inject.Inject
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
 
@@ -35,9 +35,11 @@ class BenefitsConnector @Inject()(httpHandler: HttpHandler) extends DefaultServi
     s"$serviceUrl/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
 
   def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] =
-    httpHandler.getFromApi(benefitsUrl(nino.nino, taxYear)) map (
-      json => (json \ "data").as[Benefits]
-    ) recover {
+    httpHandler.getFromApiv2(benefitsUrl(nino.nino, taxYear)) map {
+      case Right(json) => (json \ "data").as[Benefits]
+      case Left(status) if status == 401 =>
+        throw new UnauthorizedException("Call for benefits failed, returned 401")
+    } recover {
       case _: RuntimeException => {
         Logger.warn(s"Couldn't retrieve benefits for nino: $nino")
         throw new RuntimeException(s"Couldn't retrieve benefits for nino: $nino")

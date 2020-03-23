@@ -29,6 +29,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
@@ -89,15 +90,37 @@ class IncomeSourceSummaryControllerSpec
       }
     }
 
+    "redirect to Unauthorised page" when {
+      "benefits throws an UnauthorisedException" in {
+        val sut = createSUT
+
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(employmentId.toString))(any()))
+          .thenReturn(Future.successful(true))
+        when(benefitsService.benefits(any(), any())(any())) thenReturn Future.failed(
+          new UnauthorizedException("Not authorised"))
+
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+      }
+    }
+
     "throw error" when {
+
       "failed to read tax code incomes" in {
         val sut = createSUT
+        when(benefitsService.benefits(any(), any())(any())) thenReturn Future.successful(benefits)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("FAILED")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
+        print(await(result))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
@@ -109,6 +132,7 @@ class IncomeSourceSummaryControllerSpec
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
+        print(await(result))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }

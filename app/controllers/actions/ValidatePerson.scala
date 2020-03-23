@@ -23,7 +23,7 @@ import controllers.routes
 import play.api.mvc.{ActionFilter, Result}
 import uk.gov.hmrc.tai.service.PersonService
 import play.api.mvc.Results.Redirect
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,11 +38,14 @@ class ValidatePersonImpl @Inject()(personService: PersonService)(implicit ec: Ex
     val personNino = request.taiUser.nino
     val person = personService.personDetails(personNino)
 
-    person map ({
+    person map {
       case p if p.isDeceased     => Some(Redirect(routes.DeceasedController.deceased()))
       case p if p.hasCorruptData => Some(Redirect(routes.ServiceController.gateKeeper()))
       case _                     => None
-    })
+    } recover {
+      case _: UnauthorizedException =>
+        Some(Redirect(routes.UnauthorisedController.onPageLoad()))
+    }
   }
 
 }

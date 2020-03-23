@@ -22,6 +22,7 @@ import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -73,7 +74,8 @@ class IncomeSourceSummaryController @Inject()(
         case _ => throw new RuntimeException("Error while fetching income summary details")
       }
     }) recover {
-      case NonFatal(e) => internalServerError("IncomeSourceSummaryController exception", Some(e))
+      case _: UnauthorizedException => Redirect(routes.UnauthorisedController.onPageLoad())
+      case NonFatal(e)              => internalServerError("IncomeSourceSummaryController exception", Some(e))
     }
   }
 }

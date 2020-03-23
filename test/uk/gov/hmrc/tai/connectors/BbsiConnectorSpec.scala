@@ -26,7 +26,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException, UnauthorizedException}
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.model.domain.{BankAccount, SavingsInvestments, UntaxedInterest}
 import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest}
@@ -48,7 +48,7 @@ class BbsiConnectorSpec
 
         val sut = createSut("http://")
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(
           Future.successful(
             jsonBbsiDetails(Json.arr())
           ))
@@ -57,7 +57,7 @@ class BbsiConnectorSpec
 
         result mustBe Nil
 
-        verify(httpHandler, times(1)).getFromApi(
+        verify(httpHandler, times(1)).getFromApiv2(
           Matchers.eq(s"http:///tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts")
         )(any())
       }
@@ -69,14 +69,14 @@ class BbsiConnectorSpec
 
         val sut = createSut("http://")
 
-        when(httpHandler.getFromApi(any())(any()))
+        when(httpHandler.getFromApiv2(any())(any()))
           .thenReturn(Future.successful(jsonBbsiDetails(jsonSingleBankAccounts)))
 
         val result = Await.result(sut.bankAccounts(nino), 5.seconds)
 
         result mustBe Seq(bankAccount1)
 
-        verify(httpHandler, times(1)).getFromApi(
+        verify(httpHandler, times(1)).getFromApiv2(
           Matchers.eq(s"http:///tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts")
         )(any())
       }
@@ -85,14 +85,14 @@ class BbsiConnectorSpec
 
         val sut = createSut("http://")
 
-        when(httpHandler.getFromApi(any())(any()))
+        when(httpHandler.getFromApiv2(any())(any()))
           .thenReturn(Future.successful(jsonBbsiDetails(jsonMultipleBankAccounts)))
 
         val result = Await.result(sut.bankAccounts(nino), 5.seconds)
 
         result mustBe Seq(bankAccount1, bankAccount2)
 
-        verify(httpHandler, times(1)).getFromApi(
+        verify(httpHandler, times(1)).getFromApiv2(
           Matchers.eq(s"http:///tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts")
         )(any())
       }
@@ -103,13 +103,13 @@ class BbsiConnectorSpec
       "api returns untaxed interest json" in {
         val sut = createSut("http://")
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(jsonApiResponse(jsonUntaxedInterest)))
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(Future.successful(jsonApiResponse(jsonUntaxedInterest)))
 
         val result = Await.result(sut.untaxedInterest(nino), 5.seconds)
 
         result mustBe Some(untaxedInterest)
 
-        verify(httpHandler, times(1)).getFromApi(
+        verify(httpHandler, times(1)).getFromApiv2(
           Matchers.eq(s"http:///tai/$nino/tax-account/income/savings-investments/untaxed-interest")
         )(any())
       }
@@ -120,13 +120,13 @@ class BbsiConnectorSpec
       "api does not return untaxed interest" in {
         val sut = createSut("http://")
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(jsonApiResponse(Json.obj())))
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(Future.successful(jsonApiResponse(Json.obj())))
 
         val result = Await.result(sut.untaxedInterest(nino), 5.seconds)
 
         result mustBe None
 
-        verify(httpHandler, times(1)).getFromApi(
+        verify(httpHandler, times(1)).getFromApiv2(
           Matchers.eq(s"http:///tai/$nino/tax-account/income/savings-investments/untaxed-interest")
         )(any())
       }
@@ -139,9 +139,9 @@ class BbsiConnectorSpec
 
         val sut = createSut()
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(
           Future.successful(
-            Json.obj("" -> "")
+            Right(Json.obj("" -> ""))
           ))
 
         val result = Await.result(sut.bankAccounts(nino), 5.seconds)
@@ -153,11 +153,20 @@ class BbsiConnectorSpec
 
         val sut = createSut()
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new NotFoundException("")))
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(Future.failed(new NotFoundException("")))
 
         val result = Await.result(sut.bankAccounts(nino), 5.seconds)
 
         result mustBe Seq.empty[BankAccount]
+      }
+
+      "api returns an Unauthorised status" in {
+
+        val sut = createSut()
+
+        when(httpHandler.getFromApiv2(any())(any())) thenReturn Future.successful(Left(401))
+
+        Await.result(sut.bankAccounts(nino), 5 seconds) mustBe List.empty
       }
     }
   }
@@ -167,7 +176,7 @@ class BbsiConnectorSpec
       "a valid id is passed" in {
         val sut = createSut()
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(bankAccountJsonResponse))
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(Future.successful(bankAccountJsonResponse))
 
         val result = Await.result(sut.bankAccount(nino, 1), 5.seconds)
 
@@ -180,17 +189,26 @@ class BbsiConnectorSpec
       "an invalid id is passed" in {
         val sut = createSut()
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new RuntimeException))
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(Future.failed(new RuntimeException))
 
         val result = Await.result(sut.bankAccount(nino, 1), 5.seconds)
 
         result mustBe None
-
       }
+
+      "api returns an Unauthorised status" in {
+
+        val sut = createSut()
+
+        when(httpHandler.getFromApiv2(any())(any())) thenReturn Future.successful(Left(401))
+
+        Await.result(sut.bankAccount(nino, 1), 5 seconds) mustBe None
+      }
+
       "an unknown json object is returned" in {
         val sut = createSut()
 
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(JsString("Foo")))
+        when(httpHandler.getFromApiv2(any())(any())).thenReturn(Future.successful(Right(JsString("Foo"))))
 
         val result = Await.result(sut.bankAccount(nino, 1), 5.seconds)
 
@@ -326,10 +344,11 @@ class BbsiConnectorSpec
 
   private val jsonBankAccount2 = Json.toJson(bankAccount2)
 
-  private val bankAccountJsonResponse = Json.obj("data" -> jsonBankAccount1)
+  private val bankAccountJsonResponse = Right(Json.obj("data" -> jsonBankAccount1))
 
-  private def jsonBbsiDetails(data: JsArray) = Json.obj("nino" -> nino.nino, "taxYear" -> taxYear, "data" -> data)
-  private def jsonApiResponse(data: JsValue) = Json.obj("data" -> data)
+  private def jsonBbsiDetails(data: JsArray) =
+    Right(Json.obj("nino"                                            -> nino.nino, "taxYear" -> taxYear, "data" -> data))
+  private def jsonApiResponse(data: JsValue) = Right(Json.obj("data" -> data))
 
   private val jsonSingleBankAccounts = Json.arr(jsonBankAccount1)
   private val jsonMultipleBankAccounts = Json.arr(jsonBankAccount1, jsonBankAccount2)
