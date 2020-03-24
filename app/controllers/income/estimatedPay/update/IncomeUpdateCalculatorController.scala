@@ -56,9 +56,10 @@ class IncomeUpdateCalculatorController @Inject()(
     with UpdatedEstimatedPayJourneyCache with FormValuesConstants with FeatureTogglesConfig {
 
   def onPageLoad(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    val nino = request.taiUser.nino
     val estimatedPayCompletionFuture = estimatedPayJourneyCompletionService.hasJourneyCompleted(id.toString)
     val cacheEmploymentDetailsFuture =
-      cacheEmploymentDetails(id, employmentService.employment(request.taiUser.nino, id))
+      cacheEmploymentDetails(id, employmentService.employment(nino, id))
 
     (for {
       estimatedPayCompletion <- estimatedPayCompletionFuture
@@ -70,8 +71,11 @@ class IncomeUpdateCalculatorController @Inject()(
       } else {
         Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage())
       }
-    }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+    }) recoverWith {
+      implicit val rl: RecoveryLocation = classOf[IncomeUpdateCalculatorController]
+      unauthorisedResult(nino.nino) orElse {
+        case NonFatal(e) => Future.successful(internalServerError(e.getMessage))
+      }
     }
   }
 

@@ -43,6 +43,7 @@ import uk.gov.hmrc.tai.util.constants.{EditIncomePayPeriodConstants, _}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import org.mockito.Matchers.{eq => eqTo}
 import play.api.test.FakeRequest
+import uk.gov.hmrc.http.UnauthorizedException
 
 import scala.concurrent.Future
 
@@ -84,9 +85,9 @@ class IncomeUpdateCalculatorControllerSpec
 
   "onPageLoad" must {
     object OnPageLoadHarness {
-      sealed class OnPageLoadHarness(hasJourneyCompleted: Boolean, returnedEmployment: Option[Employment]) {
+      sealed class OnPageLoadHarness(hasJourneyCompleted: Boolean, returnedEmployment: Future[Option[Employment]]) {
         when(employmentService.employment(any(), any())(any()))
-          .thenReturn(Future.successful(returnedEmployment))
+          .thenReturn(returnedEmployment)
 
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
@@ -97,14 +98,14 @@ class IncomeUpdateCalculatorControllerSpec
           new TestIncomeUpdateCalculatorController()
             .onPageLoad(employerId)(RequestBuilder.buildFakeGetRequestWithAuth)
       }
-      def setup(hasJourneyCompleted: Boolean, returnedEmployment: Option[Employment]): OnPageLoadHarness =
+      def setup(hasJourneyCompleted: Boolean, returnedEmployment: Future[Option[Employment]]): OnPageLoadHarness =
         new OnPageLoadHarness(hasJourneyCompleted, returnedEmployment)
     }
 
     "redirect to the duplicateSubmissionWarning url" when {
       "an income update has already been performed" in {
         val result = OnPageLoadHarness
-          .setup(true, Some(defaultEmployment))
+          .setup(true, Future.successful(Some(defaultEmployment)))
           .onPageLoad()
 
         status(result) mustBe SEE_OTHER
@@ -118,7 +119,7 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect to the estimatedPayLanding url" when {
       "an income update has already been performed" in {
         val result = OnPageLoadHarness
-          .setup(false, Some(defaultEmployment))
+          .setup(false, Future.successful(Some(defaultEmployment)))
           .onPageLoad()
 
         status(result) mustBe SEE_OTHER
@@ -129,11 +130,23 @@ class IncomeUpdateCalculatorControllerSpec
       }
     }
 
+    "redirect to Unauthorised page" when {
+      "employments service throws an UnauthorisedException" in {
+        val result = OnPageLoadHarness
+          .setup(true, Future.failed(new UnauthorizedException("Unauthorised")))
+          .onPageLoad()
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      }
+    }
+
     "generate an internal server error " when {
       "no employments are found" in {
 
         val result = OnPageLoadHarness
-          .setup(false, None)
+          .setup(false, Future.successful(None))
           .onPageLoad()
 
         status(result) mustBe INTERNAL_SERVER_ERROR

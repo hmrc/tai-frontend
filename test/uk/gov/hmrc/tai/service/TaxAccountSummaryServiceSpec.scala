@@ -26,7 +26,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -184,6 +184,19 @@ class TaxAccountSummaryServiceSpec
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
       caught.getMessage mustBe "Failed to fetch income details"
+    }
+
+    "throw an UnauthorisedException" when {
+      "employments connector throws an UnauthorisedException" in {
+        val sut = createSUT
+
+        when(employmentService.ceasedEmployments(any(), any())(any())) thenReturn Future.failed(
+          new UnauthorizedException("Unauthorised"))
+
+        an[UnauthorizedException] mustBe thrownBy {
+          Await.result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5 seconds)
+        }
+      }
     }
 
     "return a ViewModel" in {

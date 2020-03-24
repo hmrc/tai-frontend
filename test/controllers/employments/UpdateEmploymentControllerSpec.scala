@@ -31,7 +31,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
@@ -102,6 +102,22 @@ class UpdateEmploymentControllerSpec
         doc.title() must include(Messages("tai.updateEmployment.whatDoYouWantToTellUs.pagetitle"))
         doc.toString must include("updateDetails")
         verify(journeyCacheService, times(1)).currentValue(any())(any())
+      }
+    }
+
+    "redirect to the Unauthorised page" when {
+      "employments service throws an UnauthorisedException" in {
+        val sut = createSUT
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+        val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
+        when(journeyCacheService.cache(Matchers.eq(cache))(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
+
+        val result = sut.updateEmploymentDetails(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
       }
     }
 

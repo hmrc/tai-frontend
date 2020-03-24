@@ -30,7 +30,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException, UnauthorizedException}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
@@ -112,6 +112,19 @@ class PayeControllerHistoricSpec
     }
 
     "display an error page" when {
+
+      "employment service call results in an UnauthorisedException from NPS" in {
+        val testController = createTestController()
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+        verify(employmentService, times(1)).employments(any(), any())(any())
+      }
+
       "employment service call results in a NotFoundException from NPS" in {
 
         val testController = createTestController()

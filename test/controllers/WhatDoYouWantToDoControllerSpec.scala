@@ -158,6 +158,19 @@ class WhatDoYouWantToDoControllerSpec
       }
     }
 
+    "redirect to Unauthorised page" when {
+
+      "employments service throws an UnauthorisedException" in {
+        val testController = createTestController()
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+      }
+    }
+
     "return the 'you can't use this service page'" when {
       "nps tax account hod call has returned a not found exception ('no tax account information found'), indicating no current year data is present, " +
         "and no previous year employment data is present" in {

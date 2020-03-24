@@ -33,7 +33,7 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.SessionKeys
+import uk.gov.hmrc.http.{SessionKeys, UnauthorizedException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -221,6 +221,27 @@ class EndEmploymentControllerSpec
       }
     }
 
+    "redirect to the Unauthorised page" when {
+      "employment service throws an Unauthorised exception" in {
+        val endEmploymentTest = createEndEmploymentTest
+
+        val employmentId = 1
+
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
+
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val request = fakeGetRequest.withFormUrlEncodedBody(EmploymentDecision -> NoValue)
+
+        val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      }
+    }
+
     "render the what do you want to do page with form errors" when {
       "no value is present in EmploymentDecision" in {
         val endEmploymentTest = createEndEmploymentTest
@@ -398,6 +419,30 @@ class EndEmploymentControllerSpec
 
       Await.result(endEmploymentTest.handleEndEmploymentPage(0)(request), 5 seconds)
       verify(endEmploymentJourneyCacheService, times(1)).cache(Matchers.eq(dataToCache))(any())
+    }
+
+    "redirect to the Unauthorised Page" when {
+      "employments service throws an UnauthorisedException" in {
+        val endEmploymentTest = createEndEmploymentTest
+
+        when(employmentService.employment(any(), any())(any())) thenReturn Future.failed(
+          new UnauthorizedException("Unauthorised"))
+
+        val formData = Json.obj(
+          endEmploymentTest.employmentEndDateForm.EmploymentFormDay   -> "01",
+          endEmploymentTest.employmentEndDateForm.EmploymentFormMonth -> "02",
+          endEmploymentTest.employmentEndDateForm.EmploymentFormYear  -> "2017"
+        )
+
+        val request = FakeRequest("POST", "")
+          .withJsonBody(formData)
+          .withSession(SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority")
+
+        val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      }
     }
 
     "check your answers page" must {

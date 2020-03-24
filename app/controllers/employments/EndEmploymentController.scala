@@ -120,6 +120,9 @@ class EndEmploymentController @Inject()(
         redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
       }
       case _ => throw new RuntimeException("No employment found")
+    } recoverWith {
+      implicit val rl: RecoveryLocation = classOf[EndEmploymentController]
+      unauthorisedResult(nino.nino)
     }
   }
 
@@ -165,6 +168,9 @@ class EndEmploymentController @Inject()(
                       Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
                     }
                   case _ => throw new RuntimeException("No employment found")
+                } recoverWith {
+                  implicit val rl: RecoveryLocation = classOf[EndEmploymentController]
+                  unauthorisedResult(nino.nino)
                 }
             }
           )
@@ -265,6 +271,9 @@ class EndEmploymentController @Inject()(
           )
         case _ =>
           throw new RuntimeException("No employment found")
+      } recoverWith {
+        implicit val rl: RecoveryLocation = classOf[EndEmploymentController]
+        unauthorisedResult(nino.nino)
       }
 
   }

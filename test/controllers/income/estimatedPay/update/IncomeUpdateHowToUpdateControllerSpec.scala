@@ -32,6 +32,7 @@ import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model._
@@ -101,13 +102,13 @@ class IncomeUpdateHowToUpdateControllerSpec
   "howToUpdatePage" must {
     object HowToUpdatePageHarness {
 
-      sealed class HowToUpdatePageHarness(cacheMap: Map[String, String], employment: Option[Employment]) {
+      sealed class HowToUpdatePageHarness(cacheMap: Map[String, String], employment: Future[Option[Employment]]) {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
 
         when(employmentService.employment(any(), any())(any()))
-          .thenReturn(Future.successful(employment))
+          .thenReturn(employment)
 
         when(incomeService.employmentAmount(any(), any())(any(), any()))
           .thenReturn(Future.successful(BuildEmploymentAmount()))
@@ -124,7 +125,7 @@ class IncomeUpdateHowToUpdateControllerSpec
 
       def setup(
         cacheMap: Map[String, String],
-        employment: Option[Employment] = Some(defaultEmployment)): HowToUpdatePageHarness =
+        employment: Future[Option[Employment]] = Future.successful(Some(defaultEmployment))): HowToUpdatePageHarness =
         new HowToUpdatePageHarness(cacheMap, employment)
     }
 
@@ -167,10 +168,21 @@ class IncomeUpdateHowToUpdateControllerSpec
         UpdateIncome_IncomeTypeKey -> TaiConstants.IncomeTypePension)
 
       val result = HowToUpdatePageHarness
-        .setup(cacheMap, None)
+        .setup(cacheMap, Future.successful(None))
         .howToUpdatePage()
 
       status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+
+    "redirect to Unauthorised page" when {
+      "employments service throws and UnauthorisedException" in {
+        val result = HowToUpdatePageHarness
+        .setup(Map.empty, Future.failed(new UnauthorizedException("Unauthorised")))
+          .howToUpdatePage()
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      }
     }
   }
 

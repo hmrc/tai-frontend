@@ -75,10 +75,10 @@ class IncomeUpdateHowToUpdateController @Inject()(
     val nino = user.nino
 
     (employmentService.employment(nino, id) flatMap {
-      case Some(employment: Employment) =>
+      case emp @ Some(employment: Employment) =>
         val incomeToEditFuture = incomeService.employmentAmount(nino, id)
         val taxCodeIncomeDetailsFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
-        val cacheEmploymentDetailsFuture = cacheEmploymentDetails(id, employmentService.employment(nino, id))
+        val cacheEmploymentDetailsFuture = cacheEmploymentDetails(id, Future.successful(emp))
 
         for {
           incomeToEdit: EmploymentAmount <- incomeToEditFuture

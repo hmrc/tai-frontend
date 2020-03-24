@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 
+import scala.concurrent.Future
 import scala.util.control.NonFatal
 
 class TaxFreeAmountController @Inject()(
@@ -62,8 +63,11 @@ class TaxFreeAmountController @Inject()(
           Ok(views.html.taxFreeAmount(viewModel))
         case _ => throw new RuntimeException("Failed to fetch total tax details")
       }
-    }) recover {
-      case NonFatal(e) => internalServerError(s"Could not get tax free amount", Some(e))
+    }) recoverWith {
+      implicit val rl: RecoveryLocation = classOf[TaxFreeAmountController]
+      unauthorisedResult(nino.nino) orElse {
+        case NonFatal(e) => Future.successful(internalServerError(s"Could not get tax free amount", Some(e)))
+      }
     }
 
   }

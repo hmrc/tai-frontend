@@ -73,9 +73,10 @@ class IncomeSourceSummaryController @Inject()(
           Ok(views.html.IncomeSourceSummary(incomeDetailsViewModel))
         case _ => throw new RuntimeException("Error while fetching income summary details")
       }
-    }) recover {
-      case _: UnauthorizedException => Redirect(routes.UnauthorisedController.onPageLoad())
-      case NonFatal(e)              => internalServerError("IncomeSourceSummaryController exception", Some(e))
+    }) recoverWith {
+      implicit val rl: RecoveryLocation = classOf[IncomeTaxComparisonController]
+      unauthorisedResult(nino.nino) orElse
+        hodAnyErrorResult(nino.nino)
     }
   }
 }

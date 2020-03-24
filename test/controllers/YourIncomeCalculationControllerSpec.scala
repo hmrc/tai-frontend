@@ -28,6 +28,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -42,7 +43,7 @@ class YourIncomeCalculationControllerSpec
     extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
   override def messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  "Your Income Calculation" must {
+  "Your Income Calculation - Page" must {
     "return rti details page" when {
       "rti details are present" in {
 
@@ -55,6 +56,20 @@ class YourIncomeCalculationControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.income.calculation.TaxableIncomeDetails", employment.name))
+      }
+    }
+
+    "redirect to Unauthorised page" when {
+      "call to employments service throws an UnauthorisedException" in {
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = createTest.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
       }
     }
 
@@ -89,7 +104,7 @@ class YourIncomeCalculationControllerSpec
       }
     }
   }
-  "Your income calculation" should {
+  "Your income calculation - Historic years" should {
 
     "show historic data" when {
       "historic data has been passed" in {
@@ -117,6 +132,19 @@ class YourIncomeCalculationControllerSpec
 
         status(result) mustBe BAD_GATEWAY
 
+      }
+    }
+
+    "redirect to Unauthorised page" when {
+      "call to employments service throws an UnauthorisedException" in {
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+        val result =
+          createTest.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(
+            RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
       }
     }
 
@@ -161,6 +189,19 @@ class YourIncomeCalculationControllerSpec
 
         status(result) mustBe BAD_GATEWAY
 
+      }
+    }
+
+    "redirect to Unauthorised page" when {
+      "call to employments service throws an UnauthorisedException" in {
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+        val result =
+          createTest.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(
+            RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
       }
     }
 

@@ -29,7 +29,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
@@ -133,6 +133,21 @@ class TaxAccountSummaryControllerSpec
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "an UnauthorisedException was thrown by the employment service" in {
+        val sut = createSUT
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
+        )
+
+        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
+          Future.failed(new UnauthorizedException("Unauthorised"))
+        )
+
+        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
       }
 
       "a downstream error has occurred in the employment service (which does not reply with TaiResponse type)" in {

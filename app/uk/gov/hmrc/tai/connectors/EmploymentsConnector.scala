@@ -17,8 +17,9 @@
 package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
+import play.api.libs.json.{JsError, JsSuccess, JsValue}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
@@ -33,25 +34,30 @@ class EmploymentsConnector @Inject()(httpHandler: HttpHandler) extends DefaultSe
   def employmentUrl(nino: Nino, id: String) = s"$serviceUrl/tai/$nino/employments/$id"
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApi(employmentServiceUrl(nino, year)) map { json =>
-      if ((json \ "data" \ "employments").validate[Seq[Employment]].isSuccess) {
-        (json \ "data" \ "employments").as[Seq[Employment]]
-      } else {
-        throw new RuntimeException("Invalid employment json")
-      }
+    httpHandler.getFromApiv2(employmentServiceUrl(nino, year)).map {
+      case Right(json) =>
+        (json \ "data" \ "employments").validate[Seq[Employment]] match {
+          case JsSuccess(value, _) => value
+          case JsError(_)          => throw new RuntimeException("Invalid employment json")
+        }
+      case Left(_) => throw new UnauthorizedException("Retrieve employments returned 401")
     }
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApi(ceasedEmploymentServiceUrl(nino, year)).map { json =>
-      (json \ "data").validate[Seq[Employment]].recoverTotal(_ => throw new RuntimeException("Invalid employment json"))
+    httpHandler.getFromApiv2(ceasedEmploymentServiceUrl(nino, year)).map {
+      case Right(json) =>
+        (json \ "data").validate[Seq[Employment]] match {
+          case JsSuccess(value, _) => value
+          case JsError(_)          => throw new RuntimeException("Invalid employment json")
+        }
+      case Left(_) => throw new UnauthorizedException("Retrieve employments returned 401")
     }
 
   def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    httpHandler
-      .getFromApi(employmentUrl(nino, id))
-      .map(
-        json => (json \ "data").asOpt[Employment]
-      )
+    httpHandler.getFromApiv2(employmentUrl(nino, id)).map {
+      case Right(json) => (json \ "data").asOpt[Employment]
+      case Left(_)     => None
+    }
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     httpHandler.putToApi[EndEmployment](endEmploymentServiceUrl(nino, id), endEmploymentData).map { response =>

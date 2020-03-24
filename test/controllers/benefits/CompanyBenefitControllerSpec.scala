@@ -33,7 +33,7 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
@@ -139,6 +139,25 @@ class CompanyBenefitControllerSpec
         val result = SUT.decision()(request)
 
         result rendersTheSameViewAs updateOrRemoveCompanyBenefitDecision(expectedViewModel)
+      }
+    }
+
+    "redirect to Unauthorised page" when {
+      "employments service throws UnauthorisedException" in {
+        val SUT = createSUT
+        val cache = Map(
+          EndCompanyBenefit_EmploymentIdKey -> "1",
+          EndCompanyBenefit_BenefitTypeKey  -> "type",
+          EndCompanyBenefit_RefererKey      -> "referrer")
+
+        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
       }
     }
 

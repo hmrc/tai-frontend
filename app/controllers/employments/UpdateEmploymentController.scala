@@ -95,8 +95,11 @@ class UpdateEmploymentController @Inject()(
                          }
                          case _ => throw new RuntimeException("Error during employment details retrieval")
                        }
-      } yield futureResult).recover {
-        case NonFatal(exception) => internalServerError(exception.getMessage)
+      } yield futureResult).recoverWith {
+        implicit val rl: RecoveryLocation = classOf[RecoveryLocation]
+        unauthorisedResult(user.nino.nino) orElse {
+          case NonFatal(exception) => Future.successful(internalServerError(exception.getMessage))
+        }
       }
 
   }

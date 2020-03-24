@@ -19,7 +19,7 @@ package controllers.benefits
 import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.Logger
 import play.api.Play.current
@@ -35,6 +35,8 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
+
+import scala.concurrent.Future
 import scala.util.control.NonFatal
 
 class CompanyBenefitController @Inject()(
@@ -62,7 +64,7 @@ class CompanyBenefitController @Inject()(
     }
 
   def decision: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     (for {
       currentCache <- journeyCacheService.currentCache
@@ -99,8 +101,12 @@ class CompanyBenefitController @Inject()(
 
         case None => throw new RuntimeException("No employment found")
       }
-    }).flatMap(identity) recover {
-      case NonFatal(e) => internalServerError("CompanyBenefitController exception", Some(e))
+    }) flatMap identity recoverWith {
+      implicit val rl: RecoveryLocation = classOf[CompanyBenefitController]
+      unauthorisedResult(user.nino.nino) orElse {
+        case NonFatal(e) =>
+          Future.successful(internalServerError("CompanyBenefitController exception", Some(e)))
+      }
     }
   }
 

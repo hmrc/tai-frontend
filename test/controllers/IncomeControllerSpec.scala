@@ -31,7 +31,7 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
@@ -275,6 +275,22 @@ class IncomeControllerSpec
         val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
+      }
+    }
+
+    "redirect to Unauthorised page" when {
+      "employments connector throws an UnauthorisedException" in {
+        val testController = createTestIncomeController()
+        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(cachedData)
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
       }
     }
 
@@ -580,6 +596,22 @@ class IncomeControllerSpec
         val result = testController.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
+      }
+    }
+
+    "redirect to Unauthorised page" when {
+      "employments connector throws UnauthorisedException" in {
+        val testController = createTestIncomeController()
+        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(cachedData)
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = testController.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
       }
     }
 

@@ -66,8 +66,11 @@ class TaxAccountSummaryController @Inject()(
         case (TaiTaxAccountFailureResponse(message)) =>
           throw new RuntimeException(s"Failed to fetch tax account summary details with exception: $message")
       })
-      .recover {
-        case NonFatal(e) => internalServerError(e.getMessage, Some(e))
+      .recoverWith {
+        implicit val rl: RecoveryLocation = classOf[TaxAccountSummaryController]
+        unauthorisedResult(nino.nino) orElse {
+          case NonFatal(e) => Future.successful(internalServerError(e.getMessage, Some(e)))
+        }
       }
   }
 }

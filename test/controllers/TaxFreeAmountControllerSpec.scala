@@ -26,6 +26,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
+import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -62,6 +63,19 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
         s"${messagesApi("tai.taxFreeAmount.heading.pt1")} ${TaxYearRangeUtil.currentTaxYearRange}"
 
       doc.title() must include(expectedTitle)
+    }
+
+    "redirect to Unauthorised page" when {
+      "employments service throws UnauthorisedException" in {
+        val sut = createSUT()
+        when(employmentService.employmentNames(any(), any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = sut.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+
+      }
     }
 
     "display error page" when {

@@ -160,6 +160,12 @@ trait ErrorPagesHandler {
       }
     }
 
+  def unauthorisedResult(nino: String)(implicit rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+    case _: UnauthorizedException =>
+      Logger.warn(s"<Unauthorised response returned> - for nino: $nino @${rl.getName}")
+      Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
+  }
+
   def npsEmploymentAbsentResult(nino: String)(
     implicit request: Request[AnyContent],
     messages: Messages,

@@ -169,8 +169,11 @@ class IncomeController @Inject()(
           }
         case _ => throw new RuntimeException("Exception while reading employment and tax code details")
       }
-    }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+    }) recoverWith {
+      implicit val rl: RecoveryLocation = classOf[IncomeController]
+      unauthorisedResult(nino.nino) orElse {
+        case NonFatal(e) => Future.successful(internalServerError(e.getMessage))
+      }
     }
   }
 
@@ -308,8 +311,11 @@ class IncomeController @Inject()(
           }
         case _ => throw new RuntimeException("Exception while reading employment and tax code details")
       }
-    }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+    }) recoverWith {
+      implicit val rl: RecoveryLocation = classOf[IncomeController]
+      unauthorisedResult(nino.nino) orElse {
+        case NonFatal(e) => Future.successful(internalServerError(e.getMessage))
+      }
     }
   }
 

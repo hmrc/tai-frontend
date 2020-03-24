@@ -21,6 +21,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -52,7 +53,7 @@ class UnderpaymentFromPreviousYearController @Inject()(
     val employmentsFuture = employmentService.employments(nino, year.prev)
     val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, year)
 
-    for {
+    (for {
       employments      <- employmentsFuture
       codingComponents <- codingComponentsFuture
       totalTax         <- totalTaxFuture
@@ -64,6 +65,9 @@ class UnderpaymentFromPreviousYearController @Inject()(
           Ok(previousYearUnderpayment(model))
         case _ => throw new RuntimeException("Failed to fetch total tax details")
       }
+    }) recoverWith {
+      implicit val rl: RecoveryLocation = classOf[UnderpaymentFromPreviousYearController]
+      unauthorisedResult(nino.nino)
     }
 
   }

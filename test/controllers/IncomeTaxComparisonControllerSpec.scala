@@ -30,6 +30,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
@@ -58,6 +59,18 @@ class IncomeTaxComparisonControllerSpec
       doc.title() must include(Messages("tai.incomeTaxComparison.heading.more"))
 
       verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
+    }
+
+    "redirect to Unauthorised page" when {
+      "employments throws an UnauthorisedException" in {
+        val controller = new TestController
+        when(employmentService.employments(any(), any())(any())) thenReturn Future.failed(
+          new UnauthorizedException("Unauthorised"))
+        val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+      }
     }
 
     "throw an error page" when {

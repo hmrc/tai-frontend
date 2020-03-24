@@ -84,7 +84,9 @@ class WhatDoYouWantToDoController @Inject()(
     } recoverWith {
       val nino = request.taiUser.getNino
 
-      (hodBadRequestResult(nino) orElse hodInternalErrorResult(nino))
+      unauthorisedResult(nino) orElse
+        hodBadRequestResult(nino) orElse
+        hodInternalErrorResult(nino)
     }
   }
 

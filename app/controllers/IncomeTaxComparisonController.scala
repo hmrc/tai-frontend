@@ -22,19 +22,18 @@ import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
-
-import scala.util.control.NonFatal
 
 class IncomeTaxComparisonController @Inject()(
   val auditConnector: AuditConnector,
@@ -118,9 +117,10 @@ class IncomeTaxComparisonController @Inject()(
         }
         case _ => throw new RuntimeException("Not able to fetch income tax comparision details")
       }
-    }) recover {
-      case NonFatal(e) => internalServerError("IncomeTaxComparisonController exception", Some(e))
+    }) recoverWith {
+      implicit val rl: RecoveryLocation = classOf[IncomeTaxComparisonController]
+      unauthorisedResult(nino.nino) orElse
+        hodAnyErrorResult(nino.nino)
     }
   }
-
 }

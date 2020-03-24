@@ -65,7 +65,7 @@ class YourIncomeCalculationController @Inject()(
     val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
     val employmentFuture = employmentService.employment(nino, empId)
 
-    for {
+    (for {
       taxCodeIncomeDetails <- taxCodeIncomesFuture
       employmentDetails    <- employmentFuture
     } yield {
@@ -87,6 +87,9 @@ class YourIncomeCalculationController @Inject()(
         }
         case _ => internalServerError("Error while fetching RTI details")
       }
+    }) recoverWith {
+      implicit val rl: RecoveryLocation = classOf[YourIncomeCalculationController]
+      unauthorisedResult(nino.nino)
     }
   }
 
@@ -113,6 +116,9 @@ class YourIncomeCalculationController @Inject()(
               case (true, _)  => Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel))
               case (false, _) => Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel))
             }
+          } recoverWith {
+            implicit val rl: RecoveryLocation = classOf[YourIncomeCalculationController]
+            unauthorisedResult(nino.nino)
           }
 
         } else {
