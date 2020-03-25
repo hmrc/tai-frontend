@@ -37,6 +37,7 @@ import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionCYPlus1EmploymentViewModel, DuplicateSubmissionCYPlus1PensionViewModel, DuplicateSubmissionEstimatedPay}
 
@@ -249,8 +250,14 @@ class UpdateIncomeNextYearController @Inject()(
                   else {
                     updateNextYearsIncomeService.getNewAmount(employmentId) flatMap {
                       case Right(newAmount) if (newAmount == newIncome.toInt) =>
-                        Future.successful(
-                          Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId)))
+                        val samePayViewModel = SameEstimatedPayViewModel(
+                          model.employmentName,
+                          model.employmentId,
+                          newAmount,
+                          model.isPension,
+                          controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
+
+                        Future.successful(Ok(views.html.incomes.sameEstimatedPay(samePayViewModel)))
                       case _ =>
                         updateNextYearsIncomeService.setNewAmount(newIncome, employmentId, nino) map { _ =>
                           Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))

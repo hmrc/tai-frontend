@@ -19,21 +19,26 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.MonetaryUtil
 
-case class SameEstimatedPayViewModel(employerName: String, employerId: Int, amount: Int, returnLink: String) {
+case class SameEstimatedPayViewModel(
+  employerName: String,
+  employerId: Int,
+  amount: Int,
+  returnLinkLabel: String,
+  returnLinkUrl: String) {
   def amountWithPounds: String = MonetaryUtil.withPoundPrefix(amount, 0)
 }
 
 object SameEstimatedPayViewModel {
-  def apply(employerName: String, employerId: Int, amount: Int, isPension: Boolean)(
+  def apply(employerName: String, employerId: Int, amount: Int, isPension: Boolean, returnLinkUrl: String)(
     implicit messages: Messages): SameEstimatedPayViewModel = {
 
-    val returnLink = {
+    val returnLinkLabel = {
       if (isPension)
         messages("tai.updateEmployment.incomeSame.pension.return.link")
       else
         messages("tai.updateEmployment.incomeSame.employment.return.link")
     }
 
-    SameEstimatedPayViewModel(employerName, employerId, amount, returnLink)
+    SameEstimatedPayViewModel(employerName, employerId, amount, returnLinkLabel, returnLinkUrl)
   }
 }

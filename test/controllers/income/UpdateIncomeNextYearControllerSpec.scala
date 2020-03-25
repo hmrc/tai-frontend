@@ -20,11 +20,13 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => meq}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -294,8 +296,9 @@ class UpdateIncomeNextYearControllerSpec
               .buildFakeRequestWithOnlySession(POST)
               .withFormUrlEncodedBody("income" -> newEstPay))
 
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url.toString)
+          status(result) mustBe OK
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.title() must include(Messages("tai.updateEmployment.incomeSame.title", ""))
         }
       }
     }

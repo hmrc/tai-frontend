@@ -93,7 +93,13 @@ class IncomeController @Inject()(
       cachedData <- journeyCacheService
                      .mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey)
     } yield {
-      val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt, cachedData(2).toInt, false)
+      val employerId = cachedData(1).toInt
+      val model = SameEstimatedPayViewModel(
+        cachedData(0),
+        employerId,
+        cachedData(2).toInt,
+        false,
+        routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString)
       Ok(views.html.incomes.sameEstimatedPay(model))
     }).recover {
       case NonFatal(e) => internalServerError(e.getMessage)
@@ -110,7 +116,12 @@ class IncomeController @Inject()(
       id         <- idFuture
       income     <- incomeService.employmentAmount(nino, id)
     } yield {
-      val model = SameEstimatedPayViewModel(cachedData(0), id, income.oldAmount, income.isOccupationalPension)
+      val model = SameEstimatedPayViewModel(
+        cachedData(0),
+        id,
+        income.oldAmount,
+        income.isOccupationalPension,
+        routes.IncomeSourceSummaryController.onPageLoad(id).url)
       Ok(views.html.incomes.sameEstimatedPay(model))
     }).recover {
       case NonFatal(e) => internalServerError(e.getMessage)

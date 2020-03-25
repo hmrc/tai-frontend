@@ -61,8 +61,8 @@
                 <div class="subsection">
                 @Link.toInternalPage(
                     id=Some("returnToEmploymentDetails"),
-                    value=Some(model.returnLink),
-                    url = routes.IncomeSourceSummaryController.onPageLoad(model.employerId).url.toString,
+                    value=Some(model.returnLinkLabel),
+                    url = model.returnLinkUrl,
                     cssClasses=Some("button")
                 ).toHtml
                 </div>
