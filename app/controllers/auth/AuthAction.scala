@@ -161,7 +161,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implic
   private def handleFailure(redirect: Call): PartialFunction[Throwable, Result] = {
     case _: NoActiveSession => Redirect(redirect)
     case ex: AuthorisationException => {
-      Logger.warn(s"Exception returned during authorisation with exception: ${ex.getClass()}", ex)
+      Logger.warn(s"<Exception returned during authorisation with exception: ${ex.getClass()}", ex)
       Redirect(routes.UnauthorisedController.onPageLoad())
     }
   }

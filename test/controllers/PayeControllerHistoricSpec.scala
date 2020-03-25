@@ -92,8 +92,6 @@ class PayeControllerHistoricSpec
 
         val result = testController.payePage(TaxYear())(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        val doc = Jsoup.parse(contentAsString(result))
-
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
       }
@@ -103,8 +101,6 @@ class PayeControllerHistoricSpec
         val testController = createTestController()
 
         val result = testController.payePage(TaxYear().next)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        val doc = Jsoup.parse(contentAsString(result))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
@@ -239,13 +235,14 @@ class PayeControllerHistoricSpec
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val employmentService = mock[EmploymentService]
+  val mockAppConfig = mock[ApplicationConfig]
 
   class PayeControllerHistoricTest(
     employments: Seq[Employment],
     previousYears: Int,
     showTaxCodeDescriptionLink: Boolean)
       extends PayeControllerHistoric(
-        mock[ApplicationConfig],
+        mockAppConfig,
         taxCodeChangeService,
         employmentService,
         FakeAuthAction,
@@ -253,7 +250,8 @@ class PayeControllerHistoricSpec
         MockPartialRetriever,
         MockTemplateRenderer
       ) {
-    override val numberOfPreviousYearsToShow: Int = previousYears
+
+    when(mockAppConfig.numberOfPreviousYearsToShow) thenReturn 5
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
     when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
