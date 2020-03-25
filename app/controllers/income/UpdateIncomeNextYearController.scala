@@ -73,27 +73,28 @@ class UpdateIncomeNextYearController @Inject()(
           Ok(
             views.html.incomes.nextYear
               .updateIncomeCYPlus1Warning(DuplicateSubmissionWarningForm.createForm, vm, employmentId))
+        } recoverWith {
+          implicit val rl: RecoveryLocation = classOf[UpdateIncomeNextYearController]
+          unauthorisedResult(nino.nino)
         }
       }
   }
 
   def submitDuplicateWarning(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      val nino: Nino = user.nino
       preAction {
-        implicit val user = request.taiUser
-        val nino = user.nino
-
         DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
           formWithErrors => {
-            updateNextYearsIncomeService.get(employmentId, nino) flatMap { model =>
+            updateNextYearsIncomeService.get(employmentId, nino) map { model =>
               val vm = if (model.isPension) {
                 DuplicateSubmissionCYPlus1PensionViewModel(model.employmentName, model.newValue.get)
               } else {
                 DuplicateSubmissionCYPlus1EmploymentViewModel(model.employmentName, model.newValue.get)
               }
 
-              Future.successful(
-                BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId)))
+              BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId))
             }
           },
           success => {
@@ -105,6 +106,9 @@ class UpdateIncomeNextYearController @Inject()(
             }
           }
         )
+      } recoverWith {
+        implicit val rl: RecoveryLocation = classOf[UpdateIncomeNextYearController]
+        unauthorisedResult(nino.nino)
       }
   }
 
@@ -116,6 +120,9 @@ class UpdateIncomeNextYearController @Inject()(
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
         Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension))
+      } recoverWith {
+        implicit val rl: RecoveryLocation = classOf[UpdateIncomeNextYearController]
+        unauthorisedResult(nino.nino)
       }
     }
   }
@@ -135,6 +142,9 @@ class UpdateIncomeNextYearController @Inject()(
               model.currentValue,
               AmountComparatorForm.createForm()))
         }
+      } recoverWith {
+        implicit val rl: RecoveryLocation = classOf[UpdateIncomeNextYearController]
+        unauthorisedResult(nino.nino)
       }
     }
   }
@@ -148,6 +158,9 @@ class UpdateIncomeNextYearController @Inject()(
         Ok(
           views.html.incomes.nextYear
             .updateIncomeCYPlus1Same(model.employmentName, model.employmentId, model.currentValue))
+      } recoverWith {
+        implicit val rl: RecoveryLocation = classOf[UpdateIncomeNextYearController]
+        unauthorisedResult(nino.nino)
       }
     }
   }
@@ -159,6 +172,9 @@ class UpdateIncomeNextYearController @Inject()(
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
         Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName, model.isPension))
+      } recoverWith {
+        implicit val rl: RecoveryLocation = classOf[UpdateIncomeNextYearController]
+        unauthorisedResult(nino.nino)
       }
     }
   }
@@ -244,7 +260,10 @@ class UpdateIncomeNextYearController @Inject()(
                 }
             }
           }
-        )
+        ) recoverWith {
+        implicit val rl: RecoveryLocation = classOf[UpdateIncomeNextYearController]
+        unauthorisedResult(nino.nino)
+      }
     }
   }
 

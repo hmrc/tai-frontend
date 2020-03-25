@@ -177,7 +177,7 @@ class IncomeUpdateHowToUpdateControllerSpec
     "redirect to Unauthorised page" when {
       "employments service throws and UnauthorisedException" in {
         val result = HowToUpdatePageHarness
-        .setup(Map.empty, Future.failed(new UnauthorizedException("Unauthorised")))
+          .setup(Map.empty, Future.failed(new UnauthorizedException("Unauthorised")))
           .howToUpdatePage()
 
         status(result) mustBe SEE_OTHER

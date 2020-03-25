@@ -90,8 +90,11 @@ class IncomeUpdateHowToUpdateController @Inject()(
           result
         }
       case None => throw new RuntimeException("Not able to find employment")
-    }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+    }) recoverWith {
+      implicit val rl: RecoveryLocation = classOf[IncomeUpdateHowToUpdateController]
+      unauthorisedResult(nino.nino) orElse {
+        case NonFatal(e) => Future.successful(internalServerError(e.getMessage))
+      }
     }
   }
 

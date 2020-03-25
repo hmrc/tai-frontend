@@ -29,6 +29,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, _}
@@ -100,37 +101,91 @@ class UpdateIncomeNextYearControllerSpec
         vm,
         employmentID)
     }
+
+    "redirect to Unauthorised page" when {
+      "updateNextYearsIncomeService throws an UnauthorisedException" in {
+        val testController = createTestIncomeController()
+
+        implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
+          RequestBuilder.buildFakeRequestWithOnlySession("GET")
+
+        when(updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = testController.duplicateWarning(employmentID)(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      }
+    }
   }
 
   "submitDuplicateSubmissionWarning" must {
-    "redirect to the start url when yes is selected" in {
-      val testController = createTestIncomeController()
+    "redirect to the start url" when {
+      "yes is selected" in {
+        val testController = createTestIncomeController()
 
-      mockedGet(testController)
+        mockedGet(testController)
 
-      val result = testController.submitDuplicateWarning(employmentID)(
-        RequestBuilder
-          .buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody(YesNoChoice -> YesValue))
+        val result = testController.submitDuplicateWarning(employmentID)(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(YesNoChoice -> YesValue))
 
-      status(result) mustBe SEE_OTHER
+        status(result) mustBe SEE_OTHER
 
-      redirectLocation(result).get mustBe routes.UpdateIncomeNextYearController.start(employmentID).url
+        redirectLocation(result).get mustBe routes.UpdateIncomeNextYearController.start(employmentID).url
+      }
     }
 
-    "redirect to the IncomeTaxComparison page url when no is selected" in {
-      val testController = createTestIncomeController()
+    "redirect to the IncomeTaxComparison page url" when {
+      "no is selected" in {
+        val testController = createTestIncomeController()
 
-      mockedGet(testController)
+        mockedGet(testController)
 
-      val result = testController.submitDuplicateWarning(employmentID)(
-        RequestBuilder
-          .buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody(YesNoChoice -> NoValue))
+        val result = testController.submitDuplicateWarning(employmentID)(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(YesNoChoice -> NoValue))
 
-      status(result) mustBe SEE_OTHER
+        status(result) mustBe SEE_OTHER
 
-      redirectLocation(result).get mustBe controllers.routes.IncomeTaxComparisonController.onPageLoad().url
+        redirectLocation(result).get mustBe controllers.routes.IncomeTaxComparisonController.onPageLoad().url
+      }
+    }
+
+    "redirect to the Unauthorised page" when {
+      "updateNextYearsIncomeService throws an UnauthorisedException" in {
+        val testController = createTestIncomeController()
+
+        when(updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = testController.submitDuplicateWarning(employmentID)(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(YesNoChoice -> "!%!$!"))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      }
+    }
+
+    "return a Bad Request" when {
+      "an invalid input is submitted" in {
+        val testController = createTestIncomeController()
+
+        mockedGet(testController)
+
+        val result = testController.submitDuplicateWarning(employmentID)(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(YesNoChoice -> "!%!$!"))
+
+        status(result) mustBe BAD_REQUEST
+      }
     }
   }
 
@@ -163,6 +218,21 @@ class UpdateIncomeNextYearControllerSpec
         val result: Future[Result] = testController.start(employmentID)(fakeRequest)
 
         status(result) mustBe NOT_FOUND
+      }
+    }
+
+    "redirect to the Unauthorised page" when {
+      "updateNextYearsIncomeService throws an UnauthorisedException" in {
+        val testController = createTestIncomeController()
+
+        when(updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = testController.start(employmentID)(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
       }
     }
   }
@@ -199,6 +269,21 @@ class UpdateIncomeNextYearControllerSpec
         val result: Future[Result] = testController.edit(employmentID)(fakeRequest)
 
         status(result) mustBe NOT_FOUND
+      }
+    }
+
+    "redirect to the Unauthorised page" when {
+      "updateNextYearsIncomeService throws an UnauthorisedException" in {
+        val testController = createTestIncomeController()
+
+        when(updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = testController.edit(employmentID)(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
       }
     }
   }
@@ -309,6 +394,34 @@ class UpdateIncomeNextYearControllerSpec
       }
     }
 
+    "redirect to the Unauthorised page" when {
+      "updateNextYearsIncomeService.get throws an UnauthorisedException" in {
+        val testController = createTestIncomeController()
+
+        when(updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = testController.update(employmentID)(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      }
+
+      "updateNextYearsIncomeService.setNewAmount throws an UnauthorisedException" in {
+        val testController = createTestIncomeController()
+
+        when(updateNextYearsIncomeService.setNewAmount(any(), Matchers.eq(employmentID), any())(any()))
+          .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+        val result = testController.update(employmentID)(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      }
+    }
+
     "same" must {
       "return OK with the same view" when {
         "the estimated pay is retrieved successfully" in {
@@ -338,6 +451,21 @@ class UpdateIncomeNextYearControllerSpec
           val result: Future[Result] = testController.same(employmentID)(fakeRequest)
 
           status(result) mustBe NOT_FOUND
+        }
+      }
+
+      "redirect to the Unauthorised page" when {
+        "updateNextYearsIncomeService throws an UnauthorisedException" in {
+          val testController = createTestIncomeController()
+
+          when(updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.any())(any()))
+            .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+          val result = testController.same(employmentID)(fakeRequest)
+
+          status(result) mustBe SEE_OTHER
+
+          redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
         }
       }
     }
@@ -371,6 +499,20 @@ class UpdateIncomeNextYearControllerSpec
           val result: Future[Result] = testController.success(employmentID)(fakeRequest)
 
           status(result) mustBe NOT_FOUND
+        }
+      }
+      "redirect to the Unauthorised page" when {
+        "updateNextYearsIncomeService throws an UnauthorisedException" in {
+          val testController = createTestIncomeController()
+
+          when(updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.any())(any()))
+            .thenReturn(Future.failed(new UnauthorizedException("Unauthorised")))
+
+          val result = testController.success(employmentID)(fakeRequest)
+
+          status(result) mustBe SEE_OTHER
+
+          redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
         }
       }
     }
