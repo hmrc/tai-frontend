@@ -20,26 +20,29 @@ import controllers.FakeTaiPlayApplication
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UnauthorizedException}
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.Person
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with DefaultServicesConfig {
+class PersonConnectorSpec
+    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with DefaultServicesConfig with ScalaFutures {
 
   "person method" must {
 
     "return a Person model instance, wrapped in a TaiSuccessResponse" when {
       "the http call returns successfully" in {
         val sut = new SUT("/fakeUrl")
-        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+        when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
           .thenReturn(Future.successful(apiResponse(person)))
         val result = Await.result(sut.person(nino), 5 seconds)
         result mustBe (TaiSuccessResponseWithPayload(person))
@@ -49,7 +52,7 @@ class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
     "return a TaiNotFoundResponse" when {
       "the http call returns a not found exception" in {
         val sut = new SUT("/fakeUrl")
-        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+        when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
           .thenReturn(Future.failed(new NotFoundException("downstream not found")))
         val result = Await.result(sut.person(nino), 5 seconds)
         result mustBe (TaiNotFoundResponse("downstream not found"))
@@ -58,13 +61,25 @@ class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
       "the http call returns invalid json" in {
         val sut = new SUT("/fakeUrl")
         val invalidJson = Json.obj("data" -> Json.obj("notEven" -> "close"))
-        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+        when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
           .thenReturn(Future.successful(invalidJson))
         val result = Await.result(sut.person(nino), 5 seconds)
         result match {
           case TaiNotFoundResponse(msg) => msg must include("JsResultException")
           case _                        => fail("A TaiNotFoundResponse was expected!")
         }
+      }
+    }
+
+    "propages the UnauthorizedException to the global error handler" in {
+      val sut = new SUT("/fakeUrl")
+      when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+        .thenReturn(Future.failed(new UnauthorizedException("unauthorised user")))
+
+      val result = sut.person(nino)
+
+      whenReady(result.failed) { e =>
+        e mustBe a[UnauthorizedException]
       }
     }
   }
