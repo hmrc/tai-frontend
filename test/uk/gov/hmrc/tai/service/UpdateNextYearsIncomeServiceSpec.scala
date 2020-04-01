@@ -24,12 +24,13 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
+import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiSuccessResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 import utils.WireMockHelper
 
@@ -62,11 +63,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
           employmentName,
           employmentId,
           isPension,
-          employmentAmount,
-          None)
-
-        verify(journeyCacheService, times(1))
-          .cache(expectedMap(employmentName, employmentId, isPension, employmentAmount))
+          employmentAmount)
       }
     }
 
@@ -106,38 +103,6 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       }
     }
 
-    "retrieve the cached values and returns the cache model" when {
-      "journey values exist without a new amount in the cache" in {
-        when(journeyCacheService.currentCache(any())).thenReturn(
-          Future.successful(expectedMap(employmentName, employmentId, isPension, employmentAmount))
-        )
-
-        val result = updateNextYearsIncomeService.get(employmentId, nino)
-
-        result.futureValue mustBe UpdateNextYearsIncomeCacheModel(
-          employmentName,
-          employmentId,
-          isPension,
-          employmentAmount,
-          None)
-      }
-
-      "journey values exist with a new amount in the cache" in {
-        when(journeyCacheService.currentCache(any())).thenReturn(
-          Future.successful(fullMap(employmentName, employmentId, isPension, employmentAmount))
-        )
-
-        val result = updateNextYearsIncomeService.get(employmentId, nino)
-
-        result.futureValue mustBe UpdateNextYearsIncomeCacheModel(
-          employmentName,
-          employmentId,
-          isPension,
-          employmentAmount,
-          Some(employmentAmount))
-      }
-    }
-
     "setup the cache" when {
       "journey values do not exist in the cache" in {
         when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
@@ -157,8 +122,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
           employmentName,
           employmentId,
           isPension,
-          employmentAmount,
-          None)
+          employmentAmount)
       }
 
       "user selects a different employer" in {
@@ -183,54 +147,41 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
           employmentName,
           newEmploymentId,
           isPension,
-          employmentAmount,
-          None)
+          employmentAmount)
       }
     }
   }
 
   "setNewAmount" must {
-    "update the cache with the new amount" when {
-      "journey values are successfully retrieved from the cache" in {
-        when(journeyCacheService.currentCache(any())).thenReturn(
-          Future.successful(expectedMap(employmentName, employmentId, isPension, employmentAmount))
-        )
+    "caches the amount with the employment id key" in {
 
-        val result = updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId, nino)
+      val key = s"${UpdateNextYearsIncomeConstants.NEW_AMOUNT}-$employmentId"
+      val amount = convertCurrencyToInt(Some(employmentAmount.toString)).toString
+      val expected = Map(key -> amount)
 
-        result.futureValue mustBe UpdateNextYearsIncomeCacheModel(
-          employmentName,
-          employmentId,
-          isPension,
-          employmentAmount,
-          Some(employmentAmount))
+      when(
+        journeyCacheService.cache(any(), any())(any())
+      ).thenReturn(
+        Future.successful(expected)
+      )
 
-        verify(journeyCacheService, times(1))
-          .cache(fullMap(employmentName, employmentId, isPension, employmentAmount))
-      }
+      val result = updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId, nino)
+
+      result.futureValue mustBe expected
+
+      verify(
+        journeyCacheService,
+        times(1)
+      ).cache(any(), any())(any())
     }
   }
 
   "submit" must {
-    "post the values from cache to the tax account" in {
+    "post the values from cache to the tax account" in new SubmitSetup {
       val service = new UpdateNextYearsIncomeServiceTest
 
-      when(
-        journeyCacheService.currentCache(any())
-      ).thenReturn(
-        Future.successful(fullMap(employmentName, employmentId, false, employmentAmount))
-      )
-
-      when(
-        taxAccountService.updateEstimatedIncome(
-          Meq(nino),
-          Meq(employmentAmount),
-          Meq(TaxYear().next),
-          Meq(employmentId)
-        )(any())
-      ).thenReturn(
-        Future.successful(TaiSuccessResponse)
-      )
+      when(journeyCacheService.mandatoryJourneyValueAsInt(service.amountKey(employmentId)))
+        .thenReturn(Future.successful(Right(employmentAmount)))
 
       service.submit(employmentId, nino).futureValue mustBe TaiSuccessResponse
 
@@ -245,29 +196,28 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       )(any())
     }
 
-    "cache as a successful journey" in {
+    "cache as a successful journey" in new SubmitSetup {
       val service = new UpdateNextYearsIncomeServiceTest
 
-      when(
-        journeyCacheService.currentCache(any())
-      ).thenReturn(
-        Future.successful(fullMap(employmentName, employmentId, false, employmentAmount))
-      )
-
-      when(
-        taxAccountService.updateEstimatedIncome(
-          Meq(nino),
-          Meq(employmentAmount),
-          Meq(TaxYear().next),
-          Meq(employmentId)
-        )(any())
-      ).thenReturn(
-        Future.successful(TaiSuccessResponse)
-      )
+      when(journeyCacheService.mandatoryJourneyValueAsInt(service.amountKey(employmentId)))
+        .thenReturn(Future.successful(Right(employmentAmount)))
 
       service.submit(employmentId, nino).futureValue mustBe TaiSuccessResponse
 
       verify(successfulJourneyCacheService, times(1)).cache(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true"))
+      verify(successfulJourneyCacheService, times(1))
+        .cache(Map(s"${UpdateNextYearsIncomeConstants.SUCCESSFUL}-$employmentId" -> "true"))
+    }
+
+    "return a TaiCacheError if there is a cache error" in new SubmitSetup {
+      val service = new UpdateNextYearsIncomeServiceTest
+
+      val errorMessage = "cache error"
+
+      when(journeyCacheService.mandatoryJourneyValueAsInt(service.amountKey(employmentId)))
+        .thenReturn(Future.successful(Left(errorMessage)))
+
+      service.submit(employmentId, nino).futureValue mustBe TaiCacheError(errorMessage)
     }
   }
 
@@ -340,4 +290,31 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       )
 
   val updateNextYearsIncomeService = new UpdateNextYearsIncomeServiceTest
+
+  class SubmitSetup {
+    when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+      .thenReturn(Future.successful(Some(employment(employmentName))))
+
+    when(
+      taxAccountService
+        .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any()))
+      .thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
+
+    when(successfulJourneyCacheService.cache(any())(any()))
+      .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true")))
+
+    when(successfulJourneyCacheService.cache(any())(any()))
+      .thenReturn(Future.successful(Map(s"${UpdateNextYearsIncomeConstants.SUCCESSFUL}-$employmentId" -> "true")))
+
+    when(
+      taxAccountService.updateEstimatedIncome(
+        Meq(nino),
+        Meq(employmentAmount),
+        Meq(TaxYear().next),
+        Meq(employmentId)
+      )(any())
+    ).thenReturn(
+      Future.successful(TaiSuccessResponse)
+    )
+  }
 }

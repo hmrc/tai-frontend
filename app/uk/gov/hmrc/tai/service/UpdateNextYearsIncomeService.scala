@@ -20,7 +20,7 @@ import javax.inject.{Inject, Named}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import uk.gov.hmrc.tai.connectors.responses.TaiResponse
+import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.PensionIncome
@@ -36,11 +36,13 @@ class UpdateNextYearsIncomeService @Inject()(
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService) {
 
+  def isEstimatedPayJourneyCompleteForEmployer(id: Int)(implicit hc: HeaderCarrier): Future[Boolean] = {
+    val key = s"${UpdateNextYearsIncomeConstants.SUCCESSFUL}-$id"
+    successfulJourneyCacheService.currentCache map (_.get(key).isDefined)
+  }
+
   def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier): Future[Boolean] =
     successfulJourneyCacheService.currentCache map (_.get(UpdateNextYearsIncomeConstants.SUCCESSFUL).isDefined)
-
-  def reset(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    journeyCacheService.flush()
 
   private def setup(employmentId: Int, nino: Nino)(
     implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] = {
@@ -54,12 +56,7 @@ class UpdateNextYearsIncomeService @Inject()(
       (taxCodeIncomeOption, employmentOption) match {
         case (Some(taxCodeIncome), Some(employment)) => {
           val isPension = taxCodeIncome.componentType == PensionIncome
-          val model =
-            UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, taxCodeIncome.amount.toInt)
-
-          journeyCacheService.cache(model.toCacheMap)
-
-          model
+          UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, taxCodeIncome.amount.toInt)
         }
         case _ =>
           throw new RuntimeException(
@@ -67,52 +64,34 @@ class UpdateNextYearsIncomeService @Inject()(
       }
   }
 
-  private def shouldCache(cache: Map[String, String], employmentId: Int): Boolean =
-    cache.isEmpty || cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_ID).toInt != employmentId
-
   def get(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] =
-    journeyCacheService.currentCache flatMap {
-      case cache: Map[String, String] if shouldCache(cache, employmentId) => setup(employmentId, nino)
-      case cache: Map[String, String] => {
-        if (cache.contains(UpdateNextYearsIncomeConstants.NEW_AMOUNT)) {
-          Future.successful(
-            UpdateNextYearsIncomeCacheModel(
-              cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME),
-              cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_ID).toInt,
-              cache(UpdateNextYearsIncomeConstants.IS_PENSION).toBoolean,
-              cache(UpdateNextYearsIncomeConstants.CURRENT_AMOUNT).toInt,
-              Some(cache(UpdateNextYearsIncomeConstants.NEW_AMOUNT).toInt)
-            ))
-        } else {
-          Future.successful(
-            UpdateNextYearsIncomeCacheModel(
-              cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME),
-              cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_ID).toInt,
-              cache(UpdateNextYearsIncomeConstants.IS_PENSION).toBoolean,
-              cache(UpdateNextYearsIncomeConstants.CURRENT_AMOUNT).toInt
-            ))
-        }
-      }
+    journeyCacheService.currentCache flatMap { _ =>
+      setup(employmentId, nino)
     }
+
+  def amountKey(employmentId: Int): String =
+    s"${UpdateNextYearsIncomeConstants.NEW_AMOUNT}-$employmentId"
 
   def setNewAmount(newValue: String, employmentId: Int, nino: Nino)(
-    implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] =
-    get(employmentId, nino) map { model =>
-      val updatedValue = model.copy(newValue = Some(convertCurrencyToInt(Some(newValue))))
-      journeyCacheService.cache(updatedValue.toCacheMap)
+    implicit hc: HeaderCarrier): Future[Map[String, String]] =
+    journeyCacheService.cache(amountKey(employmentId), convertCurrencyToInt(Some(newValue)).toString)
 
-      updatedValue
-    }
+  def getNewAmount(employmentId: Int)(implicit hc: HeaderCarrier): Future[Either[String, Int]] =
+    journeyCacheService.mandatoryJourneyValueAsInt(amountKey(employmentId))
 
   def submit(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    get(employmentId, nino) flatMap {
-      case UpdateNextYearsIncomeCacheModel(_, _, _, _, Some(newValue)) => {
-        val response = taxAccountService.updateEstimatedIncome(nino, newValue, TaxYear().next, employmentId)
-        successfulJourneyCacheService.cache(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true"))
-        response
-      }
-      case _ => {
-        throw new RuntimeException
+    get(employmentId, nino) flatMap { _ =>
+      getNewAmount(employmentId).flatMap {
+        case Right(newAmount) =>
+          successfulJourneyCacheService
+            .cache(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true"))
+            .flatMap { _ =>
+              val successfulEmploymentKey = s"${UpdateNextYearsIncomeConstants.SUCCESSFUL}-$employmentId"
+              successfulJourneyCacheService
+                .cache(Map(successfulEmploymentKey -> "true"))
+                .flatMap(_ => taxAccountService.updateEstimatedIncome(nino, newAmount, TaxYear().next, employmentId))
+            }
+        case Left(error) => Future.successful(TaiCacheError(error))
       }
     }
 }
