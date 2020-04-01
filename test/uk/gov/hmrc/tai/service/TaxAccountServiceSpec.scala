@@ -55,7 +55,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
       val result = testService.taxCodeIncomeForEmployment(generateNino, TaxYear(), 1)
 
-      val expected = Some(taxCodeIncome1)
+      val expected = Right(Some(taxCodeIncome1))
 
       Await.result(result, 5 seconds) mustBe expected
     }
@@ -68,10 +68,10 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
       val result = testService.taxCodeIncomeForEmployment(generateNino, TaxYear(), 99)
 
-      Await.result(result, 5 seconds) mustBe None
+      Await.result(result, 5 seconds) mustBe Right(Option.empty[TaxCodeIncome])
     }
 
-    "throw an exception when the TaxCodeIncome cannot be found" in {
+    "return the error when the TaxCodeIncome cannot be found" in {
       val testService = createSut
 
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
@@ -79,9 +79,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
       val result = testService.taxCodeIncomeForEmployment(generateNino, TaxYear(), 99)
 
-      val expected = Some(taxCodeIncome1)
-
-      a[RuntimeException] mustBe thrownBy(Await.result(result, 5 seconds))
+      Await.result(result, 5 seconds) mustBe Left(TaiTaxAccountFailureResponse("error"))
     }
   }
 

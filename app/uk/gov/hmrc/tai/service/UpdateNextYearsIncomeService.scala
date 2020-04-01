@@ -52,7 +52,7 @@ class UpdateNextYearsIncomeService @Inject()(
       employmentOption    <- employmentFuture
     } yield
       (taxCodeIncomeOption, employmentOption) match {
-        case (Some(taxCodeIncome), Some(employment)) => {
+        case (Right(Some(taxCodeIncome)), Some(employment)) => {
           val isPension = taxCodeIncome.componentType == PensionIncome
           val model =
             UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, taxCodeIncome.amount.toInt)

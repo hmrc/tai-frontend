@@ -52,7 +52,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
 
         when(taxAccountService
           .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any()))
-          .thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
+          .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
         when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(Map.empty[String, String])
@@ -77,7 +77,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
 
         when(taxAccountService
           .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any()))
-          .thenReturn(Future.successful(None))
+          .thenReturn(Future.successful(Right(None)))
 
         val result = updateNextYearsIncomeService.get(employmentId, nino)
 
@@ -94,7 +94,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
 
         when(taxAccountService
           .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any()))
-          .thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
+          .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
         val result = updateNextYearsIncomeService.get(employmentId, nino)
 
@@ -145,7 +145,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
 
         when(taxAccountService
           .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any()))
-          .thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
+          .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
         when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(Map[String, String]())
@@ -171,7 +171,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
           taxAccountService
             .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(newEmploymentId))(
               any()))
-          .thenReturn(Future.successful(Some(taxCodeIncome(employmentName, newEmploymentId, employmentAmount))))
+          .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, newEmploymentId, employmentAmount)))))
 
         when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(fullMap(employmentName, employmentId, isPension, employmentAmount))

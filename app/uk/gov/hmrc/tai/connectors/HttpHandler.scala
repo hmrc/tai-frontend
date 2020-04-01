@@ -28,13 +28,12 @@ import scala.concurrent.Future
 
 class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFunctions {
 
-  private def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
-    response.status match {
-      case UNAUTHORIZED => response
-      case _            => handleResponse(http, url)(response)
-    }
-
-  def getFromApi(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
+  def getFromApiV2(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
+    def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
+      response.status match {
+        case UNAUTHORIZED => response
+        case _            => handleResponse(http, url)(response)
+      }
 
     implicit val httpRds = new HttpReads[HttpResponse] {
       def read(http: String, url: String, res: HttpResponse) = customRead(http, url, res)
@@ -67,6 +66,39 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
         case UNAUTHORIZED =>
           Logger.warn(s"HttpHandler - Unauthorized received")
           Future.failed(new UnauthorizedException(httpResponse.body))
+
+        case _ =>
+          Logger.warn(s"HttpHandler - Server error received")
+          Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+      }
+    }
+  }
+
+  @deprecated("Use getFromApiV2 as it handles UnauthorizedExceptions back from tai", "0.575.0")
+  def getFromApi(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
+    val futureResponse = http.GET[HttpResponse](url)
+
+    futureResponse.flatMap { httpResponse =>
+      httpResponse.status match {
+
+        case OK =>
+          Future.successful(httpResponse.json)
+
+        case NOT_FOUND =>
+          Logger.warn(s"HttpHandler - No data can be found")
+          Future.failed(new NotFoundException(httpResponse.body))
+
+        case INTERNAL_SERVER_ERROR =>
+          Logger.warn(s"HttpHandler - Internal Server Error received")
+          Future.failed(new InternalServerException(httpResponse.body))
+
+        case BAD_REQUEST =>
+          Logger.warn(s"HttpHandler - Bad Request received")
+          Future.failed(new BadRequestException(httpResponse.body))
+
+        case LOCKED =>
+          Logger.warn(s"HttpHandler - Locked received")
+          Future.failed(new LockedException(httpResponse.body))
 
         case _ =>
           Logger.warn(s"HttpHandler - Server error received")
