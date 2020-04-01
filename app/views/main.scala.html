@@ -39,8 +39,7 @@
   gaCustomTitle: Option[String] = None,
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None,
-  script: Option[Html] = None,
-  hidePtaAccountNav: Boolean = false
+  script: Option[Html] = None
 )(mainContent: Html
 )(implicit request: Request[_],
   messages: Messages,
@@ -77,13 +76,9 @@
 }
 
 @signOutUrl = @{
-  if (hidePtaAccountNav) {
-    ""
-  } else {
     mustacheCheck {
         routes.ServiceController.serviceSignout().url
     }
-  }
 }
 
 @trustedHelperBanner = {
@@ -177,7 +172,6 @@
         "isGovernmentGateway" -> isGG,
         "isSa" -> isSa,
         "isVerify" -> isVerify,
-        "hideAccountMenu" -> hidePtaAccountNav,
         "signOutUrl" -> signOutUrl,
         "mainContentHeader" -> mainContentHeader,
         "sidebar" -> sidebar,
