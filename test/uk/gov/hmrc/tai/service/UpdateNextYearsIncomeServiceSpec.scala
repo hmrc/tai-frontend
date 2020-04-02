@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.mockito.{Matchers, Mockito}
-import org.mockito.Mockito.{times, verify, when}
+import controllers.FakeTaiPlayApplication
 import org.mockito.Matchers.{any, eq => Meq}
+import org.mockito.Mockito.{times, verify, when}
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiSuccessResponse}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -34,11 +35,11 @@ import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 import utils.WireMockHelper
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 import scala.util.Random
 
-class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with WireMockHelper with ScalaFutures {
+class UpdateNextYearsIncomeServiceSpec
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with WireMockHelper with ScalaFutures {
 
   override def beforeEach: Unit =
     Mockito.reset(successfulJourneyCacheService)

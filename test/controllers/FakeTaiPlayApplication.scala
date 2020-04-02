@@ -25,6 +25,8 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.domain.Person
 
+import scala.concurrent.ExecutionContext
+
 trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguration with TestSuite {
   this: Suite =>
   override lazy val port = 12345
@@ -58,4 +60,6 @@ trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguratio
   val fakeRequest = FakeRequest("GET", "/")
 
   abstract override def run(testName: Option[String], args: Args): Status = super[OneServerPerSuite].run(testName, args)
+
+  implicit val ec = app.injector.instanceOf[ExecutionContext]
 }

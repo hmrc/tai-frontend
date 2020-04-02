@@ -198,9 +198,6 @@ class TaxAccountSummaryViewModelSpec
 
       "has the other income sources with links" when {
         "other income sources with untaxed interest are available and bank accounts are not available" in {
-//          val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(name = Messages("tai.typeDecodes.UntaxedInterestIncome"), amount = "£100",
-//            detailsLinkLabel = Messages("tai.bbsi.viewDetails"), detailsLinkUrl = controllers.income.bbsi.routes.BbsiController.untaxedInterestDetails().url,
-//            displayDetailsLink = false)
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(
             name = "Profit",
             amount = "£100",
@@ -214,9 +211,6 @@ class TaxAccountSummaryViewModelSpec
         }
 
         "other income sources with untaxed interest are available and bank accounts are also available" in {
-//          val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(name = Messages("tai.typeDecodes.UntaxedInterestIncome"), amount = "£100",
-//            detailsLinkLabel = Messages("tai.bbsi.viewDetails"), detailsLinkUrl = controllers.income.bbsi.routes.BbsiController.untaxedInterestDetails().url,
-//            displayDetailsLink = true)
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(
             name = "Profit",
             amount = "£100",
@@ -263,9 +257,6 @@ class TaxAccountSummaryViewModelSpec
         }
 
         "multiple other income with untaxed interest are present" in {
-//          val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(name = Messages("tai.typeDecodes.UntaxedInterestIncome"), amount = "£100",
-//            detailsLinkLabel = Messages("tai.bbsi.viewDetails"), detailsLinkUrl = controllers.income.bbsi.routes.BbsiController.untaxedInterestDetails().url,
-//            displayDetailsLink = true)
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(
             name = "Tips",
             amount = "£100",

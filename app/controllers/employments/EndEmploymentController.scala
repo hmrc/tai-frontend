@@ -46,7 +46,7 @@ import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWee
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 
 import scala.Function.tupled
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class EndEmploymentController @Inject()(
   auditService: AuditService,
@@ -57,7 +57,7 @@ class EndEmploymentController @Inject()(
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   val auditConnector: AuditConnector,
   implicit val templateRenderer: TemplateRenderer,
-  implicit val partialRetriever: FormPartialRetriever)
+  implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController with JourneyCacheConstants with FormValuesConstants with IrregularPayConstants
     with AuditConstants with EmptyCacheRedirect {
 

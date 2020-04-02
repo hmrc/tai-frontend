@@ -138,25 +138,8 @@ object IncomeSourceViewModel extends ViewModelHelper {
     )
   }
 
-  def apply(nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): Seq[IncomeSourceViewModel] = {
-
-    val untaxedInterest = nonTaxCodeIncome.untaxedInterest.map(
-      u =>
-        IncomeSourceViewModel(
-          messages("tai.typeDecodes." + u.incomeComponentType.toString),
-          withPoundPrefixAndSign(MoneyPounds(u.amount, 0)),
-          "",
-          displayTaxCode = false,
-          "",
-          displayPayrollNumber = false,
-          "",
-          displayEndDate = false,
-          messages("tai.bbsi.viewDetails"),
-          controllers.income.bbsi.routes.BbsiController.untaxedInterestDetails().url,
-          displayDetailsLink = u.bankAccounts.nonEmpty
-      ))
-
-    val otherIncomeSources = nonTaxCodeIncome.otherNonTaxCodeIncomes
+  def apply(nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): Seq[IncomeSourceViewModel] =
+    nonTaxCodeIncome.otherNonTaxCodeIncomes
       .withFilter(
         _.incomeComponentType != BankOrBuildingSocietyInterest
       )
@@ -187,6 +170,4 @@ object IncomeSourceViewModel extends ViewModelHelper {
           case _ => model.copy(displayDetailsLink = false)
         }
       })
-    otherIncomeSources
-  }
 }

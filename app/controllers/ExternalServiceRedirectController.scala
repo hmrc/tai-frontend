@@ -26,13 +26,15 @@ import uk.gov.hmrc.tai.service.{AuditService, SessionService}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 
+import scala.concurrent.ExecutionContext
+
 class ExternalServiceRedirectController @Inject()(
   sessionService: SessionService,
   auditService: AuditService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController {
 
   def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] =
