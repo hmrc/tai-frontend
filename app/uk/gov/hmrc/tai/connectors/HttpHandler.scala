@@ -29,13 +29,13 @@ import scala.concurrent.Future
 class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFunctions {
 
   def getFromApiV2(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
-    def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
-      response.status match {
-        case UNAUTHORIZED => response
-        case _            => handleResponse(http, url)(response)
-      }
-
     implicit val httpRds = new HttpReads[HttpResponse] {
+      def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
+        response.status match {
+          case UNAUTHORIZED => response
+          case _            => handleResponse(http, url)(response)
+        }
+
       def read(http: String, url: String, res: HttpResponse) = customRead(http, url, res)
     }
 

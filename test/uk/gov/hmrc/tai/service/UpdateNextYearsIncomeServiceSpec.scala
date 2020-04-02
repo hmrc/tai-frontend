@@ -298,7 +298,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
     when(
       taxAccountService
         .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any()))
-      .thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
+      .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
     when(successfulJourneyCacheService.cache(any())(any()))
       .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true")))
