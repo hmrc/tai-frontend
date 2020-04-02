@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountServ
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{IabdTaxCodeChangeReasons, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class TaxCodeChangeController @Inject()(
   taxCodeChangeService: TaxCodeChangeService,
@@ -45,7 +45,7 @@ class TaxCodeChangeController @Inject()(
   yourTaxFreeAmountService: YourTaxFreeAmountService,
   taxCodeChangeReasonsService: TaxCodeChangeReasonsService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with FeatureTogglesConfig with YourTaxFreeAmount {
 
   def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

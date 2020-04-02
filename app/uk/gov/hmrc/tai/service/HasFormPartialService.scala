@@ -23,12 +23,13 @@ import uk.gov.hmrc.http.HttpGet
 import uk.gov.hmrc.play.bootstrap.filters.frontend.crypto.SessionCookieCrypto
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.HtmlPartial
-import uk.gov.hmrc.tai.config.{ApplicationConfig}
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.EnhancedPartialRetriever
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class HasFormPartialService @Inject()(sessionCookieCrypto: SessionCookieCrypto, httpClient: DefaultHttpClient)
+class HasFormPartialService @Inject()(sessionCookieCrypto: SessionCookieCrypto, httpClient: DefaultHttpClient)(
+  implicit ec: ExecutionContext)
     extends EnhancedPartialRetriever {
 
   override val http: HttpGet = httpClient

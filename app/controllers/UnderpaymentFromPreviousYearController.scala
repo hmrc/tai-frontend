@@ -32,6 +32,8 @@ import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 import views.html.previousYearUnderpayment
 
+import scala.concurrent.ExecutionContext
+
 class UnderpaymentFromPreviousYearController @Inject()(
   codingComponentService: CodingComponentService,
   employmentService: EmploymentService,
@@ -40,7 +42,7 @@ class UnderpaymentFromPreviousYearController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with Referral {
 
   def underpaymentExplanation = (authenticate andThen validatePerson).async { implicit request =>

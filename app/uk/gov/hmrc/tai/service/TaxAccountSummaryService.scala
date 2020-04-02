@@ -29,14 +29,14 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, NotLive}
 import uk.gov.hmrc.tai.viewModels.{IncomesSources, TaxAccountSummaryViewModel}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class TaxAccountSummaryService @Inject()(
   trackingService: TrackingService,
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController {
 
   def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(

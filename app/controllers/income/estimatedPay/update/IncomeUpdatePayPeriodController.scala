@@ -32,12 +32,14 @@ import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 
+import scala.concurrent.ExecutionContext
+
 class IncomeUpdatePayPeriodController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   def payPeriodPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

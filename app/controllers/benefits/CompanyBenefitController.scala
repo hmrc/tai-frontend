@@ -35,6 +35,8 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
+
+import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
 class CompanyBenefitController @Inject()(
@@ -44,7 +46,7 @@ class CompanyBenefitController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   override implicit val templateRenderer: TemplateRenderer,
-  override implicit val partialRetriever: FormPartialRetriever)
+  override implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController with JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants {
 
   private val logger = Logger(this.getClass)

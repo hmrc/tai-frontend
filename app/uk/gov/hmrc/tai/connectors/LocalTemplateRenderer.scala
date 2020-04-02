@@ -22,16 +22,16 @@ import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 
-class LocalTemplateRenderer @Inject()(http: DefaultHttpClient) extends TemplateRenderer with DefaultServicesConfig {
+class LocalTemplateRenderer @Inject()(http: DefaultHttpClient)(implicit ec: ExecutionContext)
+    extends TemplateRenderer with DefaultServicesConfig {
 
   override lazy val templateServiceBaseUrl = baseUrl("frontend-template-provider")
   override val refreshAfter: Duration = 10 minutes
 
   private implicit val hc = HeaderCarrier()
-  import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
   override def fetchTemplate(path: String): Future[String] =
     http.GET(path).map(_.body)

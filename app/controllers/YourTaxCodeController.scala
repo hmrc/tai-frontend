@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
 
+import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
 class YourTaxCodeController @Inject()(
@@ -39,7 +40,7 @@ class YourTaxCodeController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with FeatureTogglesConfig {
 
   private[controllers] def renderTaxCodes(employmentId: Option[Int]): Action[AnyContent] =

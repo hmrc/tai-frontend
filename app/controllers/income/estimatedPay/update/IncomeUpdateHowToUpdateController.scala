@@ -36,7 +36,7 @@ import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class IncomeUpdateHowToUpdateController @Inject()(
@@ -47,7 +47,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
   taxAccountService: TaxAccountService,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   private def incomeTypeIdentifier(isPension: Boolean): String =

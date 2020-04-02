@@ -32,6 +32,8 @@ import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 
+import scala.concurrent.ExecutionContext
+
 class PotentialUnderpaymentController @Inject()(
   taxAccountService: TaxAccountService,
   codingComponentService: CodingComponentService,
@@ -39,7 +41,7 @@ class PotentialUnderpaymentController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with AuditConstants with Referral {
 
   def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {

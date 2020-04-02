@@ -39,7 +39,7 @@ import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDeta
 import views.html.incomes.previousYears.CheckYourAnswers
 
 import scala.Function.tupled
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateIncomeDetailsController @Inject()(
   previousYearsIncomeService: PreviousYearsIncomeService,
@@ -48,7 +48,7 @@ class UpdateIncomeDetailsController @Inject()(
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with JourneyCacheConstants with FormValuesConstants {
 
   def telephoneNumberViewModel(taxYear: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel =

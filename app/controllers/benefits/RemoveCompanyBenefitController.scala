@@ -43,7 +43,7 @@ import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefi
 import views.html.benefits.removeCompanyBenefitCheckYourAnswers
 
 import scala.Function.tupled
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal.RoundingMode
 
 class RemoveCompanyBenefitController @Inject()(
@@ -53,7 +53,7 @@ class RemoveCompanyBenefitController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   implicit val templateRenderer: TemplateRenderer,
-  implicit val partialRetriever: FormPartialRetriever)
+  implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController with JourneyCacheConstants with FormValuesConstants
     with RemoveCompanyBenefitStopDateConstants {
 

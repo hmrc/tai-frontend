@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.service
 import javax.inject.{Inject, Named}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
@@ -28,13 +27,13 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateNextYearsIncomeService @Inject()(
   @Named("Update Next Years Income") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   employmentService: EmploymentService,
-  taxAccountService: TaxAccountService) {
+  taxAccountService: TaxAccountService)(implicit ec: ExecutionContext) {
 
   def isEstimatedPayJourneyCompleteForEmployer(id: Int)(implicit hc: HeaderCarrier): Future[Boolean] = {
     val key = s"${UpdateNextYearsIncomeConstants.SUCCESSFUL}-$id"

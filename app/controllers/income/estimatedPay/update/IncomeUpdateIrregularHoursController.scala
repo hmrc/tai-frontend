@@ -38,7 +38,7 @@ import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class IncomeUpdateIrregularHoursController @Inject()(
@@ -49,7 +49,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with JourneyCacheConstants {
 
   private val taxCodeIncomeInfoToCache = (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {

@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class WhatDoYouWantToDoController @Inject()(
   employmentService: EmploymentService,
@@ -49,7 +49,7 @@ class WhatDoYouWantToDoController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with FeatureTogglesConfig {
 
   implicit val recoveryLocation: RecoveryLocation = classOf[WhatDoYouWantToDoController]

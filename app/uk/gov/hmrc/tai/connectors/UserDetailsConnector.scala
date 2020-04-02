@@ -20,12 +20,11 @@ import javax.inject.Inject
 import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.tai.model.UserDetails
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class UserDetailsConnector @Inject()(val http: DefaultHttpClient) {
+class UserDetailsConnector @Inject()(val http: DefaultHttpClient)(implicit ec: ExecutionContext) {
 
   def userDetails(userDetailsUri: String)(implicit hc: HeaderCarrier): Future[UserDetails] = {
     Logger.debug(s"Calling User Details with uri: $userDetailsUri")
