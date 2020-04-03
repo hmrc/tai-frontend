@@ -31,17 +31,12 @@ class TaiModule extends Module {
     // Journey Cache Services
     bind[JourneyCacheService].qualifiedWith("Add Employment").to(classOf[AddEmploymentJourneyCacheService]),
     bind[JourneyCacheService].qualifiedWith("Add Pension Provider").to(classOf[AddPensionProviderJourneyCacheService]),
-    bind[JourneyCacheService].qualifiedWith("Close Bank Account").to(classOf[CloseBankAccountJourneyCacheService]),
     bind[JourneyCacheService].qualifiedWith("Company Car").to(classOf[CompanyCarJourneyCacheService]),
     bind[JourneyCacheService].qualifiedWith("End Company Benefit").to(classOf[EndCompanyBenefitJourneyCacheService]),
     bind[JourneyCacheService].qualifiedWith("End Employment").to(classOf[EndEmploymentJourneyCacheService]),
     bind[JourneyCacheService]
       .qualifiedWith("Track Successful Journey")
       .to(classOf[TrackSuccessfulJourneyJourneyCacheService]),
-    bind[JourneyCacheService].qualifiedWith("Update Bank Account").to(classOf[UpdateBankAccountJourneyCacheService]),
-    bind[JourneyCacheService]
-      .qualifiedWith("Update Bank Account Choice")
-      .to(classOf[UpdateBankAccountChoiceJourneyCacheService]),
     bind[JourneyCacheService].qualifiedWith("Update Employment").to(classOf[UpdateEmploymentJourneyCacheService]),
     bind[JourneyCacheService].qualifiedWith("Update Income").to(classOf[UpdateIncomeJourneyCacheService]),
     bind[JourneyCacheService]

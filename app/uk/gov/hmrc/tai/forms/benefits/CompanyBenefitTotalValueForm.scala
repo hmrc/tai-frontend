@@ -31,8 +31,8 @@ object CompanyBenefitTotalValueForm {
         "totalValue" ->
           text.verifying(
             StopOnFirstFail(
-              nonEmptyText(Messages("tai.bbsi.update.form.interest.blank")),
-              isNumber(Messages("tai.bbsi.update.form.interest.isCurrency"))
+              nonEmptyText(Messages("tai.interest.blank")),
+              isNumber(Messages("tai.interest.isCurrency"))
             ))
       ))
 

@@ -74,16 +74,6 @@ trait JourneyCacheConstants {
   val CompanyCar_HasActiveFuelBenefitdKey = "hasActiveFuelBenefit"
   val CompanyCar_DateWithdrawnKey = "dateWithdrawn"
 
-  val CloseBankAccountJourneyKey = "close-bank-account"
-  val CloseBankAccountDateKey = "closeBankAccountDate"
-  val CloseBankAccountInterestKey = "closeBankAccountInterest"
-  val CloseBankAccountInterestChoice = "closeBankAccountInterestChoice"
-  val CloseBankAccountNameKey = "bankName"
-
-  val UpdateBankAccountJourneyKey = "update-bank-account"
-  val UpdateBankAccountInterestKey = "updateInterest"
-  val UpdateBankAccountNameKey = "updateBankName"
-
   val TrackSuccessfulJourney_JourneyKey = "successful-journey"
   val TrackSuccessfulJourney_AddEmploymentKey = "addEmployment"
   val TrackSuccessfulJourney_UpdateEndEmploymentKey = "updateEndEmployment"

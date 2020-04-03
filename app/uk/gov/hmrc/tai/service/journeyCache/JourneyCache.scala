@@ -17,20 +17,14 @@
 package uk.gov.hmrc.tai.service.journeyCache
 
 import javax.inject.Inject
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants._
-import uk.gov.hmrc.tai.util.constants.BankAccountDecisionConstants._
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
-
-import scala.concurrent.{ExecutionContext, Future}
 
 class AddEmploymentJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
     extends JourneyCacheService(AddEmployment_JourneyKey, journeyCacheConnector)
 class AddPensionProviderJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
     extends JourneyCacheService(AddPensionProvider_JourneyKey, journeyCacheConnector)
-class CloseBankAccountJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(CloseBankAccountJourneyKey, journeyCacheConnector)
 class CompanyCarJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
     extends JourneyCacheService(CompanyCar_JourneyKey, journeyCacheConnector)
 class EndCompanyBenefitJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
@@ -39,10 +33,6 @@ class EndEmploymentJourneyCacheService @Inject()(journeyCacheConnector: JourneyC
     extends JourneyCacheService(EndEmployment_JourneyKey, journeyCacheConnector)
 class TrackSuccessfulJourneyJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
     extends JourneyCacheService(TrackSuccessfulJourney_JourneyKey, journeyCacheConnector)
-class UpdateBankAccountJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(UpdateBankAccountJourneyKey, journeyCacheConnector)
-class UpdateBankAccountChoiceJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(UpdateBankAccountChoiceJourneyKey, journeyCacheConnector)
 class UpdateEmploymentJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
     extends JourneyCacheService(UpdateEmployment_JourneyKey, journeyCacheConnector)
 class UpdateNextYearsIncomeJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
