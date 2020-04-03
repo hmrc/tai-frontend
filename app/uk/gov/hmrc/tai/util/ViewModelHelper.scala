@@ -39,15 +39,12 @@ trait ViewModelHelper {
   def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String =
     htmlNonBroken(Dates.formatDate(TaxYear().next.start))
 
-  @deprecated("Use TaxYearRangeUtil.currentTaxYearRange", "0.456.0")
   def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String =
     TaxYearRangeUtil.currentTaxYearRange
 
-  @deprecated("Use TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited", "0.456.0")
   def currentTaxYearRangeHtmlNonBreakBetween(implicit messages: Messages): String =
     TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited
 
-  @deprecated("Use TaxYearRangeUtil.dynamicDateRange", "0.456.0")
   def dynamicDateRangeHtmlNonBreak(from: LocalDate, to: LocalDate)(implicit messages: Messages): String =
     TaxYearRangeUtil.dynamicDateRange(from, to)
 
