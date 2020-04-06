@@ -113,10 +113,10 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
           }
       }
 
-      "tracking service throws back an exception but user has completed a journey" in {
+      "tracking service returns an empty tracked form but user has completed a journey" in {
         val controller = sut
         when(trackingConnector.getUserTracking(any())(any()))
-          .thenReturn(Future.failed(new RuntimeException("an error occurred")))
+          .thenReturn(Future.successful(Seq.empty[TrackedForm]))
         when(successfulJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(TrackSuccessfulJourney_AddEmploymentKey -> "true")))
 
@@ -140,9 +140,9 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
       }
 
-      "tracking service throws back an exception" in {
+      "tracking service return an empty form" in {
         when(trackingConnector.getUserTracking(any())(any()))
-          .thenReturn(Future.failed(new Exception("an error occurred")))
+          .thenReturn(Future.successful(Seq.empty[TrackedForm]))
         val result = sut.isAnyIFormInProgress(nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
       }

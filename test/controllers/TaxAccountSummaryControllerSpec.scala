@@ -202,7 +202,6 @@ class TaxAccountSummaryControllerSpec
 
   def createSUT = new SUT()
 
-  val trackingService = mock[TrackingService]
   val auditService = mock[AuditService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
@@ -210,7 +209,6 @@ class TaxAccountSummaryControllerSpec
 
   class SUT()
       extends TaxAccountSummaryController(
-        trackingService,
         employmentService,
         taxAccountService,
         taxAccountSummaryService,
@@ -219,9 +217,7 @@ class TaxAccountSummaryControllerSpec
         FakeValidatePerson,
         MockPartialRetriever,
         MockTemplateRenderer
-      ) {
-    when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(ThreeWeeks))
-  }
+      ) {}
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 

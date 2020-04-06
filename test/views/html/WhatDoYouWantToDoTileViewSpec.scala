@@ -31,7 +31,7 @@ import play.api.mvc.Cookie
 
 class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
-  val modelWithiFormNoCyPlus1 = createViewModel(ThreeWeeks, false)
+  val modelWithiFormNoCyPlus1 = createViewModel(false)
 
   "whatDoYouWantTodo Page" should {
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))
@@ -54,7 +54,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       "CY+1 is enabled" in {
 
-        val modelNoiFormWithCyPlus1 = createViewModel(NoTimeToProcess, true)
+        val modelNoiFormWithCyPlus1 = createViewModel(true)
 
         val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1)
         val cards = doc(nextYearView).getElementsByClass("card")
@@ -73,7 +73,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       "Tax Code Change is enabled" in {
 
         val taxCodeMatched = TaxCodeMismatchFactory.matchedTaxCode
-        val modeWithCyPlus1TaxCodeChange = createViewModel(NoTimeToProcess, true, true, Some(taxCodeMatched))
+        val modeWithCyPlus1TaxCodeChange = createViewModel(true, true, Some(taxCodeMatched))
 
         val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange)
         val cards = doc(nextYearView).getElementsByClass("card")
@@ -85,7 +85,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       "Tax Code Change is disabled" in {
 
-        val modelNoiFormWithCyPlus1 = createViewModel(NoTimeToProcess, true)
+        val modelNoiFormWithCyPlus1 = createViewModel(true)
 
         val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1)
         val cards = doc(nextYearView).getElementsByClass("card")
@@ -111,15 +111,14 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   }
 
   def createViewModel(
-    isAnyIFormInProgress: TimeToProcess,
     isCyPlusOneEnabled: Boolean,
     hasTaxCodeChanged: Boolean = false,
     taxCodeMismatch: Option[TaxCodeMismatch] = None): WhatDoYouWantToDoViewModel =
-    WhatDoYouWantToDoViewModel(isAnyIFormInProgress, isCyPlusOneEnabled, hasTaxCodeChanged, taxCodeMismatch)
+    WhatDoYouWantToDoViewModel(isCyPlusOneEnabled, hasTaxCodeChanged, taxCodeMismatch)
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 
-  private lazy val modelNoiFormNoCyPlus1 = createViewModel(NoTimeToProcess, false)
+  private lazy val modelNoiFormNoCyPlus1 = createViewModel(false)
 
   override def view: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1)
 }

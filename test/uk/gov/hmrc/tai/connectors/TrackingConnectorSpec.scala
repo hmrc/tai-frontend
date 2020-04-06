@@ -21,6 +21,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsResultException, Json}
@@ -29,9 +30,10 @@ import uk.gov.hmrc.tai.model.domain.tracking.{TrackedForm, TrackedFormAcquired, 
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, LockedException}
 
-class TrackingConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with BeforeAndAfterEach {
+class TrackingConnectorSpec
+    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with BeforeAndAfterEach with ScalaFutures {
 
   override def beforeEach: Unit =
     Mockito.reset(httpHandler)
@@ -53,20 +55,28 @@ class TrackingConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(trackedFormSeqJson)))
 
         val result = sut.getUserTracking(nino)
-        Await.result(result, 50 seconds) mustBe trackedFormSeq
+        result.futureValue mustBe trackedFormSeq
       }
     }
 
-    "throw exception" when {
+    "return an empty response" when {
       "json is not valid" in {
         val sut = createSUT()
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse("""{}""")))
 
         val result = sut.getUserTracking(nino)
-        the[JsResultException] thrownBy Await.result(result, 5 seconds)
+        result.futureValue mustBe Seq.empty[TrackedForm]
+      }
 
+      "getFromApi throws" in {
+        val sut = createSUT()
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new LockedException("locked")))
+
+        val result = sut.getUserTracking(nino)
+        result.futureValue mustBe Seq.empty[TrackedForm]
       }
     }
+
   }
 
   val nino: String = new Generator().nextNino.nino

@@ -35,7 +35,6 @@ import scala.concurrent.Future
 import scala.util.control.NonFatal
 
 class TaxAccountSummaryController @Inject()(
-  trackingService: TrackingService,
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
   taxAccountSummaryService: TaxAccountSummaryService,

@@ -43,16 +43,13 @@ class TrackingService @Inject()(
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService)
     extends JourneyCacheConstants {
 
-  def isAnyIFormInProgress(nino: String)(implicit hc: HeaderCarrier): Future[TimeToProcess] = {
-
-    val longTESProcesses: Future[Seq[TrackedForm]] = unfinishedTrackingForms(nino, "TES[1|7]")
-    val shortTESProcesses: Future[Seq[TrackedForm]] = unfinishedTrackingForms(nino, "TES[2-6]")
-
+  def isAnyIFormInProgress(nino: String)(implicit hc: HeaderCarrier): Future[TimeToProcess] =
     for {
-      haveAnyLongProcesses                    <- longTESProcesses map (_.nonEmpty)
-      haveAnyShortProcesses                   <- shortTESProcesses map (_.nonEmpty)
+      trackedForms                            <- trackingConnector.getUserTracking(nino)
       successfulJournies: Map[String, String] <- successfulJourneyCacheService.currentCache
     } yield {
+      val haveAnyLongProcesses = hasIncompleteTrackingForms(trackedForms, "TES[1|7]")
+      val haveAnyShortProcesses = hasIncompleteTrackingForms(trackedForms, "TES[2-6]")
 
       val filteredJournies = successfulJournies.keySet.filterNot(
         key =>
@@ -67,23 +64,15 @@ class TrackingService @Inject()(
         case _                                          => NoTimeToProcess
       }
     }
-  }
 
   private def isA3WeeksJourney(journies: Map[String, String]): Boolean =
     journies exists { _ == TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true" }
 
-  private def unfinishedTrackingForms(nino: String, regex: String)(
-    implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] = {
-    val futureTrackedForms = trackingConnector.getUserTracking(nino).map(_.filter(_.id.matches(regex)))
-
-    futureTrackedForms map { trackedForms =>
-      trackedForms.filter(form => form.status != TrackedFormDone)
-    } recover {
-      case NonFatal(x) => {
-        Logger.warn(s"Tracking service returned error, therefore returning an empty response. Error: ${x.getMessage}")
-        Seq.empty[TrackedForm]
-      }
-    }
-  }
+  private def hasIncompleteTrackingForms(trackedForms: Seq[TrackedForm], regex: String)(
+    implicit hc: HeaderCarrier): Boolean =
+    trackedForms
+      .filter(_.id.matches(regex))
+      .filter(form => form.status != TrackedFormDone)
+      .nonEmpty
 
 }
