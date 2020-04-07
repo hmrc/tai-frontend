@@ -210,6 +210,7 @@ class IncomeTaxComparisonControllerSpec
         updateNextYearsIncomeService,
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

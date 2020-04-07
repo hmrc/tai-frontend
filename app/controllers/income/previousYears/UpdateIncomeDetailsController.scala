@@ -20,9 +20,7 @@ import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -45,6 +43,7 @@ class UpdateIncomeDetailsController @Inject()(
   previousYearsIncomeService: PreviousYearsIncomeService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
+  override val messagesApi: MessagesApi,
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,

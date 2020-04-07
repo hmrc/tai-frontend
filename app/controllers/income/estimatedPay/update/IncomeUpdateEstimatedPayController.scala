@@ -33,8 +33,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.MessagesApi
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,6 +41,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   incomeService: IncomeService,
+  override val messagesApi: MessagesApi,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)

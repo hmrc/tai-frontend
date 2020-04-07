@@ -24,7 +24,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
@@ -446,7 +446,8 @@ class EstimatedIncomeTaxControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         MockPartialRetriever,
-        MockTemplateRenderer
+        MockTemplateRenderer,
+        app.injector.instanceOf[MessagesApi]
       )
 
 }

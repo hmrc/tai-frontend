@@ -22,10 +22,7 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import org.joda.time.LocalDate
-import play.api.Play.current
-import play.api.data.validation.{Constraint, Invalid, Valid}
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -33,7 +30,6 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
-import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneRegex
 import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, AddEmploymentPayrollNumberForm, EmploymentAddDateForm, EmploymentNameForm}
 import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -55,6 +51,7 @@ class AddEmploymentController @Inject()(
   @Named("Add Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   val auditConnector: AuditConnector,
+  override val messagesApi: MessagesApi,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with JourneyCacheConstants with AuditConstants with FormValuesConstants

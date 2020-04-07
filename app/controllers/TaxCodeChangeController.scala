@@ -19,8 +19,7 @@ package controllers
 import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -44,6 +43,7 @@ class TaxCodeChangeController @Inject()(
   validatePerson: ValidatePerson,
   yourTaxFreeAmountService: YourTaxFreeAmountService,
   taxCodeChangeReasonsService: TaxCodeChangeReasonsService,
+  override val messagesApi: MessagesApi,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with FeatureTogglesConfig with YourTaxFreeAmount {

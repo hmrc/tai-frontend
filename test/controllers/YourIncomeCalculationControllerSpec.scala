@@ -314,6 +314,7 @@ class YourIncomeCalculationControllerSpec
         paymentsService,
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

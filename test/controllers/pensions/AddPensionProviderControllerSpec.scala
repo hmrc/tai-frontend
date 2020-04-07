@@ -945,6 +945,7 @@ class AddPensionProviderControllerSpec
         mock[AuditConnector],
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         addPensionProviderJourneyCacheService,
         trackSuccessJourneyCacheService,
         MockPartialRetriever,

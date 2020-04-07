@@ -21,9 +21,8 @@ import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import org.joda.time.LocalDate
-import play.api.Play.current
 import play.api.data.Form
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.MessagesApi
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -54,6 +53,7 @@ class IncomeController @Inject()(
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
+  override val messagesApi: MessagesApi,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with JourneyCacheConstants with FormValuesConstants with FeatureTogglesConfig {

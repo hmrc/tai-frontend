@@ -20,10 +20,8 @@ import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -54,6 +52,7 @@ class UpdatePensionProviderController @Inject()(
   auditService: AuditService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
+  override val messagesApi: MessagesApi,
   @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,

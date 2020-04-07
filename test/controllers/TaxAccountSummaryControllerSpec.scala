@@ -62,7 +62,7 @@ class TaxAccountSummaryControllerSpec
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
 
-      when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
+      when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any())).thenReturn(
         Future.successful(
           TaxAccountSummaryViewModel(
             taxAccountSummary,
@@ -89,7 +89,7 @@ class TaxAccountSummaryControllerSpec
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
 
-      when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
+      when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any())).thenReturn(
         Future.successful(
           TaxAccountSummaryViewModel(
             taxAccountSummary,
@@ -117,7 +117,7 @@ class TaxAccountSummaryControllerSpec
     "display an error page" when {
       "a downstream error has occurred in one of the TaiResponse responding service methods" in {
         val sut = createSUT
-        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
+        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any())).thenReturn(
           Future.successful(
             TaxAccountSummaryViewModel(
               taxAccountSummary,
@@ -141,7 +141,7 @@ class TaxAccountSummaryControllerSpec
           Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
-        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
+        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any())).thenReturn(
           Future.failed(new RuntimeException("Failed to fetch income details"))
         )
 
@@ -217,6 +217,7 @@ class TaxAccountSummaryControllerSpec
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

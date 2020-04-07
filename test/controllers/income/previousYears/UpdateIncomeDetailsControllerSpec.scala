@@ -403,6 +403,7 @@ class UpdateIncomeDetailsControllerSpec
         previousYearsIncomeService,
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         trackingjourneyCacheService,
         journeyCacheService,
         MockPartialRetriever,

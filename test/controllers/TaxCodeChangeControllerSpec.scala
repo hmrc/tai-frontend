@@ -153,6 +153,7 @@ class TaxCodeChangeControllerSpec
         FakeValidatePerson,
         yourTaxFreeAmountService,
         taxCodeChangeReasonsService,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

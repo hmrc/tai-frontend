@@ -33,8 +33,7 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.MessagesApi
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 
@@ -47,6 +46,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
+  override val messagesApi: MessagesApi,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)

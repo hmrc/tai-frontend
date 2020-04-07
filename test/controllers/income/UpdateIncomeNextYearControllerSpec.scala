@@ -26,7 +26,7 @@ import org.mockito.Matchers.{any, eq => meq}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -498,6 +498,7 @@ class UpdateIncomeNextYearControllerSpec
         mock[AuditConnector],
         FakeAuthAction,
         FakeValidatePerson,
+        app.injector.instanceOf[MessagesApi],
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

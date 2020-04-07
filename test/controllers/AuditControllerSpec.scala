@@ -23,6 +23,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.MessagesApi
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.service.AuditService
@@ -61,6 +62,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
+        app.injector.instanceOf[MessagesApi],
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

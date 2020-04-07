@@ -118,6 +118,7 @@ class PotentialUnderpaymentControllerSpec
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

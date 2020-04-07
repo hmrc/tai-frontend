@@ -26,11 +26,10 @@ import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
@@ -51,6 +50,7 @@ class IncomeUpdatePayPeriodControllerSpec
       extends IncomeUpdatePayPeriodController(
         FakeAuthAction,
         FakeValidatePerson,
+        app.injector.instanceOf[MessagesApi],
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer) {

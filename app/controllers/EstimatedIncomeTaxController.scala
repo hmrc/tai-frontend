@@ -19,10 +19,7 @@ package controllers
 import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -45,7 +42,8 @@ class EstimatedIncomeTaxController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  override val messagesApi: MessagesApi)(implicit ec: ExecutionContext)
     extends TaiBaseController {
 
   def estimatedIncomeTax(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

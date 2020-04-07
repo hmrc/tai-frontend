@@ -20,8 +20,7 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.{Inject, Named}
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -49,6 +48,7 @@ class IncomeUpdateCalculatorController @Inject()(
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
+  override val messagesApi: MessagesApi,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)

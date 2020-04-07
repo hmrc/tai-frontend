@@ -19,8 +19,7 @@ package controllers
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthenticatedRequest}
 import javax.inject.Inject
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -37,6 +36,7 @@ class PayeControllerHistoric @Inject()(
   employmentService: EmploymentService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
+  override val messagesApi: MessagesApi,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController {

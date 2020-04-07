@@ -17,8 +17,7 @@
 package controllers
 
 import play.Logger
-import play.api.Play.current
-import play.api.i18n.Messages
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
@@ -44,52 +43,52 @@ trait ErrorPagesHandler {
   def error4xxPageWithLink(pageTitle: String)(implicit request: Request[_], messages: Messages) =
     views.html.error_template_noauth(
       pageTitle,
-      Messages("tai.errorMessage.heading"),
-      Messages("tai.errorMessage.frontend400.message1"),
+      messages("tai.errorMessage.heading"),
+      messages("tai.errorMessage.frontend400.message1"),
       List(
-        Messages(
+        messages(
           "tai.errorMessage.frontend400.message2",
           Link
             .toInternalPage(
               url = "#report-name",
               cssClasses = Some("report-error__toggle"),
-              value = Some(Messages("tai.errorMessage.reportAProblem")))
+              value = Some(messages("tai.errorMessage.reportAProblem")))
             .toHtml
         ))
     )
 
   def badRequestPageWrongVersion(implicit request: Request[_], messages: Messages) =
     views.html.error_template_noauth(
-      Messages("global.error.badRequest400.title"),
-      Messages("tai.errorMessage.heading"),
-      Messages("tai.errorMessage.frontend400.message1.version"),
+      messages("global.error.badRequest400.title"),
+      messages("tai.errorMessage.heading"),
+      messages("tai.errorMessage.frontend400.message1.version"),
       List.empty
     )
 
   def error4xxFromNps(pageTitle: String)(implicit request: Request[_], messages: Messages) =
     views.html.error_template_noauth(
       pageTitle,
-      Messages("tai.errorMessage.heading.nps"),
-      Messages("tai.errorMessage.frontend400.message1.nps"),
-      List(Messages("tai.errorMessage.frontend400.message2.nps"))
+      messages("tai.errorMessage.heading.nps"),
+      messages("tai.errorMessage.frontend400.message1.nps"),
+      List(messages("tai.errorMessage.frontend400.message2.nps"))
     )
 
   def error5xx(pageBody: String)(implicit request: Request[_], messages: Messages) =
     views.html.error_template_noauth(
-      Messages("global.error.InternalServerError500.title"),
-      Messages("tai.technical.error.heading"),
+      messages("global.error.InternalServerError500.title"),
+      messages("tai.technical.error.heading"),
       pageBody,
       List.empty)
 
   @deprecated("Prefer chaining of named partial functions for clarity", "Introduction of new WDYWTD page")
   def handleErrorResponse(methodName: String, nino: Nino)(
-    implicit request: Request[_]): PartialFunction[Throwable, Future[Result]] =
+    implicit request: Request[_],
+    messages: Messages): PartialFunction[Throwable, Future[Result]] =
     PartialFunction[Throwable, Future[Result]] { throwable: Throwable =>
-      implicit val messages = play.api.i18n.Messages.Implicits.applicationMessages
       throwable match {
         case e: Upstream4xxResponse => {
           Logger.warn(s"<Upstream4xxResponse> - $methodName nino $nino")
-          Future.successful(BadRequest(error4xxPageWithLink(Messages("global.error.badRequest400.title"))))
+          Future.successful(BadRequest(error4xxPageWithLink(messages("global.error.badRequest400.title"))))
         }
 
         case e: BadRequestException => {
@@ -116,10 +115,10 @@ trait ErrorPagesHandler {
                       s"<Cannot complete a coding calculation without Primary Employment> - $methodName nino $nino")
                     Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
                   } else {
-                    Future.successful(BadRequest(error4xxFromNps(Messages("global.error.badRequest400.title"))))
+                    Future.successful(BadRequest(error4xxFromNps(messages("global.error.badRequest400.title"))))
                   }
                 case _ =>
-                  Future.successful(BadRequest(error4xxPageWithLink(Messages("global.error.badRequest400.title"))))
+                  Future.successful(BadRequest(error4xxPageWithLink(messages("global.error.badRequest400.title"))))
               }
           }
         }
@@ -136,26 +135,26 @@ trait ErrorPagesHandler {
               if (noCyInfo) {
                 Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
               } else {
-                Future.successful(NotFound(error4xxFromNps(Messages("global.error.pageNotFound404.title"))))
+                Future.successful(NotFound(error4xxFromNps(messages("global.error.pageNotFound404.title"))))
               }
             case _ =>
-              Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+              Future.successful(NotFound(error4xxPageWithLink(messages("global.error.pageNotFound404.title"))))
           }
         }
 
         case e: InternalServerException => {
           Logger.warn(s"<InternalServerException> - $methodName nino $nino")
-          Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.npsdown.message"))))
+          Future.successful(InternalServerError(error5xx(messages("tai.technical.error.npsdown.message"))))
         }
 
         case e: Upstream5xxResponse => {
           Logger.warn(s"<Upstream5xxResponse> - $methodName nino $nino")
-          Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.npsdown.message"))))
+          Future.successful(InternalServerError(error5xx(messages("tai.technical.error.npsdown.message"))))
         }
 
         case e => {
           Logger.warn(s"<Unknown Exception> - $methodName nino $nino", e)
-          Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
+          Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"))))
         }
       }
     }
@@ -166,7 +165,7 @@ trait ErrorPagesHandler {
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: NotFoundException if e.getMessage.toLowerCase.contains(NpsAppStatusMsg) =>
       Logger.warn(s"<Not found response received from NPS> - for nino $nino @${rl.getName}")
-      Future.successful(NotFound(error4xxFromNps(Messages("global.error.pageNotFound404.title"))))
+      Future.successful(NotFound(error4xxFromNps(messages("global.error.pageNotFound404.title"))))
   }
 
   def rtiEmploymentAbsentResult(nino: String)(
@@ -175,7 +174,7 @@ trait ErrorPagesHandler {
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: NotFoundException =>
       Logger.warn(s"<Not found response received from rti> - for nino $nino @${rl.getName}")
-      Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+      Future.successful(NotFound(error4xxPageWithLink(messages("global.error.pageNotFound404.title"))))
   }
 
   def hodInternalErrorResult(nino: String)(
@@ -184,7 +183,7 @@ trait ErrorPagesHandler {
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e @ (_: InternalServerException | _: HttpException) =>
       Logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
-      Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
+      Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"))))
   }
 
   def hodBadRequestResult(nino: String)(
@@ -195,7 +194,7 @@ trait ErrorPagesHandler {
       Logger.warn(
         s"<Bad request exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass}",
         e)
-      Future.successful(BadRequest(error4xxPageWithLink(Messages("global.error.badRequest400.title"))))
+      Future.successful(BadRequest(error4xxPageWithLink(messages("global.error.badRequest400.title"))))
   }
 
   def hodAnyErrorResult(nino: String)(
@@ -204,7 +203,7 @@ trait ErrorPagesHandler {
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e =>
       Logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
-      Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
+      Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"))))
   }
 
   def npsTaxAccountDeceasedResult(nino: String)(
@@ -297,6 +296,6 @@ trait ErrorPagesHandler {
     messages: Messages): Result = {
     Logger.warn(logMessage)
     ex.map(x => Logger.error(x.getMessage(), x))
-    InternalServerError(error5xx(Messages("tai.technical.error.message")))
+    InternalServerError(error5xx(messages("tai.technical.error.message")))
   }
 }

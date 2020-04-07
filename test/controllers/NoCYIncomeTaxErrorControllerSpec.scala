@@ -102,6 +102,7 @@ class NoCYIncomeTaxErrorControllerSpec
         mock[AuditConnector],
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer) {
 

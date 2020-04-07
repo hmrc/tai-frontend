@@ -19,9 +19,7 @@ package controllers
 import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth._
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.BadRequestException
@@ -43,6 +41,7 @@ class YourIncomeCalculationController @Inject()(
   paymentsService: PaymentsService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
+  override val messagesApi: MessagesApi,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController {

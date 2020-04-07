@@ -163,6 +163,7 @@ class IncomeSourceSummaryControllerSpec
         estimatedPayJourneyCompletionService,
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       )

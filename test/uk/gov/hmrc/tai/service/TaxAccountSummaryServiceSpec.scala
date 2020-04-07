@@ -214,7 +214,8 @@ class TaxAccountSummaryServiceSpec
         employmentService = employmentService,
         taxAccountService = taxAccountService,
         partialRetriever = MockPartialRetriever,
-        templateRenderer = MockTemplateRenderer
+        templateRenderer = MockTemplateRenderer,
+        messagesApi = messagesApi
       ) {
 
     when(employmentService.ceasedEmployments(any[Nino], any[TaxYear])(any[HeaderCarrier])).thenReturn(

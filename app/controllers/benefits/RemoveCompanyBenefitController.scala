@@ -21,9 +21,7 @@ import javax.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
@@ -52,6 +50,7 @@ class RemoveCompanyBenefitController @Inject()(
   benefitsService: BenefitsService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
+  override val messagesApi: MessagesApi,
   implicit val templateRenderer: TemplateRenderer,
   implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController with JourneyCacheConstants with FormValuesConstants

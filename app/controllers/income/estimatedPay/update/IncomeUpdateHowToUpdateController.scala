@@ -20,6 +20,7 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.{Inject, Named}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
@@ -31,8 +32,6 @@ import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 
@@ -45,6 +44,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
   employmentService: EmploymentService,
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,
+  override val messagesApi: MessagesApi,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)

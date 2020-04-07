@@ -24,6 +24,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.MessagesApi
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
@@ -119,6 +120,7 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
+        app.injector.instanceOf[MessagesApi],
         MockPartialRetriever,
         MockTemplateRenderer
       )
