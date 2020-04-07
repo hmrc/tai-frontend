@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
-import play.Logger
+import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Writes}
 import uk.gov.hmrc.http._
@@ -26,10 +26,56 @@ import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class HttpHandler @Inject()(val http: DefaultHttpClient) {
+class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFunctions {
 
+  def getFromApiV2(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
+    implicit val httpRds = new HttpReads[HttpResponse] {
+      def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
+        response.status match {
+          case UNAUTHORIZED => response
+          case _            => handleResponse(http, url)(response)
+        }
+
+      def read(http: String, url: String, res: HttpResponse) = customRead(http, url, res)
+    }
+
+    val futureResponse = http.GET[HttpResponse](url)
+
+    futureResponse.flatMap { httpResponse =>
+      httpResponse.status match {
+
+        case OK =>
+          Future.successful(httpResponse.json)
+
+        case NOT_FOUND =>
+          Logger.warn(s"HttpHandler - No data can be found")
+          Future.failed(new NotFoundException(httpResponse.body))
+
+        case INTERNAL_SERVER_ERROR =>
+          Logger.warn(s"HttpHandler - Internal Server Error received")
+          Future.failed(new InternalServerException(httpResponse.body))
+
+        case BAD_REQUEST =>
+          Logger.warn(s"HttpHandler - Bad Request received")
+          Future.failed(new BadRequestException(httpResponse.body))
+
+        case LOCKED =>
+          Logger.warn(s"HttpHandler - Locked received")
+          Future.failed(new LockedException(httpResponse.body))
+
+        case UNAUTHORIZED =>
+          Logger.warn(s"HttpHandler - Unauthorized received")
+          Future.failed(new UnauthorizedException(httpResponse.body))
+
+        case _ =>
+          Logger.warn(s"HttpHandler - Server error received")
+          Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+      }
+    }
+  }
+
+  @deprecated("Use getFromApiV2 as it handles UnauthorizedExceptions back from tai", "0.575.0")
   def getFromApi(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
-
     val futureResponse = http.GET[HttpResponse](url)
 
     futureResponse.flatMap { httpResponse =>

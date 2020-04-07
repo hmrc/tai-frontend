@@ -17,9 +17,10 @@
 package uk.gov.hmrc.tai.connectors
 
 import org.joda.time.LocalDate
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status._
@@ -30,112 +31,154 @@ import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class HttpHandlerSpec extends PlaySpec with MockitoSugar {
+class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
 
-  "HttpHandler" should {
+  override def beforeEach: Unit =
+    Mockito.reset(http)
 
+  "getFromApi" should {
     "return valid json" when {
-
       "data is successfully received from the http get call" in {
-
         val testUrl = "testUrl"
-
         val SUT = createSUT
-
         when(http.GET[HttpResponse](any())(any(), any(), any()))
           .thenReturn(Future.successful(SuccesfulGetResponseWithObject))
-
         val responseFuture = SUT.getFromApi(testUrl)
-
         val response = Await.result(responseFuture, 5 seconds)
-
         response mustBe Json.toJson(responseBodyObject)
-
         verify(http, times(1)).GET(Matchers.eq(testUrl))(any(), any(), any())
       }
     }
 
     "result in a BadRequest exception" when {
-
       "when a BadRequest http response is received from the http get call" in {
-
         val SUT = createSUT
-
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(BadRequestHttpResponse))
-
         val responseFuture = SUT.getFromApi("")
-
         val ex = the[BadRequestException] thrownBy Await.result(responseFuture, 5 seconds)
-
         ex.message mustBe "\"bad request\""
       }
     }
 
     "result in a NotFound exception" when {
-
       "when a NotFound http response is received from the http get call" in {
-
         val SUT = createSUT
-
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(NotFoundHttpResponse))
-
         val responseFuture = SUT.getFromApi("")
-
         val ex = the[NotFoundException] thrownBy Await.result(responseFuture, 5 seconds)
-
         ex.message mustBe "\"not found\""
       }
     }
 
     "result in a InternalServerError exception" when {
-
       "when a InternalServerError http response is received from the http get call" in {
-
         val SUT = createSUT
-
         when(http.GET[HttpResponse](any())(any(), any(), any()))
           .thenReturn(Future.successful(InternalServerErrorHttpResponse))
-
         val responseFuture = SUT.getFromApi("")
-
         val ex = the[InternalServerException] thrownBy Await.result(responseFuture, 5 seconds)
-
         ex.message mustBe "\"internal server error\""
       }
     }
 
     "result in a Locked exception" when {
-
       "when a Locked response is received from the http get call" in {
-
         val SUT = createSUT
-
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(LockedHttpResponse))
-
         val responseFuture = SUT.getFromApi("")
-
         val ex = the[LockedException] thrownBy Await.result(responseFuture, 5 seconds)
-
         ex.message mustBe "\"locked\""
       }
     }
 
     "result in an HttpException" when {
-
       "when a unknown error http response is received from the http get call" in {
-
         val SUT = createSUT
-
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(UnknownErrorHttpResponse))
-
         val responseFuture = SUT.getFromApi("")
-
         val ex = the[HttpException] thrownBy Await.result(responseFuture, 5 seconds)
+        ex.message mustBe "\"unknown response\""
+      }
+    }
+  }
 
+  "getFromApiV2" should {
+    "return valid json" when {
+      "data is successfully received from the http get call" in {
+        val testUrl = "testUrl"
+        val SUT = createSUT
+        when(http.GET[HttpResponse](any())(any(), any(), any()))
+          .thenReturn(Future.successful(SuccesfulGetResponseWithObject))
+        val responseFuture = SUT.getFromApiV2(testUrl)
+        val response = Await.result(responseFuture, 5 seconds)
+        response mustBe Json.toJson(responseBodyObject)
+        verify(http, times(1)).GET(Matchers.eq(testUrl))(any(), any(), any())
+      }
+    }
+
+    "result in a BadRequest exception" when {
+      "when a BadRequest http response is received from the http get call" in {
+        val SUT = createSUT
+        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(BadRequestHttpResponse))
+        val responseFuture = SUT.getFromApiV2("")
+        val ex = the[BadRequestException] thrownBy Await.result(responseFuture, 5 seconds)
+        ex.message mustBe "\"bad request\""
+      }
+    }
+
+    "result in a NotFound exception" when {
+      "when a NotFound http response is received from the http get call" in {
+        val SUT = createSUT
+        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(NotFoundHttpResponse))
+        val responseFuture = SUT.getFromApiV2("")
+        val ex = the[NotFoundException] thrownBy Await.result(responseFuture, 5 seconds)
+        ex.message mustBe "\"not found\""
+      }
+    }
+
+    "result in a InternalServerError exception" when {
+      "when a InternalServerError http response is received from the http get call" in {
+        val SUT = createSUT
+        when(http.GET[HttpResponse](any())(any(), any(), any()))
+          .thenReturn(Future.successful(InternalServerErrorHttpResponse))
+        val responseFuture = SUT.getFromApiV2("")
+        val ex = the[InternalServerException] thrownBy Await.result(responseFuture, 5 seconds)
+        ex.message mustBe "\"internal server error\""
+      }
+    }
+
+    "result in a Locked exception" when {
+      "when a Locked response is received from the http get call" in {
+        val SUT = createSUT
+        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(LockedHttpResponse))
+        val responseFuture = SUT.getFromApiV2("")
+        val ex = the[LockedException] thrownBy Await.result(responseFuture, 5 seconds)
+        ex.message mustBe "\"locked\""
+      }
+    }
+
+    "result in an HttpException" when {
+      "when a unknown error http response is received from the http get call" in {
+        val SUT = createSUT
+        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(UnknownErrorHttpResponse))
+        val responseFuture = SUT.getFromApiV2("")
+        val ex = the[HttpException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"unknown response\""
       }
     }
 
+    "result in an UnauthorisedException" when {
+      "when an Unauthorised response is received from the http get call" in {
+        val SUT = createSUT
+        val unauthorisedResponse =
+          HttpResponse(UNAUTHORIZED, Some(JsString("unauthorised response")), Map("ETag" -> Seq("34")))
+
+        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(unauthorisedResponse))
+        val responseFuture = SUT.getFromApiV2("")
+        val ex = the[HttpException] thrownBy Await.result(responseFuture, 5 seconds)
+        ex.message mustBe "\"unauthorised response\""
+      }
+    }
   }
 
   "putToApi" should {

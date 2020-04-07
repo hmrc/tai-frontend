@@ -31,7 +31,7 @@ import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service._
@@ -43,6 +43,7 @@ import org.mockito.Matchers.{eq => eqTo}
 import play.api.test.FakeRequest
 
 import scala.concurrent.Future
+
 class IncomeUpdateIrregularHoursControllerSpec
     extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JourneyCacheConstants {
 
@@ -75,6 +76,7 @@ class IncomeUpdateIrregularHoursControllerSpec
 
   "editIncomeIrregularHours" must {
     object EditIncomeIrregularHoursHarness {
+
       sealed class EditIncomeIrregularHoursHarness(taxCodeIncome: Option[TaxCodeIncome]) {
 
         when(incomeService.latestPayment(any(), any())(any()))
@@ -82,7 +84,7 @@ class IncomeUpdateIrregularHoursControllerSpec
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
-          .thenReturn(Future.successful(taxCodeIncome))
+          .thenReturn(Future.successful(Right(taxCodeIncome)))
 
         def editIncomeIrregularHours(
           incomeNumber: Int,
@@ -110,16 +112,31 @@ class IncomeUpdateIrregularHoursControllerSpec
       "the employment income cannot be found" in {
 
         val result = EditIncomeIrregularHoursHarness
-          .setup(None)
+          .setup(Option.empty[TaxCodeIncome])
           .editIncomeIrregularHours(2, RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "redirect to unauthorised page" when {
+      "there is an unauthorised response" in {
+
+        val service = EditIncomeIrregularHoursHarness.setup(Option.empty[TaxCodeIncome])
+
+        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Left(TaiUnauthorisedResponse("error"))))
+        val result = service.editIncomeIrregularHours(2, RequestBuilder.buildFakeGetRequestWithAuth())
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
       }
     }
   }
 
   "handleIncomeIrregularHours" must {
     object HandleIncomeIrregularHoursHarness {
+
       sealed class HandleIncomeIrregularHoursHarness() {
 
         val cacheMap = Map(
@@ -138,6 +155,7 @@ class IncomeUpdateIrregularHoursControllerSpec
 
         when(journeyCacheService.currentCache(any()))
           .thenReturn(Future.successful(cacheMap))
+
         def handleIncomeIrregularHours(
           employmentId: Int,
           request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -221,6 +239,7 @@ class IncomeUpdateIrregularHoursControllerSpec
 
   "confirmIncomeIrregularHours" must {
     object ConfirmIncomeIrregularHoursHarness {
+
       sealed class ConfirmIncomeIrregularHoursHarness(
         failure: Boolean,
         newAmount: Int,
@@ -243,6 +262,7 @@ class IncomeUpdateIrregularHoursControllerSpec
           new TestIncomeUpdateIrregularHoursController()
             .confirmIncomeIrregularHours(employmentId)(request)
       }
+
       def setup(
         failure: Boolean = false,
         newAmount: Int = 1235,
@@ -298,6 +318,7 @@ class IncomeUpdateIrregularHoursControllerSpec
 
   "submitIncomeIrregularHours" must {
     object SubmitIncomeIrregularHoursHarness {
+
       sealed class SubmitIncomeIrregularHoursHarness(mandatoryValuesFuture: Future[Seq[String]]) {
 
         when(
@@ -320,6 +341,7 @@ class IncomeUpdateIrregularHoursControllerSpec
           new TestIncomeUpdateIrregularHoursController()
             .submitIncomeIrregularHours(employmentId)(request)
       }
+
       def setup(mandatoryValuesFuture: Future[Seq[String]]): SubmitIncomeIrregularHoursHarness =
         new SubmitIncomeIrregularHoursHarness(mandatoryValuesFuture)
     }

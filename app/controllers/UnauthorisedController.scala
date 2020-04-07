@@ -43,7 +43,7 @@ class UnauthorisedController @Inject()(
   def completionUrl: String = ApplicationConfig.taiFrontendServiceUrl
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(unauthorisedView())
+    Ok(unauthorisedView()).withNewSession
   }
 
   def loginGG: Action[AnyContent] = Action.async { implicit request =>
@@ -90,8 +90,18 @@ class UnauthorisedController @Inject()(
 
   private def unauthorisedView()(implicit request: Request[_]) =
     views.html.error_template_noauth(
-      Messages("global.error.InternalServerError500.title"),
-      Messages("tai.technical.error.heading"),
-      Messages("tai.technical.error.message"),
-      List.empty)
+      Messages("tai.unauthorised.heading"),
+      Messages("tai.unauthorised.heading"),
+      Messages("tai.unauthorised.message"),
+      List(
+        views.html.includes
+          .link(
+            copy = Messages("tai.unauthorised.button-text"),
+            url = ApplicationConfig.unauthorisedSignOutUrl,
+            isButton = true,
+            id = Some("sign-in")
+          )
+          .toString()
+      )
+    )
 }
