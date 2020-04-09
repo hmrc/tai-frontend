@@ -36,19 +36,19 @@ class CompanyBenefitTotalValueFormSpec extends PlaySpec with OneAppPerSuite with
       "passed empty value" in {
         val totalValue = form.bind(Json.obj("totalValue" -> ""))
 
-        totalValue.errors must contain(FormError("totalValue", List(Messages("tai.bbsi.update.form.interest.blank"))))
+        totalValue.errors must contain(FormError("totalValue", List(Messages("tai.interest.blank"))))
       }
 
       "passed characters" in {
         val totalValue = form.bind(Json.obj("totalValue" -> "dasdas"))
 
-        totalValue.errors must contain(FormError("totalValue", Messages("tai.bbsi.update.form.interest.isCurrency")))
+        totalValue.errors must contain(FormError("totalValue", Messages("tai.interest.isCurrency")))
       }
 
       "entered (,) at wrong place" in {
         val totalValue = form.bind(Json.obj("totalValue" -> "1,00"))
 
-        totalValue.errors must contain(FormError("totalValue", Messages("tai.bbsi.update.form.interest.isCurrency")))
+        totalValue.errors must contain(FormError("totalValue", Messages("tai.interest.isCurrency")))
       }
 
     }
