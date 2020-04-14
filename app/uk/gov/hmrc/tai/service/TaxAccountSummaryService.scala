@@ -20,10 +20,10 @@ import com.google.inject.Inject
 import controllers.TaiBaseController
 import play.api.i18n.{Messages, MessagesApi}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, NotLive}
@@ -69,7 +69,8 @@ class TaxAccountSummaryService @Inject()(
             IncomesSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
             nonMatchingCeasedEmployments
           )
-        case _ => throw new RuntimeException("Failed to fetch income details")
+        case (_, _, _, _, TaiUnauthorisedResponse(message)) => throw new UnauthorizedException(message)
+        case _                                              => throw new RuntimeException("Failed to fetch income details")
       }
     }
 

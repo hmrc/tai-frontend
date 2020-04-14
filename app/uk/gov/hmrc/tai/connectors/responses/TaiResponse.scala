@@ -29,6 +29,7 @@ sealed trait TaiFailureResponse extends TaiResponse {
 }
 
 case class TaiNotFoundResponse(message: String) extends TaiFailureResponse
+case class TaiUnauthorisedResponse(message: String) extends TaiFailureResponse
 case class TaiCacheError(message: String) extends TaiFailureResponse
 
 case class TaiTaxAccountFailureResponse(message: String) extends TaiFailureResponse

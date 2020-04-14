@@ -20,7 +20,7 @@ import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxCodeIncomeComponentType
 import uk.gov.hmrc.tai.model.domain.income.{TaxCodeIncome, TaxCodeIncomeSourceStatus}
@@ -42,15 +42,15 @@ class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
     taxAccountConnector.taxCodeIncomes(nino, year)
 
   def taxCodeIncomeForEmployment(nino: Nino, year: TaxYear, employmentId: Int)(
-    implicit hc: HeaderCarrier): Future[Option[TaxCodeIncome]] =
+    implicit hc: HeaderCarrier): Future[Either[TaiResponse, Option[TaxCodeIncome]]] =
     for {
       taxCodeIncomesResponse <- taxAccountConnector.taxCodeIncomes(nino, year)
     } yield {
       taxCodeIncomesResponse match {
         case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => {
-          taxCodeIncomes.find(_.employmentId.contains(employmentId))
+          Right(taxCodeIncomes.find(_.employmentId.contains(employmentId)))
         }
-        case _ => throw new RuntimeException(s"Not able to find tax code incomes")
+        case response: TaiResponse => Left(response)
       }
     }
 

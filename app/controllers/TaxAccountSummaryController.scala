@@ -19,12 +19,14 @@ package controllers
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.Inject
+import play.api.Logger
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service._
@@ -34,7 +36,6 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class TaxAccountSummaryController @Inject()(
-  trackingService: TrackingService,
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
   taxAccountSummaryService: TaxAccountSummaryService,
@@ -55,7 +56,7 @@ class TaxAccountSummaryController @Inject()(
     (taxAccountService
       .taxAccountSummary(nino, TaxYear())
       .flatMap {
-        case (TaiTaxAccountFailureResponse(message))
+        case TaiTaxAccountFailureResponse(message)
             if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
               message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
           Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
@@ -63,10 +64,15 @@ class TaxAccountSummaryController @Inject()(
           taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
             Ok(views.html.incomeTaxSummary(vm))
           }
-        case (TaiTaxAccountFailureResponse(message)) =>
+        case TaiTaxAccountFailureResponse(message) =>
           throw new RuntimeException(s"Failed to fetch tax account summary details with exception: $message")
+        case TaiUnauthorisedResponse(message) =>
+          Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
       })
       .recover {
+        case e: UnauthorizedException =>
+          Logger.warn("taxAccountSummary failed with: " + e.getMessage)
+          Redirect(controllers.routes.UnauthorisedController.onPageLoad())
         case NonFatal(e) => internalServerError(e.getMessage, Some(e))
       }
   }

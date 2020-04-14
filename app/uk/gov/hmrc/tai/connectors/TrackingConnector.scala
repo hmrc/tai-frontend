@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
+import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.model.domain.tracking.TrackedForm
@@ -24,6 +25,7 @@ import uk.gov.hmrc.tai.model.domain.tracking.formatter.TrackedFormFormatters
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 class TrackingConnector @Inject()(httpHandler: HttpHandler) extends TrackedFormFormatters with DefaultServicesConfig {
 
@@ -34,6 +36,10 @@ class TrackingConnector @Inject()(httpHandler: HttpHandler) extends TrackedFormF
   def trackingUrl(id: String) = s"$serviceUrl/tracking-data/user/$IdType/$id"
 
   def getUserTracking(nino: String)(implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] =
-    httpHandler.getFromApi(trackingUrl(nino)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))
-
+    (httpHandler.getFromApi(trackingUrl(nino)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))).recover {
+      case NonFatal(x) => {
+        Logger.warn(s"Tracking service returned error, therefore returning an empty response. Error: ${x.getMessage}")
+        Seq.empty[TrackedForm]
+      }
+    }
 }

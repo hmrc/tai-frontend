@@ -419,7 +419,6 @@ class WhatDoYouWantToDoControllerSpec
     new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled)
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val trackingService = mock[TrackingService]
   val auditService = mock[AuditService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
@@ -429,7 +428,6 @@ class WhatDoYouWantToDoControllerSpec
         employmentService,
         taxCodeChangeService,
         taxAccountService,
-        trackingService,
         mock[AuditConnector],
         auditService,
         FakeAuthAction,
@@ -443,8 +441,6 @@ class WhatDoYouWantToDoControllerSpec
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(AuditResult.Success))
-    when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(NoTimeToProcess))
-
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
       .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary)))
   }

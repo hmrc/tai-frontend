@@ -29,10 +29,10 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service._
@@ -135,7 +135,17 @@ class TaxAccountSummaryControllerSpec
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
-      "a downstream error has occurred in the employment service (which does not reply with TaiResponse type)" in {
+      "a downstream unauthenticated error has occurred in one of the TaiResponse responding service methods" in {
+        val sut = createSUT
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future(TaiUnauthorisedResponse("unauthorised")))
+
+        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      }
+
+      "a downstream error has occurred in the tax account service (which does not reply with TaiResponse type)" in {
         val sut = createSUT
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
@@ -147,6 +157,21 @@ class TaxAccountSummaryControllerSpec
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "a downstream unauthorised exception has occurred in the tax account service" in {
+        val sut = createSUT
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
+        )
+
+        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any())).thenReturn(
+          Future.failed(new UnauthorizedException("unauthorised"))
+        )
+
+        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
       }
 
       "a downstream error has occurred in the tax code income service (which does not reply with TaiResponse type)" in {
@@ -161,6 +186,9 @@ class TaxAccountSummaryControllerSpec
         )
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
 
+        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any())).thenReturn(
+          Future.failed(new RuntimeException("Failed to fetch income details"))
+        )
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -176,6 +204,7 @@ class TaxAccountSummaryControllerSpec
         redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url)
 
       }
+
       "a downstream error has occurred in one of the TaiResponse responding service methods due to no employments recorded for current tax year" in {
         val sut = createSUT
 
@@ -185,7 +214,17 @@ class TaxAccountSummaryControllerSpec
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url)
+      }
 
+      "a downstream error has occurred in one of the TaiResponse responding service methods due to not being authorised" in {
+        val sut = createSUT
+
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future(TaiUnauthorisedResponse("unauthorised user")))
+
+        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
       }
     }
 
@@ -202,7 +241,6 @@ class TaxAccountSummaryControllerSpec
 
   def createSUT = new SUT()
 
-  val trackingService = mock[TrackingService]
   val auditService = mock[AuditService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
@@ -210,7 +248,6 @@ class TaxAccountSummaryControllerSpec
 
   class SUT()
       extends TaxAccountSummaryController(
-        trackingService,
         employmentService,
         taxAccountService,
         taxAccountSummaryService,
@@ -220,9 +257,7 @@ class TaxAccountSummaryControllerSpec
         messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
-      ) {
-    when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(ThreeWeeks))
-  }
+      ) {}
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 

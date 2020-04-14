@@ -17,14 +17,12 @@
 package uk.gov.hmrc.tai.viewModels
 
 import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
-import uk.gov.hmrc.tai.service.TimeToProcess
 import uk.gov.hmrc.tai.util.MapForGoogleAnalytics
 import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
 
 import scala.collection.immutable.ListMap
 
 case class WhatDoYouWantToDoViewModel(
-  isAnyIFormInProgress: TimeToProcess,
   isCyPlusOneEnabled: Boolean,
   hasTaxCodeChanged: Boolean = false,
   taxCodeMismatch: Option[TaxCodeMismatch] = None) {

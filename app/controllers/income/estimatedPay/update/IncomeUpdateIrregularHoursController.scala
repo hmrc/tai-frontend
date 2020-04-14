@@ -21,7 +21,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Payment
@@ -70,19 +70,19 @@ class IncomeUpdateIrregularHoursController @Inject()(
       val paymentRequest: Future[Option[Payment]] = incomeService.latestPayment(nino, employmentId)
       val taxCodeIncomeRequest = taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
 
-      (paymentRequest flatMap { payment =>
+      paymentRequest flatMap { payment =>
         taxCodeIncomeRequest flatMap {
-          case Some(tci) => {
+          case Right(Some(tci)) => {
             (taxCodeIncomeInfoToCache.tupled andThen journeyCacheService.cache)(tci, payment) map { _ =>
               val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
 
               Ok(views.html.incomes.editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
             }
           }
-          case None => throw new RuntimeException(s"Not able to find employment with id $employmentId")
+          case Left(TaiUnauthorisedResponse(_)) =>
+            Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
+          case _ => Future.successful(internalServerError("Failed to find tax code income for employment"))
         }
-      }).recover {
-        case NonFatal(e) => internalServerError(e.getMessage)
       }
   }
 

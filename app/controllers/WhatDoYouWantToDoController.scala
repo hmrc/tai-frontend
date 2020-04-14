@@ -42,7 +42,6 @@ class WhatDoYouWantToDoController @Inject()(
   employmentService: EmploymentService,
   taxCodeChangeService: TaxCodeChangeService,
   taxAccountService: TaxAccountService,
-  trackingService: TrackingService,
   val auditConnector: AuditConnector,
   auditService: AuditService,
   authenticate: AuthAction,
@@ -89,58 +88,47 @@ class WhatDoYouWantToDoController @Inject()(
   }
 
   private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
-
     val nino = user.nino
 
     auditNumberOfTaxCodesReturned(nino)
 
-    trackingService.isAnyIFormInProgress(nino.nino) flatMap { trackingResponse: TimeToProcess =>
-      if (cyPlusOneEnabled) {
+    if (cyPlusOneEnabled) {
+      val hasTaxCodeChanged = taxCodeChangeService.hasTaxCodeChanged(nino)
+      val cy1TaxAccountSummary = taxAccountService.taxAccountSummary(nino, TaxYear().next)
 
-        val hasTaxCodeChanged = taxCodeChangeService.hasTaxCodeChanged(nino)
-        val cy1TaxAccountSummary = taxAccountService.taxAccountSummary(nino, TaxYear().next)
+      for {
+        taxCodeChanged    <- hasTaxCodeChanged
+        taxAccountSummary <- cy1TaxAccountSummary
+      } yield {
+        taxAccountSummary match {
+          case TaiSuccessResponseWithPayload(_) => {
+            val model = WhatDoYouWantToDoViewModel(cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch)
 
-        for {
-          taxCodeChanged    <- hasTaxCodeChanged
-          taxAccountSummary <- cy1TaxAccountSummary
-        } yield {
-          taxAccountSummary match {
-            case TaiSuccessResponseWithPayload(_) => {
-              val model = WhatDoYouWantToDoViewModel(
-                trackingResponse,
-                cyPlusOneEnabled,
-                taxCodeChanged.changed,
-                taxCodeChanged.mismatch)
-
-              Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
-
-              Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
-            }
-            case _ => {
-              val model = WhatDoYouWantToDoViewModel(trackingResponse, isCyPlusOneEnabled = false)
-
-              Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
-
-              Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
-
-            }
-          }
-        }
-      } else {
-        taxCodeChangeService
-          .hasTaxCodeChanged(nino)
-          .map(hasTaxCodeChanged => {
-            val model = WhatDoYouWantToDoViewModel(
-              trackingResponse,
-              cyPlusOneEnabled,
-              hasTaxCodeChanged.changed,
-              hasTaxCodeChanged.mismatch)
-
-            Logger.debug(s"wdywtdViewModelCYDisabled $model")
+            Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
 
             Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
-          })
+          }
+          case _ => {
+            val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false)
+
+            Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
+
+            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+
+          }
+        }
       }
+    } else {
+      taxCodeChangeService
+        .hasTaxCodeChanged(nino)
+        .map(hasTaxCodeChanged => {
+          val model =
+            WhatDoYouWantToDoViewModel(cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch)
+
+          Logger.debug(s"wdywtdViewModelCYDisabled $model")
+
+          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+        })
     }
   }
 
