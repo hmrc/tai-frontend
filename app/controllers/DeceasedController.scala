@@ -17,9 +17,8 @@
 package controllers
 
 import javax.inject.Inject
-import controllers.auth.{AuthAction, AuthedUser}
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import controllers.auth.AuthAction
+import play.api.i18n.MessagesApi
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 
@@ -27,6 +26,7 @@ import scala.concurrent.Future
 
 class DeceasedController @Inject()(
   authenticate: AuthAction,
+  override val messagesApi: MessagesApi,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController {

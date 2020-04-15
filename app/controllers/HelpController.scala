@@ -19,8 +19,7 @@ package controllers
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.Inject
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.MessagesApi
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 
@@ -29,6 +28,7 @@ import scala.concurrent.Future
 class HelpController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
+  override val messagesApi: MessagesApi,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController {

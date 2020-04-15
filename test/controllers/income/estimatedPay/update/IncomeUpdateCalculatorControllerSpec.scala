@@ -28,7 +28,7 @@ import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -72,6 +72,7 @@ class IncomeUpdateCalculatorControllerSpec
         estimatedPayJourneyCompletionService,
         FakeAuthAction,
         FakeValidatePerson,
+        app.injector.instanceOf[MessagesApi],
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer

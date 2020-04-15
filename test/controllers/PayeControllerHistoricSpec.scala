@@ -234,6 +234,7 @@ class PayeControllerHistoricSpec
         employmentService,
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

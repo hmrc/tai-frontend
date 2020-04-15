@@ -57,7 +57,7 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler) extends DefaultS
     }
   }
 
-  @deprecated("Use mandatoryJourneyValueAs")
+  @deprecated("Use mandatoryJourneyValueAs", "0.576.0")
   def mandatoryValueAs[T](journeyName: String, key: String, convert: String => T)(
     implicit hc: HeaderCarrier): Future[T] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"

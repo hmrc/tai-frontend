@@ -817,6 +817,7 @@ class AddEmploymentControllerSpec
         addEmploymentJourneyCacheService,
         trackSuccessJourneyCacheService,
         mock[AuditConnector],
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

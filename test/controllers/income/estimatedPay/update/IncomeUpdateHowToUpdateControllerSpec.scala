@@ -28,7 +28,7 @@ import org.mockito.{Matchers, Mockito}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -64,6 +64,7 @@ class IncomeUpdateHowToUpdateControllerSpec
         employmentService,
         incomeService,
         taxAccountService,
+        app.injector.instanceOf[MessagesApi],
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer

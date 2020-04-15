@@ -27,7 +27,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -64,6 +64,7 @@ class IncomeUpdateIrregularHoursControllerSpec
         incomeService,
         taxAccountService,
         estimatedPayJourneyCompletionService,
+        app.injector.instanceOf[MessagesApi],
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer

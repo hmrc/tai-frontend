@@ -72,6 +72,7 @@ class UnderPaymentFromPreviousYearControllerSpec
         taxAccountService,
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

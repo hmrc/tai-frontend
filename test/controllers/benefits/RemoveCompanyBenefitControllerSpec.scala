@@ -709,6 +709,7 @@ class RemoveCompanyBenefitControllerSpec
         benefitsService,
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockTemplateRenderer,
         MockPartialRetriever
       )

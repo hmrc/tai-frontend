@@ -611,6 +611,7 @@ class UpdatePensionProviderControllerSpec
         mock[AuditService],
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         journeyCacheService,
         successfulJourneyCacheService,
         MockPartialRetriever,

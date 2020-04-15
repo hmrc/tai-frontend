@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import com.google.inject.Inject
 import controllers.TaiBaseController
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -29,19 +29,19 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, NotLive}
 import uk.gov.hmrc.tai.viewModels.{IncomesSources, TaxAccountSummaryViewModel}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class TaxAccountSummaryService @Inject()(
   trackingService: TrackingService,
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
+  override val messagesApi: MessagesApi,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController {
 
   def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(
-    implicit hc: HeaderCarrier,
-    messages: Messages): Future[TaxAccountSummaryViewModel] =
+    implicit hc: HeaderCarrier): Future[TaxAccountSummaryViewModel] =
     for {
       livePensionIncomeSources      <- taxAccountService.incomeSources(nino, TaxYear(), PensionIncome, Live)
       liveEmploymentIncomeSources   <- taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Live)

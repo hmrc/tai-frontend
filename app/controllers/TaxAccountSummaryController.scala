@@ -20,8 +20,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -33,7 +32,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class TaxAccountSummaryController @Inject()(
@@ -43,8 +42,9 @@ class TaxAccountSummaryController @Inject()(
   auditService: AuditService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
+  override val messagesApi: MessagesApi,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController with AuditConstants with FeatureTogglesConfig {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

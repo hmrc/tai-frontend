@@ -26,7 +26,7 @@ import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -55,6 +55,7 @@ class IncomeUpdatePayslipAmountControllerSpec
       extends IncomeUpdatePayslipAmountController(
         FakeAuthAction,
         FakeValidatePerson,
+        app.injector.instanceOf[MessagesApi],
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer) {

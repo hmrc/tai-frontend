@@ -17,16 +17,12 @@
 package controllers
 
 import javax.inject.Inject
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.http.SessionKeys
-import uk.gov.hmrc.play.config
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.auth.ConfigProperties
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
@@ -34,6 +30,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import scala.concurrent.Future
 
 class UnauthorisedController @Inject()(
+  override val messagesApi: MessagesApi,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController {

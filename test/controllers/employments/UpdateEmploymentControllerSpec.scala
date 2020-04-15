@@ -486,6 +486,7 @@ class UpdateEmploymentControllerSpec
         mock[AuditConnector],
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         journeyCacheService,
         successfulJourneyCacheService,
         MockPartialRetriever,

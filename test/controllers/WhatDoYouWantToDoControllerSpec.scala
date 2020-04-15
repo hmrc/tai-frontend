@@ -432,6 +432,7 @@ class WhatDoYouWantToDoControllerSpec
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

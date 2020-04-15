@@ -342,6 +342,7 @@ class CompanyBenefitControllerSpec
         journeyCacheService,
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockTemplateRenderer,
         MockPartialRetriever
       ) {

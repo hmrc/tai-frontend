@@ -54,6 +54,7 @@ class HelpControllerSpec extends PlaySpec with JsoupMatchers with MockitoSugar w
       extends HelpController(
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       )

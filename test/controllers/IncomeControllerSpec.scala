@@ -770,6 +770,7 @@ class IncomeControllerSpec
         estimatedPayJourneyCompletionService,
         FakeAuthAction,
         FakeValidatePerson,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

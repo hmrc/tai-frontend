@@ -86,6 +86,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
       extends ServiceController(
         authAction,
         FakeValidatePerson,
+        messagesApi,
         MockPartialRetriever,
         MockTemplateRenderer
       )

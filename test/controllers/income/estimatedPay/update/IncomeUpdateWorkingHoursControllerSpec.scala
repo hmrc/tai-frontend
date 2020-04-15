@@ -18,19 +18,18 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{FakeAuthAction, FakeTaiPlayApplication, routes}
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
+import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
@@ -51,6 +50,7 @@ class IncomeUpdateWorkingHoursControllerSpec
       extends IncomeUpdateWorkingHoursController(
         FakeAuthAction,
         FakeValidatePerson,
+        app.injector.instanceOf[MessagesApi],
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer) {

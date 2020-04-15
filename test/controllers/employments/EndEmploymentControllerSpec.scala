@@ -808,6 +808,7 @@ class EndEmploymentControllerSpec
         endEmploymentJourneyCacheService,
         trackSuccessJourneyCacheService,
         mock[AuditConnector],
+        messagesApi,
         MockTemplateRenderer,
         MockPartialRetriever
       ) {

@@ -56,6 +56,7 @@ class YourTaxCodeControllerSpec
         taxCodeChangeService,
         FakeAuthAction,
         FakeValidatePerson,
+        app.injector.instanceOf[MessagesApi],
         MockPartialRetriever,
         MockTemplateRenderer
       )
