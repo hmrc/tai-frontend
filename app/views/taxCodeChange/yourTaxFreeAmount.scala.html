@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 @import includes.taxFreeAmountSummaryComparison
 @import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 
 @(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -32,12 +33,19 @@
         preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
 
+@scriptElem = {
+    @if(FeatureTogglesConfig.webChatEnabled){
+        <script src="@controllers.routes.AssetsController.versioned("javascript/nuance-webchat.js")" type="text/javascript"></script>
+    }
+}
+
 @main(
     title = Messages("taxCode.change.yourTaxFreeAmount.title"),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
     authedUser = Some(user),
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    script = Some(scriptElem)
     ) {
 
 

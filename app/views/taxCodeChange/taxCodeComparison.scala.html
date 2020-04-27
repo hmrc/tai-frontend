@@ -24,6 +24,7 @@
 @import org.joda.time.LocalDate
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
+@import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 
 @import uk.gov.hmrc.tai.util.HtmlFormatter
 @(taxCodeChangeViewModel: TaxCodeChangeViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
@@ -41,12 +42,19 @@
     )
 }
 
+@scriptElem = {
+    @if(FeatureTogglesConfig.webChatEnabled){
+        <script src="@controllers.routes.AssetsController.versioned("javascript/nuance-webchat.js")" type="text/javascript"></script>
+    }
+}
+
 @main(
     title = Messages("taxCode.change.journey.preHeading"),
     pageHeader = Some(header),
     authedUser = Some(user),
     gaCustomTitle = None,
-    gaSettings = GoogleAnalyticsSettings(dimensions = Some(taxCodeChangeViewModel.gaDimensions))
+    gaSettings = GoogleAnalyticsSettings(dimensions = Some(taxCodeChangeViewModel.gaDimensions)),
+    script = Some(scriptElem)
     ) {
 
     <div class="column-two-thirds">

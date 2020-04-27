@@ -20,6 +20,7 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.IFormInProgressBannerViewModel
+@import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 
 @(viewModel: TaxAccountSummaryViewModel
 )(implicit request: Request[_],
@@ -52,11 +53,18 @@
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
+@scriptElem = {
+    @if(FeatureTogglesConfig.webChatEnabled){
+        <script src="@controllers.routes.AssetsController.versioned("javascript/nuance-webchat.js")" type="text/javascript"></script>
+    }
+}
+
 @main(
     title = viewModel.title,
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = Some("full-width")
+    articleClasses = Some("full-width"),
+    script = Some(scriptElem)
     ){
 
 @includes.iFormInProgressBanner(IFormInProgressBannerViewModel(viewModel.isAnyFormInProgress))
