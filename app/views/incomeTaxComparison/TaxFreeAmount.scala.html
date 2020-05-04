@@ -56,7 +56,7 @@
                 @messages("tai.income.personalAllowance")
             </td>
             @for((personalAllowance, itemIndex) <- model.personalAllowance.values zip (Stream from 1)) {
-                <td scope="row" role="tablecell" class="numeric">
+                <td scope="row" role="cell" class="numeric">
 
                     @if(itemIndex == 1){
                         <span class="table-heading" aria-hidden="true">
