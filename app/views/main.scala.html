@@ -144,7 +144,7 @@
 
 @inlineScript = {
     @if(gaCallsAdditionalJs.isDefined && gaCallsAdditionalJs.get.toString.trim != ""){
-        <script type="text/javascript">@gaCallsAdditionalJs.get</script>
+        <script>@gaCallsAdditionalJs.get</script>
     }
 
     @script
