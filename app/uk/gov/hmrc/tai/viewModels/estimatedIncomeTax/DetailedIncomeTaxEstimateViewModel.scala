@@ -279,18 +279,22 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
       }
       .map(_.amount)
       .getOrElse(BigDecimal(0))
+
+    val tabIndexLink = {
+      val link: Link = Link
+        .toInternalPage(
+          url = routes.YourTaxCodeController.taxCodes.url,
+          value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
+        )
+      val tabLink = link.copy(dataAttributes = Some(Map("taxindex" -> "-1")))
+      tabLink.toHtml.body.replaceAll("data-", "")
+    }
     createReductionTaxRow(
       marriageAllowance,
       Messages(
         "tai.taxCollected.atSource.marriageAllowance.description",
         MoneyPounds(marriageAllowanceNpsComponent).quantity,
-        Link
-          .toInternalPage(
-            url = routes.YourTaxCodeController.taxCodes.url,
-            value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
-          )
-          .toHtml
-          .body
+        tabIndexLink
       ),
       Messages("tai.taxCollected.atSource.marriageAllowance.title")
     )

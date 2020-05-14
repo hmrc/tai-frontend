@@ -58,9 +58,9 @@
                 )),
                 panelClass = Some("tax-code-change__details")
             ){
-                <ul role="list" class="tai-description-list">
+                <ul class="tai-description-list">
                     @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
-                    <li role="listitem">
+                    <li>
                         <div class="bold-medium">
                             <span class="visuallyhidden">@Messages("tai.taxCode.part.announce", taxCodeExplanation._1)</span>
                             <span class="tax-code-change__part" aria-hidden="true">@taxCodeExplanation._1</span>

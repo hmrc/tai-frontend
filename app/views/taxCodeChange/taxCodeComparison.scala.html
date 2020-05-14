@@ -87,8 +87,8 @@
             <p aria-hidden="true">@messages("tai.taxCodeComparison.title")</p>
 
         <div class ="tax-code-change">
-            <label for="taxCodeReasons" class="visuallyhidden">@messages("tai.taxCodeComparison.title")</label>
-            <ul class="list-bullet" name="taxCodeReasons" id="taxCodeReasons">
+            <span class="visuallyhidden">@messages("tai.taxCodeComparison.title")</span>
+            <ul class="list-bullet" id="taxCodeReasons">
             @for((reason) <- taxCodeReasons) {
                 <li class="tax-code-reason">
                 @reason
