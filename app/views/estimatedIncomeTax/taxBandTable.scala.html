@@ -19,27 +19,27 @@
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 
-@(tableId: String, taxBands: List[TaxBand], taxRegion: String)(implicit messages: Messages)
+@(tableClass: String, taxBands: List[TaxBand], taxRegion: String)(implicit messages: Messages)
 
 
 
-<table id=@{tableId}>
+<table id=@{tableClass}>
     <thead>
     <tr>
-        <th id="taxBand">@Messages("tai.incomeTaxBand")</th>
-        <th id="taxAmount" class="numeric">@Messages("tai.amount")</th>
-        <th id="taxRate" class="numeric">@Messages("tai.taxRate")</th>
-        <th id="tax" class="numeric">@Messages("tai.tax")</th>
+        <th class="taxBand">@Messages("tai.incomeTaxBand")</th>
+        <th class="numeric taxAmount">@Messages("tai.amount")</th>
+        <th class="numeric taxRate">@Messages("tai.taxRate")</th>
+        <th class="numeric tax">@Messages("tai.tax")</th>
     </tr>
     </thead>
     <tbody>
 
     @for((taxBand, count) <- taxBands.sortBy(_.rate).zipWithIndex){
     <tr>
-        <td id="bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
-        <td id="income@{count}" class="numeric">@withPoundPrefix(MoneyPounds(taxBand.income,0))</td>
-        <td id="taxRate@{count}" class="numeric">@taxBand.rate%</td>
-        <td id="tax@{count}" class="numeric">@withPoundPrefix(MoneyPounds(taxBand.tax,0))</td>
+        <td class="bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
+        <td class="numeric income@{count}">@withPoundPrefix(MoneyPounds(taxBand.income,0))</td>
+        <td class="numeric taxRate@{count}">@taxBand.rate%</td>
+        <td class="numeric tax@{count}">@withPoundPrefix(MoneyPounds(taxBand.tax,0))</td>
     </tr>
     }
     </tbody>

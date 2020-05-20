@@ -46,11 +46,11 @@
         <thead id="incomeSummeryComparisonTableHeader">
             <tr role="row">
                 <th scope="col"><span class="visuallyhidden">@messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")</span></th>
-                <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="numeric">
+                <th scope="col" class="numeric taxCodeComparisonTableHeaderCol1">
                     @Html(messages("tai.CurrentTaxYear"))
                     @Html(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end)))
                 </th>
-                <th id="taxCodeComparisonTableHeaderCol2" scope="col" class="numeric">
+                <th scope="col" class="numeric taxCodeComparisonTableHeaderCol2">
                     @Html(messages("tai.NextTaxYear"))
                     @Html(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start)))
                 </th>
@@ -65,7 +65,7 @@
 
             <tr>
                 <td role="cell" class="table-title">
-                    <span class="table-heading" aria-hidden="true" id="employerName">
+                    <span class="table-heading employerName" aria-hidden="true">
                         @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
                     </span>
                     <span class="carry-over">@employmentIncomeSourceDetail.name</span>
@@ -105,7 +105,7 @@
 
                 <tr>
                     <td role="cell" class="table-title">
-                        <span class="table-heading" aria-hidden="true" id="employerName">
+                        <span class="table-heading employerName" aria-hidden="true">
                         @messages("tai.incomeTaxComparison.taxCodes.table.pensionsReaderText")
                         </span>
                         <span class="carry-over">@pensionIncomeSourceDetail.name</span>

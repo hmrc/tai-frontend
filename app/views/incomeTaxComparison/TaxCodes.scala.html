@@ -39,21 +39,21 @@
     <tr role="row">
         <th scope="col">
         </th>
-        <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="numeric">
+        <th scope="col" class="numeric taxCodeComparisonTableHeaderCol1">
             @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
             @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
         </th>
-        <th id="taxCodeComparisonTableTableHeaderCol2" scope="col" class="numeric">
+        <th scope="col" class="numeric taxCodeComparisonTableHeaderCol1">
             @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
             @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
         </th>
     </tr>
     </thead>
-    <tbody id="taxCodeComparisonTableBody">
+    <tbody class="taxCodeComparisonTableBody">
         @for(taxCodeDetail <- model.employmentTaxCodes) {
             <tr role="row">
                 <td role="cell" class="table-title">
-                    <span class="table-heading" aria-hidden="true" id="employerName">
+                    <span class="table-heading employerName" aria-hidden="true">
                     @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
                     </span>
                     <span class="carry-over">@taxCodeDetail.name</span>
@@ -64,7 +64,7 @@
         @for(taxCodeDetail <- model.pensionTaxCodes) {
             <tr role="row">
                 <td role="cell" class="table-title">
-                    <span class="table-heading" aria-hidden="true" id="employerName">
+                    <span class="table-heading employerName" aria-hidden="true">
                     @messages("tai.incomeTaxComparison.taxCodes.table.pensionsReaderText")
                     </span>
                     <span class="carry-over">@taxCodeDetail.name</span>

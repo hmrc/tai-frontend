@@ -247,6 +247,8 @@ trait JsoupMatchers {
   def haveTableTdWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "td")
   def haveTableThWithIdAndText(id: String, expectedText: String) =
     new CssSelectorWithTextMatcher(expectedText, s"th[id=$id]")
+  def haveTableThWithClassAndText(classes: String, expectedText: String) =
+    new CssSelectorWithTextMatcher(expectedText, s"th[class=$classes]")
   def haveTableCaptionWithIdAndText(id: String, expectedText: String) =
     new CssSelectorWithTextMatcher(expectedText, s"caption[id=$id]")
   def haveElementAtPathWithId(elementSelector: String, id: String) =

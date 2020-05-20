@@ -74,7 +74,7 @@
                     </p>
 
                     @taxBandTable(
-                        tableId = "employmentIncomeTaxDetails",
+                        tableClass = "employmentIncomeTaxDetails",
                         taxBands = viewModel.nonSavings,
                         taxRegion = viewModel.taxRegion)
                 </section>
@@ -87,7 +87,7 @@
                             MoneyPounds(viewModel.totalDividendIncome, 0).quantity,
                             MoneyPounds(viewModel.taxFreeDividendAllowance, 0).quantity)
                         </p>
-                        @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.dividends, taxRegion = viewModel.taxRegion)
+                        @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.dividends, taxRegion = viewModel.taxRegion)
                     </section>
                 }
 
@@ -103,7 +103,7 @@
                                 @Messages("tai.estimatedIncome.savings.desc.higherRate", DetailedIncomeTaxEstimateViewModel.taxFreeSavingsIncome(viewModel.savings))
                             </p>
                         }
-                        @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion = viewModel.taxRegion)
+                        @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion = viewModel.taxRegion)
 
                     </section>
                 }

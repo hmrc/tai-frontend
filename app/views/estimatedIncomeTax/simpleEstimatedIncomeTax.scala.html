@@ -87,7 +87,7 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
                     <p id="taxOnEmploymentIncomeDesc">
                         @Html(viewModel.taxOnIncomeTypeDescription)
                     </p>
-                    @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.mergedTaxBands, taxRegion = viewModel.taxRegion)
+                    @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.mergedTaxBands, taxRegion = viewModel.taxRegion)
                 </section>
 
                 <section>

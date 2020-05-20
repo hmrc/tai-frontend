@@ -343,6 +343,16 @@ class DetailedIncomeTaxEstimateViewModelSpec
             CodingComponent(MarriedCouplesAllowanceMAE, None, 1200, "", None)
           )
 
+          val tabIndexLink = {
+            val link: Link = Link
+              .toInternalPage(
+                url = routes.YourTaxCodeController.taxCodes().toString,
+                value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
+              )
+            val tabLink = link.copy(dataAttributes = Some(Map("taxindex" -> "-1")))
+            tabLink.toHtml.body.replaceAll("data-", "")
+          }
+
           val result: Seq[ReductionTaxRow] =
             DetailedIncomeTaxEstimateViewModel.createReductionsTable(codingComponents, totalTax)
 
@@ -363,13 +373,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
               Messages(
                 "tai.taxCollected.atSource.marriageAllowance.description",
                 MoneyPounds(1200).quantity,
-                Link
-                  .toInternalPage(
-                    url = routes.YourTaxCodeController.taxCodes().toString,
-                    value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
-                  )
-                  .toHtml
-                  .body
+                tabIndexLink
               ),
               800,
               Messages("tai.taxCollected.atSource.marriageAllowance.title")
