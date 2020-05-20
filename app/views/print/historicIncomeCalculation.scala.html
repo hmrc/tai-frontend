@@ -37,7 +37,7 @@
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
 
 <div class="print-wrapper">
-    <br><strong><p>@user.getDisplayName</p></strong>
+    <p><strong>@user.getDisplayName</strong></p>
 
     <section class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse(""))</h2></section>
 

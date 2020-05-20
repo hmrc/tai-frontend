@@ -160,6 +160,21 @@ trait JsoupMatchers {
     }
   }
 
+  class ClassSelectorWithUrlMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
+    def apply(left: Document): MatchResult = {
+      val elements: String =
+        left.getElementsByClass(selector).attr("href")
+
+      lazy val elementContents = elements.mkString("\t", "\n\t", "")
+
+      MatchResult(
+        elements.contains(expectedContent),
+        s"[$expectedContent] not found in elements with class '$selector':[\n$elementContents]",
+        s"[$expectedContent] element found with class '$selector' and url [$expectedContent]"
+      )
+    }
+  }
+
   class IdSelectorWithUrlAndTextMatcher(id: String, url: String, text: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
       val element = left.getElementById(id)
@@ -285,6 +300,8 @@ trait JsoupMatchers {
   def haveBackButtonWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "backLink")
   def haveCancelLinkWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "cancelLink")
   def haveLinkWithUrlWithID(id: String, expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, id)
+  def haveLinkWithUrlWithClass(classes: String, expectedURL: String) =
+    new ClassSelectorWithUrlMatcher(expectedURL, classes)
   def haveReturnToSummaryButtonWithUrl(expectedURL: String) =
     new IdSelectorWithUrlMatcher(expectedURL, "returnToSummary")
 

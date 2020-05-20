@@ -141,7 +141,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                         @Link.toInternalPage(
                             url=routes.YourTaxCodeController.prevTaxCodes(viewModel.taxYear).toString(),
                             value=Some(messages("tai.taxCode.description.link")),
-                            id=Some("taxCodeDescription")
+                            cssClasses=Some("taxCodeDescription")
                         ).toHtml
                     }
 

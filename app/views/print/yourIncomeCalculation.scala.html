@@ -29,7 +29,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
 
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
 
-    <br><strong><p>@user.getDisplayName</p></strong>
+    <p><strong>@user.getDisplayName</strong></p>
     <section class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName)</h2></section>
 	    <section class="section soft--top">
             @model.employmentStatus match {
