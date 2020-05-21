@@ -39,7 +39,7 @@
   gaCustomTitle: Option[String] = None,
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None,
-  script: Option[Html] = None,
+  additionalScript: Option[Html] = None,
   hidePtaAccountNav: Boolean = false
 )(mainContent: Html
 )(implicit request: Request[_],
@@ -147,7 +147,7 @@
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
 
-    @script
+    @additionalScript
 }
 
 
