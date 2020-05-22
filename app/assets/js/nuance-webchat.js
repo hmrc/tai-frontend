@@ -18,9 +18,8 @@ $(window).on("load", function() {
       }
     }
 
-    waitForEl("#inqChatStage", function() {
+   waitForEl("#Nuance-chat-anchored", function() {
         $("#Nuance-chat-anchored").appendTo("#wrapper #content #skipto article");
         $("#inqChatStage").appendTo("#wrapper #content #skipto article");
     });
-
 });
