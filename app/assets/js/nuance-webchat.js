@@ -14,7 +14,7 @@ $(window).on("load", function() {
           if(count<4) {
             waitForEl(selector,callback,count);
           } else {return;}
-        }, 500);
+        }, 1000);
       }
     }
 
