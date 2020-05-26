@@ -24,7 +24,6 @@
         panel: Boolean = false,
         jsHidden: Boolean = false,
         labelHidden: Boolean = false,
-        maxlength: String = "",
         hintClass: String = "",
         rows: String = "7"
 )(implicit lang: Lang, m: Messages)
@@ -41,5 +40,5 @@
     </label>
 
     <textarea name="@field.name" class="form-control @if(fieldErrorsEnabled && field.hasErrors) { form-control-error} @classes.mkString(" ")" id="@field.id"
-        @if(maxlength.nonEmpty) { maxlength="@maxlength" } @if(rows.nonEmpty) { rows="@rows" }>@field.value</textarea>
+        @if(rows.nonEmpty) { rows="@rows" }>@field.value</textarea>
 </div>

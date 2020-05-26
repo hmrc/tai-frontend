@@ -106,14 +106,6 @@ partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
                                     <th class="text--right">@Messages("tai.income.calculation.incomeTable.nationalInsuranceHeader")</th>
                                 </tr>
                             </thead>
-                            <tfoot>
-                                <tr class="table__row--bold">
-                                    <td>@Messages("tai.taxFree.total")</td>
-                                    <td class="text--right">@{f"${model.latestPayment.get.amountYearToDate}%,.2f"}</td>
-                                    <td class="text--right">@{f"${model.latestPayment.get.taxAmountYearToDate}%,.2f"}</td>
-                                    <td class="text--right">@{f"${model.latestPayment.get.nationalInsuranceAmountYearToDate}%,.2f"}</td>
-                                </tr>
-                            </tfoot>
                             <tbody>
                                 @for(payment <- model.payments){
                                     <tr class="pension-contributions-data">
@@ -124,6 +116,14 @@ partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
                                     </tr>
                                 }
                             </tbody>
+                            <tfoot>
+                                <tr class="table__row--bold">
+                                    <td>@Messages("tai.taxFree.total")</td>
+                                    <td class="text--right">@{f"${model.latestPayment.get.amountYearToDate}%,.2f"}</td>
+                                    <td class="text--right">@{f"${model.latestPayment.get.taxAmountYearToDate}%,.2f"}</td>
+                                    <td class="text--right">@{f"${model.latestPayment.get.nationalInsuranceAmountYearToDate}%,.2f"}</td>
+                                </tr>
+                            </tfoot>
                         </table>
 
                         @model.messageWhenTotalNotEqual.map { message =>

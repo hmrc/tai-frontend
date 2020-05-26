@@ -54,11 +54,11 @@
             <li id="totalValueEnter">@Messages("tai.remove.company.benefit.total.value.enter")</li>
         </ul>
 
-        <summary>
+
             @includes.details_summary(Messages("tai.remove.company.benefit.total.value.whatHappens.link")){
-            <span>@Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.toString("yyyy"),TaxYear().end.toString("yyyy"), Dates.formatDate(TaxYear().end))</span>
+            <p>@Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.toString("yyyy"),TaxYear().end.toString("yyyy"), Dates.formatDate(TaxYear().end))</p>
         }
-        </summary>
+
 
     @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitBenefitValue()) {
         <div class="section">

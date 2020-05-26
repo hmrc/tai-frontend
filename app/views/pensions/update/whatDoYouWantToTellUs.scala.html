@@ -47,8 +47,7 @@
         @textArea(
             field=whatDoYouWantToTellUsForm("pensionDetails"),
             classes = Seq("form-control form-control--full-width js-char-count"),
-            labelText = Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.text", WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit),
-            maxlength =  WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit.toString
+            labelText = Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.text", WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit)
         )
 
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updatePension.preHeading")))

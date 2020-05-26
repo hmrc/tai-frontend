@@ -49,7 +49,7 @@
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
-                <section class="soft--top flush--bottom">
+                <div class="soft--top flush--bottom">
                     <div class="grid-row">
                         <div class="column-one-half">
                             <h2 class="flush--bottom">
@@ -63,9 +63,9 @@
                     @viewModel.selfAssessmentAndPayeText.map(paragraphText =>
                         <p>{paragraphText}</p>
                     )
-                </section>
+                </div>
 
-                <section class="section soft--top">
+                <div class="section soft--top">
                     <h2 class="heading-section">
                         @viewModel.taxOnIncomeTypeHeading
                     </h2>
@@ -77,10 +77,10 @@
                         tableClass = "employmentIncomeTaxDetails",
                         taxBands = viewModel.nonSavings,
                         taxRegion = viewModel.taxRegion)
-                </section>
+                </div>
 
                 @if(viewModel.dividends.nonEmpty){
-                    <section class="section soft--top">
+                    <div class="section soft--top">
                         <h2 id="tax-on-dividend-income-text" class="heading-section">@Messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading")</h2>
                         <p id="tax-on-dividend-income-desc">
                             @Messages("tai.estimatedIncome.dividend.para.desc",
@@ -88,11 +88,11 @@
                             MoneyPounds(viewModel.taxFreeDividendAllowance, 0).quantity)
                         </p>
                         @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.dividends, taxRegion = viewModel.taxRegion)
-                    </section>
+                    </div>
                 }
 
                 @if(viewModel.savings.nonEmpty){
-                    <section class="section soft--top">
+                    <div class="section soft--top">
                         <h2 id="tax-on-savings-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>
 
                         <p id="income-from-savings">
@@ -105,11 +105,11 @@
                         }
                         @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion = viewModel.taxRegion)
 
-                    </section>
+                    </div>
                 }
 
                 @if(viewModel.additionalTaxTable.nonEmpty){
-                <section>
+                <div>
                     <h3 id ="additionalTaxTable-heading" class="heading-medium heading-section">
                         @Messages("tai.estimatedIncome.additionalTax.title")</h3>
                     <p id="additionalTaxTable-desc">@Messages("tai.estimatedIncome.additionalTax.desc")</p>
@@ -142,11 +142,11 @@
                         </tr>
                         }
                     </table>
-                </section>
+                </div>
                 }
 
                 @if(viewModel.reductionTaxTable.nonEmpty){
-                <section class="section soft--top soft--bottom">
+                <div class="section soft--top soft--bottom">
                     <h3 id="taxPaidElsewhereTable-heading" class="heading-medium heading-section">@Messages("tai.estimatedIncome.reductionsTax.title")</h3>
                     <p id="taxPaidElsewhereTable-desc">@Messages("tai.estimatedIncome.reductionsTax.desc")</p>
                     <table id="taxPaidElsewhereTable" class="table-section">
@@ -170,14 +170,12 @@
                         </tr>
                         }
                     </table>
-                </section>
+                </div>
                 }
             </div>
         </div>
 
-        <section>
-            @navigationLinks(gaEventActionString)
-        </section>
+        @navigationLinks(gaEventActionString)
 
     </div>
 }
