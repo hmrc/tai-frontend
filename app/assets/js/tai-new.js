@@ -34,6 +34,16 @@ $(document).ready(function() {
       language: GOVUK.playLanguage
     })
 
+    // ---------------------------------------------------
+    // Introduce direct skip link control, to work around voiceover failing of hash links
+    // https://bugs.webkit.org/show_bug.cgi?id=179011
+    // https://axesslab.com/skip-links/
+    // ---------------------------------------------------
+    $('.skiplink').click(function(e) {
+        e.preventDefault();
+        $(':header:first').attr('tabindex', '-1').focus();
+    });
+
 });
 
 // re-enable any disabled buttons when navigating back
@@ -41,3 +51,4 @@ $(document).ready(function() {
 window.onpageshow = function(event) {
     $('[type="submit"][disabled]').removeAttr('disabled');
 }
+
