@@ -40,11 +40,11 @@
     <thead id="taxFreeAmountComparisonTableHeader">
         <tr role="row">
             <th></th>
-            <th class="tax-free-amount-dates" id="taxFreeAmountComparisonTableHeaderCol1" scope="col">
+            <th class="tax-free-amount-dates taxFreeAmountComparisonTableHeaderCol1" scope="col">
                 @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
             </th>
-            <th class="tax-free-amount-dates" id="taxFreeComparisonTableTableHeaderCol2" scope="col">
+            <th class="tax-free-amount-dates taxFreeComparisonTableTableHeaderCol2" scope="col">
                 @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
             </th>
@@ -81,12 +81,12 @@
     <thead id="taxFreeAmountComparisonTableHeader2">
         <tr role="row">
             <th class="visuallyhidden"></th>
-            <th class="visuallyhidden" id="taxFreeAmountComparisonTableHeaderCol1" scope="col">
+            <th class="visuallyhidden taxFreeAmountComparisonTableHeaderCol1" scope="col">
                 @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
 
             </th>
-            <th class="visuallyhidden" id="taxFreeComparisonTableTableHeaderCol2" scope="col">
+            <th class="visuallyhidden taxFreeComparisonTableTableHeaderCol2" scope="col">
                 @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
 
@@ -156,11 +156,11 @@
     <thead  class="visuallyhidden" id="taxFreeAmountComparisonTableHeader3">
         <tr role="row">
             <th class="visuallyhidden"></th>
-            <th  class="visuallyhidden" id="taxFreeAmountComparisonTableHeaderCol1" scope="col">
+            <th  class="visuallyhidden taxFreeAmountComparisonTableHeaderCol1" scope="col">
                 @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
             </th>
-            <th class="visuallyhidden" id="taxFreeComparisonTableTableHeaderCol2" scope="col">
+            <th class="visuallyhidden taxFreeComparisonTableTableHeaderCol2" scope="col">
                 @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
             </th>

@@ -82,10 +82,11 @@
 
     @if(model.isPension){
         <p  aria-hidden="true">
-            @Link.toInternalPage(
+            @Html(Link.toInternalPage(
                 id=Some("updatePension"),
                 url=controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url,
-                value=Some(messages("tai.pension.income.details.updateLinkText"))).toHtml
+                value=Some(messages("tai.pension.income.details.updateLinkText")),
+                dataAttributes=Some(Map("tabindex" -> "-1"))).toHtml.body.replaceAll("data-tabindex", "tabindex"))
         </p>
         <p class="visuallyhidden">
         @Link.toInternalPage(
@@ -95,11 +96,11 @@
         </p>
     }else {
         <p  aria-hidden="true">
-            @Link.toInternalPage(
+            @Html(Link.toInternalPage(
                 id=Some("updateEmployer"),
                 url=controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url,
                 value=Some(messages("tai.employment.income.details.updateLinkText")),
-                dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.employment.income.details.updateLinkText")}"))).toHtml
+                dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.employment.income.details.updateLinkText")}", "tabindex" -> "-1"))).toHtml.body.replaceAll("data-tabindex", "tabindex"))
         </p>
         <p class="visuallyhidden">
         @Link.toInternalPage(
@@ -126,11 +127,11 @@
                 <span class="bold-xlarge faded-text-dark" aria-hidden="true">@pounds(model.estimatedTaxableIncome)</span>
                 <span class="visuallyhidden">@Html(messages("tai.income.details.yourEstimatedTaxableIncome.screenReader", pounds(model.estimatedTaxableIncome)))</span>
                 <p  aria-hidden="true">
-                    @Link.toInternalPage(
+                    @Html(Link.toInternalPage(
                         id=Some("updateIncome"),
                         url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
                         value=Some(messages("tai.income.details.updateTaxableIncome.update")),
-                        dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.income.details.updateTaxableIncome.update")}"))).toHtml
+                        dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.income.details.updateTaxableIncome.update")}", "tabindex" -> "-1"))).toHtml.body.replaceAll("data-tabindex", "tabindex"))
                 </p>
                 <p class="visuallyhidden">
                     @Link.toInternalPage(
@@ -146,11 +147,11 @@
             <span class="bold-xlarge faded-text-dark" aria-hidden="true">@pounds(model.incomeReceivedToDate)</span>
             <span class="visuallyhidden">@Html(messages("tai.income.details.incomeReceivedToDate.screenReader", pounds(model.incomeReceivedToDate)))</span>
             <p  aria-hidden="true">
-                @Link.toInternalPage(
+                @Html(Link.toInternalPage(
                     id=Some("viewIncomeReceivedToDate"),
                     url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
                     value=Some(messages("tai.income.details.checkPaymentsReceived")),
-                    dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.income.details.checkPaymentsReceived")}"))).toHtml
+                    dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.income.details.checkPaymentsReceived")}", "tabindex" -> "-1"))).toHtml.body.replaceAll("data-tabindex", "tabindex"))
             </p>
             <p class="visuallyhidden">
                 @Link.toInternalPage(
