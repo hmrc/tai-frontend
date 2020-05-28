@@ -50,7 +50,8 @@
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusOvertimeAmount){
             @includes.forms.input(
                 field = bonusOvertimeAmountForm("amount"),
-                labelText = "",
+                labelText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited),
+                labelClass = "visuallyhidden",
                 bold = true,
                 classes = Seq("form-control-1-4"),
                 isCurrency = true

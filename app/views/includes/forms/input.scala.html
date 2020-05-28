@@ -18,6 +18,7 @@
         field: Field,
         fieldErrorsEnabled: Boolean = true,
         labelText: String = "",
+        labelClass: String = "",
         hintText: String = "",
         hintClass: String = "form-hint",
         bold: Boolean = false,
@@ -29,8 +30,6 @@
         attrType: String = "",
         attrMin: String = "",
         attrMax: String = "",
-        attrMinlength: String = "",
-        attrMaxlength: String = "",
         attrPattern: String = "",
         attrDescribedBy: String = "",
         data: String = "",
@@ -38,7 +37,7 @@
 )(implicit lang: Lang, messages: Messages)
 
 <div class="form-group @if(fieldErrorsEnabled && field.hasErrors) {form-group-error}  @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {data-reveal="@data"}>
-    <label for="@field.id">
+    <label for="@field.id" @if(labelClass != ""){class="@labelClass"}>
         @if(labelText.nonEmpty) {
             <span class="@if(labelHidden){visually-hidden}else{form-label @if(bold){form-label-bold}}">
             @labelText
@@ -86,8 +85,6 @@
        }
        @if(attrMin.nonEmpty) { min="@attrMin" }
        @if(attrMax.nonEmpty) { max="@attrMax" }
-       @if(attrMinlength.nonEmpty) { minlength="@attrMinlength" }
-       @if(attrMaxlength.nonEmpty) { maxlength="@attrMaxlength" }
        @if(attrPattern.nonEmpty) { pattern="@attrPattern" }
     />
 }
