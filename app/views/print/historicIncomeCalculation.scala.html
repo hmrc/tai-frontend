@@ -39,12 +39,12 @@
 <div class="print-wrapper">
     <p><strong>@user.getDisplayName</strong></p>
 
-    <section class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse(""))</h2></section>
+    <div class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse(""))</h2></div>
 
     @historicIncomeCalculationViewModel.realTimeStatus match {
     case Available if  historicIncomeCalculationViewModel.payments.nonEmpty => {
     <p><strong>@Messages("tai.income.calculation.summary.previous",Dates.formatDate(historicIncomeCalculationViewModel.payments.head.date),Dates.formatDate(historicIncomeCalculationViewModel.payments.last.date))</strong></p>
-    <section class="section soft--top">
+    <div class="section soft--top">
         @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.nonEmpty) {
         @historicIncomeCalculationViewModel.employerName.map { name =>
         <p>@Messages("tai.income.calculation.eyu.previous",name)</p>
@@ -54,8 +54,8 @@
         <p>@Messages("tai.income.calculation.previous", name)</p>
         }
         }
-    </section>
-    <section class="section soft--top soft--bottom">
+    </div>
+    <div class="section soft--top soft--bottom">
         <table id="taxable-income-table" class="print-table-section print-table">
             <thead>
             <tr>
@@ -102,7 +102,7 @@
                 }
             </div>
         </div>
-    </section>
+    </div>
     }
 
     case _ => {

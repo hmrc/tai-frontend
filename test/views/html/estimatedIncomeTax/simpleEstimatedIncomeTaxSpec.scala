@@ -173,7 +173,7 @@ class simpleEstimatedIncomeTaxSpec extends TaiViewSpec {
       document.select("#taxOnEmploymentIncomeDesc").html() mustBe Html(
         Messages("your.total.income.from.employment.desc", "47,835", "tax-free amount", "£11,500")).body
 
-      document.select("#employmentIncomeTaxDetails").size() mustBe 1
+      document.select(".employmentIncomeTaxDetails").size() mustBe 1
       document must haveTableThWithClassAndText("taxBand", messages("tai.incomeTaxBand"))
       document must haveTableThWithClassAndText("numeric taxAmount", messages("tai.amount"))
       document must haveTableThWithClassAndText("numeric taxRate", messages("tai.taxRate"))

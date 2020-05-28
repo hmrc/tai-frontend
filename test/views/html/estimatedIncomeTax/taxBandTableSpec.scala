@@ -25,7 +25,7 @@ class taxBandTableSpec extends TaiViewSpec with BandTypesConstants with TaxRegio
 
   "taxBandTable template" must {
     "display the given column headings" in {
-      doc(view).select("#table-id").size() mustBe 1
+      doc(view).select(".table-id").size() mustBe 1
       doc(view) must haveTableThWithClassAndText("taxBand", messages("tai.incomeTaxBand"))
       doc(view) must haveTableThWithClassAndText("numeric taxAmount", messages("tai.amount"))
       doc(view) must haveTableThWithClassAndText("numeric taxRate", messages("tai.taxRate"))

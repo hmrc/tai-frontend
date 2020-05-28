@@ -22,7 +22,7 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     authedUser = Some(user),
     gaCustomTitle = None
 ){
-    <section class="section">
+    <div class="section">
         <h1 class="h1-heading">@heading</h1>
         <div class="grid grid-2-3">
             <p id="paraOne">@Html(message1)</p>
@@ -33,6 +33,6 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
                 case _ => {}
             }
         </div>
-    </section>
+    </div>
 }
 

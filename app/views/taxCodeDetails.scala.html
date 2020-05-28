@@ -53,7 +53,7 @@
 
                 @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
 
-                <section class="section" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
+                <div class="section" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
 
                     <h2 class="break-word-only" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
 
@@ -73,7 +73,7 @@
                         }
                     </ul>
 
-                </section>
+                </div>
                 }
 
                 @taxCodeViewModel.employmentId.map { empId =>

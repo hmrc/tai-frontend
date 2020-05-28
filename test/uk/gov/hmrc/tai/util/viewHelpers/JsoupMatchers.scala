@@ -257,6 +257,7 @@ trait JsoupMatchers {
   def haveUnorderedListWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "ul")
   def haveAsideWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "aside")
   def haveSectionWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "section")
+  def haveDivWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "div")
   def haveTableWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "table")
   def haveTableTheadWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "thead")
   def haveTableTdWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "td")

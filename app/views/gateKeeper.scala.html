@@ -35,7 +35,7 @@
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
-                <section class="flush--bottom hard--bottom">
+                <div class="flush--bottom hard--bottom">
                     <p>@Messages("tai.gateKeeper.description.p1", s"${Dates.formatDate(TaxYear().start)}")</p>
                     <p>@Messages("tai.gateKeeper.description.p2")</p>
                     <ul class="bullets">
@@ -47,7 +47,7 @@
                         <li>@Messages("tai.gatekeeper.textphone")</li>
                         <li>@Messages("tai.gatekeeper.outsideUk")</li>
                     </ul>
-                </section>
+                </div>
                 @Link.toInternalPage(id=Some("backLink"), url=ApplicationConfig.pertaxServiceUrl.toString,value=Some(Messages("tai.backToHome-link.upper")), dataAttributes = Some(Map("journey-click"->"check-income-tax:Service Link:personal-tax-account-footer-link"))).toHtml
             </div>
         </div>

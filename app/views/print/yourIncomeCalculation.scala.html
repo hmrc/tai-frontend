@@ -30,8 +30,8 @@ messages: Messages, user: controllers.auth.AuthedUser)
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
 
     <p><strong>@user.getDisplayName</strong></p>
-    <section class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName)</h2></section>
-	    <section class="section soft--top">
+    <div class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName)</h2></div>
+	    <div class="section soft--top">
             @model.employmentStatus match {
                 case PotentiallyCeased => {
                     @if(model.latestPayment.isDefined) {
@@ -61,10 +61,10 @@ messages: Messages, user: controllers.auth.AuthedUser)
                     }
                 }
             }
-	    </section>
+	    </div>
 
     @if(model.latestPayment.isDefined) {
-        <section class="section soft--top soft--bottom">
+        <div class="section soft--top soft--bottom">
             <table id="taxable-income-table" class="print-table-section print-table">
                 <thead>
                     <tr class="print-table__row--bold">
@@ -98,7 +98,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
                 <p>@message</p>
                 <p>@Messages("tai.income.calculation.totalNotMatching.message")</p>
             }
-        </section>
+        </div>
     }
 
     <div class="grid-row">

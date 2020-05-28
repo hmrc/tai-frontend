@@ -45,7 +45,7 @@
         <div class="grid grid-2-3">
             <div class="inner-block">
 
-                <section id="taxFreeAmountSummary" class="section flush--bottom">
+                <div id="taxFreeAmountSummary" class="section flush--bottom">
 
                     <p id="ledeMessage" class="flush--top">
                         <span class="lede">@Messages("tai.taxFreeAmount.summarysection.taxFreeExplanation")</span>
@@ -60,16 +60,16 @@
                         <li>@Messages("tai.taxFreeAmount.summarysection.bullet1")</li>
                         <li>@Messages("tai.taxFreeAmount.summarysection.bullet2")</li>
                     </ul>
-                </section>
+                </div>
 
-                <section id="taxFreeAmountDetail" class="section">
+                <div id="taxFreeAmountDetail" class="section">
                     <h2 class="flush--bottom">@Messages("tai.taxFreeAmount.detailsection.heading")</h2>
 
                     @taxFreeAmountSummary(viewModel.taxFreeAmountSummary.summaryItems, gaEventActionString)
 
-                </section>
+                </div>
 
-                <section id="addSomethingMissingSection" class="section">
+                <div id="addSomethingMissingSection" class="section">
                 <h2 id="addSomethingMissingHeading">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
 
                 <p class="icon icon-plus display-block">
@@ -98,7 +98,7 @@
                     cssClasses=Some(""),
                     dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.missing.section.income")}"))).toHtml
                 </p>
-                </section>
+                </div>
 
             </div>
         </div>
