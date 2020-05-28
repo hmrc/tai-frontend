@@ -47,7 +47,8 @@
         @textArea(
             field=updateEmploymentDetailsForm("employmentDetails"),
             classes = Seq("form-control form-control--full-width js-char-count"),
-            labelText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.text", UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit)
+            labelText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.text", UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit),
+            maxlength = UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit.toString
         )
 
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")))

@@ -41,5 +41,5 @@
     </label>
 
     <textarea name="@field.name" class="form-control @if(fieldErrorsEnabled && field.hasErrors) { form-control-error} @classes.mkString(" ")" id="@field.id"
-        @if(rows.nonEmpty) { rows="@rows" }>@field.value</textarea>
+    @if(maxlength.nonEmpty) { maxlength="@maxlength" } @if(rows.nonEmpty) { rows="@rows" }>@field.value</textarea>
 </div>
