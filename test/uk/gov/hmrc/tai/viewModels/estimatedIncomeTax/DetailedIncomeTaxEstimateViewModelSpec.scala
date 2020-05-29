@@ -349,7 +349,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
                 url = routes.YourTaxCodeController.taxCodes().toString,
                 value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
               )
-            val tabLink = link.copy(dataAttributes = Some(Map("taxindex" -> "-1")))
+            val tabLink = link.copy(dataAttributes = Some(Map("tabindex" -> "-1")))
             tabLink.toHtml.body.replaceAll("data-", "")
           }
 
