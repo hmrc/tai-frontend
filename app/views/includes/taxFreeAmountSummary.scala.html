@@ -34,7 +34,7 @@
                 }
 
                 @if(item.rows.length>1) {
-                <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight} else {flush}" role="list">
+                <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight} else {flush}">
 
                     @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
                         <li id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}">

@@ -16,7 +16,7 @@
 
 @(form: Form[_])(implicit  lang: Lang, messages: Messages)
 @if(form.hasErrors) {
-<section class="flash error-summary">
+<div class="flash error-summary">
     @Messages("tai.income.error.form.summary")
-</section>
+</div>
 }

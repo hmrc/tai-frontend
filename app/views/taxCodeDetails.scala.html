@@ -53,14 +53,14 @@
 
                 @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
 
-                <section class="section" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
+                <div class="section" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
 
                     <h2 class="break-word-only" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
 
-                    <ul role="list" id="taxCodeList@{listIdx.toString}" class="tai-description-list flush" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
+                    <ul id="taxCodeList@{listIdx.toString}" class="tai-description-list flush" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
 
                         @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
-                        <li role="listitem">
+                        <li>
                             <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
                                 <span class="visuallyhidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
                                 <span aria-hidden="true">@taxCodeTerm</span>
@@ -73,7 +73,7 @@
                         }
                     </ul>
 
-                </section>
+                </div>
                 }
 
                 @taxCodeViewModel.employmentId.map { empId =>

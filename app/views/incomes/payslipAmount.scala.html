@@ -50,6 +50,8 @@
     @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipAmount) {
         @includes.forms.input(
             field = viewModel.payslipForm("totalSalary"),
+            labelText = viewModel.payPeriodTitle,
+            labelClass = "visuallyhidden",
             bold = true,
             classes = Seq("form-control-1-4"),
             isCurrency = true

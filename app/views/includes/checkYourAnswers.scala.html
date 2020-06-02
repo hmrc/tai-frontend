@@ -21,7 +21,7 @@
 
 @if(title.isDefined) { <h2 class="heading-medium section flush soft--top">@title.get.replace("&nbsp;", "\u00A0")</h2> }
 
-<ul role="list" class="govuk-check-your-answers @if(longQuestions) {cya-questions-long} else {cya-questions-short}" id="check-answers-summary">
+<ul class="govuk-check-your-answers @if(longQuestions) {cya-questions-long} else {cya-questions-short}" id="check-answers-summary">
     @for((line, idx) <- confirmationLines zip (Stream from 1)) {
         <li>
             <div class="cya-question" id="confirmation-line-@{idx.toString}-question">

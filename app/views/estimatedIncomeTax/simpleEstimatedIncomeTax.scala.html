@@ -55,7 +55,7 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
-                <section class="soft--top flush--bottom">
+                <div class="soft--top flush--bottom">
                     <div class="grid-row">
                         <div class="column-one-half">
                             <h2 class="flush--bottom">
@@ -74,35 +74,27 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
                             </h2>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <section>
-                    @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,SimpleTaxView)
-                </section>
+                @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,SimpleTaxView)
 
-                <section>
-                    <h2 class="heading-section">
-                        @viewModel.taxOnIncomeTypeHeading
-                    </h2>
-                    <p id="taxOnEmploymentIncomeDesc">
-                        @Html(viewModel.taxOnIncomeTypeDescription)
-                    </p>
-                    @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.mergedTaxBands, taxRegion = viewModel.taxRegion)
-                </section>
+                <h2 class="heading-section">
+                    @viewModel.taxOnIncomeTypeHeading
+                </h2>
+                <p id="taxOnEmploymentIncomeDesc">
+                    @Html(viewModel.taxOnIncomeTypeDescription)
+                </p>
+                @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.mergedTaxBands, taxRegion = viewModel.taxRegion)
 
-                <section>
-                    @whyThisIsAnEstimateDesc()
-                    @howYouPayYourTaxDesc()
-                </section>
+                @whyThisIsAnEstimateDesc()
+                @howYouPayYourTaxDesc()
             </div>
             <div id ="iForms" class="inner-block">
                 @iFormLinks
             </div>
         </div>
 
-        <section>
-            @navigationLinks(gaEventActionString)
-        </section>
+        @navigationLinks(gaEventActionString)
 
 
     </div>

@@ -67,7 +67,7 @@
             <div class="inner-block">
 
                 @if(viewModel.iyaCYAmount > 0){
-                    <section class="section soft--top">
+                    <div class="section soft--top">
                         <p id="iya-cy-how-much" class="flush--bottom">@messages("tai.iya.paidTooLittle.cy.text")</p>
 
                         <p class="bold-large flush--top">@withPoundPrefix(MoneyPounds(viewModel.iyaCYAmount, 2))</p>
@@ -96,12 +96,12 @@
                         <p>@Messages("tai.iya.what.next.text2")</p>
 
 
-                    </section>
+                    </div>
                 }
 
 
                 @if(viewModel.iyaCYAmount == 0 && viewModel.iyaCYPlusOneAmount > 0) {
-                    <section class="section soft--top">
+                    <div class="section soft--top">
                         <p id="iya-cy-plus-one-how-much">@messages("tai.iya.paidTooLittle.cy.text")</p>
                         <p class="bold-large flush--top">@withPoundPrefix(MoneyPounds(viewModel.iyaCYPlusOneAmount, 2))</p>
 
@@ -122,7 +122,7 @@
                                 Link.toInternalPage(url = routes.HelpController.helpPage.toString, value = Some(Messages("tai.iya.paidTooLittle.get.help.linkText")),
                                     id = Some("getHelpLink")).toHtml))
                         </p>
-                    </section>
+                    </div>
                 }
 
                 <div class="flush-top">

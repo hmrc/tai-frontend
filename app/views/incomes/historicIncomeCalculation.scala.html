@@ -61,7 +61,7 @@
                     <div class="grid-layout__column grid-layout__column--2-3">
                     @historicIncomeCalculationViewModel.realTimeStatus match {
                         case Available if  historicIncomeCalculationViewModel.payments.nonEmpty => {
-                            <section class="subsection subsection--wide">
+                            <div class="subsection subsection--wide">
                                 <p id="previous-year-summary-message">@messages("tai.income.calculation.summary.previous",Dates.formatDate(historicIncomeCalculationViewModel.payments.head.date),Dates.formatDate(historicIncomeCalculationViewModel.payments.last.date))</p>
                                 @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.nonEmpty) {
                                     @historicIncomeCalculationViewModel.employerName.map { name =>
@@ -72,8 +72,8 @@
                                     <p>@messages("tai.income.calculation.previous", name)</p>
                                     }
                                 }
-                            </section>
-                            <section class="section soft--top soft--bottom">
+                            </div>
+                            <div class="section soft--top soft--bottom">
                                 <table id="taxable-income-table" class="table-section">
                                     <caption class="text--left table__caption table__caption--bottom-border visually-hidden">@messages("tai.income.calculation.incomeTable.caption")</caption>
                                     <thead>
@@ -122,12 +122,12 @@
                                     </div>
                                 </div>
 
-                            </section>
+                            </div>
                         }
                         case _ => {
-                            <section class="subsection subsection--wide">
+                            <div class="subsection subsection--wide">
                                 <p>@messages("tai.income.calculation.noRtiDataPreviousYear",Dates.formatDate(TaxYear(historicIncomeCalculationViewModel.taxYear.year).end))</p>
-                            </section>
+                            </div>
                         }
                     }
                     </div>

@@ -71,7 +71,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         val view: Html = views.html.paye
           .historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true), 1)
 
-        doc(view) must haveLinkWithUrlWithID(
+        doc(view) must haveLinkWithUrlWithClass(
           "taxCodeDescription",
           controllers.routes.YourTaxCodeController.prevTaxCodes(cyMinusOneTaxYear).url)
       }

@@ -42,7 +42,7 @@
 <div class="grid-row">
     <div class="grid grid-2-3">
         <div class="inner-block">
-            <section id="tax-code-correct" class="section flush--bottom">
+            <div id="tax-code-correct" class="section flush--bottom">
                 <p id="lede-message" class="flush--top">
                     <span class="lede">@Messages("taxCode.change.whatHappensNext.paragragh1")</span>
                 </p>
@@ -55,9 +55,9 @@
                     value=Some(Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")),
                     dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")}"))).toHtml))
                 </p>
-            </section>
+            </div>
 
-            <section id="tax-code-incorrect" class="section flush--bottom">
+            <div id="tax-code-incorrect" class="section flush--bottom">
                 <h2 class="heading-medium">@Messages("taxCode.change.whatHappensNext.wrongInformation.text")</h2>
 
                 <p id="update-current-income-or-benefits">
@@ -68,7 +68,7 @@
                     value=Some(Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")),
                     dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")}"))).toHtml))
                 </p>
-            </section>
+            </div>
 
         </div>
     </div>

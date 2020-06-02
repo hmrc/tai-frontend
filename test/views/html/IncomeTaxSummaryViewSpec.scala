@@ -66,15 +66,15 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "display three outline sections: 'income from employment', 'employments that have ended', and 'income from private pensions'" when {
 
       "the associated collections within the view model are non empty" in {
-        doc must haveSectionWithId("incomeFromEmploymentSection")
+        doc must haveDivWithId("incomeFromEmploymentSection")
         doc must haveElementAtPathWithText(
           "#incomeFromEmploymentSection h2",
           messages("tai.incomeTaxSummary.employment.section.heading"))
-        doc must haveSectionWithId("incomeFromPensionSection")
+        doc must haveDivWithId("incomeFromPensionSection")
         doc must haveElementAtPathWithText(
           "#incomeFromPensionSection h2",
           messages("tai.incomeTaxSummary.pension.section.heading"))
-        doc must haveSectionWithId("endedIncomeSection")
+        doc must haveDivWithId("endedIncomeSection")
         doc must haveElementAtPathWithText(
           "#endedIncomeSection h2",
           messages("tai.incomeTaxSummary.ceased.section.heading", vm.lastTaxYearEnd))
@@ -85,14 +85,14 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
       "the associated collections within the view model are empty" in {
         val docWithoutIncomeSections = doc(views.html.incomeTaxSummary(noSectionsVm))
-        docWithoutIncomeSections must not(haveSectionWithId("incomeFromEmploymentSection"))
-        docWithoutIncomeSections must not(haveSectionWithId("incomeFromPensionSection"))
-        docWithoutIncomeSections must not(haveSectionWithId("endedIncomeSection"))
+        docWithoutIncomeSections must not(haveDivWithId("incomeFromEmploymentSection"))
+        docWithoutIncomeSections must not(haveDivWithId("incomeFromPensionSection"))
+        docWithoutIncomeSections must not(haveDivWithId("endedIncomeSection"))
       }
     }
 
     "display an 'Annual Amounts' summary section" in {
-      doc must haveSectionWithId("annualAmountsSummarySection")
+      doc must haveDivWithId("annualAmountsSummarySection")
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection h2",
         messages("tai.incomeTaxSummary.annualAmounts.section.heading"))
@@ -100,7 +100,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     }
 
     "display a 'Something Missing' section" in {
-      doc must haveSectionWithId("addMissingIncomeSourceSection")
+      doc must haveDivWithId("addMissingIncomeSourceSection")
       doc must haveElementAtPathWithText(
         "#addMissingIncomeSourceSection h2",
         messages("tai.incomeTaxSummary.addMissingIncome.section.heading"))

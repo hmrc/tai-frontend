@@ -69,24 +69,24 @@
                 </div>
             }
 
-            <section class="section" id="incomeTax" aria-labelledby="incomeTaxHeading">
+            <div class="section" id="incomeTax" aria-labelledby="incomeTaxHeading">
                 @IncomeTax(incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel)
-            </section>
+            </div>
 
-            <section class="section" id="incomeSummary" aria-labelledby="incomeSummaryHeading">
+            <div class="section" id="incomeSummary" aria-labelledby="incomeSummaryHeading">
                 @IncomeSummary(incomeTaxComparisonViewModel.incomeSourceComparisonViewModel, estimatedPayEnabled)
-            </section>
+            </div>
 
-            <section class="section" id="taxCodes" aria-labelledby="taxCodesHeading">
+            <div class="section" id="taxCodes" aria-labelledby="taxCodesHeading">
                 @TaxCodes(incomeTaxComparisonViewModel.taxCodeComparisonViewModel)
-            </section>
+            </div>
 
-            <section class="section" id="taxFreeAmount" aria-labelledby="taxFreeAmountHeading">
+            <div class="section" id="taxFreeAmount" aria-labelledby="taxFreeAmountHeading">
                 @TaxFreeAmount(incomeTaxComparisonViewModel.taxFreeAmountComparisonViewModel)
-            </section>
+            </div>
 
-            <section class="section" id="whatHappensNext" aria-labelledby="whatHappensNextHeading">
-                <h2 class="heading-large">@messages("tai.incomeTaxComparison.whatHappensNext.subHeading")</h2>
+            <div class="section" id="whatHappensNext" aria-labelledby="whatHappensNextHeading">
+                <h2 class="heading-large" id="whatHappensNextHeading">@messages("tai.incomeTaxComparison.whatHappensNext.subHeading")</h2>
 
 
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text")</p>
@@ -128,7 +128,7 @@
                         )
                     </li>
                 </ul>
-            </section>
+            </div>
 
             <p>
                 @Link.toInternalPage(

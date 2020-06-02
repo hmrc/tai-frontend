@@ -37,15 +37,13 @@
     articleClasses = None
 ){
 
-<section>
-    <div>
-        @includes.checkYourAnswers(
-            title = None,
-            longQuestions = true,
-            confirmationLines = viewModel.journeyConfirmationLines
-        )
-    </div>
-</section>
+
+    @includes.checkYourAnswers(
+        title = None,
+        longQuestions = true,
+        confirmationLines = viewModel.journeyConfirmationLines
+    )
+
 
 <p>@messages("tai.checkYourAnswers.confirmText")</p>
 

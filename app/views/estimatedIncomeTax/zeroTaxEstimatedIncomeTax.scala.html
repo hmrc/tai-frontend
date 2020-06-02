@@ -55,7 +55,7 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
-                <section class="soft--top flush--bottom">
+                <div class="soft--top flush--bottom">
                     <div class="grid-row">
                         <div class="column-one-half">
                             <h2 class="flush--bottom">
@@ -74,13 +74,11 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
                             </h2>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <section>
                     @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,ZeroTaxView, Some(viewModel.incomeEstimate))
-                </section>
 
-                <section id="estimatedIncomeText" class="soft--top flush--bottom">
+                <div id="estimatedIncomeText" class="soft--top flush--bottom">
                     <p id="estimatedIncomeLowDesc">
                         @Html(Messages("tai.estimatedIncomeLow.desc",
                         Link.toInternalPage(id=Some("taxFreeAmountLink"),
@@ -92,21 +90,17 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
                         @Html(Messages("tai.estimatedIncomeEarning.desc",
                         pounds(viewModel.taxFreeEstimate - viewModel.incomeEstimate)))
                     </div>
-                </section>
+                </div>
 
-                <section>
                     @whyThisIsAnEstimateDesc()
                     @howYouPayYourTaxDesc()
-                </section>
             </div>
             <div id ="iForms" class="inner-block">
                 @iFormLinks
             </div>
         </div>
 
-        <section>
-            @navigationLinks(gaEventActionString)
-        </section>
+        @navigationLinks(gaEventActionString)
 
 
     </div>

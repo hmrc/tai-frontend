@@ -131,7 +131,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     }
 
     "display a company benefit section" in {
-      doc must haveSectionWithId("companyBenefitsSection")
+      doc must haveDivWithId("companyBenefitsSection")
       doc must haveH2HeadingWithIdAndText(
         "companyBenefitsHeading",
         messages("tai.income.details.companyuBenefitsHeading", "Employer"))
@@ -140,11 +140,11 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "use conditional logic to display the company benefits section" which {
       "hides the section when the income type is pension" in {
         val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(model.copy(isPension = true)).toString)
-        testDoc must not(haveSectionWithId("companyBenefitsSection"))
+        testDoc must not(haveDivWithId("companyBenefitsSection"))
       }
       "displays the scetion otherwise" in {
         val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(model.copy(isPension = false)).toString)
-        testDoc must haveSectionWithId("companyBenefitsSection")
+        testDoc must haveDivWithId("companyBenefitsSection")
       }
     }
 

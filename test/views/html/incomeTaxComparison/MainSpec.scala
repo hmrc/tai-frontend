@@ -105,7 +105,7 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
     )
 
     "show the income tax section with heading" in {
-      doc(viewWithMore) must haveSectionWithId("incomeTax")
+      doc(viewWithMore) must haveDivWithId("incomeTax")
       doc(viewWithMore) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "£1"))
     }
 
@@ -117,20 +117,20 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
     }
 
     "show the tax codes section" in {
-      doc(view) must haveSectionWithId("taxCodes")
+      doc(view) must haveDivWithId("taxCodes")
     }
 
     "show the income summary section" in {
-      doc(view) must haveSectionWithId("incomeSummary")
+      doc(view) must haveDivWithId("incomeSummary")
     }
 
     "show the tax free amount section with heading" in {
-      doc(view) must haveSectionWithId("taxFreeAmount")
+      doc(view) must haveDivWithId("taxFreeAmount")
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.taxFreeAmount.subHeading"))
     }
 
     "have the what happens next with heading" in {
-      doc(view) must haveSectionWithId("whatHappensNext")
+      doc(view) must haveDivWithId("whatHappensNext")
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.whatHappensNext.subHeading"))
     }
 

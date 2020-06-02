@@ -51,12 +51,12 @@
 ) {
     <div class="grid-row">
             <div class="inner-block">
-                <section class="section flush--bottom soft--ends">
+                <div class="section flush--bottom soft--ends">
                     <p>@messages("tai.updateEmployment.incomeSame.newEstimate.text") <span class="bold-large">@model.amountWithPounds</span></p>
                     <div class="panel panel-border-narrow">
                         <p>@messages("tai.updateEmployment.incomeSame.description", model.employerName,TaxYearRangeUtil.currentTaxYearRangeSingleLine)</p>
                     </div>
-                </section>
+                </div>
 
                 <div class="subsection">
                 @Link.toInternalPage(

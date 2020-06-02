@@ -54,7 +54,7 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
     }
     "contain summary with text and a hidden text" in {
       doc must haveSummaryWithText(Messages("tai.remove.company.benefit.total.value.whatHappens.link"))
-      doc must haveSpanWithText(
+      doc must haveParagraphWithText(
         Messages(
           "tai.remove.company.benefit.total.value.whatHappens.desc",
           TaxYear().start.toString("yyyy"),

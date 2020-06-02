@@ -35,23 +35,23 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       }
 
       "contains title and highlighted amount" in {
-        doc must haveSectionWithId("taxFreeAmountSummary")
+        doc must haveDivWithId("taxFreeAmountSummary")
         doc must haveElementAtPathWithText(
-          "section[id=taxFreeAmountSummary]>h2",
+          "div[id=taxFreeAmountSummary]>h2",
           s"${messages("tai.taxFreeAmount.summarysection.heading")} £2020")
-        val summarySection = doc.select("section[id=taxFreeAmountSummary]")
+        val summarySection = doc.select("div[id=taxFreeAmountSummary]")
         summarySection.select("span").get(1) must haveText("£2020")
       }
 
       "contains the correct text content" in {
         doc must haveElementAtPathWithText(
-          "section[id=taxFreeAmountSummary] p",
+          "div[id=taxFreeAmountSummary] p",
           messages("tai.taxFreeAmount.summarysection.p2"))
         doc must haveElementAtPathWithText(
-          "section[id=taxFreeAmountSummary] li",
+          "div[id=taxFreeAmountSummary] li",
           messages("tai.taxFreeAmount.summarysection.bullet1"))
         doc must haveElementAtPathWithText(
-          "section[id=taxFreeAmountSummary] li",
+          "div[id=taxFreeAmountSummary] li",
           messages("tai.taxFreeAmount.summarysection.bullet2"))
       }
     }
@@ -59,9 +59,9 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
     "display a detail section" which {
 
       "contains a title" in {
-        doc must haveSectionWithId("taxFreeAmountDetail")
+        doc must haveDivWithId("taxFreeAmountDetail")
         doc must haveElementAtPathWithText(
-          "section[id=taxFreeAmountDetail]>h2",
+          "div[id=taxFreeAmountDetail]>h2",
           messages("tai.taxFreeAmount.detailsection.heading"))
       }
 

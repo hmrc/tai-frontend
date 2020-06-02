@@ -52,13 +52,13 @@
             <div class="inner-block">
 
                 @if(income.toEmploymentAmount().newAmount == 0){
-                <section class="section flush--bottom soft--ends">
+                <div class="section flush--bottom soft--ends">
                     <p  id="result">@messages("tai.incomes.confirm.same.result", income.toEmploymentAmount().oldAmount)</p>
                     <p  id="resultSame">@messages("tai.incomes.confirm.same",income.name)</p>
-                </section>
+                </div>
                 }else{
 
-                    <section class="section flush--bottom soft--ends">
+                    <div class="section flush--bottom soft--ends">
                        
                             <p>
                                 @messages("tai.incomes.confirm.save.message")
@@ -71,9 +71,9 @@
                                 <p>@messages("tai.incomes.confirm.save.message.details.p2")</p>
                             </div>
                        
-                    </section>
+                    </div>
                 @if(FormHelper.convertCurrencyToInt(income.newAmount) != income.oldAmount){
-                    <section class="section">
+                    <div class="section">
                         @form(action = controllers.routes.IncomeController.updateEstimatedIncome) {
                             <input type="hidden" id="name" name="name" value="@income.name"/>
                             <input type="hidden" id="description" name="description" value="@income.description"/>
@@ -86,7 +86,7 @@
                                 <input type="submit" class="button section" value='@messages("tai.incomes.confirm.save")'/>
                             </div>
                         }
-                    </section>
+                    </div>
                 }
                 }
             </div>

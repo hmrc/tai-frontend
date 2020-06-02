@@ -25,12 +25,11 @@
     }
 }
 
-<noscript><style> .displayIfJsEnabled { display: none } </style></noscript>
 
 <p class="flush--bottom">@Link.toInternalPage(
     id=Some("backLink"),
     value=Some(Messages("tai.back-link.upper")),
     url = "#",
-    cssClasses=Some("displayIfJsEnabled link-back"),
+    cssClasses=Some("link-back js-visible"),
     dataAttributes = stagePromptAttributes
 ).toHtml</p>

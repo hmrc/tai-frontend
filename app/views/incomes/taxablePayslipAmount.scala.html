@@ -53,6 +53,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handleTaxablePayslipAmount){
             @input(
                 field = viewModel.form("taxablePay"),
+                labelText = Messages(viewModel.title),
+                labelClass = "visuallyhidden",
                 bold = true,
                 classes = Seq("form-control-1-4"),
                 isCurrency = true

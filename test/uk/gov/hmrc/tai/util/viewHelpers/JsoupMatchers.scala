@@ -160,6 +160,21 @@ trait JsoupMatchers {
     }
   }
 
+  class ClassSelectorWithUrlMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
+    def apply(left: Document): MatchResult = {
+      val elements: String =
+        left.getElementsByClass(selector).attr("href")
+
+      lazy val elementContents = elements.mkString("\t", "\n\t", "")
+
+      MatchResult(
+        elements.contains(expectedContent),
+        s"[$expectedContent] not found in elements with class '$selector':[\n$elementContents]",
+        s"[$expectedContent] element found with class '$selector' and url [$expectedContent]"
+      )
+    }
+  }
+
   class IdSelectorWithUrlAndTextMatcher(id: String, url: String, text: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
       val element = left.getElementById(id)
@@ -242,11 +257,14 @@ trait JsoupMatchers {
   def haveUnorderedListWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "ul")
   def haveAsideWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "aside")
   def haveSectionWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "section")
+  def haveDivWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "div")
   def haveTableWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "table")
   def haveTableTheadWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "thead")
   def haveTableTdWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "td")
   def haveTableThWithIdAndText(id: String, expectedText: String) =
     new CssSelectorWithTextMatcher(expectedText, s"th[id=$id]")
+  def haveTableThWithClassAndText(classes: String, expectedText: String) =
+    new CssSelectorWithTextMatcher(expectedText, s"th[class=$classes]")
   def haveTableCaptionWithIdAndText(id: String, expectedText: String) =
     new CssSelectorWithTextMatcher(expectedText, s"caption[id=$id]")
   def haveElementAtPathWithId(elementSelector: String, id: String) =
@@ -283,6 +301,8 @@ trait JsoupMatchers {
   def haveBackButtonWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "backLink")
   def haveCancelLinkWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "cancelLink")
   def haveLinkWithUrlWithID(id: String, expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, id)
+  def haveLinkWithUrlWithClass(classes: String, expectedURL: String) =
+    new ClassSelectorWithUrlMatcher(expectedURL, classes)
   def haveReturnToSummaryButtonWithUrl(expectedURL: String) =
     new IdSelectorWithUrlMatcher(expectedURL, "returnToSummary")
 

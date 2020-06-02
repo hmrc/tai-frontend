@@ -173,23 +173,23 @@ class simpleEstimatedIncomeTaxSpec extends TaiViewSpec {
       document.select("#taxOnEmploymentIncomeDesc").html() mustBe Html(
         Messages("your.total.income.from.employment.desc", "47,835", "tax-free amount", "£11,500")).body
 
-      document.select("#employmentIncomeTaxDetails").size() mustBe 1
-      document must haveTableThWithIdAndText("taxBand", messages("tai.incomeTaxBand"))
-      document must haveTableThWithIdAndText("taxAmount", messages("tai.amount"))
-      document must haveTableThWithIdAndText("taxRate", messages("tai.taxRate"))
-      document must haveTableThWithIdAndText("tax", messages("tai.tax"))
-      document.select("#bandType0").text() mustBe messages("estimate.uk.bandtype.pa")
-      document.select("#bandType1").text() mustBe messages("estimate.uk.bandtype.B")
-      document.select("#bandType2").text() mustBe messages("estimate.uk.bandtype.D0")
-      document.select("#income0").text() mustBe "£11,500"
-      document.select("#taxRate0").text() mustBe "0%"
-      document.select("#tax0").text() mustBe "£0"
-      document.select("#income1").text() mustBe "£32,010"
-      document.select("#taxRate1").text() mustBe "20%"
-      document.select("#tax1").text() mustBe "£6,402"
-      document.select("#income2").text() mustBe "£36,466"
-      document.select("#taxRate2").text() mustBe "40%"
-      document.select("#tax2").text() mustBe "£14,586"
+      document.select(".employmentIncomeTaxDetails").size() mustBe 1
+      document must haveTableThWithClassAndText("taxBand", messages("tai.incomeTaxBand"))
+      document must haveTableThWithClassAndText("numeric taxAmount", messages("tai.amount"))
+      document must haveTableThWithClassAndText("numeric taxRate", messages("tai.taxRate"))
+      document must haveTableThWithClassAndText("numeric tax", messages("tai.tax"))
+      document.select(".bandType0").text() mustBe messages("estimate.uk.bandtype.pa")
+      document.select(".bandType1").text() mustBe messages("estimate.uk.bandtype.B")
+      document.select(".bandType2").text() mustBe messages("estimate.uk.bandtype.D0")
+      document.select(".income0").text() mustBe "£11,500"
+      document.select(".taxRate0").text() mustBe "0%"
+      document.select(".tax0").text() mustBe "£0"
+      document.select(".income1").text() mustBe "£32,010"
+      document.select(".taxRate1").text() mustBe "20%"
+      document.select(".tax1").text() mustBe "£6,402"
+      document.select(".income2").text() mustBe "£36,466"
+      document.select(".taxRate2").text() mustBe "40%"
+      document.select(".tax2").text() mustBe "£14,586"
 
     }
 

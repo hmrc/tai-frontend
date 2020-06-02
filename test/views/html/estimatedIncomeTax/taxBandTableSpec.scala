@@ -25,11 +25,11 @@ class taxBandTableSpec extends TaiViewSpec with BandTypesConstants with TaxRegio
 
   "taxBandTable template" must {
     "display the given column headings" in {
-      doc(view).select("#table-id").size() mustBe 1
-      doc(view) must haveTableThWithIdAndText("taxBand", messages("tai.incomeTaxBand"))
-      doc(view) must haveTableThWithIdAndText("taxAmount", messages("tai.amount"))
-      doc(view) must haveTableThWithIdAndText("taxRate", messages("tai.taxRate"))
-      doc(view) must haveTableThWithIdAndText("tax", messages("tai.tax"))
+      doc(view).select(".table-id").size() mustBe 1
+      doc(view) must haveTableThWithClassAndText("taxBand", messages("tai.incomeTaxBand"))
+      doc(view) must haveTableThWithClassAndText("numeric taxAmount", messages("tai.amount"))
+      doc(view) must haveTableThWithClassAndText("numeric taxRate", messages("tai.taxRate"))
+      doc(view) must haveTableThWithClassAndText("numeric tax", messages("tai.tax"))
     }
     "display the correct number of rows" in {
       doc(view).getElementsByTag("tr").size mustBe 5
@@ -39,28 +39,28 @@ class taxBandTableSpec extends TaiViewSpec with BandTypesConstants with TaxRegio
     }
 
     "display the given tax band types" in {
-      doc(view).select("#bandType0").text() mustBe messages("estimate.uk.bandtype.SDR")
-      doc(view).select("#bandType1").text() mustBe messages("estimate.uk.bandtype.LDR")
-      doc(view).select("#bandType2").text() mustBe messages("estimate.uk.bandtype.HDR1")
-      doc(view).select("#bandType3").text() mustBe messages("estimate.uk.bandtype.HDR2")
+      doc(view).select(".bandType0").text() mustBe messages("estimate.uk.bandtype.SDR")
+      doc(view).select(".bandType1").text() mustBe messages("estimate.uk.bandtype.LDR")
+      doc(view).select(".bandType2").text() mustBe messages("estimate.uk.bandtype.HDR1")
+      doc(view).select(".bandType3").text() mustBe messages("estimate.uk.bandtype.HDR2")
     }
     "display the given amounts" in {
-      doc(view).select("#income0").text() mustBe "£11,500"
-      doc(view).select("#income1").text() mustBe "£32,010"
-      doc(view).select("#income2").text() mustBe "£36,466"
-      doc(view).select("#income3").text() mustBe "£40,000"
+      doc(view).select(".income0").text() mustBe "£11,500"
+      doc(view).select(".income1").text() mustBe "£32,010"
+      doc(view).select(".income2").text() mustBe "£36,466"
+      doc(view).select(".income3").text() mustBe "£40,000"
     }
     "display the given tax rates" in {
-      doc(view).select("#taxRate0").text() mustBe "0%"
-      doc(view).select("#taxRate1").text() mustBe "20%"
-      doc(view).select("#taxRate2").text() mustBe "40%"
-      doc(view).select("#taxRate3").text() mustBe "50%"
+      doc(view).select(".taxRate0").text() mustBe "0%"
+      doc(view).select(".taxRate1").text() mustBe "20%"
+      doc(view).select(".taxRate2").text() mustBe "40%"
+      doc(view).select(".taxRate3").text() mustBe "50%"
     }
     "display the given tax paid" in {
-      doc(view).select("#tax0").text() mustBe "£0"
-      doc(view).select("#tax1").text() mustBe "£6,402"
-      doc(view).select("#tax2").text() mustBe "£14,586"
-      doc(view).select("#tax3").text() mustBe "£15,000"
+      doc(view).select(".tax0").text() mustBe "£0"
+      doc(view).select(".tax1").text() mustBe "£6,402"
+      doc(view).select(".tax2").text() mustBe "£14,586"
+      doc(view).select(".tax3").text() mustBe "£15,000"
     }
   }
 

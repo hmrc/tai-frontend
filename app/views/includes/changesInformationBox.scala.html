@@ -16,7 +16,6 @@
 
 @(title: String, description: String, link: Html = Html(""), id: String="Banner")(value: Html)(implicit request: Request[_])
 
-<section>
     <div class="light-grey-change">
         <h3 class="flush--top bold-small" id="title-@{id}">@title
             @value
@@ -26,4 +25,3 @@
             <p id="link-@{id}">@link</p>
         }
     </div>
-</section>
