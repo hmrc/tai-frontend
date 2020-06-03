@@ -49,10 +49,6 @@
     </head>
     <body class="print-page">
 
-        <noscript>
-            <style> .print-button, .displayIfJsEnabled {display: none !important;} </style>
-        </noscript>
-
         <div class="print-wrapper">
             <div class="nav">
                 <div class="nav-container print-grid-row">
@@ -66,7 +62,7 @@
                                 dataAttributes = Some(Map("journey-click" -> s"link - click:${title} - print page:${Messages("tai.back-link.upper")}"))
                             ).toHtml
                         </div>
-                        <div class="column-half print-button">
+                        <div class="column-half js-visible">
                             <a href="javascript:window.print();">@Messages("tai.label.print")</a>
                         </div>
                     </div>
