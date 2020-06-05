@@ -37,7 +37,7 @@
         <link rel="shortcut icon" href="/template/images/favicon.ico" type="image/x-icon" />
 
         <style>
-            .nav-container {
+            #main-nav {
                 display: none;
             }
         </style>
@@ -57,7 +57,7 @@
 
         <div class="print-wrapper">
             <div class="nav">
-                <div class="nav-container print-grid-row">
+                <div class="nav-container print-grid-row" id="main-nav">
                     <div class="print-grid-row">
                         <div class="column-half back-link">
                             @Link.toInternalPage(
@@ -92,7 +92,7 @@
         <script src="@controllers.routes.AssetsController.versioned("javascript/tai-backlink.js")"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                document.getElementsByClassName('nav-container')[0].style.display = "block";
+                document.getElementById('main-nav').style.display = "block";
             });
         </script>
 
