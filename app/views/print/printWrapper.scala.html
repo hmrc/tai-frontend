@@ -35,6 +35,12 @@
         <title>@fullTitle</title>
         <link rel="stylesheet" href='@controllers.routes.AssetsController.versioned("stylesheets/tai19032019.min.css")' />
         <link rel="shortcut icon" href="/template/images/favicon.ico" type="image/x-icon" />
+
+        <style>
+            #main-nav {
+                display: none;
+            }
+        </style>
         <script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -51,7 +57,7 @@
 
         <div class="print-wrapper">
             <div class="nav">
-                <div class="nav-container print-grid-row">
+                <div class="nav-container print-grid-row" id="main-nav">
                     <div class="print-grid-row">
                         <div class="column-half back-link">
                             @Link.toInternalPage(
@@ -62,7 +68,7 @@
                                 dataAttributes = Some(Map("journey-click" -> s"link - click:${title} - print page:${Messages("tai.back-link.upper")}"))
                             ).toHtml
                         </div>
-                        <div class="column-half js-visible">
+                        <div class="column-half print-button">
                             <a href="javascript:window.print();">@Messages("tai.label.print")</a>
                         </div>
                     </div>
@@ -84,6 +90,11 @@
         </div>
 
         <script src="@controllers.routes.AssetsController.versioned("javascript/tai-backlink.js")"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('main-nav').style.display = "block";
+            });
+        </script>
 
     </body>
 </html>
