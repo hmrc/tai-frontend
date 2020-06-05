@@ -46,7 +46,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     }
 
     "show the necessary print buttons" in {
-      doc.getElementsByClass("js-visible").toString must include("javascript:window.print()")
+      doc.getElementsByClass("print-button").toString must include("javascript:window.print()")
     }
 
     "have informative text when payment data is not available" when {
