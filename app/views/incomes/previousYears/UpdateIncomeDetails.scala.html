@@ -47,7 +47,8 @@
          @textArea(
                 field=updateIncomeDetailsForm("employmentDetails"),
                 classes = Seq("form-control form-control--full-width js-char-count"),
-                labelText = Messages("tai.income.previousYears.details.textarea.text", UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit)
+                labelText = Messages("tai.income.previousYears.details.textarea.text"),
+                maxlength = UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit.toString
             )
 
             @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title")))
