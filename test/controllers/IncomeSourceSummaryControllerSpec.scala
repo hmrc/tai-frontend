@@ -126,6 +126,7 @@ class IncomeSourceSummaryControllerSpec
     Nil)
   val employment = Employment(
     "test employment",
+    Live,
     Some("EMPLOYER-1122"),
     LocalDate.now(),
     None,

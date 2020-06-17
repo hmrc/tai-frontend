@@ -226,6 +226,7 @@ class YourIncomeCalculationControllerSpec
     Nil)
   val employment = Employment(
     "test employment",
+    Live,
     Some("EMPLOYER1"),
     LocalDate.now(),
     None,
@@ -240,6 +241,7 @@ class YourIncomeCalculationControllerSpec
   val sampleEmployment = Seq(
     Employment(
       "employer1",
+      Live,
       None,
       new LocalDate(2016, 6, 9),
       None,
@@ -249,9 +251,11 @@ class YourIncomeCalculationControllerSpec
       1,
       None,
       false,
-      false),
+      false
+    ),
     Employment(
       "employer2",
+      Live,
       None,
       new LocalDate(2016, 7, 9),
       None,
@@ -261,11 +265,13 @@ class YourIncomeCalculationControllerSpec
       2,
       None,
       false,
-      false)
+      false
+    )
   )
   val sampleEmploymentForRtiUnavailable = Seq(
     Employment(
       "employer1",
+      Live,
       None,
       new LocalDate(2016, 6, 9),
       None,
@@ -279,6 +285,7 @@ class YourIncomeCalculationControllerSpec
     ),
     Employment(
       "employer2",
+      Live,
       None,
       new LocalDate(2016, 7, 9),
       None,

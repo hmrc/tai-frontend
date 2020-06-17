@@ -41,6 +41,7 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants, JourneyCacheConstants}
@@ -775,7 +776,19 @@ class EndEmploymentControllerSpec
   }
 
   def employmentWithAccounts(accounts: List[AnnualAccount]) =
-    Employment("employer", Some("emp123"), new LocalDate(2000, 5, 20), None, accounts, "", "", 8, None, false, false)
+    Employment(
+      "employer",
+      Live,
+      Some("emp123"),
+      new LocalDate(2000, 5, 20),
+      None,
+      accounts,
+      "",
+      "",
+      8,
+      None,
+      false,
+      false)
 
   def paymentOnDate(date: LocalDate) =
     Payment(
@@ -820,7 +833,7 @@ class EndEmploymentControllerSpec
     when(employmentService.employment(any(), any())(any()))
       .thenReturn(
         Future.successful(
-          Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false, false))))
+          Some(Employment(employerName, Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false))))
 
     when(endEmploymentJourneyCacheService.currentValueAsDate(any())(any()))
       .thenReturn(Future.successful(Some(new LocalDate("2017-9-9"))))

@@ -359,6 +359,7 @@ class TaxAccountSummaryViewModelSpec
     pensionEmployment4,
     Employment(
       "JobSeekerAllowance name1",
+      Live,
       Some("5ABC"),
       new LocalDate(2017, 3, 1),
       None,
@@ -371,6 +372,7 @@ class TaxAccountSummaryViewModelSpec
       false),
     Employment(
       "JobSeekerAllowance name2",
+      Live,
       Some("6ABC"),
       new LocalDate(2017, 3, 1),
       None,
@@ -383,6 +385,7 @@ class TaxAccountSummaryViewModelSpec
       false),
     Employment(
       "OtherIncome name1",
+      Live,
       Some("7ABC"),
       new LocalDate(2017, 3, 1),
       None,
@@ -395,6 +398,7 @@ class TaxAccountSummaryViewModelSpec
       false),
     Employment(
       "OtherIncome name2",
+      Live,
       Some("8ABC"),
       new LocalDate(2017, 3, 1),
       None,
@@ -409,6 +413,7 @@ class TaxAccountSummaryViewModelSpec
     empEmployment10,
     Employment(
       "Pension name3",
+      Live,
       Some("11ABC"),
       new LocalDate(2017, 3, 1),
       None,
@@ -421,6 +426,7 @@ class TaxAccountSummaryViewModelSpec
       false),
     Employment(
       "Pension name4",
+      Live,
       Some("12ABC"),
       new LocalDate(2017, 3, 1),
       Some(new LocalDate(2018, 4, 21)),
@@ -430,7 +436,8 @@ class TaxAccountSummaryViewModelSpec
       12,
       None,
       false,
-      false)
+      false
+    )
   )
 
   val emptyTaxCodeIncomes = Seq.empty[TaxCodeIncome]

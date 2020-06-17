@@ -30,6 +30,7 @@ trait TaxAccountSummaryTestData {
 
   val employment = Employment(
     "Employer name",
+    Live,
     Some("123ABC"),
     new LocalDate(2017, 3, 1),
     Some(new LocalDate(2018, 4, 21)),
@@ -39,7 +40,8 @@ trait TaxAccountSummaryTestData {
     1,
     None,
     false,
-    false)
+    false
+  )
 
   val taxAccountSummary: TaxAccountSummary = TaxAccountSummary(1111, 2222, 333.32, 444.44, 111.11)
 
@@ -82,6 +84,7 @@ trait TaxAccountSummaryTestData {
     Ceased)
   val empEmployment1 = Employment(
     "Employer name1",
+    Live,
     Some("1ABC"),
     new LocalDate(2017, 3, 1),
     None,
@@ -94,6 +97,7 @@ trait TaxAccountSummaryTestData {
     false)
   val empEmployment2 = Employment(
     "Employer name2",
+    Live,
     Some("1ABC"),
     new LocalDate(2017, 3, 1),
     None,
@@ -106,6 +110,7 @@ trait TaxAccountSummaryTestData {
     false)
   val pensionEmployment3 = Employment(
     "Pension name1",
+    Live,
     Some("3ABC"),
     new LocalDate(2017, 3, 1),
     None,
@@ -118,6 +123,7 @@ trait TaxAccountSummaryTestData {
     false)
   val pensionEmployment4 = Employment(
     "Pension name2",
+    Live,
     Some("4ABC"),
     new LocalDate(2017, 3, 1),
     None,
@@ -130,6 +136,7 @@ trait TaxAccountSummaryTestData {
     false)
   val empEmployment9 = Employment(
     "Employer name3",
+    Live,
     Some("9ABC"),
     new LocalDate(2017, 3, 1),
     None,
@@ -142,6 +149,7 @@ trait TaxAccountSummaryTestData {
     false)
   val empEmployment10 = Employment(
     "Employer name4",
+    Live,
     Some("10ABC"),
     new LocalDate(2017, 3, 1),
     Some(new LocalDate(2018, 4, 21)),
@@ -151,7 +159,8 @@ trait TaxAccountSummaryTestData {
     10,
     None,
     false,
-    false)
+    false
+  )
 
   val livePensionIncomeSources: Seq[TaxedIncome] = Seq(
     TaxedIncome(livePension3, pensionEmployment3),
@@ -183,6 +192,7 @@ trait TaxAccountSummaryTestData {
   val annualAccount = AnnualAccount("key", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(payment), Nil)
   val ceasedEmployment = Employment(
     "Ceased employer name",
+    Live,
     Some("123ABC"),
     new LocalDate(2017, 3, 1),
     Some(new LocalDate(2018, 4, 21)),
@@ -192,12 +202,14 @@ trait TaxAccountSummaryTestData {
     1,
     None,
     false,
-    false)
+    false
+  )
 
   val nonMatchedEmployments = Seq(
     ceasedEmployment.copy(sequenceNumber = nonMatchingSequenceNumber),
     Employment(
       "Pension name1",
+      Live,
       Some("3ABC"),
       new LocalDate(2017, 3, 1),
       None,

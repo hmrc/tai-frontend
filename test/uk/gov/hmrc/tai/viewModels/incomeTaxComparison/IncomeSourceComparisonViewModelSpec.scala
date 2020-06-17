@@ -50,7 +50,8 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
             OtherBasisOfOperation,
             Live)
 
-        val employmentCY = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
+        val employmentCY =
+          Employment("employment1", Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
 
         val incomeSourceComparisonViewModel =
           IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
@@ -89,7 +90,8 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
             OtherBasisOfOperation,
             Live)
 
-        val employmentCY = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
+        val employmentCY =
+          Employment("employment1", Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
 
         val incomeSourceComparisonViewModel =
           IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
@@ -120,6 +122,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
 
         val employmentCY = Employment(
           "Pension1",
+          Live,
           Some("3ABC"),
           new LocalDate(2017, 3, 1),
           None,
@@ -152,7 +155,8 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         val taxCodeIncomesCYPlusOne =
           TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "1150L", "employer3", OtherBasisOfOperation, Live)
 
-        val employmentCY = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 3, None, false, false)
+        val employmentCY =
+          Employment("employment1", Live, None, new LocalDate(), None, Nil, "", "", 3, None, false, false)
 
         val incomeSourceComparisonViewModel =
           IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
@@ -194,6 +198,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
 
         val employmentCY = Employment(
           "Pension1",
+          Live,
           Some("3ABC"),
           new LocalDate(2017, 3, 1),
           None,

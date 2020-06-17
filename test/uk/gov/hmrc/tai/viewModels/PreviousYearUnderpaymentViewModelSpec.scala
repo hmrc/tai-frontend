@@ -23,6 +23,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.urls.Link
 
@@ -91,9 +92,22 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
   val sampleAnnualAccount2 = AnnualAccount("1-2-3", TaxYear(2016), Available, List(samplePayment), Nil)
 
   val sampleEmployment1 =
-    Employment(empName, None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false)
+    Employment(
+      empName,
+      Live,
+      None,
+      new LocalDate(2017, 6, 9),
+      None,
+      Nil,
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      false,
+      false)
   val sampleEmployment2 = Employment(
     "emp2",
+    Live,
     None,
     new LocalDate(2017, 6, 10),
     None,
@@ -107,9 +121,22 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
   val sampleEmployments = List(sampleEmployment1, sampleEmployment2)
 
   val sampleEmployment3 =
-    Employment(empName, None, new LocalDate(2016, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false)
+    Employment(
+      empName,
+      Live,
+      None,
+      new LocalDate(2016, 6, 9),
+      None,
+      Nil,
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      false,
+      false)
   val sampleEmployment4 = Employment(
     "emp2",
+    Live,
     None,
     new LocalDate(2016, 6, 10),
     None,

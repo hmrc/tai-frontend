@@ -22,6 +22,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.{TaxYear, tai}
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.model
+import uk.gov.hmrc.tai.model.domain.income.Live
 
 class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
@@ -44,6 +45,7 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("111111"),
           empStartDateWithinCYMinusThree,
           None,
@@ -66,6 +68,7 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("111111"),
           empStartDateWithinCYMinusOne,
           None,
@@ -96,6 +99,7 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("111111"),
           empStartDateWithinCYMinusOne,
           None,
@@ -126,6 +130,7 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("111111"),
           empStartDateWithinCYMinusOne,
           None,
@@ -155,6 +160,7 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
       "the income sources receivingOccupationalPension is set to true" in {
         val employment = Employment(
           "test pension",
+          Live,
           Some("111111"),
           empStartDateWithinCYMinusOne,
           None,
@@ -187,6 +193,7 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
         val employment1 = Employment(
           "test employment1",
+          Live,
           Some("111111"),
           empStartDateWithinCYMinusOne,
           None,
@@ -199,6 +206,7 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
           false)
         val employment2 = Employment(
           "test employment2",
+          Live,
           Some("111112"),
           empStartDateWithinCYMinusOne,
           None,

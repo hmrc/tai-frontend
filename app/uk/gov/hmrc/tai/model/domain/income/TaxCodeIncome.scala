@@ -108,6 +108,7 @@ case class TaxCodeIncome(
   taxCode: String,
   name: String,
   basisOperation: BasisOfOperation,
+  // TODO:// Remove this as it no longer comes back from backend
   status: TaxCodeIncomeSourceStatus,
   iabdUpdateSource: Option[IabdUpdateSource] = None,
   updateNotificationDate: Option[LocalDate] = None,

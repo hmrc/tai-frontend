@@ -244,6 +244,7 @@ class UpdateNextYearsIncomeServiceSpec
   private def employment(name: String): Employment =
     Employment(
       name = name,
+      employmentStatus = Live,
       payrollNumber = None,
       startDate = TaxYear().start,
       endDate = None,

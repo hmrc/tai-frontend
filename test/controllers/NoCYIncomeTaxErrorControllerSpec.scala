@@ -33,6 +33,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, Person}
 import uk.gov.hmrc.tai.service.EmploymentService
 
@@ -109,6 +110,7 @@ class NoCYIncomeTaxErrorControllerSpec
     val sampleEmployment = Seq(
       Employment(
         "empName",
+        Live,
         None,
         new LocalDate(2017, 6, 9),
         None,

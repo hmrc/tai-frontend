@@ -39,6 +39,7 @@ import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompa
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
@@ -679,6 +680,7 @@ class RemoveCompanyBenefitControllerSpec
 
   val employment = Employment(
     "company name",
+    Live,
     Some("123"),
     new LocalDate("2016-05-26"),
     Some(new LocalDate("2016-05-26")),

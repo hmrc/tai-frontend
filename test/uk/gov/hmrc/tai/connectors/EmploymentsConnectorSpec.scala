@@ -30,6 +30,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -173,7 +174,7 @@ class EmploymentsConnectorSpec
 
         val result = Await.result(responseFuture, 5 seconds)
 
-        result mustBe oneEmploymentDetails
+        result mustBe oneCeasedEmploymentDetails
 
         verify(httpHandler).getFromApi(
           Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
@@ -189,7 +190,7 @@ class EmploymentsConnectorSpec
 
         val result = Await.result(responseFuture, 5 seconds)
 
-        result mustBe twoEmploymentsDetails
+        result mustBe twoCeasedEmploymentsDetails
 
         verify(httpHandler).getFromApi(
           Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
@@ -321,8 +322,9 @@ class EmploymentsConnectorSpec
     }
   }
 
-  private val anEmploymentObject = Employment(
+  val anEmploymentObject = Employment(
     "company name",
+    Live,
     Some("123"),
     new LocalDate("2016-05-26"),
     Some(new LocalDate("2016-05-26")),
@@ -335,7 +337,29 @@ class EmploymentsConnectorSpec
     false)
 
   private val oneEmploymentDetails = List(anEmploymentObject)
+
+  private val oneCeasedEmploymentDetails = List(
+    Employment(
+      "company name",
+      Ceased,
+      Some("123"),
+      new LocalDate("2016-05-26"),
+      Some(new LocalDate("2016-05-26")),
+      Nil,
+      "123",
+      "321",
+      2,
+      None,
+      false,
+      false))
+
   private val twoEmploymentsDetails = oneEmploymentDetails.head :: oneEmploymentDetails.head.copy(
+    taxDistrictNumber = "1234",
+    payeNumber = "4321",
+    sequenceNumber = 3,
+    receivingOccupationalPension = true) :: Nil
+
+  private val twoCeasedEmploymentsDetails = oneCeasedEmploymentDetails.head :: oneCeasedEmploymentDetails.head.copy(
     taxDistrictNumber = "1234",
     payeNumber = "4321",
     sequenceNumber = 3,
@@ -362,6 +386,7 @@ class EmploymentsConnectorSpec
     """{
           "data" : {
             "name": "company name",
+            "employmentStatus" : "Live",
             "payrollNumber": "123",
             "startDate": "2016-05-26",
             "endDate": "2016-05-26",
@@ -381,6 +406,7 @@ class EmploymentsConnectorSpec
             "employments": [
           {
             "name": "company name",
+            "employmentStatus" : "Live",
             "payrollNumber": "123",
             "startDate": "2016-05-26",
             "endDate": "2016-05-26",
@@ -400,6 +426,7 @@ class EmploymentsConnectorSpec
       |           "employments": [
       |         {
       |            "name": "company name",
+      |            "employmentStatus" : "Live",
       |            "payrollNumber": "123",
       |            "startDate": "2016-05-26",
       |            "endDate": "2016-05-26",
@@ -413,6 +440,7 @@ class EmploymentsConnectorSpec
       |          },
       |          {
       |            "name": "company name",
+      |            "employmentStatus" : "Live",
       |            "payrollNumber": "123",
       |            "startDate": "2016-05-26",
       |            "endDate": "2016-05-26",
@@ -430,6 +458,7 @@ class EmploymentsConnectorSpec
     """{
           "data" : [{
             "name": "company name",
+            "employmentStatus" : "Ceased",
             "payrollNumber": "123",
             "startDate": "2016-05-26",
             "endDate": "2016-05-26",
@@ -447,6 +476,7 @@ class EmploymentsConnectorSpec
     """{
       |       "data" : [{
       |            "name": "company name",
+      |            "employmentStatus" : "Ceased",
       |            "payrollNumber": "123",
       |            "startDate": "2016-05-26",
       |            "endDate": "2016-05-26",
@@ -460,6 +490,7 @@ class EmploymentsConnectorSpec
       |          },
       |          {
       |            "name": "company name",
+      |            "employmentStatus" : "Ceased",
       |            "payrollNumber": "123",
       |            "startDate": "2016-05-26",
       |            "endDate": "2016-05-26",

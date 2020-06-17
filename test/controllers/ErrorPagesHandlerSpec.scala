@@ -33,6 +33,7 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.tai.connectors.responses.TaiTaxAccountFailureResponse
 import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
 import scala.concurrent.Future
@@ -234,6 +235,7 @@ class ErrorPagesHandlerSpec extends PlaySpec with FakeTaiPlayApplication with I1
         val employmentDetails = Seq(
           Employment(
             "company name",
+            Live,
             Some("123"),
             new LocalDate("2016-05-26"),
             Some(new LocalDate("2016-05-26")),
@@ -261,6 +263,7 @@ class ErrorPagesHandlerSpec extends PlaySpec with FakeTaiPlayApplication with I1
         val employmentDetails = Seq(
           Employment(
             "company name",
+            Live,
             Some("123"),
             new LocalDate("2016-05-26"),
             Some(new LocalDate("2016-05-26")),
@@ -288,6 +291,7 @@ class ErrorPagesHandlerSpec extends PlaySpec with FakeTaiPlayApplication with I1
         val employmentDetails = Seq(
           Employment(
             "company name",
+            Live,
             Some("123"),
             new LocalDate("2016-05-26"),
             Some(new LocalDate("2016-05-26")),

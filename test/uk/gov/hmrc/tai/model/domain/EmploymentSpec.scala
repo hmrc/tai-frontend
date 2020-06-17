@@ -22,6 +22,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.income.Live
 
 class EmploymentSpec extends PlaySpec {
 
@@ -30,6 +31,7 @@ class EmploymentSpec extends PlaySpec {
       "there are multiple annual accounts" in {
         val employment = Employment(
           "",
+          Live,
           None,
           new LocalDate(),
           None,
@@ -46,14 +48,14 @@ class EmploymentSpec extends PlaySpec {
       }
       "there is only one annual account" in {
         val employment =
-          Employment("", None, new LocalDate(), None, List(annualAccount1), "", "", 1, None, false, false)
+          Employment("", Live, None, new LocalDate(), None, List(annualAccount1), "", "", 1, None, false, false)
 
         employment.latestAnnualAccount mustBe Some(annualAccount1)
       }
     }
     "return none" when {
       "there are no annual accounts" in {
-        val employment = Employment("", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
+        val employment = Employment("", Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
 
         employment.latestAnnualAccount mustBe None
       }
