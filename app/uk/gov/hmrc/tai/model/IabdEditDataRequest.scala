@@ -39,7 +39,7 @@ object EmploymentAmount {
   implicit val formats = Json.format[EmploymentAmount]
   def apply(taxCodeIncome: TaxCodeIncome, employment: Employment)(implicit messages: Messages): EmploymentAmount = {
     val description = taxCodeIncome.componentType match {
-      case EmploymentIncome if taxCodeIncome.status == Live =>
+      case EmploymentIncome if employment.employmentStatus == Live =>
         s"${Messages("tai.incomes.status-1")} ${Messages(s"tai.incomes.type-0")}"
       case EmploymentIncome => s"${Messages("tai.incomes.status-2")} ${Messages(s"tai.incomes.type-0")}"
       case _                => Messages(s"tai.incomes.type-1")
@@ -55,7 +55,7 @@ object EmploymentAmount {
       None,
       Some(employment.startDate),
       employment.endDate,
-      taxCodeIncome.status == Live,
+      employment.employmentStatus == Live,
       taxCodeIncome.componentType == PensionIncome
     )
   }

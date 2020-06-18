@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.filters.TaxAccountFilter
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
@@ -44,7 +43,7 @@ case class IncomesSources(
   liveEmploymentIncomeSources: Seq[TaxedIncome],
   ceasedEmploymentIncomeSources: Seq[TaxedIncome])
 
-object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter {
+object TaxAccountSummaryViewModel extends ViewModelHelper {
 
   def apply(
     taxAccountSummary: TaxAccountSummary,

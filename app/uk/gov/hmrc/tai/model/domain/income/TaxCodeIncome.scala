@@ -41,14 +41,11 @@ object BasisOfOperation {
   }
 }
 
+// TODO:// Move to employment model or own file
 sealed trait TaxCodeIncomeSourceStatus
-
 case object Live extends TaxCodeIncomeSourceStatus
-
 case object NotLive extends TaxCodeIncomeSourceStatus
-
 case object PotentiallyCeased extends TaxCodeIncomeSourceStatus
-
 case object Ceased extends TaxCodeIncomeSourceStatus
 
 object TaxCodeIncomeSourceStatus {
@@ -108,7 +105,7 @@ case class TaxCodeIncome(
   taxCode: String,
   name: String,
   basisOperation: BasisOfOperation,
-  // TODO:// Remove this as it no longer comes back from backend
+  // This is not the live employment status but the batched job employment status
   status: TaxCodeIncomeSourceStatus,
   iabdUpdateSource: Option[IabdUpdateSource] = None,
   updateNotificationDate: Option[LocalDate] = None,

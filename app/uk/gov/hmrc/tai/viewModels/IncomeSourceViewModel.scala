@@ -72,16 +72,16 @@ object IncomeSourceViewModel extends ViewModelHelper {
     val endDate: Option[String] = taxedIncome.employment.endDate.map(Dates.formatDate(_))
 
     val detailsLinkLabel = taxedIncome.taxCodeIncome.componentType match {
-      case EmploymentIncome if taxedIncome.taxCodeIncome.status == Live =>
+      case EmploymentIncome if taxedIncome.employment.employmentStatus == Live =>
         messages("tai.incomeTaxSummary.employmentAndBenefits.link")
-      case EmploymentIncome if taxedIncome.taxCodeIncome.status != Live =>
+      case EmploymentIncome if taxedIncome.employment.employmentStatus != Live =>
         messages("tai.incomeTaxSummary.employment.link")
       case PensionIncome => messages("tai.incomeTaxSummary.pension.link")
       case _             => messages("tai.incomeTaxSummary.income.link")
     }
 
     val detailsLinkUrl =
-      if (taxedIncome.taxCodeIncome.componentType == EmploymentIncome && taxedIncome.taxCodeIncome.status != Live) {
+      if (taxedIncome.taxCodeIncome.componentType == EmploymentIncome && taxedIncome.employment.employmentStatus != Live) {
         controllers.routes.YourIncomeCalculationController
           .yourIncomeCalculationPage(taxedIncome.employment.sequenceNumber)
           .url
@@ -93,11 +93,11 @@ object IncomeSourceViewModel extends ViewModelHelper {
       taxedIncome.employment.name,
       withPoundPrefixAndSign(MoneyPounds(taxedIncome.taxCodeIncome.amount, 0)),
       taxedIncome.taxCodeIncome.taxCode,
-      taxedIncome.taxCodeIncome.status == Live,
+      taxedIncome.employment.employmentStatus == Live,
       taxedIncome.employment.payrollNumber.getOrElse(""),
       taxedIncome.employment.payrollNumber.isDefined,
       endDate.getOrElse(""),
-      taxedIncome.taxCodeIncome.status != Live && endDate.isDefined,
+      taxedIncome.employment.employmentStatus != Live && endDate.isDefined,
       detailsLinkLabel,
       detailsLinkUrl,
       Some(controllers.routes.YourTaxCodeController.taxCode(taxedIncome.employment.sequenceNumber))
@@ -109,15 +109,15 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     val endDate: Option[String] = employment.endDate.map(Dates.formatDate(_))
     val detailsLinkLabel = taxCodeIncome.componentType match {
-      case EmploymentIncome if taxCodeIncome.status == Live =>
+      case EmploymentIncome if employment.employmentStatus == Live =>
         messages("tai.incomeTaxSummary.employmentAndBenefits.link")
-      case EmploymentIncome if taxCodeIncome.status != Live => messages("tai.incomeTaxSummary.employment.link")
-      case PensionIncome                                    => messages("tai.incomeTaxSummary.pension.link")
-      case _                                                => messages("tai.incomeTaxSummary.income.link")
+      case EmploymentIncome if employment.employmentStatus != Live => messages("tai.incomeTaxSummary.employment.link")
+      case PensionIncome                                           => messages("tai.incomeTaxSummary.pension.link")
+      case _                                                       => messages("tai.incomeTaxSummary.income.link")
     }
 
     val incomeSourceSummaryUrl =
-      if (taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status != Live) {
+      if (taxCodeIncome.componentType == EmploymentIncome && employment.employmentStatus != Live) {
         controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url
       } else {
         controllers.routes.IncomeSourceSummaryController.onPageLoad(employment.sequenceNumber).url
@@ -127,11 +127,11 @@ object IncomeSourceViewModel extends ViewModelHelper {
       employment.name,
       withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0)),
       taxCodeIncome.taxCode,
-      taxCodeIncome.status == Live,
+      employment.employmentStatus == Live,
       employment.payrollNumber.getOrElse(""),
       employment.payrollNumber.isDefined,
       endDate.getOrElse(""),
-      taxCodeIncome.status != Live && endDate.isDefined,
+      employment.employmentStatus != Live && endDate.isDefined,
       detailsLinkLabel,
       incomeSourceSummaryUrl,
       Some(controllers.routes.YourTaxCodeController.taxCode(employment.sequenceNumber))

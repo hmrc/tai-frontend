@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.filters
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 
+// TODO:// Either add employment as a param or reinvestigate why this is required, to relook at this when CY+1 is reenabled
 trait TaxAccountFilter {
 
   def liveEmployment(taxCodeIncome: TaxCodeIncome) =

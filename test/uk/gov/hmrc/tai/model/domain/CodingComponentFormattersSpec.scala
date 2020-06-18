@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.model.domain
 
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.{JsError, JsResultException, JsString, Json}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
 import uk.gov.hmrc.tai.model.domain.income._
@@ -241,24 +241,25 @@ class CodingComponentFormattersSpec extends PlaySpec with CodingComponentFormatt
     }
   }
 
+  // TODO:// move this
   "taxCodeIncomeSourceStatusReads" must {
     "read the field correctly" when {
       "json string is Live" in {
-        JsString("Live").as[TaxCodeIncomeSourceStatus](taxCodeIncomeSourceStatusReads) mustBe Live
+        JsString("Live").as[TaxCodeIncomeSourceStatus] mustBe Live
       }
       "json string is PotentiallyCeased" in {
         JsString("PotentiallyCeased")
-          .as[TaxCodeIncomeSourceStatus](taxCodeIncomeSourceStatusReads) mustBe PotentiallyCeased
+          .as[TaxCodeIncomeSourceStatus] mustBe PotentiallyCeased
       }
       "json string is Ceased" in {
-        JsString("Ceased").as[TaxCodeIncomeSourceStatus](taxCodeIncomeSourceStatusReads) mustBe Ceased
+        JsString("Ceased").as[TaxCodeIncomeSourceStatus] mustBe Ceased
       }
     }
-    "throw runtime exception" when {
+    "throw JsResultException" when {
       "provided with unrecognized status" in {
-        val ex = the[IllegalArgumentException] thrownBy JsString("Some Status")
-          .as[TaxCodeIncomeSourceStatus](taxCodeIncomeSourceStatusReads)
-        ex.getMessage must include("Invalid TaxCodeIncomeSourceStatus type")
+        val ex = the[JsResultException] thrownBy JsString("Some Status")
+          .as[TaxCodeIncomeSourceStatus]
+        ex.getMessage must include("Invalid Tax component type")
       }
     }
   }

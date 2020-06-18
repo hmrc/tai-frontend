@@ -178,8 +178,10 @@ trait TaxAccountSummaryTestData {
   )
   val taxCodeIncome =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
+
   val taxCodeIncomeCeased =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Ceased)
+
   val payment = Payment(
     new LocalDate(),
     BigDecimal(123.45),
@@ -192,7 +194,7 @@ trait TaxAccountSummaryTestData {
   val annualAccount = AnnualAccount("key", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(payment), Nil)
   val ceasedEmployment = Employment(
     "Ceased employer name",
-    Live,
+    Ceased,
     Some("123ABC"),
     new LocalDate(2017, 3, 1),
     Some(new LocalDate(2018, 4, 21)),

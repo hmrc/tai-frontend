@@ -57,7 +57,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       }
 
       "tax code income is not present" in {
-        val model = incomeCalculationViewModel(hasTaxCodeIncome = false)
+        val model = incomeCalculationViewModel(employmentStatus = Ceased, hasTaxCodeIncome = false)
 
         model.empId mustBe 2
         model.employerName mustBe "test employment"
@@ -68,7 +68,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         model.latestPayment mustBe Some(
           LatestPayment(new LocalDate().minusWeeks(1), 400, 50, 25, Irregular)
         )
-        model.endDate mustBe None
+        model.endDate mustBe Some(LocalDate.parse("2017-08-08"))
         model.isPension mustBe false
         model.rtiStatus mustBe Available
         model.employmentStatus mustBe Ceased
@@ -1282,9 +1282,10 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     cessationPay: Option[BigDecimal] = None,
     paymentDetails: Seq[PaymentDetailsViewModel] = paymentDetails) = {
     val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), realTimeStatus, payments, Nil)
+
     val employment = Employment(
       "test employment",
-      Live,
+      employmentStatus,
       Some("EMPLOYER1"),
       uk.gov.hmrc.tai.model.TaxYear().start.plusDays(1),
       if (employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None,

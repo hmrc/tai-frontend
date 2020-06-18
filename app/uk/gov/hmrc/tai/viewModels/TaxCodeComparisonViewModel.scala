@@ -86,6 +86,7 @@ object TaxCodeComparisonViewModel {
         taxCodeForYear.taxCodeIncomeSources.filter(incomeSource => filterIncomeSources(incomeSource, taxComponentType)))
     }
 
+  // TODO:// Either add employment as a param or reinvestigate why this is required, to relook at this when CY+1 is reenabled
   private def filterIncomeSources(incomeSource: TaxCodeIncome, taxComponentType: TaxComponentType): Boolean =
     incomeSource.componentType == taxComponentType && incomeSource.status == Live
 
