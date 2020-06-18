@@ -15,15 +15,16 @@
  */
 
 package uk.gov.hmrc.tai.config
-
 import play.api.Play._
 import uk.gov.hmrc.tai.model.TaxYear
 import views.html.helper
+import play.api.Configuration
+
 
 class ApplicationConfig extends DefaultServicesConfig {
 
+  val config: Configuration
   def statusRange = s"${TaxYear().prev.year}-${TaxYear().year}"
-
   lazy val citizenAuthHost = fetchUrl("citizen-auth")
   lazy val companyAuthUrl = fetchUrl("company-auth")
   lazy val urlEncode = helper.urlEncode(_: String)
@@ -44,6 +45,12 @@ class ApplicationConfig extends DefaultServicesConfig {
     s"$taiRootUri/digital-forms/form/tell-us-about-investment-income/draft/guide"
   lazy val taxFreeAllowanceLinkUrl =
     s"$taiRootUri/digital-forms/form/check-income-tax-tell-us-your-tax-free-allowance/draft/guide"
+  val nuanceUrl: String =
+    "https://hmrc-uk.digital.nuance.com/chatskins/launch/inqChatLaunch10006719.js"
+  val nuancePreProdUrl: String =
+    "https://hmrc-uk-preprod.digital.nuance.com/chatskins/launch/inqChatLaunch10006719.js"
+  val preProdMode = configuration.getBoolean("pre-prod.mode").getOrElse(false)
+  val performanceTest = configuration.getBoolean("performance-test.mode").getOrElse(false)
 
   lazy val reportAProblemPartialUrl = s"${fetchUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
   lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
