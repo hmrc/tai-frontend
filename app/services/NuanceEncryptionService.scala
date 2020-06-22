@@ -30,8 +30,7 @@ case class NuanceEncryptionService @Inject()(configuration: Configuration) {
   protected val FIELD_PREFIX = "ENCRYPTED-"
   private val VALUE_SEPARATOR = "-"
   private val baseSettingsKey = "request-body-encryption"
-  private val hashingKey: String = configuration.get[String](s"$baseSettingsKey.hashing-key")
-
+  private val hashingKey: String = configuration.getString(s"$baseSettingsKey.hashing-key").getOrElse("")
   protected lazy val crypto: CryptoGCMWithKeysFromConfig = new CryptoGCMWithKeysFromConfig(
     baseConfigKey = baseSettingsKey,
     config = configuration.underlying

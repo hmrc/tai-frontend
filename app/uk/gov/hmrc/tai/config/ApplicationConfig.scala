@@ -20,8 +20,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import views.html.helper
 import play.api.Configuration
 
-
-class ApplicationConfig extends DefaultServicesConfig {
+abstract class ApplicationConfig extends DefaultServicesConfig {
 
   val config: Configuration
   def statusRange = s"${TaxYear().prev.year}-${TaxYear().year}"
