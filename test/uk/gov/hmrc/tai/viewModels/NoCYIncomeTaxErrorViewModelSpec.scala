@@ -24,6 +24,7 @@ import uk.gov.hmrc.tai.model.{TaxYear, tai}
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model
+import uk.gov.hmrc.tai.model.domain.income.Live
 
 class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
@@ -36,20 +37,44 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       }
       "only one employment is present in the seq but without an end date" in {
         val employment =
-          Employment("test employment", Some("111111"), empStartDateOne, None, Nil, "", "", 2, None, false, false)
+          Employment("test employment", Live, Some("111111"), empStartDateOne, None, Nil, "", "", 2, None, false, false)
 
         val sut = createSut(Seq(employment))
         sut.endDate mustBe None
       }
       "multiple employments are present in the seq with no end dates" in {
         val employment =
-          Employment("test employment", Some("111111"), empStartDateOne, None, Nil, "", "", 2, None, false, false)
+          Employment("test employment", Live, Some("111111"), empStartDateOne, None, Nil, "", "", 2, None, false, false)
 
         val employment1 =
-          Employment("test employment1", Some("222222"), empStartDateTwo, None, Nil, "", "", 2, None, false, false)
+          Employment(
+            "test employment1",
+            Live,
+            Some("222222"),
+            empStartDateTwo,
+            None,
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false)
 
         val employment2 =
-          Employment("test employment2", Some("333333"), empStartDateThree, None, Nil, "", "", 2, None, false, false)
+          Employment(
+            "test employment2",
+            Live,
+            Some("333333"),
+            empStartDateThree,
+            None,
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false)
 
         val sut = createSut(Seq(employment, employment1, employment2))
         sut.endDate mustBe None
@@ -60,6 +85,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       "only one employment is present in the seq" in {
         val employment = Employment(
           "test employment",
+          Live,
           Some("111111"),
           empStartDateOne,
           Some(empEndDateOne),
@@ -80,10 +106,11 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
     "return the most recent employment's end date" when {
       "multiple employments are present in the seq with one of them doesnt have end date" in {
         val employment =
-          Employment("test employment", Some("111111"), empStartDateOne, None, Nil, "", "", 2, None, false, false)
+          Employment("test employment", Live, Some("111111"), empStartDateOne, None, Nil, "", "", 2, None, false, false)
 
         val employment1 = Employment(
           "test employment1",
+          Live,
           Some("222222"),
           empStartDateTwo,
           Some(empEndDateTwo),
@@ -97,6 +124,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
         val employment2 = Employment(
           "test employment2",
+          Live,
           Some("333333"),
           empStartDateThree,
           Some(empEndDateThree),
@@ -114,6 +142,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       "multiple employments are present in the seq with all of them having end dates" in {
         val employment = Employment(
           "test employment",
+          Live,
           Some("111111"),
           empStartDateOne,
           Some(empEndDateOne),
@@ -127,6 +156,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
         val employment1 = Employment(
           "test employment1",
+          Live,
           Some("222222"),
           empStartDateTwo,
           Some(empEndDateTwo),
@@ -140,6 +170,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
         val employment2 = Employment(
           "test employment2",
+          Live,
           Some("333333"),
           empStartDateThree,
           Some(empEndDateThree),

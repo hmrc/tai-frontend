@@ -368,6 +368,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         ),
         "employment" -> Json.obj(
           "name"                         -> "company name",
+          "employmentStatus"             -> "Live",
           "payrollNumber"                -> "888",
           "startDate"                    -> "2019-05-26",
           "annualAccounts"               -> Json.arr(),
@@ -507,6 +508,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "Employer1", OtherBasisOfOperation, Live)
   val employment = Employment(
     "company name",
+    Live,
     Some("888"),
     new LocalDate(2019, 5, 26),
     None,

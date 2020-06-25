@@ -37,6 +37,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment, TaxComponentType, Telephone}
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -320,6 +321,7 @@ class CompanyBenefitControllerSpec
 
   val employment = Employment(
     "company name",
+    Live,
     Some("123"),
     new LocalDate("2016-05-26"),
     Some(new LocalDate("2016-05-26")),

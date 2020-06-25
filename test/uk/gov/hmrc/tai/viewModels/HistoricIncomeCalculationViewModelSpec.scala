@@ -25,6 +25,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants.EYU_DATE_FORMAT
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.income.Live
 
 class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 
@@ -85,6 +86,7 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
         val sampleAnnualAccount = AnnualAccount("1-2-3", previousYear, Available, Nil, List(sampleEndOfTaxYearUpdate))
         val sampleEmployment = Employment(
           "emp1",
+          Live,
           None,
           new LocalDate(2017, 6, 10),
           None,
@@ -297,9 +299,22 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
   val sampleAnnualAccount = AnnualAccount("1-2-3", previousYear, Available, List(samplePayment), Nil)
 
   val sampleEmployment1 =
-    Employment(empName, None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false)
+    Employment(
+      empName,
+      Live,
+      None,
+      new LocalDate(2017, 6, 9),
+      None,
+      Nil,
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      false,
+      false)
   val sampleEmployment2 = Employment(
     "emp2",
+    Live,
     None,
     new LocalDate(2017, 6, 10),
     None,

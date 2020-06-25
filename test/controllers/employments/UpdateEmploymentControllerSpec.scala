@@ -35,6 +35,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
@@ -458,6 +459,7 @@ class UpdateEmploymentControllerSpec
 
   private val employment = Employment(
     "company name",
+    Live,
     Some("123"),
     new LocalDate("2016-05-26"),
     Some(new LocalDate("2016-05-26")),

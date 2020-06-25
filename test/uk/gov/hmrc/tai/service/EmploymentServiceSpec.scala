@@ -26,6 +26,7 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
 
 import scala.concurrent.duration._
@@ -70,6 +71,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
         val sut = createSUT
         val employment1 = Employment(
           "company name 1",
+          Live,
           Some("123"),
           new LocalDate("2016-05-26"),
           Some(new LocalDate("2016-05-26")),
@@ -82,6 +84,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
           false)
         val employment2 = Employment(
           "company name 2",
+          Live,
           Some("123"),
           new LocalDate("2016-05-26"),
           Some(new LocalDate("2016-05-26")),
@@ -216,6 +219,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private val employment = Employment(
     "company name",
+    Live,
     Some("123"),
     new LocalDate("2016-05-26"),
     Some(new LocalDate("2016-05-26")),

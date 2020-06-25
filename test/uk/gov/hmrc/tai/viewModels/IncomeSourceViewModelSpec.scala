@@ -58,10 +58,10 @@ class IncomeSourceViewModelSpec
       }
       "has the displayTaxCode field as false" when {
         "employment status is not live" in {
-          val ceasedTaxCodeIncome = taxCodeIncome.copy(status = Ceased)
-          val potantiallyCasedTaxCodeIncome = taxCodeIncome.copy(status = PotentiallyCeased)
-          val sut1 = IncomeSourceViewModel(ceasedTaxCodeIncome, employment)
-          val sut2 = IncomeSourceViewModel(potantiallyCasedTaxCodeIncome, employment)
+          val ceasedEmployment = employment.copy(employmentStatus = Ceased)
+          val potantiallyCeasedEmployment = employment.copy(employmentStatus = PotentiallyCeased)
+          val sut1 = IncomeSourceViewModel(taxCodeIncome, ceasedEmployment)
+          val sut2 = IncomeSourceViewModel(taxCodeIncome, potantiallyCeasedEmployment)
           sut1.displayTaxCode mustBe false
           sut2.displayTaxCode mustBe false
         }
@@ -111,14 +111,14 @@ class IncomeSourceViewModelSpec
       }
       "has formatted endDate field as same as employment model and displayEndDate as true" when {
         "employment model has endDate and employment status is ceased" in {
-          val taxCodeIncomeCeased = taxCodeIncome.copy(status = Ceased)
-          val sut = IncomeSourceViewModel(taxCodeIncomeCeased, employment)
+          val ceasedEmployment = employment.copy(employmentStatus = Ceased)
+          val sut = IncomeSourceViewModel(taxCodeIncome, ceasedEmployment)
           sut.endDate mustBe "21 April 2018"
           sut.displayEndDate mustBe true
         }
         "employment model has endDate and employment status is potentially ceased" in {
-          val taxCodeIncomePotentiallyCeased = taxCodeIncome.copy(status = PotentiallyCeased)
-          val sut = IncomeSourceViewModel(taxCodeIncomePotentiallyCeased, employment)
+          val potentiallyCeasedEmployment = employment.copy(employmentStatus = PotentiallyCeased)
+          val sut = IncomeSourceViewModel(taxCodeIncome, potentiallyCeasedEmployment)
           sut.endDate mustBe "21 April 2018"
           sut.displayEndDate mustBe true
         }
@@ -134,7 +134,7 @@ class IncomeSourceViewModelSpec
       }
       "has details link with employment only label for ceased employment" when {
         "income source type is employment" in {
-          val sut = IncomeSourceViewModel(taxCodeIncomeCeased, ceasedEmployment)
+          val sut = IncomeSourceViewModel(taxCodeIncome, ceasedEmployment)
           sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.employment.link")
           sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(1).url
         }
@@ -247,7 +247,7 @@ class IncomeSourceViewModelSpec
 
     "detailsLinkLabel" must {
       "be the correct label for ceased employments" in {
-        val taxedIncome = TaxedIncome(taxCodeIncomeCeased, empEmployment1)
+        val taxedIncome = TaxedIncome(taxCodeIncomeCeased, ceasedEmployment)
         val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
         actual.detailsLinkLabel mustBe messagesApi("tai.incomeTaxSummary.employment.link")
@@ -269,7 +269,7 @@ class IncomeSourceViewModelSpec
     }
 
     "detailsLinkUrl is yourIncomeCalculationPage for a ceased employment" in {
-      val taxedIncome = TaxedIncome(taxCodeIncomeCeased, empEmployment1)
+      val taxedIncome = TaxedIncome(taxCodeIncome, ceasedEmployment)
       val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
       actual.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController

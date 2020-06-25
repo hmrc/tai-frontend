@@ -57,7 +57,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       }
 
       "tax code income is not present" in {
-        val model = incomeCalculationViewModel(hasTaxCodeIncome = false)
+        val model = incomeCalculationViewModel(employmentStatus = Ceased, hasTaxCodeIncome = false)
 
         model.empId mustBe 2
         model.employerName mustBe "test employment"
@@ -68,7 +68,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         model.latestPayment mustBe Some(
           LatestPayment(new LocalDate().minusWeeks(1), 400, 50, 25, Irregular)
         )
-        model.endDate mustBe None
+        model.endDate mustBe Some(LocalDate.parse("2017-08-08"))
         model.isPension mustBe false
         model.rtiStatus mustBe Available
         model.employmentStatus mustBe Ceased
@@ -147,7 +147,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     "return none" when {
       "amountYearToDate is not same as amount" in {
         val employment =
-          Employment("employment", None, TaxYear().start.plusDays(1), None, Nil, "", "", 2, None, false, false)
+          Employment("employment", Live, None, TaxYear().start.plusDays(1), None, Nil, "", "", 2, None, false, false)
 
         YourIncomeCalculationViewModel.sameIncomeCalculationMessage(employment, 100, 1000, "emp", None) mustBe None
       }
@@ -156,7 +156,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     "return message" when {
       "amountYearToDate is not same as amount" in {
         val employment =
-          Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
+          Employment("employment", Live, None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
 
         YourIncomeCalculationViewModel.sameIncomeCalculationMessage(employment, 100, 100, "emp", None) mustBe
           Some(
@@ -174,6 +174,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "endDate and cessationPay is available" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -191,6 +192,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "cessationPay is not available" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -209,7 +211,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     "return message for potentially ceased employment" when {
       "end date is not available" in {
         val employment =
-          Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
+          Employment("employment", Live, None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
         CeasedIncomeMessages.ceasedIncomeCalculationMessage(PotentiallyCeased, employment, "pension") mustBe
           Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay"))
       }
@@ -219,6 +221,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "employment is live" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -239,6 +242,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "cessationPay is not available" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -257,7 +261,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     "return message for potentially ceased employment" when {
       "end date is not available" in {
         val employment =
-          Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
+          Employment("employment", Live, None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
         CeasedIncomeMessages.ceasedIncomeCalculationEstimateMessage(PotentiallyCeased, employment, 1000) mustBe
           Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1000, 0).quantity))
       }
@@ -267,6 +271,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "employment is live" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -287,6 +292,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "payment frequency is monthly" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -305,6 +311,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "payment frequency is Annually" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -323,6 +330,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "payment frequency is OneOff" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -341,6 +349,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "payment frequency is Irregular" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -360,6 +369,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "payment frequency is monthly" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.plusMonths(1),
           Some(TaxYear().end),
@@ -383,6 +393,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "payment frequency is Annually" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.plusMonths(1),
           Some(TaxYear().end),
@@ -406,6 +417,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "payment frequency is OneOff" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.plusMonths(1),
           Some(TaxYear().end),
@@ -424,6 +436,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "payment frequency is Irregular" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.plusMonths(1),
           Some(TaxYear().end),
@@ -443,6 +456,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "payment frequency is none" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.plusMonths(1),
           Some(TaxYear().end),
@@ -1015,6 +1029,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "getCeasedMsg returns both messages" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -1047,6 +1062,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "getCeasedMsg returns first message" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -1081,6 +1097,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "getManualUpdateMsg returns both messages" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -1118,7 +1135,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
       "getSameMsg returns the first message" in {
         val employment =
-          Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
+          Employment("employment", Live, None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
           Some(2),
@@ -1146,6 +1163,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "getPayFreqMsg returns both messages" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -1179,6 +1197,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "getPayFreqMsg returns the first message" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -1213,6 +1232,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "none of the conditions are matched" in {
         val employment = Employment(
           "employment",
+          Live,
           None,
           TaxYear().start.minusMonths(1),
           Some(TaxYear().end),
@@ -1262,8 +1282,10 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     cessationPay: Option[BigDecimal] = None,
     paymentDetails: Seq[PaymentDetailsViewModel] = paymentDetails) = {
     val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), realTimeStatus, payments, Nil)
+
     val employment = Employment(
       "test employment",
+      employmentStatus,
       Some("EMPLOYER1"),
       uk.gov.hmrc.tai.model.TaxYear().start.plusDays(1),
       if (employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None,

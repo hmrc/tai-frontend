@@ -726,7 +726,7 @@ class IncomeControllerSpec
   val nino = FakeAuthAction.nino
 
   def employmentWithAccounts(accounts: List[AnnualAccount]) =
-    Employment("ABCD", Some("ABC123"), new LocalDate(2000, 5, 20), None, accounts, "", "", 8, None, false, false)
+    Employment("ABCD", Live, Some("ABC123"), new LocalDate(2000, 5, 20), None, accounts, "", "", 8, None, false, false)
 
   def paymentOnDate(date: LocalDate) =
     Payment(

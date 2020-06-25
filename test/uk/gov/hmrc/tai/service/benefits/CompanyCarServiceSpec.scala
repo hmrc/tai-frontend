@@ -33,6 +33,7 @@ import scala.concurrent.{Await, Future}
 import scala.util.Random
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 class CompanyCarServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheConstants with BeforeAndAfterEach {
@@ -174,7 +175,7 @@ class CompanyCarServiceSpec extends PlaySpec with MockitoSugar with JourneyCache
   )
 
   val employment =
-    Employment("The Man Plc", None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false, false)
+    Employment("The Man Plc", Live, None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false, false)
   val companyCars = Seq(companyCar, companyCarWithDateWithDrawn)
 
   def generateNino: Nino = new Generator(new Random).nextNino

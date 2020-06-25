@@ -34,6 +34,7 @@ import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerExcep
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
@@ -252,6 +253,7 @@ class PayeControllerHistoricSpec
   val sampleEmploymentForEmptyAnnualAccounts = Seq(
     Employment(
       "employer1",
+      Live,
       None,
       new LocalDate(2016, 6, 9),
       None,
@@ -265,6 +267,7 @@ class PayeControllerHistoricSpec
     ),
     Employment(
       "employer2",
+      Live,
       None,
       new LocalDate(2016, 7, 9),
       None,
@@ -281,6 +284,7 @@ class PayeControllerHistoricSpec
   val sampleEmploymentForRtiUnavailable = Seq(
     Employment(
       "employer1",
+      Live,
       None,
       new LocalDate(2016, 6, 9),
       None,
@@ -294,6 +298,7 @@ class PayeControllerHistoricSpec
     ),
     Employment(
       "employer2",
+      Live,
       None,
       new LocalDate(2016, 7, 9),
       None,
@@ -310,6 +315,7 @@ class PayeControllerHistoricSpec
   val sampleEmployment = Seq(
     Employment(
       "employer1",
+      Live,
       None,
       new LocalDate(2018, 6, 9),
       None,
@@ -323,6 +329,7 @@ class PayeControllerHistoricSpec
     ),
     Employment(
       "employer2",
+      Live,
       None,
       new LocalDate(2017, 7, 9),
       None,

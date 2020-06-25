@@ -160,7 +160,7 @@ trait CodingComponentFormatters {
       val taxCode = (json \ "taxCode").as[String]
       val name = (json \ "name").as[String]
       val basisOperation = (json \ "basisOperation").as[BasisOfOperation]
-      val status = (json \ "status").as[TaxCodeIncomeSourceStatus](taxCodeIncomeSourceStatusReads)
+      val status = (json \ "status").as[TaxCodeIncomeSourceStatus]
       val iabdUpdateSource = (json \ "iabdUpdateSource").asOpt[IabdUpdateSource]
       val updateNotificationDate = (json \ "updateNotificationDate").asOpt[LocalDate]
       val updateActionDate = (json \ "updateActionDate").asOpt[LocalDate]
@@ -179,15 +179,5 @@ trait CodingComponentFormatters {
           updateNotificationDate,
           updateActionDate))
     }
-  }
-
-  val taxCodeIncomeSourceStatusReads = new Reads[TaxCodeIncomeSourceStatus] {
-    override def reads(json: JsValue): JsResult[TaxCodeIncomeSourceStatus] =
-      json.as[String] match {
-        case "Live"              => JsSuccess(Live)
-        case "PotentiallyCeased" => JsSuccess(PotentiallyCeased)
-        case "Ceased"            => JsSuccess(Ceased)
-        case _                   => throw new IllegalArgumentException("Invalid TaxCodeIncomeSourceStatus type")
-      }
   }
 }

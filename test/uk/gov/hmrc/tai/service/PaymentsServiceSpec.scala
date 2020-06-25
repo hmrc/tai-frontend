@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.service
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.viewModels.PaymentDetailsViewModel
 
 class PaymentsServiceSpec extends PlaySpec {
@@ -33,7 +34,19 @@ class PaymentsServiceSpec extends PlaySpec {
 
   def createEmployment(payments: Seq[Payment]): Employment = {
     val annualAccounts = Seq(AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), Available, payments, Nil))
-    Employment("test employment", Some("EMPLOYER1"), testDate, None, annualAccounts, "", "", 2, None, false, false)
+    Employment(
+      "test employment",
+      Live,
+      Some("EMPLOYER1"),
+      testDate,
+      None,
+      annualAccounts,
+      "",
+      "",
+      2,
+      None,
+      false,
+      false)
   }
 
   "filterDuplicates" should {
@@ -46,6 +59,7 @@ class PaymentsServiceSpec extends PlaySpec {
       val emptyAnnualAccounts = Seq.empty[AnnualAccount]
       val employment = Employment(
         "test employment",
+        Live,
         Some("EMPLOYER1"),
         testDate,
         None,

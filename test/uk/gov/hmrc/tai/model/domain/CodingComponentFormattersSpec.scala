@@ -241,26 +241,4 @@ class CodingComponentFormattersSpec extends PlaySpec with CodingComponentFormatt
     }
   }
 
-  "taxCodeIncomeSourceStatusReads" must {
-    "read the field correctly" when {
-      "json string is Live" in {
-        JsString("Live").as[TaxCodeIncomeSourceStatus](taxCodeIncomeSourceStatusReads) mustBe Live
-      }
-      "json string is PotentiallyCeased" in {
-        JsString("PotentiallyCeased")
-          .as[TaxCodeIncomeSourceStatus](taxCodeIncomeSourceStatusReads) mustBe PotentiallyCeased
-      }
-      "json string is Ceased" in {
-        JsString("Ceased").as[TaxCodeIncomeSourceStatus](taxCodeIncomeSourceStatusReads) mustBe Ceased
-      }
-    }
-    "throw runtime exception" when {
-      "provided with unrecognized status" in {
-        val ex = the[IllegalArgumentException] thrownBy JsString("Some Status")
-          .as[TaxCodeIncomeSourceStatus](taxCodeIncomeSourceStatusReads)
-        ex.getMessage must include("Invalid TaxCodeIncomeSourceStatus type")
-      }
-    }
-  }
-
 }

@@ -57,11 +57,11 @@ object YourIncomeCalculationViewModel {
 
     val latestPayment = latestPaymentDetails(employment)
     val isPension = taxCodeIncome.exists(_.componentType == PensionIncome)
-    val status = taxCodeIncome.map(_.status).getOrElse(Ceased)
+    val status = employment.employmentStatus
 
     val (incomeCalculationMessage, incomeCalculationEstimateMessage) = taxCodeIncome map { income =>
       incomeExplanationMessage(
-        income.status,
+        employment.employmentStatus,
         employment,
         pensionOrEmpMessage(isPension),
         income,

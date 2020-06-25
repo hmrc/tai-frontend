@@ -82,6 +82,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("PENSION-1122"),
           LocalDate.now(),
           None,
@@ -109,6 +110,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("EMPLOYER-1122"),
           LocalDate.now(),
           None,
@@ -135,6 +137,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("EMPLOYER-1122"),
           LocalDate.now(),
           None,
@@ -160,6 +163,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("EMPLOYER-1122"),
           LocalDate.now(),
           None,
@@ -183,6 +187,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("EMPLOYER-1122"),
           LocalDate.now(),
           None,
@@ -228,6 +233,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("EMPLOYER-1122"),
           LocalDate.now(),
           None,
@@ -281,6 +287,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("EMPLOYER-1122"),
           LocalDate.now(),
           None,
@@ -339,6 +346,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("EMPLOYER-1122"),
           LocalDate.now(),
           None,
@@ -363,6 +371,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
         val employment = Employment(
           "test employment",
+          Live,
           Some("EMPLOYER-1122"),
           LocalDate.now(),
           None,
