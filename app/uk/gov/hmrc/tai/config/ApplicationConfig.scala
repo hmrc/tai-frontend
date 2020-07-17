@@ -58,7 +58,10 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val gaRecStatus: String = configuration.getString(s"govuk-tax.$env.google-analytics.gaRecStatus").getOrElse("")
   lazy val analyticsHost: String = configuration.getString(s"govuk-tax.$env.google-analytics.host").getOrElse("auto")
   lazy val pertaxServiceUrl = s"${fetchUrl("pertax-frontend")}/personal-account"
-  lazy val pertaxServiceUpliftFailedUrl = s"${fetchUrl("pertax-frontend")}/personal-account/identity-check-failed"
+  lazy val pertaxServiceUpliftFailedUrl = configuration
+    .getString(s"govuk-tax.$env.external-url.feedback-survey-frontend.host")
+    .getOrElse("") +
+    "/personal-account/identity-check-failed"
   lazy val pertaxExitSurveyUrl = s"$pertaxServiceUrl/signout?origin=TES"
   lazy val feedbackSurveyUrl = s"$feedbackHost/feedback/TES"
   lazy val feedbackHost =
@@ -72,7 +75,9 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val mainContentHeaderPartialUrl =
     s"${fetchUrl("header-service")}/personal-account/integration/main-content-header"
   lazy val sa16UpliftUrl = s"${fetchUrl("identity-verification-frontend")}/mdtp/uplift"
-  lazy val taiFrontendServiceUrl = s"$personServiceUrl/income-tax"
+  lazy val taiHomePageUrl = configuration
+    .getString(s"govuk-tax.$env.external-url.tai-frontend.host")
+    .getOrElse("") + "/check-income-tax/what-do-you-want-to-do"
   lazy val taxYouPaidStatus = s"${fetchUrl("taxcalc-frontend")}/tax-you-paid/status"
   lazy val gg_web_context = configuration.getString(s"$env.external-url.gg.web-context").getOrElse("gg")
   lazy val ida_web_context = configuration.getString(s"$env.external-url.ida.web-context").getOrElse("ida")

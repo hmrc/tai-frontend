@@ -37,7 +37,7 @@ class UnauthorisedController @Inject()(
 
   def upliftUrl: String = ApplicationConfig.sa16UpliftUrl
   def failureUrl: String = ApplicationConfig.pertaxServiceUpliftFailedUrl
-  def completionUrl: String = ApplicationConfig.taiFrontendServiceUrl
+  def completionUrl: String = ApplicationConfig.taiHomePageUrl
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
     Ok(unauthorisedView()).withNewSession
