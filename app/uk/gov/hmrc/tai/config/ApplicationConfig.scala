@@ -59,7 +59,7 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val analyticsHost: String = configuration.getString(s"govuk-tax.$env.google-analytics.host").getOrElse("auto")
   lazy val pertaxServiceUrl = s"${fetchUrl("pertax-frontend")}/personal-account"
   lazy val pertaxServiceUpliftFailedUrl = configuration
-    .getString(s"govuk-tax.$env.external-url.feedback-survey-frontend.host")
+    .getString(s"govuk-tax.$env.external-url.pertax-frontend.host")
     .getOrElse("") +
     "/personal-account/identity-check-failed"
   lazy val pertaxExitSurveyUrl = s"$pertaxServiceUrl/signout?origin=TES"
