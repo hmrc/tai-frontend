@@ -20,9 +20,9 @@ import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UnauthorizedException}
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
@@ -110,8 +110,10 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler)
     httpHandler.getFromApiV2(taxAccountSummaryUrl(nino.nino, year)) map (
       json => TaiSuccessResponseWithPayload((json \ "data").as[TaxAccountSummary])
     ) recover {
+      case e: NotFoundException =>
+        Logger.warn(s"No tax account information found: ${e.getMessage}")
+        TaiNotFoundResponse(e.getMessage)
       case e: UnauthorizedException =>
-        Logger.warn(s"UNAUTHORIZED")
         TaiUnauthorisedResponse(e.getMessage)
       case NonFatal(e) =>
         Logger.warn(s"Couldn't retrieve tax summary for $nino with exception:${e.getMessage}")
