@@ -59,22 +59,6 @@ class AnnualAccountSpec extends PlaySpec {
     }
   }
 
-  "totalTaxPaidYearToDate" must {
-    "return the latest year to date value from the payments" when {
-      "there is only one payment" in {
-        SutWithOnePayment.totalTaxPaidYearToDate mustBe 1200
-      }
-      "there are multiple payments" in {
-        SutWithMultiplePayments.totalTaxPaidYearToDate mustBe 2500
-      }
-    }
-    "return zero for the latest year to date value" when {
-      "there are no payments" in {
-        SutWithNoPayments.totalTaxPaidYearToDate mustBe 0
-      }
-    }
-  }
-
   "latestPayment" must {
     "return the latest payment" when {
       "there are multiple payments" in {

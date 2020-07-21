@@ -27,7 +27,6 @@ case class AnnualAccount(
   endOfTaxYearUpdates: Seq[EndOfTaxYearUpdate]) {
 
   lazy val totalIncomeYearToDate: BigDecimal = maxPayment(payments.max.amountYearToDate)
-  lazy val totalTaxPaidYearToDate: BigDecimal = maxPayment(payments.max.taxAmountYearToDate)
 
   lazy val employerDesignation = {
     val split = key.split("-")
