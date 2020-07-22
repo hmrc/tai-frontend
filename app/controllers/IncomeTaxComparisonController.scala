@@ -106,7 +106,7 @@ class IncomeTaxComparisonController @Inject()(
             IncomeSourceComparisonViewModel(taxCodeIncomesCY, employmentsCY, taxCodeIncomesCYPlusOne)
 
           val model = IncomeTaxComparisonViewModel(
-            request.taiUser.getDisplayName,
+            "TODO name",
             estimatedIncomeTaxComparisonViewModel,
             taxCodeComparisonModel,
             taxFreeAmountComparisonModel,

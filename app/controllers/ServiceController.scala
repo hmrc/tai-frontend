@@ -43,12 +43,12 @@ class ServiceController @Inject()(
   }
 
   def serviceSignout = (authenticate andThen validatePerson).async { implicit request =>
-    if (request.taiUser.providerType == TaiConstants.AuthProviderVerify) {
-      Future.successful(
-        Redirect(ApplicationConfig.citizenAuthFrontendSignOutUrl)
-          .withSession(TaiConstants.SessionPostLogoutPage -> ApplicationConfig.feedbackSurveyUrl))
-    } else {
-      Future.successful(Redirect(ApplicationConfig.companyAuthFrontendSignOutUrl))
+    request.taiUser.providerType match {
+      case Some(TaiConstants.AuthProviderVerify) =>
+        Future.successful(
+          Redirect(ApplicationConfig.citizenAuthFrontendSignOutUrl)
+            .withSession(TaiConstants.SessionPostLogoutPage -> ApplicationConfig.feedbackSurveyUrl))
+      case _ => Future.successful(Redirect(ApplicationConfig.companyAuthFrontendSignOutUrl))
     }
   }
 

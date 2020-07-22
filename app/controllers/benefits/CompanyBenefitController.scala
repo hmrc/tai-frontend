@@ -69,7 +69,7 @@ class CompanyBenefitController @Inject()(
     (for {
       currentCache <- journeyCacheService.currentCache
       employment <- employmentService
-                     .employment(Nino(user.getNino), currentCache(EndCompanyBenefit_EmploymentIdKey).toInt)
+                     .employment(user.nino, currentCache(EndCompanyBenefit_EmploymentIdKey).toInt)
       decision <- decisionCacheWrapper.getDecision()
     } yield {
       employment match {

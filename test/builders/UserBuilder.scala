@@ -17,15 +17,17 @@
 package builders
 
 import controllers.auth.AuthedUser
+import uk.gov.hmrc.auth.core.ConfidenceLevel
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 object UserBuilder {
   val nino: Nino = new Generator().nextNino
+
   def apply(
     firstName: String = "Firstname",
     lastName: String = "Surname",
     utr: String = "utr",
     providerType: String = TaiConstants.AuthProviderGG) =
-    AuthedUser(firstName + " " + lastName, nino.toString(), utr, providerType, "200", None)
+    AuthedUser(firstName + " " + lastName, nino.toString(), Some(utr), Some(providerType), ConfidenceLevel.L200, None)
 }

@@ -82,7 +82,7 @@ class PayeControllerHistoric @Inject()(
     implicit request: AuthenticatedRequest[AnyContent]): PartialFunction[Throwable, Future[Result]] = {
 
     implicit val rl: RecoveryLocation = classOf[WhatDoYouWantToDoController]
-    val nino = request.taiUser.getNino
+    val nino = request.taiUser.nino.toString()
 
     npsEmploymentAbsentResult(nino) orElse
       rtiEmploymentAbsentResult(nino) orElse

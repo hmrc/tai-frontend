@@ -63,7 +63,7 @@ class IncomeSourceSummaryController @Inject()(
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
           val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
             empId,
-            taiUser.getDisplayName,
+            "TODO name",
             taxCodeIncomes,
             employment,
             benefitsDetails,

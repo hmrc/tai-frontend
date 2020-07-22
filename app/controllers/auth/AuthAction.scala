@@ -16,9 +16,9 @@
 
 package controllers.auth
 
-import javax.inject.{Inject, Singleton}
 import com.google.inject.ImplementedBy
 import controllers.routes
+import javax.inject.{Inject, Singleton}
 import play.Logger
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
@@ -35,52 +35,25 @@ import scala.concurrent.{ExecutionContext, Future}
 case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser) extends WrappedRequest[A](request)
 
 case class AuthedUser(
-  name: String,
   validNino: String,
-  utr: String,
-  providerType: String,
-  confidenceLevel: String,
+  utr: Option[String],
+  providerType: Option[String],
+  confidenceLevel: ConfidenceLevel,
   trustedHelper: Option[TrustedHelper]) {
-
-  def getDisplayName: String = name
-
-  def getNino: String = validNino
-
-  def nino: Nino = Nino(validNino)
-
-  def getUTR: String = utr
+  val nino: Nino = Nino(validNino)
 }
 
 object AuthedUser {
   def apply(
-    name: Option[Name],
     nino: Option[String],
-    saUtr: Option[String],
+    utr: Option[String],
     providerType: Option[String],
-    confidenceLevel: ConfidenceLevel): AuthedUser = {
+    confidenceLevel: ConfidenceLevel,
+    trustedHelper: Option[TrustedHelper]): AuthedUser = {
     val validNino = nino.getOrElse("")
-    val validName = name.flatMap(_.name).getOrElse("")
-    val validUtr = saUtr.getOrElse("")
-    val validProviderType = providerType.getOrElse("")
 
-    AuthedUser(validName, validNino, validUtr, validProviderType, confidenceLevel.toString, None)
+    AuthedUser(validNino, utr, providerType, confidenceLevel, trustedHelper)
   }
-
-  def apply(name: String, nino: Nino, providerType: Option[String], confidenceLevel: ConfidenceLevel): AuthedUser = {
-    val validProviderType = providerType.getOrElse("")
-
-    AuthedUser(name, nino.nino, "", validProviderType, confidenceLevel.toString, None)
-  }
-
-  def apply(trustedHelper: TrustedHelper, providerType: Option[String], confidenceLevel: ConfidenceLevel): AuthedUser =
-    AuthedUser(
-      trustedHelper.principalName,
-      trustedHelper.principalNino,
-      "",
-      providerType.getOrElse(""),
-      confidenceLevel.toString,
-      Some(trustedHelper)
-    )
 }
 
 @Singleton
@@ -92,16 +65,13 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implic
       HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised().retrieve(
-      Retrievals.credentials and Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper) {
-      case credentials ~ _ ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) => {
+      Retrievals.credentials and Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper) {
+      case credentials ~ nino ~ saUtr ~ confidenceLevel ~ trustedHelper => {
         val providerType = credentials.map(_.providerType)
-        val user = AuthedUser(helper, providerType, confidenceLevel)
 
-        authWithCredentials(request, block, credentials, user)
-      }
-      case credentials ~ nino ~ name ~ saUtr ~ confidenceLevel ~ _ => {
-        val providerType = credentials.map(_.providerType)
-        val user = AuthedUser(name, nino, saUtr, providerType, confidenceLevel)
+        val userNino = trustedHelper.fold(nino)(helper => Some(helper.principalNino))
+
+        val user = AuthedUser(userNino, saUtr, providerType, confidenceLevel, trustedHelper)
 
         authWithCredentials(request, block, credentials, user)
       }
@@ -128,12 +98,9 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implic
     user: AuthedUser,
     request: Request[A],
     block: AuthenticatedRequest[A] => Future[Result],
-    failureHandler: PartialFunction[Throwable, Result])(implicit hc: HeaderCarrier): Future[Result] = {
-
-    val confidenceLevel = user.confidenceLevel.toInt
-
-    (confidenceLevel match {
-      case level if level >= 200 => {
+    failureHandler: PartialFunction[Throwable, Result])(implicit hc: HeaderCarrier): Future[Result] =
+    (user.confidenceLevel.level match {
+      case level if level >= ConfidenceLevel.L200.level => {
         for {
           result <- block(AuthenticatedRequest(request, user))
         } yield {
@@ -142,7 +109,6 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implic
       }
       case _ => Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl()))
     }) recover failureHandler
-  }
 
   private def handleEntryPointFailure[A](request: Request[A]): PartialFunction[Throwable, Result] =
     request.session.get(SessionKeys.authProvider) match {

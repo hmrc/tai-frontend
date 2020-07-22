@@ -105,17 +105,19 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
 
     "return the users nino in an Ok response" when {
 
+      val authProviderGG = Some(TaiConstants.AuthProviderGG)
       val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
+      val saUtr = Some("000111222")
       val nino = new Generator().nextNino.nino
       val baseRetrieval =
-        creds ~ Some(nino) ~ Some(Name(Some("mainUser"), Some(""))) ~ Some("000111222") ~ ConfidenceLevel.L200
+        creds ~ Some(nino) ~ Some(Name(Some("mainUser"), Some(""))) ~ saUtr ~ ConfidenceLevel.L200
 
       "no trusted helper data is returned" in {
 
         val controller = Harness.successful(baseRetrieval ~ None)
         val result = controller.onPageLoad()(fakeRequest)
 
-        val expectedTaiUser = AuthedUser("mainUser", nino, "000111222", TaiConstants.AuthProviderGG, "200", None)
+        val expectedTaiUser = AuthedUser("mainUser", nino, saUtr, authProviderGG, ConfidenceLevel.L200, None)
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }
@@ -128,7 +130,13 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
         val result = controller.onPageLoad()(fakeRequest)
 
         val expectedTaiUser =
-          AuthedUser("principalName", nino.nino, "", TaiConstants.AuthProviderGG, "200", Some(trustedHelper))
+          AuthedUser(
+            "principalName",
+            nino.nino,
+            Some("000111222"),
+            authProviderGG,
+            ConfidenceLevel.L200,
+            Some(trustedHelper))
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }

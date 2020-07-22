@@ -64,7 +64,7 @@
 
 @isSa = @{
     authedUser.fold(false) {
-        _.getUTR != ""
+        _.utr != ""
     }
 }
 
@@ -110,7 +110,7 @@
 @googleAnalytics = @{
 
     def confidenceLevel: String = {
-        authedUser.fold("false")(_.confidenceLevel)
+        authedUser.fold("false")(_.confidenceLevel.toString)
     }
 
     Map[String, Any](

@@ -250,7 +250,7 @@ class RemoveCompanyBenefitController @Inject()(
         optionalCacheSeq(0),
         mandatoryCacheSeq(4),
         optionalCacheSeq(1))
-      _ <- benefitsService.endedCompanyBenefit(Nino(user.getNino), mandatoryCacheSeq.head.toInt, model)
+      _ <- benefitsService.endedCompanyBenefit(user.nino, mandatoryCacheSeq.head.toInt, model)
       _ <- trackingJourneyCacheService.cache(TrackSuccessfulJourney_EndEmploymentBenefitKey, true.toString)
       _ <- journeyCacheService.flush
     } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.confirmation())

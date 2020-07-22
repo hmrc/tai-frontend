@@ -81,9 +81,9 @@ class WhatDoYouWantToDoController @Inject()(
       )
 
     } recoverWith {
-      val nino = request.taiUser.getNino
+      val nino = request.taiUser.nino
 
-      (hodBadRequestResult(nino) orElse hodInternalErrorResult(nino))
+      (hodBadRequestResult(nino.toString()) orElse hodInternalErrorResult(nino.toString()))
     }
   }
 
