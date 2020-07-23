@@ -29,8 +29,56 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  val historicIncomeCalculationVM = createHistoricIncomeCalculationVM(Nil, Nil, Unavailable, TaxYear().prev)
 
+  val dateFormatPattern = "d MMMM yyyy"
+  val printTableDateFormatPattern = "d MMM yyyy"
+
+  val samplePaymentWithoutNic = Payment(
+    date = new LocalDate(2016, 4, 7),
+    amount = 111,
+    amountYearToDate = 150,
+    taxAmount = 0,
+    taxAmountYearToDate = 0,
+    nationalInsuranceAmount = 0,
+    nationalInsuranceAmountYearToDate = 0,
+    payFrequency = Monthly
+  )
+  val samplePaymentWithNic = Payment(
+    date = new LocalDate(2017, 4, 7),
+    amount = 222,
+    amountYearToDate = 150,
+    taxAmount = 0,
+    taxAmountYearToDate = 0,
+    nationalInsuranceAmount = 100,
+    nationalInsuranceAmountYearToDate = 200,
+    payFrequency = Annually
+  )
+  val samplePayments = Seq(samplePaymentWithoutNic, samplePaymentWithNic)
+
+  def createHistoricIncomeCalculationVM(
+    payments: Seq[Payment],
+    eyuMessage: Seq[String],
+    realTimeStatus: RealTimeStatus,
+    year: TaxYear) =
+    HistoricIncomeCalculationViewModel(
+      employerName = Some("Foo"),
+      employmentId = 1,
+      payments = payments,
+      endOfTaxYearUpdateMessages = eyuMessage,
+      realTimeStatus = realTimeStatus,
+      year)
+
+  private def customView(
+    payments: Seq[Payment] = Nil,
+    eyuMessage: Seq[String] = Nil,
+    realTimeStatus: RealTimeStatus = Available,
+    year: TaxYear = TaxYear().prev) = {
+    val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel =
+      createHistoricIncomeCalculationVM(payments, eyuMessage, realTimeStatus, year)
+    views.html.print.historicIncomeCalculation(historicIncomeCalculationVM)
+  }
+
+  val historicIncomeCalculationVM = createHistoricIncomeCalculationVM(Nil, Nil, Unavailable, TaxYear().prev)
   override def view: Html = views.html.print.historicIncomeCalculation(historicIncomeCalculationVM)
 
   "The previous year income calculation print page" should {
@@ -170,54 +218,9 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
       }
     }
 
-  }
-
-  val dateFormatPattern = "d MMMM yyyy"
-  val printTableDateFormatPattern = "d MMM yyyy"
-
-  val samplePaymentWithoutNic = Payment(
-    date = new LocalDate(2016, 4, 7),
-    amount = 111,
-    amountYearToDate = 150,
-    taxAmount = 0,
-    taxAmountYearToDate = 0,
-    nationalInsuranceAmount = 0,
-    nationalInsuranceAmountYearToDate = 0,
-    payFrequency = Monthly
-  )
-  val samplePaymentWithNic = Payment(
-    date = new LocalDate(2017, 4, 7),
-    amount = 222,
-    amountYearToDate = 150,
-    taxAmount = 0,
-    taxAmountYearToDate = 0,
-    nationalInsuranceAmount = 100,
-    nationalInsuranceAmountYearToDate = 200,
-    payFrequency = Annually
-  )
-  val samplePayments = Seq(samplePaymentWithoutNic, samplePaymentWithNic)
-
-  def createHistoricIncomeCalculationVM(
-    payments: Seq[Payment],
-    eyuMessage: Seq[String],
-    realTimeStatus: RealTimeStatus,
-    year: TaxYear) =
-    HistoricIncomeCalculationViewModel(
-      employerName = Some("Foo"),
-      employmentId = 1,
-      payments = payments,
-      endOfTaxYearUpdateMessages = eyuMessage,
-      realTimeStatus = realTimeStatus,
-      year)
-
-  private def customView(
-    payments: Seq[Payment] = Nil,
-    eyuMessage: Seq[String] = Nil,
-    realTimeStatus: RealTimeStatus = Available,
-    year: TaxYear = TaxYear().prev) = {
-    val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel =
-      createHistoricIncomeCalculationVM(payments, eyuMessage, realTimeStatus, year)
-    views.html.print.historicIncomeCalculation(historicIncomeCalculationVM)
+    "contain the user's name" in {
+      doc must haveStrongWithText("Firstname Surname")
+    }
   }
 
 }

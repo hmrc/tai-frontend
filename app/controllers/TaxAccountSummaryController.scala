@@ -48,8 +48,7 @@ class TaxAccountSummaryController @Inject()(
     extends TaiBaseController with AuditConstants with FeatureTogglesConfig {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
-    val nino = user.nino
+    val nino = request.taiUser.nino
 
     auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> nino.toString()))
 

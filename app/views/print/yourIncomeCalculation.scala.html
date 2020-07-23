@@ -23,13 +23,14 @@
 @import uk.gov.hmrc.tai.model.domain._
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
+@import controllers.auth.AuthenticatedRequest
 
-@(model: YourIncomeCalculationViewModel)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser)
+@(model: YourIncomeCalculationViewModel)(implicit request: AuthenticatedRequest[_],
+messages: Messages)
 
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
 
-    <p><strong>"TODO name"</strong></p>
+    <p><strong>@request.fullName</strong></p>
     <div class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName)</h2></div>
 	    <div class="section soft--top">
             @model.employmentStatus match {

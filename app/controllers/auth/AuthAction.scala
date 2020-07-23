@@ -24,15 +24,13 @@ import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.{Retrievals, TrustedHelper}
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.{ExecutionContext, Future}
-
-case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser) extends WrappedRequest[A](request)
 
 case class AuthedUser(
   validNino: String,
@@ -60,7 +58,9 @@ object AuthedUser {
 class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implicit ec: ExecutionContext)
     extends AuthAction with AuthorisedFunctions {
 
-  override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
+  override def invokeBlock[A](
+    request: Request[A],
+    block: InternalAuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
@@ -81,7 +81,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implic
 
   private def authWithCredentials[A](
     request: Request[A],
-    block: AuthenticatedRequest[A] => Future[Result],
+    block: InternalAuthenticatedRequest[A] => Future[Result],
     credentials: Option[Credentials],
     user: AuthedUser)(implicit hc: HeaderCarrier): Future[Result] =
     credentials match {
@@ -97,12 +97,12 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implic
   private def processRequest[A](
     user: AuthedUser,
     request: Request[A],
-    block: AuthenticatedRequest[A] => Future[Result],
+    block: InternalAuthenticatedRequest[A] => Future[Result],
     failureHandler: PartialFunction[Throwable, Result])(implicit hc: HeaderCarrier): Future[Result] =
     (user.confidenceLevel.level match {
       case level if level >= ConfidenceLevel.L200.level => {
         for {
-          result <- block(AuthenticatedRequest(request, user))
+          result <- block(InternalAuthenticatedRequest(request, user))
         } yield {
           result
         }
@@ -134,4 +134,5 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implic
 }
 
 @ImplementedBy(classOf[AuthActionImpl])
-trait AuthAction extends ActionBuilder[AuthenticatedRequest] with ActionFunction[Request, AuthenticatedRequest]
+trait AuthAction
+    extends ActionBuilder[InternalAuthenticatedRequest] with ActionFunction[Request, InternalAuthenticatedRequest]

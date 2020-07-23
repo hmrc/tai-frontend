@@ -21,10 +21,11 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.IFormInProgressBannerViewModel
 
+@import controllers.auth.AuthenticatedRequest
+
 @(viewModel: TaxAccountSummaryViewModel
-)(implicit request: Request[_],
+)(implicit request: AuthenticatedRequest[_],
   messages: Messages,
-  user: controllers.auth.AuthedUser,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -47,14 +48,14 @@
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.header,
-        preHeadingText = "TODO name",
+        preHeadingText = request.fullName,
         preHeadingAccessibleAnnouncement = "This section is the income tax summary for",
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
 @main(
     title = viewModel.title,
-    authedUser = Some(user),
+    authedUser = Some(request.taiUser),
     pageHeader = Some(header),
     articleClasses = Some("full-width")
     ){

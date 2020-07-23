@@ -106,7 +106,7 @@ class IncomeTaxComparisonController @Inject()(
             IncomeSourceComparisonViewModel(taxCodeIncomesCY, employmentsCY, taxCodeIncomesCYPlusOne)
 
           val model = IncomeTaxComparisonViewModel(
-            "TODO name",
+            request.fullName,
             estimatedIncomeTaxComparisonViewModel,
             taxCodeComparisonModel,
             taxFreeAmountComparisonModel,
@@ -114,7 +114,6 @@ class IncomeTaxComparisonController @Inject()(
             isEstimatedPayJourneyComplete
           )
 
-          implicit val user = request.taiUser
           Ok(views.html.incomeTaxComparison.Main(model, cyPlus1EstimatedPayEnabled))
         }
         case _ => throw new RuntimeException("Not able to fetch income tax comparision details")

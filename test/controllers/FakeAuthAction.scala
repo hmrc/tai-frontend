@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest}
+import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.auth.core.ConfidenceLevel
 import uk.gov.hmrc.domain.Generator
@@ -27,29 +27,22 @@ import scala.util.Random
 
 object FakeAuthAction extends AuthAction {
   val nino = new Generator(new Random).nextNino
-  val user = AuthedUser(
-    "person name",
-    nino.toString(),
-    Some("saUtr"),
-    Some(TaiConstants.AuthProviderGG),
-    ConfidenceLevel.L200,
-    None)
+  val user = AuthedUser(nino.toString(), Some("saUtr"), Some(TaiConstants.AuthProviderGG), ConfidenceLevel.L200, None)
 
-  override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
-    block(AuthenticatedRequest(request, user))
+  override def invokeBlock[A](
+    request: Request[A],
+    block: (InternalAuthenticatedRequest[A]) => Future[Result]): Future[Result] =
+    block(InternalAuthenticatedRequest(request, user))
 }
 
 object FakeAuthActionVerify extends AuthAction {
 
   val nino = new Generator(new Random).nextNino
-  val user = AuthedUser(
-    "person name",
-    nino.toString(),
-    Some("saUtr"),
-    Some(TaiConstants.AuthProviderVerify),
-    ConfidenceLevel.L200,
-    None)
+  val user =
+    AuthedUser(nino.toString(), Some("saUtr"), Some(TaiConstants.AuthProviderVerify), ConfidenceLevel.L200, None)
 
-  override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
-    block(AuthenticatedRequest(request, user))
+  override def invokeBlock[A](
+    request: Request[A],
+    block: (InternalAuthenticatedRequest[A]) => Future[Result]): Future[Result] =
+    block(InternalAuthenticatedRequest(request, user))
 }

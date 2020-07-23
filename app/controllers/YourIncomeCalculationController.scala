@@ -100,7 +100,6 @@ class YourIncomeCalculationController @Inject()(
       {
         if (year <= TaxYear().prev) {
           val nino = request.taiUser.nino
-          implicit val user = request.taiUser
 
           employmentService.employments(nino, year) map { employments =>
             val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employments, empId, year)
