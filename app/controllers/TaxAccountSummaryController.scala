@@ -26,7 +26,7 @@ import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service._
@@ -53,9 +53,11 @@ class TaxAccountSummaryController @Inject()(
 
     auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> nino.toString()))
 
-    (taxAccountService
+    taxAccountService
       .taxAccountSummary(nino, TaxYear())
       .flatMap {
+        case TaiNotFoundResponse(_) =>
+          Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
         case TaiTaxAccountFailureResponse(message)
             if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
               message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
@@ -68,7 +70,7 @@ class TaxAccountSummaryController @Inject()(
           throw new RuntimeException(s"Failed to fetch tax account summary details with exception: $message")
         case TaiUnauthorisedResponse(message) =>
           Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
-      })
+      }
       .recover {
         case e: UnauthorizedException =>
           Logger.warn("taxAccountSummary failed with: " + e.getMessage)

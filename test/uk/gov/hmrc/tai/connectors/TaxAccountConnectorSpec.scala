@@ -25,9 +25,9 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json._
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, UnauthorizedException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, UnauthorizedException}
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
@@ -207,6 +207,17 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
         val ex = Await.result(sut.taxAccountSummary(generateNino, currentTaxYear), 5 seconds)
         ex mustBe a[TaiUnauthorisedResponse]
+      }
+    }
+
+    "return a TaiNotFoundResponse" when {
+      "the http response is NotFound" in {
+        val sut = createSUT
+        when(httpHandler.getFromApiV2(any())(any()))
+          .thenReturn(Future.failed(new NotFoundException("no tax account info found")))
+
+        val ex = Await.result(sut.taxAccountSummary(generateNino, currentTaxYear), 5 seconds)
+        ex mustBe a[TaiNotFoundResponse]
       }
     }
   }

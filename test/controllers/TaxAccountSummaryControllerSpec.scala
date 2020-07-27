@@ -19,7 +19,6 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
@@ -31,8 +30,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service._
@@ -43,7 +41,6 @@ import utils.TaxAccountSummaryTestData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Random
 
 class TaxAccountSummaryControllerSpec
     extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with AuditConstants
@@ -225,6 +222,18 @@ class TaxAccountSummaryControllerSpec
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      }
+
+
+      "there is a TaiNotFoundResponse because there is no tax account information found" in {
+        val sut = createSUT
+
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future(TaiNotFoundResponse("No tax account information found")))
+
+        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url)
       }
     }
 
