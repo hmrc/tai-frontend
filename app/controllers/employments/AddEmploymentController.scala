@@ -176,7 +176,7 @@ class AddEmploymentController @Inject()(
   def sixWeeksError(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.mandatoryValue(AddEmployment_NameKey) map { employmentName =>
       implicit val user: AuthedUser = request.taiUser
-      auditService.createAndSendAuditEvent(AddEmployment_CantAddEmployer, Map("nino" -> user.getNino))
+      auditService.createAndSendAuditEvent(AddEmployment_CantAddEmployer, Map("nino" -> user.nino.toString()))
       Ok(views.html.employments.add_employment_error_page(employmentName))
     }
   }
@@ -318,7 +318,7 @@ class AddEmploymentController @Inject()(
         mandatoryVals(2),
         mandatoryVals(3),
         optionalVals.head)
-      _ <- employmentService.addEmployment(Nino(user.getNino), model)
+      _ <- employmentService.addEmployment(user.nino, model)
       _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourney_AddEmploymentKey, "true")
       _ <- journeyCacheService.flush()
     } yield {

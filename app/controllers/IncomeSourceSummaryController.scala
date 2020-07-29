@@ -50,8 +50,7 @@ class IncomeSourceSummaryController @Inject()(
     extends TaiBaseController with FeatureTogglesConfig {
 
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    val taiUser = request.taiUser
-    val nino = taiUser.nino
+    val nino = request.taiUser.nino
 
     (for {
       taxCodeIncomeDetails   <- taxAccountService.taxCodeIncomes(nino, TaxYear())
@@ -63,13 +62,12 @@ class IncomeSourceSummaryController @Inject()(
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
           val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
             empId,
-            taiUser.getDisplayName,
+            request.fullName,
             taxCodeIncomes,
             employment,
             benefitsDetails,
             estimatedPayCompletion)
 
-          implicit val user = request.taiUser
           Ok(views.html.IncomeSourceSummary(incomeDetailsViewModel))
         case _ => throw new RuntimeException("Error while fetching income summary details")
       }

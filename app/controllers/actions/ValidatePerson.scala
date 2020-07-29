@@ -18,9 +18,9 @@ package controllers.actions
 
 import com.google.inject.ImplementedBy
 import javax.inject.{Inject, Singleton}
-import controllers.auth.AuthenticatedRequest
+import controllers.auth.{AuthenticatedRequest, InternalAuthenticatedRequest}
 import controllers.routes
-import play.api.mvc.{ActionFilter, Result}
+import play.api.mvc.{ActionFilter, ActionRefiner, Result}
 import uk.gov.hmrc.tai.service.PersonService
 import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.http.HeaderCarrier
@@ -31,21 +31,22 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ValidatePersonImpl @Inject()(personService: PersonService)(implicit ec: ExecutionContext) extends ValidatePerson {
 
-  override protected def filter[A](request: AuthenticatedRequest[A]): Future[Option[Result]] = {
+  override protected def refine[A](
+    request: InternalAuthenticatedRequest[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
 
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+
     val personNino = request.taiUser.nino
     val person = personService.personDetails(personNino)
 
-    person map ({
-      case p if p.isDeceased     => Some(Redirect(routes.DeceasedController.deceased()))
-      case p if p.hasCorruptData => Some(Redirect(routes.ServiceController.gateKeeper()))
-      case _                     => None
-    })
+    person map {
+      case p if p.isDeceased     => Left(Redirect(routes.DeceasedController.deceased()))
+      case p if p.hasCorruptData => Left(Redirect(routes.ServiceController.gateKeeper()))
+      case p                     => Right(AuthenticatedRequest(request, request.taiUser, p.name))
+    }
   }
-
 }
 
 @ImplementedBy(classOf[ValidatePersonImpl])
-trait ValidatePerson extends ActionFilter[AuthenticatedRequest]
+trait ValidatePerson extends ActionRefiner[InternalAuthenticatedRequest, AuthenticatedRequest]

@@ -103,7 +103,7 @@ class EndEmploymentController @Inject()(
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    val nino = Nino(user.getNino)
+    val nino = user.nino
 
     employmentService.employment(nino, empId) flatMap {
       case Some(employment) => {
@@ -136,7 +136,7 @@ class EndEmploymentController @Inject()(
                   Redirect(controllers.employments.routes.UpdateEmploymentController
                     .updateEmploymentDetails(mandatoryValues(1).toInt)))
               case _ =>
-                val nino = Nino(user.getNino)
+                val nino = user.nino
                 employmentService.employment(nino, mandatoryValues(1).toInt) flatMap {
                   case Some(employment) =>
                     val today = new LocalDate()
@@ -215,7 +215,7 @@ class EndEmploymentController @Inject()(
 
   def endEmploymentPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val nino = Nino(user.getNino)
+    val nino = user.nino
     journeyCacheService.collectedJourneyValues(
       Seq(EndEmployment_NameKey, EndEmployment_EmploymentIdKey),
       Seq(EndEmployment_EndDateKey)) map tupled { (mandatorySeq, optionalSeq) =>
@@ -244,7 +244,7 @@ class EndEmploymentController @Inject()(
   def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val nino = Nino(user.getNino)
+      val nino = user.nino
       employmentService.employment(nino, employmentId) flatMap {
         case Some(employment) =>
           EmploymentEndDateForm(employment.name).form.bindFromRequest.fold(
@@ -350,7 +350,7 @@ class EndEmploymentController @Inject()(
   def confirmAndSendEndEmployment(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val nino = Nino(user.getNino)
+      val nino = user.nino
       for {
         (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedValues(
                                                   Seq(

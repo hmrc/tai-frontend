@@ -174,6 +174,10 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
         doc(payrolledView) must haveParagraphWithText(messages("tai.income.calculation.payrollingBik.message2"))
       }
     }
+
+    "contain the user's name" in {
+      doc(view) must haveStrongWithText("Firstname Surname")
+    }
   }
 
   lazy val defaultPayments = Seq(

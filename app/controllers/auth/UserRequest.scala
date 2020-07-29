@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-package builders
+package controllers.auth
 
-import controllers.auth.AuthedUser
-import uk.gov.hmrc.auth.core.ConfidenceLevel
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.tai.util.constants.TaiConstants
+import play.api.mvc.{Request, WrappedRequest}
 
-object UserBuilder {
-  val nino: Nino = new Generator().nextNino
+case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser, fullName: String)
+    extends WrappedRequest[A](request)
 
-  def apply(utr: String = "utr", providerType: String = TaiConstants.AuthProviderGG) =
-    AuthedUser(nino.toString(), Some(utr), Some(providerType), ConfidenceLevel.L200, None)
-}
+case class InternalAuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser) extends WrappedRequest[A](request)

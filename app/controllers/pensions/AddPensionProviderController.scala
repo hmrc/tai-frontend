@@ -138,7 +138,8 @@ class AddPensionProviderController @Inject()(
 
   def cantAddPension(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.mandatoryValue(AddPensionProvider_NameKey) map { pensionProviderName =>
-      auditService.createAndSendAuditEvent(AddPension_CantAddPensionProvider, Map("nino" -> request.taiUser.getNino))
+      auditService
+        .createAndSendAuditEvent(AddPension_CantAddPensionProvider, Map("nino" -> request.taiUser.nino.toString()))
       implicit val user: AuthedUser = request.taiUser
 
       Ok(views.html.pensions.addPensionErrorPage(pensionProviderName))
@@ -330,7 +331,7 @@ class AddPensionProviderController @Inject()(
         mandatoryVals(2),
         mandatoryVals.last,
         optionalVals.head)
-      _ <- pensionProviderService.addPensionProvider(Nino(user.getNino), model)
+      _ <- pensionProviderService.addPensionProvider(user.nino, model)
       _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourney_AddPensionProviderKey, "true")
       _ <- journeyCacheService.flush()
     } yield {
