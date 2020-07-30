@@ -224,7 +224,6 @@ class TaxAccountSummaryControllerSpec
         redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
       }
 
-
       "there is a TaiNotFoundResponse because there is no tax account information found" in {
         val sut = createSUT
 
