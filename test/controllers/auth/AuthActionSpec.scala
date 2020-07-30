@@ -134,6 +134,37 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }
+
+      "logging in as a verify user" in {
+        val authProvider = Some(TaiConstants.AuthProviderVerify)
+        val creds = Some(Credentials("verify", TaiConstants.AuthProviderVerify))
+        val saUtr = Some("000111222")
+        val nino = new Generator().nextNino.nino
+        val baseRetrieval =
+          creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L500
+
+        val controller = Harness.successful(baseRetrieval ~ None)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        val expectedTaiUser = AuthedUser(nino, saUtr, authProvider, ConfidenceLevel.L500, None)
+
+        contentAsString(result) mustBe expectedTaiUser.toString
+      }
+
+      "redirect a user to uplift if the confidence level is below 200" in {
+        val authProviderGG = Some(TaiConstants.AuthProviderGG)
+        val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
+        val saUtr = Some("000111222")
+        val nino = new Generator().nextNino.nino
+        val baseRetrieval =
+          creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L100
+
+        val controller = Harness.successful(baseRetrieval ~ None)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.UnauthorisedController.upliftFailedUrl.url
+      }
     }
   }
 
