@@ -1403,4 +1403,4 @@ tai.unauthorised.heading = Rydych wedi cael eich allgofnodi er eich diogelwch
 tai.unauthorised.message = Bydd yn rhaid i chi fewngofnodi eto. Os oeddech yn diweddaru’ch manylion, bydd yn rhaid i chi ddechrau eto.
 tai.unauthorised.button-text = Mewngofnodi
 
-tai.rti.down=We cannot show this information at this time. Try again later to view income received to date
+tai.rti.down=Ni allwn ddangos y wybodaeth hon ar hyn o bryd. Ceisiwch eto yn nes ymlaen i weld yr incwm a dderbyniwyd hyd yma
