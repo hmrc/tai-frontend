@@ -101,6 +101,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     id=Some("updateEmployment")
                 ).toHtml
             </p>
+
             @if(viewModel.p800ServiceIsAvailable) {
                 <p>
                     @messages("tai.paye.lastTaxYear.checkIncomeTax.text")
@@ -113,6 +114,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                 </p>
             }
         </div>
+
     </div>
     @if(noOfPreviousYearsToShow > 1) {
     <div class="grid grid-1-3">
@@ -134,8 +136,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 
                 <div id="@incomeType@idx" class="subsection flush--top @if(pair.length==1){column-full}else{column-one-half}">
                     <h3 class="heading-large flush break-word-only">@employment.name</h3>
-                    <p class="flush--top">
-                        <span class="heading-36 faded-text-dark">@withPoundPrefix(MoneyPounds(employment.taxablePayYTD))</span>
+                    <p class="panel panel-border-wide">
+                        @messages("tai.rti.down")
                     </p>
 
                     @if(viewModel.showTaxCodeDescriptionLink) {
@@ -161,15 +163,6 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                                 }
 
                         }
-                    </p>
-
-                    <p class="flush--top">
-                        @includes.link(
-                            id = Some(s"${incomeType}${idx}-checkDetailsLink"),
-                            url = routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(viewModel.taxYear, employment.id).toString(),
-                            copy=messages("tai.paye.lastTaxYear.table.link"),
-                            altCopy=Some(messages("tai.paye.lastTaxYear.table.reader.link", employment.name))
-                        )
                     </p>
                 </div>
             }

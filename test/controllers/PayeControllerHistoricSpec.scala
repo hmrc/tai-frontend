@@ -85,6 +85,18 @@ class PayeControllerHistoricSpec
       status(result) mustBe OK
     }
 
+    "display the last year paye page successfully when RTI is down" in {
+
+      val testController = createTestController()
+      when(employmentService.employments(any(), any())(any()))
+        .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
+
+      val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe 200
+      contentAsString(result) must include(messages("tai.rti.down"))
+    }
+
     "Redirect to the paye controller" when {
 
       "the supplied year relates to current tax year" in {
@@ -185,19 +197,6 @@ class PayeControllerHistoricSpec
         doc.title() must include("Sorry, there is a problem with the service")
         doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
         doc must haveParagraphWithText(Messages("tai.technical.error.message"))
-      }
-
-      "payePage call results in a bad gateway" in {
-
-        val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
-
-        when(employmentService.stubbedAccountsExist(any())).thenReturn(true)
-
-        val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe BAD_GATEWAY
       }
 
       "payePage call when employee sequence is empty " in {
