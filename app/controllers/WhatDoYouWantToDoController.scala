@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -108,13 +108,13 @@ class WhatDoYouWantToDoController @Inject()(
 
             Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
           }
-          case _ => {
+          case response: TaiResponse => {
+            if (response.isInstanceOf[TaiNotFoundResponse])
+              Logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
+
             val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false)
-
             Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
-
             Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
-
           }
         }
       }
