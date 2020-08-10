@@ -235,19 +235,19 @@ class EmploymentsConnectorSpec
     "return an employment from current year" when {
       "valid id has been passed" in {
         val sut = createSUT()
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(anEmployment)))
+        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(Json.parse(anEmployment)))
 
         val result = Await.result(sut.employment(nino, "123"), 5.seconds)
 
         result mustBe Some(anEmploymentObject)
-        verify(httpHandler, times(1)).getFromApi(any())(any())
+        verify(httpHandler, times(1)).getFromApiV2(any())(any())
       }
     }
 
     "return none" when {
       "invalid json returned by an api" in {
         val sut = createSUT()
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(zeroEmployments)))
+        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(Json.parse(zeroEmployments)))
 
         Await.result(sut.employment(nino, "123"), 5.seconds) mustBe None
       }

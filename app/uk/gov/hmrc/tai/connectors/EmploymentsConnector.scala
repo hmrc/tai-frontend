@@ -48,7 +48,7 @@ class EmploymentsConnector @Inject()(httpHandler: HttpHandler) extends DefaultSe
 
   def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     httpHandler
-      .getFromApi(employmentUrl(nino, id))
+      .getFromApiV2(employmentUrl(nino, id))
       .map(
         json => (json \ "data").asOpt[Employment]
       )

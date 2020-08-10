@@ -145,22 +145,30 @@
 
         <div class="column-one-half subsection--wide">
             <h2 class="flush">@messages("tai.income.details.incomeReceivedToDate")</h2>
-            <p class="break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
-            <span class="bold-xlarge faded-text-dark" aria-hidden="true">@pounds(model.incomeReceivedToDate)</span>
-            <span class="visuallyhidden">@Html(messages("tai.income.details.incomeReceivedToDate.screenReader", pounds(model.incomeReceivedToDate)))</span>
-            <p  aria-hidden="true">
-                @Html(Link.toInternalPage(
-                    id=Some("viewIncomeReceivedToDate"),
-                    url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
-                    value=Some(messages("tai.income.details.checkPaymentsReceived")),
-                    dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.income.details.checkPaymentsReceived")}", "tabindex" -> "-1"))).toHtml.body.replaceAll("data-tabindex", "tabindex"))
-            </p>
-            <p class="visuallyhidden">
-                @Link.toInternalPage(
-                    id=Some("viewIncomeReceivedToDateScreenReader"),
-                    url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
-                    value=Some(messages("tai.income.details.checkPaymentsReceived.screenReader", model.empOrPensionName))).toHtml
-            </p>
+
+                @if(model.rtiAvailable) {
+                        <p class="break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
+                        <span class="bold-xlarge faded-text-dark" aria-hidden="true">@pounds(model.incomeReceivedToDate)</span>
+                        <span class="visuallyhidden">@Html(messages("tai.income.details.incomeReceivedToDate.screenReader", pounds(model.incomeReceivedToDate)))</span>
+
+                        <p aria-hidden="true">
+                        @Html(Link.toInternalPage(
+                        id=Some("viewIncomeReceivedToDate"),
+                        url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
+                        value=Some(messages("tai.income.details.checkPaymentsReceived")),
+                        dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.income.details.checkPaymentsReceived")}", "tabindex" -> "-1"))).toHtml.body.replaceAll("data-tabindex", "tabindex"))
+                        </p>
+
+                        <p class="visuallyhidden">
+                        @Link.toInternalPage(
+                        id=Some("viewIncomeReceivedToDateScreenReader"),
+                        url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
+                        value=Some(messages("tai.income.details.checkPaymentsReceived.screenReader", model.empOrPensionName))).toHtml
+                        </p>
+                } else {
+                    <span>@messages("tai.rti.down")</span>
+                }
+
         </div>
     </div>
 

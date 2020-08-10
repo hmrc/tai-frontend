@@ -40,7 +40,6 @@ case class YourIncomeCalculationViewModel(
   employerName: String,
   payments: Seq[PaymentDetailsViewModel],
   employmentStatus: TaxCodeIncomeSourceStatus,
-  rtiStatus: RealTimeStatus,
   latestPayment: Option[LatestPayment],
   endDate: Option[LocalDate],
   isPension: Boolean,
@@ -53,7 +52,6 @@ case class YourIncomeCalculationViewModel(
 object YourIncomeCalculationViewModel {
   def apply(taxCodeIncome: Option[TaxCodeIncome], employment: Employment, paymentDetails: Seq[PaymentDetailsViewModel])(
     implicit messages: Messages): YourIncomeCalculationViewModel = {
-    val realTimeStatus = employment.latestAnnualAccount.map(_.realTimeStatus).getOrElse(TemporarilyUnavailable)
 
     val latestPayment = latestPaymentDetails(employment)
     val isPension = taxCodeIncome.exists(_.componentType == PensionIncome)
@@ -76,7 +74,6 @@ object YourIncomeCalculationViewModel {
       employment.name,
       paymentDetails,
       status,
-      realTimeStatus,
       latestPayment,
       employment.endDate,
       isPension,

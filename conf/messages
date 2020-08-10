@@ -1398,3 +1398,6 @@ tai.deskpro.link.text.replacement = Is this page not working properly?
 tai.unauthorised.heading = You have been signed out for your security
 tai.unauthorised.message = You will have to sign in again. If you were updating your details, you will have to do this again.
 tai.unauthorised.button-text = Sign in
+
+tai.rti.down= We cannot show this information at this time. Try again later to view income received to date.
+tai.rti.down.ceased_employments = We cannot show this information at this time. Try again later to view employments that have ended.

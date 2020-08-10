@@ -192,7 +192,6 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
   override def view: Html = views.html.print.yourIncomeCalculation(model)
 
   private def incomeCalculationViewModel(
-    realTimeStatus: RealTimeStatus = Available,
     payments: Seq[PaymentDetailsViewModel] = defaultPayments,
     employmentStatus: TaxCodeIncomeSourceStatus = Live,
     employmentType: TaxCodeIncomeComponentType = EmploymentIncome,
@@ -208,7 +207,6 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
       "test employment",
       payments,
       employmentStatus,
-      realTimeStatus,
       latestPayment,
       if (employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None,
       employmentType == PensionIncome,

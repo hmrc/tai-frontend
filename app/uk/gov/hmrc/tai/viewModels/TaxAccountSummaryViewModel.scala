@@ -36,7 +36,8 @@ case class TaxAccountSummaryViewModel(
   ceasedEmployments: Seq[IncomeSourceViewModel],
   displayIyaBanner: Boolean,
   isAnyFormInProgress: TimeToProcess,
-  otherIncomeSources: Seq[IncomeSourceViewModel])
+  otherIncomeSources: Seq[IncomeSourceViewModel],
+  rtiAvailable: Boolean)
 
 case class IncomesSources(
   livePensionIncomeSources: Seq[TaxedIncome],
@@ -69,6 +70,10 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
 
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
 
+    val rtiAvailable = incomesSources.liveEmploymentIncomeSources
+      .map(_.employment.annualAccounts.filter(_.realTimeStatus == TemporarilyUnavailable))
+      .isEmpty
+
     TaxAccountSummaryViewModel(
       header = header,
       title = title,
@@ -80,7 +85,8 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
       ceasedEmployments = ceasedEmploymentViewModels,
       displayIyaBanner = taxAccountSummary.totalInYearAdjustmentIntoCY > 0,
       isAnyFormInProgress = isAnyFormInProgress,
-      otherIncomeSources = IncomeSourceViewModel(nonTaxCodeIncome)
+      otherIncomeSources = IncomeSourceViewModel(nonTaxCodeIncome),
+      rtiAvailable = rtiAvailable
     )
   }
 }
