@@ -65,7 +65,7 @@ class PayeControllerHistoric @Inject()(
         hasTaxCodeRecordsInYearPerEmployment <- hasTaxCodeRecordsFuture
       } yield {
         implicit val user = request.taiUser
-        if (isRtiAvailable(employments)) {
+        if (isRtiUnavailable(employments)) {
           Ok(
             views.html.paye.RtiDisabledHistoricPayAsYouEarn(
               HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
@@ -82,7 +82,7 @@ class PayeControllerHistoric @Inject()(
     }
   } recoverWith hodStatusRedirect
 
-  private def isRtiAvailable(employments: Seq[Employment]): Boolean =
+  private def isRtiUnavailable(employments: Seq[Employment]): Boolean =
     employments.headOption.exists(_.annualAccounts.headOption.exists(_.realTimeStatus == TemporarilyUnavailable))
 
   private def hodStatusRedirect(

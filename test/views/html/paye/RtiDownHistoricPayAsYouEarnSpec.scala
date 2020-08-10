@@ -54,8 +54,6 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
 
     "contain correct header" in {
       val taxYear = cyMinusOneTaxYear
-      val view: Html =
-        views.html.paye.RtiDisabledHistoricPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), 3)
       val newDoc = doc(view)
 
       newDoc.body.text must include(messages("tai.paye.lastTaxYear.preHeading"))
