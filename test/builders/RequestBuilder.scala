@@ -28,11 +28,7 @@ object RequestBuilder {
   def buildFakeRequestWithOnlySession(method: String) = {
     require(HTTP_VERBS contains method)
 
-    FakeRequest(method = method, path = "").withSession(
-      SessionKeys.sessionId    -> s"session-${UUID.randomUUID()}",
-      SessionKeys.authProvider -> "IDA",
-      SessionKeys.userId       -> s"/path/to/authority"
-    )
+    FakeRequest(method = method, path = "").withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
   }
 
   def buildFakeRequestWithAuth(method: String, headers: Map[String, String]) =
@@ -50,10 +46,7 @@ object RequestBuilder {
         "isOccupationalPension" -> "false",
         "hasMultipleIncomes"    -> "true"
       )
-      .withSession(
-        SessionKeys.sessionId    -> s"session-${UUID.randomUUID()}",
-        SessionKeys.authProvider -> "IDA",
-        SessionKeys.userId       -> s"/path/to/authority")
+      .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
       .withHeaders(headers.toArray: _*)
 
   def buildFakeRequestWithAuth(method: String) =
@@ -71,10 +64,7 @@ object RequestBuilder {
         "isOccupationalPension" -> "false",
         "hasMultipleIncomes"    -> "true"
       )
-      .withSession(
-        SessionKeys.sessionId    -> s"session-${UUID.randomUUID()}",
-        SessionKeys.authProvider -> "IDA",
-        SessionKeys.userId       -> s"/path/to/authority")
+      .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
 
   def buildFakeRequestWithAuth(method: String, action: String) =
     FakeRequest(method = method, path = "")
@@ -92,18 +82,12 @@ object RequestBuilder {
         "isOccupationalPension" -> "false",
         "hasMultipleIncomes"    -> "true"
       )
-      .withSession(
-        SessionKeys.sessionId    -> s"session-${UUID.randomUUID()}",
-        SessionKeys.authProvider -> "IDA",
-        SessionKeys.userId       -> s"/path/to/authority")
+      .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
 
   def buildFakeInvalidRequestWithAuth(method: String) =
     FakeRequest(method = method, path = "")
       .withFormUrlEncodedBody("name" -> "test1", "description" -> "description", "employmentId" -> "14")
-      .withSession(
-        SessionKeys.sessionId    -> s"session-${UUID.randomUUID()}",
-        SessionKeys.authProvider -> "IDA",
-        SessionKeys.userId       -> s"/path/to/authority")
+      .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
 
   def buildFakeRequestWithoutAuth(method: String) =
     FakeRequest(method = method, path = "")

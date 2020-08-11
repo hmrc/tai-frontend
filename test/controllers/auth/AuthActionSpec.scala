@@ -24,22 +24,22 @@ import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Controller
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core.{Nino => _, _}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name, Retrieval, ~}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
+import uk.gov.hmrc.auth.core.{Nino => _, _}
+import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   lazy val fakeVerifyRequest = FakeRequest("GET", "/").withSession(
-    SessionKeys.authProvider -> TaiConstants.AuthProviderVerify
+    TaiConstants.AuthProvider -> TaiConstants.AuthProviderVerify
   )
 
   abstract class Harness(authAction: AuthAction) extends Controller {
