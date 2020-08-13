@@ -126,7 +126,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)(implic
     }) recover failureHandler
 
   private def handleEntryPointFailure[A](request: Request[A]): PartialFunction[Throwable, Result] =
-    request.session.get(SessionKeys.authProvider) match {
+    request.session.get(TaiConstants.AuthProvider) match {
       case Some(TaiConstants.AuthProviderVerify) =>
         handleVerifyFailure
       case _ =>

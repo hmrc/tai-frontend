@@ -1403,5 +1403,5 @@ tai.unauthorised.heading = Rydych wedi cael eich allgofnodi er eich diogelwch
 tai.unauthorised.message = Bydd yn rhaid i chi fewngofnodi eto. Os oeddech yn diweddaru’ch manylion, bydd yn rhaid i chi ddechrau eto.
 tai.unauthorised.button-text = Mewngofnodi
 
-tai.rti.down= Ni allwn ddangos y wybodaeth hon ar hyn o bryd. Ceisiwch eto yn nes ymlaen i weld yr incwm a dderbyniwyd hyd yma.
-tai.rti.down.ceased_employments = Ni allwn ddangos y wybodaeth hon ar hyn o bryd. Ceisiwch eto yn nes ymlaen i weld swyddi sydd wedi dod i ben.
+tai.rti.down=Ni allwn ddangos yr wybodaeth hon ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen i fwrw golwg dros yr incwm a ddaeth i law hyd yn hyn.
+tai.rti.down.ceased_employments = Ni allwn ddangos yr wybodaeth hon ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen i weld y cyflogaethau sydd wedi dod i ben.

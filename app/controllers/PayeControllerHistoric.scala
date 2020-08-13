@@ -25,6 +25,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.{Employment, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 
@@ -64,9 +65,12 @@ class PayeControllerHistoric @Inject()(
         hasTaxCodeRecordsInYearPerEmployment <- hasTaxCodeRecordsFuture
       } yield {
         implicit val user = request.taiUser
-        if (employmentService.stubbedAccountsExist(employments)) {
-          badGatewayError(
-            "Employment contains stub annual account data found meaning payment information can't be displayed")
+        if (isRtiUnavailable(employments)) {
+          Ok(
+            views.html.paye.RtiDisabledHistoricPayAsYouEarn(
+              HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
+              ApplicationConfig.numberOfPreviousYearsToShow
+            ))
         } else {
           Ok(
             views.html.paye.historicPayAsYouEarn(
@@ -78,7 +82,10 @@ class PayeControllerHistoric @Inject()(
     }
   } recoverWith hodStatusRedirect
 
-  def hodStatusRedirect(
+  private def isRtiUnavailable(employments: Seq[Employment]): Boolean =
+    employments.headOption.exists(_.annualAccounts.headOption.exists(_.realTimeStatus == TemporarilyUnavailable))
+
+  private def hodStatusRedirect(
     implicit request: AuthenticatedRequest[AnyContent]): PartialFunction[Throwable, Future[Result]] = {
 
     implicit val rl: RecoveryLocation = classOf[WhatDoYouWantToDoController]

@@ -99,10 +99,6 @@ class EndEmploymentControllerSpec
 
         val request = FakeRequest("POST", "")
           .withFormUrlEncodedBody(EmploymentDecision -> YesValue)
-          .withSession(
-            SessionKeys.authProvider -> "IDA",
-            SessionKeys.userId       -> s"/path/to/authority"
-          )
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
@@ -232,10 +228,6 @@ class EndEmploymentControllerSpec
 
         val request = FakeRequest("POST", "")
           .withFormUrlEncodedBody(EmploymentDecision -> "")
-          .withSession(
-            SessionKeys.authProvider -> "IDA",
-            SessionKeys.userId       -> s"/path/to/authority"
-          )
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
@@ -332,7 +324,6 @@ class EndEmploymentControllerSpec
 
       val request = FakeRequest("POST", "")
         .withJsonBody(formData)
-        .withSession(SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority")
 
       val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
 
@@ -349,7 +340,6 @@ class EndEmploymentControllerSpec
 
       val request = FakeRequest("POST", "/")
         .withJsonBody(formWithErrors)
-        .withSession(SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority")
 
       val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
 
@@ -374,7 +364,6 @@ class EndEmploymentControllerSpec
 
       val request = FakeRequest("POST", "")
         .withJsonBody(formData)
-        .withSession(SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority")
 
       val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
 
@@ -395,7 +384,6 @@ class EndEmploymentControllerSpec
 
       val request = FakeRequest("POST", "")
         .withJsonBody(formData)
-        .withSession(SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority")
 
       Await.result(endEmploymentTest.handleEndEmploymentPage(0)(request), 5 seconds)
       verify(endEmploymentJourneyCacheService, times(1)).cache(Matchers.eq(dataToCache))(any())

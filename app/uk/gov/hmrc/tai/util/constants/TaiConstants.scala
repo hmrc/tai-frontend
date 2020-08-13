@@ -61,6 +61,7 @@ object TaiConstants {
 
   val AuthProviderGG = "GovernmentGateway"
   val AuthProviderVerify = "Verify"
+  val AuthProvider = "AuthProvider"
 
   val SessionPostLogoutPage = "postLogoutPage"
 
