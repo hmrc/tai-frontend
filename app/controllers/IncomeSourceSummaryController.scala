@@ -60,7 +60,7 @@ class IncomeSourceSummaryController @Inject()(
       estimatedPayCompletion <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
-        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), e @ Some(employment)) =>
+        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
           val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
 
           val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
