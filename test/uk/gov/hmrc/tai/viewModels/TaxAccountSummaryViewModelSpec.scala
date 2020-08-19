@@ -360,15 +360,15 @@ class TaxAccountSummaryViewModelSpec
 
       val viewModel = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, incomeSources, Seq())
 
-      viewModel.rtiAvailable mustBe false
+      viewModel.rtiAvailable mustBe true
     }
 
     "sets rtiAvailable to false when there is a TemporarilyUnavailable rtiStatus for live employments" in {
       val employment =
         empEmployment1.copy(annualAccounts = Seq(annualAccount.copy(realTimeStatus = TemporarilyUnavailable)))
-      val liveEmploymentIncomeSources: Seq[TaxedIncome] = Seq(TaxedIncome(liveEmployment1, employment))
+      val unavailableEmploymentIncomeSources: Seq[TaxedIncome] = Seq(TaxedIncome(liveEmployment1, employment))
       val incomeSources =
-        IncomesSources(Seq(), liveEmploymentIncomeSources, Seq())
+        IncomesSources(Seq(), unavailableEmploymentIncomeSources, Seq())
 
       val viewModel = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, incomeSources, Seq())
 

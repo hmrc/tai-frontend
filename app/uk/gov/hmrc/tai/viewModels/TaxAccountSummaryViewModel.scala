@@ -71,7 +71,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
 
     val rtiAvailable = incomesSources.liveEmploymentIncomeSources
-      .map(_.employment.annualAccounts.filter(_.realTimeStatus == TemporarilyUnavailable))
+      .flatMap(_.employment.annualAccounts.filter(_.realTimeStatus == TemporarilyUnavailable))
       .isEmpty
 
     TaxAccountSummaryViewModel(
