@@ -57,7 +57,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         Seq(endedEmployment),
         false,
         NoTimeToProcess,
-        Seq(otherIncomeSourceViewModel)
+        Seq(otherIncomeSourceViewModel),
+        true
       )
       def view: Html = views.html.incomeTaxSummary(vm)
       doc(view) must not(haveElementWithId("isAnyFormInProgressBanner"))
@@ -125,7 +126,9 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           Nil,
           true,
           ThreeWeeks,
-          Seq(otherIncomeSourceViewModel))
+          Seq(otherIncomeSourceViewModel),
+          true)
+
         val docWithIyaBanner = doc(views.html.incomeTaxSummary(vm))
         docWithIyaBanner must haveElementAtPathWithText(
           "#inYearAdjustmentBanner",
@@ -166,7 +169,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           Nil,
           false,
           ThreeWeeks,
-          Seq(otherIncomeSourceViewModel)
+          Seq(otherIncomeSourceViewModel),
+          true
         )
         val docWithMultipleEmployments = doc(views.html.incomeTaxSummary(vm))
         docWithMultipleEmployments.select("#incomeFromEmploymentSection h3").size mustBe 3
@@ -212,7 +216,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           Nil,
           false,
           ThreeWeeks,
-          Seq(otherIncomeSourceViewModel)
+          Seq(otherIncomeSourceViewModel),
+          true
         )
         val docWithMultiplePensionIncomes = doc(views.html.incomeTaxSummary(vm))
         docWithMultiplePensionIncomes.select("#incomeFromPensionSection h3").size mustBe 4
@@ -231,6 +236,11 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   }
 
   "employments that have ended section" must {
+
+    "display the rti is down message when rti is not available" in {
+      val view = views.html.incomeTaxSummary(vm.copy(rtiAvailable = false))
+      doc(view) must haveParagraphWithText(messages("tai.rti.down.ceased_employments"))
+    }
 
     "display the correct number of ended employment detail sections" when {
 
@@ -254,7 +264,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
             pensionIncome.copy(name = "name4")),
           false,
           ThreeWeeks,
-          Seq(otherIncomeSourceViewModel)
+          Seq(otherIncomeSourceViewModel),
+          true
         )
         val docWithMultipleEndedIncomes = doc(views.html.incomeTaxSummary(vm))
         docWithMultipleEndedIncomes.select("#endedIncomeSection h3").size mustBe 4
@@ -307,7 +318,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         Nil,
         false,
         ThreeWeeks,
-        Seq(otherIncomeSourceViewModel))
+        Seq(otherIncomeSourceViewModel),
+        true)
 
       val document = doc(views.html.incomeTaxSummary(vm))
 
@@ -332,7 +344,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         Nil,
         false,
         ThreeWeeks,
-        Seq(otherIncomeSourceViewModel))
+        Seq(otherIncomeSourceViewModel),
+        true)
 
       val document = doc(views.html.incomeTaxSummary(vm))
 
@@ -352,7 +365,9 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         Nil,
         false,
         ThreeWeeks,
-        Seq(otherIncomeSourceViewModel))
+        Seq(otherIncomeSourceViewModel),
+        true)
+
       val document = doc(views.html.incomeTaxSummary(vm))
       document must haveElementAtPathWithText(
         "#employment1EndDate",
@@ -382,7 +397,10 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         Nil,
         false,
         ThreeWeeks,
-        Seq(otherIncomeSourceViewModel))
+        Seq(otherIncomeSourceViewModel),
+        true
+      )
+
       val document = doc(views.html.incomeTaxSummary(vm))
       document must not(haveElementWithId("employment1DetailsLink"))
     }
@@ -534,8 +552,10 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     Seq(endedEmployment),
     false,
     ThreeWeeks,
-    Seq(otherIncomeSourceViewModel)
+    Seq(otherIncomeSourceViewModel),
+    true
   )
+
   val noSectionsVm = TaxAccountSummaryViewModel(
     "main heading",
     "title",
@@ -547,7 +567,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     Nil,
     false,
     ThreeWeeks,
-    Seq(otherIncomeSourceViewModel))
+    Seq(otherIncomeSourceViewModel),
+    true)
 
   override def view: Html = views.html.incomeTaxSummary(vm)
 }

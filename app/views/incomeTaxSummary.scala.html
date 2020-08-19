@@ -111,7 +111,11 @@
 
                 <h2 id="endedIncomeHeading" class="heading-section">@Messages("tai.incomeTaxSummary.ceased.section.heading", viewModel.lastTaxYearEnd)</h2>
 
-                @incomeTaxSummary_incomeSourceDetail(viewModel.ceasedEmployments, "income", Messages("tai.incomeTaxSummary.ceasedIncomeAmount.prefix"), gaEventActionString)
+                @if(viewModel.rtiAvailable) {
+                    @incomeTaxSummary_incomeSourceDetail(viewModel.ceasedEmployments, "income", Messages("tai.incomeTaxSummary.ceasedIncomeAmount.prefix"), gaEventActionString)
+                } else {
+                    <p>@messages("tai.rti.down.ceased_employments")</p>
+                }
 
             </div>
             }

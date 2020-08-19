@@ -25,6 +25,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryViewModel}
 
 class IncomeSourceSummaryViewSpec extends TaiViewSpec {
+
   "Income details spec" must {
     behave like pageWithCombinedHeader(
       model.displayName,
@@ -109,6 +110,24 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         pensionDoc must haveLinkWithUrlWithID(
           "viewIncomeReceivedToDate",
           controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(pensionModel.empId).url)
+      }
+
+      "rti is unavailable display a status message" in {
+        val model = IncomeSourceSummaryViewModel(
+          1,
+          "User Name",
+          "Employer",
+          100,
+          400,
+          "1100L",
+          "EMPLOYER-1122",
+          false,
+          estimatedPayJourneyCompleted = true,
+          rtiAvailable = false)
+
+        val doc = Jsoup.parse(views.html.IncomeSourceSummary(model).toString())
+        doc must haveHeadingH2WithText(messages("tai.income.details.incomeReceivedToDate"))
+        doc must haveSpanWithText(messages("tai.rti.down"))
       }
     }
 
@@ -230,7 +249,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "1100L",
     "EMPLOYER-1122",
     false,
-    estimatedPayJourneyCompleted = true)
+    estimatedPayJourneyCompleted = true,
+    rtiAvailable = true)
   private lazy val companyBenefits = Seq(
     CompanyBenefitViewModel("ben1", BigDecimal(100.20), "url1"),
     CompanyBenefitViewModel("ben2", BigDecimal(3002.23), "url2"),
@@ -246,7 +266,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "1100L",
     "PENSION-1122",
     true,
-    estimatedPayJourneyCompleted = true)
+    estimatedPayJourneyCompleted = true,
+    rtiAvailable = true)
   private lazy val pensionDoc = Jsoup.parse(pensionView.toString())
 
   override def view: Html = views.html.IncomeSourceSummary(model)

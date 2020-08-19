@@ -52,7 +52,8 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
     "1100L",
     "PENSION-1122",
     true,
-    estimatedPayJourneyCompleted = false)
+    estimatedPayJourneyCompleted = false,
+    rtiAvailable = true)
 
   val expectedEmploymentViewModel = IncomeSourceSummaryViewModel(
     1,
@@ -63,14 +64,15 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
     "1100L",
     "EMPLOYER-1122",
     false,
-    estimatedPayJourneyCompleted = false)
+    estimatedPayJourneyCompleted = false,
+    rtiAvailable = true)
 
   def createViewModel(
     taxCodeIncomeSources: Seq[TaxCodeIncome],
     employment: Employment,
     benefits: Benefits,
     empId: Int = 1): IncomeSourceSummaryViewModel =
-    IncomeSourceSummaryViewModel(empId, "User Name", taxCodeIncomeSources, employment, benefits, false)
+    IncomeSourceSummaryViewModel(empId, "User Name", taxCodeIncomeSources, employment, benefits, false, true)
 
   "IncomeSourceSummaryViewModel apply method" must {
     "return pension details" when {

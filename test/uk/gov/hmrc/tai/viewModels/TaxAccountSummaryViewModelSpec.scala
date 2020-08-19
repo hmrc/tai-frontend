@@ -350,98 +350,31 @@ class TaxAccountSummaryViewModelSpec
         true
       )
     }
+
+    "sets rtiAvailable to true when rtiStatus is Available for live employments" in {
+      val employment =
+        empEmployment1.copy(annualAccounts = Seq(annualAccount.copy(realTimeStatus = Available)))
+      val liveEmploymentIncomeSources: Seq[TaxedIncome] = Seq(TaxedIncome(liveEmployment1, employment))
+      val incomeSources =
+        IncomesSources(Seq(), liveEmploymentIncomeSources, Seq())
+
+      val viewModel = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, incomeSources, Seq())
+
+      viewModel.rtiAvailable mustBe true
+    }
+
+    "sets rtiAvailable to false when there is a TemporarilyUnavailable rtiStatus for live employments" in {
+      val employment =
+        empEmployment1.copy(annualAccounts = Seq(annualAccount.copy(realTimeStatus = TemporarilyUnavailable)))
+      val unavailableEmploymentIncomeSources: Seq[TaxedIncome] = Seq(TaxedIncome(liveEmployment1, employment))
+      val incomeSources =
+        IncomesSources(Seq(), unavailableEmploymentIncomeSources, Seq())
+
+      val viewModel = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, incomeSources, Seq())
+
+      viewModel.rtiAvailable mustBe false
+    }
   }
-
-  val employments: Seq[Employment] = Seq(
-    empEmployment1,
-    empEmployment2,
-    pensionEmployment3,
-    pensionEmployment4,
-    Employment(
-      "JobSeekerAllowance name1",
-      Live,
-      Some("5ABC"),
-      new LocalDate(2017, 3, 1),
-      None,
-      Seq.empty[AnnualAccount],
-      "DIST5",
-      "PAYE5",
-      5,
-      None,
-      false,
-      false),
-    Employment(
-      "JobSeekerAllowance name2",
-      Live,
-      Some("6ABC"),
-      new LocalDate(2017, 3, 1),
-      None,
-      Seq.empty[AnnualAccount],
-      "DIST6",
-      "PAYE6",
-      6,
-      None,
-      false,
-      false),
-    Employment(
-      "OtherIncome name1",
-      Live,
-      Some("7ABC"),
-      new LocalDate(2017, 3, 1),
-      None,
-      Seq.empty[AnnualAccount],
-      "DIST7",
-      "PAYE7",
-      7,
-      None,
-      false,
-      false),
-    Employment(
-      "OtherIncome name2",
-      Live,
-      Some("8ABC"),
-      new LocalDate(2017, 3, 1),
-      None,
-      Seq.empty[AnnualAccount],
-      "DIST8",
-      "PAYE8",
-      8,
-      None,
-      false,
-      false),
-    empEmployment9,
-    empEmployment10,
-    Employment(
-      "Pension name3",
-      Live,
-      Some("11ABC"),
-      new LocalDate(2017, 3, 1),
-      None,
-      Seq.empty[AnnualAccount],
-      "DIST11",
-      "PAYE11",
-      11,
-      None,
-      false,
-      false),
-    Employment(
-      "Pension name4",
-      Live,
-      Some("12ABC"),
-      new LocalDate(2017, 3, 1),
-      Some(new LocalDate(2018, 4, 21)),
-      Seq.empty[AnnualAccount],
-      "DIST12",
-      "PAYE12",
-      12,
-      None,
-      false,
-      false
-    )
-  )
-
-  val emptyTaxCodeIncomes = Seq.empty[TaxCodeIncome]
-  val emptyEmployments = Seq.empty[Employment]
 
   val otherIncomeSourceViewModel = IncomeSourceViewModel(
     "",

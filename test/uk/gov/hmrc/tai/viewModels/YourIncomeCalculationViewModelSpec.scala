@@ -47,7 +47,6 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         )
         model.endDate mustBe None
         model.isPension mustBe false
-        model.rtiStatus mustBe Available
         model.employmentStatus mustBe Live
       }
 
@@ -70,7 +69,6 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         )
         model.endDate mustBe Some(LocalDate.parse("2017-08-08"))
         model.isPension mustBe false
-        model.rtiStatus mustBe Available
         model.employmentStatus mustBe Ceased
       }
     }
