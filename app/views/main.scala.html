@@ -64,7 +64,7 @@
 
 @isSa = @{
     authedUser.fold(false) {
-        _.utr != ""
+        _.utr.isDefined
     }
 }
 
