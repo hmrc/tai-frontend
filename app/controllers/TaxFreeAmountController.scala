@@ -20,10 +20,11 @@ import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.i18n.MessagesApi
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
@@ -61,11 +62,11 @@ class TaxFreeAmountController @Inject()(
             TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax))
           implicit val user = request.taiUser
           Ok(views.html.taxFreeAmount(viewModel))
-        case _ => throw new RuntimeException("Failed to fetch total tax details")
+        case TaiNotFoundResponse(_) => Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
+        case _                      => throw new RuntimeException("Failed to fetch total tax details")
       }
     }) recover {
       case NonFatal(e) => internalServerError(s"Could not get tax free amount", Some(e))
     }
-
   }
 }

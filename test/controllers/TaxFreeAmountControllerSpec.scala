@@ -25,9 +25,8 @@ import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import play.api.test.Helpers._
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity}
@@ -72,6 +71,24 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
 
         val result = SUT.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "redirect to the noCY Income page" when {
+      "there is no tax account information returned" in {
+        val SUT = createSUT()
+
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+          .thenReturn(Future.successful(codingComponents))
+        when(companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
+        when(employmentService.employmentNames(any(), any())(any()))
+          .thenReturn(Future.successful(Map.empty[Int, String]))
+        when(taxAccountService.totalTax(any(), any())(any()))
+          .thenReturn(Future.successful(TaiNotFoundResponse("no tax account information found")))
+
+        val result = SUT.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url)
       }
     }
   }
