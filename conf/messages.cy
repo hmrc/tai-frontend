@@ -1404,4 +1404,7 @@ tai.unauthorised.message = Bydd yn rhaid i chi fewngofnodi eto. Os oeddech yn di
 tai.unauthorised.button-text = Mewngofnodi
 
 tai.rti.down=Ni allwn ddangos yr wybodaeth hon ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen i fwrw golwg dros yr incwm a ddaeth i law hyd yn hyn.
-tai.rti.down.ceased_employments = Ni allwn ddangos yr wybodaeth hon ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen i weld y cyflogaethau sydd wedi dod i ben.
+tai.rti.down.ceasedEmployments = Ni allwn ddangos yr wybodaeth hon ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen i weld y cyflogaethau sydd wedi dod i ben.
+
+tai.rti.down.updateEmployment=You cannot update or remove this employer at this time. Try again later.
+tai.rti.down.updatePension=You cannot update or remove this pension at this time. Try again later.

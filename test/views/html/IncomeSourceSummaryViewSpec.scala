@@ -112,7 +112,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(pensionModel.empId).url)
       }
 
-      "rti is unavailable display a status message" in {
+      "rti is unavailable display rti down messages for employments" in {
         val model = IncomeSourceSummaryViewModel(
           1,
           "User Name",
@@ -126,8 +126,26 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           rtiAvailable = false)
 
         val doc = Jsoup.parse(views.html.IncomeSourceSummary(model).toString())
-        doc must haveHeadingH2WithText(messages("tai.income.details.incomeReceivedToDate"))
         doc must haveSpanWithText(messages("tai.rti.down"))
+        doc must haveSpanWithText(messages("tai.rti.down.updateEmployment"))
+      }
+
+      "rti is unavailable display rti down messages for pensios" in {
+        val model = IncomeSourceSummaryViewModel(
+          1,
+          "User Name",
+          "Employer",
+          100,
+          400,
+          "1100L",
+          "EMPLOYER-1122",
+          true,
+          estimatedPayJourneyCompleted = true,
+          rtiAvailable = false)
+
+        val doc = Jsoup.parse(views.html.IncomeSourceSummary(model).toString())
+        doc must haveSpanWithText(messages("tai.rti.down"))
+        doc must haveSpanWithText(messages("tai.rti.down.updatePension"))
       }
     }
 
