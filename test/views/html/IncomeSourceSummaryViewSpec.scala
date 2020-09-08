@@ -130,7 +130,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         doc must haveSpanWithText(messages("tai.rti.down.updateEmployment"))
       }
 
-      "rti is unavailable display rti down messages for pensios" in {
+      "rti is unavailable display rti down messages for pensions" in {
         val model = IncomeSourceSummaryViewModel(
           1,
           "User Name",
