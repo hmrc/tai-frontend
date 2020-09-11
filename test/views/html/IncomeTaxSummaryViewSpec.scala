@@ -239,7 +239,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
     "display the rti is down message when rti is not available" in {
       val view = views.html.incomeTaxSummary(vm.copy(rtiAvailable = false))
-      doc(view) must haveParagraphWithText(messages("tai.rti.down.ceased_employments"))
+      doc(view) must haveParagraphWithText(messages("tai.rti.down.ceasedEmployments"))
     }
 
     "display the correct number of ended employment detail sections" when {

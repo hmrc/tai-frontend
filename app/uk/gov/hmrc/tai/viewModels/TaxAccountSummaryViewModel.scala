@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service.TimeToProcess
@@ -38,11 +38,6 @@ case class TaxAccountSummaryViewModel(
   isAnyFormInProgress: TimeToProcess,
   otherIncomeSources: Seq[IncomeSourceViewModel],
   rtiAvailable: Boolean)
-
-case class IncomesSources(
-  livePensionIncomeSources: Seq[TaxedIncome],
-  liveEmploymentIncomeSources: Seq[TaxedIncome],
-  ceasedEmploymentIncomeSources: Seq[TaxedIncome])
 
 object TaxAccountSummaryViewModel extends ViewModelHelper {
 
@@ -70,10 +65,6 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
 
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
 
-    val rtiAvailable = incomesSources.liveEmploymentIncomeSources
-      .flatMap(_.employment.annualAccounts.filter(_.realTimeStatus == TemporarilyUnavailable))
-      .isEmpty
-
     TaxAccountSummaryViewModel(
       header = header,
       title = title,
@@ -86,7 +77,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
       displayIyaBanner = taxAccountSummary.totalInYearAdjustmentIntoCY > 0,
       isAnyFormInProgress = isAnyFormInProgress,
       otherIncomeSources = IncomeSourceViewModel(nonTaxCodeIncome),
-      rtiAvailable = rtiAvailable
+      rtiAvailable = incomesSources.isRtiAvailable
     )
   }
 }

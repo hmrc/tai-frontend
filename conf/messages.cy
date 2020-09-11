@@ -1404,4 +1404,7 @@ tai.unauthorised.message = Bydd yn rhaid i chi fewngofnodi eto. Os oeddech yn di
 tai.unauthorised.button-text = Mewngofnodi
 
 tai.rti.down=Ni allwn ddangos yr wybodaeth hon ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen i fwrw golwg dros yr incwm a ddaeth i law hyd yn hyn.
-tai.rti.down.ceased_employments = Ni allwn ddangos yr wybodaeth hon ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen i weld y cyflogaethau sydd wedi dod i ben.
+tai.rti.down.ceasedEmployments = Ni allwn ddangos yr wybodaeth hon ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen i weld y cyflogaethau sydd wedi dod i ben.
+
+tai.rti.down.updateEmployment=Ni allwch ddiweddaru na dileu’r cyflogwr hwn ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen.
+tai.rti.down.updatePension=Ni allwch ddiweddaru na dileu’r pensiwn hwn ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen.

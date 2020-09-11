@@ -20,7 +20,7 @@ import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service.ThreeWeeks
@@ -349,30 +349,6 @@ class TaxAccountSummaryViewModelSpec
         taxCodeUrl = Some(controllers.routes.YourTaxCodeController.taxCode(nonMatchingSequenceNumber)),
         true
       )
-    }
-
-    "sets rtiAvailable to true when rtiStatus is Available for live employments" in {
-      val employment =
-        empEmployment1.copy(annualAccounts = Seq(annualAccount.copy(realTimeStatus = Available)))
-      val liveEmploymentIncomeSources: Seq[TaxedIncome] = Seq(TaxedIncome(liveEmployment1, employment))
-      val incomeSources =
-        IncomesSources(Seq(), liveEmploymentIncomeSources, Seq())
-
-      val viewModel = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, incomeSources, Seq())
-
-      viewModel.rtiAvailable mustBe true
-    }
-
-    "sets rtiAvailable to false when there is a TemporarilyUnavailable rtiStatus for live employments" in {
-      val employment =
-        empEmployment1.copy(annualAccounts = Seq(annualAccount.copy(realTimeStatus = TemporarilyUnavailable)))
-      val unavailableEmploymentIncomeSources: Seq[TaxedIncome] = Seq(TaxedIncome(liveEmployment1, employment))
-      val incomeSources =
-        IncomesSources(Seq(), unavailableEmploymentIncomeSources, Seq())
-
-      val viewModel = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, incomeSources, Seq())
-
-      viewModel.rtiAvailable mustBe false
     }
   }
 

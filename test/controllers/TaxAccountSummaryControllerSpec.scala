@@ -31,12 +31,13 @@ import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
+import uk.gov.hmrc.tai.model.IncomesSources
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
-import uk.gov.hmrc.tai.viewModels.{IncomesSources, TaxAccountSummaryViewModel}
+import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import utils.TaxAccountSummaryTestData
 
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -82,34 +82,42 @@
     gaCustomTitle = Some(title)
 ) {
 
-    @if(model.isPension){
-        <p  aria-hidden="true">
+    @if(model.rtiAvailable) {
+        @if(model.isPension) {
+            <p aria-hidden="true">
             @Html(Link.toInternalPage(
-                id=Some("updatePension"),
-                url=controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url,
-                value=Some(messages("tai.pension.income.details.updateLinkText")),
-                dataAttributes=Some(Map("tabindex" -> "-1"))).toHtml.body.replaceAll("data-tabindex", "tabindex"))
-        </p>
-        <p class="visuallyhidden">
-        @Link.toInternalPage(
-            id=Some("updatePensionScreenReader"),
-            url=controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url,
-            value=Some(messages("tai.pension.income.details.updateLinkText.screenReader", model.empOrPensionName))).toHtml
-        </p>
-    }else {
-        <p  aria-hidden="true">
+                id = Some("updatePension"),
+                url = controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url,
+                value = Some(messages("tai.pension.income.details.updateLinkText")),
+                dataAttributes = Some(Map("tabindex" -> "-1"))).toHtml.body.replaceAll("data-tabindex", "tabindex"))
+            </p>
+            <p class="visuallyhidden">
+            @Link.toInternalPage(
+                id = Some("updatePensionScreenReader"),
+                url = controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url,
+                value = Some(messages("tai.pension.income.details.updateLinkText.screenReader", model.empOrPensionName))).toHtml
+            </p>
+        } else {
+            <p aria-hidden="true">
             @Html(Link.toInternalPage(
-                id=Some("updateEmployer"),
-                url=controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url,
-                value=Some(messages("tai.employment.income.details.updateLinkText")),
-                dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.employment.income.details.updateLinkText")}", "tabindex" -> "-1"))).toHtml.body.replaceAll("data-tabindex", "tabindex"))
-        </p>
-        <p class="visuallyhidden">
-        @Link.toInternalPage(
-            id=Some("updateEmployerScreenReader"),
-            url=controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url,
-            value=Some(messages("tai.employment.income.details.updateLinkText.screenReader", model.empOrPensionName))).toHtml
-        </p>
+                id = Some("updateEmployer"),
+                url = controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url,
+                value = Some(messages("tai.employment.income.details.updateLinkText")),
+                dataAttributes = Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.employment.income.details.updateLinkText")}", "tabindex" -> "-1"))).toHtml.body.replaceAll("data-tabindex", "tabindex"))
+            </p>
+            <p class="visuallyhidden">
+            @Link.toInternalPage(
+                id = Some("updateEmployerScreenReader"),
+                url = controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url,
+                value = Some(messages("tai.employment.income.details.updateLinkText.screenReader", model.empOrPensionName))).toHtml
+            </p>
+        }
+    } else {
+        @if(model.isPension) {
+            <span>@messages("tai.rti.down.updatePension")</span>
+        } else {
+            <span>@messages("tai.rti.down.updateEmployment")</span>
+        }
     }
 
     @if(model.estimatedPayJourneyCompleted){
@@ -118,11 +126,7 @@
         </div>
     }
 
-
     <div class="grid-row">
-
-
-
         <div class="column-one-half subsection--wide">
                 <h2 class="flush">@messages("tai.income.details.estimatedTaxableIncome")</h2>
                 <p class="break-word">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>

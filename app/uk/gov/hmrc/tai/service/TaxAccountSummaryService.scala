@@ -18,16 +18,16 @@ package uk.gov.hmrc.tai.service
 
 import com.google.inject.Inject
 import controllers.TaiBaseController
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.MessagesApi
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, NotLive}
-import uk.gov.hmrc.tai.viewModels.{IncomesSources, TaxAccountSummaryViewModel}
+import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
+import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 
 import scala.concurrent.{ExecutionContext, Future}
 
