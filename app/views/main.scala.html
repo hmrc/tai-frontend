@@ -55,11 +55,11 @@
 @isUserResearchBannerHidden = @{request.cookies.exists((x: Cookie) => x.name == "mdtpurr")}
 
 @authProvider = @{
-    request.session.get(TaiConstants.AuthProvider)
+    request.session.get(TaiConstants.ViewAuthProvider)
 }
 
 @isGG = @{
-    authProvider.contains(TaiConstants.AuthProviderGG)
+    authProvider.contains(TaiConstants.ViewAuthProviderGG)
 }
 
 @isSa = @{
@@ -69,7 +69,7 @@
 }
 
 @isVerify = @{
-    authProvider.contains(TaiConstants.AuthProviderVerify)
+    authProvider.contains(TaiConstants.ViewAuthProviderVerify)
 }
 
 @mustacheCheck(str: String) = @{
