@@ -20,6 +20,7 @@ import controllers.FakeTaiPlayApplication
 import org.mockito.Matchers.{any, eq => Meq}
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -33,13 +34,12 @@ import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
-import utils.WireMockHelper
 
 import scala.concurrent.Future
 import scala.util.Random
 
 class UpdateNextYearsIncomeServiceSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with WireMockHelper with ScalaFutures {
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with BeforeAndAfterEach with ScalaFutures {
 
   override def beforeEach: Unit =
     Mockito.reset(successfulJourneyCacheService)

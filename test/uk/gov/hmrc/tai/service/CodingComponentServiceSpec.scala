@@ -25,7 +25,7 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.connectors.{TaxAccountConnector, TaxFreeAmountComparisonConnector}
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
@@ -59,6 +59,17 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       }
     }
 
+    "return empty CodingComponents" when {
+      "error is TaiNotFoundResponse" in {
+        val service = createSut
+        when(taxAccountConnector.codingComponents(any(), any())(any()))
+          .thenReturn(Future.successful(TaiNotFoundResponse("no coding components found")))
+
+        val result = service.taxFreeAmountComponents(generateNino, currentTaxYear)
+        Await.result(result, 5 seconds) mustBe Seq.empty
+      }
+    }
+
     "return Tai Failure response" when {
       "error is received from TAI" in {
         val service = createSut
@@ -81,10 +92,11 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
           .result(service.taxFreeAmountComponents(generateNino, currentTaxYear), 5 seconds)
         exceptionThrown.getMessage must include("could not fetch coding components")
       }
+
       "other error is received from TAI" in {
         val service = createSut
         when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(TaiNotFoundResponse("error description")))
+          .thenReturn(Future.successful(TaiCacheError("error description")))
 
         val exceptionThrown = the[RuntimeException] thrownBy Await
           .result(service.taxFreeAmountComponents(generateNino, currentTaxYear), 5 seconds)
