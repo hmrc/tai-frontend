@@ -46,12 +46,11 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val taxFreeAllowanceLinkUrl =
     s"$taiRootUri/digital-forms/form/check-income-tax-tell-us-your-tax-free-allowance/draft/guide"
 
-  private def loadConfig(key: String) = runModeConfiguration.underlying.getString(key)
-
   lazy val accessibilityStatementToggle: Boolean =
     configuration.getBoolean("accessibility-statement.toggle").getOrElse(false)
-  lazy val accessibilityBaseUrl: String = loadConfig(s"accessibility-statement.baseUrl")
-  lazy private val accessibilityRedirectUrl: String = loadConfig(s"accessibility-statement.redirectUrl")
+
+  lazy val accessibilityBaseUrl: String = getString(s"accessibility-statement.baseUrl")
+  lazy private val accessibilityRedirectUrl: String = getString(s"accessibility-statement.redirectUrl")
   def accessibilityStatementUrl(referrer: String) =
     s"$accessibilityBaseUrl/accessibility-statement$accessibilityRedirectUrl?referrerUrl=${SafeRedirectUrl(
       accessibilityBaseUrl + referrer).encodedUrl}"
