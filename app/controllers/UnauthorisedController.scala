@@ -17,27 +17,28 @@
 package controllers
 
 import javax.inject.Inject
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.i18n.Messages
+import play.api.mvc._
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.auth.ConfigProperties
+import uk.gov.hmrc.tai.config.{ApplicationConfig, AuthConfigProperties}
 import uk.gov.hmrc.tai.util.ViewModelHelper
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
 import scala.concurrent.Future
 
 class UnauthorisedController @Inject()(
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
+  applicationConfig: ApplicationConfig,
+  authConfigProperties: AuthConfigProperties,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)
-    extends TaiBaseController {
+    extends TaiBaseController(mcc) {
 
-  def upliftUrl: String = ApplicationConfig.sa16UpliftUrl
-  def failureUrl: String = ApplicationConfig.pertaxServiceUpliftFailedUrl
-  def completionUrl: String = ApplicationConfig.taiHomePageUrl
+  def upliftUrl: String = applicationConfig.sa16UpliftUrl
+  def failureUrl: String = applicationConfig.pertaxServiceUpliftFailedUrl
+  def completionUrl: String = applicationConfig.taiHomePageUrl
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
     Ok(unauthorisedView()).withNewSession
@@ -65,22 +66,22 @@ class UnauthorisedController @Inject()(
   }
 
   private def verifyRedirect(implicit request: Request[_]): Future[Result] = {
-    lazy val idaSignIn = s"${ApplicationConfig.citizenAuthHost}/${ApplicationConfig.ida_web_context}/login"
+    lazy val idaSignIn = s"${applicationConfig.citizenAuthHost}/${applicationConfig.ida_web_context}/login"
     Future.successful(
       Redirect(idaSignIn).withSession(
         SessionKeys.loginOrigin -> "TAI",
-        SessionKeys.redirect -> ConfigProperties.postSignInRedirectUrl.getOrElse(
+        SessionKeys.redirect -> authConfigProperties.postSignInRedirectUrl.getOrElse(
           controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
       ))
   }
 
   private def ggRedirect(implicit request: Request[_]): Future[Result] = {
     val postSignInUpliftUrl =
-      s"${ViewModelHelper.urlEncode(ApplicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${ViewModelHelper.urlEncode(ConfigProperties.postSignInRedirectUrl
+      s"${ViewModelHelper.urlEncode(applicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${ViewModelHelper.urlEncode(authConfigProperties.postSignInRedirectUrl
         .getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url))}"
 
     lazy val ggSignIn =
-      s"${ApplicationConfig.companyAuthUrl}/${ApplicationConfig.gg_web_context}/sign-in?continue=$postSignInUpliftUrl&accountType=individual"
+      s"${applicationConfig.companyAuthUrl}/${applicationConfig.gg_web_context}/sign-in?continue=$postSignInUpliftUrl&accountType=individual"
 
     Future.successful(Redirect(ggSignIn))
   }
@@ -94,7 +95,7 @@ class UnauthorisedController @Inject()(
         views.html.includes
           .link(
             copy = Messages("tai.unauthorised.button-text"),
-            url = ApplicationConfig.unauthorisedSignOutUrl,
+            url = applicationConfig.unauthorisedSignOutUrl,
             isButton = true,
             id = Some("sign-in")
           )

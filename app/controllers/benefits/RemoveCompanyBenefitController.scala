@@ -17,13 +17,12 @@
 package controllers.benefits
 
 import com.google.inject.name.Named
-import javax.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.Nino
+import javax.inject.Inject
+import play.api.i18n.{I18nSupport, Messages}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -50,10 +49,10 @@ class RemoveCompanyBenefitController @Inject()(
   benefitsService: BenefitsService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
   implicit val templateRenderer: TemplateRenderer,
   implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
-    extends TaiBaseController with JourneyCacheConstants with FormValuesConstants
+    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants
     with RemoveCompanyBenefitStopDateConstants {
 
   def stopDate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -95,6 +94,7 @@ class RemoveCompanyBenefitController @Inject()(
 
   def totalValueOfBenefit(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
+    implicit val lang = request.lang
 
     val mandatoryKeys = Seq(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey)
     val optionalKeys = Seq(EndCompanyBenefit_BenefitValueKey)
@@ -113,6 +113,7 @@ class RemoveCompanyBenefitController @Inject()(
 
   def submitBenefitValue(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
+    implicit val lang = request.lang
 
     CompanyBenefitTotalValueForm.form.bindFromRequest.fold(
       formWithErrors => {
@@ -135,6 +136,7 @@ class RemoveCompanyBenefitController @Inject()(
 
   def telephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val user = request.taiUser
+    implicit val lang = request.lang
 
     journeyCacheService.currentCache map { currentCache =>
       val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
@@ -152,6 +154,7 @@ class RemoveCompanyBenefitController @Inject()(
 
   def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val user = request.taiUser
+    implicit val lang = request.lang
 
     YesNoTextEntryForm
       .form(

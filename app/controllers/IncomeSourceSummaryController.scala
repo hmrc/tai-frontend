@@ -16,15 +16,14 @@
 
 package controllers
 
-import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.FeatureTogglesConfig
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
@@ -45,10 +44,11 @@ class IncomeSourceSummaryController @Inject()(
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  applicationConfig: ApplicationConfig,
+  mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with FeatureTogglesConfig {
+    extends TaiBaseController(mcc) {
 
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
@@ -70,7 +70,9 @@ class IncomeSourceSummaryController @Inject()(
             employment,
             benefitsDetails,
             estimatedPayCompletion,
-            rtiAvailable)
+            rtiAvailable,
+            applicationConfig
+          )
 
           Ok(views.html.IncomeSourceSummary(incomeDetailsViewModel))
         case _ => throw new RuntimeException("Error while fetching income summary details")

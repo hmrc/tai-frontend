@@ -20,8 +20,8 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.{Inject, Named}
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.i18n.Lang
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
@@ -35,11 +35,12 @@ import scala.concurrent.{ExecutionContext, Future}
 class IncomeUpdateBonusController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with JourneyCacheConstants with FormValuesConstants with UpdatedEstimatedPayJourneyCache {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants
+    with UpdatedEstimatedPayJourneyCache {
   def bonusPaymentsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
@@ -89,7 +90,7 @@ class IncomeUpdateBonusController @Inject()(
 
   def bonusOvertimeAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-
+    implicit val lang: Lang = request.lang
     for {
       incomeSourceEither  <- IncomeSource.create(journeyCacheService)
       bonusOvertimeAmount <- journeyCacheService.currentValue(UpdateIncome_BonusOvertimeAmountKey)
@@ -105,7 +106,7 @@ class IncomeUpdateBonusController @Inject()(
 
   def handleBonusOvertimeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-
+    implicit val lang: Lang = request.lang
     BonusOvertimeAmountForm
       .createForm()
       .bindFromRequest()

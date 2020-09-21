@@ -17,14 +17,13 @@
 package controllers.employments
 
 import com.google.inject.name.Named
-import javax.inject.Inject
 import controllers._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.Inject
 import org.joda.time.LocalDate
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Result}
-import uk.gov.hmrc.domain.Nino
+import play.api.i18n.{Lang, Messages}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -52,10 +51,10 @@ class EndEmploymentController @Inject()(
   @Named("End Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   val auditConnector: AuditConnector,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
   implicit val templateRenderer: TemplateRenderer,
   implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
-    extends TaiBaseController with JourneyCacheConstants with FormValuesConstants with IrregularPayConstants
+    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with IrregularPayConstants
     with AuditConstants with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -215,6 +214,7 @@ class EndEmploymentController @Inject()(
 
   def endEmploymentPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
+    implicit val lang: Lang = request.lang
     val nino = user.nino
     journeyCacheService.collectedJourneyValues(
       Seq(EndEmployment_NameKey, EndEmployment_EmploymentIdKey),
@@ -244,6 +244,7 @@ class EndEmploymentController @Inject()(
   def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
+      implicit val lang: Lang = request.lang
       val nino = user.nino
       employmentService.employment(nino, employmentId) flatMap {
         case Some(employment) =>
@@ -268,6 +269,7 @@ class EndEmploymentController @Inject()(
 
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
+    implicit val lang: Lang = request.lang
 
     for {
       employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey)
@@ -289,6 +291,7 @@ class EndEmploymentController @Inject()(
 
   def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
+    implicit val lang: Lang = request.lang
 
     YesNoTextEntryForm
       .form(

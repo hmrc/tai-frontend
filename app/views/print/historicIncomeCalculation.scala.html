@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.tai.auth.ConfigProperties
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.play.views.formatting.Money._
@@ -32,10 +31,10 @@
 
 @import controllers.auth.AuthenticatedRequest
 
-@(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel
+@(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel, appConfig: ApplicationConfig
 )(implicit request: AuthenticatedRequest[_], messages: Messages)
 
-@printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
+@printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading"), appConfig){
 
 <div class="print-wrapper">
     <p><strong>@request.fullName</strong></p>

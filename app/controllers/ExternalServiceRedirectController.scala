@@ -16,11 +16,10 @@
 
 package controllers
 
-import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.{AuditService, SessionService}
@@ -32,10 +31,10 @@ class ExternalServiceRedirectController @Inject()(
   auditService: AuditService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController {
+    extends TaiBaseController(mcc) {
 
   def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>

@@ -23,7 +23,7 @@
 
 @import controllers.auth.AuthenticatedRequest
 
-@(viewModel: TaxAccountSummaryViewModel
+@(viewModel: TaxAccountSummaryViewModel, appConfig: ApplicationConfig
 )(implicit request: AuthenticatedRequest[_],
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
@@ -60,7 +60,7 @@
     articleClasses = Some("full-width")
     ){
 
-@includes.iFormInProgressBanner(IFormInProgressBannerViewModel(viewModel.isAnyFormInProgress))
+@includes.iFormInProgressBanner(IFormInProgressBannerViewModel(viewModel.isAnyFormInProgress), appConfig)
 
 <div class="grid-row">
     <div class="grid grid-2-3">
@@ -190,7 +190,7 @@
                         <p class="icon icon-plus">
                             @Link.toInternalPage(
                                 id=Some("addOtherIncomeSourceLink"),
-                                url=ApplicationConfig.otherIncomeLinkUrl,
+                                url=appConfig.otherIncomeLinkUrl,
                                 value=Some(Messages("tai.incomeTaxSummary.addMissingIncome.section.otherLink")),
                                 cssClasses=Some(""),
                                 dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.incomeTaxSummary.addMissingIncome.section.otherLink")}"))).toHtml

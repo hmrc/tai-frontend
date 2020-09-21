@@ -16,9 +16,9 @@
 
 package controllers
 
-import javax.inject.Inject
 import controllers.auth.AuthAction
-import play.api.i18n.MessagesApi
+import javax.inject.Inject
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 
@@ -26,10 +26,10 @@ import scala.concurrent.Future
 
 class DeceasedController @Inject()(
   authenticate: AuthAction,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)
-    extends TaiBaseController {
+    extends TaiBaseController(mcc) {
 
   def deceased() = authenticate.async(implicit request => Future.successful(Ok(views.html.deceased_helpline())))
 

@@ -4,21 +4,23 @@ private object AppDependencies {
   import play.core.PlayVersion
   import play.sbt.PlayImport._
   
-  private val playVersion = "play-25"
+  private val playVersion = "play-26"
 
   val compile = Seq(
     filters,
-    "uk.gov.hmrc"   %% "play-conditional-form-mapping" % s"1.2.0-$playVersion",
-    "uk.gov.hmrc"   %% s"bootstrap-$playVersion"       % "5.4.0",
-    "uk.gov.hmrc"   %% "domain"                        % s"5.10.0-$playVersion",
-    "uk.gov.hmrc"   %% "url-builder"                   % s"3.4.0-$playVersion",
-    "uk.gov.hmrc"   %% "play-partials"                 % s"6.11.0-$playVersion",
-    "uk.gov.hmrc"   %% "play-language"                 % "3.4.0",
-    "uk.gov.hmrc"   %% "local-template-renderer"       % s"2.9.0-$playVersion",
-    "uk.gov.hmrc"   %% "auth-client"                   % s"3.1.0-$playVersion",
-    "uk.gov.hmrc"   %% "play-ui"                       % s"8.12.0-$playVersion",
-    "uk.gov.hmrc"   %% "play-config"                   % "7.5.0",
-    "org.typelevel" %% "cats-core"                     % "2.0.0"
+    jodaForms,
+    "uk.gov.hmrc"       %% "play-conditional-form-mapping" % s"1.2.0-$playVersion",
+    "uk.gov.hmrc"       %% s"bootstrap-$playVersion"       % "1.16.0",
+    "uk.gov.hmrc"       %% "domain"                        % s"5.10.0-$playVersion",
+    "uk.gov.hmrc"       %% "url-builder"                   % s"3.4.0-$playVersion",
+    "uk.gov.hmrc"       %% "play-partials"                 % s"6.11.0-$playVersion",
+    "uk.gov.hmrc"       %% "play-language"                 % "3.4.0",
+    "uk.gov.hmrc"       %% "local-template-renderer"       % s"2.9.0-$playVersion",
+    "uk.gov.hmrc"       %% "auth-client"                   % s"3.1.0-$playVersion",
+    "uk.gov.hmrc"       %% "play-ui"                       % s"8.12.0-$playVersion",
+    "uk.gov.hmrc"       %% "play-config"                   % "7.5.0",
+    "org.typelevel"     %% "cats-core"                     % "2.0.0",
+    "com.typesafe.play" %% "play-json-joda"                % "2.6.10"
   )
 
   trait TestDependencies {

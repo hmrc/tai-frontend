@@ -32,6 +32,7 @@ import uk.gov.hmrc.urls.Link
 class TaiErrorHandler @Inject()(
   localTemplateRenderer: LocalTemplateRenderer,
   taiHtmlPartialRetriever: TaiHtmlPartialRetriever,
+  applicationConfig: ApplicationConfig,
   val messagesApi: MessagesApi,
   val configuration: Configuration)
     extends FrontendErrorHandler {
@@ -69,8 +70,8 @@ class TaiErrorHandler @Inject()(
   override def notFoundTemplate(implicit request: Request[_]): Html = {
 
     val contactUrl = request2Messages.lang.code match {
-      case "cy" => ApplicationConfig.contactHelplineWelshUrl
-      case _    => ApplicationConfig.contactHelplineUrl
+      case "cy" => applicationConfig.contactHelplineWelshUrl
+      case _    => applicationConfig.contactHelplineUrl
     }
 
     badRequestErrorTemplate(

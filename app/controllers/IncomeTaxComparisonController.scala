@@ -19,12 +19,11 @@ package controllers
 import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.FeatureTogglesConfig
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
@@ -44,10 +43,11 @@ class IncomeTaxComparisonController @Inject()(
   updateNextYearsIncomeService: UpdateNextYearsIncomeService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  applicationConfig: ApplicationConfig,
+  mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with FeatureTogglesConfig {
+    extends TaiBaseController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
@@ -114,7 +114,7 @@ class IncomeTaxComparisonController @Inject()(
             isEstimatedPayJourneyComplete
           )
 
-          Ok(views.html.incomeTaxComparison.Main(model, cyPlus1EstimatedPayEnabled))
+          Ok(views.html.incomeTaxComparison.Main(model, applicationConfig))
         }
         case _ => throw new RuntimeException("Not able to fetch income tax comparision details")
       }

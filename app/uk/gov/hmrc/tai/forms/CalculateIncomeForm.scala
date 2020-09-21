@@ -21,6 +21,8 @@ import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.Json
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 import play.api.mvc.Request
 import uk.gov.hmrc.tai.model.EmploymentAmount
 

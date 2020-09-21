@@ -20,9 +20,8 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.{Inject, Named}
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.Nino
+import play.api.i18n.{Lang, Messages}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -47,12 +46,12 @@ class UpdateEmploymentController @Inject()(
   val auditConnector: AuditConnector,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
   @Named("Update Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with Referral with JourneyCacheConstants with AuditConstants with FormValuesConstants
+    extends TaiBaseController(mcc) with Referral with JourneyCacheConstants with AuditConstants with FormValuesConstants
     with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -73,6 +72,7 @@ class UpdateEmploymentController @Inject()(
   def updateEmploymentDetails(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
+      implicit val lang: Lang = request.lang
       (for {
         userSuppliedDetails <- journeyCacheService.currentValue(UpdateEmployment_EmploymentDetailsKey)
         employment          <- employmentService.employment(user.nino, empId)
@@ -104,6 +104,7 @@ class UpdateEmploymentController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             implicit val user: AuthedUser = request.taiUser
+            implicit val lang: Lang = request.lang
             BadRequest(
               views.html.employments.update.whatDoYouWantToTellUs(
                 EmploymentViewModel(currentCache(UpdateEmployment_NameKey), empId),
@@ -125,6 +126,7 @@ class UpdateEmploymentController @Inject()(
                          .optionalValues(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey)
     } yield {
       implicit val user: AuthedUser = request.taiUser
+      implicit val lang: Lang = request.lang
       employmentId match {
         case Right(empId) =>
           Ok(
@@ -149,6 +151,7 @@ class UpdateEmploymentController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             implicit val user: AuthedUser = request.taiUser
+            implicit val lang: Lang = request.lang
             BadRequest(
               views.html.can_we_contact_by_phone(
                 Some(user),

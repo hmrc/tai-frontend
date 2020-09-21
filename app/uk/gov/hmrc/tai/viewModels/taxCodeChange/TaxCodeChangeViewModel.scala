@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.{BasisOfOperation, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
@@ -56,13 +57,15 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
   def getTaxCodeExplanations(
     taxCodeRecord: TaxCodeRecord,
     scottishTaxRateBands: Map[String, BigDecimal],
-    identifier: String)(implicit messages: Messages): DescriptionListViewModel = {
+    identifier: String,
+    appConfig: ApplicationConfig)(implicit messages: Messages): DescriptionListViewModel = {
 
     val isCurrentTaxCode = identifier == "current"
 
     val taxCode = taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
 
-    val explanation = describeTaxCode(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands, isCurrentTaxCode)
+    val explanation =
+      describeTaxCode(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands, isCurrentTaxCode, appConfig)
 
     DescriptionListViewModel(messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCode), explanation)
   }

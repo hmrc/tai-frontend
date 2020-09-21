@@ -22,9 +22,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.Logger
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Result}
-import uk.gov.hmrc.domain.{AgentBusinessUtr, AgentCode, AgentUserId, AtedUtr, AwrsUtr, CtUtr, HmrcMtdVat, HmrcObtdsOrg, Nino, Org, PayeAgentReference, PsaId, PspId, SaAgentReference, SaUtr, Uar, Vrn}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.DecisionCacheWrapper
@@ -44,10 +42,10 @@ class CompanyBenefitController @Inject()(
   @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
   override implicit val templateRenderer: TemplateRenderer,
   override implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
-    extends TaiBaseController with JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants {
 
   private val logger = Logger(this.getClass)
 

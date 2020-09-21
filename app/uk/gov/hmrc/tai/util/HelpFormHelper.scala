@@ -24,8 +24,10 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 
 object HelpFormHelper {
 
-  def replaceMessage(partialRetriever: FormPartialRetriever)(implicit request: Request[_], messages: Messages): Html = {
-    def partial = partialRetriever.getPartialContent(ApplicationConfig.reportAProblemPartialUrl)
+  def replaceMessage(partialRetriever: FormPartialRetriever, applicationConfig: ApplicationConfig)(
+    implicit request: Request[_],
+    messages: Messages): Html = {
+    def partial = partialRetriever.getPartialContent(applicationConfig.reportAProblemPartialUrl)
 
     Html(
       partial.toString

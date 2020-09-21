@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.model.tai
 
+import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.model.TaxYear
@@ -33,6 +34,18 @@ class TaxYearSpec extends PlaySpec {
     "marshall valid TaxYear object" when {
       "given a valid json value" in {
         Json.parse("2017").as[TaxYear] mustBe TaxYear(2017)
+      }
+    }
+
+    "instantiate as the previous year" when {
+      "the given date is before the start of the tax year" in {
+        TaxYear(LocalDate.parse("2020-04-05")).year mustBe 2019
+      }
+    }
+
+    "instantiate as the current year" when {
+      "the given date is after the start of the tax year" in {
+        TaxYear(LocalDate.parse("2020-04-06")).year mustBe 2020
       }
     }
 

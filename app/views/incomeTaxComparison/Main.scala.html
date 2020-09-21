@@ -23,7 +23,7 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 
 @import controllers.auth.AuthenticatedRequest
-@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, estimatedPayEnabled: Boolean)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 @gaEventActionString = @{"Income Tax comparison - current and next tax years"}
 @backLinkToChooseTaxYear = {
     <p class="flush--bottom">
@@ -75,11 +75,11 @@
             </div>
 
             <div class="section" id="incomeSummary" aria-labelledby="incomeSummaryHeading">
-                @IncomeSummary(incomeTaxComparisonViewModel.incomeSourceComparisonViewModel, estimatedPayEnabled)
+                @IncomeSummary(incomeTaxComparisonViewModel.incomeSourceComparisonViewModel, appConfig.cyPlus1EstimatedPayEnabled)
             </div>
 
             <div class="section" id="taxCodes" aria-labelledby="taxCodesHeading">
-                @TaxCodes(incomeTaxComparisonViewModel.taxCodeComparisonViewModel)
+                @TaxCodes(incomeTaxComparisonViewModel.taxCodeComparisonViewModel, appConfig)
             </div>
 
             <div class="section" id="taxFreeAmount" aria-labelledby="taxFreeAmountHeading">
@@ -102,7 +102,7 @@
                     <li>
                         @includes.link(
                             id = Some("companyBenefitsLink"),
-                            url = ApplicationConfig.companyBenefitsLinkUrl,
+                            url = appConfig.companyBenefitsLinkUrl,
                             copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText"),
                             altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText")),
                             attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText")}"))
@@ -112,7 +112,7 @@
                     <li>
                         @includes.link(
                             id = Some("allowancesTaxReliefsLink"),
-                            url = ApplicationConfig.taxFreeAllowanceLinkUrl,
+                            url = appConfig.taxFreeAllowanceLinkUrl,
                             copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText"),
                             altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText")),
                             attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText")}"))
@@ -122,7 +122,7 @@
                     <li>
                         @includes.link(
                             id = Some("otherIncomeLink"),
-                            url = ApplicationConfig.otherIncomeLinkUrl,
+                            url = appConfig.otherIncomeLinkUrl,
                             copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText"),
                             altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText")),
                             attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText")}"))

@@ -19,11 +19,10 @@ package controllers
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.Inject
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.FeatureTogglesConfig
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -38,10 +37,11 @@ class YourTaxCodeController @Inject()(
   taxCodeChangeService: TaxCodeChangeService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
+  applicationConfig: ApplicationConfig,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with FeatureTogglesConfig {
+    extends TaiBaseController(mcc) {
 
   private[controllers] def renderTaxCodes(employmentId: Option[Int]): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
@@ -59,7 +59,7 @@ class YourTaxCodeController @Inject()(
             taxCodeIncomes.filter(_.employmentId == Some(id))
           }
 
-        val taxCodeViewModel = TaxCodeViewModel(filteredTaxCodes, scottishTaxRateBands, employmentId)
+        val taxCodeViewModel = TaxCodeViewModel(filteredTaxCodes, scottishTaxRateBands, employmentId, applicationConfig)
 
         implicit val user = request.taiUser
 
@@ -82,7 +82,8 @@ class YourTaxCodeController @Inject()(
         taxCodeRecords       <- taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(nino, year)
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeRecords.map(_.taxCode))
       } yield {
-        val taxCodeViewModel = TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year)
+        val taxCodeViewModel =
+          TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year, applicationConfig)
         implicit val user = request.taiUser
         Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
       }) recover {

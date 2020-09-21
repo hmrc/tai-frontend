@@ -16,28 +16,28 @@
 
 package controllers.income
 
-import javax.inject.Inject
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.Inject
 import play.api.Logger
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.i18n.{I18nSupport, Lang, Messages}
+import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.FeatureTogglesConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse}
+import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
-import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionCYPlus1EmploymentViewModel, DuplicateSubmissionCYPlus1PensionViewModel, DuplicateSubmissionEstimatedPay}
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -47,10 +47,11 @@ class UpdateIncomeNextYearController @Inject()(
   val auditConnector: AuditConnector,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
+  applicationConfig: ApplicationConfig,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with FeatureTogglesConfig with FormValuesConstants {
+    extends TaiBaseController(mcc) with FormValuesConstants with I18nSupport {
 
   def onPageLoad(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -82,7 +83,7 @@ class UpdateIncomeNextYearController @Inject()(
   private def duplicateWarningGet(
     employmentId: Int,
     nino: Nino,
-    resultFunc: (Int, DuplicateSubmissionEstimatedPay) => Result)(implicit hc: HeaderCarrier) =
+    resultFunc: (Int, DuplicateSubmissionEstimatedPay) => Result)(implicit hc: HeaderCarrier, messages: Messages) =
     updateNextYearsIncomeService.getNewAmount(employmentId).flatMap {
       case Right(newAmount) =>
         updateNextYearsIncomeService.get(employmentId, nino) map { model =>
@@ -141,6 +142,7 @@ class UpdateIncomeNextYearController @Inject()(
   def edit(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     preAction {
       implicit val user = request.taiUser
+      implicit val lang: Lang = request.lang
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
@@ -207,7 +209,7 @@ class UpdateIncomeNextYearController @Inject()(
     (authenticate andThen validatePerson).async { implicit request =>
       implicit val user = request.taiUser
 
-      if (cyPlusOneEnabled) {
+      if (applicationConfig.cyPlusOneEnabled) {
         (updateNextYearsIncomeService.submit(employmentId, user.nino) map {
           case TaiSuccessResponse => Redirect(routes.UpdateIncomeNextYearController.success(employmentId))
           case _                  => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
@@ -222,6 +224,7 @@ class UpdateIncomeNextYearController @Inject()(
 
   def update(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
+    implicit val lang: Lang = request.lang
     val nino = user.nino
 
     preAction {
@@ -271,7 +274,7 @@ class UpdateIncomeNextYearController @Inject()(
   }
 
   private def preAction(action: => Future[Result])(implicit request: Request[AnyContent]): Future[Result] =
-    if (cyPlusOneEnabled) {
+    if (applicationConfig.cyPlusOneEnabled) {
       action
     } else {
       Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))

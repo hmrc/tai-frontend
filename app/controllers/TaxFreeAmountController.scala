@@ -19,10 +19,10 @@ package controllers
 import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
@@ -40,10 +40,11 @@ class TaxFreeAmountController @Inject()(
   companyCarService: CompanyCarService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  applicationConfig: ApplicationConfig,
+  mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController {
+    extends TaiBaseController(mcc) {
 
   def taxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
@@ -58,9 +59,11 @@ class TaxFreeAmountController @Inject()(
         case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
           val viewModel = TaxFreeAmountViewModel(
             codingComponents,
-            TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax))
+            TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax),
+            applicationConfig
+          )
           implicit val user = request.taiUser
-          Ok(views.html.taxFreeAmount(viewModel))
+          Ok(views.html.taxFreeAmount(viewModel, applicationConfig))
         case _ => throw new RuntimeException("Failed to fetch total tax details")
       }
     }) recover {

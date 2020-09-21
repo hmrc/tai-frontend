@@ -47,6 +47,10 @@
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
+@appConfig = @{
+    Play.current.injector.instanceOf[ApplicationConfig]
+}
+
 
 @serviceSuffix = @{
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
@@ -104,7 +108,7 @@
     }
 }
 
-@helpForm = @{HelpFormHelper.replaceMessage(partialRetriever)}
+@helpForm = @{HelpFormHelper.replaceMessage(partialRetriever, appConfig)}
 
 
 @googleAnalytics = @{
@@ -114,8 +118,8 @@
     }
 
     Map[String, Any](
-        "trackingId" -> ApplicationConfig.analyticsToken,
-        "cookieDomain" -> ApplicationConfig.analyticsHost,
+        "trackingId" -> appConfig.analyticsToken,
+        "cookieDomain" -> appConfig.analyticsHost,
         "confidenceLevel" -> confidenceLevel,
         "authProvider" -> authProvider
 
@@ -152,7 +156,7 @@
 
 
 @isWelshEnabled = @{
-    FeatureTogglesConfig.welshLanguageEnabled
+    appConfig.welshLanguageEnabled
 }
 
 @isWelshActive = @{
@@ -162,7 +166,7 @@
 @mustacheMap = @{
     Map[String, Any](
         "nuanceWebChat" -> Map(
-        "isWebchatEnabled" -> FeatureTogglesConfig.webChatEnabled,
+        "isWebchatEnabled" -> appConfig.webChatEnabled,
         "nuanceId" -> sessionId),
         "pageTitle" -> s"${title} ${serviceSuffix}",
         "linkElems" -> Map(
@@ -212,16 +216,16 @@
 }
 
 @templateArguments = @{
-    if(!isUserResearchBannerHidden && ApplicationConfig.urBannerEnabled) {
+    if(!isUserResearchBannerHidden && appConfig.urBannerEnabled) {
         mustacheMap ++ Map[String, Any](
             "fullWidthBannerTitle" -> Messages("tai.urbanner.title"),
             "fullWidthBannerText" -> Messages("tai.urbanner.text"),
-            "fullWidthBannerLink" -> ApplicationConfig.urBannerLink,
+            "fullWidthBannerLink" -> appConfig.urBannerLink,
             "fullWidthBannerDismissText" -> Messages("tai.urbanner.reject"),
             "fullWidthBannerGaAction" -> "Help improve the HMRC website"
         )
     } else mustacheMap
 }
 @{
-    templateRenderer.renderDefaultTemplate(ApplicationConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), templateArguments)
+    templateRenderer.renderDefaultTemplate(appConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), templateArguments)
 }

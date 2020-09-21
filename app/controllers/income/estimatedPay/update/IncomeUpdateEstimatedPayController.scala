@@ -23,17 +23,18 @@ import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.{Inject, Named}
 import org.joda.time.LocalDate
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.i18n.Lang
+import play.api.mvc._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.IncomeService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
-import play.api.i18n.MessagesApi
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,14 +42,16 @@ class IncomeUpdateEstimatedPayController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   incomeService: IncomeService,
-  override val messagesApi: MessagesApi,
+  appConfig: ApplicationConfig,
+  mcc: MessagesControllerComponents,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   def estimatedPayLandingPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
+    implicit val lang: Lang = request.lang
 
     journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey) map {
       mandatoryValues =>
@@ -57,7 +60,8 @@ class IncomeUpdateEstimatedPayController @Inject()(
           views.html.incomes.estimatedPayLandingPage(
             incomeName,
             incomeId.toInt,
-            incomeType == TaiConstants.IncomeTypePension
+            incomeType == TaiConstants.IncomeTypePension,
+            appConfig
           ))
     }
   }

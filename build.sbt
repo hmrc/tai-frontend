@@ -11,7 +11,6 @@ val appName = "tai-frontend"
 lazy val appDependencies: Seq[ModuleID] = AppDependencies()
 lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
 lazy val playSettings: Seq[Setting[_]] = Seq(
-//  dependencyOverrides += "uk.gov.hmrc" %% "play-config" % "7.5.0",
   routesImport ++= Seq(
     "uk.gov.hmrc.domain._",
     "_root_.uk.gov.hmrc.tai.binders.TaxYearObjectBinder._",
@@ -68,7 +67,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
-    routesGenerator := StaticRoutesGenerator,
+    routesGenerator := InjectedRoutesGenerator,
     scalafmtOnCompile := true,
     PlayKeys.playDefaultPort := 9230
   )

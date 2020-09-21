@@ -20,7 +20,10 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.{Inject, Named}
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.i18n.Lang
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.{PayslipDeductionsForm, PayslipForm, TaxablePayslipForm}
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -28,9 +31,6 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{GrossPayPeriodTitle, PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
-import play.api.i18n.MessagesApi
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,14 +38,15 @@ import scala.concurrent.{ExecutionContext, Future}
 class IncomeUpdatePayslipAmountController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   def payslipAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
+    implicit val lang: Lang = request.lang
 
     val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
     val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TotalSalaryKey)
@@ -80,6 +81,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
 
   def handlePayslipAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
+    implicit val lang: Lang = request.lang
 
     val result: Future[Future[Result]] = for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)
@@ -116,6 +118,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
 
   def taxablePayslipAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
+    implicit val lang: Lang = request.lang
 
     val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
     val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TaxablePayKey)
@@ -145,6 +148,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
 
   def handleTaxablePayslipAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
+    implicit val lang: Lang = request.lang
 
     (for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)

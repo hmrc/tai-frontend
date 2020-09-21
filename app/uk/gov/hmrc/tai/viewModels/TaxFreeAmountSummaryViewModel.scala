@@ -22,9 +22,7 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxFreeAmountDetails
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
@@ -45,11 +43,12 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
   def apply(
     codingComponents: Seq[CodingComponent],
     taxFreeAmountDetails: TaxFreeAmountDetails,
-    taxFreeAmountTotal: BigDecimal)(implicit messages: Messages): TaxFreeAmountSummaryViewModel = {
+    taxFreeAmountTotal: BigDecimal,
+    applicationConfig: ApplicationConfig)(implicit messages: Messages): TaxFreeAmountSummaryViewModel = {
 
     val personalAllowance = personalAllowanceVM(codingComponents)
-    val additions = additionsVM(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails)
-    val deductions = deductionsVM(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails)
+    val additions = additionsVM(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails, applicationConfig)
+    val deductions = deductionsVM(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails, applicationConfig)
     val total = totalRow(taxFreeAmountTotal)
 
     TaxFreeAmountSummaryViewModel(Seq(personalAllowance, additions, deductions, total))
@@ -80,18 +79,22 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
     )
   }
 
-  private def additionsVM(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails)(
-    implicit messages: Messages) = TaxFreeAmountSummaryCategoryViewModel(
+  private def additionsVM(
+    codingComponents: Seq[CodingComponent],
+    taxFreeAmountDetails: TaxFreeAmountDetails,
+    applicationConfig: ApplicationConfig)(implicit messages: Messages) = TaxFreeAmountSummaryCategoryViewModel(
     Messages("tai.taxFreeAmount.table.columnOneHeader"),
     Messages("tai.taxFreeAmount.table.columnTwoHeader"),
     hideHeaders = true,
     hideCaption = false,
     Messages("tai.taxFreeAmount.table.additions.caption"),
-    additionRows(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails)
+    additionRows(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails, applicationConfig)
   )
 
-  private def additionRows(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails)(
-    implicit messages: Messages): Seq[TaxFreeAmountSummaryRowViewModel] = {
+  private def additionRows(
+    codingComponents: Seq[CodingComponent],
+    taxFreeAmountDetails: TaxFreeAmountDetails,
+    applicationConfig: ApplicationConfig)(implicit messages: Messages): Seq[TaxFreeAmountSummaryRowViewModel] = {
 
     val additionComponents: Seq[CodingComponent] = codingComponents.collect {
       case cc @ CodingComponent(_: AllowanceComponentType, _, _, _, _) if !isPersonalAllowanceComponent(cc) => cc
@@ -112,22 +115,29 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
           totalAmountFormatted,
           ChangeLinkViewModel(false, "", "")
         ))
-      (additionComponents map (TaxFreeAmountSummaryRowViewModel(_, taxFreeAmountDetails: TaxFreeAmountDetails))) ++ totalsRow
+      (additionComponents map (TaxFreeAmountSummaryRowViewModel(
+        _,
+        taxFreeAmountDetails: TaxFreeAmountDetails,
+        applicationConfig))) ++ totalsRow
     }
   }
 
-  private def deductionsVM(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails)(
-    implicit messages: Messages) = TaxFreeAmountSummaryCategoryViewModel(
+  private def deductionsVM(
+    codingComponents: Seq[CodingComponent],
+    taxFreeAmountDetails: TaxFreeAmountDetails,
+    applicationConfig: ApplicationConfig)(implicit messages: Messages) = TaxFreeAmountSummaryCategoryViewModel(
     Messages("tai.taxFreeAmount.table.columnOneHeader"),
     Messages("tai.taxFreeAmount.table.columnTwoHeader"),
     hideHeaders = true,
     hideCaption = false,
     Messages("tai.taxFreeAmount.table.deductions.caption"),
-    deductionRows(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails)
+    deductionRows(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails, applicationConfig)
   )
 
-  private def deductionRows(codingComponents: Seq[CodingComponent], taxFreeAmountDetails: TaxFreeAmountDetails)(
-    implicit messages: Messages): Seq[TaxFreeAmountSummaryRowViewModel] = {
+  private def deductionRows(
+    codingComponents: Seq[CodingComponent],
+    taxFreeAmountDetails: TaxFreeAmountDetails,
+    applicationConfig: ApplicationConfig)(implicit messages: Messages): Seq[TaxFreeAmountSummaryRowViewModel] = {
     val deductionComponents: Seq[CodingComponent] = codingComponents.filter({
       _.componentType match {
         case _: AllowanceComponentType => false
@@ -150,7 +160,7 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
           totalAmountFormatted,
           ChangeLinkViewModel(false, "", "")
         ))
-      (deductionComponents map (TaxFreeAmountSummaryRowViewModel(_, taxFreeAmountDetails))) ++ totalsRow
+      (deductionComponents map (TaxFreeAmountSummaryRowViewModel(_, taxFreeAmountDetails, applicationConfig))) ++ totalsRow
     }
   }
 
@@ -187,20 +197,23 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
   def apply(label: String, value: String, link: ChangeLinkViewModel): TaxFreeAmountSummaryRowViewModel =
     new TaxFreeAmountSummaryRowViewModel(TaxSummaryLabel(label), value, link)
 
-  def apply(codingComponent: CodingComponent, taxFreeAmountDetails: TaxFreeAmountDetails)(
-    implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
+  def apply(
+    codingComponent: CodingComponent,
+    taxFreeAmountDetails: TaxFreeAmountDetails,
+    applicationConfig: ApplicationConfig)(implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
     val label: TaxSummaryLabel = TaxSummaryLabel(
       codingComponent.componentType,
       codingComponent.employmentId,
       taxFreeAmountDetails,
       codingComponent.amount)
     val value = withPoundPrefix(MoneyPounds(codingComponent.amount, 0))
-    val link = createChangeLink(codingComponent)
+    val link = createChangeLink(codingComponent, applicationConfig)
 
     TaxFreeAmountSummaryRowViewModel(label, value, link)
   }
 
-  private def createChangeLink(codingComponent: CodingComponent)(implicit messages: Messages): ChangeLinkViewModel =
+  private def createChangeLink(codingComponent: CodingComponent, applicationConfig: ApplicationConfig)(
+    implicit messages: Messages): ChangeLinkViewModel =
     codingComponent.componentType match {
       case MedicalInsurance =>
         val url = routes.ExternalServiceRedirectController
@@ -227,13 +240,13 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
         ChangeLinkViewModel(
           isDisplayed = true,
           Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"),
-          ApplicationConfig.cocarFrontendUrl
+          applicationConfig.cocarFrontendUrl
         )
       case CarFuelBenefit =>
         ChangeLinkViewModel(
           isDisplayed = true,
           Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"),
-          ApplicationConfig.cocarFrontendUrl
+          applicationConfig.cocarFrontendUrl
         )
       case companyBenefit: BenefitComponentType =>
         val url = controllers.benefits.routes.CompanyBenefitController
@@ -244,7 +257,7 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
           Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"),
           url)
       case allowanceComponentType: AllowanceComponentType =>
-        val url = ApplicationConfig.taxFreeAllowanceLinkUrl
+        val url = applicationConfig.taxFreeAllowanceLinkUrl
         ChangeLinkViewModel(
           isDisplayed = true,
           Messages(s"tai.taxFreeAmount.table.taxComponent.${allowanceComponentType.toString}"),
