@@ -16,22 +16,16 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.urls.Link
+import utils.BaseSpec
 
 import scala.collection.immutable.ListMap
-import scala.concurrent.Future
 
-class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class TaxCodeViewModelSpec extends BaseSpec {
 
   val taxYear = uk.gov.hmrc.tai.model.TaxYear()
   val taxYearSuffix =
@@ -99,7 +93,7 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
           s"tai.taxCode.S",
           Link
             .toExternalPage(
-              url = ApplicationConfig.scottishRateIncomeTaxUrl,
+              url = appConfig.scottishRateIncomeTaxUrl,
               value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
             .toHtml
         ))
@@ -219,7 +213,7 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
             s"tai.taxCode.S",
             Link
               .toExternalPage(
-                url = ApplicationConfig.scottishRateIncomeTaxUrl,
+                url = appConfig.scottishRateIncomeTaxUrl,
                 value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
               .toHtml
           ),
@@ -237,7 +231,7 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
             s"tai.taxCode.S",
             Link
               .toExternalPage(
-                url = ApplicationConfig.scottishRateIncomeTaxUrl,
+                url = appConfig.scottishRateIncomeTaxUrl,
                 value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
               .toHtml
           ),
@@ -254,7 +248,7 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
             s"tai.taxCode.S",
             Link
               .toExternalPage(
-                url = ApplicationConfig.scottishRateIncomeTaxUrl,
+                url = appConfig.scottishRateIncomeTaxUrl,
                 value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
               .toHtml
           ),
@@ -272,7 +266,7 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
             s"tai.taxCode.S",
             Link
               .toExternalPage(
-                url = ApplicationConfig.scottishRateIncomeTaxUrl,
+                url = appConfig.scottishRateIncomeTaxUrl,
                 value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
               .toHtml
           ),
@@ -297,7 +291,7 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
             s"tai.taxCode.S",
             Link
               .toExternalPage(
-                url = ApplicationConfig.scottishRateIncomeTaxUrl,
+                url = appConfig.scottishRateIncomeTaxUrl,
                 value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
               .toHtml
           ),
@@ -332,8 +326,8 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
   private val taxCodeIncomes2 =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "BR", "employer2", Week1Month1BasisOfOperation, Live)
-  private val nino = new Generator().nextNino
   private val scottishTaxRateBands = Map.empty[String, BigDecimal]
 
-  def testViewModel(taxCodeIncomes: Seq[TaxCodeIncome]) = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands, None)
+  def testViewModel(taxCodeIncomes: Seq[TaxCodeIncome]) =
+    TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands, None, appConfig)
 }

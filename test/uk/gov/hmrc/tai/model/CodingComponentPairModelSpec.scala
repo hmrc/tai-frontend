@@ -16,14 +16,11 @@
 
 package uk.gov.hmrc.tai.model
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.GiftAidPayments
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
+import utils.BaseSpec
 
-class CodingComponentPairModelSpec extends PlaySpec with FakeTaiPlayApplication {
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+class CodingComponentPairModelSpec extends BaseSpec {
 
   "CodingComponentPairModel" should {
     "return a tax label summary with the previous and current amounts" in {

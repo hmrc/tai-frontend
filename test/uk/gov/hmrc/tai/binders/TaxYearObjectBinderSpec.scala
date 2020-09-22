@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.tai.binders
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.TaxYear
+import utils.BaseSpec
 
-class TaxYearObjectBinderSpec extends PlaySpec with FakeTaiPlayApplication {
+class TaxYearObjectBinderSpec extends BaseSpec {
 
   "TaxYearObjectBinder - bind" should {
 

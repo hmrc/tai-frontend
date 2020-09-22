@@ -18,21 +18,18 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -40,6 +37,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
+import utils.BaseSpec
 import utils.factories.TaxCodeMismatchFactory
 
 import scala.concurrent.duration._
@@ -47,11 +45,7 @@ import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 import scala.util.Random
 
-class WhatDoYouWantToDoControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JsoupMatchers
-    with BeforeAndAfterEach {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(auditService, employmentService)
@@ -367,14 +361,12 @@ class WhatDoYouWantToDoControllerSpec
   "employments retrieval for CY-1" must {
 
     "supply employment data where data is found" in {
-      implicit val hc = HeaderCarrier()
       val testController = createTestController()
       val employments = Await.result(testController.previousYearEmployments(nino), 5 seconds)
       employments mustBe fakeEmploymentData
     }
 
     "supply an empty list in the event of a downstream failure" in {
-      implicit val hc = HeaderCarrier()
       val testController = createTestController()
       when(employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
         .thenReturn(Future.failed((new NotFoundException("no data found"))))
@@ -412,7 +404,6 @@ class WhatDoYouWantToDoControllerSpec
       false)
   )
 
-  private val nino = new Generator(new Random).nextNino
   private val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
   val taxCodeNotChanged = HasTaxCodeChanged(false, Some(TaxCodeMismatchFactory.matchedTaxCode))
   val taxCodeChanged = HasTaxCodeChanged(true, Some(TaxCodeMismatchFactory.matchedTaxCode))
@@ -421,9 +412,10 @@ class WhatDoYouWantToDoControllerSpec
     new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled)
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val auditService = mock[AuditService]
-  val employmentService = mock[EmploymentService]
-  val taxAccountService = mock[TaxAccountService]
+  val auditService: AuditService = mock[AuditService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
   class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true)
       extends WhatDoYouWantToDoController(
@@ -434,11 +426,13 @@ class WhatDoYouWantToDoControllerSpec
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
+        mockAppConfig,
+        mcc,
+        partialRetriever,
+        templateRenderer
       ) {
-    override val cyPlusOneEnabled: Boolean = isCyPlusOneEnabled
+
+    when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any()))

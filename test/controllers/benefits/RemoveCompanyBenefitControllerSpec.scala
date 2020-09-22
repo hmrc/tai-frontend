@@ -18,7 +18,7 @@ package controllers.benefits
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
+import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -26,14 +26,11 @@ import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -45,21 +42,18 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
+import utils.BaseSpec
 import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYourAnswers}
 
 import scala.concurrent.Future
 import scala.util.Random
 
 class RemoveCompanyBenefitControllerSpec
-    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with FormValuesConstants
-    with JourneyCacheConstants with RemoveCompanyBenefitStopDateConstants with JsoupMatchers with BeforeAndAfterEach
-    with ControllerViewTestHelper {
+    extends BaseSpec with FormValuesConstants with JourneyCacheConstants with RemoveCompanyBenefitStopDateConstants
+    with JsoupMatchers with BeforeAndAfterEach with ControllerViewTestHelper {
 
   override def beforeEach: Unit =
     Mockito.reset(removeCompanyBenefitJourneyCacheService)
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit val request = fakeRequest
 
   "stopDate" must {
     "show 'When did you stop getting benefits from company?' page" in {
@@ -692,11 +686,7 @@ class RemoveCompanyBenefitControllerSpec
     false,
     false)
 
-  def generateNino: Nino = new Generator(new Random).nextNino
-
   val startOfTaxYear = Dates.formatDate(TaxYear().start)
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   def createSUT = new SUT
 
@@ -711,7 +701,7 @@ class RemoveCompanyBenefitControllerSpec
         benefitsService,
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
+        mcc,
         MockTemplateRenderer,
         MockPartialRetriever
       )

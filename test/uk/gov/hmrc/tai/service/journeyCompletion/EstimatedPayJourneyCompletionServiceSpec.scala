@@ -16,26 +16,23 @@
 
 package uk.gov.hmrc.tai.service.journeyCompletion
 
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => meq}
+import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import utils.BaseSpec
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
-class EstimatedPayJourneyCompletionServiceSpec
-    extends PlaySpec with MockitoSugar with JourneyCacheConstants with BeforeAndAfterEach {
+class EstimatedPayJourneyCompletionServiceSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
 
   private def createTestService = new EstimatedPayJourneyCompletionServiceTest
 
   val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val incomeId = "1"
   val trueValue = "true"

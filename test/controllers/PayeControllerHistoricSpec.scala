@@ -39,20 +39,17 @@ import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, Tempo
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
+import utils.BaseSpec
 import views.html.paye.historicPayAsYouEarn
 
 import scala.concurrent.Future
 import scala.util.Random
 
 class PayeControllerHistoricSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JsoupMatchers
-    with ControllerViewTestHelper with BeforeAndAfterEach {
+    extends BaseSpec with JsoupMatchers with ControllerViewTestHelper with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(employmentService)
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   private val currentYear: Int = TaxYear().year
   private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
@@ -221,8 +218,8 @@ class PayeControllerHistoricSpec
     new PayeControllerHistoricTest(employments, previousYears, showTaxCodeDescriptionLink)
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val employmentService = mock[EmploymentService]
-  val mockAppConfig = mock[ApplicationConfig]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
   class PayeControllerHistoricTest(
     employments: Seq[Employment],
@@ -234,9 +231,9 @@ class PayeControllerHistoricSpec
         employmentService,
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
+        mcc,
+        partialRetriever,
+        templateRenderer
       ) {
 
     when(mockAppConfig.numberOfPreviousYearsToShow) thenReturn 5

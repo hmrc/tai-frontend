@@ -17,22 +17,18 @@
 package controllers.i18n
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
+import org.mockito.Mockito._
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.tai.config.ApplicationConfig
+import utils.BaseSpec
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.Random
 
-class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class TaiLanguageControllerSpec extends BaseSpec {
 
   "switchLanguage method" must {
 
@@ -76,22 +72,24 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
         result.header.headers("Set-Cookie") must include("PLAY_LANG=en;")
       }
       "the requested language is supported, but the welsh language feature toggle is not enabled" in {
+        when(mockAppConfig.welshLanguageEnabled) thenReturn false
+
         val result = Await
-          .result(new SUT(false).switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
+          .result(new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
         result.header.headers.isDefinedAt("Set-Cookie") mustBe true
         result.header.headers("Set-Cookie") must include("PLAY_LANG=en;")
       }
     }
   }
 
-  private val nino = new Generator(new Random).nextNino
+  private val mockAppConfig = mock[ApplicationConfig]
 
-  private class SUT(welshEnabled: Boolean = true)
+  when(mockAppConfig.welshLanguageEnabled) thenReturn true
+
+  private class SUT
       extends TaiLanguageController(
+        appConfig,
         MockPartialRetriever,
         MockTemplateRenderer
-      ) {
-    override val isWelshEnabled = welshEnabled
-  }
-
+      )
 }

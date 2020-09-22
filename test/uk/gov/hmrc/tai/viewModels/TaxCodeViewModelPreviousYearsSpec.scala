@@ -16,22 +16,17 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.config.ApplicationConfig
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.urls.Link
+import utils.BaseSpec
 
 import scala.collection.immutable.ListMap
 
-class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
 
   "TaxCodeViewModelPreviousYears apply method" must {
     "be able to form view model object with single TaxCodeIncome" when {
@@ -173,7 +168,7 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
           s"tai.taxCode.prev.S",
           Link
             .toExternalPage(
-              url = ApplicationConfig.scottishRateIncomeTaxUrl,
+              url = appConfig.scottishRateIncomeTaxUrl,
               value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
             .toHtml
         ))
@@ -246,7 +241,7 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
             s"tai.taxCode.prev.S",
             Link
               .toExternalPage(
-                url = ApplicationConfig.scottishRateIncomeTaxUrl,
+                url = appConfig.scottishRateIncomeTaxUrl,
                 value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
               .toHtml
           ),
@@ -260,7 +255,7 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
             s"tai.taxCode.prev.S",
             Link
               .toExternalPage(
-                url = ApplicationConfig.scottishRateIncomeTaxUrl,
+                url = appConfig.scottishRateIncomeTaxUrl,
                 value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
               .toHtml
           ),
@@ -275,7 +270,7 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
             s"tai.taxCode.prev.S",
             Link
               .toExternalPage(
-                url = ApplicationConfig.scottishRateIncomeTaxUrl,
+                url = appConfig.scottishRateIncomeTaxUrl,
                 value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
               .toHtml
           ),
@@ -291,7 +286,7 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
             s"tai.taxCode.prev.S",
             Link
               .toExternalPage(
-                url = ApplicationConfig.scottishRateIncomeTaxUrl,
+                url = appConfig.scottishRateIncomeTaxUrl,
                 value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
               .toHtml
           ),
@@ -332,6 +327,6 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
   private val scottishTaxRateBands = Map.empty[String, BigDecimal]
 
   def previousYearTestViewModel(taxCodeRecords: Seq[TaxCodeRecord]) =
-    TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, TaxYear().prev)
+    TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, TaxYear().prev, appConfig)
 
 }

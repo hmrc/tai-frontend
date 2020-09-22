@@ -17,37 +17,32 @@
 package controllers.income.previousYears
 
 import builders.RequestBuilder
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
+import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito._
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, UpdateHistoricIncomeChoiceConstants}
+import utils.BaseSpec
 
 import scala.concurrent.Future
 import scala.util.Random
 
 class UpdateIncomeDetailsControllerSpec
-    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with FormValuesConstants
-    with UpdateHistoricIncomeChoiceConstants with JourneyCacheConstants with BeforeAndAfterEach {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+    extends BaseSpec with FormValuesConstants with UpdateHistoricIncomeChoiceConstants with JourneyCacheConstants
+    with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(journeyCacheService, trackingjourneyCacheService)
@@ -386,10 +381,6 @@ class UpdateIncomeDetailsControllerSpec
     }
   }
 
-  def generateNino: Nino = new Generator(new Random).nextNino
-
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-
   private val previousTaxYear = TaxYear().prev
 
   private def createSUT = new SUT
@@ -403,7 +394,7 @@ class UpdateIncomeDetailsControllerSpec
         previousYearsIncomeService,
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
+        mcc,
         trackingjourneyCacheService,
         journeyCacheService,
         MockPartialRetriever,

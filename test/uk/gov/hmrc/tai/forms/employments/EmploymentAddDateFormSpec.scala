@@ -17,14 +17,12 @@
 package uk.gov.hmrc.tai.forms.employments
 
 import org.joda.time.LocalDate
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.data.FormError
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
+import utils.BaseSpec
 
-class EmploymentAddDateFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class EmploymentAddDateFormSpec extends BaseSpec {
 
   "EmploymentAddDateForm" must {
     "return no errors with valid data" in {

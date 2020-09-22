@@ -17,11 +17,13 @@
 package controllers.actions
 import controllers.auth.{AuthenticatedRequest, InternalAuthenticatedRequest}
 import play.api.mvc.Result
+import play.api.test.Helpers.stubControllerComponents
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 object FakeValidatePerson extends ValidatePerson {
   override protected def refine[A](
     request: InternalAuthenticatedRequest[A]): Future[Either[Result, AuthenticatedRequest[A]]] =
     Future.successful(Right(AuthenticatedRequest(request, request.taiUser, "Firstname Surname")))
+  override protected def executionContext: ExecutionContext = stubControllerComponents().executionContext
 }

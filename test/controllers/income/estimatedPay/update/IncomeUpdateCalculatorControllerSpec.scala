@@ -18,40 +18,34 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
+import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model._
+import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live}
-import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{EditIncomePayPeriodConstants, _}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import org.mockito.Matchers.{eq => eqTo}
-import play.api.test.FakeRequest
+import utils.BaseSpec
 
 import scala.concurrent.Future
 
 class IncomeUpdateCalculatorControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JsoupMatchers with JourneyCacheConstants
-    with EditIncomeIrregularPayConstants with FormValuesConstants with ControllerViewTestHelper
-    with EditIncomePayPeriodConstants with ScalaFutures {
-
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+    extends BaseSpec with JsoupMatchers with JourneyCacheConstants with EditIncomeIrregularPayConstants
+    with FormValuesConstants with ControllerViewTestHelper with EditIncomePayPeriodConstants with ScalaFutures {
 
   val employer = IncomeSource(id = 1, name = "sample employer")
   val defaultEmployment =
@@ -72,7 +66,7 @@ class IncomeUpdateCalculatorControllerSpec
         estimatedPayJourneyCompletionService,
         FakeAuthAction,
         FakeValidatePerson,
-        app.injector.instanceOf[MessagesApi],
+        mcc,
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer

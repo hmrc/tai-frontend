@@ -16,17 +16,12 @@
 
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.forms.PayslipForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
+import utils.BaseSpec
 
-class PaySlipAmountViewModelSpec
-    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with EditIncomePayPeriodConstants {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class PaySlipAmountViewModelSpec extends BaseSpec with EditIncomePayPeriodConstants {
 
   val form = PayslipForm.createForm("tai.payslip.error.form.totalPay.input.mandatory")
   val employer = IncomeSource(id = 1, name = "employer name")

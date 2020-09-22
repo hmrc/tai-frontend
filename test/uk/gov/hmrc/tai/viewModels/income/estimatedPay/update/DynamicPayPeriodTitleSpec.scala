@@ -16,15 +16,10 @@
 
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
+import utils.BaseSpec
 
-class DynamicPayPeriodTitleSpec
-    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with EditIncomePayPeriodConstants {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class DynamicPayPeriodTitleSpec extends BaseSpec with EditIncomePayPeriodConstants {
 
   "DynamicPayPeriodTitle" must {
 

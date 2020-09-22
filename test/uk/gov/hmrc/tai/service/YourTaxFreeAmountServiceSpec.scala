@@ -17,13 +17,10 @@
 package uk.gov.hmrc.tai.service
 
 import builders.RequestBuilder
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,14 +29,13 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class YourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
-
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+class YourTaxFreeAmountServiceSpec extends BaseSpec {
 
   "taxFreeAmountComparison" must {
     "return a TaxFreeAmountComparison with a previous and current" in {
@@ -84,8 +80,6 @@ class YourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar with FakeT
     }
   }
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-  private val nino: Nino = new Generator(new Random).nextNino
   private def createTestService = new TestService
 
   private val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]

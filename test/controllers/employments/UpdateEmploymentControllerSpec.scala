@@ -17,39 +17,35 @@
 package controllers.employments
 
 import builders.RequestBuilder
+import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.Mockito._
 import org.mockito.{Matchers, Mockito}
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import utils.BaseSpec
 
 import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.util.Random
 
 class UpdateEmploymentControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JourneyCacheConstants
-    with AuditConstants with FormValuesConstants with BeforeAndAfter with BeforeAndAfterEach {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+    extends BaseSpec with JourneyCacheConstants with AuditConstants with FormValuesConstants with BeforeAndAfter
+    with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(journeyCacheService, successfulJourneyCacheService, personService)
@@ -471,10 +467,6 @@ class UpdateEmploymentControllerSpec
     false,
     false)
 
-  def generateNino: Nino = new Generator(new Random).nextNino
-
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-
   private def createSUT = new SUT
 
   val personService: PersonService = mock[PersonService]
@@ -488,11 +480,11 @@ class UpdateEmploymentControllerSpec
         mock[AuditConnector],
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
+        mcc,
         journeyCacheService,
         successfulJourneyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer
-      ) {}
+      )
 
 }

@@ -20,19 +20,15 @@ import org.joda.time.DateTime
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.PreviousYearsIncomeConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Random
 
-class PreviousYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
+class PreviousYearsIncomeServiceSpec extends BaseSpec {
 
   "previous years income" must {
     "return an envelope id" in {
@@ -64,8 +60,6 @@ class PreviousYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
   }
 
   private val year: TaxYear = TaxYear(DateTime.now().getYear)
-  private val nino: Nino = new Generator(new Random).nextNino
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val previousYearsIncomeConnector = mock[PreviousYearsIncomeConnector]
 

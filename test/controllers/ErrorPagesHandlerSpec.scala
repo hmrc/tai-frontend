@@ -16,32 +16,25 @@
 
 package controllers
 
-import controllers.auth.AuthedUser
-import controllers.auth.AuthenticatedRequest
 import builders.UserBuilder
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.AnyContent
 import play.api.mvc.Results.{BadRequest, Redirect}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.tai.connectors.responses.TaiTaxAccountFailureResponse
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
+import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class ErrorPagesHandlerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
-
-  implicit val authedUser: AuthedUser = UserBuilder()
-  implicit val messages: Messages = Messages.Implicits.applicationMessages
+class ErrorPagesHandlerSpec extends BaseSpec {
 
   "ErrorPagesHandler" must {
     "handle an internal server error" in {
@@ -351,17 +344,13 @@ class ErrorPagesHandlerSpec extends PlaySpec with FakeTaiPlayApplication with I1
     }
   }
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit val testTemplateRenderer = MockTemplateRenderer
-  implicit val testPartialRetriever = MockPartialRetriever
-  val nino = new Generator().nextNino
   val ninoValue = nino.value
 
   val createSut = new SUT
 
   class SUT extends ErrorPagesHandler {
-    override implicit def templateRenderer = testTemplateRenderer
-    override implicit def partialRetriever = testPartialRetriever
+    override implicit def templateRenderer = templateRenderer
+    override implicit def partialRetriever = partialRetriever
 
     val recoveryLocation: RecoveryLocation = classOf[SUT]
   }

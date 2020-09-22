@@ -19,17 +19,14 @@ package controllers
 import builders.RequestBuilder
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+import utils.BaseSpec
 
 import scala.language.postfixOps
 
-class DeceasedControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
+class DeceasedControllerSpec extends BaseSpec {
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   "Deceased Controller" must {
     "load the deceased page" when {
       "triggered from any page" which {
@@ -45,14 +42,11 @@ class DeceasedControllerSpec extends PlaySpec with FakeTaiPlayApplication with I
     }
   }
 
-  def createSut = new SUT
-
-  class SUT
-      extends DeceasedController(
-        FakeAuthAction,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
-      )
+  def createSut = new DeceasedController(
+    FakeAuthAction,
+    mcc,
+    MockPartialRetriever,
+    MockTemplateRenderer
+  )
 
 }

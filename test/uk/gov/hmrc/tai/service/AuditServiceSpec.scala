@@ -16,32 +16,31 @@
 
 package uk.gov.hmrc.tai.service
 
-import controllers.FakeTaiPlayApplication
-import org.joda.time.{DateTime, LocalDate}
+import java.time._
+
+import org.joda.time.{LocalDate => JodaLocalDate}
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.logging.{Authorization, ForwardedFor, RequestId, SessionId}
 import uk.gov.hmrc.http.{HeaderCarrier, UserId}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
+class AuditServiceSpec extends BaseSpec {
 
   "AuditService" should {
 
-    lazy val now = DateTime.now()
+    lazy val now = Instant.now()
     lazy val eventId = "event-id"
 
     "create and send an audit event" when {
@@ -143,7 +142,19 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")))
 
         val employment =
-          Employment("The Man Plc", Live, None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false, false)
+          Employment(
+            "The Man Plc",
+            Live,
+            None,
+            new JodaLocalDate("2016-06-09"),
+            None,
+            Nil,
+            "",
+            "",
+            1,
+            None,
+            false,
+            false)
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
         Await.result(sut.sendUserEntryAuditEvent(nino, "NA", List(employment), List(taxCodeIncome)), 5.seconds)
@@ -534,7 +545,7 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
 
         val result = Await.result(sut.sendAuditEventAndGetRedirectUri(nino, MarriageAllowanceService), 5.seconds)
 
-        result mustBe ApplicationConfig.marriageServiceHistoryUrl
+        result mustBe appConfig.marriageServiceHistoryUrl
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
@@ -583,8 +594,6 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
       }
     }
   }
-
-  private val nino = new Generator().nextNino
 
   private val entryAuditDetails = (noOfEmpAndTax: String) =>
     Map(
@@ -655,7 +664,8 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
   class SUT
       extends AuditService(
         mock[AuditConnector],
-        mock[PersonService]
+        mock[PersonService],
+        appConfig
       ) {
 
     override val appName: String = "test"

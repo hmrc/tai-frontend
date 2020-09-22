@@ -16,19 +16,15 @@
 
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.YourTaxFreeAmountComparison
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import utils.BaseSpec
 
-class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with YourTaxFreeAmount {
+class YourTaxFreeAmountSpec extends BaseSpec with YourTaxFreeAmount {
 
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
   val date = new LocalDate(2018, 6, 5)
 
   def createYourTaxFreeAmountComparison(): YourTaxFreeAmountComparison = {

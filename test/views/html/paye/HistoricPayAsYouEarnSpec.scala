@@ -18,15 +18,17 @@ package views.html.paye
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.Mockito._
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 
-class historicPayAsYouEarnSpec extends TaiViewSpec {
+class HistoricPayAsYouEarnSpec extends TaiViewSpec {
 
   private val currentYear: Int = TaxYear().year
   private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
@@ -37,11 +39,22 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
   private val employment: EmploymentViewModel =
     EmploymentViewModel("test employment", 123.32, 1, false, Some("payrollNumber"))
 
-  override def view: Html =
-    views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), 3)
+  def noOfPreviousYears: Int = 1
 
-  private def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html =
-    views.html.paye.historicPayAsYouEarn(vm, noOfPreviousYears)
+  override lazy val app: Application = GuiceApplicationBuilder()
+    .configure(
+      additionalConfiguration ++
+        Map("tai.numberOfPreviousYearsToShow" -> noOfPreviousYears)
+    )
+    .build()
+
+  def view: Html =
+    views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), appConfig)
+
+  def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html = {
+    when(appConfig.numberOfPreviousYearsToShow) thenReturn noOfPreviousYears
+    views.html.paye.historicPayAsYouEarn(vm, appConfig)
+  }
 
   "historicPayAsYouEarn view" should {
 
@@ -55,8 +68,6 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
     "contain correct header" in {
       val taxYear = cyMinusOneTaxYear
       val vm = HistoricPayAsYouEarnViewModel(taxYear, Nil, Nil, false, true)
-      val view: Html =
-        views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), 3)
       val newDoc = doc(view)
 
       newDoc.body.text must include(messages("tai.paye.lastTaxYear.preHeading"))
@@ -69,7 +80,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         val employment: EmploymentViewModel =
           EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
         val view: Html = views.html.paye
-          .historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true), 1)
+          .historicPayAsYouEarn(
+            HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true),
+            appConfig)
 
         doc(view) must haveLinkWithUrlWithClass(
           "taxCodeDescription",
@@ -81,7 +94,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
       val employment: EmploymentViewModel =
         EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
       val view: Html = views.html.paye
-        .historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, false), 1)
+        .historicPayAsYouEarn(
+          HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, false),
+          appConfig)
 
       doc(view).toString mustNot include(messages("tai.taxCode.description.link"))
     }
@@ -100,7 +115,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         val employment: EmploymentViewModel =
           EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
         val view: Html = views.html.paye
-          .historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true), 1)
+          .historicPayAsYouEarn(
+            HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true),
+            appConfig)
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
@@ -108,7 +125,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
       "when you have a pension" in {
         val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true, Some("payrollNumber"))
         val view: Html = views.html.paye
-          .historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true, true), 1)
+          .historicPayAsYouEarn(
+            HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true, true),
+            appConfig)
         doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
@@ -119,7 +138,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true, Some("payrollNumber"))
         val view: Html = views.html.paye.historicPayAsYouEarn(
           HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Seq(employment), true, true),
-          1)
+          appConfig)
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
@@ -158,7 +177,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         )
         doc must haveLinkElement(
           "p800Link",
-          ApplicationConfig.taxYouPaidStatus,
+          appConfig.taxYouPaidStatus,
           messages("tai.paye.lastTaxYear.checkIncomeTax.link")
         )
         doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.incorrectInformation.title"))
@@ -236,7 +255,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         )
         doc must haveLinkElement(
           "p800Link",
-          ApplicationConfig.taxYouPaidStatus,
+          appConfig.taxYouPaidStatus,
           messages("tai.paye.lastTaxYear.checkIncomeTax.link")
         )
         doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.incorrectInformation.title"))
@@ -281,7 +300,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         )
         doc must haveLinkElement(
           "p800Link",
-          ApplicationConfig.taxYouPaidStatus,
+          appConfig.taxYouPaidStatus,
           messages("tai.paye.lastTaxYear.checkIncomeTax.link")
         )
       }
@@ -323,7 +342,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
 
         doc must haveLinkElement(
           "p800Link",
-          ApplicationConfig.taxYouPaidStatus,
+          appConfig.taxYouPaidStatus,
           messages("tai.paye.lastTaxYear.checkIncomeTax.link")
         )
       }
@@ -343,7 +362,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
 
       doc must haveLinkElement(
         "p800Link",
-        ApplicationConfig.taxYouPaidStatus,
+        appConfig.taxYouPaidStatus,
         messages("tai.paye.lastTaxYear.checkIncomeTax.link")
       )
 
@@ -411,7 +430,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
       val sut: Html = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
 
-      doc must haveLinkWithUrlWithID("p800Link", ApplicationConfig.taxYouPaidStatus.toString)
+      doc must haveLinkWithUrlWithID("p800Link", appConfig.taxYouPaidStatus.toString)
       doc.select("#p800Link").size() mustBe 1
     }
   }

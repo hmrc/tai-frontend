@@ -17,44 +17,39 @@
 package controllers.employments
 
 import builders.RequestBuilder
+import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.Mockito._
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
-import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm._
 import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, EmploymentAddDateForm}
 import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 class AddEmploymentControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JourneyCacheConstants
-    with AuditConstants with FormValuesConstants with BeforeAndAfterEach {
+    extends BaseSpec with JourneyCacheConstants with AuditConstants with FormValuesConstants with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(addEmploymentJourneyCacheService)
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "addEmploymentName" must {
     "show the employment name form page" when {
@@ -798,9 +793,6 @@ class AddEmploymentControllerSpec
     }
   }
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-  val nino: String = new Generator().nextNino.nino
-
   private def createSUT = new SUT
 
   val auditService = mock[AuditService]
@@ -817,7 +809,7 @@ class AddEmploymentControllerSpec
         addEmploymentJourneyCacheService,
         trackSuccessJourneyCacheService,
         mock[AuditConnector],
-        messagesApi,
+        mcc,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

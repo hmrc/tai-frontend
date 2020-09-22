@@ -16,12 +16,9 @@
 
 package uk.gov.hmrc.tai.forms
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
+import utils.BaseSpec
 
-class WhatDoYouWantToDoFormSpec extends PlaySpec with FakeTaiPlayApplication {
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+class WhatDoYouWantToDoFormSpec extends BaseSpec {
 
   "calling the WhatDoYouWantToDoForm" should {
     "return the form with errors" when {

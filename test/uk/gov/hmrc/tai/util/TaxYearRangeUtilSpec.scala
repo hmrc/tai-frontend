@@ -16,18 +16,12 @@
 
 package uk.gov.hmrc.tai.util
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-
-import play.api.i18n.Messages.Implicits._
-import play.api.i18n.MessagesApi
 import uk.gov.hmrc.tai.model.TaxYear
+import utils.BaseSpec
 
-class TaxYearRangeUtilSpec extends PlaySpec with FakeTaiPlayApplication {
-
-  implicit val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
+class TaxYearRangeUtilSpec extends BaseSpec {
 
   "Tax year range util " must {
 

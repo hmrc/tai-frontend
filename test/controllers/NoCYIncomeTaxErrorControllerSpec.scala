@@ -23,27 +23,22 @@ import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.{BadRequestException, NotFoundException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, Person}
 import uk.gov.hmrc.tai.service.EmploymentService
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Random
 
-class NoCYIncomeTaxErrorControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with ScalaFutures with I18nSupport with MockitoSugar
-    with BeforeAndAfterEach {
+class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I18nSupport with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(employmentService)
@@ -61,7 +56,7 @@ class NoCYIncomeTaxErrorControllerSpec
     "call employment service to fetch sequence of employments" in {
       val sut = createSUT()
       Await.result(sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-      verify(employmentService, times(1)).employments(any(), any())(any())
+      verify(employmentService).employments(any(), any())(any())
     }
 
     "display the page" when {
@@ -70,7 +65,7 @@ class NoCYIncomeTaxErrorControllerSpec
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)
-        verify(employmentService, times(1)).employments(any(), any())(any())
+        verify(employmentService).employments(any(), any())(any())
         status(result) mustBe OK
       }
 
@@ -79,18 +74,13 @@ class NoCYIncomeTaxErrorControllerSpec
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)
-        verify(employmentService, times(1)).employments(any(), any())(any())
+        verify(employmentService).employments(any(), any())(any())
         status(result) mustBe OK
       }
     }
   }
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit val hc = HeaderCarrier()
-
-  def generateNino: Nino = new Generator(new Random).nextNino
-
-  val defaultPerson = fakePerson(generateNino)
+  val defaultPerson = fakePerson(nino)
 
   def createSUT(person: Person = defaultPerson, employmentDataFailure: Option[Throwable] = None) =
     new SUT(person, employmentDataFailure)
@@ -103,9 +93,9 @@ class NoCYIncomeTaxErrorControllerSpec
         mock[AuditConnector],
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer) {
+        mcc,
+        partialRetriever,
+        templateRenderer) {
 
     val sampleEmployment = Seq(
       Employment(

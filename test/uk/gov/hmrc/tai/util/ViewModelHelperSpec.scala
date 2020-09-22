@@ -16,16 +16,14 @@
 
 package uk.gov.hmrc.tai.util
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
+import utils.BaseSpec
 
-class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlayApplication {
+class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {
 
   "withPoundPrefixAndSign" must {
     "return the string representation of the provided MoneyPounds with a pound symbol prefix" when {

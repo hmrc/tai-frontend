@@ -26,58 +26,48 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
+import utils.BaseSpec
 
-class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
 
   "HistoricIncomeCalculationViewModel" should {
     "have employment name" in {
-      val sut = createSUT()
-      sut.employerName mustBe Some(empName)
+      sut().employerName mustBe Some(empName)
     }
 
     "have employee id" in {
-      val sut = createSUT()
-      sut.employmentId mustBe sampleEmployeeId
+      sut().employmentId mustBe sampleEmployeeId
     }
 
     "have payments details" in {
-      val sut = createSUT()
-      sut.payments mustBe Nil
+      sut().payments mustBe Nil
     }
 
     "have eyu messages" in {
-      val sut = createSUT()
-      sut.endOfTaxYearUpdateMessages mustBe Nil
+      sut().endOfTaxYearUpdateMessages mustBe Nil
     }
 
     "have real time status" in {
-      val sut = createSUT()
-      sut.realTimeStatus mustBe sampleRealTimeStatus
+      sut().realTimeStatus mustBe sampleRealTimeStatus
     }
   }
 
   "Given tax year, employee id and sequence of employments, HistoricIncomeCalculationViewModel" should {
     "be able to create view model" when {
       "sequence of employment is provided" in {
-        val sut = createSUT()
-        sut.employerName mustBe Some(empName)
+        sut().employerName mustBe Some(empName)
       }
 
       "requested employment has no payments data" in {
-        val sut = createSUT()
-        sut.payments mustBe Nil
+        sut().payments mustBe Nil
       }
 
       "requested employment has payments available" in {
-        val sut = createSUT(employmentId = 2)
-        sut.payments mustBe List(samplePayment)
+        sut(employmentId = 2).payments mustBe List(samplePayment)
       }
 
       "requested employment has no end of tax year update messages" in {
-        val sut = createSUT()
-        sut.endOfTaxYearUpdateMessages mustBe Nil
+        sut().endOfTaxYearUpdateMessages mustBe Nil
       }
 
       "requested employment has end of tax year update details" in {
@@ -98,8 +88,7 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
           false,
           false)
 
-        val sut = createSUT(employments = List(sampleEmployment))
-        sut.endOfTaxYearUpdateMessages mustBe Seq(
+        sut(employments = List(sampleEmployment)).endOfTaxYearUpdateMessages mustBe Seq(
           Messages("tai.income.calculation.eyu.single.nationalInsurance", date.toString(EYU_DATE_FORMAT), "10.0 less"))
       }
     }
@@ -108,13 +97,11 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
   "fetchRealTimeStatus" should {
     "return the real time status" when {
       "there is no annual account provided" in {
-        val sut = HistoricIncomeCalculationViewModel.fetchRealTimeStatus(None)
-        sut mustBe TemporarilyUnavailable
+        HistoricIncomeCalculationViewModel.fetchRealTimeStatus(None) mustBe TemporarilyUnavailable
       }
 
       "given an annual account" in {
-        val sut = HistoricIncomeCalculationViewModel.fetchRealTimeStatus(Some(sampleAnnualAccount))
-        sut mustBe Available
+        HistoricIncomeCalculationViewModel.fetchRealTimeStatus(Some(sampleAnnualAccount)) mustBe Available
       }
     }
   }
@@ -327,10 +314,7 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
     false)
   val sampleEmployments = List(sampleEmployment1, sampleEmployment2)
 
-  def createSUT(
-    employments: Seq[Employment] = sampleEmployments,
-    employmentId: Int = 1,
-    taxYear: TaxYear = previousYear) =
+  def sut(employments: Seq[Employment] = sampleEmployments, employmentId: Int = 1, taxYear: TaxYear = previousYear) =
     HistoricIncomeCalculationViewModel(employments, employmentId, taxYear)
 
 }

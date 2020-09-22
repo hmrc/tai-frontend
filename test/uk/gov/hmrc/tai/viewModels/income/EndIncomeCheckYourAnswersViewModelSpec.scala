@@ -16,22 +16,18 @@
 
 package uk.gov.hmrc.tai.viewModels.income
 
-import controllers.FakeTaiPlayApplication
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
-import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
+import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class EndIncomeCheckYourAnswersViewModelSpec
-    extends PlaySpec with JourneyCacheConstants with MockitoSugar with FakeTaiPlayApplication {
+class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec with JourneyCacheConstants {
 
   "journeyConfirmationLines method" must {
     "generate two confirmation lines when telephone contact not approved" in {

@@ -16,17 +16,12 @@
 
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
-import controllers.FakeTaiPlayApplication
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.CodingComponentPair
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
+import utils.BaseSpec
 
-class IabdTaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
-
-  implicit val messagesApi = app.injector.instanceOf[MessagesApi]
+class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
 
   val taxFreeInfo = TaxFreeInfo("12-12-2015", 2000, 1000)
   val jobExpensesIncrease = CodingComponentPair(JobExpenses, Some(2), Some(50), Some(100))

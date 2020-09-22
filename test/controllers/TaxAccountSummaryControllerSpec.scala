@@ -18,17 +18,14 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
 import play.api.test.Helpers.{contentAsString, status, _}
-import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
+import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.IncomesSources
@@ -38,16 +35,12 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
-import utils.TaxAccountSummaryTestData
+import utils.{BaseSpec, TaxAccountSummaryTestData}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class TaxAccountSummaryControllerSpec
-    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with AuditConstants
-    with BeforeAndAfterEach with TaxAccountSummaryTestData {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+    extends BaseSpec with AuditConstants with BeforeAndAfterEach with TaxAccountSummaryTestData {
 
   override def beforeEach: Unit =
     Mockito.reset(auditService)
@@ -55,12 +48,11 @@ class TaxAccountSummaryControllerSpec
   "onPageLoad" must {
 
     "display the income tax summary page" in {
-      val sut = createSUT
       when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
 
-      when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any())).thenReturn(
+      when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
         Future.successful(
           TaxAccountSummaryViewModel(
             taxAccountSummary,
@@ -82,12 +74,11 @@ class TaxAccountSummaryControllerSpec
     }
 
     "raise an audit event" in {
-      val sut = createSUT
       when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
 
-      when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any())).thenReturn(
+      when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
         Future.successful(
           TaxAccountSummaryViewModel(
             taxAccountSummary,
@@ -114,8 +105,7 @@ class TaxAccountSummaryControllerSpec
 
     "display an error page" when {
       "a downstream error has occurred in one of the TaiResponse responding service methods" in {
-        val sut = createSUT
-        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any())).thenReturn(
+        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
           Future.successful(
             TaxAccountSummaryViewModel(
               taxAccountSummary,
@@ -134,7 +124,6 @@ class TaxAccountSummaryControllerSpec
       }
 
       "a downstream unauthenticated error has occurred in one of the TaiResponse responding service methods" in {
-        val sut = createSUT
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future(TaiUnauthorisedResponse("unauthorised")))
 
@@ -144,12 +133,11 @@ class TaxAccountSummaryControllerSpec
       }
 
       "a downstream error has occurred in the tax account service (which does not reply with TaiResponse type)" in {
-        val sut = createSUT
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
-        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any())).thenReturn(
+        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
           Future.failed(new RuntimeException("Failed to fetch income details"))
         )
 
@@ -158,12 +146,11 @@ class TaxAccountSummaryControllerSpec
       }
 
       "a downstream unauthorised exception has occurred in the tax account service" in {
-        val sut = createSUT
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
-        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any())).thenReturn(
+        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
           Future.failed(new UnauthorizedException("unauthorised"))
         )
 
@@ -173,7 +160,6 @@ class TaxAccountSummaryControllerSpec
       }
 
       "a downstream error has occurred in the tax code income service (which does not reply with TaiResponse type)" in {
-        val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
@@ -184,7 +170,7 @@ class TaxAccountSummaryControllerSpec
         )
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
 
-        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any())).thenReturn(
+        when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
           Future.failed(new RuntimeException("Failed to fetch income details"))
         )
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -192,7 +178,6 @@ class TaxAccountSummaryControllerSpec
       }
 
       "a downstream error has occurred in one of the TaiResponse responding service methods due to no found primary employment information" in {
-        val sut = createSUT
 
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg.toLowerCase)))
@@ -204,7 +189,6 @@ class TaxAccountSummaryControllerSpec
       }
 
       "a downstream error has occurred in one of the TaiResponse responding service methods due to no employments recorded for current tax year" in {
-        val sut = createSUT
 
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentForCurrentTaxYear.toLowerCase)))
@@ -215,7 +199,6 @@ class TaxAccountSummaryControllerSpec
       }
 
       "a downstream error has occurred in one of the TaiResponse responding service methods due to not being authorised" in {
-        val sut = createSUT
 
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future(TaiUnauthorisedResponse("unauthorised user")))
@@ -226,7 +209,6 @@ class TaxAccountSummaryControllerSpec
       }
 
       "there is a TaiNotFoundResponse because there is no tax account information found" in {
-        val sut = createSUT
 
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future(TaiNotFoundResponse("No tax account information found")))
@@ -248,26 +230,22 @@ class TaxAccountSummaryControllerSpec
     )
   )
 
-  def createSUT = new SUT()
+  val auditService: AuditService = mock[AuditService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val taxAccountSummaryService: TaxAccountSummaryService = mock[TaxAccountSummaryService]
 
-  val auditService = mock[AuditService]
-  val employmentService = mock[EmploymentService]
-  val taxAccountService = mock[TaxAccountService]
-  val taxAccountSummaryService = mock[TaxAccountSummaryService]
-
-  class SUT()
-      extends TaxAccountSummaryController(
-        employmentService,
-        taxAccountService,
-        taxAccountSummaryService,
-        auditService,
-        FakeAuthAction,
-        FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
-      ) {}
-
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
+  def sut: TaxAccountSummaryController = new TaxAccountSummaryController(
+    employmentService,
+    taxAccountService,
+    taxAccountSummaryService,
+    auditService,
+    FakeAuthAction,
+    FakeValidatePerson,
+    appConfig,
+    mcc,
+    partialRetriever,
+    templateRenderer
+  )
 
 }

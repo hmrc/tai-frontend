@@ -16,25 +16,21 @@
 
 package controllers
 
-import builders.{RequestBuilder, UserBuilder}
+import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.i18n.MessagesApi
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.service.{AuditService, SessionService}
+import utils.BaseSpec
 
 import scala.concurrent.Future
-import scala.util.Random
 
-class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
+class ExternalServiceRedirectControllerSpec extends BaseSpec {
 
   "External Service Redirect controller - auditInvalidateCacheAndRedirectService" must {
     "redirect to external url" when {
@@ -107,7 +103,6 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
   }
 
   private val redirectUri = "redirectUri"
-  private implicit val hc = HeaderCarrier()
 
   def createSut = new SUT
 
@@ -120,8 +115,8 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
-        app.injector.instanceOf[MessagesApi],
-        MockPartialRetriever,
-        MockTemplateRenderer
+        mcc,
+        partialRetriever,
+        templateRenderer
       )
 }

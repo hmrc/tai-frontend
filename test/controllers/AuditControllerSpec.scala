@@ -21,16 +21,13 @@ import controllers.actions.FakeValidatePerson
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.MessagesApi
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.service.AuditService
+import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
+class AuditControllerSpec extends BaseSpec {
 
   "Audit Controller" must {
     "send specific audit event and redirect" when {
@@ -47,7 +44,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
           status(result) mustBe SEE_OTHER
           verify(auditService, times(1))
             .sendAuditEventAndGetRedirectUri(any(), any())(any(), any())
-          redirectLocation(result) mustEqual Some(redirectUri)
+          redirectLocation(result) mustBe Some(redirectUri)
         }
       }
     }
@@ -62,7 +59,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
-        app.injector.instanceOf[MessagesApi],
+        mcc,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

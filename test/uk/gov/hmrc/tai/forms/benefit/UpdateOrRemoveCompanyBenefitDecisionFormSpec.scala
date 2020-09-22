@@ -16,17 +16,15 @@
 
 package uk.gov.hmrc.tai.forms.benefit
 
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
+import utils.BaseSpec
 
 class UpdateOrRemoveCompanyBenefitDecisionFormSpec
-    extends PlaySpec with OneAppPerSuite with I18nSupport with FormValuesConstants
-    with UpdateOrRemoveCompanyBenefitDecisionConstants {
+    extends BaseSpec with FormValuesConstants with UpdateOrRemoveCompanyBenefitDecisionConstants {
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val choice = UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice
   private val form = UpdateOrRemoveCompanyBenefitDecisionForm.form
 

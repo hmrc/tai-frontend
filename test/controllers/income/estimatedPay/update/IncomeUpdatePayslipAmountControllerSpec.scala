@@ -18,34 +18,28 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
+import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
+import utils.BaseSpec
 import views.html.incomes.{payslipAmount, taxablePayslipAmount}
 
 import scala.concurrent.Future
 
 class IncomeUpdatePayslipAmountControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with EditIncomePayPeriodConstants
-    with ControllerViewTestHelper with JourneyCacheConstants {
-
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+    extends BaseSpec with EditIncomePayPeriodConstants with ControllerViewTestHelper with JourneyCacheConstants {
 
   val employer = IncomeSource(id = 1, name = "sample employer")
 
@@ -55,7 +49,7 @@ class IncomeUpdatePayslipAmountControllerSpec
       extends IncomeUpdatePayslipAmountController(
         FakeAuthAction,
         FakeValidatePerson,
-        app.injector.instanceOf[MessagesApi],
+        mcc,
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer) {

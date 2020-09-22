@@ -16,28 +16,25 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.http.Status._
 import play.api.libs.json._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.{HttpResponse, InternalServerException, NotFoundException}
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class JourneyCacheConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
+class JourneyCacheConnectorSpec extends BaseSpec {
 
   "currentCache" must {
 
     "return the map of current cached values [String, String], as returned from the api call" in {
-      val sut = createSUT()
       val cacheString = """{"key1":"value1","key2":"value2"}"""
       when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(cacheString)))
 
@@ -46,14 +43,12 @@ class JourneyCacheConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiP
       result mustBe expectedResult
     }
     "trap a NOT FOUND exception (a valid business scenario), and return an empty map in its place" in {
-      val sut = createSUT()
       when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new NotFoundException("no cache was found")))
 
       val result = Await.result(sut.currentCache(journeyName), 5 seconds)
       result mustBe Map.empty[String, String]
     }
     "expose any exception that is not a NOT FOUND type" in {
-      val sut = createSUT()
       when(httpHandler.getFromApi(any())(any()))
         .thenReturn(Future.failed(new InternalServerException("something terminal")))
 
@@ -65,7 +60,6 @@ class JourneyCacheConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiP
   "currentValueAs" must {
 
     "return the cached value transformed by the supplied function" in {
-      val sut = createSUT()
       when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(JsString("1")))
 
       when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(JsString("2017-03-04")))
@@ -75,7 +69,6 @@ class JourneyCacheConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiP
     }
 
     "trap a NOT FOUND exception (a valid business scenario), and return None in its place" in {
-      val sut = createSUT()
       when(httpHandler.getFromApi(any())(any()))
         .thenReturn(Future.failed(new NotFoundException("key wasn't found in cache")))
 
@@ -84,7 +77,6 @@ class JourneyCacheConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiP
     }
 
     "expose an exception that is not a NOT FOUND type" in {
-      val sut = createSUT()
       when(httpHandler.getFromApi(any())(any()))
         .thenReturn(Future.failed(new InternalServerException("something terminal")))
 
@@ -97,14 +89,12 @@ class JourneyCacheConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiP
   "mandatoryValueAs" must {
 
     "return the requested values where present" in {
-      val sut = createSUT()
       when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(JsString("true")))
       Await
         .result(sut.mandatoryValueAs[Boolean](journeyName, "booleanValKey", string => string.toBoolean), 5 seconds) mustBe true
     }
 
     "throw a runtime exception when the requested value is not found" in {
-      val sut = createSUT()
       when(httpHandler.getFromApi(any())(any()))
         .thenReturn(Future.failed(new NotFoundException("key wasn't found in cache")))
 
@@ -118,7 +108,6 @@ class JourneyCacheConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiP
   "mandatoryJourneyValueAs" must {
 
     "return the requested values where present" in {
-      val sut = createSUT()
       when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(JsString("true")))
       Await.result(
         sut.mandatoryJourneyValueAs[Boolean](journeyName, "booleanValKey", string => string.toBoolean),
@@ -126,7 +115,6 @@ class JourneyCacheConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiP
     }
 
     "return an error message when the requested value is not found" in {
-      val sut = createSUT()
       when(httpHandler.getFromApi(any())(any()))
         .thenReturn(Future.failed(new NotFoundException("key wasn't found in cache")))
 
@@ -140,7 +128,6 @@ class JourneyCacheConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiP
   "cache" must {
 
     "return the updated journey cache in full" in {
-      val sut = createSUT()
       val newValuesToCache = Map("key1" -> "value1", "key2" -> "value2")
       val updatedCacheJson = """{"key1":"value1","key2":"value2","key7":"value7"}"""
       val updatedCacheMap = Map("key1" -> "value1", "key2" -> "value2", "key7" -> "value7")
@@ -154,7 +141,6 @@ class JourneyCacheConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiP
 
   "flush" must {
     "remove journey cache data for company car journey" in {
-      val sut = createSUT()
       val url = s"${sut.cacheUrl(journeyName)}"
       when(httpHandler.deleteFromApi(Matchers.eq(url))(any(), any()))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
@@ -166,12 +152,9 @@ class JourneyCacheConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiP
 
   private val journeyName = "journey1"
 
-  private def createSUT() = new SUT
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  private class SUT extends JourneyCacheConnector(httpHandler) {
+  def sut: JourneyCacheConnector = new JourneyCacheConnector(httpHandler) {
     override val serviceUrl: String = "mockUrl"
   }
 

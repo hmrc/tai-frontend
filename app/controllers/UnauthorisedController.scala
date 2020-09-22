@@ -22,7 +22,7 @@ import play.api.mvc._
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.{ApplicationConfig, AuthConfigProperties}
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
@@ -31,7 +31,6 @@ import scala.concurrent.Future
 class UnauthorisedController @Inject()(
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
-  authConfigProperties: AuthConfigProperties,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
@@ -70,14 +69,14 @@ class UnauthorisedController @Inject()(
     Future.successful(
       Redirect(idaSignIn).withSession(
         SessionKeys.loginOrigin -> "TAI",
-        SessionKeys.redirect -> authConfigProperties.postSignInRedirectUrl.getOrElse(
+        SessionKeys.redirect -> applicationConfig.postSignInRedirectUrl.getOrElse(
           controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
       ))
   }
 
   private def ggRedirect(implicit request: Request[_]): Future[Result] = {
     val postSignInUpliftUrl =
-      s"${ViewModelHelper.urlEncode(applicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${ViewModelHelper.urlEncode(authConfigProperties.postSignInRedirectUrl
+      s"${ViewModelHelper.urlEncode(applicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${ViewModelHelper.urlEncode(applicationConfig.postSignInRedirectUrl
         .getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url))}"
 
     lazy val ggSignIn =

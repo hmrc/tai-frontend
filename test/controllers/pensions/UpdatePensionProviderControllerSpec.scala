@@ -17,42 +17,35 @@
 package controllers.pensions
 
 import builders.RequestBuilder
+import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, IncorrectPensionDecisionConstants, JourneyCacheConstants}
+import utils.BaseSpec
 
 import scala.concurrent.Future
 
 class UpdatePensionProviderControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JourneyCacheConstants
-    with FormValuesConstants with IncorrectPensionDecisionConstants with BeforeAndAfterEach {
+    extends BaseSpec with JourneyCacheConstants with FormValuesConstants with IncorrectPensionDecisionConstants
+    with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(journeyCacheService)
 
   val pensionName = "Pension 1"
   val pensionId = "1"
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "doYouGetThisPension" must {
     "show the doYouGetThisPension view" in {
@@ -113,7 +106,7 @@ class UpdatePensionProviderControllerSpec
           fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecision -> NoValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe ApplicationConfig.incomeFromEmploymentPensionLinkUrl
+        redirectLocation(result).get mustBe appConfig.incomeFromEmploymentPensionLinkUrl
       }
     }
 
@@ -587,14 +580,11 @@ class UpdatePensionProviderControllerSpec
     }
   }
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-
   private def createController = new UpdatePensionProviderTestController
 
   private def fakeGetRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
   private def fakePostRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
 
-  val generateNino: Nino = new Generator().nextNino
   val pensionTaxCodeIncome =
     TaxCodeIncome(PensionIncome, Some(pensionId.toInt), 100, "", "", pensionName, Week1Month1BasisOfOperation, Live)
   val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "", "", Week1Month1BasisOfOperation, Live)
@@ -611,7 +601,8 @@ class UpdatePensionProviderControllerSpec
         mock[AuditService],
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
+        mcc,
+        appConfig,
         journeyCacheService,
         successfulJourneyCacheService,
         MockPartialRetriever,

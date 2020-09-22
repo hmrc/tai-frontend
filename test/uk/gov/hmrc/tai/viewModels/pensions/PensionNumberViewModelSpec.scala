@@ -16,13 +16,10 @@
 
 package uk.gov.hmrc.tai.viewModels.pensions
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
+import utils.BaseSpec
 
-class PensionNumberViewModelSpec
-    extends PlaySpec with JourneyCacheConstants with FormValuesConstants with FakeTaiPlayApplication {
+class PensionNumberViewModelSpec extends BaseSpec with JourneyCacheConstants with FormValuesConstants {
 
   "Pension number view model" must {
     "create an instance of view model" when {

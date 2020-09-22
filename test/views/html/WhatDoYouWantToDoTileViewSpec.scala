@@ -19,15 +19,12 @@ package views.html
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
 import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
-import uk.gov.hmrc.tai.service.{NoTimeToProcess, SevenDays, ThreeWeeks, TimeToProcess}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import utils.factories.TaxCodeMismatchFactory
-import play.api.mvc.Cookie
 
 class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
@@ -105,7 +102,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       urBanner.text() startsWith Messages("tai.urbanner.title")
       urDismissedText.text() must include(Messages("tai.urbanner.reject"))
       urBanner.text() must include(Messages("tai.urbanner.text"))
-      urBannerHref.text() must include(ApplicationConfig.urBannerLink)
+      urBannerHref.text() must include(appConfig.urBannerLink)
     }
 
   }

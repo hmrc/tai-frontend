@@ -16,14 +16,12 @@
 
 package uk.gov.hmrc.tai.viewModels.pensions
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
+import utils.BaseSpec
 
-class CheckYourAnswersViewModelSpec extends PlaySpec with JourneyCacheConstants with FakeTaiPlayApplication {
+class CheckYourAnswersViewModelSpec extends BaseSpec with JourneyCacheConstants {
 
   "companion apply method" must {
     "generate four confirmation lines when telephone contact not approved" in {

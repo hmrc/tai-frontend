@@ -16,66 +16,57 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.libs.json._
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, UnauthorizedException}
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
+import uk.gov.hmrc.http.{HttpResponse, NotFoundException, UnauthorizedException}
+import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax._
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
-import scala.util.Random
 
-class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
+class TaxAccountConnectorSpec extends BaseSpec {
 
   "tax account url" must {
     "fetch the url to connect to TAI to retrieve tax codes" in {
-      val sut = createSUT
-      val nino = generateNino.nino
-
-      sut.taxAccountUrl(nino, currentTaxYear) mustBe s"${sut.serviceUrl}/tai/$nino/tax-account/${currentTaxYear.year}/income/tax-code-incomes"
+      sut
+        .taxAccountUrl(nino.nino, currentTaxYear) mustBe s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/${currentTaxYear.year}/income/tax-code-incomes"
     }
   }
 
   "taxCode" should {
     "fetch the tax codes" when {
       "provided with valid nino" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(taxCodeIncomeJson))
-        val result = sut.taxCodeIncomes(generateNino, currentTaxYear)
+        val result = sut.taxCodeIncomes(nino, currentTaxYear)
         Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(Seq(taxCodeIncome))
       }
     }
 
     "thrown exception" when {
       "tai sends an invalid json" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(corruptJsonResponse))
 
-        val ex = Await.result(sut.taxCodeIncomes(generateNino, currentTaxYear), 5 seconds)
+        val ex = Await.result(sut.taxCodeIncomes(nino, currentTaxYear), 5 seconds)
         ex mustBe a[TaiTaxAccountFailureResponse]
       }
     }
 
     "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any()))
           .thenReturn(Future.failed(new UnauthorizedException("unauthorised")))
 
-        val ex = Await.result(sut.taxCodeIncomes(generateNino, currentTaxYear), 5 seconds)
+        val ex = Await.result(sut.taxCodeIncomes(nino, currentTaxYear), 5 seconds)
         ex mustBe a[TaiUnauthorisedResponse]
       }
     }
@@ -84,41 +75,37 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
   "incomeSources" should {
     "fetch the tax codes" when {
       "provided with valid nino" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(incomeSourceJson))
 
-        val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, EmploymentIncome, Live), 5 seconds)
+        val result = Await.result(sut.incomeSources(nino, currentTaxYear, EmploymentIncome, Live), 5 seconds)
         result mustBe TaiSuccessResponseWithPayload(Seq(incomeSource))
       }
     }
 
     "fetch empty seq" when {
       "provided with nino that is not found" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(incomeSourceEmpty))
 
-        val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, EmploymentIncome, Live), 5 seconds)
+        val result = Await.result(sut.incomeSources(nino, currentTaxYear, EmploymentIncome, Live), 5 seconds)
         result mustBe TaiSuccessResponseWithPayload(Seq.empty[TaxedIncome])
       }
     }
 
     "thrown exception" when {
       "tai sends an invalid json" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(corruptJsonResponse))
 
-        val ex = Await.result(sut.incomeSources(generateNino, currentTaxYear, EmploymentIncome, Live), 5 seconds)
+        val ex = Await.result(sut.incomeSources(nino, currentTaxYear, EmploymentIncome, Live), 5 seconds)
         ex mustBe a[TaiTaxAccountFailureResponse]
       }
     }
 
     "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any()))
           .thenReturn(Future.failed(new UnauthorizedException("unauthorised")))
 
-        val ex = Await.result(sut.incomeSources(generateNino, currentTaxYear, EmploymentIncome, Live), 5 seconds)
+        val ex = Await.result(sut.incomeSources(nino, currentTaxYear, EmploymentIncome, Live), 5 seconds)
         ex mustBe a[TaiUnauthorisedResponse]
       }
     }
@@ -127,9 +114,8 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
   "codingComponents" should {
     "fetch the coding components" when {
       "provided with valid nino" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(codingComponentSampleJson))
-        val result = sut.codingComponents(generateNino, currentTaxYear)
+        val result = sut.codingComponents(nino, currentTaxYear)
 
         Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(codingComponentSeq)
       }
@@ -137,9 +123,8 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
     "thrown exception" when {
       "tai sends an invalid json" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(corruptJsonResponse))
-        val result = sut.codingComponents(generateNino, currentTaxYear)
+        val result = sut.codingComponents(nino, currentTaxYear)
 
         val ex = Await.result(result, 5 seconds)
         ex mustBe a[TaiTaxAccountFailureResponse]
@@ -148,10 +133,9 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
     "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any()))
           .thenReturn(Future.failed(new UnauthorizedException("unauthorised")))
-        val result = sut.codingComponents(generateNino, currentTaxYear)
+        val result = sut.codingComponents(nino, currentTaxYear)
 
         val ex = Await.result(result, 5 seconds)
         ex mustBe a[TaiUnauthorisedResponse]
@@ -162,7 +146,6 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
   "taxAccountSummary" should {
     "fetch the tax account summary" when {
       "provided with valid nino" in {
-        val sut = createSUT
         val taxAccountSummaryJson = Json.obj(
           "data" -> Json.obj(
             "totalEstimatedTax"                  -> 111,
@@ -177,7 +160,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         )
 
         when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(taxAccountSummaryJson))
-        val result = sut.taxAccountSummary(generateNino, currentTaxYear)
+        val result = sut.taxAccountSummary(nino, currentTaxYear)
         Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(
           TaxAccountSummary(111, 222, 1111.11, 2222.23, 1111.12, 100, 200))
       }
@@ -185,7 +168,6 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
     "thrown exception" when {
       "tai sends an invalid json" in {
-        val sut = createSUT
         val corruptTaxAccountSummaryJson = Json.obj(
           "data" -> Json.obj(
             "totalEstimatedTax222" -> 111,
@@ -194,29 +176,27 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
           "links" -> Json.arr())
         when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(corruptTaxAccountSummaryJson))
 
-        val ex = Await.result(sut.taxAccountSummary(generateNino, currentTaxYear), 5 seconds)
+        val ex = Await.result(sut.taxAccountSummary(nino, currentTaxYear), 5 seconds)
         ex mustBe a[TaiTaxAccountFailureResponse]
       }
     }
 
     "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any()))
           .thenReturn(Future.failed(new UnauthorizedException("unauthorised")))
 
-        val ex = Await.result(sut.taxAccountSummary(generateNino, currentTaxYear), 5 seconds)
+        val ex = Await.result(sut.taxAccountSummary(nino, currentTaxYear), 5 seconds)
         ex mustBe a[TaiUnauthorisedResponse]
       }
     }
 
     "return a TaiNotFoundResponse" when {
       "the http response is NotFound" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any()))
           .thenReturn(Future.failed(new NotFoundException("no tax account info found")))
 
-        val ex = Await.result(sut.taxAccountSummary(generateNino, currentTaxYear), 5 seconds)
+        val ex = Await.result(sut.taxAccountSummary(nino, currentTaxYear), 5 seconds)
         ex mustBe a[TaiNotFoundResponse]
       }
     }
@@ -225,8 +205,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
   "nonTaxCodeComponents" should {
     "fetch the non tax code incomes" when {
       "provided with valid nino" in {
-        val sut = createSUT
-        val nino = generateNino
+
         when(
           httpHandler.getFromApiV2(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/income"))(any()))
           .thenReturn(Future.successful(incomeJson))
@@ -238,8 +217,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
     "thrown exception" when {
       "tai sends an invalid json" in {
-        val sut = createSUT
-        val nino = generateNino
+
         when(
           httpHandler.getFromApiV2(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/income"))(any()))
           .thenReturn(Future.successful(corruptJsonResponse))
@@ -251,11 +229,10 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
     "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
-        val sut = createSUT
         when(httpHandler.getFromApiV2(any())(any()))
           .thenReturn(Future.failed(new UnauthorizedException("unauthorised")))
 
-        val ex = Await.result(sut.nonTaxCodeIncomes(generateNino, currentTaxYear), 5 seconds)
+        val ex = Await.result(sut.nonTaxCodeIncomes(nino, currentTaxYear), 5 seconds)
         ex mustBe a[TaiUnauthorisedResponse]
       }
     }
@@ -264,8 +241,6 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
   "updateEstimatedIncome" must {
     "return Success" when {
       "update tax code income returns 200" in {
-        val sut = createSUT
-        val nino = generateNino
         when(
           httpHandler.putToApi(
             Matchers.eq(sut.updateTaxCodeIncome(nino.nino, TaxYear(), 1)),
@@ -282,8 +257,6 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
   "total tax" must {
     "return the total tax details for the given year" when {
       "provided with nino" in {
-        val sut = createSUT
-        val nino = generateNino
 
         val expectedTotalTax = TotalTax(
           1000,
@@ -311,8 +284,6 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
     "return failure" when {
       "update tax code income returns 500" in {
-        val sut = createSUT
-        val nino = generateNino
 
         when(
           httpHandler.getFromApiV2(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/total-tax"))(
@@ -326,8 +297,6 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
     "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
-        val sut = createSUT
-        val nino = generateNino
 
         when(
           httpHandler.getFromApiV2(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/total-tax"))(
@@ -341,10 +310,6 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
   }
 
   private val currentTaxYear = TaxYear()
-
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-
-  def generateNino: Nino = new Generator(new Random).nextNino
 
   val taxCodeIncomeJson: JsValue = Json.obj(
     "data" -> JsArray(
@@ -537,11 +502,9 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
   )
   val incomeSource = TaxedIncome(taxCodeIncome, employment)
 
-  private def createSUT = new SUT
-
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  private class SUT extends TaxAccountConnector(httpHandler) {
+  def sut: TaxAccountConnector = new TaxAccountConnector(httpHandler) {
     override val serviceUrl: String = "mockUrl"
   }
 

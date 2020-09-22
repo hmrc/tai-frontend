@@ -18,32 +18,29 @@ package controllers.benefits
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
+import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers.{any, eq => mockEq}
+import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
-import org.mockito.Matchers.{eq => eqTo}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment, TaxComponentType, Telephone}
+import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment, Telephone}
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
+import utils.BaseSpec
 import views.html.benefits.updateOrRemoveCompanyBenefitDecision
 
 import scala.concurrent.duration._
@@ -51,14 +48,11 @@ import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 class CompanyBenefitControllerSpec
-    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with FormValuesConstants
-    with UpdateOrRemoveCompanyBenefitDecisionConstants with JourneyCacheConstants with JsoupMatchers
-    with BeforeAndAfterEach with ControllerViewTestHelper {
+    extends BaseSpec with FormValuesConstants with UpdateOrRemoveCompanyBenefitDecisionConstants
+    with JourneyCacheConstants with JsoupMatchers with BeforeAndAfterEach with ControllerViewTestHelper {
 
   override def beforeEach: Unit =
     Mockito.reset(journeyCacheService)
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "redirectCompanyBenefitSelection" must {
     "redirect to decision page" in {
@@ -105,7 +99,7 @@ class CompanyBenefitControllerSpec
         verify(employmentService, times(1)).employment(any(), any())(any())
         verify(journeyCacheService, times(1)).currentCache(any())
         verify(journeyCacheService, times(1)).cache(
-          mockEq(
+          eqTo(
             Map(
               EndCompanyBenefit_EmploymentNameKey -> empName,
               EndCompanyBenefit_BenefitNameKey    -> benefitType,
@@ -313,10 +307,6 @@ class CompanyBenefitControllerSpec
     }
   }
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-
-  def generateNino: Nino = new Generator(new Random).nextNino
-
   def createSUT = new SUT
 
   val employment = Employment(
@@ -344,7 +334,7 @@ class CompanyBenefitControllerSpec
         journeyCacheService,
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
+        mcc,
         MockTemplateRenderer,
         MockPartialRetriever
       ) {

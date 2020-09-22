@@ -21,16 +21,15 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class JourneyCacheServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
+class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(journeyCacheConnector)
@@ -329,8 +328,6 @@ class JourneyCacheServiceSpec extends PlaySpec with MockitoSugar with BeforeAndA
       Await.result(sut.flush(), 5 seconds) mustBe TaiSuccessResponse
     }
   }
-
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val testCache = Map(
     "key1" -> "val1",

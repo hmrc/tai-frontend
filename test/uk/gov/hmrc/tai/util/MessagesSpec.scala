@@ -18,14 +18,14 @@ package uk.gov.hmrc.tai.util
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import play.api.{Application, Environment}
-import play.api.i18n.{DefaultLangs, DefaultMessagesApi, Lang}
+import play.api.Application
+import play.api.i18n.{Lang, Messages}
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import utils.BaseSpec
 
 import scala.util.matching.Regex
 @RunWith(classOf[JUnitRunner])
-class MessagesSpec extends UnitSpec with WithFakeApplication {
+class MessagesSpec extends BaseSpec {
 
   override lazy val fakeApplication: Application = new GuiceApplicationBuilder()
     .configure(
@@ -33,27 +33,23 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
     )
     .build()
 
-  val messagesAPI = new DefaultMessagesApi(
-    Environment.simple(),
-    fakeApplication.configuration,
-    new DefaultLangs(fakeApplication.configuration))
-  val languageEnglish: Lang = Lang.get("en").getOrElse(throw new Exception())
-  val languageWelsh: Lang = Lang.get("cy").getOrElse(throw new Exception())
+  override implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang, Lang("cy")))
+
   val MatchSingleQuoteOnly: Regex = """\w+'{1}\w+""".r
   val MatchBacktickQuoteOnly: Regex = """`+""".r
 
   "Application" should {
     "have the correct message configs" in {
-      messagesAPI.messages.size shouldBe 4
-      messagesAPI.messages.keys should contain theSameElementsAs Vector("en", "cy", "default", "default.play")
+      messagesApi.messages.size mustBe 4
+      messagesApi.messages.keys must contain theSameElementsAs Vector("en", "cy", "default", "default.play")
     }
 
     "have messages for default and cy only" in {
-      messagesAPI.messages("en").size shouldBe 0
-      val englishMessageCount = messagesAPI.messages("default").size - frameworkProvidedKeys.size
+      messagesApi.messages("en").size mustBe 0
+      val englishMessageCount = messagesApi.messages("default").size - frameworkProvidedKeys.size
 
-      messagesAPI.messages("cy").size shouldBe englishMessageCount
-      messagesAPI.messages("default.play").size shouldBe 46
+      messagesApi.messages("cy").size mustBe englishMessageCount
+      messagesApi.messages("default.play").size mustBe 46
     }
   }
 
@@ -73,7 +69,7 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
       //   - Messages which just can't be different from English
       //     E.g. addresses, acronyms, numbers, etc.
       //   - Content which is pending translation to Welsh
-      same.size.toDouble / defaultMessages.size.toDouble < 0.06 shouldBe true
+      same.size.toDouble / defaultMessages.size.toDouble < 0.06 mustBe true
     }
     "have a non-empty message for each key" in {
       assertNonEmptyValuesForDefaultMessages()
@@ -94,7 +90,7 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
       missingFromWelsh foreach { key =>
         println(s"Key which has arguments in Welsh but not in English: $key")
       }
-      englishWithArgsMsgKeys.size shouldBe welshWithArgsMsgKeys.size
+      englishWithArgsMsgKeys.size mustBe welshWithArgsMsgKeys.size
     }
     "have the same args in the same order for all keys which take args" in {
       val englishWithArgsMsgKeysAndArgList = defaultMessages collect {
@@ -112,7 +108,7 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
           println(
             s"key which has different arguments or order of arguments between English and Welsh: $key -- English arg seq=$engArgSeq and Welsh arg seq=$welshArgSeq")
       }
-      mismatchedArgSequences.size shouldBe 0
+      mismatchedArgSequences.size mustBe 0
     }
   }
 
@@ -135,15 +131,15 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
   private def assertNonEmptyNonTemporaryValues(label: String, messages: Map[String, String]) = messages.foreach {
     case (key: String, value: String) =>
       withClue(s"In $label, there is an empty value for the key:[$key][$value]") {
-        value.trim.isEmpty shouldBe false
+        value.trim.isEmpty mustBe false
       }
   }
 
   private def assertCorrectUseOfQuotes(label: String, messages: Map[String, String]) = messages.foreach {
     case (key: String, value: String) =>
       withClue(s"In $label, there is an unescaped or invalid quote:[$key][$value]") {
-        MatchSingleQuoteOnly.findFirstIn(value).isDefined shouldBe false
-        MatchBacktickQuoteOnly.findFirstIn(value).isDefined shouldBe false
+        MatchSingleQuoteOnly.findFirstIn(value).isDefined mustBe false
+        MatchBacktickQuoteOnly.findFirstIn(value).isDefined mustBe false
       }
   }
 
@@ -157,7 +153,7 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
   private lazy val welshMessages: Map[String, String] = getExpectedMessages("cy") -- commonProvidedKeys
 
   private def getExpectedMessages(languageCode: String) =
-    messagesAPI.messages.getOrElse(languageCode, throw new Exception(s"Missing messages for $languageCode"))
+    messagesApi.messages.getOrElse(languageCode, throw new Exception(s"Missing messages for $languageCode"))
 
   private def mismatchingKeys(defaultKeySet: Set[String], welshKeySet: Set[String]) = {
     val test1 =

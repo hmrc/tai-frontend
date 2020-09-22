@@ -16,16 +16,12 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.{FakeTaiPlayApplication, routes}
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import uk.gov.hmrc.tai.model.domain.{DividendTax, EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
+import play.api.i18n.{I18nSupport, Messages}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.urls.Link
+import uk.gov.hmrc.tai.model.domain.{DividendTax, EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
+import utils.BaseSpec
 
-class PotentialUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class PotentialUnderpaymentViewModelSpec extends BaseSpec {
 
   "PotentialUnderpaymentViewModel apply method" must {
 

@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.tai.forms
 
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.data.FormError
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsForm
+import utils.BaseSpec
 
-class UpdateIncomeDetailsFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class UpdateIncomeDetailsFormSpec extends BaseSpec {
 
   "UpdateIncomeDetailsForm" must {
     "return no errors" when {

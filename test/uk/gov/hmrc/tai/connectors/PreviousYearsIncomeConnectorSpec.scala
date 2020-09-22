@@ -29,17 +29,17 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
+import utils.BaseSpec
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class PreviousYearsIncomeConnectorSpec
-    extends PlaySpec with MockitoSugar with DefaultServicesConfig with FakeTaiPlayApplication {
+class PreviousYearsIncomeConnectorSpec extends BaseSpec with DefaultServicesConfig {
 
   "PreviousYearsIncomeConnector" must {
 
     "return an envelope id on a successful invocation" in {
-      val sut = createSUT()
       val model =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
@@ -48,7 +48,7 @@ class PreviousYearsIncomeConnectorSpec
           .postToApi(Matchers.eq(s"/tai/$nino/employments/years/2016/update"), Matchers.eq(model))(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
-      val result = Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)
+      val result = Await.result(sut().incorrectIncome(nino, 2016, model), 5.seconds)
 
       result mustBe Some("123-456-789")
     }
@@ -56,15 +56,10 @@ class PreviousYearsIncomeConnectorSpec
   }
 
   private val year: TaxYear = TaxYear(DateTime.now().getYear)
-  private val nino: Nino = new Generator(new Random).nextNino
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-
-  private def createSUT(servUrl: String = "") = new PreviousYearsIncomeConnectorTest(servUrl)
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  private class PreviousYearsIncomeConnectorTest(servUrl: String = "")
-      extends PreviousYearsIncomeConnector(httpHandler) {
+  def sut(servUrl: String = ""): PreviousYearsIncomeConnector = new PreviousYearsIncomeConnector(httpHandler) {
     override val serviceUrl: String = servUrl
   }
 }

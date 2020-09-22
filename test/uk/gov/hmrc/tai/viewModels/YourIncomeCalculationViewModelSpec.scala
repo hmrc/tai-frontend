@@ -16,20 +16,16 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel.pensionOrEmpMessage
+import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income._
+import utils.BaseSpec
 
-class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
   "Your Income Calculation View Model" must {
     "return employment details" when {

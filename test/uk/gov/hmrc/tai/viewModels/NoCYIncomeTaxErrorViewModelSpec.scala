@@ -16,17 +16,15 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.{TaxYear, tai}
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.Live
+import utils.BaseSpec
 
-class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
+class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
 
   "NoCYIncomeTaxErrorViewModel" should {
 

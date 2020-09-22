@@ -18,16 +18,17 @@ package controllers
 
 import org.scalatest.concurrent.PatienceConfiguration
 import org.scalatest.{Args, Status, Suite, TestSuite}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.ExecutionContext
 
-trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguration with TestSuite {
+trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfiguration with TestSuite {
   this: Suite =>
   override lazy val port = 12345
 
@@ -57,9 +58,10 @@ trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguratio
     .setLevel(ch.qos.logback.classic.Level.WARN)
 
   def fakePerson(nino: Nino) = Person(nino, "firstname", "surname", false, false)
-  val fakeRequest = FakeRequest("GET", "/")
+  val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
 
-  abstract override def run(testName: Option[String], args: Args): Status = super[OneServerPerSuite].run(testName, args)
+  abstract override def run(testName: Option[String], args: Args): Status =
+    super[GuiceOneServerPerSuite].run(testName, args)
 
   implicit val ec = app.injector.instanceOf[ExecutionContext]
 }

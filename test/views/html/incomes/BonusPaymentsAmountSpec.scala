@@ -31,8 +31,6 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
   val employer = IncomeSource(id = 1, name = "Employer")
   val bonusPaymentsAmountForm = BonusOvertimeAmountForm.createForm()
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
   override def view: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm, employer)
 
   "Bonus payments amount view" should {

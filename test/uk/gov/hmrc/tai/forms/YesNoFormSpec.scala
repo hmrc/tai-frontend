@@ -16,14 +16,12 @@
 
 package uk.gov.hmrc.tai.forms
 
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import utils.BaseSpec
 
-class YesNoFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport with FormValuesConstants {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class YesNoFormSpec extends BaseSpec with FormValuesConstants {
 
   "YesNoFormSpec" must {
     "return no errors with valid 'yes' " in {

@@ -16,13 +16,11 @@
 
 package uk.gov.hmrc.tai.viewModels.pensions.update
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
+import utils.BaseSpec
 
-class UpdatePensionCheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
+class UpdatePensionCheckYourAnswersViewModelSpec extends BaseSpec {
 
   "Update pension check your answers view model" must {
     "generate journey lines without a phone number line" when {

@@ -16,33 +16,26 @@
 
 package uk.gov.hmrc.tai.service
 
-import controllers.FakeTaiPlayApplication
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
-import utils.TaxAccountSummaryTestData
+import utils.{BaseSpec, TaxAccountSummaryTestData}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 class TaxAccountSummaryServiceSpec
-    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with AuditConstants
-    with BeforeAndAfterEach with TaxAccountSummaryTestData {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+    extends BaseSpec with AuditConstants with BeforeAndAfterEach with TaxAccountSummaryTestData {
 
   override def beforeEach: Unit = {
     Mockito.reset(taxAccountService)
@@ -215,7 +208,7 @@ class TaxAccountSummaryServiceSpec
         taxAccountService = taxAccountService,
         partialRetriever = MockPartialRetriever,
         templateRenderer = MockTemplateRenderer,
-        messagesApi = messagesApi
+        mcc = mcc
       ) {
 
     when(employmentService.ceasedEmployments(any[Nino], any[TaxYear])(any[HeaderCarrier])).thenReturn(
@@ -248,8 +241,6 @@ class TaxAccountSummaryServiceSpec
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
-
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   override def fakePerson(nino: Nino) = Person(nino, "firstname", "surname", false, false)
 

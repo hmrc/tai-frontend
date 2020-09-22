@@ -16,25 +16,17 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
-import controllers.{FakeTaiPlayApplication, routes}
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxAdjustmentComponent, TaxBand, TotalTax}
+import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
-import uk.gov.hmrc.urls.Link
-import views.html.includes.link
+import utils.BaseSpec
 
 import scala.collection.immutable.Seq
 import scala.language.postfixOps
 
-class EstimatedIncomeViewModelSpec
-    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxRegionConstants with BandTypesConstants {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with BandTypesConstants {
 
   "Banded Graph" must {
 

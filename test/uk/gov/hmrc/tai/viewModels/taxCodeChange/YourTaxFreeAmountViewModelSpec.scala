@@ -16,17 +16,12 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.CodingComponentPairModel
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
+import utils.BaseSpec
 
-class YourTaxFreeAmountViewModelSpec
-    extends PlaySpec with FakeTaiPlayApplication with ViewModelHelper with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class YourTaxFreeAmountViewModelSpec extends BaseSpec with ViewModelHelper {
 
   private val pairs = Seq(
     CodingComponentPairModel("Thing", 1000, 2000),

@@ -18,7 +18,6 @@ package views.html.incomeTaxComparison
 
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -38,7 +37,7 @@ class TaxCodesSpec extends TaiViewSpec {
           "tai.incomeTaxComparison.taxCodes.scottishInfo",
           Link
             .toExternalPage(
-              url = ApplicationConfig.scottishRateIncomeTaxUrl,
+              url = appConfig.scottishRateIncomeTaxUrl,
               value = Some(messages("tai.taxCode.scottishIncomeText.link")))
             .toHtml
         )).body
@@ -61,5 +60,5 @@ class TaxCodesSpec extends TaiViewSpec {
   private lazy val model = TaxCodeComparisonViewModel(employmentTaxCode, pensionTaxCode)
   val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear() end))
   val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start))
-  override def view: Html = views.html.incomeTaxComparison.TaxCodes(model)
+  override def view: Html = views.html.incomeTaxComparison.TaxCodes(model, appConfig)
 }

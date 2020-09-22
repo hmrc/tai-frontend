@@ -16,21 +16,13 @@
 
 package views.html
 
-import builders.UserBuilder
-import controllers.FakeTaiPlayApplication
-import uk.gov.hmrc.tai.viewModels._
 import org.jsoup.Jsoup
-import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.tai.util.constants.TaxRegionConstants
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, ComplexTaxView, SimpleTaxView}
+import utils.BaseSpec
 
-class yourTaxGraphPageSpec extends UnitSpec with MockitoSugar with FakeTaiPlayApplication with TaxRegionConstants {
-
-  implicit val request = fakeRequest
+class YourTaxGraphPageSpec extends BaseSpec with TaxRegionConstants {
 
   "Graph" should {
 
@@ -45,9 +37,9 @@ class yourTaxGraphPageSpec extends UnitSpec with MockitoSugar with FakeTaiPlayAp
 
       val doc =
         Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, ComplexTaxView).toString())
-      doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.zeroBand")
-      doc.select("#nextBand").text() shouldBe nextBandMessage
-      doc.select("#totalIncome").text() shouldBe empty
+      doc.select("#bandType0").text() mustBe Messages("tai.bandtype.zeroBand")
+      doc.select("#nextBand").text() mustBe nextBandMessage
+      doc.select("#totalIncome").text() mustBe empty
 
     }
 
@@ -62,12 +54,12 @@ class yourTaxGraphPageSpec extends UnitSpec with MockitoSugar with FakeTaiPlayAp
 
       val doc =
         Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, SimpleTaxView).toString())
-      doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.zeroBand")
-      doc.select("#bandType1").text() shouldBe Messages("tai.bandtype.nonZeroBand")
-      doc.select("#nextBand").text() shouldBe nextBandMessage
-      doc.select("#bandType2").size() shouldBe 0
-      doc.select("#zeroIncomeTotal").text() shouldBe "£3,200"
-      doc.select("#totalIncome").text() shouldBe "£19,200"
+      doc.select("#bandType0").text() mustBe Messages("tai.bandtype.zeroBand")
+      doc.select("#bandType1").text() mustBe Messages("tai.bandtype.nonZeroBand")
+      doc.select("#nextBand").text() mustBe nextBandMessage
+      doc.select("#bandType2").size() mustBe 0
+      doc.select("#zeroIncomeTotal").text() mustBe "£3,200"
+      doc.select("#totalIncome").text() mustBe "£19,200"
     }
 
     "show Tax-Free Allowance and Taxed Income" in {
@@ -81,12 +73,12 @@ class yourTaxGraphPageSpec extends UnitSpec with MockitoSugar with FakeTaiPlayAp
 
       val doc =
         Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, SimpleTaxView).toString())
-      doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.zeroBand")
-      doc.select("#bandType1").text() shouldBe Messages("tai.bandtype.nonZeroBand")
-      doc.select("#nextBand").text() shouldBe nextBandMessage
-      doc.select("#bandType2").size() shouldBe 0
-      doc.select("#zeroIncomeTotal").text() shouldBe "£3,000"
-      doc.select("#totalIncome").text() shouldBe "£48,000"
+      doc.select("#bandType0").text() mustBe Messages("tai.bandtype.zeroBand")
+      doc.select("#bandType1").text() mustBe Messages("tai.bandtype.nonZeroBand")
+      doc.select("#nextBand").text() mustBe nextBandMessage
+      doc.select("#bandType2").size() mustBe 0
+      doc.select("#zeroIncomeTotal").text() mustBe "£3,000"
+      doc.select("#totalIncome").text() mustBe "£48,000"
     }
 
     "show Tax-Free Allowance and PSA and 7.5% DIV" in {
@@ -101,12 +93,12 @@ class yourTaxGraphPageSpec extends UnitSpec with MockitoSugar with FakeTaiPlayAp
       val doc =
         Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, ComplexTaxView).toString())
 
-      doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.zeroBand")
-      doc.select("#bandType1").text() shouldBe Messages("tai.bandtype.nonZeroBand")
-      doc.select("#nextBand").size() shouldBe 0
-      doc.select("#bandType3").size() shouldBe 0
-      doc.select("#zeroIncomeTotal").text() shouldBe "£14,000"
-      doc.select("#totalIncome").text() shouldBe "£29,000"
+      doc.select("#bandType0").text() mustBe Messages("tai.bandtype.zeroBand")
+      doc.select("#bandType1").text() mustBe Messages("tai.bandtype.nonZeroBand")
+      doc.select("#nextBand").size() mustBe 0
+      doc.select("#bandType3").size() mustBe 0
+      doc.select("#zeroIncomeTotal").text() mustBe "£14,000"
+      doc.select("#totalIncome").text() mustBe "£29,000"
     }
 
     "show tax rate bands for other rate bands " when {
@@ -121,7 +113,7 @@ class yourTaxGraphPageSpec extends UnitSpec with MockitoSugar with FakeTaiPlayAp
         val doc =
           Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, ComplexTaxView).toString())
 
-        doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.nonZeroBand")
+        doc.select("#bandType0").text() mustBe Messages("tai.bandtype.nonZeroBand")
       }
     }
   }

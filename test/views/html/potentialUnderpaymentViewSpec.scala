@@ -17,8 +17,6 @@
 package views.html
 
 import org.jsoup.Jsoup
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
@@ -30,9 +28,6 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 
 class potentialUnderpaymentViewSpec extends TaiViewSpec {
-
-  implicit val hc = HeaderCarrier()
-  val nino = new Generator().nextNino
 
   val tas = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
   val ccs = Seq(

@@ -16,24 +16,20 @@
 
 package views.html.incomeTaxComparison
 
-import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
+import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.{DateHelper, TaxYearRangeUtil}
+import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
-import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, IncomeSourceViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
-import uk.gov.hmrc.tai.util.ViewModelHelper
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
 
 class MainSpec extends TaiViewSpec with ViewModelHelper {
   "Cy plus one view" must {
 
-    val welshMessage = Messages(Lang("cy"), messages.messages)
+    val welshMessage = messagesApi.preferred(Seq(Lang("cy")))
 
     "show the correct page title" in {
 
@@ -161,19 +157,7 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
     "have the tell us about a change links" in {
       doc(view) must haveLinkElement(
         id = "companyBenefitsLink",
-        href = ApplicationConfig.companyBenefitsLinkUrl,
-        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText")
-      )
-
-      doc(view) must haveLinkElement(
-        id = "allowancesTaxReliefsLink",
-        href = ApplicationConfig.taxFreeAllowanceLinkUrl,
-        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText")
-      )
-
-      doc(view) must haveLinkElement(
-        id = "otherIncomeLink",
-        href = ApplicationConfig.otherIncomeLinkUrl,
+        href = appConfig.otherIncomeLinkUrl,
         text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText")
       )
     }
@@ -219,11 +203,14 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
   private lazy val incomeTaxComparisonViewModelSame =
     buildIncomeTaxComparisonViewModel(currentYearItem, currentYearItem)
 
-  def viewWithMore(implicit messages: Messages): Html =
-    views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelMore, true)
-  def viewWithLess(implicit messages: Messages): Html =
-    views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelLess, true)
-  def viewWithSame(implicit messages: Messages): Html =
-    views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModelSame, true)
+  def viewWithMore(implicit currMessages: Messages): Html =
+    views.html.incomeTaxComparison
+      .Main(incomeTaxComparisonViewModelMore, appConfig)(authRequest, currMessages, templateRenderer, partialRetriever)
+  def viewWithLess(implicit currMessages: Messages): Html =
+    views.html.incomeTaxComparison
+      .Main(incomeTaxComparisonViewModelLess, appConfig)(authRequest, currMessages, templateRenderer, partialRetriever)
+  def viewWithSame(implicit currMessages: Messages): Html =
+    views.html.incomeTaxComparison
+      .Main(incomeTaxComparisonViewModelSame, appConfig)(authRequest, currMessages, templateRenderer, partialRetriever)
   override def view: Html = viewWithSame
 }

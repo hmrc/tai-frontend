@@ -16,21 +16,16 @@
 
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
-import controllers.FakeTaiPlayApplication
 import org.scalatest.prop.PropertyChecks
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
+import utils.BaseSpec
 
 class CheckYourAnswersViewModelSpec
-    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with ViewModelHelper with PropertyChecks
-    with EditIncomePayPeriodConstants {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+    extends BaseSpec with ViewModelHelper with PropertyChecks with EditIncomePayPeriodConstants {
 
   "Update income estimate check your answers view model" must {
     "return all journey lines" when {

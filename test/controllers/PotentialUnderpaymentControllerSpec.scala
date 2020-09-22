@@ -36,20 +36,16 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.AuditConstants
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 class PotentialUnderpaymentControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with AuditConstants with I18nSupport
-    with BeforeAndAfterEach {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+    extends BaseSpec with AuditConstants with I18nSupport with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(auditService)
-
-  val nino = new Generator().nextNino
 
   "potentialUnderpaymentPage method" must {
     "return a clean response" when {
@@ -118,9 +114,9 @@ class PotentialUnderpaymentControllerSpec
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
+        mcc,
+        partialRetriever,
+        templateRenderer
       ) {
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
       Future.successful(

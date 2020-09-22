@@ -16,13 +16,11 @@
 
 package uk.gov.hmrc.tai.viewModels.employments
 
-import controllers.FakeTaiPlayApplication
-import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
-import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
+import utils.BaseSpec
 
-class UpdateEmploymentCheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
+class UpdateEmploymentCheckYourAnswersViewModelSpec extends BaseSpec {
 
   "Update employment check your answers view model" must {
     "return journey lines without phone number line" when {

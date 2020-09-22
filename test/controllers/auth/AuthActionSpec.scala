@@ -16,11 +16,9 @@
 
 package controllers.auth
 
-import controllers.{FakeTaiPlayApplication, routes}
+import controllers.routes
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Controller
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -31,13 +29,13 @@ import uk.gov.hmrc.auth.core.{Nino => _, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.util.constants.TaiConstants
+import utils.BaseSpec
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+class AuthActionSpec extends BaseSpec {
+
   lazy val fakeVerifyRequest = FakeRequest("GET", "/").withSession(
     TaiConstants.AuthProvider -> TaiConstants.AuthProviderVerify
   )
@@ -58,11 +56,11 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
       val mocked = mock[AuthConnector]
       when(mocked.authorise[A](any(), any())(any(), any())).thenReturn(Future.successful(a))
 
-      fromAction(new AuthActionImpl(mocked))
+      fromAction(new AuthActionImpl(mocked, mcc))
     }
 
     def failure(ex: Throwable): Harness =
-      fromAction(new AuthActionImpl(new FakeFailingAuthConnector(ex)))
+      fromAction(new AuthActionImpl(new FakeFailingAuthConnector(ex), mcc))
   }
 
   class FakeFailingAuthConnector(exceptionToReturn: Throwable) extends AuthConnector {

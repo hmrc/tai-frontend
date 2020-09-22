@@ -16,18 +16,14 @@
 
 package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 
-import controllers.FakeTaiPlayApplication
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
 import uk.gov.hmrc.tai.model.domain.TaxCodeChange
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, IabdTaxCodeChangeReasons, TaxCodeChangeReasons}
+import utils.BaseSpec
 
-class TaxCodeChangeReasonsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class TaxCodeChangeReasonsServiceSpec extends BaseSpec {
 
   val iabdTaxCodeChangeReasons = mock[IabdTaxCodeChangeReasons]
   val employmentTaxCodeChangeReasons = mock[TaxCodeChangeReasons]

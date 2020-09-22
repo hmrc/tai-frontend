@@ -31,8 +31,8 @@ class ApplicationConfig @Inject()(
 
   def statusRange = s"${TaxYear().prev.year}-${TaxYear().year}"
 
-  lazy val citizenAuthHost = fetchUrl("citizen-auth")
-  lazy val companyAuthUrl = fetchUrl("company-auth")
+  lazy val citizenAuthHost: String = fetchUrl("citizen-auth")
+  lazy val companyAuthUrl: String = fetchUrl("company-auth")
   lazy val urlEncode = helper.urlEncode(_: String)
   lazy val incomeTaxFormPartialLinkUrl =
     s"${fetchUrl("dfs-digital-forms-frontend")}/digital-forms/forms/personal-tax/income-tax/catalogue"
@@ -55,8 +55,8 @@ class ApplicationConfig @Inject()(
   lazy val reportAProblemPartialUrl = s"${fetchUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
   lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
-  lazy val urBannerEnabled = getOptional[String]("feature.ur-banner.enabled").getOrElse("true").toBoolean
-  lazy val urBannerLink = getOptional[String]("ur-banner.url").getOrElse("")
+  lazy val urBannerEnabled: Boolean = getOptional[String]("feature.ur-banner.enabled").getOrElse("true").toBoolean
+  lazy val urBannerLink: String = getOptional[String]("ur-banner.url").getOrElse("")
   lazy val checkUpdateProgressLinkUrl = s"${fetchUrl("track")}/track"
 
   lazy val analyticsToken: Option[String] = getOptional[String]("govuk-tax.google-analytics.token")
@@ -65,13 +65,13 @@ class ApplicationConfig @Inject()(
   lazy val gaRecStatus: String = getOptional[String]("govuk-tax.google-analytics.gaRecStatus").getOrElse("")
   lazy val analyticsHost: String = getOptional[String]("govuk-tax.google-analytics.host").getOrElse("auto")
   lazy val pertaxServiceUrl = s"${fetchUrl("pertax-frontend")}/personal-account"
-  lazy val pertaxServiceUpliftFailedUrl =
+  lazy val pertaxServiceUpliftFailedUrl: String =
     getOptional[String]("govuk-tax.external-url.pertax-frontend.host")
       .getOrElse("") +
       "/personal-account/identity-check-failed"
   lazy val pertaxExitSurveyUrl = s"$pertaxServiceUrl/signout?origin=TES"
   lazy val feedbackSurveyUrl = s"$feedbackHost/feedback/TES"
-  lazy val feedbackHost =
+  lazy val feedbackHost: String =
     getOptional[String]("govuk-tax.external-url.feedback-survey-frontend.host").getOrElse("")
   lazy val cocarFrontendUrl = s"${fetchUrl("cocar-frontend")}/paye/company-car/details"
   lazy val updateCompanyCarDetailsUrl = s"$personServiceUrl/redirect-company-car"
@@ -82,19 +82,19 @@ class ApplicationConfig @Inject()(
   lazy val mainContentHeaderPartialUrl =
     s"${fetchUrl("header-service")}/personal-account/integration/main-content-header"
   lazy val sa16UpliftUrl = s"${fetchUrl("identity-verification-frontend")}/mdtp/uplift"
-  lazy val taiHomePageUrl = getOptional[String]("govuk-tax.external-url.tai-frontend.host")
+  lazy val taiHomePageUrl: String = getOptional[String]("govuk-tax.external-url.tai-frontend.host")
     .getOrElse("") + "/check-income-tax/what-do-you-want-to-do"
   lazy val taxYouPaidStatus = s"${fetchUrl("taxcalc-frontend")}/tax-you-paid/status"
-  lazy val gg_web_context = getOptional[String]("external-url.gg.web-context").getOrElse("gg")
-  lazy val ida_web_context = getOptional[String]("external-url.ida.web-context").getOrElse("ida")
-  lazy val hardshipHelpBase = getOptional[String]("govuk-tax.external-url.hardship-help.host").getOrElse("")
+  lazy val gg_web_context: String = getOptional[String]("external-url.gg.web-context").getOrElse("gg")
+  lazy val ida_web_context: String = getOptional[String]("external-url.ida.web-context").getOrElse("ida")
+  lazy val hardshipHelpBase: String = getOptional[String]("govuk-tax.external-url.hardship-help.host").getOrElse("")
   lazy val hardshipHelpUrl =
     s"$hardshipHelpBase/digital-forms/form/tell-us-how-you-want-to-pay-estimated-tax/draft/guide"
   private val contactHost = getOptional[String](s"govuk-tax.services.contact-frontend.host").getOrElse("")
   lazy val companyAuthFrontendSignOutUrl = s"$companyAuthUrl/gg/sign-out?continue=$feedbackSurveyUrl"
-  lazy val unauthorisedSignOutUrl =
+  lazy val unauthorisedSignOutUrl: String =
     getOptional[String]("govuk-tax.external-url.company-auth.unauthorised-url").getOrElse("")
-  lazy val citizenAuthFrontendSignOutUrl = citizenAuthHost + "/ida/signout"
+  lazy val citizenAuthFrontendSignOutUrl: String = citizenAuthHost + "/ida/signout"
   lazy val assetsPath =
     s"${getOptional[String](s"assets.url").getOrElse("")}${getOptional[String](s"assets.version").getOrElse("")}/"
   lazy val scottishRateIncomeTaxUrl: String = "https://www.gov.uk/scottish-rate-income-tax"
@@ -110,7 +110,7 @@ class ApplicationConfig @Inject()(
 
   lazy val taiRootUri: String = getOptional[String]("govuk-tax.taxPlatformTaiRootUri").getOrElse("")
 
-  def fetchUrl(service: String) =
+  def fetchUrl(service: String): String =
     try {
       servicesConfig.baseUrl(service)
     } catch {
@@ -118,17 +118,17 @@ class ApplicationConfig @Inject()(
       case _: Throwable         => s"Unknown Exception: $service-url"
     }
 
-  lazy val isTaiCy3Enabled = getOptional[Boolean]("tai.cy3.enabled").getOrElse(false)
-  lazy val numberOfPreviousYearsToShow = getOptional[Int]("tai.numberOfPreviousYearsToShow").getOrElse(5)
+  lazy val isTaiCy3Enabled: Boolean = getOptional[Boolean]("tai.cy3.enabled").getOrElse(false)
+  lazy val numberOfPreviousYearsToShow: Int = getOptional[Int]("tai.numberOfPreviousYearsToShow").getOrElse(5)
 }
 
 trait FeatureTogglesConfig { self: ApplicationConfig =>
-  val cyPlusOneEnabled = getOptional[Boolean]("tai.cyPlusOne.enabled").getOrElse(false)
-  val welshLanguageEnabled = getOptional[Boolean]("tai.feature.welshLanguage.enabled").getOrElse(false)
-  val companyCarForceRedirectEnabled =
+  val cyPlusOneEnabled: Boolean = getOptional[Boolean]("tai.cyPlusOne.enabled").getOrElse(false)
+  val welshLanguageEnabled: Boolean = getOptional[Boolean]("tai.feature.welshLanguage.enabled").getOrElse(false)
+  val companyCarForceRedirectEnabled: Boolean =
     getOptional[Boolean]("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
-  val cyPlus1EstimatedPayEnabled = getOptional[Boolean]("tai.cyPlusOne.enabled").getOrElse(false)
-  val webChatEnabled = getOptional[Boolean]("tai.webChat.enabled").getOrElse(false)
+  val cyPlus1EstimatedPayEnabled: Boolean = getOptional[Boolean]("tai.cyPlusOne.enabled").getOrElse(false)
+  val webChatEnabled: Boolean = getOptional[Boolean]("tai.webChat.enabled").getOrElse(false)
 }
 
 trait AuthConfigProperties { self: ApplicationConfig =>

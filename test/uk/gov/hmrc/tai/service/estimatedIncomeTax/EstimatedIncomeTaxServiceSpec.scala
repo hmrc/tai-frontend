@@ -16,24 +16,19 @@
 
 package uk.gov.hmrc.tai.service.estimatedIncomeTax
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.tai.model.domain._
+import play.api.i18n.I18nSupport
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
-import uk.gov.hmrc.tai.model.domain.tax
+import uk.gov.hmrc.tai.model.domain.{tax, _}
 import uk.gov.hmrc.tai.model.domain.tax.{DoubleTaxationRelief, MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
+import utils.BaseSpec
 
 import scala.collection.immutable.Seq
 
-class EstimatedIncomeTaxServiceSpec
-    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with BandTypesConstants with TaxRegionConstants {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants with TaxRegionConstants {
 
   "hasNonCodedIncome" must {
     "return true when NonCodedIncome exists" in {

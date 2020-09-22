@@ -16,43 +16,34 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.I18nSupport
 import play.api.libs.json.{JsObject, JsString, Json}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.model.domain.MedicalInsurance
 import uk.gov.hmrc.tai.model.domain.benefits._
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Random
 
-class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class BenefitsConnectorSpec extends BaseSpec {
 
   "getCompanyCarBenefits" must {
     "fetch the company car details" when {
       "provided with valid nino" in {
-        val sut = createSUT
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(benefitsJson))
 
-        val result = sut.benefits(generateNino, 2018)
+        val result = sut.benefits(nino, 2018)
         Await.result(result, 5 seconds) mustBe benefits
       }
     }
 
     "thrown exception" when {
       "benefit type is invalid" in {
-        val sut = createSUT
-        val nino = generateNino
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(invalidBenefitsJson))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.benefits(nino, 2018), 5 seconds)
@@ -64,9 +55,7 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
   "removeCompanyBenefit" must {
 
     "return an envelope id on a successful invocation" in {
-      val sut = createSUT
       val employmentId = 1
-      val nino = generateNino
       val endedCompanyBenefit =
         EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
@@ -140,14 +129,9 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
       "links" -> Json.arr()
     )
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-  def generateNino: Nino = new Generator(new Random).nextNino
-
-  private def createSUT = new SUT
-
   val httpHandler = mock[HttpHandler]
 
-  private class SUT extends BenefitsConnector(httpHandler) {
+  def sut: BenefitsConnector = new BenefitsConnector(httpHandler) {
     override val serviceUrl: String = "mockUrl"
   }
 

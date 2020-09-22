@@ -16,23 +16,19 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
+import uk.gov.hmrc.play.views.formatting.Money.pounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
-import uk.gov.hmrc.play.views.formatting.Money.pounds
 import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
+import utils.BaseSpec
 
 import scala.language.postfixOps
 
-class SimpleEstimatedIncomeTaxViewModelSpec
-    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxRegionConstants with BandTypesConstants {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class SimpleEstimatedIncomeTaxViewModelSpec extends BaseSpec with TaxRegionConstants with BandTypesConstants {
 
   "Simple Estimated Income Tax View Model" must {
     "return a valid view model for valid input" in {

@@ -36,7 +36,6 @@ class PayeControllerHistoric @Inject()(
   employmentService: EmploymentService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
@@ -69,13 +68,13 @@ class PayeControllerHistoric @Inject()(
           Ok(
             views.html.paye.RtiDisabledHistoricPayAsYouEarn(
               HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-              applicationConfig
+              config
             ))
         } else {
           Ok(
             views.html.paye.historicPayAsYouEarn(
               HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-              applicationConfig
+              config
             ))
         }
       }

@@ -20,7 +20,7 @@ import controllers.routes
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class confirmationSpec extends TaiViewSpec {
+class ConfirmationSpec extends TaiViewSpec {
   override def view: Html = views.html.pensions.update.confirmation()
 
   "Confirmation View" must {

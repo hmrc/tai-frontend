@@ -18,60 +18,46 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
+import utils.BaseSpec
 
 import scala.concurrent.Future
-import scala.util.Random
 
-class YourTaxCodeControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar with BeforeAndAfterEach {
-
-  val nino = new Generator(new Random).nextNino
-
-  lazy val testController = new TestController
+class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val taxAccountService = mock[TaxAccountService]
 
-  class TestController
-      extends YourTaxCodeController(
-        taxAccountService,
-        taxCodeChangeService,
-        FakeAuthAction,
-        FakeValidatePerson,
-        app.injector.instanceOf[MessagesApi],
-        MockPartialRetriever,
-        MockTemplateRenderer
-      )
+  def sut = new YourTaxCodeController(
+    taxAccountService,
+    taxCodeChangeService,
+    FakeAuthAction,
+    FakeValidatePerson,
+    mcc,
+    appConfig,
+    partialRetriever,
+    templateRenderer
+  )
 
   override def beforeEach: Unit =
     Mockito.reset(taxAccountService)
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  private implicit val hc = HeaderCarrier()
 
   "renderTaxCodes" must {
     "display error when there is TaiFailure in service" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error occurred")))
-      val result = testController.renderTaxCodes(None)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = sut.renderTaxCodes(None)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
@@ -79,7 +65,7 @@ class YourTaxCodeControllerSpec
     "display any error" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.failed(new InternalError("error occurred")))
-      val result = testController.renderTaxCodes(None)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = sut.renderTaxCodes(None)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
@@ -107,7 +93,7 @@ class YourTaxCodeControllerSpec
       val startOfTaxYear: String = TaxYear().start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
       val endOfTaxYear: String = TaxYear().end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
 
-      val result = testController.taxCodes(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = sut.taxCodes(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
@@ -120,7 +106,7 @@ class YourTaxCodeControllerSpec
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
-      val result = testController.taxCode(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = sut.taxCode(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
@@ -154,7 +140,7 @@ class YourTaxCodeControllerSpec
       when(taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
         .thenReturn(Future.successful(taxCodeRecords))
 
-      val result = testController.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = sut.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
@@ -167,7 +153,7 @@ class YourTaxCodeControllerSpec
     "display error when there is TaiFailure in service" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error occurred")))
-      val result = testController.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = sut.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
@@ -175,7 +161,7 @@ class YourTaxCodeControllerSpec
     "display any error" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.failed(new InternalError("error occurred")))
-      val result = testController.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = sut.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
     }

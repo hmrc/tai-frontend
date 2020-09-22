@@ -16,15 +16,12 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateHistoricIncomeDetailsViewModel
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
-import uk.gov.hmrc.tai.util.HtmlFormatter
+import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateHistoricIncomeDetailsViewModel
+import utils.BaseSpec
 
-class UpdateHistoricIncomeDetailsViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
+class UpdateHistoricIncomeDetailsViewModelSpec extends BaseSpec {
 
   "UpdateHistoricIncomeDetailsViewModel" must {
     "return given tax year" in {
