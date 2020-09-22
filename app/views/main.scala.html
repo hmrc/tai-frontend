@@ -159,6 +159,10 @@
     LanguageUtils.getCurrentLang == Lang("cy")
 }
 
+@accessibilityFooterUrl = {
+@ApplicationConfig.accessibilityStatementUrl(request.uri)
+}
+
 @mustacheMap = @{
     Map[String, Any](
         "nuanceWebChat" -> Map(
@@ -222,6 +226,14 @@
         )
     } else mustacheMap
 }
+
+@extraTemplateArguments = @{
+    if(ApplicationConfig.accessibilityStatementToggle) {
+       templateArguments ++ Map[String,Any](
+     "accessibilityFooterUrl" -> accessibilityFooterUrl)
+    } else templateArguments
+}
+
 @{
-    templateRenderer.renderDefaultTemplate(ApplicationConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), templateArguments)
+    templateRenderer.renderDefaultTemplate(ApplicationConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), extraTemplateArguments)
 }
