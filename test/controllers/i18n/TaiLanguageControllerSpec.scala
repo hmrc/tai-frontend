@@ -17,10 +17,8 @@
 package controllers.i18n
 
 import builders.RequestBuilder
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Mockito._
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import utils.BaseSpec
 
@@ -90,7 +88,7 @@ class TaiLanguageControllerSpec extends BaseSpec {
         mockAppConfig,
         langUtils,
         stubControllerComponents(),
-        MockPartialRetriever,
-        MockTemplateRenderer
+        partialRetriever,
+        templateRenderer
       )
 }

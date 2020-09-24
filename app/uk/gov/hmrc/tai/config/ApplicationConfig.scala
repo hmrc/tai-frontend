@@ -62,20 +62,20 @@ class ApplicationConfig @Inject()(
   lazy val urBannerLink: String = getOptional[String]("ur-banner.url").getOrElse("")
   lazy val checkUpdateProgressLinkUrl = s"${fetchUrl("track")}/track"
 
-  lazy val analyticsToken: Option[String] = getOptional[String]("govuk-tax.google-analytics.token")
+  lazy val analyticsToken: Option[String] = getOptional[String]("microservice.google-analytics.token")
   lazy val gaValueOfPayments: String =
-    getOptional[String]("govuk-tax.google-analytics.gaValueOfPayments").getOrElse("")
-  lazy val gaRecStatus: String = getOptional[String]("govuk-tax.google-analytics.gaRecStatus").getOrElse("")
-  lazy val analyticsHost: String = getOptional[String]("govuk-tax.google-analytics.host").getOrElse("auto")
+    getOptional[String]("microservice.google-analytics.gaValueOfPayments").getOrElse("")
+  lazy val gaRecStatus: String = getOptional[String]("microservice.google-analytics.gaRecStatus").getOrElse("")
+  lazy val analyticsHost: String = getOptional[String]("microservice.google-analytics.host").getOrElse("auto")
   lazy val pertaxServiceUrl = s"${fetchUrl("pertax-frontend")}/personal-account"
   lazy val pertaxServiceUpliftFailedUrl: String =
-    getOptional[String]("govuk-tax.external-url.pertax-frontend.host")
+    getOptional[String]("microservice.external-url.pertax-frontend.host")
       .getOrElse("") +
       "/personal-account/identity-check-failed"
   lazy val pertaxExitSurveyUrl = s"$pertaxServiceUrl/signout?origin=TES"
   lazy val feedbackSurveyUrl = s"$feedbackHost/feedback/TES"
   lazy val feedbackHost: String =
-    getOptional[String]("govuk-tax.external-url.feedback-survey-frontend.host").getOrElse("")
+    getOptional[String]("microservice.external-url.feedback-survey-frontend.host").getOrElse("")
   lazy val cocarFrontendUrl = s"${fetchUrl("cocar-frontend")}/paye/company-car/details"
   lazy val updateCompanyCarDetailsUrl = s"$personServiceUrl/redirect-company-car"
   lazy val personServiceUrl = s"${fetchUrl("tai-frontend")}/check-income-tax"
@@ -85,18 +85,18 @@ class ApplicationConfig @Inject()(
   lazy val mainContentHeaderPartialUrl =
     s"${fetchUrl("header-service")}/personal-account/integration/main-content-header"
   lazy val sa16UpliftUrl = s"${fetchUrl("identity-verification-frontend")}/mdtp/uplift"
-  lazy val taiHomePageUrl: String = getOptional[String]("govuk-tax.external-url.tai-frontend.host")
+  lazy val taiHomePageUrl: String = getOptional[String]("microservice.external-url.tai-frontend.host")
     .getOrElse("") + "/check-income-tax/what-do-you-want-to-do"
   lazy val taxYouPaidStatus = s"${fetchUrl("taxcalc-frontend")}/tax-you-paid/status"
   lazy val gg_web_context: String = getOptional[String]("external-url.gg.web-context").getOrElse("gg")
   lazy val ida_web_context: String = getOptional[String]("external-url.ida.web-context").getOrElse("ida")
-  lazy val hardshipHelpBase: String = getOptional[String]("govuk-tax.external-url.hardship-help.host").getOrElse("")
+  lazy val hardshipHelpBase: String = getOptional[String]("microservice.external-url.hardship-help.host").getOrElse("")
   lazy val hardshipHelpUrl =
     s"$hardshipHelpBase/digital-forms/form/tell-us-how-you-want-to-pay-estimated-tax/draft/guide"
-  private val contactHost = getOptional[String](s"govuk-tax.services.contact-frontend.host").getOrElse("")
+  private val contactHost = getOptional[String](s"microservice.services.contact-frontend.host").getOrElse("")
   lazy val companyAuthFrontendSignOutUrl = s"$companyAuthUrl/gg/sign-out?continue=$feedbackSurveyUrl"
   lazy val unauthorisedSignOutUrl: String =
-    getOptional[String]("govuk-tax.external-url.company-auth.unauthorised-url").getOrElse("")
+    getOptional[String]("microservice.external-url.company-auth.unauthorised-url").getOrElse("")
   lazy val citizenAuthFrontendSignOutUrl: String = citizenAuthHost + "/ida/signout"
   lazy val assetsPath =
     s"${getOptional[String](s"assets.url").getOrElse("")}${getOptional[String](s"assets.version").getOrElse("")}/"
@@ -109,9 +109,9 @@ class ApplicationConfig @Inject()(
     "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/welsh-language-helplines"
 
   lazy val frontendTemplatePath: String =
-    getOptional[String]("govuk-tax.services.frontend-template-provider.path").getOrElse("/template/mustache")
+    getOptional[String]("microservice.services.frontend-template-provider.path").getOrElse("/template/mustache")
 
-  lazy val taiRootUri: String = getOptional[String]("govuk-tax.taxPlatformTaiRootUri").getOrElse("")
+  lazy val taiRootUri: String = getOptional[String]("microservice.taxPlatformTaiRootUri").getOrElse("")
 
   def fetchUrl(service: String): String =
     try {
@@ -136,15 +136,15 @@ trait FeatureTogglesConfig { self: ApplicationConfig =>
 
 trait AuthConfigProperties { self: ApplicationConfig =>
 
-  val postSignInRedirectUrl: Option[String] = getOptional[String]("govuk-tax.login-callback.url")
+  val postSignInRedirectUrl: Option[String] = getOptional[String]("microservice.login-callback.url")
 
-  val activatePaperless: Boolean = getOptional[Boolean]("govuk-tax.activatePaperless")
-    .getOrElse(throw new IllegalStateException("Could not find configuration for govuk-tax.activatePaperless"))
+  val activatePaperless: Boolean = getOptional[Boolean]("microservice.activatePaperless")
+    .getOrElse(throw new IllegalStateException("Could not find configuration for microservice.activatePaperless"))
 
   val activatePaperlessEvenIfGatekeeperFails: Boolean =
-    getOptional[Boolean](s"govuk-tax.activatePaperlessEvenIfGatekeeperFails")
-      .getOrElse(throw new IllegalStateException("Could not find configuration for govuk-tax.activatePaperless"))
+    getOptional[Boolean](s"microservice.activatePaperlessEvenIfGatekeeperFails")
+      .getOrElse(throw new IllegalStateException("Could not find configuration for microservice.activatePaperless"))
 
   val taxPlatformTaiRootUri: String =
-    getOptional[String]("govuk-tax.taxPlatformTaiRootUri").getOrElse("http://noConfigTaiRootUri")
+    getOptional[String]("microservice.taxPlatformTaiRootUri").getOrElse("http://noConfigTaiRootUri")
 }

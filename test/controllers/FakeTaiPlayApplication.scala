@@ -64,5 +64,5 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
   abstract override def run(testName: Option[String], args: Args): Status =
     super[GuiceOneServerPerSuite].run(testName, args)
 
-  implicit val ec = app.injector.instanceOf[ExecutionContext]
+  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 }
