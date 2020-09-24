@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import org.joda.time.LocalDate
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.YourTaxFreeAmountComparison
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil

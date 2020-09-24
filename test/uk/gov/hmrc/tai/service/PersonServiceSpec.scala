@@ -16,28 +16,18 @@
 
 package uk.gov.hmrc.tai.service
 
-import controllers.FakeTaiPlayApplication
 import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
-import scala.util.Random
 
-class PersonServiceSpec extends PlaySpec with MockitoSugar with I18nSupport with FakeTaiPlayApplication {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
-  private implicit val hc = HeaderCarrier()
+class PersonServiceSpec extends BaseSpec {
 
   "personDetailsNew method" must {
     "return a Person model instance" when {
@@ -64,8 +54,6 @@ class PersonServiceSpec extends PlaySpec with MockitoSugar with I18nSupport with
   }
 
   val testTimeout = 5 seconds
-
-  val nino = new Generator(new Random).nextNino
 
   def createSut = new PersonServiceTest
 

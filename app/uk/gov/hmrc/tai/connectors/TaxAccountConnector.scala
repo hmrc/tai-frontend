@@ -21,7 +21,7 @@ import play.api.Logger
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UnauthorizedException}
-import uk.gov.hmrc.tai.config.DefaultServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -31,13 +31,13 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentType, TaxedIncome, UpdateTaxCodeIncomeRequest}
 
 import scala.util.control.NonFatal
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class TaxAccountConnector @Inject()(httpHandler: HttpHandler)
-    extends CodingComponentFormatters with DefaultServicesConfig {
+class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
+  implicit ec: ExecutionContext)
+    extends CodingComponentFormatters {
 
-  val serviceUrl: String = baseUrl("tai")
+  val serviceUrl: String = servicesConfig.baseUrl("tai")
 
   def taxAccountUrl(nino: String, year: TaxYear): String =
     s"$serviceUrl/tai/$nino/tax-account/${year.year}/income/tax-code-incomes"

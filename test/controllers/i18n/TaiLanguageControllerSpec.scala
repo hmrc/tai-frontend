@@ -20,13 +20,12 @@ import builders.RequestBuilder
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Mockito._
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import utils.BaseSpec
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.util.Random
 
 class TaiLanguageControllerSpec extends BaseSpec {
 
@@ -88,7 +87,9 @@ class TaiLanguageControllerSpec extends BaseSpec {
 
   private class SUT
       extends TaiLanguageController(
-        appConfig,
+        mockAppConfig,
+        langUtils,
+        stubControllerComponents(),
         MockPartialRetriever,
         MockTemplateRenderer
       )

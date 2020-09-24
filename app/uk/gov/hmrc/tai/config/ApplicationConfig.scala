@@ -18,18 +18,21 @@ package uk.gov.hmrc.tai.config
 
 import javax.inject.Inject
 import play.api.{ConfigLoader, Configuration}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import views.html.helper
 
 class ApplicationConfig @Inject()(
   val runModeConfiguration: Configuration,
-  servicesConfig: DefaultServicesConfig
+  servicesConfig: ServicesConfig
 ) extends FeatureTogglesConfig with AuthConfigProperties {
 
   def getOptional[A](key: String)(implicit loader: ConfigLoader[A]): Option[A] =
     runModeConfiguration.getOptional[A](key)
 
   def statusRange = s"${TaxYear().prev.year}-${TaxYear().year}"
+
+  lazy val baseURL: String = servicesConfig.baseUrl("tai")
 
   lazy val citizenAuthHost: String = fetchUrl("citizen-auth")
   lazy val companyAuthUrl: String = fetchUrl("company-auth")
@@ -144,8 +147,4 @@ trait AuthConfigProperties { self: ApplicationConfig =>
 
   val taxPlatformTaiRootUri: String =
     getOptional[String]("govuk-tax.taxPlatformTaiRootUri").getOrElse("http://noConfigTaiRootUri")
-}
-
-trait TaiConfig extends DefaultServicesConfig {
-  lazy val baseURL: String = baseUrl("tai")
 }

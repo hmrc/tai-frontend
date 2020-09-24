@@ -21,7 +21,6 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.Person
 import utils.BaseSpec
@@ -29,7 +28,7 @@ import utils.BaseSpec
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class PersonConnectorSpec extends BaseSpec with DefaultServicesConfig {
+class PersonConnectorSpec extends BaseSpec {
 
   "person method" must {
 
@@ -69,7 +68,7 @@ class PersonConnectorSpec extends BaseSpec with DefaultServicesConfig {
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut: PersonConnector = new PersonConnector(httpHandler) {
+  def sut: PersonConnector = new PersonConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "/fakeUrl"
   }
 

@@ -16,16 +16,14 @@
 
 package views.html.incomes.nextYear
 
-import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat
-import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, IrregularPay}
-import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
-class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
+class UpdateIncomeCYPlus1Confirm extends TaiViewSpec {
 
   val employerName = "employerName"
   val currentAmount = 1234

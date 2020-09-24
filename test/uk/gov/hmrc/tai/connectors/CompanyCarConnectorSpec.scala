@@ -16,24 +16,19 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
+import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsResultException, Json}
-import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.http.{HttpException, HttpResponse}
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit, WithdrawCarAndFuel}
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Random
-import play.api.http.Status._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException, HttpResponse}
-import utils.BaseSpec
 
 class CompanyCarConnectorSpec extends BaseSpec {
 
@@ -60,7 +55,7 @@ class CompanyCarConnectorSpec extends BaseSpec {
 
         val ex = the[JsResultException] thrownBy Await
           .result(sut.companyCarBenefitForEmployment(nino, employmentId), 5 seconds)
-        ex.getMessage must include("List(ValidationError(List(error.path.missing)")
+        ex.getMessage must include("List(JsonValidationError(List(error.path.missing)")
       }
     }
   }
@@ -182,7 +177,7 @@ class CompanyCarConnectorSpec extends BaseSpec {
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut: CompanyCarConnector = new CompanyCarConnector(httpHandler) {
+  def sut: CompanyCarConnector = new CompanyCarConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "mockUrl"
   }
 

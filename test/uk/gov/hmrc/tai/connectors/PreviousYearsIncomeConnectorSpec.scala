@@ -16,26 +16,20 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.DateTime
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsString, Json}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.tai.config.DefaultServicesConfig
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Random
 
-class PreviousYearsIncomeConnectorSpec extends BaseSpec with DefaultServicesConfig {
+class PreviousYearsIncomeConnectorSpec extends BaseSpec {
 
   "PreviousYearsIncomeConnector" must {
 
@@ -59,7 +53,8 @@ class PreviousYearsIncomeConnectorSpec extends BaseSpec with DefaultServicesConf
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut(servUrl: String = ""): PreviousYearsIncomeConnector = new PreviousYearsIncomeConnector(httpHandler) {
-    override val serviceUrl: String = servUrl
-  }
+  def sut(servUrl: String = ""): PreviousYearsIncomeConnector =
+    new PreviousYearsIncomeConnector(httpHandler, servicesConfig) {
+      override val serviceUrl: String = servUrl
+    }
 }

@@ -19,7 +19,6 @@ package controllers.benefits
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
@@ -28,9 +27,8 @@ import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.language.LanguageUtils
+import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -46,7 +44,6 @@ import utils.BaseSpec
 import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYourAnswers}
 
 import scala.concurrent.Future
-import scala.util.Random
 
 class RemoveCompanyBenefitControllerSpec
     extends BaseSpec with FormValuesConstants with JourneyCacheConstants with RemoveCompanyBenefitStopDateConstants
@@ -479,7 +476,8 @@ class RemoveCompanyBenefitControllerSpec
 
       val result = SUT.checkYourAnswers()(request)
 
-      val stopDate = Messages("tai.remove.company.benefit.beforeTaxYearEnd", Dates.formatDate(TaxYear().start))
+      val stopDate =
+        Messages("tai.remove.company.benefit.beforeTaxYearEnd", Dates.formatDate(TaxYear().start))
       val expectedViewModel = RemoveCompanyBenefitCheckYourAnswersViewModel(
         "AwesomeType",
         "TestCompany",
@@ -702,8 +700,9 @@ class RemoveCompanyBenefitControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        MockTemplateRenderer,
-        MockPartialRetriever
+        langUtils,
+        templateRenderer,
+        partialRetriever
       )
 
 }

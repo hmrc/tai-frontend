@@ -19,16 +19,16 @@ package uk.gov.hmrc.tai.connectors
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.config.DefaultServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentsConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesConfig {
+class EmploymentsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
+  implicit ec: ExecutionContext) {
 
-  val serviceUrl: String = baseUrl("tai")
+  val serviceUrl: String = servicesConfig.baseUrl("tai")
 
   def employmentUrl(nino: Nino, id: String) = s"$serviceUrl/tai/$nino/employments/$id"
 

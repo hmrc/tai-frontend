@@ -20,7 +20,6 @@ import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import play.api.i18n.I18nSupport
 import play.api.libs.json.{JsObject, JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.model.domain.MedicalInsurance
@@ -131,7 +130,7 @@ class BenefitsConnectorSpec extends BaseSpec {
 
   val httpHandler = mock[HttpHandler]
 
-  def sut: BenefitsConnector = new BenefitsConnector(httpHandler) {
+  def sut: BenefitsConnector = new BenefitsConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "mockUrl"
   }
 

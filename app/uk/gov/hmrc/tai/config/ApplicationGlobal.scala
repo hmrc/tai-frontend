@@ -16,16 +16,12 @@
 
 package uk.gov.hmrc.tai.config
 
-import com.typesafe.config.Config
-import controllers.routes
 import javax.inject.Inject
-import net.ceedubs.ficus.Ficus._
+import play.api.Configuration
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Request
-import play.api.{Configuration, Play}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
-import uk.gov.hmrc.play.config.ControllerConfig
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.urls.Link
 
@@ -92,8 +88,4 @@ class TaiErrorHandler @Inject()(
       )
     )
   }
-}
-
-object ControllerConfiguration extends ControllerConfig {
-  lazy val controllerConfigs = Play.current.configuration.underlying.as[Config]("controllers")
 }

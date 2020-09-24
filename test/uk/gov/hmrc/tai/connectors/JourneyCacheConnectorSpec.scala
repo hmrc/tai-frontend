@@ -154,7 +154,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut: JourneyCacheConnector = new JourneyCacheConnector(httpHandler) {
+  def sut: JourneyCacheConnector = new JourneyCacheConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "mockUrl"
   }
 

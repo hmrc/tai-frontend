@@ -504,7 +504,7 @@ class TaxAccountConnectorSpec extends BaseSpec {
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut: TaxAccountConnector = new TaxAccountConnector(httpHandler) {
+  def sut: TaxAccountConnector = new TaxAccountConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "mockUrl"
   }
 

@@ -18,7 +18,6 @@ package views.html.incomes
 
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Field, Form}
 import play.api.mvc.Call
 import play.twirl.api.Html
@@ -26,7 +25,7 @@ import uk.gov.hmrc.tai.forms.PayslipDeductionsForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class PaySlipDeductionsSpec extends TaiViewSpec with MockitoSugar {
+class PaySlipDeductionsSpec extends TaiViewSpec {
 
   val employer = IncomeSource(id = 1, name = "Employer")
 

@@ -19,13 +19,15 @@ import builders.UserBuilder
 import controllers.FakeTaiPlayApplication
 import controllers.auth.AuthedUser
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -38,17 +40,18 @@ trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar wi
 
   lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
   lazy val appConfig: ApplicationConfig = inject[ApplicationConfig]
+  lazy val servicesConfig: ServicesConfig = inject[ServicesConfig]
+  lazy val langUtils: LanguageUtils = inject[LanguageUtils]
 
   implicit lazy val messagesApi: MessagesApi = inject[MessagesApi]
   implicit lazy val provider: MessagesProvider = inject[MessagesProvider]
   implicit lazy val lang: Lang = Lang("en")
   implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-  implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-  implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-
   val nino: Nino = new Generator().nextNino
 
+  implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
+  implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
   implicit val authedUser: AuthedUser = UserBuilder()
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

@@ -18,14 +18,13 @@ package views.html.incomes
 
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Field, Form}
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.PayPeriodForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class PayPeriodSpec extends TaiViewSpec with MockitoSugar {
+class PayPeriodSpec extends TaiViewSpec {
 
   val id = 1
   val employerName = "Employer"

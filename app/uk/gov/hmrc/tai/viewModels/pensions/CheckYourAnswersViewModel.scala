@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels.pensions
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 case class CheckYourAnswersViewModel(

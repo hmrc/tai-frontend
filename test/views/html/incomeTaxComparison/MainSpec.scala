@@ -17,9 +17,8 @@
 package views.html.incomeTaxComparison
 
 import play.api.i18n.{Lang, Messages}
-import play.api.test.FakeRequest
 import play.twirl.api.Html
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -73,25 +72,19 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
     "show the correct table heading in welsh when user pays more tax next year" in {
 
       doc(viewWithMore(welshMessage)).text() must include(
-        welshMessage(
-          "tai.incomeTaxComparison.dateWithoutWelshAmendment",
-          Dates.formatDate(TaxYear().next.start)(welshMessage)))
+        welshMessage("tai.incomeTaxComparison.dateWithoutWelshAmendment", Dates.formatDate(TaxYear().next.start)))
     }
 
     "show the correct table heading in welsh when user pays less tax next year" in {
 
       doc(viewWithLess(welshMessage)).text() must include(
-        welshMessage(
-          "tai.incomeTaxComparison.welshAmendmentToDate",
-          Dates.formatDate(TaxYear().next.start)(welshMessage)))
+        welshMessage("tai.incomeTaxComparison.welshAmendmentToDate", Dates.formatDate(TaxYear().next.start)))
     }
 
     "show the correct table heading in welsh when user pays same tax next year" in {
 
       doc(viewWithSame(welshMessage)).text() must include(
-        welshMessage(
-          "tai.incomeTaxComparison.welshAmendmentToDate",
-          Dates.formatDate(TaxYear().next.start)(welshMessage)))
+        welshMessage("tai.incomeTaxComparison.welshAmendmentToDate", Dates.formatDate(TaxYear().next.start)))
     }
 
     behave like pageWithCombinedHeader(

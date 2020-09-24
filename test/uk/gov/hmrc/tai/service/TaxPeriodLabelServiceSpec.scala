@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.HtmlFormatter
 import utils.BaseSpec

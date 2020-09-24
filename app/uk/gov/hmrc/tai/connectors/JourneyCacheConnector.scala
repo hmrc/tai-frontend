@@ -19,15 +19,15 @@ package uk.gov.hmrc.tai.connectors
 import javax.inject.Inject
 import play.api.Logger
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import uk.gov.hmrc.tai.config.DefaultServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class JourneyCacheConnector @Inject()(httpHandler: HttpHandler) extends DefaultServicesConfig {
+class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
+  implicit ec: ExecutionContext) {
 
-  val serviceUrl: String = baseUrl("tai")
+  val serviceUrl: String = servicesConfig.baseUrl("tai")
 
   def cacheUrl(journeyName: String) = s"$serviceUrl/tai/journey-cache/$journeyName"
 

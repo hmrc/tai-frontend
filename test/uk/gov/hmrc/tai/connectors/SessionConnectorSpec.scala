@@ -48,8 +48,8 @@ class SessionConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut: SessionConnector = new SessionConnector(httpHandler) {
-    override lazy val baseURL: String = "localhost"
+  def sut: SessionConnector = new SessionConnector(httpHandler, servicesConfig) {
+    override val serviceUrl: String = "localhost"
 
     when(httpHandler.deleteFromApi(any())(any(), any()))
       .thenReturn(Future.successful(HttpResponse(200)))

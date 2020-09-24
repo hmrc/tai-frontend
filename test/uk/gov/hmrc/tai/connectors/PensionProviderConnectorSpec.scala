@@ -22,7 +22,6 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 import utils.BaseSpec
@@ -30,7 +29,7 @@ import utils.BaseSpec
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class PensionProviderConnectorSpec extends BaseSpec with DefaultServicesConfig {
+class PensionProviderConnectorSpec extends BaseSpec {
 
   "PensionProviderConnector addPensionProvider" must {
     "return an envelope id on a successful invocation" in {
@@ -72,7 +71,7 @@ class PensionProviderConnectorSpec extends BaseSpec with DefaultServicesConfig {
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut: PensionProviderConnector = new PensionProviderConnector(httpHandler) {
+  def sut: PensionProviderConnector = new PensionProviderConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "testUrl"
   }
 

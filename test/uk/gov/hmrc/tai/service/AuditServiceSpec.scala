@@ -38,6 +38,8 @@ import scala.concurrent.{Await, Future}
 
 class AuditServiceSpec extends BaseSpec {
 
+  val appName = "test"
+
   "AuditService" should {
 
     lazy val now = Instant.now()
@@ -69,7 +71,7 @@ class AuditServiceSpec extends BaseSpec {
 
         val dataEvent = argumentCaptor.getValue
 
-        dataEvent.auditSource mustBe sut.appName
+        dataEvent.auditSource mustBe appName
         dataEvent.auditType mustBe eventName
         dataEvent.detail mustBe eventDetails
         dataEvent.tags("path") mustBe testPath
@@ -98,7 +100,7 @@ class AuditServiceSpec extends BaseSpec {
 
         val dataEvent = argumentCaptor.getValue
 
-        dataEvent.auditSource mustBe sut.appName
+        dataEvent.auditSource mustBe appName
         dataEvent.auditType mustBe eventName
         dataEvent.detail mustBe eventDetails
         dataEvent.tags("path") mustBe testPath
@@ -127,7 +129,7 @@ class AuditServiceSpec extends BaseSpec {
 
         val dataEvent = argumentCaptor.getValue
 
-        dataEvent.auditSource mustBe sut.appName
+        dataEvent.auditSource mustBe appName
         dataEvent.auditType mustBe eventName
         dataEvent.detail mustBe eventDetails
         dataEvent.tags("path") mustBe missingTestPath
@@ -663,12 +665,10 @@ class AuditServiceSpec extends BaseSpec {
 
   class SUT
       extends AuditService(
+        appName,
         mock[AuditConnector],
         mock[PersonService],
         appConfig
-      ) {
-
-    override val appName: String = "test"
-  }
+      )
 
 }

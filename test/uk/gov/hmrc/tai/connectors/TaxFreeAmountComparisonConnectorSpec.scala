@@ -95,6 +95,6 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut = new TaxFreeAmountComparisonConnector(httpHandler)
+  def sut = new TaxFreeAmountComparisonConnector(httpHandler, servicesConfig)
 
 }

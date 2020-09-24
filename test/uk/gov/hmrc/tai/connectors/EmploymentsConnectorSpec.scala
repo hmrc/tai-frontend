@@ -23,7 +23,6 @@ import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live}
@@ -33,7 +32,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class EmploymentsConnectorSpec extends BaseSpec with DefaultServicesConfig with BeforeAndAfterEach {
+class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(httpHandler)
@@ -479,7 +478,7 @@ class EmploymentsConnectorSpec extends BaseSpec with DefaultServicesConfig with 
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut(servUrl: String = "") = new EmploymentsConnector(httpHandler) {
+  def sut(servUrl: String = "") = new EmploymentsConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = servUrl
   }
 

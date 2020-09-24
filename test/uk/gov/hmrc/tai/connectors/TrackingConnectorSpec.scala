@@ -92,7 +92,7 @@ class TrackingConnectorSpec extends BaseSpec with BeforeAndAfterEach with ScalaF
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut: TrackingConnector = new TrackingConnector(httpHandler) {
+  def sut: TrackingConnector = new TrackingConnector(httpHandler, servicesConfig) {
     override lazy val serviceUrl: String = "mockUrl"
   }
 }

@@ -51,6 +51,9 @@
     Play.current.injector.instanceOf[ApplicationConfig]
 }
 
+@langUtils = @{
+    Play.current.injector.instanceOf[LanguageUtils]
+}
 
 @serviceSuffix = @{
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
@@ -160,7 +163,7 @@
 }
 
 @isWelshActive = @{
-    LanguageUtils.getCurrentLang == Lang("cy")
+    langUtils.getCurrentLang == Lang("cy")
 }
 
 @mustacheMap = @{

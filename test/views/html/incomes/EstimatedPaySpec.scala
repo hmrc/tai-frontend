@@ -17,7 +17,6 @@
 package views.html.incomes
 
 import org.joda.time.LocalDate
-import org.scalatest.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
@@ -26,7 +25,7 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
 
-class EstimatedPaySpec extends TaiViewSpec with MockitoSugar {
+class EstimatedPaySpec extends TaiViewSpec {
 
   override def view: Html = views.html.incomes.estimatedPay(createViewModel())
 

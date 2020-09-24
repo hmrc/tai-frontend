@@ -17,9 +17,9 @@
 package uk.gov.hmrc.tai.viewModels
 
 import controllers.i18n.TaiLanguageController
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import play.api.i18n.{Lang, Messages}
-import uk.gov.hmrc.domain.Generator
+import play.api.test.Helpers.stubControllerComponents
+import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.PersonService
@@ -206,6 +206,8 @@ class TaxCodeDescriptorSpec extends BaseSpec {
   private class SUT(welshEnabled: Boolean = true)
       extends TaiLanguageController(
         appConfig,
+        langUtils,
+        stubControllerComponents(),
         partialRetriever,
         templateRenderer
       )

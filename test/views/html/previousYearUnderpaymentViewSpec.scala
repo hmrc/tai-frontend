@@ -16,10 +16,9 @@
 
 package views.html
 
-import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec

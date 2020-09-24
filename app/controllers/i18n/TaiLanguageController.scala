@@ -17,9 +17,8 @@
 package controllers.i18n
 
 import javax.inject.Inject
-import play.api.Application
 import play.api.i18n.{Lang, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -27,9 +26,11 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 
 class TaiLanguageController @Inject()(
   applicationConfig: ApplicationConfig,
+  languageUtils: LanguageUtils,
+  cc: ControllerComponents,
   val partialRetriever: FormPartialRetriever,
-  val templateRenderer: TemplateRenderer)(implicit messagesApi: MessagesApi, app: Application)
-    extends LanguageController {
+  val templateRenderer: TemplateRenderer)(implicit messagesApi: MessagesApi)
+    extends LanguageController(applicationConfig.runModeConfiguration, languageUtils, cc) {
 
   override protected def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
@@ -41,9 +42,9 @@ class TaiLanguageController @Inject()(
   override def switchToLanguage(language: String): Action[AnyContent] = Action { implicit request =>
     val newLanguage =
       if (applicationConfig.welshLanguageEnabled)
-        languageMap.getOrElse(language, LanguageUtils.getCurrentLang)
+        languageMap.getOrElse(language, languageUtils.getCurrentLang)
       else
-        LanguageUtils.getCurrentLang
+        languageUtils.getCurrentLang
 
     val redirectURL = request.headers.get(REFERER).getOrElse(fallbackURL)
 

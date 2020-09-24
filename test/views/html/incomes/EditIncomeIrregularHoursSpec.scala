@@ -16,18 +16,15 @@
 
 package views.html.incomes
 
-import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
-import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.ViewModelHelper.{currentTaxYearRangeHtmlNonBreak, withPoundPrefix}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
-import controllers.income.estimatedPay.update.routes
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefix
 
-class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
+class EditIncomeIrregularHoursSpec extends TaiViewSpec {
 
   private val employerName = "employerName"
   private val currentAmount = 1000
