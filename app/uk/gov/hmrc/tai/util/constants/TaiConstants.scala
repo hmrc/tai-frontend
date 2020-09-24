@@ -63,6 +63,10 @@ object TaiConstants {
   val AuthProviderVerify = "Verify"
   val AuthProvider = "AuthProvider"
 
+  val ViewAuthProviderGG = "GGW"
+  val ViewAuthProviderVerify = "IDA"
+  val ViewAuthProvider = "ap"
+
   val SessionPostLogoutPage = "postLogoutPage"
 
   val TaxableIncomeCurrentYearPage = 1
