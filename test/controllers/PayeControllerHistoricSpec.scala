@@ -90,7 +90,7 @@ class PayeControllerHistoricSpec
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-      status(result) mustBe 200
+      status(result) mustBe OK
       contentAsString(result) must include(messages("tai.rti.down"))
     }
 
@@ -209,24 +209,15 @@ class PayeControllerHistoricSpec
     }
   }
 
-  val fakeNino = new Generator(new Random).nextNino
-
-  def createTestController(
-    employments: Seq[Employment] = Nil,
-    previousYears: Int = 3,
-    showTaxCodeDescriptionLink: Boolean = false) =
-    new PayeControllerHistoricTest(employments, previousYears, showTaxCodeDescriptionLink)
+  def createTestController(employments: Seq[Employment] = Nil, showTaxCodeDescriptionLink: Boolean = false) =
+    new PayeControllerHistoricTest(employments, showTaxCodeDescriptionLink)
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  class PayeControllerHistoricTest(
-    employments: Seq[Employment],
-    previousYears: Int,
-    showTaxCodeDescriptionLink: Boolean)
+  class PayeControllerHistoricTest(employments: Seq[Employment], showTaxCodeDescriptionLink: Boolean)
       extends PayeControllerHistoric(
-        mockAppConfig,
+        appConfig,
         taxCodeChangeService,
         employmentService,
         FakeAuthAction,
@@ -235,8 +226,6 @@ class PayeControllerHistoricSpec
         partialRetriever,
         templateRenderer
       ) {
-
-    when(mockAppConfig.numberOfPreviousYearsToShow) thenReturn 5
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
     when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))

@@ -33,22 +33,15 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
   override lazy val port = 12345
 
   val additionalConfiguration = Map[String, Any](
-    "govuk-tax.services.contact-frontend.host"         -> "localhost",
-    "govuk-tax.services.contact-frontend.port"         -> "12345",
-    "govuk-tax.services.pertax-frontend.host"          -> "localhost",
-    "govuk-tax.services.pertax-frontend.port"          -> "1111",
-    "govuk-tax.services.personal-tax-summary.host"     -> "localhost",
-    "govuk-tax.services.personal-tax-summary.port"     -> "2222",
-    "govuk-tax.services.activity-logger.host"          -> "localhost",
-    "govuk-tax.services.activity-logger.port"          -> "12345",
-    "tai.cy3.enabled"                                  -> true,
-    "govuk-tax.services.feedback-survey-frontend.host" -> "localhost",
-    "govuk-tax.services.feedback-survey-frontend.port" -> "3333",
-    "govuk-tax.services.company-auth.host"             -> "localhost",
-    "govuk-tax.services.company-auth.port"             -> "4444",
-    "govuk-tax.services.citizen-auth.host"             -> "localhost",
-    "govuk-tax.services.citizen-auth.port"             -> "9999",
-    "metrics.enabled"                                  -> false
+    "microservice.services.contact-frontend.port"         -> port,
+    "microservice.services.pertax-frontend.port"          -> "1111",
+    "microservice.services.personal-tax-summary.port"     -> "2222",
+    "microservice.services.activity-logger.port"          -> port,
+    "tai.cy3.enabled"                                     -> true,
+    "microservice.services.feedback-survey-frontend.port" -> "3333",
+    "microservice.services.company-auth.port"             -> "4444",
+    "microservice.services.citizen-auth.port"             -> "9999",
+    "metrics.enabled"                                     -> false
   )
 
   implicit override lazy val app: Application = new GuiceApplicationBuilder().configure(additionalConfiguration).build()

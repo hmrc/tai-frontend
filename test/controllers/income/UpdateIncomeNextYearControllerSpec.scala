@@ -23,7 +23,8 @@ import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => meq}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{reset, when}
+import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -43,7 +44,8 @@ import views.html.incomes.nextYear._
 
 import scala.concurrent.Future
 
-class UpdateIncomeNextYearControllerSpec extends BaseSpec with FormValuesConstants with ControllerViewTestHelper {
+class UpdateIncomeNextYearControllerSpec
+    extends BaseSpec with FormValuesConstants with ControllerViewTestHelper with BeforeAndAfterEach {
 
   val employmentID = 1
   val currentEstPay = 1234
@@ -53,6 +55,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with FormValuesConstan
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+
+  override def beforeEach() = reset(mockAppConfig)
 
   "onPageLoad" must {
     "redirect to the duplicateSubmissionWarning url" when {
@@ -513,7 +517,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with FormValuesConstan
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        appConfig,
+        mockAppConfig,
         MockPartialRetriever,
         MockTemplateRenderer
       )

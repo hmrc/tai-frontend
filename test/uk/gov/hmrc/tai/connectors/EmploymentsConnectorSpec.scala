@@ -101,7 +101,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
         result mustBe oneEmploymentDetails
 
-        verify(httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
+        verify(httpHandler).getFromApi(Matchers.eq(s"/tai/$nino/employments/years/${year.year}"))(any())
       }
 
       "api provides multiple employments" in {
@@ -233,7 +233,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       "we send a PUT request to backend" in {
         val json = Json.obj("data" -> JsString("123-456-789"))
         when(httpHandler.putToApi(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(HttpResponse(200, Some(json))))
+          .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
 
         val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15), "YES", Some("EXT-TEST"))
 
@@ -247,7 +247,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       "json is invalid" in {
         val json = Json.obj("test" -> JsString("123-456-789"))
         when(httpHandler.putToApi(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(HttpResponse(200, Some(json))))
+          .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
         val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15), "YES", Some("EXT-TEST"))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut().endEmployment(nino, 1, endEmploymentData), 5.seconds)
@@ -269,7 +269,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       when(
         httpHandler
           .postToApi(Matchers.eq(sut().addEmploymentServiceUrl(nino)), Matchers.eq(addEmployment))(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
 
       val result = Await.result(sut().addEmployment(nino, addEmployment), 5.seconds)
 
@@ -284,7 +284,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler.postToApi(Matchers.eq(s"/tai/$nino/employments/1/reason"), Matchers.eq(model))(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
 
       val result = Await.result(sut().incorrectEmployment(nino, 1, model), 5.seconds)
 

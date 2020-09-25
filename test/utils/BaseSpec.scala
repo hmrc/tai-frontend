@@ -16,15 +16,14 @@
 
 package utils
 import builders.UserBuilder
-import controllers.FakeTaiPlayApplication
 import controllers.auth.AuthedUser
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
-import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
-import play.api.test.FakeRequest
-import uk.gov.hmrc.domain.{Generator, Nino}
+import play.api.mvc.MessagesControllerComponents
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
@@ -48,12 +47,11 @@ trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar wi
   implicit lazy val lang: Lang = Lang("en")
   implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-  val nino: Nino = new Generator().nextNino
+  val nino: Nino = FakeAuthAction.nino
 
   implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
   implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
   implicit val authedUser: AuthedUser = UserBuilder()
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
 }

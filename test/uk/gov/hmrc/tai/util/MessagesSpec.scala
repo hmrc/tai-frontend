@@ -24,7 +24,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import utils.BaseSpec
 
 import scala.util.matching.Regex
-@RunWith(classOf[JUnitRunner])
+//@RunWith(classOf[JUnitRunner])
 class MessagesSpec extends BaseSpec {
 
   override lazy val fakeApplication: Application = new GuiceApplicationBuilder()
@@ -49,7 +49,6 @@ class MessagesSpec extends BaseSpec {
       val englishMessageCount = messagesApi.messages("default").size - frameworkProvidedKeys.size
 
       messagesApi.messages("cy").size mustBe englishMessageCount
-      messagesApi.messages("default.play").size mustBe 46
     }
   }
 

@@ -19,12 +19,14 @@ package views.html
 import builders.UserBuilder
 import org.jsoup.Jsoup
 import play.api.i18n.Lang
+import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class GetHelpPageSpec extends TaiViewSpec {
 
   implicit val user = UserBuilder()
+  implicit val request = FakeRequest()
   override def view: Html = views.html.help.getHelp(appConfig)
 
   "show get help page" must {

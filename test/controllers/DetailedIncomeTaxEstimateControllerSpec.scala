@@ -32,6 +32,31 @@ import scala.concurrent.Future
 
 class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
 
+  val personService: PersonService = mock[PersonService]
+  val codingComponentService = mock[CodingComponentService]
+  val taxAccountService = mock[TaxAccountService]
+
+  def sut =
+    new DetailedIncomeTaxEstimateController(
+      taxAccountService,
+      codingComponentService,
+      FakeAuthAction,
+      FakeValidatePerson,
+      mcc,
+      partialRetriever,
+      templateRenderer
+    )
+
+  when(taxAccountService.totalTax(any(), any())(any()))
+    .thenReturn(Future.successful(TaiSuccessResponseWithPayload(TotalTax(0, Seq.empty, None, None, None))))
+  when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+    .thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
+  when(taxAccountService.taxAccountSummary(any(), any())(any()))
+    .thenReturn(Future.successful(TaiSuccessResponseWithPayload(TaxAccountSummary(0, 0, 0, 0, 0))))
+  when(taxAccountService.nonTaxCodeIncomes(any(), any())(any()))
+    .thenReturn(Future.successful(TaiSuccessResponseWithPayload(NonTaxCodeIncome(None, Seq.empty))))
+  when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+
   "Detailed Income Tax Estimate Controller" must {
     "return OK when responses are " when {
       "there are bands present" in {
@@ -76,31 +101,4 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
       }
     }
   }
-
-  val personService: PersonService = mock[PersonService]
-  val codingComponentService = mock[CodingComponentService]
-  val taxAccountService = mock[TaxAccountService]
-
-  def sut =
-    new DetailedIncomeTaxEstimateController(
-      taxAccountService,
-      codingComponentService,
-      FakeAuthAction,
-      FakeValidatePerson,
-      mcc,
-      partialRetriever,
-      templateRenderer
-    ) {
-
-      when(taxAccountService.totalTax(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(TotalTax(0, Seq.empty, None, None, None))))
-      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
-      when(taxAccountService.taxAccountSummary(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(TaxAccountSummary(0, 0, 0, 0, 0))))
-      when(taxAccountService.nonTaxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(NonTaxCodeIncome(None, Seq.empty))))
-      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
-    }
-
 }

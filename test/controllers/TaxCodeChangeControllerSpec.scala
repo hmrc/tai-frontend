@@ -20,9 +20,8 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.joda.time.LocalDate
 import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.Matchers.{any, eq => meq}
 import org.mockito.Mockito.when
-import play.api.i18n.I18nSupport
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
@@ -146,7 +145,8 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         templateRenderer
       ) {
 
-    when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
+    when(taxCodeChangeService.latestTaxCodeChangeDate(meq(nino))(any()))
+      .thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
   }
 
 }

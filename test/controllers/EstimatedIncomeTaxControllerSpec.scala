@@ -21,6 +21,7 @@ import controllers.actions.FakeValidatePerson
 import org.joda.time.LocalDate
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.play.partials.HtmlPartial
@@ -39,6 +40,8 @@ import utils.BaseSpec
 import scala.concurrent.Future
 
 class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants with TaxRegionConstants {
+
+  implicit val request = FakeRequest()
 
   "EstimatedIncomeTaxController" must {
     "return Ok" when {

@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.viewModels
 import controllers.i18n.TaiLanguageController
 import play.api.i18n.{Lang, Messages}
 import play.api.test.Helpers.stubControllerComponents
-import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.PersonService

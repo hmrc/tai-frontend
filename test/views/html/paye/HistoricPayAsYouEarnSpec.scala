@@ -18,9 +18,6 @@ package views.html.paye
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.Mockito._
-import play.api.Application
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
@@ -39,22 +36,11 @@ class HistoricPayAsYouEarnSpec extends TaiViewSpec {
   private val employment: EmploymentViewModel =
     EmploymentViewModel("test employment", 123.32, 1, false, Some("payrollNumber"))
 
-  def noOfPreviousYears: Int = 1
-
-  override lazy val app: Application = GuiceApplicationBuilder()
-    .configure(
-      additionalConfiguration ++
-        Map("tai.numberOfPreviousYearsToShow" -> noOfPreviousYears)
-    )
-    .build()
-
   def view: Html =
     views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), appConfig)
 
-  def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html = {
-    when(appConfig.numberOfPreviousYearsToShow) thenReturn noOfPreviousYears
+  def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html =
     views.html.paye.historicPayAsYouEarn(vm, appConfig)
-  }
 
   "historicPayAsYouEarn view" should {
 

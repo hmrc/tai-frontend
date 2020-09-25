@@ -150,6 +150,18 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
     "have the tell us about a change links" in {
       doc(view) must haveLinkElement(
         id = "companyBenefitsLink",
+        href = appConfig.companyBenefitsLinkUrl,
+        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText")
+      )
+
+      doc(view) must haveLinkElement(
+        id = "allowancesTaxReliefsLink",
+        href = appConfig.taxFreeAllowanceLinkUrl,
+        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText")
+      )
+
+      doc(view) must haveLinkElement(
+        id = "otherIncomeLink",
         href = appConfig.otherIncomeLinkUrl,
         text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText")
       )

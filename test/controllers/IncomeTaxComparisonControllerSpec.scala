@@ -22,7 +22,7 @@ import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{verify, when}
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -38,23 +38,27 @@ import scala.concurrent.Future
 
 class IncomeTaxComparisonControllerSpec extends BaseSpec {
 
+  implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+
   "onPageLoad" must {
     "display the cy plus one page" in {
-      val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val controller = new TestController
+      val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(Messages("tai.incomeTaxComparison.heading.more"))
 
-      verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
+      verify(employmentService).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
     }
 
     "throw an error page" when {
       "not able to fetch comparision details" in {
+        val controller = new TestController
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiNotFoundResponse("Not Found")))
 
-        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = controller.onPageLoad()(request)
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -64,18 +68,20 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
 
   "rendered CY+1 page" must {
     "show estimated income for CY and CY+1 for single employment" in {
+      val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOne)))
 
-      val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
-      val doc = Jsoup.parse(contentAsString(result))
+      def doc = Jsoup.parse(contentAsString(result))
       doc.getElementById("amount-cy-0").text must equal("£1,111")
       doc.getElementById("amount-cy-plus-one-0").text must equal("£2,222")
     }
 
     "show estimated income for CY and CY+1 for multiple employments" in {
+      val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear()))(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesMultiple)))
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(
@@ -83,7 +89,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
         .thenReturn(Future.successful(Seq(employment, employment2)))
 
-      val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
@@ -94,6 +100,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     }
 
     "show estimated income for CY and CY+1 for multiple pensions" in {
+      val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear()))(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesMultiple)))
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(
@@ -101,7 +108,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
         .thenReturn(Future.successful(Seq(employment, employment2, pension, pension2)))
 
-      val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
@@ -112,12 +119,13 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     }
 
     "show not applicable when CY and CY+1 employment id's don't match" in {
+      val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOne2)))
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
         .thenReturn(Future.successful(Seq(employment, employment2)))
 
-      val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
@@ -126,12 +134,13 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     }
 
     "show not applicable when employment id is missing for CY+1" in {
+      val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesNoEmpId)))
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
         .thenReturn(Future.successful(Seq(employment, employment2)))
 
-      val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = controller.onPageLoad()(request)
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
       doc.getElementById("amount-cy-plus-one-0").text must equal("not applicable")
@@ -183,30 +192,29 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
   val taxAccountService = mock[TaxAccountService]
   val updateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
 
-  def sut: IncomeTaxComparisonController =
-    new IncomeTaxComparisonController(
-      mock[AuditConnector],
-      taxAccountService,
-      employmentService,
-      codingComponentService,
-      updateNextYearsIncomeService,
-      FakeAuthAction,
-      FakeValidatePerson,
-      appConfig,
-      mcc,
-      partialRetriever,
-      templateRenderer
-    ) {
+  class TestController()
+      extends IncomeTaxComparisonController(
+        mock[AuditConnector],
+        taxAccountService,
+        employmentService,
+        codingComponentService,
+        updateNextYearsIncomeService,
+        FakeAuthAction,
+        FakeValidatePerson,
+        appConfig,
+        mcc,
+        partialRetriever,
+        templateRenderer
+      ) {
 
-      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-      when(taxAccountService.taxAccountSummary(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
-      when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
-        .thenReturn(Future.successful(Seq.empty[CodingComponent]))
-      when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
-        .thenReturn(Future.successful(Seq(employment)))
-      when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any())).thenReturn(Future.successful(false))
-    }
-
+    when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+      .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+    when(taxAccountService.taxAccountSummary(any(), any())(any()))
+      .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
+    when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+      .thenReturn(Future.successful(Seq.empty[CodingComponent]))
+    when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
+      .thenReturn(Future.successful(Seq(employment)))
+    when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any())).thenReturn(Future.successful(false))
+  }
 }

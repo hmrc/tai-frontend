@@ -27,6 +27,19 @@ import scala.concurrent.duration._
 
 class TaiLanguageControllerSpec extends BaseSpec {
 
+  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+
+  private class SUT
+      extends TaiLanguageController(
+        mockAppConfig,
+        langUtils,
+        stubControllerComponents(),
+        partialRetriever,
+        templateRenderer
+      )
+
+  when(mockAppConfig.welshLanguageEnabled) thenReturn true
+
   "switchLanguage method" must {
 
     "return a redirect to the what do you want to do page" when {
@@ -78,17 +91,4 @@ class TaiLanguageControllerSpec extends BaseSpec {
       }
     }
   }
-
-  private val mockAppConfig = mock[ApplicationConfig]
-
-  when(mockAppConfig.welshLanguageEnabled) thenReturn true
-
-  private class SUT
-      extends TaiLanguageController(
-        mockAppConfig,
-        langUtils,
-        stubControllerComponents(),
-        partialRetriever,
-        templateRenderer
-      )
 }

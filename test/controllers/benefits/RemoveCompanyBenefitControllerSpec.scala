@@ -26,8 +26,8 @@ import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
@@ -473,6 +473,8 @@ class RemoveCompanyBenefitControllerSpec
             Seq[Option[String]](Some("10000"), Some("123456789"))
           ))
       )
+
+      implicit val request = FakeRequest()
 
       val result = SUT.checkYourAnswers()(request)
 

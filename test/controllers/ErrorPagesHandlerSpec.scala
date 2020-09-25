@@ -17,10 +17,11 @@
 package controllers
 
 import builders.UserBuilder
-import controllers.auth.{AuthedUser, AuthenticatedRequest}
+import controllers.auth.AuthenticatedRequest
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import play.api.mvc.Results.{BadRequest, Redirect}
 import play.api.test.FakeRequest
@@ -349,8 +350,8 @@ class ErrorPagesHandlerSpec extends BaseSpec {
   val createSut = new SUT
 
   class SUT extends ErrorPagesHandler {
-    override implicit def templateRenderer = templateRenderer
-    override implicit def partialRetriever = partialRetriever
+    override implicit def templateRenderer = MockTemplateRenderer
+    override implicit def partialRetriever = MockPartialRetriever
 
     val recoveryLocation: RecoveryLocation = classOf[SUT]
   }

@@ -61,8 +61,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
             "previous" -> Json.arr(
               Json.obj(
                 "taxCode"          -> "code",
-                "startDate"        -> Json.parse(startDate.toString()),
-                "endDate"          -> Json.parse(startDate.plusDays(1).toString()),
+                "startDate"        -> startDate.toString(),
+                "endDate"          -> startDate.plusDays(1).toString(),
                 "basisOfOperation" -> "Cumulative",
                 "employerName"     -> "Employer 1",
                 "pensionIndicator" -> false,
@@ -73,8 +73,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
             "current" -> Json.arr(
               Json.obj(
                 "taxCode"          -> "code",
-                "startDate"        -> Json.parse(startDate.plusDays(2).toString()),
-                "endDate"          -> Json.parse(TaxYear().end.toString()),
+                "startDate"        -> startDate.plusDays(2).toString(),
+                "endDate"          -> TaxYear().end.toString(),
                 "basisOfOperation" -> "Cumulative",
                 "employerName"     -> "Employer 1",
                 "pensionIndicator" -> false,
@@ -141,8 +141,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         "data" -> Json.arr(
           Json.obj(
             "taxCode"          -> "code",
-            "startDate"        -> Json.parse(startDate.toString()),
-            "endDate"          -> Json.parse(startDate.plusDays(1).toString()),
+            "startDate"        -> startDate.toString(),
+            "endDate"          -> startDate.plusDays(1).toString(),
             "basisOfOperation" -> "Cumulative",
             "employerName"     -> "Employer 1",
             "pensionIndicator" -> false,
@@ -151,8 +151,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
           ),
           Json.obj(
             "taxCode"          -> "code2",
-            "startDate"        -> Json.parse(startDate.toString()),
-            "endDate"          -> Json.parse(startDate.plusDays(1).toString()),
+            "startDate"        -> startDate.toString(),
+            "endDate"          -> startDate.plusDays(1).toString(),
             "basisOfOperation" -> "Cumulative",
             "employerName"     -> "Employer 2",
             "pensionIndicator" -> false,

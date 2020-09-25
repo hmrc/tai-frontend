@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.util
 
+import builders.RequestBuilder
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import play.twirl.api.Html
@@ -25,6 +26,8 @@ import utils.BaseSpec
 class HelpFormHelperSpec extends BaseSpec {
 
   val mockPartialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
+
+  implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
   "HelpFormHelper" should {
 
