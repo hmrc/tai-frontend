@@ -62,11 +62,11 @@
 @isUserResearchBannerHidden = @{request.cookies.exists((x: Cookie) => x.name == "mdtpurr")}
 
 @authProvider = @{
-    request.session.get(SessionKeys.authProvider)
+    request.session.get(TaiConstants.ViewAuthProvider)
 }
 
 @isGG = @{
-    authProvider.contains("GGW")
+    authProvider.contains(TaiConstants.ViewAuthProviderGG)
 }
 
 @isSa = @{
@@ -76,7 +76,7 @@
 }
 
 @isVerify = @{
-    authProvider.contains("IDA")
+    authProvider.contains(TaiConstants.ViewAuthProviderVerify)
 }
 
 @mustacheCheck(str: String) = @{
@@ -166,6 +166,10 @@
     langUtils.getCurrentLang == Lang("cy")
 }
 
+@accessibilityFooterUrl = {
+@appConfig.accessibilityStatementUrl(request.uri)
+}
+
 @mustacheMap = @{
     Map[String, Any](
         "nuanceWebChat" -> Map(
@@ -229,6 +233,14 @@
         )
     } else mustacheMap
 }
+
+@extraTemplateArguments = @{
+    if(appConfig.accessibilityStatementToggle) {
+       templateArguments ++ Map[String,Any](
+     "accessibilityFooterUrl" -> accessibilityFooterUrl)
+    } else templateArguments
+}
+
 @{
-    templateRenderer.renderDefaultTemplate(appConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), templateArguments)
+    templateRenderer.renderDefaultTemplate(appConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), extraTemplateArguments)
 }

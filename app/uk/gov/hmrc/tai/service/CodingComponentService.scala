@@ -19,14 +19,14 @@ package uk.gov.hmrc.tai.service
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.connectors.{TaxAccountConnector, TaxFreeAmountComparisonConnector}
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 
 class CodingComponentService @Inject()(
   taxAccountConnector: TaxAccountConnector,
@@ -36,6 +36,7 @@ class CodingComponentService @Inject()(
     taxAccountConnector.codingComponents(nino, year) map {
       case TaiSuccessResponseWithPayload(codingComponents: Seq[CodingComponent]) =>
         filterOutZeroAmountsComponents(codingComponents)
+      case TaiNotFoundResponse(_)          => Seq.empty
       case TaiTaxAccountFailureResponse(e) => throw new RuntimeException(e)
       case _                               => throw new RuntimeException("could not fetch coding components")
     }

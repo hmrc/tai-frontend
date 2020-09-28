@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.config
 import javax.inject.Inject
 import play.api.{ConfigLoader, Configuration}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.tai.model.TaxYear
 import views.html.helper
 
@@ -54,6 +55,15 @@ class ApplicationConfig @Inject()(
     s"$taiRootUri/digital-forms/form/tell-us-about-investment-income/draft/guide"
   lazy val taxFreeAllowanceLinkUrl =
     s"$taiRootUri/digital-forms/form/check-income-tax-tell-us-your-tax-free-allowance/draft/guide"
+
+  lazy val accessibilityStatementToggle: Boolean =
+    getOptional[Boolean]("accessibility-statement.toggle").getOrElse(false)
+
+  lazy val accessibilityBaseUrl: String = servicesConfig.getString(s"accessibility-statement.baseUrl")
+  lazy private val accessibilityRedirectUrl: String = servicesConfig.getString(s"accessibility-statement.redirectUrl")
+  def accessibilityStatementUrl(referrer: String) =
+    s"$accessibilityBaseUrl/accessibility-statement$accessibilityRedirectUrl?referrerUrl=${SafeRedirectUrl(
+      accessibilityBaseUrl + referrer).encodedUrl}"
 
   lazy val reportAProblemPartialUrl = s"${fetchUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
   lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"

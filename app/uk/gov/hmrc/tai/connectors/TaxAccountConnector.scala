@@ -100,6 +100,9 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
     httpHandler.getFromApiV2(codingComponentsUrl(nino.nino, year)) map (
       json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads)))
     ) recover {
+      case e: NotFoundException =>
+        Logger.warn(s"Coding Components - No tax account information found: ${e.getMessage}")
+        TaiNotFoundResponse(e.getMessage)
       case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve coding components for $nino with exception:${e.getMessage}")
@@ -133,6 +136,9 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
     httpHandler.getFromApiV2(totalTaxUrl(nino.nino, year)) map (
       json => TaiSuccessResponseWithPayload((json \ "data").as[TotalTax])
     ) recover {
+      case e: NotFoundException =>
+        Logger.warn(s"Total tax - No tax account information found: ${e.getMessage}")
+        TaiNotFoundResponse(e.getMessage)
       case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve total tax for $nino with exception:${e.getMessage}")
