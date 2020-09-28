@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.tai.util
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import play.api.Application
 import play.api.i18n.{Lang, Messages}
 import play.api.inject.guice.GuiceApplicationBuilder
 import utils.BaseSpec
 
 import scala.util.matching.Regex
-//@RunWith(classOf[JUnitRunner])
+
 class MessagesSpec extends BaseSpec {
 
   override lazy val fakeApplication: Application = new GuiceApplicationBuilder()
