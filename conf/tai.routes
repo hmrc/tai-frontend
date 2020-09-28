@@ -223,7 +223,11 @@ GET         /redirect-company-benefit/:employmentId/:benefitType                
 GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision
 POST        /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.submitDecision
 
+## Language Switches
 GET         /language/:lang                                                            controllers.i18n.TaiLanguageController.switchToLanguage(lang: String)
+
+GET         /language/en                                                               controllers.i18n.TaiLanguageController.english()
+GET         /language/cy                                                               controllers.i18n.TaiLanguageController.welsh()
 
 ## Incorrect Pension
 
