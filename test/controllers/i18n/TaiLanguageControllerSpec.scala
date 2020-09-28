@@ -18,6 +18,7 @@ package controllers.i18n
 
 import builders.RequestBuilder
 import org.mockito.Mockito._
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import utils.BaseSpec
@@ -27,67 +28,23 @@ import scala.concurrent.duration._
 
 class TaiLanguageControllerSpec extends BaseSpec {
 
-  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  def sut = new TaiLanguageController(
+    appConfig,
+    langUtils,
+    stubControllerComponents(),
+    partialRetriever,
+    templateRenderer
+  )
 
-  private class SUT
-      extends TaiLanguageController(
-        mockAppConfig,
-        langUtils,
-        stubControllerComponents(),
-        partialRetriever,
-        templateRenderer
-      )
+  "switchToLanguage" must {
 
-  when(mockAppConfig.welshLanguageEnabled) thenReturn true
+    "default to the correct fallbackUrl" when {
 
-  "switchLanguage method" must {
+      "there is no referrer set in the request header" in {
 
-    "return a redirect to the what do you want to do page" when {
-      "no referrer header is present" in {
-        val result = new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include(
-          controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
-      }
-    }
+        val result = sut.english()(FakeRequest())
 
-    "return a redirect to the referrer url" when {
-      "a referrer header is present" in {
-        val result = new SUT()
-          .switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET", Map("Referer" -> "/fake/url")))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include("/fake/url")
-      }
-    }
-
-    "return a header to set the PLAY_LANG cookie to the requested language code" when {
-      "the requested language is supported" in {
-        val result =
-          Await.result(new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-        result.header.headers.isDefinedAt("Set-Cookie") mustBe true
-        result.header.headers("Set-Cookie") must include("PLAY_LANG=en;")
-
-        val result2 =
-          Await.result(new SUT().switchToLanguage("cymraeg")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-        result2.header.headers.isDefinedAt("Set-Cookie") mustBe true
-        result2.header.headers("Set-Cookie") must include("PLAY_LANG=cy;")
-      }
-    }
-
-    "return a header to set the PLAY_LANG to the current language" when {
-      "the requested language is not supported" in {
-        val result =
-          Await.result(new SUT().switchToLanguage("czech")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-        result.header.headers.isDefinedAt("Set-Cookie") mustBe true
-        result.header.headers("Set-Cookie") must include("PLAY_LANG=en;")
-      }
-      "the requested language is supported, but the welsh language feature toggle is not enabled" in {
-        when(mockAppConfig.welshLanguageEnabled) thenReturn false
-
-        val result = Await
-          .result(new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-        result.header.headers.isDefinedAt("Set-Cookie") mustBe true
-        result.header.headers("Set-Cookie") must include("PLAY_LANG=en;")
+        redirectLocation(result) mustBe Some(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url)
       }
     }
   }

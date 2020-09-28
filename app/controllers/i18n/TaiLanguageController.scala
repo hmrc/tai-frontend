@@ -39,15 +39,6 @@ class TaiLanguageController @Inject()(
 
   override protected def fallbackURL: String = controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url
 
-  override def switchToLanguage(language: String): Action[AnyContent] = Action { implicit request =>
-    val newLanguage =
-      if (applicationConfig.welshLanguageEnabled)
-        languageMap.getOrElse(language, languageUtils.getCurrentLang)
-      else
-        languageUtils.getCurrentLang
-
-    val redirectURL = request.headers.get(REFERER).getOrElse(fallbackURL)
-
-    Redirect(redirectURL).withLang(Lang(newLanguage.code))
-  }
+  def english(): Action[AnyContent] = switchToLanguage(language = "english")
+  def welsh(): Action[AnyContent] = switchToLanguage(language = "cymraeg")
 }

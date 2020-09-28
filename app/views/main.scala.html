@@ -204,8 +204,8 @@
         "inlineScript" -> inlineScript,
         "showPropositionLinks" -> isWelshEnabled,
         "langSelector" -> isWelshEnabled,
-        "enUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("english"),
-        "cyUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("cymraeg"),
+        "enUrl" -> controllers.i18n.routes.TaiLanguageController.english(),
+        "cyUrl" -> controllers.i18n.routes.TaiLanguageController.welsh(),
         "isWelsh" -> isWelshActive,
         "optimizely" -> Map(
             "audience" -> optimizelyAudience.getOrElse("Other user"),
