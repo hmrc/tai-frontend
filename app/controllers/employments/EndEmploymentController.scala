@@ -214,7 +214,7 @@ class EndEmploymentController @Inject()(
 
   def endEmploymentPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    implicit val lang: Lang = request.lang
+
     val nino = user.nino
     journeyCacheService.collectedJourneyValues(
       Seq(EndEmployment_NameKey, EndEmployment_EmploymentIdKey),
@@ -244,7 +244,6 @@ class EndEmploymentController @Inject()(
   def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      implicit val lang: Lang = request.lang
       val nino = user.nino
       employmentService.employment(nino, employmentId) flatMap {
         case Some(employment) =>
@@ -269,7 +268,6 @@ class EndEmploymentController @Inject()(
 
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    implicit val lang: Lang = request.lang
 
     for {
       employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey)
@@ -291,7 +289,6 @@ class EndEmploymentController @Inject()(
 
   def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    implicit val lang: Lang = request.lang
 
     YesNoTextEntryForm
       .form(

@@ -21,7 +21,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.{Inject, Named}
 import org.joda.time.LocalDate
-import play.api.i18n.{Lang, Messages}
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -74,7 +74,6 @@ class AddPensionProviderController @Inject()(
   def addPensionProviderName(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.currentValue(AddPensionProvider_NameKey) map { pensionName =>
       implicit val user: AuthedUser = request.taiUser
-      implicit val lang: Lang = request.lang
       Ok(views.html.pensions.addPensionName(PensionProviderNameForm.form.fill(pensionName.getOrElse(""))))
     }
   }
@@ -82,7 +81,6 @@ class AddPensionProviderController @Inject()(
   def submitPensionProviderName(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      implicit val lang: Lang = request.lang
       PensionProviderNameForm.form.bindFromRequest.fold(
         formWithErrors => {
           Future.successful(BadRequest(views.html.pensions.addPensionName(formWithErrors)))
@@ -149,7 +147,6 @@ class AddPensionProviderController @Inject()(
   def addPensionProviderStartDate(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      implicit val lang: Lang = request.lang
       (journeyCacheService
         .collectedJourneyValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_StartDateKey)) map tupled {
         (mandSeq, optionalVals) =>
@@ -175,7 +172,6 @@ class AddPensionProviderController @Inject()(
   def submitPensionProviderStartDate(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      implicit val lang: Lang = request.lang
       journeyCacheService.currentCache flatMap { currentCache =>
         PensionAddDateForm(currentCache(AddPensionProvider_NameKey)).form
           .bindFromRequest()
@@ -195,7 +191,6 @@ class AddPensionProviderController @Inject()(
 
   def addPensionNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    implicit val lang: Lang = request.lang
     journeyCacheService.currentCache map { cache =>
       val viewModel = PensionNumberViewModel(cache)
 
@@ -221,7 +216,6 @@ class AddPensionProviderController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { cache =>
             val viewModel = PensionNumberViewModel(cache)
-            implicit val lang: Lang = request.lang
             BadRequest(views.html.pensions.addPensionNumber(formWithErrors, viewModel))
           }
         },
@@ -245,7 +239,6 @@ class AddPensionProviderController @Inject()(
         case _              => None
       }
       val user = Some(request.taiUser)
-      implicit val lang: Lang = request.lang
 
       Ok(
         views.html.can_we_contact_by_phone(
@@ -265,7 +258,6 @@ class AddPensionProviderController @Inject()(
       .fold(
         formWithErrors => {
           val user = Some(request.taiUser)
-          implicit val lang: Lang = request.lang
           Future.successful(
             BadRequest(views.html.can_we_contact_by_phone(user, contactPhonePensionProvider, formWithErrors)))
         },

@@ -327,7 +327,7 @@ class UpdateIncomeNextYearControllerSpec
           currentEstPay,
           AmountComparatorForm
             .createForm()
-            .bindFromRequest()(request))(request, messages, authedUser, templateRenderer, partialRetriever, lang)
+            .bindFromRequest()(request))(request, messages, authedUser, templateRenderer, partialRetriever)
       }
     }
 

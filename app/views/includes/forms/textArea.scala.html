@@ -27,7 +27,7 @@
         maxlength: String = "",
         hintClass: String = "",
         rows: String = "7"
-)(implicit lang: Lang, m: Messages)
+)(implicit m: Messages)
 
 <div class="form-group @if(field.hasErrors){form-group-error} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}">
     <label class="form-label@if(bold) {-bold}" for="@field.id">

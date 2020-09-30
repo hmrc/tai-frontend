@@ -86,7 +86,6 @@ class UpdateIncomeDetailsController @Inject()(
 
   def details(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
     journeyCacheService.currentCache map { currentCache =>
       Ok(
         views.html.incomes.previousYears.UpdateIncomeDetails(
@@ -97,7 +96,6 @@ class UpdateIncomeDetailsController @Inject()(
 
   def submitDetails(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
     UpdateIncomeDetailsForm.form.bindFromRequest.fold(
       formWithErrors => {
         journeyCacheService.currentCache map { currentCache =>
@@ -117,7 +115,6 @@ class UpdateIncomeDetailsController @Inject()(
 
   def telephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
 
     journeyCacheService.currentCache map { currentCache =>
       Ok(
@@ -130,7 +127,6 @@ class UpdateIncomeDetailsController @Inject()(
 
   def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
 
     YesNoTextEntryForm
       .form(

@@ -64,7 +64,6 @@ class IncomeController @Inject()(
 
   def regularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
     val nino = user.nino
 
     (for {
@@ -129,7 +128,6 @@ class IncomeController @Inject()(
 
   def editRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
 
     journeyCacheService.collectedValues(
       Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
@@ -239,7 +237,6 @@ class IncomeController @Inject()(
 
   def pensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
     val nino = user.nino
 
     (for {
@@ -278,7 +275,6 @@ class IncomeController @Inject()(
 
   def editPensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
 
     journeyCacheService.collectedValues(
       Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),

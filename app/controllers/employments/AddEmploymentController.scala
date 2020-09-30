@@ -74,7 +74,6 @@ class AddEmploymentController @Inject()(
   def addEmploymentName(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.currentValue(AddEmployment_NameKey) map { providedName =>
       implicit val user: AuthedUser = request.taiUser
-      implicit val lang: Lang = request.lang
 
       Ok(views.html.employments.add_employment_name_form(EmploymentNameForm.form.fill(providedName.getOrElse(""))))
     }
@@ -84,7 +83,7 @@ class AddEmploymentController @Inject()(
     EmploymentNameForm.form.bindFromRequest.fold(
       formWithErrors => {
         implicit val user: AuthedUser = request.taiUser
-        implicit val lang: Lang = request.lang
+
         Future.successful(BadRequest(views.html.employments.add_employment_name_form(formWithErrors)))
       },
       employmentName => {
@@ -106,7 +105,7 @@ class AddEmploymentController @Inject()(
               case _ => EmploymentAddDateForm(mandatorySequence.head).form
             }
             implicit val user = request.taiUser
-            implicit val lang: Lang = request.lang
+
             Ok(views.html.employments.add_employment_start_date_form(form, mandatorySequence.head))
           }
           case Left(_) => Redirect(taxAccountSummaryRedirect)
@@ -122,7 +121,7 @@ class AddEmploymentController @Inject()(
           .fold(
             formWithErrors => {
               implicit val user: AuthedUser = request.taiUser
-              implicit val lang: Lang = request.lang
+
               BadRequest(
                 views.html.employments
                   .add_employment_start_date_form(formWithErrors, currentCache(AddEmployment_NameKey)))
@@ -195,7 +194,7 @@ class AddEmploymentController @Inject()(
           case _              => None
         }
         implicit val user: AuthedUser = request.taiUser
-        implicit val lang: Lang = request.lang
+
         Ok(
           views.html.employments.add_employment_payroll_number_form(
             AddEmploymentPayrollNumberForm.form.fill(AddEmploymentPayrollNumberForm(payrollChoice, payroll)),
@@ -212,7 +211,7 @@ class AddEmploymentController @Inject()(
             journeyCacheService.currentCache map { cache =>
               val viewModel = PayrollNumberViewModel(cache)
               implicit val user: AuthedUser = request.taiUser
-              implicit val lang: Lang = request.lang
+
               BadRequest(views.html.employments.add_employment_payroll_number_form(formWithErrors, viewModel))
             }
           },
@@ -237,7 +236,7 @@ class AddEmploymentController @Inject()(
           case _              => None
         }
         implicit val user: AuthedUser = request.taiUser
-        implicit val lang: Lang = request.lang
+
         Ok(
           views.html.can_we_contact_by_phone(
             Some(user),
@@ -257,7 +256,7 @@ class AddEmploymentController @Inject()(
       .fold(
         formWithErrors => {
           implicit val user: AuthedUser = request.taiUser
-          implicit val lang: Lang = request.lang
+
           Future.successful(
             BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors)))
         },

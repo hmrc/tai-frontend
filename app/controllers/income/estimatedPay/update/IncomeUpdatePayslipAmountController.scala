@@ -46,7 +46,6 @@ class IncomeUpdatePayslipAmountController @Inject()(
 
   def payslipAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
 
     val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
     val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TotalSalaryKey)
@@ -81,7 +80,6 @@ class IncomeUpdatePayslipAmountController @Inject()(
 
   def handlePayslipAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
 
     val result: Future[Future[Result]] = for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)
@@ -118,7 +116,6 @@ class IncomeUpdatePayslipAmountController @Inject()(
 
   def taxablePayslipAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
 
     val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
     val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TaxablePayKey)
@@ -148,7 +145,6 @@ class IncomeUpdatePayslipAmountController @Inject()(
 
   def handleTaxablePayslipAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
 
     (for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)

@@ -23,7 +23,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.{Inject, Named}
 import org.joda.time.LocalDate
-import play.api.i18n.Lang
 import play.api.mvc._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -51,7 +50,6 @@ class IncomeUpdateEstimatedPayController @Inject()(
 
   def estimatedPayLandingPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
 
     journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey) map {
       mandatoryValues =>

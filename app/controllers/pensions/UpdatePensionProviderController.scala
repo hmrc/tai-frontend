@@ -133,7 +133,6 @@ class UpdatePensionProviderController @Inject()(
       mandatoryVal match {
         case Right(mandatoryValues) => {
           implicit val user: AuthedUser = request.taiUser
-          implicit val lang: Lang = request.lang
           Ok(
             views.html.pensions.update.whatDoYouWantToTellUs(
               mandatoryValues.head,
@@ -152,7 +151,6 @@ class UpdatePensionProviderController @Inject()(
           journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map {
             mandatoryValues =>
               implicit val user: AuthedUser = request.taiUser
-              implicit val lang: Lang = request.lang
               BadRequest(
                 views.html.pensions.update
                   .whatDoYouWantToTellUs(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
@@ -177,7 +175,6 @@ class UpdatePensionProviderController @Inject()(
       pensionId match {
         case Right(mandatoryPensionId) => {
           val user = Some(request.taiUser)
-          implicit val lang: Lang = request.lang
 
           Ok(
             views.html.can_we_contact_by_phone(
@@ -202,7 +199,6 @@ class UpdatePensionProviderController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             val user = Some(request.taiUser)
-            implicit val lang: Lang = request.lang
 
             BadRequest(
               views.html.can_we_contact_by_phone(

@@ -65,7 +65,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
-      implicit val lang: Lang = request.lang
+
       val nino = user.nino
 
       val paymentRequest: Future[Option[Payment]] = incomeService.latestPayment(nino, employmentId)
@@ -125,7 +125,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
           .bindFromRequest()
           .fold(
             formWithErrors => {
-              implicit val lang: Lang = request.lang
+
               val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, paymentToDate)
               Future.successful(BadRequest(views.html.incomes.editIncomeIrregularHours(formWithErrors, viewModel)))
             },

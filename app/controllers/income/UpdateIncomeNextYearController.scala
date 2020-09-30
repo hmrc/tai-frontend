@@ -21,7 +21,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.Logger
-import play.api.i18n.{I18nSupport, Lang, Messages}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -142,7 +142,6 @@ class UpdateIncomeNextYearController @Inject()(
   def edit(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     preAction {
       implicit val user = request.taiUser
-      implicit val lang: Lang = request.lang
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
@@ -224,7 +223,7 @@ class UpdateIncomeNextYearController @Inject()(
 
   def update(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
+
     val nino = user.nino
 
     preAction {

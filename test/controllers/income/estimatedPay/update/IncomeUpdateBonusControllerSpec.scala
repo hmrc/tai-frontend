@@ -231,8 +231,7 @@ class IncomeUpdateBonusControllerSpec
         messages,
         authedUser,
         templateRenderer,
-        partialRetriever,
-        lang
+        partialRetriever
       )
     }
 
@@ -301,7 +300,7 @@ class IncomeUpdateBonusControllerSpec
 
         result rendersTheSameViewAs bonusPaymentAmount(
           BonusOvertimeAmountForm.createForm().bindFromRequest()(fakeRequest),
-          employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever, lang)
+          employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
       }
     }
 

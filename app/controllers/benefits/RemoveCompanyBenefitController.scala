@@ -95,8 +95,6 @@ class RemoveCompanyBenefitController @Inject()(
 
   def totalValueOfBenefit(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang = request.lang
-
     val mandatoryKeys = Seq(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey)
     val optionalKeys = Seq(EndCompanyBenefit_BenefitValueKey)
 
@@ -114,8 +112,6 @@ class RemoveCompanyBenefitController @Inject()(
 
   def submitBenefitValue(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang = request.lang
-
     CompanyBenefitTotalValueForm.form.bindFromRequest.fold(
       formWithErrors => {
         journeyCacheService
@@ -137,8 +133,6 @@ class RemoveCompanyBenefitController @Inject()(
 
   def telephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val user = request.taiUser
-    implicit val lang = request.lang
-
     journeyCacheService.currentCache map { currentCache =>
       val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
       val form = YesNoTextEntryForm
@@ -155,8 +149,6 @@ class RemoveCompanyBenefitController @Inject()(
 
   def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val user = request.taiUser
-    implicit val lang = request.lang
-
     YesNoTextEntryForm
       .form(
         Messages("tai.canWeContactByPhone.YesNoChoice.empty"),

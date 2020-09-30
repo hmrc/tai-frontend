@@ -20,7 +20,6 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.{Inject, Named}
-import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -90,7 +89,7 @@ class IncomeUpdateBonusController @Inject()(
 
   def bonusOvertimeAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
+
     for {
       incomeSourceEither  <- IncomeSource.create(journeyCacheService)
       bonusOvertimeAmount <- journeyCacheService.currentValue(UpdateIncome_BonusOvertimeAmountKey)
@@ -106,7 +105,7 @@ class IncomeUpdateBonusController @Inject()(
 
   def handleBonusOvertimeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    implicit val lang: Lang = request.lang
+
     BonusOvertimeAmountForm
       .createForm()
       .bindFromRequest()

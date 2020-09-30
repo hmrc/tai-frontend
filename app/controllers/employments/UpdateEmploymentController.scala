@@ -72,7 +72,6 @@ class UpdateEmploymentController @Inject()(
   def updateEmploymentDetails(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      implicit val lang: Lang = request.lang
       (for {
         userSuppliedDetails <- journeyCacheService.currentValue(UpdateEmployment_EmploymentDetailsKey)
         employment          <- employmentService.employment(user.nino, empId)
@@ -104,7 +103,6 @@ class UpdateEmploymentController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             implicit val user: AuthedUser = request.taiUser
-            implicit val lang: Lang = request.lang
             BadRequest(
               views.html.employments.update.whatDoYouWantToTellUs(
                 EmploymentViewModel(currentCache(UpdateEmployment_NameKey), empId),
@@ -126,7 +124,6 @@ class UpdateEmploymentController @Inject()(
                          .optionalValues(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey)
     } yield {
       implicit val user: AuthedUser = request.taiUser
-      implicit val lang: Lang = request.lang
       employmentId match {
         case Right(empId) =>
           Ok(
@@ -151,7 +148,6 @@ class UpdateEmploymentController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             implicit val user: AuthedUser = request.taiUser
-            implicit val lang: Lang = request.lang
             BadRequest(
               views.html.can_we_contact_by_phone(
                 Some(user),
