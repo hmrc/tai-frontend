@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import com.google.inject.Inject
 import controllers.TaiBaseController
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
@@ -39,7 +39,7 @@ class TaxAccountSummaryService @Inject()(
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with I18nSupport {
+    extends TaiBaseController(mcc) {
 
   def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(
     implicit hc: HeaderCarrier,
