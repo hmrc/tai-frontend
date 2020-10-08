@@ -16,19 +16,15 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
-import uk.gov.hmrc.urls.Link
+import utils.BaseSpec
 
-class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class PreviousYearUnderpaymentViewModelSpec extends BaseSpec {
 
   "PreviousYearUnderpaymentViewModel apply method" when {
 

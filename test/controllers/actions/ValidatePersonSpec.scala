@@ -32,27 +32,23 @@
 
 package controllers.actions
 
-import controllers.{FakeAuthAction, FakeTaiPlayApplication, routes}
+import controllers.{FakeAuthAction, routes}
 import org.mockito.Matchers._
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Controller
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
+import utils.BaseSpec
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Random
 
-class ValidatePersonSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
+class ValidatePersonSpec extends BaseSpec {
 
-  implicit val hc = HeaderCarrier()
   val personService = mock[PersonService]
-  val personNino = new Generator(new Random).nextNino
   val personDeceased = true
   val personAlive = !personDeceased
 
@@ -67,7 +63,7 @@ class ValidatePersonSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
       "redirect the user to a deceased page " in {
 
         when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", personDeceased, false)))
+          .thenReturn(Future.successful(Person(nino, "firstName", "Surname", personDeceased, false)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 
@@ -84,7 +80,7 @@ class ValidatePersonSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
       "not redirect the user to a deceased page " in {
 
         when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", personAlive, false)))
+          .thenReturn(Future.successful(Person(nino, "firstName", "Surname", personAlive, false)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 
@@ -97,7 +93,7 @@ class ValidatePersonSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
 
       "redirect to a corrupt page if user has corrupt data " in {
         when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", personAlive, hasCorruptData = true)))
+          .thenReturn(Future.successful(Person(nino, "firstName", "Surname", personAlive, hasCorruptData = true)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 

@@ -16,19 +16,15 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages.Implicits._
-import play.api.i18n.MessagesApi
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil}
+import utils.BaseSpec
 
-class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
-  implicit val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
+class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
   "Tax Free Amount comparison view model" must {
     "return empty model" when {

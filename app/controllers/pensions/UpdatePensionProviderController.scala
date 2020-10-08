@@ -16,13 +16,13 @@
 
 package controllers.pensions
 
-import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.{Inject, Named}
 import play.api.data.validation.{Constraint, Invalid, Valid}
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.i18n.{Lang, Messages}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -52,12 +52,13 @@ class UpdatePensionProviderController @Inject()(
   auditService: AuditService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
+  applicationConfig: ApplicationConfig,
   @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with JourneyCacheConstants with FormValuesConstants with EmptyCacheRedirect {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>
@@ -117,7 +118,7 @@ class UpdatePensionProviderController @Inject()(
                   .map { _ =>
                     Redirect(controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs())
                   }
-              case _ => Future.successful(Redirect(ApplicationConfig.incomeFromEmploymentPensionLinkUrl))
+              case _ => Future.successful(Redirect(applicationConfig.incomeFromEmploymentPensionLinkUrl))
             }
           )
     }
@@ -198,6 +199,7 @@ class UpdatePensionProviderController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             val user = Some(request.taiUser)
+
             BadRequest(
               views.html.can_we_contact_by_phone(
                 user,

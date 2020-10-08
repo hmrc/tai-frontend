@@ -16,8 +16,6 @@
 
 package views.html.incomes
 
-import org.scalatest.mockito.MockitoSugar
-import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.twirl.api.Html
@@ -26,12 +24,10 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
+class BonusPaymentsAmountSpec extends TaiViewSpec {
 
   val employer = IncomeSource(id = 1, name = "Employer")
   val bonusPaymentsAmountForm = BonusOvertimeAmountForm.createForm()
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   override def view: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm, employer)
 

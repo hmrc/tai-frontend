@@ -18,35 +18,30 @@ package controllers
 
 import org.scalatest.concurrent.PatienceConfiguration
 import org.scalatest.{Args, Status, Suite, TestSuite}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.ExecutionContext
 
-trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguration with TestSuite {
+trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfiguration with TestSuite {
   this: Suite =>
   override lazy val port = 12345
 
   val additionalConfiguration = Map[String, Any](
-    "govuk-tax.Test.services.contact-frontend.host"         -> "localhost",
-    "govuk-tax.Test.services.contact-frontend.port"         -> "12345",
-    "govuk-tax.Test.services.pertax-frontend.host"          -> "localhost",
-    "govuk-tax.Test.services.pertax-frontend.port"          -> "1111",
-    "govuk-tax.Test.services.personal-tax-summary.host"     -> "localhost",
-    "govuk-tax.Test.services.personal-tax-summary.port"     -> "2222",
-    "govuk-tax.Test.services.activity-logger.host"          -> "localhost",
-    "govuk-tax.Test.services.activity-logger.port"          -> "12345",
-    "tai.cy3.enabled"                                       -> true,
-    "govuk-tax.Test.services.feedback-survey-frontend.host" -> "localhost",
-    "govuk-tax.Test.services.feedback-survey-frontend.port" -> "3333",
-    "govuk-tax.Test.services.company-auth.host"             -> "localhost",
-    "govuk-tax.Test.services.company-auth.port"             -> "4444",
-    "govuk-tax.Test.services.citizen-auth.host"             -> "localhost",
-    "govuk-tax.Test.services.citizen-auth.port"             -> "9999"
+    "microservice.services.contact-frontend.port"         -> port,
+    "microservice.services.pertax-frontend.port"          -> "1111",
+    "microservice.services.personal-tax-summary.port"     -> "2222",
+    "microservice.services.activity-logger.port"          -> port,
+    "tai.cy3.enabled"                                     -> true,
+    "microservice.services.feedback-survey-frontend.port" -> "3333",
+    "microservice.services.company-auth.port"             -> "4444",
+    "microservice.services.citizen-auth.port"             -> "9999",
+    "metrics.enabled"                                     -> false
   )
 
   implicit override lazy val app: Application = new GuiceApplicationBuilder().configure(additionalConfiguration).build()
@@ -57,9 +52,10 @@ trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguratio
     .setLevel(ch.qos.logback.classic.Level.WARN)
 
   def fakePerson(nino: Nino) = Person(nino, "firstname", "surname", false, false)
-  val fakeRequest = FakeRequest("GET", "/")
+  val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
 
-  abstract override def run(testName: Option[String], args: Args): Status = super[OneServerPerSuite].run(testName, args)
+  abstract override def run(testName: Option[String], args: Args): Status =
+    super[GuiceOneServerPerSuite].run(testName, args)
 
-  implicit val ec = app.injector.instanceOf[ExecutionContext]
+  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 }

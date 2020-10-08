@@ -17,33 +17,42 @@
 package uk.gov.hmrc.tai.connectors
 
 import org.joda.time.LocalDate
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.http.Status._
 import play.api.libs.json.{Format, JsString, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
+class HttpHandlerSpec extends BaseSpec with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(http)
+
+  protected case class ResponseObject(name: String, age: Int)
+  implicit val responseObjectFormat = Json.format[ResponseObject]
+
+  case class DateRequest(date: LocalDate)
+
+  object DateRequest {
+    import play.api.libs.json.JodaWrites._
+    import play.api.libs.json.JodaReads._
+    implicit val formatDateRequest: Format[DateRequest] = Json.format[DateRequest]
+  }
 
   "getFromApi" should {
     "return valid json" when {
       "data is successfully received from the http get call" in {
         val testUrl = "testUrl"
-        val SUT = createSUT
         when(http.GET[HttpResponse](any())(any(), any(), any()))
           .thenReturn(Future.successful(SuccesfulGetResponseWithObject))
-        val responseFuture = SUT.getFromApi(testUrl)
+        val responseFuture = sut.getFromApi(testUrl)
         val response = Await.result(responseFuture, 5 seconds)
         response mustBe Json.toJson(responseBodyObject)
         verify(http, times(1)).GET(Matchers.eq(testUrl))(any(), any(), any())
@@ -52,9 +61,8 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
     "result in a BadRequest exception" when {
       "when a BadRequest http response is received from the http get call" in {
-        val SUT = createSUT
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(BadRequestHttpResponse))
-        val responseFuture = SUT.getFromApi("")
+        val responseFuture = sut.getFromApi("")
         val ex = the[BadRequestException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"bad request\""
       }
@@ -62,9 +70,8 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
     "result in a NotFound exception" when {
       "when a NotFound http response is received from the http get call" in {
-        val SUT = createSUT
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(NotFoundHttpResponse))
-        val responseFuture = SUT.getFromApi("")
+        val responseFuture = sut.getFromApi("")
         val ex = the[NotFoundException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"not found\""
       }
@@ -72,10 +79,9 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
     "result in a InternalServerError exception" when {
       "when a InternalServerError http response is received from the http get call" in {
-        val SUT = createSUT
         when(http.GET[HttpResponse](any())(any(), any(), any()))
           .thenReturn(Future.successful(InternalServerErrorHttpResponse))
-        val responseFuture = SUT.getFromApi("")
+        val responseFuture = sut.getFromApi("")
         val ex = the[InternalServerException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"internal server error\""
       }
@@ -83,9 +89,8 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
     "result in a Locked exception" when {
       "when a Locked response is received from the http get call" in {
-        val SUT = createSUT
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(LockedHttpResponse))
-        val responseFuture = SUT.getFromApi("")
+        val responseFuture = sut.getFromApi("")
         val ex = the[LockedException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"locked\""
       }
@@ -93,9 +98,8 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
     "result in an HttpException" when {
       "when a unknown error http response is received from the http get call" in {
-        val SUT = createSUT
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(UnknownErrorHttpResponse))
-        val responseFuture = SUT.getFromApi("")
+        val responseFuture = sut.getFromApi("")
         val ex = the[HttpException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"unknown response\""
       }
@@ -106,10 +110,9 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
     "return valid json" when {
       "data is successfully received from the http get call" in {
         val testUrl = "testUrl"
-        val SUT = createSUT
         when(http.GET[HttpResponse](any())(any(), any(), any()))
           .thenReturn(Future.successful(SuccesfulGetResponseWithObject))
-        val responseFuture = SUT.getFromApiV2(testUrl)
+        val responseFuture = sut.getFromApiV2(testUrl)
         val response = Await.result(responseFuture, 5 seconds)
         response mustBe Json.toJson(responseBodyObject)
         verify(http, times(1)).GET(Matchers.eq(testUrl))(any(), any(), any())
@@ -118,9 +121,8 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
     "result in a BadRequest exception" when {
       "when a BadRequest http response is received from the http get call" in {
-        val SUT = createSUT
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(BadRequestHttpResponse))
-        val responseFuture = SUT.getFromApiV2("")
+        val responseFuture = sut.getFromApiV2("")
         val ex = the[BadRequestException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"bad request\""
       }
@@ -128,9 +130,8 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
     "result in a NotFound exception" when {
       "when a NotFound http response is received from the http get call" in {
-        val SUT = createSUT
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(NotFoundHttpResponse))
-        val responseFuture = SUT.getFromApiV2("")
+        val responseFuture = sut.getFromApiV2("")
         val ex = the[NotFoundException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"not found\""
       }
@@ -138,10 +139,9 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
     "result in a InternalServerError exception" when {
       "when a InternalServerError http response is received from the http get call" in {
-        val SUT = createSUT
         when(http.GET[HttpResponse](any())(any(), any(), any()))
           .thenReturn(Future.successful(InternalServerErrorHttpResponse))
-        val responseFuture = SUT.getFromApiV2("")
+        val responseFuture = sut.getFromApiV2("")
         val ex = the[InternalServerException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"internal server error\""
       }
@@ -149,9 +149,8 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
     "result in a Locked exception" when {
       "when a Locked response is received from the http get call" in {
-        val SUT = createSUT
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(LockedHttpResponse))
-        val responseFuture = SUT.getFromApiV2("")
+        val responseFuture = sut.getFromApiV2("")
         val ex = the[LockedException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"locked\""
       }
@@ -159,9 +158,8 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
     "result in an HttpException" when {
       "when a unknown error http response is received from the http get call" in {
-        val SUT = createSUT
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(UnknownErrorHttpResponse))
-        val responseFuture = SUT.getFromApiV2("")
+        val responseFuture = sut.getFromApiV2("")
         val ex = the[HttpException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"unknown response\""
       }
@@ -169,12 +167,11 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
     "result in an UnauthorisedException" when {
       "when an Unauthorised response is received from the http get call" in {
-        val SUT = createSUT
         val unauthorisedResponse =
           HttpResponse(UNAUTHORIZED, Some(JsString("unauthorised response")), Map("ETag" -> Seq("34")))
 
         when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(unauthorisedResponse))
-        val responseFuture = SUT.getFromApiV2("")
+        val responseFuture = sut.getFromApiV2("")
         val ex = the[HttpException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"unauthorised response\""
       }
@@ -183,7 +180,6 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
   "putToApi" should {
     "return OK" in {
-      val sut = createSUT
       when(http.PUT[DateRequest, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK)))
 
@@ -194,7 +190,6 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
     }
 
     "return Not Found exception" in {
-      val sut = createSUT
       when(http.PUT[DateRequest, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND)))
 
@@ -205,7 +200,6 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
     }
 
     "return Internal Server exception" in {
-      val sut = createSUT
       when(http.PUT[DateRequest, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
 
@@ -216,7 +210,6 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
     }
 
     "return Bad Request exception" in {
-      val sut = createSUT
       when(http.PUT[DateRequest, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
 
@@ -227,7 +220,6 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
     }
 
     "return Http exception" in {
-      val sut = createSUT
       when(http.PUT[DateRequest, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(GATEWAY_TIMEOUT)))
 
@@ -242,7 +234,6 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
     val userInput = "userInput"
 
     "return json which is coming from http post call" in {
-      val sut = createSUT
 
       when(http.POST[String, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(userInput)))))
@@ -260,7 +251,6 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
     "return Http exception" when {
       "http response is NOT_FOUND" in {
-        val sut = createSUT
         when(http.POST[String, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(NOT_FOUND)))
 
@@ -270,7 +260,6 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
       }
 
       "http response is GATEWAY_TIMEOUT" in {
-        val sut = createSUT
         when(http.POST[String, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(GATEWAY_TIMEOUT)))
 
@@ -285,7 +274,6 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
     "post request to DELETE and return the http response" when {
       "http DELETE returns OK" in {
 
-        val sut = createSUT
         when(http.DELETE[HttpResponse](any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(OK)))
         val result = Await.result(sut.deleteFromApi(mockUrl), 5 seconds)
@@ -294,7 +282,6 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
 
       "http DELETE returns NO_CONTENT" in {
 
-        val sut = createSUT
         when(http.DELETE[HttpResponse](any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
         val result = Await.result(sut.deleteFromApi(mockUrl), 5 seconds)
@@ -302,7 +289,6 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
       }
 
       "http DELETE returns ACCEPTED" in {
-        val sut = createSUT
         when(http.DELETE[HttpResponse](any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(ACCEPTED)))
         val result = Await.result(sut.deleteFromApi(mockUrl), 5.seconds)
@@ -312,7 +298,6 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
     }
     "return Http exception" when {
       "http response is NOT OK" in {
-        val sut = createSUT
         when(http.DELETE[HttpResponse](any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(GATEWAY_TIMEOUT)))
 
@@ -323,11 +308,8 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
     }
   }
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
   private val mockUrl = "mockUrl"
 
-  private case class ResponseObject(name: String, age: Int)
-  private implicit val responseObjectFormat = Json.format[ResponseObject]
   private val responseBodyObject = ResponseObject("Name", 24)
 
   private val SuccesfulGetResponseWithObject: HttpResponse =
@@ -343,14 +325,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach
   private val UnknownErrorHttpResponse: HttpResponse =
     HttpResponse(418, Some(JsString("unknown response")), Map("ETag" -> Seq("34")))
 
-  private def createSUT = new HttpHandlerTest()
   val http = mock[DefaultHttpClient]
 
-  private class HttpHandlerTest() extends HttpHandler(http)
-}
-
-case class DateRequest(date: LocalDate)
-
-object DateRequest {
-  implicit val formatDateRequest: Format[DateRequest] = Json.format[DateRequest]
+  def sut = new HttpHandler(http)
 }

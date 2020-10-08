@@ -17,7 +17,8 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.formatting.Dates
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{Employment, PensionIncome, TaxCodeRecord}
 import uk.gov.hmrc.tai.model.domain.income.{BasisOfOperation, TaxCodeIncome}
@@ -36,10 +37,16 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
   def apply(
     taxCodeIncomes: Seq[TaxCodeIncome],
     scottishTaxRateBands: Map[String, BigDecimal],
-    employmentId: Option[Int])(implicit messages: Messages): TaxCodeViewModel = {
+    employmentId: Option[Int],
+    appConfig: ApplicationConfig)(implicit messages: Messages): TaxCodeViewModel = {
 
     val descriptionListViewModels: Seq[DescriptionListViewModel] = taxCodeIncomes.map { income =>
-      createDescriptionListViewModel(income.taxCode, income.basisOperation, scottishTaxRateBands, income.name)
+      createDescriptionListViewModel(
+        income.taxCode,
+        income.basisOperation,
+        scottishTaxRateBands,
+        income.name,
+        appConfig)
     }
 
     val size = descriptionListViewModels.size
@@ -71,9 +78,10 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
     taxCode: String,
     operation: BasisOfOperation,
     scottishTaxRateBands: Map[String, BigDecimal],
-    employerName: String)(implicit messages: Messages): DescriptionListViewModel = {
+    employerName: String,
+    appConfig: ApplicationConfig)(implicit messages: Messages): DescriptionListViewModel = {
 
-    val explanation = describeTaxCode(taxCode, operation, scottishTaxRateBands, isCurrentYear = true)
+    val explanation = describeTaxCode(taxCode, operation, scottishTaxRateBands, isCurrentYear = true, appConfig)
 
     DescriptionListViewModel(messages(s"tai.taxCode.subheading", employerName, taxCode), explanation)
   }

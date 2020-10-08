@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import org.joda.time.LocalDate
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.formatting.Dates
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
 import uk.gov.hmrc.tai.util.ViewModelHelper
@@ -35,12 +35,13 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
   def apply(
     taxCodeRecords: Seq[TaxCodeRecord],
     scottishTaxRateBands: Map[String, BigDecimal],
-    year: TaxYear = TaxYear())(implicit messages: Messages): TaxCodeViewModelPreviousYears = {
+    year: TaxYear = TaxYear(),
+    appConfig: ApplicationConfig)(implicit messages: Messages): TaxCodeViewModelPreviousYears = {
 
     val preHeader = messages(s"tai.taxCode.prev.preHeader")
 
     val descriptionListViewModels = sortedTaxCodeRecords(taxCodeRecords).map {
-      recordToDescriptionListViewModel(_, scottishTaxRateBands)
+      recordToDescriptionListViewModel(_, scottishTaxRateBands, appConfig)
     }
 
     val titleMessageKey =
@@ -67,10 +68,13 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
     records.sortBy(primarySecondaryPensionSort)
   }
 
-  private def recordToDescriptionListViewModel(record: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal])(
-    implicit messages: Messages): DescriptionListViewModel = {
+  private def recordToDescriptionListViewModel(
+    record: TaxCodeRecord,
+    scottishTaxRateBands: Map[String, BigDecimal],
+    appConfig: ApplicationConfig)(implicit messages: Messages): DescriptionListViewModel = {
     val taxCode = record.taxCode
-    val explanation = describeTaxCode(taxCode, record.basisOfOperation, scottishTaxRateBands, isCurrentYear = false)
+    val explanation =
+      describeTaxCode(taxCode, record.basisOfOperation, scottishTaxRateBands, isCurrentYear = false, appConfig)
 
     DescriptionListViewModel(
       messages(

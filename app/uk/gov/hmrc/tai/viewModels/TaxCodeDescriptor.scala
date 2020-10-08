@@ -37,11 +37,12 @@ trait TaxCodeDescriptor {
     taxCode: String,
     basisOperation: BasisOfOperation,
     scottishTaxRateBands: Map[String, BigDecimal],
-    isCurrentYear: Boolean = true)(implicit messages: Messages): ListMap[String, String] = {
+    isCurrentYear: Boolean = true,
+    applicationConfig: ApplicationConfig)(implicit messages: Messages): ListMap[String, String] = {
 
     val explanationRules: Seq[TaxCodeDescriptionTranslator] = Seq(
-      scottishTaxCodeExplanation(isCurrentYear),
-      welshTaxCodeExplanation(isCurrentYear),
+      scottishTaxCodeExplanation(isCurrentYear, applicationConfig),
+      welshTaxCodeExplanation(isCurrentYear, applicationConfig),
       untaxedTaxCodeExplanation(isCurrentYear),
       fetchTaxCodeExplanation(isCurrentYear),
       emergencyTaxCodeExplanation(isCurrentYear)
@@ -51,7 +52,7 @@ trait TaxCodeDescriptor {
     explanationRules.foldLeft(ListMap[String, String]())((expl, rule) => expl ++ rule(taxDescription))
   }
 
-  private def scottishTaxCodeExplanation(isCurrent: Boolean)(
+  private def scottishTaxCodeExplanation(isCurrent: Boolean, applicationConfig: ApplicationConfig)(
     implicit messages: Messages): TaxCodeDescriptionTranslator = (taxCodeDescription: TaxCodeDescription) => {
     val previousOrCurrent = if (isCurrent) "" else ".prev"
     val scottishRegex = "^S".r
@@ -64,7 +65,7 @@ trait TaxCodeDescriptor {
             s"tai.taxCode$previousOrCurrent.$code",
             Link
               .toExternalPage(
-                url = ApplicationConfig.scottishRateIncomeTaxUrl,
+                url = applicationConfig.scottishRateIncomeTaxUrl,
                 value = Some(messages("tai.taxCode.scottishIncomeText.link")))
               .toHtml
           ))
@@ -72,7 +73,8 @@ trait TaxCodeDescriptor {
     }
   }
 
-  private def welshTaxCodeExplanation(isCurrent: Boolean)(implicit messages: Messages): TaxCodeDescriptionTranslator =
+  private def welshTaxCodeExplanation(isCurrent: Boolean, applicationConfig: ApplicationConfig)(
+    implicit messages: Messages): TaxCodeDescriptionTranslator =
     (taxCodeDescription: TaxCodeDescription) => {
       val previousOrCurrent = if (isCurrent) "" else ".prev"
       val welshRegex = "^C".r
@@ -84,8 +86,8 @@ trait TaxCodeDescriptor {
               s"tai.taxCode$previousOrCurrent.$code",
               Link
                 .toExternalPage(
-                  url = if (messages.lang.language == "cy") { ApplicationConfig.welshRateIncomeTaxWelshUrl } else {
-                    ApplicationConfig.welshRateIncomeTaxUrl
+                  url = if (messages.lang.language == "cy") { applicationConfig.welshRateIncomeTaxWelshUrl } else {
+                    applicationConfig.welshRateIncomeTaxUrl
                   },
                   value = Some(messages("tai.taxCode.welshIncomeText.link"))
                 )

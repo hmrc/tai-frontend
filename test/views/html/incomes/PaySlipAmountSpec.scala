@@ -18,7 +18,6 @@ package views.html.incomes
 
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Field, Form}
 import play.api.mvc.Call
 import play.twirl.api.Html
@@ -28,7 +27,7 @@ import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.PaySlipAmountViewModel
 
-class PaySlipAmountSpec extends TaiViewSpec with MockitoSugar with EditIncomePayPeriodConstants {
+class PaySlipAmountSpec extends TaiViewSpec with EditIncomePayPeriodConstants {
 
   val employer = IncomeSource(id = 1, name = "Employer")
 

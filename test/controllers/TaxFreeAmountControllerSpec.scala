@@ -18,14 +18,10 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.test.Helpers._
+import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
@@ -33,11 +29,11 @@ import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class TaxFreeAmountControllerSpec extends BaseSpec {
 
   "taxFreeAmount" must {
     "show tax free amount page" in {
@@ -100,10 +96,10 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
     CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description")
   )
 
-  val codingComponentService = mock[CodingComponentService]
-  val companyCarService = mock[CompanyCarService]
-  val employmentService = mock[EmploymentService]
-  val taxAccountService = mock[TaxAccountService]
+  val codingComponentService: CodingComponentService = mock[CodingComponentService]
+  val companyCarService: CompanyCarService = mock[CompanyCarService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
 
   private class SUT()
       extends TaxFreeAmountController(
@@ -113,8 +109,9 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
         companyCarService,
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
+        appConfig,
+        mcc,
+        partialRetriever,
+        templateRenderer
       )
 }

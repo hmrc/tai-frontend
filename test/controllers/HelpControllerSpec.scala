@@ -20,26 +20,14 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.i18n.MessagesApi
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.{ApplicationConfig, ProxyHttpClient}
-import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
+import utils.BaseSpec
 
-import scala.concurrent.Future
-
-class HelpControllerSpec extends PlaySpec with JsoupMatchers with MockitoSugar with OneServerPerSuite {
+class HelpControllerSpec extends BaseSpec with JsoupMatchers {
 
   "show help page" must {
     "call getHelpPage() successfully with an authorized session" in {
-      val sut = createSut
       val result = sut.helpPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe 200
 
@@ -48,17 +36,12 @@ class HelpControllerSpec extends PlaySpec with JsoupMatchers with MockitoSugar w
     }
   }
 
-  def createSut = new SUT
-
-  class SUT
-      extends HelpController(
-        FakeAuthAction,
-        FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
-      )
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  def sut = new HelpController(
+    FakeAuthAction,
+    FakeValidatePerson,
+    appConfig,
+    mcc,
+    MockPartialRetriever,
+    MockTemplateRenderer
+  )
 }

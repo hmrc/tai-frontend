@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import play.api.i18n.Messages.Implicits._
+import utils.BaseSpec
 
-class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
+class TaxCodeComparisonViewModelSpec extends BaseSpec {
 
   "Tax code comparison view model" must {
 

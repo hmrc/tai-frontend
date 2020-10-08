@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.viewModels
 
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
-import uk.gov.hmrc.tai.service.{NoTimeToProcess, TimeToProcess}
 import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
 import utils.factories.TaxCodeMismatchFactory
 

@@ -20,15 +20,16 @@ import javax.inject.Inject
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.config.DefaultServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PersonConnector @Inject()(httpHandler: HttpHandler)(implicit ec: ExecutionContext) extends DefaultServicesConfig {
+class PersonConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
+  implicit ec: ExecutionContext) {
 
-  val serviceUrl: String = baseUrl("tai")
+  val serviceUrl: String = servicesConfig.baseUrl("tai")
 
   def personUrl(nino: String): String = s"$serviceUrl/tai/$nino/person"
 

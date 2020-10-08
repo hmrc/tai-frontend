@@ -20,42 +20,34 @@ import controllers.actions.FakeValidatePerson
 import controllers.auth.AuthAction
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
-import org.scalatest.mockito.MockitoSugar
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants
+import utils.BaseSpec
 
-class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
-  implicit val hc = HeaderCarrier()
+class ServiceControllerSpec extends BaseSpec {
 
   "Time Out page" should {
     "return page when called" in {
       val fakeRequest = FakeRequest("POST", "").withFormUrlEncodedBody()
       val sut = createSut()
       val result = sut.timeoutPage()(fakeRequest)
-      status(result) shouldBe 200
+      status(result) mustBe 200
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() should include(Messages("tai.timeout.title"))
+      doc.title() must include(Messages("tai.timeout.title"))
     }
   }
 
-  "Sign Out" should {
+  "Sign Out" must {
     "redirect to company auth frontend if it is a GG user" in {
       val sut = createSut()
 
       val result = sut.serviceSignout()(fakeRequest)
 
-      status(result) shouldBe 303
-      redirectLocation(result) shouldBe Some(ApplicationConfig.companyAuthFrontendSignOutUrl)
+      status(result) mustBe 303
+      redirectLocation(result) mustBe Some(appConfig.companyAuthFrontendSignOutUrl)
     }
 
     "redirect to citizen auth frontend if it is a Verify user" in {
@@ -63,9 +55,9 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
 
       val result = sut.serviceSignout()(fakeRequest)
 
-      status(result) shouldBe 303
-      redirectLocation(result) shouldBe Some(ApplicationConfig.citizenAuthFrontendSignOutUrl)
-      session(result).get(TaiConstants.SessionPostLogoutPage) shouldBe Some(ApplicationConfig.feedbackSurveyUrl)
+      status(result) mustBe 303
+      redirectLocation(result) mustBe Some(appConfig.citizenAuthFrontendSignOutUrl)
+      session(result).get(TaiConstants.SessionPostLogoutPage) mustBe Some(appConfig.feedbackSurveyUrl)
     }
   }
 
@@ -74,9 +66,9 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
       val fakeRequest = FakeRequest("GET", "").withFormUrlEncodedBody()
       val sut = createSut()
       val result = sut.gateKeeper()(fakeRequest)
-      status(result) shouldBe OK
+      status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() should include(Messages("tai.gatekeeper.refuse.title"))
+      doc.title() must include(Messages("tai.gatekeeper.refuse.title"))
     }
   }
 
@@ -86,9 +78,10 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
       extends ServiceController(
         authAction,
         FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
+        appConfig,
+        mcc,
+        partialRetriever,
+        templateRenderer
       )
 
 }

@@ -18,15 +18,13 @@ package views.html.incomes
 
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Field, Form}
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 
-class EditIncomeSpec extends TaiViewSpec with MockitoSugar {
+class EditIncomeSpec extends TaiViewSpec {
 
   val empId = 1
   val employerName = "fakeFieldValue"

@@ -16,33 +16,25 @@
 
 package uk.gov.hmrc.tai
 
-import controllers.FakeTaiPlayApplication
+import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
-import org.mockito.Matchers.{any, eq => mockEq}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.mockito.{Matchers, Mockito}
-import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
-import org.mockito.Matchers.{eq => eqTo}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.{Result, Results}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.Telephone
-import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
+import utils.BaseSpec
+
 import scala.concurrent.Future
-import play.api.test.Helpers.{contentAsString, status, _}
 
 class DecisionCacheWrapperSpec
-    extends PlaySpec with MockitoSugar with BeforeAndAfterEach with JourneyCacheConstants
+    extends BaseSpec with BeforeAndAfterEach with JourneyCacheConstants
     with UpdateOrRemoveCompanyBenefitDecisionConstants with ScalaFutures with Results {
 
   val journeyCacheService = mock[JourneyCacheService]
   val wrapper = new DecisionCacheWrapper(journeyCacheService)
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   override def beforeEach: Unit = Mockito.reset(journeyCacheService)
 
@@ -97,7 +89,7 @@ class DecisionCacheWrapperSpec
         val result = wrapper.cacheDecision(YesIGetThisBenefit, function)
 
         whenReady(result) { r =>
-          verify(journeyCacheService, times(1)).cache(any(), any())(any())
+          verify(journeyCacheService).cache(any(), any())(any())
         }
       }
     }

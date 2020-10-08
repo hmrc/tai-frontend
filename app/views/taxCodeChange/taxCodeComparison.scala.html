@@ -19,14 +19,15 @@
 @import controllers.routes
 @import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
-@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.play.views.formatting.Dates
 @import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
 @import org.joda.time.LocalDate
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
+@import uk.gov.hmrc.tai.config.ApplicationConfig
 
 @import uk.gov.hmrc.tai.util.HtmlFormatter
-@(taxCodeChangeViewModel: TaxCodeChangeViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(taxCodeChangeViewModel: TaxCodeChangeViewModel, appConfig: ApplicationConfig)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax code change"}
 @gaEventLabelString = @{Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}
@@ -71,7 +72,7 @@
 
 @taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord], identifier: String) = {
     @{taxCodeRecord match {
-        case Some(taxCodeRecord) => formattedTaxCodeForComparison(taxCodeRecord, identifier, taxCodeChangeViewModel.scottishTaxRateBands)
+        case Some(taxCodeRecord) => formattedTaxCodeForComparison(taxCodeRecord, identifier, taxCodeChangeViewModel.scottishTaxRateBands, appConfig)
         case _ => None
     }}
 }

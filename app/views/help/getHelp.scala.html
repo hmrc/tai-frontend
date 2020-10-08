@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 
-@()(implicit request: Request[_], messages: Messages,
+@(appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -46,9 +46,9 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 <p>
 @Html(Messages("tai.getHelp.contact", Link.toExternalPage(
     url = if (messages.lang.language == "cy") {
-        ApplicationConfig.contactHelplineWelshUrl
+        appConfig.contactHelplineWelshUrl
     } else {
-        ApplicationConfig.contactHelplineUrl
+        appConfig.contactHelplineUrl
     },
     value = Some(messages("tai.getHelp.contact.link"))
 ).toHtml))
@@ -57,7 +57,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 <p>
 @Html(Messages("tai.getHelp.form.p1.text.with.also",
 Link.toInternalPage(id=Some("get-help-iform-link"),
-    url=ApplicationConfig.hardshipHelpUrl,
+    url=appConfig.hardshipHelpUrl,
     value=Some(Messages("tai.getHelp.form.link.title"))).toHtml))
 </p>
 

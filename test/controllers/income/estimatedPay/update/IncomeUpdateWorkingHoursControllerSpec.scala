@@ -17,30 +17,25 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
+import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
+import utils.BaseSpec
 
 import scala.concurrent.Future
 
 class IncomeUpdateWorkingHoursControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JourneyCacheConstants
-    with EditIncomeIrregularPayConstants {
-
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+    extends BaseSpec with JourneyCacheConstants with EditIncomeIrregularPayConstants {
 
   val employer = IncomeSource(id = 1, name = "sample employer")
 
@@ -50,7 +45,7 @@ class IncomeUpdateWorkingHoursControllerSpec
       extends IncomeUpdateWorkingHoursController(
         FakeAuthAction,
         FakeValidatePerson,
-        app.injector.instanceOf[MessagesApi],
+        mcc,
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer) {

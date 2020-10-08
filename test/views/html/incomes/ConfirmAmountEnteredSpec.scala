@@ -16,13 +16,12 @@
 
 package views.html.incomes
 
-import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, IrregularPay, NextYearPay}
 
-class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
+class ConfirmAmountEnteredSpec extends TaiViewSpec {
 
   val employerName = "employerName"
   val currentAmount = 1234

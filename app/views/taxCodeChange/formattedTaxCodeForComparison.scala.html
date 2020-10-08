@@ -17,13 +17,14 @@
 @import includes.ptaHeader
 @import includes.details_summary
 @import controllers.routes
+@import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
-@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.play.views.formatting.Dates
 @import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
 @import org.joda.time.LocalDate
 
-@(taxCodeRecord: TaxCodeRecord, identifier: String, scottishTaxRateBands: Map[String, BigDecimal])(implicit messages: Messages)
+@(taxCodeRecord: TaxCodeRecord, identifier: String, scottishTaxRateBands: Map[String, BigDecimal], appConfig: ApplicationConfig)(implicit messages: Messages)
 
 <div class="tax-code-change__pod">
     <p class="tax-code-change__employment-heading heading-medium flush--top flush--bottom carry-over">@taxCodeRecord.employerName</p>
@@ -46,7 +47,7 @@
 </div>
 
 @taxCodeRecordExplanation(taxCodeRecord: TaxCodeRecord, identifier: String) = {
-    @defining(TaxCodeChangeViewModel.getTaxCodeExplanations(taxCodeRecord, scottishTaxRateBands, identifier)) { taxCodeDescription =>
+    @defining(TaxCodeChangeViewModel.getTaxCodeExplanations(taxCodeRecord, scottishTaxRateBands, identifier, appConfig)) { taxCodeDescription =>
         <div class="tax-code-change__explanation">
             @includes.details_summary(
                 taxCodeDescription.heading,

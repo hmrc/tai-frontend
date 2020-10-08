@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.tai.binders
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain.BenefitInKind
+import utils.BaseSpec
 
-class BenefitComponentTypeBinderSpec extends PlaySpec with FakeTaiPlayApplication {
+class BenefitComponentTypeBinderSpec extends BaseSpec {
 
   "BenefitComponentTypeBinder - bind" should {
 

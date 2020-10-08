@@ -19,26 +19,21 @@ package json
 import com.kenshoo.play.metrics.PlayModule
 import org.scalatest.concurrent.ScalaFutures
 import play.api.libs.json.Json
-import play.api.test.FakeApplication
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import controllers.viewModels.TupleFormats._
+import utils.BaseSpec
 
-case class ExampleTuple2(a: List[(String, String)])
+class TupleFormatSpec extends BaseSpec with ScalaFutures {
 
-object ExampleTuple2 {
-  implicit val format = Json.format[ExampleTuple2]
-}
+  case class ExampleTuple2(a: List[(String, String)])
 
-case class ExampleTuple3(a: List[(String, String, String)])
+  object ExampleTuple2 {
+    implicit val format = Json.format[ExampleTuple2]
+  }
 
-object ExampleTuple3 {
-  implicit val format = Json.format[ExampleTuple3]
-}
+  case class ExampleTuple3(a: List[(String, String, String)])
 
-class JsonTestSpec extends UnitSpec with WithFakeApplication with ScalaFutures {
-
-  override lazy val fakeApplication = FakeApplication()
-  override def bindModules = Seq(new PlayModule)
+  object ExampleTuple3 {
+    implicit val format = Json.format[ExampleTuple3]
+  }
 
   "JSON serialization/deserialize" should {
 
@@ -47,8 +42,8 @@ class JsonTestSpec extends UnitSpec with WithFakeApplication with ScalaFutures {
       val tuple2 = ExampleTuple2(Seq(("a", "b"), ("c", "d")).toList)
       val jsonObject = Json.toJson(tuple2)
 
-      jsonObject shouldBe rawJson
-      rawJson.as[ExampleTuple2] shouldBe tuple2
+      jsonObject mustBe rawJson
+      rawJson.as[ExampleTuple2] mustBe tuple2
     }
 
     s"Successfully serialize/deserialize Tuple3" in {
@@ -56,8 +51,8 @@ class JsonTestSpec extends UnitSpec with WithFakeApplication with ScalaFutures {
       val tuple3 = ExampleTuple3(Seq(("a", "b", "c"), ("d", "e", "f")).toList)
       val jsonObject = Json.toJson(tuple3)
 
-      jsonObject shouldBe rawJson
-      rawJson.as[ExampleTuple3] shouldBe tuple3
+      jsonObject mustBe rawJson
+      rawJson.as[ExampleTuple3] mustBe tuple3
     }
 
   }

@@ -16,30 +16,24 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.DateTime
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsString, Json}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.tai.config.DefaultServicesConfig
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
+import utils.BaseSpec
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Random
 
-class PreviousYearsIncomeConnectorSpec
-    extends PlaySpec with MockitoSugar with DefaultServicesConfig with FakeTaiPlayApplication {
+class PreviousYearsIncomeConnectorSpec extends BaseSpec {
 
   "PreviousYearsIncomeConnector" must {
 
     "return an envelope id on a successful invocation" in {
-      val sut = createSUT()
       val model =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
@@ -48,7 +42,7 @@ class PreviousYearsIncomeConnectorSpec
           .postToApi(Matchers.eq(s"/tai/$nino/employments/years/2016/update"), Matchers.eq(model))(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
-      val result = Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)
+      val result = Await.result(sut().incorrectIncome(nino, 2016, model), 5.seconds)
 
       result mustBe Some("123-456-789")
     }
@@ -56,15 +50,11 @@ class PreviousYearsIncomeConnectorSpec
   }
 
   private val year: TaxYear = TaxYear(DateTime.now().getYear)
-  private val nino: Nino = new Generator(new Random).nextNino
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-
-  private def createSUT(servUrl: String = "") = new PreviousYearsIncomeConnectorTest(servUrl)
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  private class PreviousYearsIncomeConnectorTest(servUrl: String = "")
-      extends PreviousYearsIncomeConnector(httpHandler) {
-    override val serviceUrl: String = servUrl
-  }
+  def sut(servUrl: String = ""): PreviousYearsIncomeConnector =
+    new PreviousYearsIncomeConnector(httpHandler, servicesConfig) {
+      override val serviceUrl: String = servUrl
+    }
 }

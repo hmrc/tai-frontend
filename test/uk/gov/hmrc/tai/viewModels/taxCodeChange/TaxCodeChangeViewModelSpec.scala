@@ -16,20 +16,17 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{OtherBasisOfOperation, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
+import utils.BaseSpec
 
 import scala.collection.immutable.ListMap
 
-class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
-
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+class TaxCodeChangeViewModelSpec extends BaseSpec {
 
   val endOfTaxYear = TaxYear().end
   val startDate = TaxYear().start
@@ -220,7 +217,8 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
         )
 
         val result =
-          TaxCodeChangeViewModel.getTaxCodeExplanations(previousTaxCodeRecord1, Map[String, BigDecimal](), "current")
+          TaxCodeChangeViewModel
+            .getTaxCodeExplanations(previousTaxCodeRecord1, Map[String, BigDecimal](), "current", appConfig)
 
         result mustEqual (expected)
       }
@@ -236,7 +234,8 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
         )
 
         val result =
-          TaxCodeChangeViewModel.getTaxCodeExplanations(fullYearTaxCode, Map[String, BigDecimal](), "current")
+          TaxCodeChangeViewModel
+            .getTaxCodeExplanations(fullYearTaxCode, Map[String, BigDecimal](), "current", appConfig)
 
         result mustEqual (expected)
       }
@@ -261,7 +260,8 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
           )
         )
 
-        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(scottishTaxCode, scottishTaxRateBands, "current")
+        val result =
+          TaxCodeChangeViewModel.getTaxCodeExplanations(scottishTaxCode, scottishTaxRateBands, "current", appConfig)
 
         result mustEqual (expected)
       }

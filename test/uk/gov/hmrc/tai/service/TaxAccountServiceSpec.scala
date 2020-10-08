@@ -18,22 +18,18 @@ package uk.gov.hmrc.tai.service
 
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.{income, _}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax._
+import uk.gov.hmrc.tai.model.domain.{income, _}
+import utils.BaseSpec
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
-import scala.util.Random
+import scala.concurrent.{Await, Future}
 
-class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
+class TaxAccountServiceSpec extends BaseSpec {
 
   "taxCodeIncomes" must {
     "return seq of tax codes" in {
@@ -41,7 +37,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
 
-      val result = testService.taxCodeIncomes(generateNino, TaxYear())
+      val result = testService.taxCodeIncomes(nino, TaxYear())
       Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(taxCodeIncomes)
     }
   }
@@ -53,7 +49,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
 
-      val result = testService.taxCodeIncomeForEmployment(generateNino, TaxYear(), 1)
+      val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 1)
 
       val expected = Right(Some(taxCodeIncome1))
 
@@ -66,7 +62,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
 
-      val result = testService.taxCodeIncomeForEmployment(generateNino, TaxYear(), 99)
+      val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 99)
 
       Await.result(result, 5 seconds) mustBe Right(Option.empty[TaxCodeIncome])
     }
@@ -77,7 +73,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error")))
 
-      val result = testService.taxCodeIncomeForEmployment(generateNino, TaxYear(), 99)
+      val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 99)
 
       Await.result(result, 5 seconds) mustBe Left(TaiTaxAccountFailureResponse("error"))
     }
@@ -89,7 +85,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       when(taxAccountConnector.taxAccountSummary(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary)))
 
-      val result = sut.taxAccountSummary(generateNino, TaxYear())
+      val result = sut.taxAccountSummary(nino, TaxYear())
       Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(taxAccountSummary)
     }
   }
@@ -100,7 +96,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       when(taxAccountConnector.nonTaxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(nonTaxCodeIncome)))
 
-      val result = sut.nonTaxCodeIncomes(generateNino, TaxYear())
+      val result = sut.nonTaxCodeIncomes(nino, TaxYear())
       Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(nonTaxCodeIncome)
     }
   }
@@ -111,7 +107,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       when(taxAccountConnector.updateEstimatedIncome(any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponse))
 
-      val result = sut.updateEstimatedIncome(generateNino, 100, TaxYear(), 1)
+      val result = sut.updateEstimatedIncome(nino, 100, TaxYear(), 1)
       Await.result(result, 5 seconds) mustBe TaiSuccessResponse
     }
 
@@ -120,7 +116,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       when(taxAccountConnector.updateEstimatedIncome(any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
 
-      val result = sut.updateEstimatedIncome(generateNino, 100, TaxYear(), 1)
+      val result = sut.updateEstimatedIncome(nino, 100, TaxYear(), 1)
       Await.result(result, 5 seconds) mustBe TaiTaxAccountFailureResponse("Failed")
     }
   }
@@ -132,7 +128,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       when(taxAccountConnector.totalTax(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
 
-      val result = sut.totalTax(generateNino, TaxYear())
+      val result = sut.totalTax(nino, TaxYear())
       Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(totalTax)
     }
   }
@@ -160,7 +156,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
         when(taxAccountConnector.totalTax(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
 
-        val result = sut.scottishBandRates(generateNino, TaxYear(), taxCodes)
+        val result = sut.scottishBandRates(nino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map("D0" -> 20, "1150L" -> 10)
       }
     }
@@ -171,14 +167,14 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
         when(taxAccountConnector.totalTax(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error Message")))
-        val result = sut.scottishBandRates(generateNino, TaxYear(), taxCodes)
+        val result = sut.scottishBandRates(nino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map()
       }
 
       "none of the tax code is scottish" in {
         val sut = createSut
 
-        val result = sut.scottishBandRates(generateNino, TaxYear(), taxCodeIncomes.map(_.taxCode))
+        val result = sut.scottishBandRates(nino, TaxYear(), taxCodeIncomes.map(_.taxCode))
         Await.result(result, 5 seconds) mustBe Map()
       }
 
@@ -189,7 +185,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
         when(taxAccountConnector.totalTax(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
-        val result = sut.scottishBandRates(generateNino, TaxYear(), taxCodes)
+        val result = sut.scottishBandRates(nino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map()
       }
 
@@ -199,7 +195,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
         when(taxAccountConnector.totalTax(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
-        val result = sut.scottishBandRates(generateNino, TaxYear(), taxCodes)
+        val result = sut.scottishBandRates(nino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map()
       }
     }
@@ -219,10 +215,6 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
     Some(income.UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest", Seq.empty[BankAccount])),
     Seq(OtherNonTaxCodeIncome(Profit, None, 100, "Profit"))
   )
-
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-
-  def generateNino: Nino = new Generator(new Random).nextNino
 
   private def createSut = new SUT
 

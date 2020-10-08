@@ -19,10 +19,8 @@ package controllers
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.Inject
-import play.api.i18n.MessagesApi
-import play.api.mvc.{AnyContent, Request, Result}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Request, Result}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.bootstrap.controller.UnauthorisedAction
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -33,12 +31,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class ServiceController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  applicationConfig: ApplicationConfig,
+  mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController {
+    extends TaiBaseController(mcc) {
 
-  def timeoutPage() = UnauthorisedAction.async { implicit request =>
+  def timeoutPage() = Action.async { implicit request =>
     Future.successful(Ok(views.html.timeout()))
   }
 
@@ -46,9 +45,9 @@ class ServiceController @Inject()(
     request.taiUser.providerType match {
       case Some(TaiConstants.AuthProviderVerify) =>
         Future.successful(
-          Redirect(ApplicationConfig.citizenAuthFrontendSignOutUrl)
-            .withSession(TaiConstants.SessionPostLogoutPage -> ApplicationConfig.feedbackSurveyUrl))
-      case _ => Future.successful(Redirect(ApplicationConfig.companyAuthFrontendSignOutUrl))
+          Redirect(applicationConfig.citizenAuthFrontendSignOutUrl)
+            .withSession(TaiConstants.SessionPostLogoutPage -> applicationConfig.feedbackSurveyUrl))
+      case _ => Future.successful(Redirect(applicationConfig.companyAuthFrontendSignOutUrl))
     }
   }
 

@@ -16,27 +16,26 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
-import uk.gov.hmrc.tai.connectors.CompanyCarConnector
 import org.joda.time.LocalDate
-import org.mockito.Mockito
 import org.mockito.Matchers.any
+import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.CompanyCarConnector
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.income.Live
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
-class CompanyCarServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheConstants with BeforeAndAfterEach {
+class CompanyCarServiceSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(carConnector)
@@ -102,8 +101,6 @@ class CompanyCarServiceSpec extends PlaySpec with MockitoSugar with JourneyCache
       }
     }
   }
-
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val companyCar = CompanyCarBenefit(
     10,

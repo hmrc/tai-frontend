@@ -16,28 +16,23 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.{DateTime, LocalDate}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsString, Json}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.tai.config.DefaultServicesConfig
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
+import utils.BaseSpec
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class PensionProviderConnectorSpec
-    extends PlaySpec with MockitoSugar with DefaultServicesConfig with FakeTaiPlayApplication {
+class PensionProviderConnectorSpec extends BaseSpec {
 
   "PensionProviderConnector addPensionProvider" must {
     "return an envelope id on a successful invocation" in {
-      val sut = createSUT()
       val addPensionProvider =
         AddPensionProvider("testPension", new LocalDate(2017, 6, 6), "12345", "Yes", Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
@@ -55,7 +50,6 @@ class PensionProviderConnectorSpec
 
   "PensionProviderConnector incorrectPensionProvider" must {
     "return an envelope id on a successful invocation" in {
-      val sut = createSUT()
       val incorrectPensionProvider = IncorrectPensionProvider(
         whatYouToldUs = "TEST",
         telephoneContactAllowed = "Yes",
@@ -74,14 +68,10 @@ class PensionProviderConnectorSpec
   }
 
   private val year: TaxYear = TaxYear(DateTime.now().getYear)
-  private val nino: Nino = new Generator().nextNino
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-
-  private def createSUT() = new PensionProviderConnectorTest()
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  private class PensionProviderConnectorTest() extends PensionProviderConnector(httpHandler) {
+  def sut: PensionProviderConnector = new PensionProviderConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "testUrl"
   }
 

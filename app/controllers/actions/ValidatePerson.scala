@@ -46,6 +46,7 @@ class ValidatePersonImpl @Inject()(personService: PersonService)(implicit ec: Ex
       case p                     => Right(AuthenticatedRequest(request, request.taiUser, p.name))
     }
   }
+  override protected def executionContext: ExecutionContext = ec
 }
 
 @ImplementedBy(classOf[ValidatePersonImpl])

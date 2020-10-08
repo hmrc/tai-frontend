@@ -16,19 +16,14 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, PotentiallyCeased}
 import uk.gov.hmrc.tai.model.domain.{JobSeekerAllowanceIncome, OtherIncome, PensionIncome, TaxedIncome}
-import utils.TaxAccountSummaryTestData
 import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
+import utils.{BaseSpec, TaxAccountSummaryTestData}
 
-class IncomeSourceViewModelSpec
-    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxAccountSummaryTestData {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData {
 
   "IncomeSourceViewModel apply method" must {
     "return a viewmodel" which {

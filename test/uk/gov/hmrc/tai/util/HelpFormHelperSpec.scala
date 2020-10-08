@@ -16,21 +16,18 @@
 
 package uk.gov.hmrc.tai.util
 
-import controllers.FakeTaiPlayApplication
-import org.scalatest.mockito.MockitoSugar
+import builders.RequestBuilder
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import utils.BaseSpec
 
-class HelpFormHelperSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
+class HelpFormHelperSpec extends BaseSpec {
 
-  val mockPartialRetriever = mock[FormPartialRetriever]
+  val mockPartialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
 
-  implicit val request = fakeRequest
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+  implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
   "HelpFormHelper" should {
 
@@ -41,7 +38,7 @@ class HelpFormHelperSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
         when(mockPartialRetriever.getPartialContent(any(), any(), any())(any())) thenReturn Html(
           messages("tai.deskpro.link.text.original"))
 
-        HelpFormHelper.replaceMessage(mockPartialRetriever).toString() mustBe
+        HelpFormHelper.replaceMessage(mockPartialRetriever, appConfig).toString() mustBe
           messages("tai.deskpro.link.text.replacement")
       }
     }
@@ -54,13 +51,13 @@ class HelpFormHelperSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
 
         when(mockPartialRetriever.getPartialContent(any(), any(), any())(any())) thenReturn Html(expectedMessage)
 
-        HelpFormHelper.replaceMessage(mockPartialRetriever).toString() mustBe expectedMessage
+        HelpFormHelper.replaceMessage(mockPartialRetriever, appConfig).toString() mustBe expectedMessage
       }
 
       "an empty partial is retrieved" in {
         when(mockPartialRetriever.getPartialContent(any(), any(), any())(any())) thenReturn Html("")
 
-        HelpFormHelper.replaceMessage(mockPartialRetriever).toString() mustBe empty
+        HelpFormHelper.replaceMessage(mockPartialRetriever, appConfig).toString() mustBe empty
       }
     }
   }

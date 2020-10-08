@@ -20,7 +20,8 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.{Inject, Named}
-import play.api.mvc.{Action, AnyContent}
+import play.api.i18n.Lang
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.TaxYear
@@ -33,7 +34,6 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
-import play.api.i18n.MessagesApi
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 
@@ -46,11 +46,11 @@ class IncomeUpdateIrregularHoursController @Inject()(
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with JourneyCacheConstants {
+    extends TaiBaseController(mcc) with JourneyCacheConstants {
 
   private val taxCodeIncomeInfoToCache = (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
     val defaultCaching = Map[String, String](
@@ -65,6 +65,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
+
       val nino = user.nino
 
       val paymentRequest: Future[Option[Payment]] = incomeService.latestPayment(nino, employmentId)
@@ -124,6 +125,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
           .bindFromRequest()
           .fold(
             formWithErrors => {
+
               val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, paymentToDate)
               Future.successful(BadRequest(views.html.incomes.editIncomeIrregularHours(formWithErrors, viewModel)))
             },

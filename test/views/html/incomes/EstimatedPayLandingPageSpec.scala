@@ -18,7 +18,6 @@ package views.html.incomes
 
 import play.api.mvc.Call
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class EstimatedPayLandingPageSpec extends TaiViewSpec {
@@ -44,14 +43,15 @@ class EstimatedPayLandingPageSpec extends TaiViewSpec {
     }
 
     "contain the correct content when income is from pension" in {
-      val testView: Html = views.html.incomes.estimatedPayLandingPage(employerName, empId, isPension = true)
+      val testView: Html = views.html.incomes.estimatedPayLandingPage(employerName, empId, isPension = true, appConfig)
       doc(testView).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))
       doc(testView) must haveLinkWithText(messages("tai.incomes.landing.pension.ended.link"))
-      doc(testView) must haveLinkWithUrlWithID("updatePension", ApplicationConfig.incomeFromEmploymentPensionLinkUrl)
+      doc(testView) must haveLinkWithUrlWithID("updatePension", appConfig.incomeFromEmploymentPensionLinkUrl)
       doc(testView).getElementsByClass("button").text must include(
         messages("tai.income.details.updateTaxableIncome.update"))
     }
   }
 
-  override def view: Html = views.html.incomes.estimatedPayLandingPage(employerName, empId, isPension = false)
+  override def view: Html =
+    views.html.incomes.estimatedPayLandingPage(employerName, empId, isPension = false, appConfig)
 }

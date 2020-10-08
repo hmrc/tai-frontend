@@ -16,13 +16,10 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
+import utils.BaseSpec
 
-class SameEstimatedPayViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
+class SameEstimatedPayViewModelSpec extends BaseSpec {
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val income = 123
   val id = 1
 

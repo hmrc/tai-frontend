@@ -20,19 +20,16 @@ import org.joda.time.{DateTime, LocalDate}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
+class EmploymentServiceSpec extends BaseSpec {
 
   "Employment Service" must {
     "return employments" in {
@@ -215,8 +212,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
   }
 
   private val year: TaxYear = TaxYear(DateTime.now().getYear)
-  private val nino: Nino = new Generator().nextNino
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
+
   private val employment = Employment(
     "company name",
     Live,

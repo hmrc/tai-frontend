@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import includes.taxFreeAmountSummary
 
-@(viewModel: TaxFreeAmountViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax free amount"}
 
@@ -75,7 +75,7 @@
                 <p class="icon icon-plus display-block">
                     @Link.toInternalPage(
                     id=Some("addMissingAddition"),
-                    url=ApplicationConfig.taxFreeAllowanceLinkUrl,
+                    url=appConfig.taxFreeAllowanceLinkUrl,
                     value=Some(Messages("tai.taxFreeAmount.missing.section.addition")),
                     cssClasses=Some(""),
                     dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.missing.section.addition")}"))).toHtml
@@ -84,7 +84,7 @@
                 <p class="icon icon-plus display-block">
                     @Link.toInternalPage(
                     id=Some("addMissingDeduction"),
-                    url=ApplicationConfig.companyBenefitsLinkUrl,
+                    url=appConfig.companyBenefitsLinkUrl,
                     value=Some(Messages("add.missing.company.benefit")),
                     cssClasses=Some(""),
                     dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("add.missing.company.benefit")}"))).toHtml
@@ -93,7 +93,7 @@
                 <p class="icon icon-plus display-block">
                     @Link.toInternalPage(
                     id=Some("addMissingIncome"),
-                    url=ApplicationConfig.otherIncomeLinkUrl,
+                    url=appConfig.otherIncomeLinkUrl,
                     value=Some(Messages("tai.taxFreeAmount.missing.section.income")),
                     cssClasses=Some(""),
                     dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.missing.section.income")}"))).toHtml

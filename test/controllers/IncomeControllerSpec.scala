@@ -18,21 +18,17 @@ package controllers
 
 import builders.{RequestBuilder, UserBuilder}
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
@@ -44,22 +40,20 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class IncomeControllerSpec
-    extends PlaySpec with MockitoSugar with JourneyCacheConstants with FakeTaiPlayApplication with I18nSupport
-    with BeforeAndAfterEach {
+class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18nSupport with BeforeAndAfterEach {
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
-  val incomeService = mock[IncomeService]
-  val employmentService = mock[EmploymentService]
-  val personService = mock[PersonService]
-  val taxAccountService = mock[TaxAccountService]
-  val journeyCacheService = mock[JourneyCacheService]
-  val estimatedPayJourneyCompletionService = mock[EstimatedPayJourneyCompletionService]
+  val incomeService: IncomeService = mock[IncomeService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val personService: PersonService = mock[PersonService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
+    mock[EstimatedPayJourneyCompletionService]
 
   override def beforeEach: Unit =
     Mockito.reset(incomeService, journeyCacheService)
@@ -723,8 +717,6 @@ class IncomeControllerSpec
     }
   }
 
-  val nino = FakeAuthAction.nino
-
   def employmentWithAccounts(accounts: List[AnnualAccount]) =
     Employment("ABCD", Live, Some("ABC123"), new LocalDate(2000, 5, 20), None, accounts, "", "", 8, None, false, false)
 
@@ -744,8 +736,6 @@ class IncomeControllerSpec
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
   )
-
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val employmentAmount = EmploymentAmount(
     "employment",
@@ -770,26 +760,22 @@ class IncomeControllerSpec
         estimatedPayJourneyCompletionService,
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
+        mcc,
+        partialRetriever,
+        templateRenderer
       ) {
 
     when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
     when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
-    implicit val user = UserBuilder.apply()
-
     def renderSuccess(employerName: String, employerId: Int) = { implicit request: FakeRequest[_] =>
       {
-        implicit val user = FakeAuthAction.user
         views.html.incomes.editSuccess(employerName, employerId)
       }
     }
 
     def renderPensionSuccess(employerName: String, employerId: Int) = { implicit request: FakeRequest[_] =>
       {
-        implicit val user = FakeAuthAction.user
         views.html.incomes.editPensionSuccess(employerName, employerId)
       }
     }

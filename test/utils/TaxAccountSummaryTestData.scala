@@ -26,8 +26,6 @@ import scala.util.Random
 
 trait TaxAccountSummaryTestData {
 
-  val nino: Nino = FakeAuthAction.nino
-
   val employment = Employment(
     "Employer name",
     Live,

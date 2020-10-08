@@ -17,31 +17,26 @@
 package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 
 import builders.RequestBuilder
-import controllers.FakeTaiPlayApplication
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.{CodingComponentPair, CodingComponentPairModel, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
+import uk.gov.hmrc.tai.model.{CodingComponentPair, CodingComponentPairModel, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService, YourTaxFreeAmountComparison, YourTaxFreeAmountService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class DescribedYourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
-
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
 
   "taxFreeAmountComparison" must {
     "returns a YourTaxFreeAmountViewModel with the described comparison for previous and current" in {
@@ -135,8 +130,6 @@ class DescribedYourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar w
   private val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
   private val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-  private val nino: Nino = new Generator(new Random).nextNino
   private def createTestService = new TestService
 
   private val yourTaxFreeAmountService: YourTaxFreeAmountService = mock[YourTaxFreeAmountService]

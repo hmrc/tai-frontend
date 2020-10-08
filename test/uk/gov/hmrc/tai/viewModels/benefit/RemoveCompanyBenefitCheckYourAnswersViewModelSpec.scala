@@ -16,14 +16,11 @@
 
 package uk.gov.hmrc.tai.viewModels.benefit
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
+import utils.BaseSpec
 
-class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends BaseSpec {
 
   "Remove company benefit check your answers view model" must {
 

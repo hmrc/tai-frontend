@@ -18,18 +18,13 @@ package controllers
 
 import builders.{RequestBuilder, UserBuilder}
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.play.partials.{FormPartialRetriever, HtmlPartial}
+import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.play.views.formatting.Money.pounds
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
@@ -40,12 +35,13 @@ import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, T
 import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import uk.gov.hmrc.urls.Link
+import utils.BaseSpec
 
 import scala.concurrent.Future
-import scala.util.Random
 
-class EstimatedIncomeTaxControllerSpec
-    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with BandTypesConstants with TaxRegionConstants {
+class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants with TaxRegionConstants {
+
+  implicit val request = FakeRequest()
 
   "EstimatedIncomeTaxController" must {
     "return Ok" when {
@@ -424,13 +420,7 @@ class EstimatedIncomeTaxControllerSpec
     }
   }
 
-  implicit val request = FakeRequest()
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  implicit val templateRenderer = MockTemplateRenderer
-  implicit val partialRetriever = MockPartialRetriever
   implicit val user = UserBuilder()
-
-  val nino: Nino = new Generator(new Random).nextNino
 
   private def createSUT = new SUT
 
@@ -445,9 +435,9 @@ class EstimatedIncomeTaxControllerSpec
         taxAccountService,
         FakeAuthAction,
         FakeValidatePerson,
-        MockPartialRetriever,
-        MockTemplateRenderer,
-        app.injector.instanceOf[MessagesApi]
+        partialRetriever,
+        templateRenderer,
+        mcc
       )
 
 }

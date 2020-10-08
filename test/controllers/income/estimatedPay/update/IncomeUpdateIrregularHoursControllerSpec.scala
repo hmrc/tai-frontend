@@ -17,37 +17,30 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
+import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiUnauthorisedResponse}
-import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants._
-import org.mockito.Matchers.{eq => eqTo}
-import play.api.test.FakeRequest
+import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class IncomeUpdateIrregularHoursControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JourneyCacheConstants {
-
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCacheConstants {
 
   val employer = IncomeSource(id = 1, name = "sample employer")
 
@@ -64,7 +57,7 @@ class IncomeUpdateIrregularHoursControllerSpec
         incomeService,
         taxAccountService,
         estimatedPayJourneyCompletionService,
-        app.injector.instanceOf[MessagesApi],
+        mcc,
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer

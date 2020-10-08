@@ -14,11 +14,11 @@
  * limitations under the License.
  *@
 
-@(title: String, header: String)(content: Html)(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+
+@(title: String, header: String, appConfig: ApplicationConfig)(content: Html)(implicit request: Request[_], messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.layouts
-@import uk.gov.hmrc.play.config.RunMode._
-@import uk.gov.hmrc.tai.config.ApplicationConfig
 @import play.api.Play.current
 @import play.api.Play
 @import uk.gov.hmrc.urls.Link
@@ -47,7 +47,7 @@
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
             
-                ga('create', '@ApplicationConfig.analyticsToken', 'auto');
+                ga('create', '@appConfig.analyticsToken', 'auto');
                 
                 ga('send', 'pageview', { 'anonymizeIp': true });
             

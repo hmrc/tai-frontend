@@ -16,12 +16,12 @@
 
 package controllers.income.previousYears
 
-import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.{Inject, Named}
+import play.api.i18n.{Lang, Messages}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
@@ -43,12 +43,12 @@ class UpdateIncomeDetailsController @Inject()(
   previousYearsIncomeService: PreviousYearsIncomeService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with JourneyCacheConstants with FormValuesConstants {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {
 
   def telephoneNumberViewModel(taxYear: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel =
     CanWeContactByPhoneViewModel(
@@ -86,7 +86,6 @@ class UpdateIncomeDetailsController @Inject()(
 
   def details(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-
     journeyCacheService.currentCache map { currentCache =>
       Ok(
         views.html.incomes.previousYears.UpdateIncomeDetails(
@@ -97,7 +96,6 @@ class UpdateIncomeDetailsController @Inject()(
 
   def submitDetails(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-
     UpdateIncomeDetailsForm.form.bindFromRequest.fold(
       formWithErrors => {
         journeyCacheService.currentCache map { currentCache =>

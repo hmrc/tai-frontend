@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{LatestPayment, PaymentDetailsViewModel, YourIncomeCalculationViewModel}
 import uk.gov.hmrc.urls.Link
 
-class yourIncomeCalculationSpec extends TaiViewSpec {
+class YourIncomeCalculationSpec extends TaiViewSpec {
 
   "YourIncomeCalculationView" must {
 

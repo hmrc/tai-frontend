@@ -18,20 +18,11 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.Matchers.{any, eq => meq}
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
@@ -41,14 +32,11 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
+import utils.BaseSpec
 
 import scala.concurrent.Future
-import scala.util.Random
 
-class TaxCodeChangeControllerSpec
-    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with ControllerViewTestHelper {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
   "whatHappensNext" must {
     "show 'What happens next' page" when {
@@ -114,11 +102,9 @@ class TaxCodeChangeControllerSpec
       val expectedViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates, reasons, false)
 
       status(result) mustBe OK
-      result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel)
+      result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel, appConfig)
     }
   }
-
-  val nino: Nino = new Generator(new Random).nextNino
 
   val giftAmount = 1000
 
@@ -153,12 +139,14 @@ class TaxCodeChangeControllerSpec
         FakeValidatePerson,
         yourTaxFreeAmountService,
         taxCodeChangeReasonsService,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
+        appConfig,
+        mcc,
+        partialRetriever,
+        templateRenderer
       ) {
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
+
+    when(taxCodeChangeService.latestTaxCodeChangeDate(meq(nino))(any()))
+      .thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
   }
 
 }

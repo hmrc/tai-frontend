@@ -19,7 +19,6 @@ package views.html.paye
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -38,10 +37,11 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
     EmploymentViewModel("test employment", 123.32, 1, false, Some("payrollNumber"))
 
   override def view: Html =
-    views.html.paye.RtiDisabledHistoricPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), 3)
+    views.html.paye
+      .RtiDisabledHistoricPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), appConfig)
 
   private def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html =
-    views.html.paye.RtiDisabledHistoricPayAsYouEarn(vm, noOfPreviousYears)
+    views.html.paye.RtiDisabledHistoricPayAsYouEarn(vm, appConfig)
 
   "RtiDisabledHistoricPayAsYouEarn view" should {
 
@@ -68,7 +68,7 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
         val view: Html = views.html.paye
           .RtiDisabledHistoricPayAsYouEarn(
             HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true),
-            1)
+            appConfig)
 
         doc(view) must haveLinkWithUrlWithClass(
           "taxCodeDescription",
@@ -82,7 +82,7 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
       val view: Html = views.html.paye
         .RtiDisabledHistoricPayAsYouEarn(
           HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, false),
-          1)
+          appConfig)
 
       doc(view).toString mustNot include(messages("tai.taxCode.description.link"))
     }
@@ -103,7 +103,7 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
         val view: Html = views.html.paye
           .RtiDisabledHistoricPayAsYouEarn(
             HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true),
-            1)
+            appConfig)
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
@@ -113,7 +113,7 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
         val view: Html = views.html.paye
           .RtiDisabledHistoricPayAsYouEarn(
             HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true, true),
-            1)
+            appConfig)
         doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
@@ -124,7 +124,7 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
         val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true, Some("payrollNumber"))
         val view: Html = views.html.paye.RtiDisabledHistoricPayAsYouEarn(
           HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Seq(employment), true, true),
-          1)
+          appConfig)
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
@@ -156,7 +156,7 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
 
         doc must haveLinkElement(
           "p800Link",
-          ApplicationConfig.taxYouPaidStatus,
+          appConfig.taxYouPaidStatus,
           messages("tai.paye.lastTaxYear.checkIncomeTax.link")
         )
         doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.incorrectInformation.title"))
@@ -228,7 +228,7 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
 
         doc must haveLinkElement(
           "p800Link",
-          ApplicationConfig.taxYouPaidStatus,
+          appConfig.taxYouPaidStatus,
           messages("tai.paye.lastTaxYear.checkIncomeTax.link")
         )
         doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.incorrectInformation.title"))
@@ -266,7 +266,7 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
         doc must haveParagraphWithText(messages("tai.rti.down"))
         doc must haveLinkElement(
           "p800Link",
-          ApplicationConfig.taxYouPaidStatus,
+          appConfig.taxYouPaidStatus,
           messages("tai.paye.lastTaxYear.checkIncomeTax.link")
         )
       }
@@ -293,7 +293,7 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
 
         doc must haveLinkElement(
           "p800Link",
-          ApplicationConfig.taxYouPaidStatus,
+          appConfig.taxYouPaidStatus,
           messages("tai.paye.lastTaxYear.checkIncomeTax.link")
         )
       }
@@ -313,7 +313,7 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
 
       doc must haveLinkElement(
         "p800Link",
-        ApplicationConfig.taxYouPaidStatus,
+        appConfig.taxYouPaidStatus,
         messages("tai.paye.lastTaxYear.checkIncomeTax.link")
       )
 
@@ -381,7 +381,7 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
       val sut: Html = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
 
-      doc must haveLinkWithUrlWithID("p800Link", ApplicationConfig.taxYouPaidStatus.toString)
+      doc must haveLinkWithUrlWithID("p800Link", appConfig.taxYouPaidStatus.toString)
       doc.select("#p800Link").size() mustBe 1
     }
   }

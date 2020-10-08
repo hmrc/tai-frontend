@@ -20,10 +20,9 @@ import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
+import utils.BaseSpec
 
-class EmploymentNameFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class EmploymentNameFormSpec extends BaseSpec {
 
   "EmploymentNameForm" must {
     "return no errors with valid data" in {

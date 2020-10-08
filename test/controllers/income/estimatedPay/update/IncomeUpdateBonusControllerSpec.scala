@@ -18,42 +18,39 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication, routes}
+import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.i18n.Messages
+import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
+import utils.BaseSpec
 import views.html.incomes.{bonusPaymentAmount, bonusPayments}
 
 import scala.concurrent.Future
 
 class IncomeUpdateBonusControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JourneyCacheConstants
-    with ControllerViewTestHelper with FormValuesConstants {
-
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+    extends BaseSpec with JourneyCacheConstants with ControllerViewTestHelper with FormValuesConstants {
 
   val employer = IncomeSource(id = 1, name = "sample employer")
 
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
+  override implicit val fakeRequest: FakeRequest[AnyContent] = RequestBuilder.buildFakeGetRequestWithAuth()
+
   class TestIncomeUpdateBonusController
       extends IncomeUpdateBonusController(
         FakeAuthAction,
         FakeValidatePerson,
-        app.injector.instanceOf[MessagesApi],
+        mcc,
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer) {
@@ -79,25 +76,23 @@ class IncomeUpdateBonusControllerSpec
     }
     "display bonusPayments" in {
 
-      implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
       val cachedAmount = "1231231"
 
       val result = BonusPaymentsPageHarness
         .setup(cachedAmount)
-        .bonusPaymentsPage(fakeRequest)
+        .bonusPaymentsPage(fakeRequest.asInstanceOf[FakeRequest[AnyContentAsFormUrlEncoded]])
 
       status(result) mustBe OK
 
       val expectedForm = BonusPaymentsForm.createForm.fill(YesNoForm(Some(cachedAmount)))
-      val expectedView = bonusPayments(expectedForm, employer)
+      val expectedView =
+        bonusPayments(expectedForm, employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
 
       result rendersTheSameViewAs expectedView
     }
 
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
-
-        implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val controller = new TestIncomeUpdateBonusController
 
@@ -172,7 +167,15 @@ class IncomeUpdateBonusControllerSpec
           .handleBonusPayments(fakeRequest)
 
         status(result) mustBe BAD_REQUEST
-        result rendersTheSameViewAs bonusPayments(BonusPaymentsForm.createForm.bindFromRequest()(fakeRequest), employer)
+        result rendersTheSameViewAs bonusPayments(
+          BonusPaymentsForm.createForm.bindFromRequest()(fakeRequest),
+          employer)(
+          fakeRequest,
+          messages,
+          authedUser,
+          templateRenderer,
+          partialRetriever
+        )
       }
     }
 
@@ -223,7 +226,13 @@ class IncomeUpdateBonusControllerSpec
       status(result) mustBe OK
 
       val expectedForm = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(Some(cachedAmount)))
-      result rendersTheSameViewAs bonusPaymentAmount(expectedForm, employer)
+      result rendersTheSameViewAs bonusPaymentAmount(expectedForm, employer)(
+        fakeRequest,
+        messages,
+        authedUser,
+        templateRenderer,
+        partialRetriever
+      )
     }
 
     "Redirect to /income-summary page" when {
@@ -291,7 +300,7 @@ class IncomeUpdateBonusControllerSpec
 
         result rendersTheSameViewAs bonusPaymentAmount(
           BonusOvertimeAmountForm.createForm().bindFromRequest()(fakeRequest),
-          employer)
+          employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
       }
     }
 

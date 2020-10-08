@@ -18,46 +18,38 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{times, verify, when}
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import org.mockito.Mockito.{verify, when}
+import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService, UpdateNextYearsIncomeService}
-import uk.gov.hmrc.tai.util.constants.TaiConstants
+import utils.BaseSpec
 
 import scala.concurrent.Future
-import scala.util.Random
 
-class IncomeTaxComparisonControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
+class IncomeTaxComparisonControllerSpec extends BaseSpec {
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
   "onPageLoad" must {
     "display the cy plus one page" in {
       val controller = new TestController
-      val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(Messages("tai.incomeTaxComparison.heading.more"))
 
-      verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
+      verify(employmentService).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
     }
 
     "throw an error page" when {
@@ -66,7 +58,7 @@ class IncomeTaxComparisonControllerSpec
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiNotFoundResponse("Not Found")))
 
-        val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = controller.onPageLoad()(request)
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -80,10 +72,10 @@ class IncomeTaxComparisonControllerSpec
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOne)))
 
-      val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
-      val doc = Jsoup.parse(contentAsString(result))
+      def doc = Jsoup.parse(contentAsString(result))
       doc.getElementById("amount-cy-0").text must equal("£1,111")
       doc.getElementById("amount-cy-plus-one-0").text must equal("£2,222")
     }
@@ -97,7 +89,7 @@ class IncomeTaxComparisonControllerSpec
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
         .thenReturn(Future.successful(Seq(employment, employment2)))
 
-      val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
@@ -116,7 +108,7 @@ class IncomeTaxComparisonControllerSpec
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
         .thenReturn(Future.successful(Seq(employment, employment2, pension, pension2)))
 
-      val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
@@ -133,7 +125,7 @@ class IncomeTaxComparisonControllerSpec
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
         .thenReturn(Future.successful(Seq(employment, employment2)))
 
-      val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
@@ -148,14 +140,13 @@ class IncomeTaxComparisonControllerSpec
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
         .thenReturn(Future.successful(Seq(employment, employment2)))
 
-      val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = controller.onPageLoad()(request)
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
       doc.getElementById("amount-cy-plus-one-0").text must equal("not applicable")
     }
   }
 
-  val nino: Nino = new Generator(new Random).nextNino
   val employment = Employment("employment1", Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
   val employment2 = Employment("employment2", Live, None, new LocalDate(), None, Nil, "", "", 2, None, false, false)
   val pension = Employment("employment3", Live, None, new LocalDate(), None, Nil, "", "", 3, None, false, true)
@@ -210,9 +201,10 @@ class IncomeTaxComparisonControllerSpec
         updateNextYearsIncomeService,
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
+        appConfig,
+        mcc,
+        partialRetriever,
+        templateRenderer
       ) {
 
     when(taxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -225,5 +217,4 @@ class IncomeTaxComparisonControllerSpec
       .thenReturn(Future.successful(Seq(employment)))
     when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any())).thenReturn(Future.successful(false))
   }
-
 }

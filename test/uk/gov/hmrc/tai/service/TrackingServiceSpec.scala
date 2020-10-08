@@ -18,23 +18,19 @@ package uk.gov.hmrc.tai.service
 
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import org.scalatest.prop.TableDrivenPropertyChecks._
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TrackingConnector
 import uk.gov.hmrc.tai.model.domain.tracking._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheConstants {
-
-  val nino = new Generator().nextNino.nino
+class TrackingServiceSpec extends BaseSpec with JourneyCacheConstants {
 
   private val name = "name1"
 
@@ -48,7 +44,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
           when(trackingConnector.getUserTracking(any())(any()))
             .thenReturn(Future.successful(Seq(TrackedForm("TES1", name, status))))
 
-          val result = sut.isAnyIFormInProgress(nino)
+          val result = sut.isAnyIFormInProgress(nino.nino)
           Await.result(result, 5 seconds) mustBe ThreeWeeks
         }
       }
@@ -58,7 +54,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
           s"$tes should take three weeks to process" in {
             when(trackingConnector.getUserTracking(any())(any()))
               .thenReturn(Future.successful(Seq(TrackedForm(tes, name, TrackedFormReceived))))
-            val result = sut.isAnyIFormInProgress(nino)
+            val result = sut.isAnyIFormInProgress(nino.nino)
             Await.result(result, 5 seconds) mustBe ThreeWeeks
           }
       }
@@ -68,7 +64,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
           s"$tes should take seven days to process" in {
             when(trackingConnector.getUserTracking(any())(any()))
               .thenReturn(Future.successful(Seq(TrackedForm(tes, name, TrackedFormReceived))))
-            val result = sut.isAnyIFormInProgress(nino)
+            val result = sut.isAnyIFormInProgress(nino.nino)
             Await.result(result, 5 seconds) mustBe SevenDays
           }
       }
@@ -79,7 +75,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
         when(trackingConnector.getUserTracking(any())(any()))
           .thenReturn(Future.successful(Seq(doneIForm, notDoneIForm)))
 
-        val result = sut.isAnyIFormInProgress(nino)
+        val result = sut.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe ThreeWeeks
       }
 
@@ -94,7 +90,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
             when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
             when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(entry))
 
-            val result = controller.isAnyIFormInProgress(nino)
+            val result = controller.isAnyIFormInProgress(nino.nino)
             Await.result(result, 5 seconds) mustBe SevenDays
           }
       }
@@ -108,7 +104,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
             when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
             when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(entry))
 
-            val result = controller.isAnyIFormInProgress(nino)
+            val result = controller.isAnyIFormInProgress(nino.nino)
             Await.result(result, 5 seconds) mustBe ThreeWeeks
           }
       }
@@ -120,7 +116,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
         when(successfulJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(TrackSuccessfulJourney_AddEmploymentKey -> "true")))
 
-        val result = controller.isAnyIFormInProgress(nino)
+        val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe SevenDays
       }
     }
@@ -129,21 +125,21 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
       "there is no iForm in progress" in {
         when(trackingConnector.getUserTracking(any())(any()))
           .thenReturn(Future.successful(Seq(TrackedForm("TES1", name, TrackedFormDone))))
-        val result = sut.isAnyIFormInProgress(nino)
+        val result = sut.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
       }
 
       "the TES value is not valid" in {
         when(trackingConnector.getUserTracking(any())(any()))
           .thenReturn(Future.successful(Seq(TrackedForm("AAA", name, TrackedFormDone))))
-        val result = sut.isAnyIFormInProgress(nino)
+        val result = sut.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
       }
 
       "tracking service return an empty form" in {
         when(trackingConnector.getUserTracking(any())(any()))
           .thenReturn(Future.successful(Seq.empty[TrackedForm]))
-        val result = sut.isAnyIFormInProgress(nino)
+        val result = sut.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
       }
 
@@ -154,7 +150,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
         when(successfulJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId" -> "true")))
 
-        val result = controller.isAnyIFormInProgress(nino)
+        val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
       }
 
@@ -164,7 +160,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
         when(successfulJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true")))
 
-        val result = controller.isAnyIFormInProgress(nino)
+        val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
       }
 
@@ -174,13 +170,11 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
         when(successfulJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey -> true.toString)))
 
-        val result = controller.isAnyIFormInProgress(nino)
+        val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
       }
     }
   }
-
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private def sut = new TrackingServiceTest
 

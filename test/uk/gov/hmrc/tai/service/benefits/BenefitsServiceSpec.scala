@@ -16,25 +16,17 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
-import controllers.FakeTaiPlayApplication
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.BenefitsConnector
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, EndedCompanyBenefit, GenericBenefit}
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Random
 
-class BenefitsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class BenefitsServiceSpec extends BaseSpec {
 
   "benefits" must {
     "return benefits" in {
@@ -42,7 +34,7 @@ class BenefitsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
       val sampleTaxYear = 2018
       when(benefitsConnector.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
 
-      val result = sut.benefits(generateNino, sampleTaxYear)
+      val result = sut.benefits(nino, sampleTaxYear)
       Await.result(result, 5 seconds) mustBe benefits
     }
   }
@@ -50,7 +42,6 @@ class BenefitsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
   "Ended company benefit" must {
     "return an envelope id" in {
       val sut = createSut
-      val nino = generateNino
       val endedCompanyBenefit =
         EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
       when(
@@ -65,7 +56,6 @@ class BenefitsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
         val sut = createSut
-        val nino = generateNino
         val endedCompanyBenefit =
           EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
         when(
@@ -79,9 +69,7 @@ class BenefitsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
     }
   }
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
   private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
-  private def generateNino: Nino = new Generator(new Random).nextNino
 
   private def createSut = new SUT
 

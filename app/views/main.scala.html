@@ -47,6 +47,13 @@
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
+@appConfig = @{
+    Play.current.injector.instanceOf[ApplicationConfig]
+}
+
+@langUtils = @{
+    Play.current.injector.instanceOf[LanguageUtils]
+}
 
 @serviceSuffix = @{
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
@@ -104,7 +111,7 @@
     }
 }
 
-@helpForm = @{HelpFormHelper.replaceMessage(partialRetriever)}
+@helpForm = @{HelpFormHelper.replaceMessage(partialRetriever, appConfig)}
 
 
 @googleAnalytics = @{
@@ -114,8 +121,8 @@
     }
 
     Map[String, Any](
-        "trackingId" -> ApplicationConfig.analyticsToken,
-        "cookieDomain" -> ApplicationConfig.analyticsHost,
+        "trackingId" -> appConfig.analyticsToken,
+        "cookieDomain" -> appConfig.analyticsHost,
         "confidenceLevel" -> confidenceLevel,
         "authProvider" -> authProvider
 
@@ -152,21 +159,21 @@
 
 
 @isWelshEnabled = @{
-    FeatureTogglesConfig.welshLanguageEnabled
+    appConfig.welshLanguageEnabled
 }
 
 @isWelshActive = @{
-    LanguageUtils.getCurrentLang == Lang("cy")
+    langUtils.getCurrentLang == Lang("cy")
 }
 
 @accessibilityFooterUrl = {
-@ApplicationConfig.accessibilityStatementUrl(request.uri)
+@appConfig.accessibilityStatementUrl(request.uri)
 }
 
 @mustacheMap = @{
     Map[String, Any](
         "nuanceWebChat" -> Map(
-        "isWebchatEnabled" -> FeatureTogglesConfig.webChatEnabled,
+        "isWebchatEnabled" -> appConfig.webChatEnabled,
         "nuanceId" -> sessionId),
         "pageTitle" -> s"${title} ${serviceSuffix}",
         "linkElems" -> Map(
@@ -201,8 +208,8 @@
         "inlineScript" -> inlineScript,
         "showPropositionLinks" -> isWelshEnabled,
         "langSelector" -> isWelshEnabled,
-        "enUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("english"),
-        "cyUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("cymraeg"),
+        "enUrl" -> controllers.i18n.routes.TaiLanguageController.english(),
+        "cyUrl" -> controllers.i18n.routes.TaiLanguageController.welsh(),
         "isWelsh" -> isWelshActive,
         "optimizely" -> Map(
             "audience" -> optimizelyAudience.getOrElse("Other user"),
@@ -216,11 +223,11 @@
 }
 
 @templateArguments = @{
-    if(!isUserResearchBannerHidden && ApplicationConfig.urBannerEnabled) {
+    if(!isUserResearchBannerHidden && appConfig.urBannerEnabled) {
         mustacheMap ++ Map[String, Any](
             "fullWidthBannerTitle" -> Messages("tai.urbanner.title"),
             "fullWidthBannerText" -> Messages("tai.urbanner.text"),
-            "fullWidthBannerLink" -> ApplicationConfig.urBannerLink,
+            "fullWidthBannerLink" -> appConfig.urBannerLink,
             "fullWidthBannerDismissText" -> Messages("tai.urbanner.reject"),
             "fullWidthBannerGaAction" -> "Help improve the HMRC website"
         )
@@ -228,12 +235,12 @@
 }
 
 @extraTemplateArguments = @{
-    if(ApplicationConfig.accessibilityStatementToggle) {
+    if(appConfig.accessibilityStatementToggle) {
        templateArguments ++ Map[String,Any](
      "accessibilityFooterUrl" -> accessibilityFooterUrl)
     } else templateArguments
 }
 
 @{
-    templateRenderer.renderDefaultTemplate(ApplicationConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), extraTemplateArguments)
+    templateRenderer.renderDefaultTemplate(appConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), extraTemplateArguments)
 }

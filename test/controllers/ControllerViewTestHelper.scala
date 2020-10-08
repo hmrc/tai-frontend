@@ -16,23 +16,14 @@
 
 package controllers
 
-import builders.UserBuilder
-import controllers.auth.AuthedUser
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Result
 import play.api.test.Helpers.{contentAsString, _}
 import play.twirl.api.Html
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 
 import scala.concurrent.Future
 
 trait ControllerViewTestHelper extends PlaySpec {
-
-  implicit val authedUser: AuthedUser = UserBuilder()
-  implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-  implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
 
   implicit class ViewMatcherHelper(result: Future[Result]) {
     def rendersTheSameViewAs(expected: Html): Unit =

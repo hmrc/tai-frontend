@@ -16,13 +16,11 @@
 
 package uk.gov.hmrc.tai.viewModels.income
 
-import controllers.FakeTaiPlayApplication
-import play.api.i18n.Messages.Implicits._
-import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
 import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
+import utils.BaseSpec
 
-class ConfirmAmountEnteredViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
+class ConfirmAmountEnteredViewModelSpec extends BaseSpec {
 
   val employmentId = 1000
   val employerName = "name"

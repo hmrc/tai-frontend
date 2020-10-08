@@ -16,19 +16,15 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.scalatestplus.play.PlaySpec
+import play.api.i18n.{I18nSupport, Messages}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits._
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
+import utils.BaseSpec
 
-class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class IncomeSourceSummaryViewModelSpec extends BaseSpec {
 
   val emptyBenefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
   val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
@@ -72,7 +68,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
     employment: Employment,
     benefits: Benefits,
     empId: Int = 1): IncomeSourceSummaryViewModel =
-    IncomeSourceSummaryViewModel(empId, "User Name", taxCodeIncomeSources, employment, benefits, false, true)
+    IncomeSourceSummaryViewModel(empId, "User Name", taxCodeIncomeSources, employment, benefits, false, true, appConfig)
 
   "IncomeSourceSummaryViewModel apply method" must {
     "return pension details" when {
@@ -264,7 +260,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           CompanyBenefitViewModel(
             Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"),
             BigDecimal(200.22),
-            ApplicationConfig.cocarFrontendUrl
+            appConfig.cocarFrontendUrl
           ),
           CompanyBenefitViewModel(
             Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
@@ -319,12 +315,12 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           CompanyBenefitViewModel(
             Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"),
             BigDecimal(200.22),
-            ApplicationConfig.cocarFrontendUrl
+            appConfig.cocarFrontendUrl
           ),
           CompanyBenefitViewModel(
             Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"),
             BigDecimal(200.22),
-            ApplicationConfig.cocarFrontendUrl),
+            appConfig.cocarFrontendUrl),
           CompanyBenefitViewModel(
             Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
             BigDecimal(321.12),

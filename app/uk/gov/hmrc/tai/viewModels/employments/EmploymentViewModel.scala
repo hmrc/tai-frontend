@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels.employments
 
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.formatting.Dates
 
 case class EmploymentViewModel(employerName: String, empId: Int)
 

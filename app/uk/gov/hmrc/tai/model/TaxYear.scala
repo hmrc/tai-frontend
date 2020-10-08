@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.model
 
-import com.github.nscala_time.time.Imports._
 import org.joda.time.LocalDate
 import play.api.libs.json._
 
@@ -45,7 +44,7 @@ case class TaxYear(year: Int) extends Ordered[TaxYear] {
 object TaxYear {
   def apply(from: LocalDate = new LocalDate): TaxYear = {
     val naiveYear = TaxYear(from.year.get)
-    if (from < naiveYear.start) {
+    if (from isBefore naiveYear.start) {
       naiveYear.prev
     } else { naiveYear }
   }

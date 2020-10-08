@@ -16,13 +16,11 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.{FakeTaiPlayApplication, routes}
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
+import controllers.routes
 import uk.gov.hmrc.urls.Link
+import utils.BaseSpec
 
-class ReturnLinkSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class ReturnLinkSpec extends BaseSpec {
 
   class ReturnLinkTest extends ReturnLink {}
   def createReturnLinkTest = new ReturnLinkTest

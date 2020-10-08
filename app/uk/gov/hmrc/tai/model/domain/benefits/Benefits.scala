@@ -18,6 +18,8 @@ package uk.gov.hmrc.tai.model.domain.benefits
 
 import org.joda.time.LocalDate
 import play.api.libs.json.{Format, JsSuccess, JsValue, Json}
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 import uk.gov.hmrc.tai.model.domain._
 
 case class GenericBenefit(benefitType: BenefitComponentType, employmentId: Option[Int], amount: BigDecimal)

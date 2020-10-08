@@ -16,13 +16,10 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.{JsResultException, JsString, Json}
+import utils.BaseSpec
 
-class TaxComponentTypeSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class TaxComponentTypeSpec extends BaseSpec {
 
   "toMessage" must {
     "return the tax component type as a user friendly label" in {

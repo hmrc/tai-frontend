@@ -16,17 +16,12 @@
 
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.tai.forms.{PayslipForm, TaxablePayslipForm}
+import uk.gov.hmrc.tai.forms.TaxablePayslipForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
+import utils.BaseSpec
 
-class TaxablePaySlipAmountViewModelSpec
-    extends PlaySpec with FakeTaiPlayApplication with I18nSupport with EditIncomePayPeriodConstants {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class TaxablePaySlipAmountViewModelSpec extends BaseSpec with EditIncomePayPeriodConstants {
 
   val errorMessage = messagesApi("tai.taxablePayslip.error.form.incomes.radioButton.mandatory")
 

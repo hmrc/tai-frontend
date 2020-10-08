@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.urls.Link
 
-@(model: TaxCodeComparisonViewModel)(implicit messages: Messages)
+@(model: TaxCodeComparisonViewModel, appConfig: ApplicationConfig)(implicit messages: Messages)
 
 <h2 class="heading-large" id="taxCodesHeading">@messages("tai.incomeTaxComparison.taxCodes.subHeading")</h2>
 
@@ -29,7 +29,7 @@
     <p class="notice text">
         <i class="icon icon-information"><span class="visuallyhidden">@messages("tai.information")</span></i>
         <strong id="scottishTaxCodeInfo" class="bold-small">@Html(messages("tai.incomeTaxComparison.taxCodes.scottishInfo",
-            Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value=Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml))</strong>
+            Link.toExternalPage(url = appConfig.scottishRateIncomeTaxUrl, value=Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml))</strong>
     </p>
 }
 

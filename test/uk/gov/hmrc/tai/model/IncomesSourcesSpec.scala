@@ -18,13 +18,12 @@ package uk.gov.hmrc.tai.model
 
 import org.joda.time.LocalDate
 import org.scalacheck.Gen
-import org.scalacheck.Prop.forAll
-import org.scalatest.prop.PropertyChecks
 import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 
-class IncomesSourcesSpec extends PlaySpec with PropertyChecks {
+class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
 
   val employmentTaxCodeIncome =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)

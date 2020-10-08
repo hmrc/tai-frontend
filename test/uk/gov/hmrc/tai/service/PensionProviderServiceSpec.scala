@@ -20,17 +20,14 @@ import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.PensionProviderConnector
 import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
+class PensionProviderServiceSpec extends BaseSpec {
 
   "add pension provider" must {
     "return an envelope id" in {
@@ -91,8 +88,6 @@ class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
   }
 
   private def createSUT = new PensionProviderServiceTest
-  private val nino: Nino = new Generator().nextNino
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val pensionProviderConnector = mock[PensionProviderConnector]
 

@@ -16,8 +16,6 @@
 
 package views.html
 
-import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
 
@@ -149,7 +147,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
             vm)))
       val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", svm)
 
-      val document = doc(views.html.taxFreeAmount(viewModel))
+      val document = doc(views.html.taxFreeAmount(viewModel, appConfig))
 
       document must haveLinkElement("estimatedTaxOwedLink", "testHref", "testValue")
     }
@@ -159,13 +157,13 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
         doc must haveElementAtPathWithText("h2", messages("tai.incomeTaxSummary.addMissingIncome.section.heading"))
       }
       "includes a link to add a missing allowance or addition" in {
-        doc must haveLinkWithUrlWithID("addMissingAddition", ApplicationConfig.taxFreeAllowanceLinkUrl)
+        doc must haveLinkWithUrlWithID("addMissingAddition", appConfig.taxFreeAllowanceLinkUrl)
       }
       "includes a link to add a missing company benefit" in {
-        doc must haveLinkWithUrlWithID("addMissingDeduction", ApplicationConfig.companyBenefitsLinkUrl)
+        doc must haveLinkWithUrlWithID("addMissingDeduction", appConfig.companyBenefitsLinkUrl)
       }
       "includes a link to add a missing income" in {
-        doc must haveLinkWithUrlWithID("addMissingIncome", ApplicationConfig.otherIncomeLinkUrl)
+        doc must haveLinkWithUrlWithID("addMissingIncome", appConfig.otherIncomeLinkUrl)
       }
     }
   }
@@ -223,5 +221,5 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
   val viewModel: TaxFreeAmountViewModel =
     TaxFreeAmountViewModel("main heading", "main heading", "£2020", taxFreeAmountSummaryViewModel)
 
-  override def view = views.html.taxFreeAmount(viewModel)
+  override def view = views.html.taxFreeAmount(viewModel, appConfig)
 }

@@ -18,7 +18,7 @@ package views.html.taxCodeChange
 
 import controllers.routes
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
@@ -50,7 +50,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
   val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
 
-  override def view = views.html.taxCodeChange.taxCodeComparison(viewModel)
+  override def view = views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig)
 
   def testTaxCodeRecordFormat(record: TaxCodeRecord) = {
     doc must haveParagraphWithText(record.employerName)
@@ -62,7 +62,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     doc must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
 
     for (explanation <- TaxCodeChangeViewModel
-                         .getTaxCodeExplanations(record, Map[String, BigDecimal](), "current")
+                         .getTaxCodeExplanations(record, Map[String, BigDecimal](), "current", appConfig)
                          .descriptionItems) {
       doc must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.understand", record.taxCode))
       doc must haveClassWithText(explanation._1, "tax-code-change__part")
@@ -138,7 +138,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
         val viewModel: TaxCodeChangeViewModel =
           TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), false)
 
-        val view = views.html.taxCodeChange.taxCodeComparison(viewModel)
+        val view = views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig)
         doc(view) must haveClassCount("tax-code-reason", 2)
       }
 
@@ -146,7 +146,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
         val viewModel: TaxCodeChangeViewModel =
           TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), true)
 
-        val view = views.html.taxCodeChange.taxCodeComparison(viewModel)
+        val view = views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig)
         doc(view) must haveClassCount("tax-code-reason", 1)
       }
     }

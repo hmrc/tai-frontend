@@ -16,15 +16,12 @@
 
 package uk.gov.hmrc.tai.forms.pensions
 
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import utils.BaseSpec
 
-class AddPensionProviderFirstPayFormSpec
-    extends PlaySpec with OneAppPerSuite with I18nSupport with FormValuesConstants {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class AddPensionProviderFirstPayFormSpec extends BaseSpec with FormValuesConstants {
 
   "AddPensionProviderFirstPayForm" must {
     "return no errors with valid 'yes' choice" in {

@@ -17,22 +17,26 @@
 package controllers
 
 import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
-import play.api.mvc.{Request, Result}
+import play.api.mvc._
+import play.api.test.Helpers.stubControllerComponents
 import uk.gov.hmrc.auth.core.ConfidenceLevel
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
 object FakeAuthAction extends AuthAction {
   val nino = new Generator(new Random).nextNino
   val user = AuthedUser(nino.toString(), Some("saUtr"), Some(TaiConstants.AuthProviderGG), ConfidenceLevel.L200, None)
+  val cc: ControllerComponents = stubControllerComponents()
 
   override def invokeBlock[A](
     request: Request[A],
     block: (InternalAuthenticatedRequest[A]) => Future[Result]): Future[Result] =
     block(InternalAuthenticatedRequest(request, user))
+  override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
+  override protected def executionContext: ExecutionContext = cc.executionContext
 }
 
 object FakeAuthActionVerify extends AuthAction {
@@ -40,9 +44,12 @@ object FakeAuthActionVerify extends AuthAction {
   val nino = new Generator(new Random).nextNino
   val user =
     AuthedUser(nino.toString(), Some("saUtr"), Some(TaiConstants.AuthProviderVerify), ConfidenceLevel.L200, None)
+  val cc: ControllerComponents = stubControllerComponents()
 
   override def invokeBlock[A](
     request: Request[A],
     block: (InternalAuthenticatedRequest[A]) => Future[Result]): Future[Result] =
     block(InternalAuthenticatedRequest(request, user))
+  override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
+  override protected def executionContext: ExecutionContext = cc.executionContext
 }

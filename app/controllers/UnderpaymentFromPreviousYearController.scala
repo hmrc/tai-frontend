@@ -19,7 +19,7 @@ package controllers
 import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.i18n.MessagesApi
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -40,10 +40,10 @@ class UnderpaymentFromPreviousYearController @Inject()(
   taxAccountService: TaxAccountService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with Referral {
+    extends TaiBaseController(mcc) with Referral {
 
   def underpaymentExplanation = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser

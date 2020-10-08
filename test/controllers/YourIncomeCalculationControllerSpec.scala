@@ -18,29 +18,22 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
+import utils.BaseSpec
 
 import scala.concurrent.Future
-import scala.util.Random
 
-class YourIncomeCalculationControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
-  override def messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class YourIncomeCalculationControllerSpec extends BaseSpec {
 
   "Your Income Calculation" must {
     "return rti details page" when {
@@ -50,7 +43,7 @@ class YourIncomeCalculationControllerSpec
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = createTest.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -65,7 +58,7 @@ class YourIncomeCalculationControllerSpec
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val result = createTest.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
 
       }
@@ -75,7 +68,7 @@ class YourIncomeCalculationControllerSpec
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = createTest.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
@@ -84,7 +77,7 @@ class YourIncomeCalculationControllerSpec
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = createTest.yourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
@@ -95,8 +88,7 @@ class YourIncomeCalculationControllerSpec
       "historic data has been passed" in {
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
         val result =
-          createTest.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(
-            RequestBuilder.buildFakeRequestWithAuth("GET"))
+          sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -112,8 +104,7 @@ class YourIncomeCalculationControllerSpec
         when(employmentService.employments(any(), any())(any()))
           .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
         val result =
-          createTest.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(
-            RequestBuilder.buildFakeRequestWithAuth("GET"))
+          sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe BAD_GATEWAY
 
@@ -123,8 +114,7 @@ class YourIncomeCalculationControllerSpec
     "throw bad request" when {
       "next year has been passed" in {
         val result =
-          createTest.yourIncomeCalculationHistoricYears(TaxYear().next, 1)(
-            RequestBuilder.buildFakeRequestWithAuth("GET"))
+          sut.yourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
 
@@ -139,8 +129,7 @@ class YourIncomeCalculationControllerSpec
       "historic data has been passed" in {
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
         val result =
-          createTest.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(
-            RequestBuilder.buildFakeRequestWithAuth("GET"))
+          sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -156,8 +145,7 @@ class YourIncomeCalculationControllerSpec
         when(employmentService.employments(any(), any())(any()))
           .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
         val result =
-          createTest.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(
-            RequestBuilder.buildFakeRequestWithAuth("GET"))
+          sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe BAD_GATEWAY
 
@@ -166,8 +154,8 @@ class YourIncomeCalculationControllerSpec
 
     "throw bad request" when {
       "next year has been passed" in {
-        val result = createTest.printYourIncomeCalculationHistoricYears(TaxYear().next, 1)(
-          RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result =
+          sut.printYourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
 
       }
@@ -182,7 +170,7 @@ class YourIncomeCalculationControllerSpec
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = createTest.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -197,7 +185,7 @@ class YourIncomeCalculationControllerSpec
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val result = createTest.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
 
       }
@@ -207,7 +195,7 @@ class YourIncomeCalculationControllerSpec
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = createTest.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
@@ -304,27 +292,25 @@ class YourIncomeCalculationControllerSpec
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
   )
 
-  val nino = new Generator(new Random).nextNino
-
-  def createTest = new YourIncomeCalculationControllerTest
-
   val personService: PersonService = mock[PersonService]
-  val employmentService = mock[EmploymentService]
-  val taxAccountService = mock[TaxAccountService]
-  val paymentsService = app.injector.instanceOf[PaymentsService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
 
-  class YourIncomeCalculationControllerTest
-      extends YourIncomeCalculationController(
-        personService,
-        taxAccountService,
-        employmentService,
-        paymentsService,
-        FakeAuthAction,
-        FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
-      ) {
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-  }
+  lazy val paymentsService: PaymentsService = inject[PaymentsService]
+
+  def sut: YourIncomeCalculationController =
+    new YourIncomeCalculationController(
+      personService,
+      taxAccountService,
+      employmentService,
+      paymentsService,
+      FakeAuthAction,
+      FakeValidatePerson,
+      appConfig,
+      mcc,
+      partialRetriever,
+      templateRenderer
+    ) {
+      when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+    }
 }

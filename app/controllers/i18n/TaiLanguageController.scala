@@ -17,22 +17,20 @@
 package controllers.i18n
 
 import javax.inject.Inject
-import controllers.TaiBaseController
-import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
-import play.api.Play.current
-import play.api.i18n.Lang
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.i18n.{Lang, MessagesApi}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.FeatureTogglesConfig
+import uk.gov.hmrc.tai.config.ApplicationConfig
 
 class TaiLanguageController @Inject()(
+  applicationConfig: ApplicationConfig,
+  languageUtils: LanguageUtils,
+  cc: ControllerComponents,
   val partialRetriever: FormPartialRetriever,
-  val templateRenderer: TemplateRenderer)
-    extends LanguageController with TaiBaseController with FeatureTogglesConfig {
+  val templateRenderer: TemplateRenderer)(implicit messagesApi: MessagesApi)
+    extends LanguageController(applicationConfig.runModeConfiguration, languageUtils, cc) {
 
   override protected def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
@@ -41,17 +39,6 @@ class TaiLanguageController @Inject()(
 
   override protected def fallbackURL: String = controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url
 
-  protected def isWelshEnabled = welshLanguageEnabled
-
-  override def switchToLanguage(language: String): Action[AnyContent] = Action { implicit request =>
-    val newLanguage =
-      if (isWelshEnabled)
-        languageMap.getOrElse(language, LanguageUtils.getCurrentLang)
-      else
-        LanguageUtils.getCurrentLang
-
-    val redirectURL = request.headers.get(REFERER).getOrElse(fallbackURL)
-
-    Redirect(redirectURL).withLang(Lang(newLanguage.code))
-  }
+  def english(): Action[AnyContent] = switchToLanguage(language = "english")
+  def welsh(): Action[AnyContent] = switchToLanguage(language = "cymraeg")
 }

@@ -16,22 +16,17 @@
 
 package controllers
 
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.MessagesApi
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
+import utils.BaseSpec
 
-class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
-  implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-  implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
+class UnauthorisedControllerSpec extends BaseSpec {
 
   val controller = new UnauthorisedController(
-    app.injector.instanceOf[MessagesApi],
+    mcc,
+    appConfig,
     partialRetriever,
     templateRenderer
   ) {

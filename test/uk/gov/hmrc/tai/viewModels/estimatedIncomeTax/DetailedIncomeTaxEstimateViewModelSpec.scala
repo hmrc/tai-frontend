@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
-import controllers.{FakeTaiPlayApplication, routes}
-import org.scalacheck.Gen
+import controllers.routes
 import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Gen
 import org.scalatest.prop.PropertyChecks
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome, _}
@@ -31,11 +30,9 @@ import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.{HelpLink, TaxSummaryLabel}
 import uk.gov.hmrc.urls.Link
+import utils.BaseSpec
 
-class DetailedIncomeTaxEstimateViewModelSpec
-    extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport with PropertyChecks {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesConstants with PropertyChecks {
 
   "DetailedIncomeTaxEstimateViewModel" when {
 

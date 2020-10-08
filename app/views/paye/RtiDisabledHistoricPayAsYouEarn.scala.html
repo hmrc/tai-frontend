@@ -24,7 +24,7 @@
 
 @import controllers.auth.AuthenticatedRequest
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, noOfPreviousYearsToShow: Int)(implicit request: AuthenticatedRequest[_],
+@(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
 messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your Pay As You Earn Income Tax"}
@@ -106,7 +106,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                 <p>
                     @messages("tai.paye.lastTaxYear.checkIncomeTax.text")
                     @Link.toInternalPage(
-                        url=ApplicationConfig.taxYouPaidStatus.toString,
+                        url=appConfig.taxYouPaidStatus.toString,
                         value=Some(messages("tai.paye.lastTaxYear.checkIncomeTax.link")),
                         id=Some("p800Link")
                     ).toHtml
@@ -116,10 +116,10 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
         </div>
 
     </div>
-    @if(noOfPreviousYearsToShow > 1) {
+    @if(appConfig.numberOfPreviousYearsToShow > 1) {
     <div class="grid grid-1-3">
         <div class="inner-block">
-            @includes.previousYearsSideNav(viewModel.taxYear, noOfPreviousYearsToShow)
+            @includes.previousYearsSideNav(viewModel.taxYear, appConfig.numberOfPreviousYearsToShow)
         </div>
     </div>
     }

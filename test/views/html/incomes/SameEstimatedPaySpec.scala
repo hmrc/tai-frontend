@@ -17,14 +17,12 @@
 package views.html.incomes
 
 import org.joda.time.LocalDate
-import controllers.routes
-import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
-class SameEstimatedPaySpec extends TaiViewSpec with MockitoSugar {
+class SameEstimatedPaySpec extends TaiViewSpec {
 
   val employerName = "Employer"
   val amount = "£20,000"

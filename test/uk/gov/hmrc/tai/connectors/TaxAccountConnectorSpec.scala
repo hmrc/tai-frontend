@@ -22,32 +22,26 @@ import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json._
 import play.api.test.Helpers.CONTENT_TYPE
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException, UnauthorizedException}
 import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax._
-import utils.WireMockHelper
+import utils.{BaseSpec, WireMockHelper}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
-import scala.util.Random
 
-class TaxAccountConnectorSpec
-    extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with WireMockHelper with ScalaFutures
-    with IntegrationPatience {
+class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
   override lazy val app: Application = GuiceApplicationBuilder()
     .configure("microservice.services.tai.port" -> server.port)
@@ -96,6 +90,7 @@ class TaxAccountConnectorSpec
 
     "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
+
         server.stubFor(
           get(taxAccountUrl)
             .willReturn(unauthorized())
@@ -109,6 +104,7 @@ class TaxAccountConnectorSpec
   "incomeSources" should {
     "fetch the tax codes" when {
       "provided with valid nino" in {
+
         server.stubFor(
           get(incomeSourceUrl)
             .willReturn(
@@ -122,6 +118,7 @@ class TaxAccountConnectorSpec
 
     "fetch empty seq" when {
       "provided with nino that is not found" in {
+
         server.stubFor(
           get(incomeSourceUrl)
             .willReturn(
@@ -135,6 +132,7 @@ class TaxAccountConnectorSpec
 
     "return a TaiTaxAccountFailureResponse" when {
       "tai sends an invalid json" in {
+
         server.stubFor(
           get(incomeSourceUrl)
             .willReturn(
@@ -143,11 +141,13 @@ class TaxAccountConnectorSpec
 
         val result = taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live).futureValue
         result mustBe a[TaiTaxAccountFailureResponse]
+
       }
     }
 
     "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
+
         server.stubFor(
           get(incomeSourceUrl)
             .willReturn(
@@ -163,6 +163,7 @@ class TaxAccountConnectorSpec
   "codingComponents" should {
     "fetch the coding components" when {
       "provided with valid nino" in {
+
         server.stubFor(
           get(codingComponentsUrl)
             .willReturn(
@@ -176,6 +177,7 @@ class TaxAccountConnectorSpec
 
     "return a TaiTaxAccountFailureResponse" when {
       "tai sends an invalid json" in {
+
         server.stubFor(
           get(codingComponentsUrl)
             .willReturn(
@@ -189,6 +191,7 @@ class TaxAccountConnectorSpec
 
     "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
+
         server.stubFor(
           get(codingComponentsUrl)
             .willReturn(
@@ -263,6 +266,7 @@ class TaxAccountConnectorSpec
 
     "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
+
         server.stubFor(
           get(taxAccountSummaryUrl)
             .willReturn(
@@ -276,6 +280,7 @@ class TaxAccountConnectorSpec
 
     "return a TaiNotFoundResponse" when {
       "the http response is NotFound" in {
+
         server.stubFor(
           get(taxAccountSummaryUrl)
             .willReturn(
@@ -291,6 +296,7 @@ class TaxAccountConnectorSpec
   "nonTaxCodeComponents" should {
     "fetch the non tax code incomes" when {
       "provided with valid nino" in {
+
         server.stubFor(
           get(nonTaxCodeIncomeUrl)
             .willReturn(
@@ -304,6 +310,7 @@ class TaxAccountConnectorSpec
 
     "thrown exception" when {
       "tai sends an invalid json" in {
+
         server.stubFor(
           get(nonTaxCodeIncomeUrl)
             .willReturn(
@@ -317,6 +324,7 @@ class TaxAccountConnectorSpec
 
     "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
+
         server.stubFor(
           get(nonTaxCodeIncomeUrl)
             .willReturn(
@@ -353,6 +361,7 @@ class TaxAccountConnectorSpec
   "total tax" must {
     "return the total tax details for the given year" when {
       "provided with nino" in {
+
         server.stubFor(
           get(totalTaxUrl)
             .willReturn(
@@ -393,6 +402,7 @@ class TaxAccountConnectorSpec
 
     "return failure" when {
       "update tax code income returns 500" in {
+
         server.stubFor(
           get(totalTaxUrl)
             .willReturn(
@@ -406,6 +416,7 @@ class TaxAccountConnectorSpec
 
     "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
+
         server.stubFor(
           get(totalTaxUrl)
             .willReturn(
@@ -420,9 +431,6 @@ class TaxAccountConnectorSpec
 
   private val currentTaxYear = TaxYear()
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-
-  val nino: Nino = new Generator(new Random).nextNino
   def ninoAsString: String = nino.value
 
   val taxCodeIncomeJson: JsValue = Json.obj(
@@ -616,5 +624,5 @@ class TaxAccountConnectorSpec
   )
   val incomeSource = TaxedIncome(taxCodeIncome, employment)
 
-  lazy val taxAccountConnector = new TaxAccountConnector(app.injector.instanceOf[HttpHandler])
+  lazy val taxAccountConnector = new TaxAccountConnector(inject[HttpHandler], servicesConfig)
 }

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
@@ -53,7 +53,8 @@ object IncomeSourceSummaryViewModel {
     employment: Employment,
     benefits: Benefits,
     estimatedPayJourneyCompleted: Boolean,
-    rtiAvailable: Boolean)(implicit messages: Messages): IncomeSourceSummaryViewModel = {
+    rtiAvailable: Boolean,
+    applicationConfig: ApplicationConfig)(implicit messages: Messages): IncomeSourceSummaryViewModel = {
     val amountYearToDate = for {
       latestAnnualAccount <- employment.latestAnnualAccount
       latestPayment       <- latestAnnualAccount.latestPayment
@@ -63,7 +64,7 @@ object IncomeSourceSummaryViewModel {
       .find(_.employmentId.contains(empId))
       .getOrElse(throw new RuntimeException(s"Income details not found for employment id $empId"))
 
-    val benefitVMs = companyBenefitViewModels(empId, benefits)
+    val benefitVMs = companyBenefitViewModels(empId, benefits, applicationConfig)
     val displayAddCompanyCar =
       !benefitVMs.map(_.name).contains(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
 
@@ -83,11 +84,11 @@ object IncomeSourceSummaryViewModel {
     )
   }
 
-  private def companyBenefitViewModels(empId: Int, benefits: Benefits)(
+  private def companyBenefitViewModels(empId: Int, benefits: Benefits, applicationConfig: ApplicationConfig)(
     implicit messages: Messages): Seq[CompanyBenefitViewModel] = {
     val ccBenVMs = benefits.companyCarBenefits collect {
       case CompanyCarBenefit(`empId`, grossAmount, _, _) =>
-        val changeUrl = ApplicationConfig.cocarFrontendUrl
+        val changeUrl = applicationConfig.cocarFrontendUrl
         CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), grossAmount, changeUrl)
     }
 
@@ -101,7 +102,7 @@ object IncomeSourceSummaryViewModel {
 
       case GenericBenefit(CarFuelBenefit, Some(`empId`), amount) =>
         val benefitName = Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit")
-        val changeUrl = ApplicationConfig.cocarFrontendUrl
+        val changeUrl = applicationConfig.cocarFrontendUrl
         CompanyBenefitViewModel(benefitName, amount, changeUrl)
 
       case GenericBenefit(benefitType, Some(`empId`), amount) =>

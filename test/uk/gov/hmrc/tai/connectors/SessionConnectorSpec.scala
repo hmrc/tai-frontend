@@ -16,29 +16,24 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import controllers.FakeTaiPlayApplication
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HttpResponse
+import utils.BaseSpec
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
-class SessionConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with BeforeAndAfterEach {
+class SessionConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(httpHandler)
 
-  private implicit val hc = HeaderCarrier()
-
   "Session Connector" must {
     "return Http response" when {
       "cache is invalidated" in {
-        val sut = createSUT
         val result = Await.result(sut.invalidateCache(), 5.seconds)
 
         result.status mustBe 200
@@ -46,17 +41,15 @@ class SessionConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAp
     }
 
     "call the proper url to invalidate the cache" in {
-      val sut = createSUT
       Await.result(sut.invalidateCache(), 5.seconds)
       verify(httpHandler, times(1)).deleteFromApi(Matchers.eq("localhost/tai/session-cache"))(any(), any())
     }
   }
 
-  private def createSUT = new SUT
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  class SUT extends SessionConnector(httpHandler) {
-    override lazy val baseURL: String = "localhost"
+  def sut: SessionConnector = new SessionConnector(httpHandler, servicesConfig) {
+    override val serviceUrl: String = "localhost"
 
     when(httpHandler.deleteFromApi(any())(any(), any()))
       .thenReturn(Future.successful(HttpResponse(200)))

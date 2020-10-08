@@ -17,14 +17,12 @@
 package uk.gov.hmrc.tai.forms.income.estimatedPayment.update
 
 import org.joda.time.LocalDate
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
+import utils.BaseSpec
 
-class AmountComparatorFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class AmountComparatorFormSpec extends BaseSpec {
 
   "AmountComparatorForm" must {
 

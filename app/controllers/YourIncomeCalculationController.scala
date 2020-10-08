@@ -16,21 +16,18 @@
 
 package controllers
 
-import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth._
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Request, Result}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.BadRequestException
+import javax.inject.Inject
+import play.api.mvc._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{Payment, Person}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
-import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, PaymentDetailsViewModel, YourIncomeCalculationViewModel}
+import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,10 +38,11 @@ class YourIncomeCalculationController @Inject()(
   paymentsService: PaymentsService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  appConfig: ApplicationConfig,
+  mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController {
+    extends TaiBaseController(mcc) {
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -79,7 +77,7 @@ class YourIncomeCalculationController @Inject()(
           implicit val user = request.taiUser
 
           if (printPage) {
-            Ok(views.html.print.yourIncomeCalculation(model))
+            Ok(views.html.print.yourIncomeCalculation(model, appConfig))
           } else {
             Ok(views.html.incomes.yourIncomeCalculation(model))
           }
@@ -108,7 +106,8 @@ class YourIncomeCalculationController @Inject()(
               case (_, "TemporarilyUnavailable") =>
                 badGatewayError(
                   "Employment contains stub annual account data found meaning payment information can't be displayed")
-              case (true, _)  => Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel))
+              case (true, _) =>
+                Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel, appConfig))
               case (false, _) => Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel))
             }
           }

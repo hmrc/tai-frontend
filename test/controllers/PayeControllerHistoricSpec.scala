@@ -39,20 +39,17 @@ import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, Tempo
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
+import utils.BaseSpec
 import views.html.paye.historicPayAsYouEarn
 
 import scala.concurrent.Future
 import scala.util.Random
 
 class PayeControllerHistoricSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JsoupMatchers
-    with ControllerViewTestHelper with BeforeAndAfterEach {
+    extends BaseSpec with JsoupMatchers with ControllerViewTestHelper with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(employmentService)
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   private val currentYear: Int = TaxYear().year
   private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
@@ -93,7 +90,7 @@ class PayeControllerHistoricSpec
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-      status(result) mustBe 200
+      status(result) mustBe OK
       contentAsString(result) must include(messages("tai.rti.down"))
     }
 
@@ -212,34 +209,23 @@ class PayeControllerHistoricSpec
     }
   }
 
-  val fakeNino = new Generator(new Random).nextNino
-
-  def createTestController(
-    employments: Seq[Employment] = Nil,
-    previousYears: Int = 3,
-    showTaxCodeDescriptionLink: Boolean = false) =
-    new PayeControllerHistoricTest(employments, previousYears, showTaxCodeDescriptionLink)
+  def createTestController(employments: Seq[Employment] = Nil, showTaxCodeDescriptionLink: Boolean = false) =
+    new PayeControllerHistoricTest(employments, showTaxCodeDescriptionLink)
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val employmentService = mock[EmploymentService]
-  val mockAppConfig = mock[ApplicationConfig]
+  val employmentService: EmploymentService = mock[EmploymentService]
 
-  class PayeControllerHistoricTest(
-    employments: Seq[Employment],
-    previousYears: Int,
-    showTaxCodeDescriptionLink: Boolean)
+  class PayeControllerHistoricTest(employments: Seq[Employment], showTaxCodeDescriptionLink: Boolean)
       extends PayeControllerHistoric(
-        mockAppConfig,
+        appConfig,
         taxCodeChangeService,
         employmentService,
         FakeAuthAction,
         FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
+        mcc,
+        partialRetriever,
+        templateRenderer
       ) {
-
-    when(mockAppConfig.numberOfPreviousYearsToShow) thenReturn 5
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
     when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))

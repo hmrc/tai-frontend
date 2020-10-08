@@ -16,22 +16,18 @@
 
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
-import controllers.FakeTaiPlayApplication
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
+import utils.BaseSpec
 
-class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
+class TaxCodeChangeReasonsSpec extends BaseSpec {
 
   val startDate = TaxYear().start
   val previousEmployer = "Previous Employer"
   val currentEmployer = "Current Employer"
   val employmentTaxCodeChangeReasons = new TaxCodeChangeReasons
-
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   def createTaxRecord(employerName: String): TaxCodeRecord =
     TaxCodeRecord(

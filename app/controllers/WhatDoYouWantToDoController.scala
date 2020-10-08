@@ -20,14 +20,13 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.Logger
-import play.api.i18n.MessagesApi
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.FeatureTogglesConfig
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
@@ -46,10 +45,11 @@ class WhatDoYouWantToDoController @Inject()(
   auditService: AuditService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  applicationConfig: ApplicationConfig,
+  mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with FeatureTogglesConfig {
+    extends TaiBaseController(mcc) {
 
   implicit val recoveryLocation: RecoveryLocation = classOf[WhatDoYouWantToDoController]
 
@@ -92,7 +92,7 @@ class WhatDoYouWantToDoController @Inject()(
 
     auditNumberOfTaxCodesReturned(nino)
 
-    if (cyPlusOneEnabled) {
+    if (applicationConfig.cyPlusOneEnabled) {
       val hasTaxCodeChanged = taxCodeChangeService.hasTaxCodeChanged(nino)
       val cy1TaxAccountSummary = taxAccountService.taxAccountSummary(nino, TaxYear().next)
 
@@ -102,7 +102,10 @@ class WhatDoYouWantToDoController @Inject()(
       } yield {
         taxAccountSummary match {
           case TaiSuccessResponseWithPayload(_) => {
-            val model = WhatDoYouWantToDoViewModel(cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch)
+            val model = WhatDoYouWantToDoViewModel(
+              applicationConfig.cyPlusOneEnabled,
+              taxCodeChanged.changed,
+              taxCodeChanged.mismatch)
 
             Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
 
@@ -123,7 +126,10 @@ class WhatDoYouWantToDoController @Inject()(
         .hasTaxCodeChanged(nino)
         .map(hasTaxCodeChanged => {
           val model =
-            WhatDoYouWantToDoViewModel(cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch)
+            WhatDoYouWantToDoViewModel(
+              applicationConfig.cyPlusOneEnabled,
+              hasTaxCodeChanged.changed,
+              hasTaxCodeChanged.mismatch)
 
           Logger.debug(s"wdywtdViewModelCYDisabled $model")
 

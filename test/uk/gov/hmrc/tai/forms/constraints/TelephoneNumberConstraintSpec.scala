@@ -16,16 +16,14 @@
 
 package uk.gov.hmrc.tai.forms.constraints
 
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import utils.BaseSpec
 
-class TelephoneNumberConstraintSpec extends PlaySpec with OneAppPerSuite with I18nSupport with FormValuesConstants {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class TelephoneNumberConstraintSpec extends BaseSpec with FormValuesConstants {
 
   "YesNoTextEntryFormSpec" must {
     "return no errors with valid 'yes' choice and text field content" in {

@@ -16,14 +16,14 @@
 
 package controllers
 
-import org.scalatestplus.play.PlaySpec
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import utils.BaseSpec
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class AuthProviderControllerSpec extends PlaySpec with FakeTaiPlayApplication {
+class AuthProviderControllerSpec extends BaseSpec {
 
   "AuthProviderController" should {
 
@@ -59,7 +59,5 @@ class AuthProviderControllerSpec extends PlaySpec with FakeTaiPlayApplication {
     }
   }
 
-  def createSUT = new AuthProviderControllerTest
-
-  class AuthProviderControllerTest extends AuthProviderController {}
+  def createSUT = new AuthProviderController(mcc)
 }

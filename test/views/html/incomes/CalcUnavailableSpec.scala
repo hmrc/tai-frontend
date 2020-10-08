@@ -16,11 +16,10 @@
 
 package views.html.incomes
 
-import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class CalcUnavailableSpec extends TaiViewSpec with MockitoSugar {
+class CalcUnavailableSpec extends TaiViewSpec {
 
   val id = 1
   val employerName = "Employer"

@@ -16,7 +16,6 @@
 
 package views.html.incomes
 
-import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.twirl.api.Html
@@ -26,7 +25,7 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesConstants {
+class BonusPaymentsSpec extends TaiViewSpec with FormValuesConstants {
 
   val employer = IncomeSource(id = 1, name = "Employer")
 

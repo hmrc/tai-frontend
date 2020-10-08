@@ -18,19 +18,14 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
@@ -39,21 +34,18 @@ import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import utils.BaseSpec
 
 import scala.concurrent.Future
-import scala.util.Random
 
-class IncomeSourceSummaryControllerSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
+class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val employmentId = 1
   val pensionId = 2
 
   "onPageLoad" must {
     "display the income details page" when {
       "asked for employment details" in {
-        val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -71,7 +63,6 @@ class IncomeSourceSummaryControllerSpec
       }
 
       "asked for pension details" in {
-        val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -91,7 +82,6 @@ class IncomeSourceSummaryControllerSpec
 
     "throw error" when {
       "failed to read tax code incomes" in {
-        val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("FAILED")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -102,7 +92,6 @@ class IncomeSourceSummaryControllerSpec
       }
 
       "failed to read employment details" in {
-        val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
@@ -143,29 +132,26 @@ class IncomeSourceSummaryControllerSpec
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
   )
 
-  val nino = new Generator(new Random).nextNino
-
   private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
 
-  def createSUT = new SUT
-
   val personService: PersonService = mock[PersonService]
-  val benefitsService = mock[BenefitsService]
-  val employmentService = mock[EmploymentService]
-  val taxAccountService = mock[TaxAccountService]
-  val estimatedPayJourneyCompletionService = mock[EstimatedPayJourneyCompletionService]
+  val benefitsService: BenefitsService = mock[BenefitsService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
+    mock[EstimatedPayJourneyCompletionService]
 
-  class SUT
-      extends IncomeSourceSummaryController(
-        mock[AuditConnector],
-        taxAccountService,
-        employmentService,
-        benefitsService,
-        estimatedPayJourneyCompletionService,
-        FakeAuthAction,
-        FakeValidatePerson,
-        messagesApi,
-        MockPartialRetriever,
-        MockTemplateRenderer
-      )
+  def sut = new IncomeSourceSummaryController(
+    mock[AuditConnector],
+    taxAccountService,
+    employmentService,
+    benefitsService,
+    estimatedPayJourneyCompletionService,
+    FakeAuthAction,
+    FakeValidatePerson,
+    appConfig,
+    mcc,
+    partialRetriever,
+    templateRenderer
+  )
 }

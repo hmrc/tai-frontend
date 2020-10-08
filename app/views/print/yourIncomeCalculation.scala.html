@@ -18,17 +18,18 @@
 @import uk.gov.hmrc.tai.util.constants.TaiConstants._
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel
+@import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.model.domain.income._
 @import uk.gov.hmrc.tai.model.domain._
-@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.play.views.formatting.Dates
 
 @import controllers.auth.AuthenticatedRequest
 
-@(model: YourIncomeCalculationViewModel)(implicit request: AuthenticatedRequest[_],
+@(model: YourIncomeCalculationViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
 messages: Messages)
 
-@printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
+@printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading"), appConfig){
 
     <p><strong>@request.fullName</strong></p>
     <div class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName)</h2></div>

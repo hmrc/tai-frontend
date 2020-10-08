@@ -16,40 +16,30 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import controllers.FakeTaiPlayApplication
-import org.mockito.Matchers
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, TaxFreeAmountComparison}
+import utils.BaseSpec
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
-import scala.util.Random
+import scala.concurrent.{Await, Future}
 
-class TaxFreeAmountComparisonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
+class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
 
   "tax free amount url" must {
     "fetch the url to connect to TAI to retrieve tax free amount comparison" in {
-      val testConnector = new TestTaxFreeAmountComparisonConnector
-      val nino = new Generator(new Random).nextNino
-
-      testConnector.taxFreeAmountComparisonUrl(nino.nino) mustBe s"${testConnector.serviceUrl}/tai/$nino/tax-account/tax-free-amount-comparison"
+      sut.taxFreeAmountComparisonUrl(nino.nino) mustBe s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-free-amount-comparison"
     }
   }
 
   "taxFreeAmountComparison" must {
     "return a tax free amount comparison" when {
       "the api responds with valid json" in {
-        val testConnector = new TestTaxFreeAmountComparisonConnector
-        val nino = new Generator(new Random).nextNino
-
         val json = Json.obj(
           "data" -> Json.obj(
             "previous" -> Json.arr(
@@ -75,7 +65,7 @@ class TaxFreeAmountComparisonConnectorSpec extends PlaySpec with MockitoSugar wi
           )
         )
 
-        val taxFreeAmountUrl = s"${testConnector.serviceUrl}/tai/${nino.nino}/tax-account/tax-free-amount-comparison"
+        val taxFreeAmountUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-free-amount-comparison"
 
         when(httpHandler.getFromApi(Matchers.eq(taxFreeAmountUrl))(any())).thenReturn(Future.successful(json))
 
@@ -83,7 +73,7 @@ class TaxFreeAmountComparisonConnectorSpec extends PlaySpec with MockitoSugar wi
 
         val expected = TaiSuccessResponseWithPayload(TaxFreeAmountComparison(codingComponents, codingComponents))
 
-        val result = testConnector.taxFreeAmountComparison(nino)
+        val result = sut.taxFreeAmountComparison(nino)
 
         Await.result(result, 5.seconds) mustBe expected
       }
@@ -91,24 +81,20 @@ class TaxFreeAmountComparisonConnectorSpec extends PlaySpec with MockitoSugar wi
 
     "return a TaiTaxAccountFailureResponse" when {
       "the api responds with invalid json" in {
-        val testConnector = new TestTaxFreeAmountComparisonConnector
-        val nino = new Generator(new Random).nextNino
         val exceptionMessage = "bad request"
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new BadRequestException(exceptionMessage)))
 
         val expected = TaiTaxAccountFailureResponse(exceptionMessage)
 
-        val result = testConnector.taxFreeAmountComparison(nino)
+        val result = sut.taxFreeAmountComparison(nino)
 
         Await.result(result, 5.seconds) mustBe expected
       }
     }
   }
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  class TestTaxFreeAmountComparisonConnector extends TaxFreeAmountComparisonConnector(httpHandler)
+  def sut = new TaxFreeAmountComparisonConnector(httpHandler, servicesConfig)
 
 }

@@ -16,12 +16,10 @@
 
 package uk.gov.hmrc.tai.viewModels.benefit
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
-import play.api.i18n.Messages.Implicits._
+import utils.BaseSpec
 
-class CompanyBenefitDecisionVMSpec extends PlaySpec with FakeTaiPlayApplication {
+class CompanyBenefitDecisionViewModelSpec extends BaseSpec {
 
   "CompanyBenefitDecisionViewModel" must {
     "show the word benefit once when the word benefit is part of the benefit name " in {

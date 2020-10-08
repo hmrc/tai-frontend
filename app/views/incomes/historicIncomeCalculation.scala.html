@@ -15,11 +15,12 @@
  *@
 
 @import includes.ptaHeader
+@import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.domain.{Available, TemporarilyUnavailable}
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 @import uk.gov.hmrc.urls.Link
-@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.play.views.formatting.Dates
 @import controllers.auth.AuthenticatedRequest
 
 @(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel

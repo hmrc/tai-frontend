@@ -16,15 +16,11 @@
 
 package uk.gov.hmrc.tai.viewModels.incomeTaxComparison
 
-import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
+import utils.BaseSpec
 
-class IncomeTaxComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
-
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+class IncomeTaxComparisonViewModelSpec extends BaseSpec {
 
   def createIncomeTaxComparisonViewModel(
     isEstimatedCYPlusOneJourneyCompleted: Boolean): IncomeTaxComparisonViewModel = {

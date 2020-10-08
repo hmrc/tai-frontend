@@ -16,24 +16,19 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import controllers.FakeTaiPlayApplication
 import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsResultException, Json}
-import uk.gov.hmrc.domain.Generator
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.LockedException
 import uk.gov.hmrc.tai.model.domain.tracking.{TrackedForm, TrackedFormAcquired, TrackedFormReceived}
+import utils.BaseSpec
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
-import uk.gov.hmrc.http.{HeaderCarrier, LockedException}
+import scala.concurrent.Future
 
-class TrackingConnectorSpec
-    extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with BeforeAndAfterEach with ScalaFutures {
+class TrackingConnectorSpec extends BaseSpec with BeforeAndAfterEach with ScalaFutures {
 
   override def beforeEach: Unit =
     Mockito.reset(httpHandler)
@@ -41,9 +36,7 @@ class TrackingConnectorSpec
   "Tracking Url" should {
     "fetch the correct service url" when {
       "given an id and idType" in {
-        val sut = createSUT()
-
-        sut.trackingUrl(nino) mustBe s"mockUrl/tracking-data/user/nino/$nino"
+        sut.trackingUrl(nino.nino) mustBe s"mockUrl/tracking-data/user/nino/${nino.nino}"
       }
     }
   }
@@ -51,36 +44,30 @@ class TrackingConnectorSpec
   "getUserTracking" should {
     "fetch the user tracking details" when {
       "provided with id and idType" in {
-        val sut = createSUT()
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(trackedFormSeqJson)))
 
-        val result = sut.getUserTracking(nino)
+        val result = sut.getUserTracking(nino.nino)
         result.futureValue mustBe trackedFormSeq
       }
     }
 
     "return an empty response" when {
       "json is not valid" in {
-        val sut = createSUT()
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse("""{}""")))
 
-        val result = sut.getUserTracking(nino)
+        val result = sut.getUserTracking(nino.nino)
         result.futureValue mustBe Seq.empty[TrackedForm]
       }
 
       "getFromApi throws" in {
-        val sut = createSUT()
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new LockedException("locked")))
 
-        val result = sut.getUserTracking(nino)
+        val result = sut.getUserTracking(nino.nino)
         result.futureValue mustBe Seq.empty[TrackedForm]
       }
     }
 
   }
-
-  val nino: String = new Generator().nextNino.nino
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val trackedFormSeqJson =
     """{"submissions":[{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
@@ -103,12 +90,9 @@ class TrackingConnectorSpec
   val trackedFormSeq =
     Seq(TrackedForm("R39_EN", "TES1", TrackedFormReceived), TrackedForm("R38_EN", "TES2", TrackedFormAcquired))
 
-  private def createSUT() = new SUT
-
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  private class SUT extends TrackingConnector(httpHandler) {
+  def sut: TrackingConnector = new TrackingConnector(httpHandler, servicesConfig) {
     override lazy val serviceUrl: String = "mockUrl"
   }
-
 }

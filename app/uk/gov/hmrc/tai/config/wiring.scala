@@ -17,15 +17,14 @@
 package uk.gov.hmrc.tai.config
 
 import akka.actor.ActorSystem
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 import play.api.Configuration
-import play.api.libs.ws.{DefaultWSProxyServer, WSClient, WSProxyServer}
+import play.api.libs.ws.{WSClient, WSProxyServer}
 import uk.gov.hmrc.crypto.PlainText
-import uk.gov.hmrc.http.hooks.HttpHook
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.hooks.HttpHook
 import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
-import uk.gov.hmrc.play.bootstrap.config.AppName
 import uk.gov.hmrc.play.bootstrap.filters.frontend.crypto.SessionCookieCrypto
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.http.ws._
@@ -34,6 +33,7 @@ import uk.gov.hmrc.play.partials._
 trait HttpClient extends HttpGet with HttpPut with HttpPost with HttpDelete with HttpPatch
 
 class ProxyHttpClient @Inject()(
+  @Named("appName") applicationName: String,
   config: Configuration,
   override val auditConnector: Auditing,
   override val wsClient: WSClient,
@@ -42,9 +42,7 @@ class ProxyHttpClient @Inject()(
 
   override lazy val configuration = Option(config.underlying)
 
-  override val appName: String = new AppName {
-    override def configuration: Configuration = config
-  }.appName
+  override val appName: String = applicationName
 
   override val hooks: Seq[HttpHook] = Seq(AuditingHook)
 

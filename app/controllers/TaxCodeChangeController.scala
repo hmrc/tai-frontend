@@ -19,12 +19,11 @@ package controllers
 import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.FeatureTogglesConfig
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
@@ -43,10 +42,11 @@ class TaxCodeChangeController @Inject()(
   validatePerson: ValidatePerson,
   yourTaxFreeAmountService: YourTaxFreeAmountService,
   taxCodeChangeReasonsService: TaxCodeChangeReasonsService,
-  override val messagesApi: MessagesApi,
+  appConfig: ApplicationConfig,
+  mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with FeatureTogglesConfig with YourTaxFreeAmount {
+    extends TaiBaseController(mcc) with YourTaxFreeAmount {
 
   def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino: Nino = request.taiUser.nino
@@ -71,7 +71,7 @@ class TaxCodeChangeController @Inject()(
             TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
 
           implicit val user = request.taiUser
-          Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
+          Ok(views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig))
         case _ => throw new RuntimeException("Failed to fetch total tax details for tax code comparison")
       }
     }

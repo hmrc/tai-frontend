@@ -16,14 +16,13 @@
 
 package controllers.pensions
 
-import javax.inject.{Inject, Named}
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.{Inject, Named}
 import org.joda.time.LocalDate
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.Nino
+import play.api.i18n.Messages
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -49,12 +48,12 @@ class AddPensionProviderController @Inject()(
   val auditConnector: AuditConnector,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  override val messagesApi: MessagesApi,
+  mcc: MessagesControllerComponents,
   @Named("Add Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController with JourneyCacheConstants with AuditConstants with FormValuesConstants
+    extends TaiBaseController(mcc) with JourneyCacheConstants with AuditConstants with FormValuesConstants
     with EmptyCacheRedirect {
 
   private def contactPhonePensionProvider(implicit messages: Messages): CanWeContactByPhoneViewModel =
@@ -82,7 +81,6 @@ class AddPensionProviderController @Inject()(
   def submitPensionProviderName(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-
       PensionProviderNameForm.form.bindFromRequest.fold(
         formWithErrors => {
           Future.successful(BadRequest(views.html.pensions.addPensionName(formWithErrors)))
@@ -149,7 +147,6 @@ class AddPensionProviderController @Inject()(
   def addPensionProviderStartDate(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-
       (journeyCacheService
         .collectedJourneyValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_StartDateKey)) map tupled {
         (mandSeq, optionalVals) =>
@@ -175,7 +172,6 @@ class AddPensionProviderController @Inject()(
   def submitPensionProviderStartDate(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-
       journeyCacheService.currentCache flatMap { currentCache =>
         PensionAddDateForm(currentCache(AddPensionProvider_NameKey)).form
           .bindFromRequest()
@@ -195,7 +191,6 @@ class AddPensionProviderController @Inject()(
 
   def addPensionNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-
     journeyCacheService.currentCache map { cache =>
       val viewModel = PensionNumberViewModel(cache)
 
