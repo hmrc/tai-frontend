@@ -20,7 +20,6 @@ import javax.inject.Inject
 import play.api.{ConfigLoader, Configuration}
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
-import uk.gov.hmrc.tai.model.TaxYear
 
 class ApplicationConfig @Inject()(
   val runModeConfiguration: Configuration,
@@ -32,7 +31,7 @@ class ApplicationConfig @Inject()(
     runModeConfiguration.getOptional[A](key)
 
   def decorateUrlForLocalDev(key: String): String =
-    runModeConfiguration.getOptional[String](s"external-url.$key").filter(_ => runMode.env == "Dev").getOrElse("")
+    runModeConfiguration.getOptional[String](s"external-url.$key").getOrElse("")
 
   lazy val incomeTaxFormPartialLinkUrl =
     s"$dfsFrontendHost/digital-forms/forms/personal-tax/income-tax/catalogue"
