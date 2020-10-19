@@ -62,7 +62,7 @@ class ApplicationConfig @Inject()(
   lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
   lazy val urBannerEnabled: Boolean = getOptional[String]("feature.ur-banner.enabled").getOrElse("true").toBoolean
   lazy val urBannerLink: String = getOptional[String]("ur-banner.url").getOrElse("")
-  lazy val checkUpdateProgressLinkUrl = s"${servicesConfig.baseUrl("track")}/track"
+  lazy val checkUpdateProgressLinkUrl = s"$trackFrontendHost/track"
   lazy val analyticsToken: Option[String] = getOptional[String]("microservice.google-analytics.token")
   lazy val gaValueOfPayments: String =
     getOptional[String]("microservice.google-analytics.gaValueOfPayments").getOrElse("")
@@ -112,6 +112,7 @@ class ApplicationConfig @Inject()(
   lazy val benefitsFrontendHost: String = decorateUrlForLocalDev("benefits-frontend.host")
   lazy val identityVerificationHost: String = decorateUrlForLocalDev("identity-verification.host")
   lazy val taxCalcFrontendHost: String = decorateUrlForLocalDev("taxcalc-frontend.host")
+  lazy val trackFrontendHost: String = decorateUrlForLocalDev("tracking-frontend.host")
 }
 
 trait FeatureTogglesConfig { self: ApplicationConfig =>
