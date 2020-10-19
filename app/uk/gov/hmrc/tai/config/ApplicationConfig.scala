@@ -23,7 +23,6 @@ import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
 
 class ApplicationConfig @Inject()(
   val runModeConfiguration: Configuration,
-  runMode: RunMode,
   servicesConfig: ServicesConfig
 ) extends FeatureTogglesConfig with AuthConfigProperties {
 
@@ -33,10 +32,13 @@ class ApplicationConfig @Inject()(
   def decorateUrlForLocalDev(key: String): String =
     runModeConfiguration.getOptional[String](s"external-url.$key").getOrElse("")
 
+  lazy val dfsDigitalFormsFrontend = servicesConfig.baseUrl("dfs-digital-forms-frontend")
+
   lazy val incomeTaxFormPartialLinkUrl =
-    s"$dfsFrontendHost/digital-forms/forms/personal-tax/income-tax/catalogue"
+    s"$dfsDigitalFormsFrontend/digital-forms/forms/personal-tax/income-tax/catalogue"
   lazy val incomeFromEmploymentPensionPartialLinkUrl =
-    s"$dfsFrontendHost/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
+    s"$dfsDigitalFormsFrontend/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
+
   lazy val incomeFromEmploymentPensionLinkUrl =
     s"$dfsFrontendHost/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
   lazy val companyBenefitsLinkUrl =
