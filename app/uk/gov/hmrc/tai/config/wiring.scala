@@ -20,12 +20,10 @@ import akka.actor.ActorSystem
 import javax.inject.{Inject, Named}
 import play.api.Configuration
 import play.api.libs.ws.{WSClient, WSProxyServer}
-import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.hooks.HttpHook
 import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
-import uk.gov.hmrc.play.bootstrap.filters.frontend.crypto.SessionCookieCrypto
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.http.ws._
 import uk.gov.hmrc.play.partials._
@@ -49,9 +47,8 @@ class ProxyHttpClient @Inject()(
   override def wsProxyServer: Option[WSProxyServer] = WSProxyConfiguration("proxy", config)
 }
 
-class TaiHtmlPartialRetriever @Inject()(sessionCookieCrypto: SessionCookieCrypto, http: DefaultHttpClient)
-    extends FormPartialRetriever {
+class TaiHtmlPartialRetriever @Inject()(http: DefaultHttpClient) extends FormPartialRetriever {
   override val httpGet = http
 
-  override def crypto: String => String = cookie => sessionCookieCrypto.crypto.encrypt(PlainText(cookie)).value
+  override def crypto: String => String = cookie => cookie
 }

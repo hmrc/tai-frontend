@@ -36,8 +36,6 @@ class ApplicationConfig @Inject()(
 
   lazy val incomeTaxFormPartialLinkUrl =
     s"$dfsDigitalFormsFrontend/digital-forms/forms/personal-tax/income-tax/catalogue"
-  lazy val incomeFromEmploymentPensionPartialLinkUrl =
-    s"$dfsDigitalFormsFrontend/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
 
   lazy val incomeFromEmploymentPensionLinkUrl =
     s"$dfsFrontendHost/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
