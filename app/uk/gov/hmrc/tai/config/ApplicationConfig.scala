@@ -76,7 +76,7 @@ class ApplicationConfig @Inject()(
   lazy val medBenefitServiceUrl = s"$benefitsFrontendHost/paye/benefits/medical-benefit"
   lazy val sa16UpliftUrl = s"$identityVerificationHost/mdtp/uplift"
   lazy val taiHomePageUrl: String = s"$taiRootUri/check-income-tax/what-do-you-want-to-do"
-  lazy val taxYouPaidStatus = s"$taxCalcFrontendHost}/tax-you-paid/status"
+  lazy val taxYouPaidStatus = s"$taxCalcFrontendHost/tax-you-paid/status"
   lazy val gg_web_context: String = getOptional[String]("external-url.gg.web-context").getOrElse("gg")
   lazy val ida_web_context: String = getOptional[String]("external-url.ida.web-context").getOrElse("ida")
   lazy val hardshipHelpUrl =
