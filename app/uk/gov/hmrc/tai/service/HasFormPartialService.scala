@@ -18,9 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import javax.inject.Inject
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.http.HttpGet
-import uk.gov.hmrc.play.bootstrap.filters.frontend.crypto.SessionCookieCrypto
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -28,18 +26,13 @@ import uk.gov.hmrc.tai.util.EnhancedPartialRetriever
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class HasFormPartialService @Inject()(
-  sessionCookieCrypto: SessionCookieCrypto,
-  httpClient: DefaultHttpClient,
-  applicationConfig: ApplicationConfig)(implicit ec: ExecutionContext)
+class HasFormPartialService @Inject()(httpClient: DefaultHttpClient, applicationConfig: ApplicationConfig)(
+  implicit ec: ExecutionContext)
     extends EnhancedPartialRetriever {
 
   override val http: HttpGet = httpClient
-  override def crypto: String => String = cookie => sessionCookieCrypto.crypto.encrypt(PlainText(cookie)).value
+  override def crypto: String => String = cookie => cookie
 
   def getIncomeTaxPartial(implicit request: RequestHeader): Future[HtmlPartial] =
     loadPartial(applicationConfig.incomeTaxFormPartialLinkUrl)
-
-  def getIncomeFromEmploymentPensionPartial(implicit request: RequestHeader): Future[HtmlPartial] =
-    loadPartial(applicationConfig.incomeFromEmploymentPensionPartialLinkUrl)
 }

@@ -20,7 +20,7 @@ import org.joda.time.LocalDate
 import org.scalacheck.Gen
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 
 class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
@@ -110,7 +110,7 @@ class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
   }
 
   "rti is unavailable if employment income is unavailable" in {
-    forAll(rtiUnAvailableIncomeSource, rtiAvailableIncomeSource, rtiAvailableIncomeSource) {
+    forAll(rtiAvailableIncomeSource, rtiUnAvailableIncomeSource, rtiAvailableIncomeSource) {
       (pensionIncome, employmentIncome, ceasedIncome) =>
         whenever(employmentIncome.nonEmpty) {
           val incomeSources =
