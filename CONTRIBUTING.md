@@ -1,8 +1,6 @@
 Tax Estimates Frontend
 ====================================================================
 
-[![Build Status](https://travis-ci.org/hmrc/tai-frontend.svg?branch=master)](https://travis-ci.org/hmrc/tai-frontend) [ ![Download](https://api.bintray.com/packages/hmrc/releases/tai-frontend/images/download.svg) ](https://bintray.com/hmrc/releases/tai-frontend/_latestVersion)
-
 Requirements
 ------------
 
@@ -38,7 +36,7 @@ Once you are done with the changes make sure that:
  
   ```$ sbt clean coverage test```
 
-* you have taken latest code from master before you raise 
+* you have taken latest code from main before you raise 
 * there are no merge conflicts in your pull request.
 * you have provided relevant comments while committing the changes and while raising the pull request. 
  
