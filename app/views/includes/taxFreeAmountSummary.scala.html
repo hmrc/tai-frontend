@@ -34,12 +34,12 @@
                 }
 
                 @if(item.rows.length>1) {
-                <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight} else {flush}">
+                <dl id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight} else {flush}">
 
                     @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
-                        <li id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}">
+                        <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}">
 
-                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question break-word">
+                            <dt id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question break-word">
                                 @row.label.value
                                 @row.label.link.map { link =>
                                     @includes.link(
@@ -50,15 +50,15 @@
                                         attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}")
                                     )
                                 }
-                            </div>
+                            </dt>
 
-                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
+                            <dd id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
                                 @row.value
-                            </div>
+                            </dd>
 
                             @if(!taxCodeChange) {
                                 @if(row.link.isDisplayed ) {
-                                <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell" class="cya-change">
+                                <dd id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell" class="cya-change">
                                     @includes.link(
                                         id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
                                         url = row.link.href,
@@ -66,52 +66,44 @@
                                         altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value),
                                         attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
                                     )
-                                </div>
+                                </dd>
                                 } else @{if(oneOrMoreLinksPresent) {
-                                    <div class="cya-change"></div>
+                                    <dd class="cya-change" aria-hidden="true"></dd>
                                 }}
                             }
-                        </li>
+                        </div>
                     }
-                </ul>
+                </dl>
                 } else {@if(item.rows.length == 1) {
 
-                <div id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight heading-small} else {flush}">
+                <dl id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight heading-small} else {flush}">
                     <div id="summaryTable@{itemIdx.toString}Row1">
-                        @if(isAllowanceOrTotalItem){
-                            <h3 id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word ">
-                        } else {
-                            <div id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word">
-                        }
 
-                                @item.rows(0).label.value
+                        <dt id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word ">
 
-                                @item.rows(0).label.link.map { link =>
-                                    @includes.link(
-                                        id=Some(link.id),
-                                        copy=link.value,
-                                        url = link.href,
-                                        linkClasses = Seq("link-list__item"),
-                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}")
-                                    )
-                                }
+                            @item.rows(0).label.value
 
-                        @if(isAllowanceOrTotalItem){
-                        </h3>
-                        } else {
-                        </div>
-                        }
+                            @item.rows(0).label.link.map { link =>
+                                @includes.link(
+                                    id=Some(link.id),
+                                    copy=link.value,
+                                    url = link.href,
+                                    linkClasses = Seq("link-list__item"),
+                                    attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}")
+                                )
+                            }
+                        </dt>
 
-                        <div id="summaryTable@{itemIdx.toString}Row1ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
+                        <dd id="summaryTable@{itemIdx.toString}Row1ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
                             @if(isAllowanceOrTotalItem){
                             <span class="visuallyhidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix")</span>
                             }
                             @item.rows(0).value
-                        </div>
+                        </dd>
 
                     @if(!taxCodeChange) {
                         @if(item.rows(0).link.isDisplayed) {
-                        <div id="summaryTable@{itemIdx.toString}Row1ChangeLinkCell" class="cya-change">
+                        <dd id="summaryTable@{itemIdx.toString}Row1ChangeLinkCell" class="cya-change">
                             @includes.link(
                             id = Some(s"summaryTable${itemIdx.toString}Row1ChangeLink"),
                             url = item.rows(0).link.href,
@@ -119,14 +111,14 @@
                             altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows(0).link.value),
                             attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${item.rows(0).link.value}")
                             )
-                        </div>
+                        </dd>
                         } else @{if(oneOrMoreLinksPresent) {
-                        <div class="cya-change"></div>
+                        <dd class="cya-change" aria-hidden="true"></dd>
                         }}
                     }
 
-                    </div>
-                </div>
+                   </div>
+                </dl>
 
                 }}
 

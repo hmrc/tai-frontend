@@ -82,17 +82,17 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       }
 
       "contains an inline heading for the personal allowance and total groups (which are of length 1)" in {
-        doc must haveElementAtPathWithText("h3#summaryTable1Row1-header", "Personal Allowance")
-        doc must haveElementAtPathWithText("h3#summaryTable4Row1-header", "Your total tax-free amount")
+        doc must haveElementAtPathWithText("#summaryTable1Row1-header", "Personal Allowance")
+        doc must haveElementAtPathWithText("#summaryTable4Row1-header", "Your total tax-free amount")
       }
 
       "displays a group with multiple rows as an unordered list of items" in {
-        doc must haveElementAtPathWithId("#taxFreeAmountDetail ul", "summaryTable2Body")
+        doc must haveElementAtPathWithId("#taxFreeAmountDetail dl", "summaryTable2Body")
       }
 
       "displays a group with a single row as a plain div" in {
-        doc must not(haveElementAtPathWithId("#taxFreeAmountDetail ul", "summaryTable3Body"))
-        doc must haveElementAtPathWithId("#taxFreeAmountDetail div", "summaryTable3Body")
+        doc must not(haveElementAtPathWithId("#taxFreeAmountDetail div", "summaryTable3Body"))
+        doc must haveElementAtPathWithId("#taxFreeAmountDetail dl", "summaryTable3Body")
       }
 
       "displays a link & inner link element, where present in the view model" in {
