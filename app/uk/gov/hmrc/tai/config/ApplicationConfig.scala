@@ -96,12 +96,12 @@ class ApplicationConfig @Inject()(
   lazy val frontendTemplatePath: String =
     getOptional[String]("microservice.services.frontend-template-provider.path").getOrElse("/template/mustache")
 
-  lazy val companyAuthFrontendSignOutUrl = s"$companyAuthUrl/gg/sign-out?continue=$feedbackSurveyUrl"
+  lazy val basGatewayFrontendSignOutUrl = s"$basGatewayHost/gg/sign-out?continue=$feedbackSurveyUrl"
   lazy val citizenAuthFrontendSignOutUrl: String = citizenAuthHost + "/ida/signout"
 
   //These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
   lazy val citizenAuthHost: String = decorateUrlForLocalDev("citizen-auth.host")
-  lazy val companyAuthUrl: String = decorateUrlForLocalDev("company-auth.host")
+  lazy val basGatewayHost: String = decorateUrlForLocalDev("bas-gateway-frontend.host")
   lazy val feedbackHost: String = decorateUrlForLocalDev("feedback-survey-frontend.host")
   lazy val unauthorisedSignOutUrl: String = decorateUrlForLocalDev("company-auth.unauthorised-url")
   lazy val dfsFrontendHost = decorateUrlForLocalDev(s"dfs-digital-forms-frontend.host")
