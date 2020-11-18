@@ -65,7 +65,7 @@ class UnauthorisedController @Inject()(
   }
 
   private def verifyRedirect(implicit request: Request[_]): Future[Result] = {
-    lazy val idaSignIn = s"${applicationConfig.citizenAuthHost}/${applicationConfig.ida_web_context}/login"
+    lazy val idaSignIn = s"${applicationConfig.citizenAuthHost}/ida/login"
     Future.successful(
       Redirect(idaSignIn).withSession(
         SessionKeys.loginOrigin -> "TAI",
@@ -80,7 +80,7 @@ class UnauthorisedController @Inject()(
         .getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url))}"
 
     lazy val ggSignIn =
-      s"${applicationConfig.companyAuthUrl}/${applicationConfig.gg_web_context}/sign-in?continue=$postSignInUpliftUrl&accountType=individual"
+      s"${applicationConfig.basGatewayFrontendSignInUrl}?continue=$postSignInUpliftUrl&accountType=individual"
 
     Future.successful(Redirect(ggSignIn))
   }

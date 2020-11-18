@@ -57,7 +57,7 @@ class UnauthorisedControllerSpec extends BaseSpec {
     "redirect to a login page" in {
       val result = controller.loginGG(fakeRequest)
       val expectedUrl =
-        "http://localhost:9949/gg/sign-in?continue=http%3A%2F%2Flocalhost%3A9232%2Fpersonal-account/do-uplift?redirectUrl=%2Fcheck-income-tax%2Fwhat-do-you-want-to-do&accountType=individual"
+        "http://localhost:9553/bas-gateway/sign-in?continue=http%3A%2F%2Flocalhost%3A9232%2Fpersonal-account/do-uplift?redirectUrl=%2Fcheck-income-tax%2Fwhat-do-you-want-to-do&accountType=individual"
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe expectedUrl

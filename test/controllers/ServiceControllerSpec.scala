@@ -47,7 +47,7 @@ class ServiceControllerSpec extends BaseSpec {
       val result = sut.serviceSignout()(fakeRequest)
 
       status(result) mustBe 303
-      redirectLocation(result) mustBe Some(appConfig.companyAuthFrontendSignOutUrl)
+      redirectLocation(result) mustBe Some(appConfig.basGatewayFrontendSignOutUrl)
     }
 
     "redirect to citizen auth frontend if it is a Verify user" in {

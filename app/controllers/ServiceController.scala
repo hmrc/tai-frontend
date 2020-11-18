@@ -47,7 +47,7 @@ class ServiceController @Inject()(
         Future.successful(
           Redirect(applicationConfig.citizenAuthFrontendSignOutUrl)
             .withSession(TaiConstants.SessionPostLogoutPage -> applicationConfig.feedbackSurveyUrl))
-      case _ => Future.successful(Redirect(applicationConfig.companyAuthFrontendSignOutUrl))
+      case _ => Future.successful(Redirect(applicationConfig.basGatewayFrontendSignOutUrl))
     }
   }
 
