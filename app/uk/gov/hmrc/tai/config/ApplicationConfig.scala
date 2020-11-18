@@ -77,8 +77,6 @@ class ApplicationConfig @Inject()(
   lazy val sa16UpliftUrl = s"$identityVerificationHost/mdtp/uplift"
   lazy val taiHomePageUrl: String = s"$taiRootUri/check-income-tax/what-do-you-want-to-do"
   lazy val taxYouPaidStatus = s"$taxCalcFrontendHost/tax-you-paid/status"
-  lazy val gg_web_context: String = getOptional[String]("external-url.gg.web-context").getOrElse("gg")
-  lazy val ida_web_context: String = getOptional[String]("external-url.ida.web-context").getOrElse("ida")
   lazy val hardshipHelpUrl =
     s"$dfsFrontendHost/digital-forms/form/tell-us-how-you-want-to-pay-estimated-tax/draft/guide"
   private val contactHost = getOptional[String](s"microservice.services.contact-frontend.host").getOrElse("")
@@ -96,7 +94,11 @@ class ApplicationConfig @Inject()(
   lazy val frontendTemplatePath: String =
     getOptional[String]("microservice.services.frontend-template-provider.path").getOrElse("/template/mustache")
 
-  lazy val basGatewayFrontendSignOutUrl = s"$basGatewayHost/gg/sign-out?continue=$feedbackSurveyUrl"
+  lazy val basGatewayFrontendSignOutUrl =
+    s"$basGatewayHost/bas-gateway/sign-out-without-state?continue=$feedbackSurveyUrl"
+
+  lazy val basGatewayFrontendSignInUrl = s"$basGatewayHost/bas-gateway/sign-in"
+
   lazy val citizenAuthFrontendSignOutUrl: String = citizenAuthHost + "/ida/signout"
 
   //These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
