@@ -80,7 +80,7 @@ class UnauthorisedController @Inject()(
         .getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url))}"
 
     lazy val ggSignIn =
-      s"${applicationConfig.basGatewayFrontendSignInUrl}?continue=$postSignInUpliftUrl&accountType=individual"
+      s"${applicationConfig.basGatewayFrontendSignInUrl}?continue_url=$postSignInUpliftUrl&accountType=individual"
 
     Future.successful(Redirect(ggSignIn))
   }
