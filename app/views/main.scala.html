@@ -222,10 +222,6 @@
         "enUrl" -> controllers.i18n.routes.TaiLanguageController.english(),
         "cyUrl" -> controllers.i18n.routes.TaiLanguageController.welsh(),
         "isWelsh" -> isWelshActive,
-        "optimizely" -> Map(
-            "audience" -> optimizelyAudience.getOrElse("Other user"),
-            "projectId" -> "8461600066"
-        ),
         "actingAttorneyBanner" -> trustedHelperBanner
     )
 }
