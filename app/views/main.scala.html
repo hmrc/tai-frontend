@@ -155,6 +155,10 @@
 
 @sessionId = @{ request.session.get("sessionId") }
 
+@headInlineScript = {
+    @layouts.trackingConsentSnippet()
+}
+
 @inlineScript = {
     @if(gaCallsAdditionalJs.isDefined && gaCallsAdditionalJs.get.toString.trim != ""){
         <script>@gaCallsAdditionalJs.get</script>
@@ -212,6 +216,7 @@
             Map("url" -> controllers.routes.AssetsController.versioned("javascript/urbanner.js"))
         ),
         "inlineScript" -> inlineScript,
+        "headInlineScript" -> headInlineScript,
         "showPropositionLinks" -> isWelshEnabled,
         "langSelector" -> isWelshEnabled,
         "enUrl" -> controllers.i18n.routes.TaiLanguageController.english(),
@@ -220,9 +225,6 @@
         "optimizely" -> Map(
             "audience" -> optimizelyAudience.getOrElse("Other user"),
             "projectId" -> "8461600066"
-        ),
-        "googleTagManager" -> Map(
-            "gtmId" -> "TSFTCWZ"
         ),
         "actingAttorneyBanner" -> trustedHelperBanner
     )
