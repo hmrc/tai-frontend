@@ -74,7 +74,10 @@ class ApplicationConfig @Inject()(
   lazy val cocarFrontendUrl = s"$cocarFrontendHost/paye/company-car/details"
   lazy val marriageServiceHistoryUrl = s"$tamcFrontendHost/marriage-allowance-application/history"
   lazy val medBenefitServiceUrl = s"$benefitsFrontendHost/paye/benefits/medical-benefit"
-  lazy val sa16UpliftUrl = s"$identityVerificationHost/mdtp/uplift"
+
+  lazy val ivUpliftprefix = decorateUrlForLocalDev("identity-verification.prefix")
+  lazy val sa16UpliftUrl = s"$identityVerificationHost/$ivUpliftprefix/uplift"
+
   lazy val taiHomePageUrl: String = s"$taiRootUri/check-income-tax/what-do-you-want-to-do"
   lazy val taxYouPaidStatus = s"$taxCalcFrontendHost/tax-you-paid/status"
   lazy val hardshipHelpUrl =
