@@ -37,14 +37,12 @@
         <caption class="visually-hidden">@messages("tai.incomeTaxComparison.incomeTax.estimate")</caption>
         <thead id="estimatedIncomeTaxComparisonTableHeader">
             <tr role="row">
-                <th scope="col"></th>
+                <th scope="col">@messages("tai.incomeTaxComparison.incomeTax.income.tax.type")</th>
                 <th id="estimatedIncomeTaxComparisonTableHeaderCol1" scope="col" class="numeric">
-                    @Html(viewmodel.htmlNonBroken(messages("tai.CurrentTaxYear")))
-                    @Html(viewmodel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", viewmodel.currentTaxYearHeader)))
+                    @Html(messages("tai.estimatedTax.ending", viewmodel.currentTaxYearHeader))
                 </th>
                 <th id="estimatedIncomeTaxComparisonTableHeaderCol2" scope="col" class="numeric">
-                    @Html(viewmodel.htmlNonBroken(messages("tai.NextTaxYear")))
-                    @Html(viewmodel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", viewmodel.nextTaxYearHeader)))
+                    @Html(messages("tai.estimatedTax.starting", viewmodel.nextTaxYearHeader))
                 </th>
             </tr>
         </thead>

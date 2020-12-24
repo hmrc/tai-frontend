@@ -39,7 +39,7 @@
     <caption class="visually-hidden">@messages("tai.income.personalAllowance")</caption>
     <thead id="taxFreeAmountComparisonTableHeader">
         <tr role="row">
-            <th></th>
+            <th>@messages("tai.incomeTaxComparison.taxFreeAmount.how.we.calculate")</th>
             <th class="tax-free-amount-dates taxFreeAmountComparisonTableHeaderCol1" scope="col">
                 @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
@@ -76,7 +76,7 @@
 </table>
 
 
-<table class="table--font-reset flush--bottom my-new-class responsive" role="table">
+<table class="table--font-reset flush--bottom my-new-class" role="table">
     <caption class="text--left table__caption table__caption--bottom-border tax-free-amount-table-heading">@messages("tai.incomeTaxComparison.taxFreeAmount.additions.caption")</caption>
     <thead id="taxFreeAmountComparisonTableHeader2">
         <tr role="row">
@@ -151,7 +151,7 @@
 </table>
 
 
-<table class="table--font-reset flush--bottom responsive" role="table">
+<table class="table--font-reset flush--bottom" role="table">
     <caption class="text--left table__caption table__caption--bottom-border tax-free-amount-table-heading">@messages("tai.incomeTaxComparison.taxFreeAmount.deductions.caption")</caption>
     <thead  class="visuallyhidden" id="taxFreeAmountComparisonTableHeader3">
         <tr role="row">
