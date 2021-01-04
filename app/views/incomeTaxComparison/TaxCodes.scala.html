@@ -37,8 +37,7 @@
     <caption class="visually-hidden">@messages("tai.incomeTaxComparison.taxCodes.subHeading")</caption>
     <thead id="taxCodeComparisonTableHeader">
     <tr role="row">
-        <th scope="col">
-        </th>
+        <th scope="col">@messages("tai.incomeTaxComparison.taxCodes.table.employer.or.pension")</th>
         <th scope="col" class="numeric taxCodeComparisonTableHeaderCol1">
             @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
             @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))

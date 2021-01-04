@@ -112,6 +112,8 @@ scottish.bandtype.TaxedIncome=Taxed income
 scottish.bandtype.pa=Tax-free allowance
 tai.CurrentTaxYear=Current tax year
 tai.NextTaxYear=Next tax year
+tai.estimatedTax.ending=Estimated tax for year ending {0}
+tai.estimatedTax.starting=Estimated tax for year starting {0}
 tai.WhatDoYouWantToDo.radio1=next year
 tai.WhatDoYouWantToDo.radio2=current tax year, {0} to {1}
 tai.WhatDoYouWantToDo.radio3=earlier
@@ -554,6 +556,7 @@ tai.incomeTaxComparison.incomeTax.column1=ends {0}
 tai.incomeTaxComparison.incomeTax.column2=from {0}
 
 tai.incomeTaxComparison.incomeTax.description=This estimate is based on your current circumstances.
+tai.incomeTaxComparison.incomeTax.income.tax.type=Income Tax type
 
 tai.incomeTaxComparison.incomeTax.updateEstimated=Update estimated income
 tai.incomeTaxComparison.incomeTax.forEmployer=for {0}
@@ -574,11 +577,14 @@ tai.incomeTaxComparison.taxCodes.subHeading=Tax codes
 tai.incomeTaxComparison.taxCodes.banner=Your updated estimated income and tax details for next tax year will be shown here in 48 hours
 
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Employer name
+tai.incomeTaxComparison.taxCodes.table.employer.or.pension=Employer or pension
 tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Pension name
+tai.incomeTaxComparison.taxCodes.table.actions = Actions
 
 tai.incomeTaxComparison.taxFreeAmount.NA=not applicable
 tai.incomeTaxComparison.taxFreeAmount.PA.information1=The standard Personal Allowance increases to {0} from {1}.
 tai.incomeTaxComparison.taxFreeAmount.PA.information2=Your Personal Allowance may be different depending on your circumstances.
+tai.incomeTaxComparison.taxFreeAmount.how.we.calculate=How we calculate it
 tai.incomeTaxComparison.taxFreeAmount.additions.caption=Additions
 tai.incomeTaxComparison.taxFreeAmount.deductions.caption=Deductions
 tai.incomeTaxComparison.taxFreeAmount.description=Your tax-free amount is the income you can have before paying tax.

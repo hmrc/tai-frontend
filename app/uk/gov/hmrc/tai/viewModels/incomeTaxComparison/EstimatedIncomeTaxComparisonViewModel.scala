@@ -36,11 +36,7 @@ case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxCo
   private def formatDate(date: LocalDate)(implicit messages: Messages) = htmlNonBroken(Dates.formatDate(date))
 
   override def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String =
-    taxComparison.fold(
-      _ => messages("tai.incomeTaxComparison.dateWithoutWelshAmendment", formatDate(TaxYear().next.start)),
-      _ => messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start)),
-      messages("tai.incomeTaxComparison.welshAmendmentToDate", formatDate(TaxYear().next.start))
-    )
+    messages("tai.incomeTaxComparison.dateWithoutWelshAmendment", formatDate(TaxYear().next.start))
 
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
   def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
