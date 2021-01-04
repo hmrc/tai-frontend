@@ -577,6 +577,7 @@ tai.incomeTaxComparison.taxCodes.subHeading=Tax codes
 tai.incomeTaxComparison.taxCodes.banner=Your updated estimated income and tax details for next tax year will be shown here in 48 hours
 
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Employer name
+tai.incomeTaxComparison.taxCodes.table.employer.or.pension=Employer or pension
 tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Pension name
 tai.incomeTaxComparison.taxCodes.table.actions = Actions
 

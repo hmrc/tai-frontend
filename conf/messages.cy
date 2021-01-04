@@ -579,6 +579,7 @@ tai.incomeTaxComparison.taxCodes.subHeading=Codau treth
 tai.incomeTaxComparison.taxCodes.banner=Dangosir diweddariad o''ch manylion incwm a threth amcangyfrifedig ar gyfer y flwyddyn dreth nesaf yma ymhen 48 awr
 
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Enw''r cyflogwr
+tai.incomeTaxComparison.taxCodes.table.employer.or.pension=Cyflogwr neu bensiwn
 tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Enw''r pensiwn
 tai.incomeTaxComparison.taxCodes.table.actions = Camau gweithredu
 
