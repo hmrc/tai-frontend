@@ -1416,3 +1416,8 @@ tai.rti.down.ceasedEmployments = Ni allwn ddangos yr wybodaeth hon ar hyn o bryd
 
 tai.rti.down.updateEmployment=Ni allwch ddiweddaru na dileu’r cyflogwr hwn ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen.
 tai.rti.down.updatePension=Ni allwch ddiweddaru na dileu’r pensiwn hwn ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen.
+
+global.error.InternalServerError500.tai.title = Mae’n ddrwg gennym – nid yw’r gwasanaeth ar gael
+global.error.InternalServerError500.tai.message.you.can = Gallwch ddefnyddio’r gwasanaeth hwn yn nes ymlaen, neu gallwch
+global.error.InternalServerError500.tai.message.contact.hmrc = gysylltu â CThEM
+global.error.InternalServerError500.tai.message.by.phone.post = ar-lein, dros y ffôn neu drwy’r post.

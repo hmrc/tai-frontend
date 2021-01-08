@@ -1410,3 +1410,8 @@ tai.rti.down.ceasedEmployments = We cannot show this information at this time. T
 
 tai.rti.down.updateEmployment=You cannot update or remove this employer at this time. Try again later.
 tai.rti.down.updatePension=You cannot update or remove this pension at this time. Try again later.
+
+global.error.InternalServerError500.tai.title = Sorry, the service is unavailable
+global.error.InternalServerError500.tai.message.you.can = You can use this service later or you can
+global.error.InternalServerError500.tai.message.contact.hmrc = contact HMRC
+global.error.InternalServerError500.tai.message.by.phone.post = online, by phone or by post.
