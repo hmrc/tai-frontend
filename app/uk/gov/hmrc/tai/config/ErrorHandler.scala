@@ -22,20 +22,18 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.urls.Link
 import views.html.internalServerError
 
 class ErrorHandler @Inject()(
-  localTemplateRenderer: LocalTemplateRenderer,
-  taiHtmlPartialRetriever: TaiHtmlPartialRetriever,
   applicationConfig: ApplicationConfig,
   val messagesApi: MessagesApi,
-  val configuration: Configuration)
+  val configuration: Configuration)(
+  implicit localTemplateRenderer: TemplateRenderer,
+  taiHtmlPartialRetriever: FormPartialRetriever)
     extends FrontendErrorHandler {
-
-  implicit val templateRenderer = localTemplateRenderer
-  implicit val partialRetriever = taiHtmlPartialRetriever
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(
     implicit request: Request[_]) =

@@ -28,8 +28,6 @@ class ErrorHandlerSpec extends BaseSpec {
   implicit val request = FakeRequest()
 
   lazy val errorHandler: ErrorHandler = new ErrorHandler(
-    app.injector.instanceOf[LocalTemplateRenderer],
-    app.injector.instanceOf[TaiHtmlPartialRetriever],
     appConfig,
     messagesApi,
     app.injector.instanceOf[Configuration]
