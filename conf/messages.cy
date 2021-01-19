@@ -111,6 +111,8 @@ scottish.bandtype.SR=Cyfradd gychwynnol ar gyfer cynilion
 scottish.bandtype.TaxedIncome=Incwm wedi''i drethu
 scottish.bandtype.pa=Lwfans rhydd o dreth
 tai.CurrentTaxYear=Y flwyddyn dreth bresennol
+tai.estimatedTax.ending=Treth amcangyfrifedig ar gyfer y flwyddyn sy’n dod i ben ar {0}
+tai.estimatedTax.starting=Treth amcangyfrifedig ar gyfer y flwyddyn sy’n dechrau ar {0}
 tai.NextTaxYear=Y flwyddyn dreth nesaf
 tai.WhatDoYouWantToDo.radio1=blwyddyn nesaf
 tai.WhatDoYouWantToDo.radio2=flwyddyn dreth bresennol, {0} i {1}
@@ -555,6 +557,8 @@ tai.incomeTaxComparison.heading.more=Cymhariaeth Treth Incwm: y flwyddyn dreth b
 tai.incomeTaxComparison.heading.same=Cymhariaeth Treth Incwm: y flwyddyn dreth bresennol a’r flwyddyn nesaf
 tai.incomeTaxComparison.incomeTax.description=Mae’r amcangyfrif hwn yn seiliedig ar eich amgylchiadau presennol.
 
+tai.incomeTaxComparison.incomeTax.income.tax.type=Math o Dreth Incwm
+
 tai.incomeTaxComparison.incomeTax.updateEstimated=Diweddarwch incwm amcangyfrifedig
 tai.incomeTaxComparison.incomeTax.forEmployer=ar gyfer {0}
 tai.incomeTaxComparison.incomeTax.fromEmployer.description=Gallwch ddiweddaru’r amcangyfrif o’ch incwm o gyflogaeth neu bensiynau ar gyfer y flwyddyn nesaf. Bydd hyn yn diweddaru’r amcangyfrif y byddwn yn seilio treth y flwyddyn nesaf arno.
@@ -574,10 +578,14 @@ tai.incomeTaxComparison.taxCodes.subHeading=Codau treth
 tai.incomeTaxComparison.taxCodes.banner=Dangosir diweddariad o''ch manylion incwm a threth amcangyfrifedig ar gyfer y flwyddyn dreth nesaf yma ymhen 48 awr
 
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Enw''r cyflogwr
+tai.incomeTaxComparison.taxCodes.table.employer.or.pension=Cyflogwr neu bensiwn
 tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Enw''r pensiwn
+tai.incomeTaxComparison.taxCodes.table.actions = Camau gweithredu
+
 tai.incomeTaxComparison.taxFreeAmount.NA=ddim yn gymwys
 tai.incomeTaxComparison.taxFreeAmount.PA.information1=Mae’r Lwfans Personol safonol yn cynyddu i {0} o {1} ymlaen.
 tai.incomeTaxComparison.taxFreeAmount.PA.information2=Gall eich Lwfans Personol fod yn wahanol, yn dibynnu ar eich amgylchiadau.
+tai.incomeTaxComparison.taxFreeAmount.how.we.calculate=Sut rydym yn ei chyfrifo
 tai.incomeTaxComparison.taxFreeAmount.additions.caption=Ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.deductions.caption=Didyniadau
 
@@ -1406,3 +1414,8 @@ tai.rti.down.ceasedEmployments = Ni allwn ddangos yr wybodaeth hon ar hyn o bryd
 
 tai.rti.down.updateEmployment=Ni allwch ddiweddaru na dileu’r cyflogwr hwn ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen.
 tai.rti.down.updatePension=Ni allwch ddiweddaru na dileu’r pensiwn hwn ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen.
+
+global.error.InternalServerError500.tai.title = Mae’n ddrwg gennym – nid yw’r gwasanaeth ar gael
+global.error.InternalServerError500.tai.message.you.can = Gallwch ddefnyddio’r gwasanaeth hwn yn nes ymlaen, neu gallwch
+global.error.InternalServerError500.tai.message.contact.hmrc = gysylltu â CThEM
+global.error.InternalServerError500.tai.message.by.phone.post = ar-lein, dros y ffôn neu drwy’r post.

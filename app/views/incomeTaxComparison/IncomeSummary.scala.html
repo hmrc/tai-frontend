@@ -1,5 +1,5 @@
 @*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@
         <caption class="visually-hidden">@{incomeSummaryHeading}</caption>
         <thead id="incomeSummeryComparisonTableHeader">
             <tr role="row">
-                <th scope="col"><span class="visuallyhidden">@messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")</span></th>
+                <th scope="col">@messages("tai.incomeTaxComparison.taxCodes.table.employer.or.pension")</th>
                 <th scope="col" class="numeric taxCodeComparisonTableHeaderCol1">
                     @Html(messages("tai.CurrentTaxYear"))
                     @Html(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end)))
@@ -55,7 +55,7 @@
                     @Html(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start)))
                 </th>
                 @if(estimatedPayEnabled) {
-                    <th scope="col"></th>
+                    <th scope="col">@messages("tai.incomeTaxComparison.taxCodes.table.actions")</th>
                 }
             </tr>
         </thead>
@@ -87,7 +87,7 @@
                     <span id="amount-cy-plus-one-@{count}">@employmentIncomeSourceDetail.amountCYPlusOne</span>
                 </td>
                 @if(estimatedPayEnabled) {
-                    <td class="link-update">
+                    <td>
                         @Link.toInternalPage(
                         id=Some(s"estimated-income-link-${employmentIncomeSourceDetail.empId}"),
                         url=controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(employmentIncomeSourceDetail.empId).url,

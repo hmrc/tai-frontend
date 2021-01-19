@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class UnauthorisedControllerSpec extends BaseSpec {
     "redirect to a login page" in {
       val result = controller.loginGG(fakeRequest)
       val expectedUrl =
-        "http://localhost:9553/bas-gateway/sign-in?continue=http%3A%2F%2Flocalhost%3A9232%2Fpersonal-account/do-uplift?redirectUrl=%2Fcheck-income-tax%2Fwhat-do-you-want-to-do&accountType=individual"
+        "http://localhost:9553/bas-gateway/sign-in?continue_url=http%3A%2F%2Flocalhost%3A9232%2Fpersonal-account/do-uplift?redirectUrl=%2Fcheck-income-tax%2Fwhat-do-you-want-to-do&accountType=individual"
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe expectedUrl

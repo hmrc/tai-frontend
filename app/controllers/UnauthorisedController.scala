@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ class UnauthorisedController @Inject()(
         .getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url))}"
 
     lazy val ggSignIn =
-      s"${applicationConfig.basGatewayFrontendSignInUrl}?continue=$postSignInUpliftUrl&accountType=individual"
+      s"${applicationConfig.basGatewayFrontendSignInUrl}?continue_url=$postSignInUpliftUrl&accountType=individual"
 
     Future.successful(Redirect(ggSignIn))
   }

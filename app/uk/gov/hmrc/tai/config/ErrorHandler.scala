@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,9 @@ import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.urls.Link
+import views.html.internalServerError
 
-class TaiErrorHandler @Inject()(
+class ErrorHandler @Inject()(
   localTemplateRenderer: LocalTemplateRenderer,
   taiHtmlPartialRetriever: TaiHtmlPartialRetriever,
   applicationConfig: ApplicationConfig,
@@ -88,4 +89,6 @@ class TaiErrorHandler @Inject()(
       )
     )
   }
+
+  override def internalServerErrorTemplate(implicit request: Request[_]): Html = internalServerError(applicationConfig)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,10 @@ class ApplicationConfig @Inject()(
   lazy val cocarFrontendUrl = s"$cocarFrontendHost/paye/company-car/details"
   lazy val marriageServiceHistoryUrl = s"$tamcFrontendHost/marriage-allowance-application/history"
   lazy val medBenefitServiceUrl = s"$benefitsFrontendHost/paye/benefits/medical-benefit"
-  lazy val sa16UpliftUrl = s"$identityVerificationHost/mdtp/uplift"
+
+  lazy val ivUpliftprefix = decorateUrlForLocalDev("identity-verification.prefix")
+  lazy val sa16UpliftUrl = s"$identityVerificationHost/$ivUpliftprefix/uplift"
+
   lazy val taiHomePageUrl: String = s"$taiRootUri/check-income-tax/what-do-you-want-to-do"
   lazy val taxYouPaidStatus = s"$taxCalcFrontendHost/tax-you-paid/status"
   lazy val hardshipHelpUrl =
