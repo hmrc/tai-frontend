@@ -1,5 +1,7 @@
 GET         /what-do-you-want-to-do                                                    controllers.WhatDoYouWantToDoController.whatDoYouWantToDoPage
 
+GET         /jrs-claims                                                                controllers.JrsClaimsController.getJrsClaims
+
 GET         /income-tax/no-info                                                        controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
 
 GET         /last-year-paye                                                            controllers.PayeControllerHistoric.lastYearPaye()
