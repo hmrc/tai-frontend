@@ -23,11 +23,12 @@
 
 
 @main(
-    title = messages("global.error.InternalServerError500.tai.title"),
+    title = messages("check.jrs.claims.title"),
     gaCustomTitle = None
 ){
 
     <div class="grid-row pertax-error">
+        <h2>@messages(viewModel.latestEmpoymentDate) </h2>
         <div class="column-two-thirds">
             @for(employers <- viewModel.employers) {
             <h1 class="heading-xlarge">@messages(employers.name)</h1>

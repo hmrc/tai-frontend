@@ -17,6 +17,7 @@ check.your.tax.free.amount=Check your tax-free amount
 check.your.income.tax.estimate=Check your Income Tax estimate
 current.tax.year=Check current tax year
 check.jrs.claims=Check Coronavirus Job Retention Scheme claims
+check.jrs.claims.title=Coronavirus Job Retention Scheme-Personal Tax Account-GOV.UK
 earlier=Check previous tax years
 error.invalid.date.format=Invalid date format
 error.invalid.date.future=Date must not be in the future

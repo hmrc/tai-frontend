@@ -19,11 +19,15 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims}
 
-case class JrsClaimsViewModel(employers: List[Employers])
+case class JrsClaimsViewModel(latestEmpoymentDate: String, isMultipleEmployer: Boolean, employers: List[Employers])
 
 object JrsClaimsViewModel {
 
-  def apply(jrsClaims: JrsClaims): JrsClaimsViewModel = JrsClaimsViewModel(jrsClaims.employers)
+  def apply(jrsClaims: JrsClaims): JrsClaimsViewModel =
+    JrsClaimsViewModel(
+      jrsClaims.employers.head.claims.head.yearAndMonth,
+      jrsClaims.employers.size > 1,
+      jrsClaims.employers)
 
   implicit lazy val format: Format[JrsClaimsViewModel] = Json.format[JrsClaimsViewModel]
 
