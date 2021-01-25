@@ -23,6 +23,8 @@
 @(viewModel: JrsClaimsViewModel)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
+@employerVar = {@if(viewModel.employers.size > 1){employers} else {employer}}
+
 @main(
     title = messages("check.jrs.claims.title"),
     gaCustomTitle = None
@@ -45,22 +47,37 @@
 
                 <h2 class="heading-section">@messages("check.jrs.from", viewModel.latestEmpoymentDate)</h2>
 
-                    @for(employers <- viewModel.employers) {
-                        <p>@messages("check.jrs.employer.made.claim.for.you", employers.name)</p>
+                @for(employers <- viewModel.employers) {
+                    @if(employers.claims.size > 1) {
+                        <p>@messages("check.jrs.employer.made.multiple.claims.for.you", employers.name)</p>
                         <ul class="list list-bullet">
                             @for(claims <- employers.claims) {
                                 <li>@claims.yearAndMonth</li>
                             }
                         </ul>
-                   }
-                <p>@messages("check.jrs.employer.should.have.claimed.furlough")</p>
 
-                <h2 class="heading-section">@messages("check.jrs.employer.can.claim.heading")</h2>
-                <p>@messages("check.jrs.employer.can.claim")</p>
+                    } else {
+                        <p>@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head.yearAndMonth)</p>
+
+                    }
+                }
+
+                @if(viewModel.employers.size == 1) {
+                    @if(viewModel.employers.last.claims.size > 1) {
+                        <p>@messages(s"check.jrs.${employerVar}.should.have.claimed.multiple.furlough")</p>
+                    } else {
+                        <p>@messages(s"check.jrs.${employerVar}.should.have.claimed.single.furlough")</p>
+                    }
+                } else {
+                    <p>@messages(s"check.jrs.${employerVar}.should.have.claimed.multiple.furlough")</p>
+                }
+
+                <h2 class="heading-section">@messages(s"check.jrs.${employerVar}.can.claim.heading")</h2>
+                <p>@messages(s"check.jrs.${employerVar}.can.claim")</p>
 
                 <h2 class="heading-section">@messages("check.jrs.information.is.different.heading")</h2>
-                <p>@messages("check.jrs.speak.to.employer")</p>
-                <p>@messages("check.jrs.report.fraud.you.can") <a href="appConfig.reportFraudToHmrc" target="_blank">@messages("check.jrs.report.fraud.to.hmrc")</a> @messages("check.jrs.report.fraud.if.employers.abusing.scheme")</p>
+                <p>@messages(s"check.jrs.speak.to.${employerVar}")</p>
+                <p>@messages("check.jrs.report.fraud.you.can") <a href="appConfig.reportFraudToHmrc" target="_blank">@messages("check.jrs.report.fraud.to.hmrc")</a> @messages(s"check.jrs.report.fraud.if.${employerVar}.abusing.scheme")</p>
 
                 <ul class="list list-bullet">
                     <li>
