@@ -1421,3 +1421,36 @@ global.error.InternalServerError500.tai.title = Mae’n ddrwg gennym – nid yw�
 global.error.InternalServerError500.tai.message.you.can = Gallwch ddefnyddio’r gwasanaeth hwn yn nes ymlaen, neu gallwch
 global.error.InternalServerError500.tai.message.contact.hmrc = gysylltu â CThEM
 global.error.InternalServerError500.tai.message.by.phone.post = ar-lein, dros y ffôn neu drwy’r post.
+
+check.jrs.claims=Gwirio hawliadau’r Cynllun Cadw Swyddi yn sgil Coronafeirws
+check.jrs.claims.title=Cynllun Cadw Swyddi yn sgil Coronafeirws
+check.jrs.back.link=Trosolwg o’ch Treth Incwm TWE
+check.jrs.from=O {0}
+check.jrs.employer.made.single.claims.for.you=Mae {0} wedi gwneud hawliadau ar eich cyfer ym mis {1}.
+check.jrs.employer.made.multiple.claims.for.you=Mae {0} wedi gwneud hawliadau ar eich cyfer yn:
+
+check.jrs.employer.should.have.claimed.single.furlough=Dylai’r cyflogwr hwn fod wedi’ch rhoi ar ffyrlo am ychydig neu’r cyfan o’r amser yn ystod y misoedd hynny.
+check.jrs.employer.should.have.claimed.multiple.furlough=Dylai’r cyflogwr hwn fod wedi’ch rhoi ar ffyrlo am ychydig neu’r cyfan o’r amser yn ystod y misoedd hynny.
+check.jrs.employers.should.have.claimed.single.furlough=These employers should have put you on furlough for some or all of the time during that month.
+check.jrs.employers.should.have.claimed.multiple.furlough=Dylai’r cyflogwyr hyn fod wedi’ch rhoi ar ffyrlo am ychydig neu’r cyfan o’r amser yn ystod y misoedd hynny.
+
+check.jrs.employer.can.claim.heading=Faint y gall eich cyflogwr ei hawlio
+check.jrs.employers.can.claim.heading=Faint y gall eich cyflogwyr ei hawlio
+
+check.jrs.employer.can.claim=Gall eich cyflogwr hawlio 80% o’ch cyflog arferol, hyd at £2500 y mis, tra rydych ar ffyrlo.
+check.jrs.employers.can.claim=Gall eich cyflogwyr hawlio 80% o’ch cyflog arferol, hyd at £2500 y mis, tra rydych ar ffyrlo.
+
+check.jrs.information.is.different.heading=Os yw’r wybodaeth hon yn wahanol i’r hyn roeddech yn ei ddisgwyl.
+
+check.jrs.speak.to.employer=Dylech siarad â’ch cyflogwr yn gyntaf
+check.jrs.speak.to.employers=Dylech siarad â’ch cyflogwyr yn gyntaf.
+
+check.jrs.report.fraud.you.can=You can
+check.jrs.report.fraud.to.hmrc=report fraud to HMRC
+
+check.jrs.report.fraud.if.employer.abusing.scheme=if your employer is abusing the scheme. This could include your employer:
+check.jrs.report.fraud.if.employers.abusing.scheme=if your employers are abusing the scheme. This could include your employers:
+
+check.jrs.claiming.on.your.behalf=hawlio ar eich rhan ac yn peidio â thalu i chi’r hyn y mae gennych hawl iddo
+check.jrs.asking.to.work.whilst.on.furlough=gofyn i chi weithio tra ydych ar ffyrlo
+check.jrs.making.backdated.claim=gwneud hawliad wedi’i ôl-ddyddio sy’n cynnwys adegau pan oeddech yn gweithio

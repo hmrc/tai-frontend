@@ -16,38 +16,6 @@ check.your.tax.codes=Check your tax codes
 check.your.tax.free.amount=Check your tax-free amount
 check.your.income.tax.estimate=Check your Income Tax estimate
 current.tax.year=Check current tax year
-check.jrs.claims=Check Coronavirus Job Retention Scheme claims
-check.jrs.claims.title=Coronavirus Job Retention Scheme
-check.jrs.back.link=Your PAYE Income Tax overview
-check.jrs.from=From {0}
-check.jrs.employer.made.single.claims.for.you={0} made claims for you in {1}.
-check.jrs.employer.made.multiple.claims.for.you={0} made claims for you in:
-
-check.jrs.employer.should.have.claimed.single.furlough=This employer should have put you on furlough for some or all of the time during that month.
-check.jrs.employer.should.have.claimed.multiple.furlough=This employer should have put you on furlough for some or all of the time during those months.
-check.jrs.employers.should.have.claimed.single.furlough=These employers should have put you on furlough for some or all of the time during that month.
-check.jrs.employers.should.have.claimed.multiple.furlough=These employers should have put you on furlough for some or all of the time during those months.
-
-check.jrs.employer.can.claim.heading=How much your employer can claim
-check.jrs.employers.can.claim.heading=How much your employers can claim
-
-check.jrs.employer.can.claim=Your employer can claim 80% of your usual wages, up to £2500 per month, while you are on furlough.
-check.jrs.employers.can.claim=Your employers can claim 80% of your usual wages, up to £2500 per month, while you are on furlough.
-
-check.jrs.information.is.different.heading=If this information is different to what you expected
-
-check.jrs.speak.to.employer=You should speak to your employer first.
-check.jrs.speak.to.employers=You should speak to your employers first.
-
-check.jrs.report.fraud.you.can=You can
-check.jrs.report.fraud.to.hmrc=report fraud to HMRC
-
-check.jrs.report.fraud.if.employer.abusing.scheme=if your employer is abusing the scheme. This could include your employer:
-check.jrs.report.fraud.if.employers.abusing.scheme=if your employers are abusing the scheme. This could include your employers:
-
-check.jrs.claiming.on.your.behalf=claiming on your behalf and not paying you what you’re entitled to
-check.jrs.asking.to.work.whilst.on.furlough=asking you to work whilst on furlough
-check.jrs.making.backdated.claim=making a backdated claim that includes times when you were working
 earlier=Check previous tax years
 error.invalid.date.format=Invalid date format
 error.invalid.date.future=Date must not be in the future
@@ -1447,3 +1415,36 @@ global.error.InternalServerError500.tai.title = Sorry, the service is unavailabl
 global.error.InternalServerError500.tai.message.you.can = You can use this service later or you can
 global.error.InternalServerError500.tai.message.contact.hmrc = contact HMRC
 global.error.InternalServerError500.tai.message.by.phone.post = online, by phone or by post.
+
+check.jrs.claims=Check Coronavirus Job Retention Scheme claims
+check.jrs.claims.title=Coronavirus Job Retention Scheme
+check.jrs.back.link=Your PAYE Income Tax overview
+check.jrs.from=From {0}
+check.jrs.employer.made.single.claims.for.you={0} made claims for you in {1}.
+check.jrs.employer.made.multiple.claims.for.you={0} made claims for you in:
+
+check.jrs.employer.should.have.claimed.single.furlough=This employer should have put you on furlough for some or all of the time during that month.
+check.jrs.employer.should.have.claimed.multiple.furlough=This employer should have put you on furlough for some or all of the time during those months.
+check.jrs.employers.should.have.claimed.single.furlough=These employers should have put you on furlough for some or all of the time during that month.
+check.jrs.employers.should.have.claimed.multiple.furlough=These employers should have put you on furlough for some or all of the time during those months.
+
+check.jrs.employer.can.claim.heading=How much your employer can claim
+check.jrs.employers.can.claim.heading=How much your employers can claim
+
+check.jrs.employer.can.claim=Your employer can claim 80% of your usual wages, up to £2500 per month, while you are on furlough.
+check.jrs.employers.can.claim=Your employers can claim 80% of your usual wages, up to £2500 per month, while you are on furlough.
+
+check.jrs.information.is.different.heading=If this information is different to what you expected
+
+check.jrs.speak.to.employer=You should speak to your employer first.
+check.jrs.speak.to.employers=You should speak to your employers first.
+
+check.jrs.report.fraud.you.can=You can
+check.jrs.report.fraud.to.hmrc=report fraud to HMRC
+
+check.jrs.report.fraud.if.employer.abusing.scheme=if your employer is abusing the scheme. This could include your employer:
+check.jrs.report.fraud.if.employers.abusing.scheme=if your employers are abusing the scheme. This could include your employers:
+
+check.jrs.claiming.on.your.behalf=claiming on your behalf and not paying you what you’re entitled to
+check.jrs.asking.to.work.whilst.on.furlough=asking you to work whilst on furlough
+check.jrs.making.backdated.claim=making a backdated claim that includes times when you were working
