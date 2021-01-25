@@ -94,6 +94,9 @@ class ApplicationConfig @Inject()(
   lazy val contactHelplineWelshUrl: String =
     "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/welsh-language-helplines"
 
+  lazy val reportFraudToHmrc =
+    "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/report-fraud-to-hmrc"
+
   lazy val frontendTemplatePath: String =
     getOptional[String]("microservice.services.frontend-template-provider.path").getOrElse("/template/mustache")
 

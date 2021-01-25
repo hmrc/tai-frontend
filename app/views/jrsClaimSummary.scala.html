@@ -18,6 +18,7 @@
 @import play.api.Play.current
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.JrsClaimsViewModel
+@import uk.gov.hmrc.urls.Link
 
 @(viewModel: JrsClaimsViewModel)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -27,15 +28,53 @@
     gaCustomTitle = None
 ){
 
-    <div class="grid-row pertax-error">
-        <h2>@messages(viewModel.latestEmpoymentDate) </h2>
-        <div class="column-two-thirds">
-            @for(employers <- viewModel.employers) {
-            <h1 class="heading-xlarge">@messages(employers.name)</h1>
-            @for(claims <- employers.claims) {
-            <p>@messages(claims.yearAndMonth) </p>
-            }
-       }
+
+    <div class="grid-row">
+        <div class="grid grid-2-3">
+            <div class="inner-block">
+
+                <p class="flush--bottom">@Link.toInternalPage(
+                    id=Some("backLink"),
+                    value=Some(Messages("check.jrs.back.link")),
+                    url = "#",
+                    cssClasses=Some("link-back js-visible")
+                    ).toHtml</p>
+
+                <h1 class="heading-xlarge">@messages("check.jrs.claims.title")</h1>
+
+
+                <h2 class="heading-section">@messages("check.jrs.from", viewModel.latestEmpoymentDate)</h2>
+
+                    @for(employers <- viewModel.employers) {
+                        <p>@messages("check.jrs.employer.made.claim.for.you", employers.name)</p>
+                        <ul class="list list-bullet">
+                            @for(claims <- employers.claims) {
+                                <li>@claims.yearAndMonth</li>
+                            }
+                        </ul>
+                   }
+                <p>@messages("check.jrs.employer.should.have.claimed.furlough")</p>
+
+                <h2 class="heading-section">@messages("check.jrs.employer.can.claim.heading")</h2>
+                <p>@messages("check.jrs.employer.can.claim")</p>
+
+                <h2 class="heading-section">@messages("check.jrs.information.is.different.heading")</h2>
+                <p>@messages("check.jrs.speak.to.employer")</p>
+                <p>@messages("check.jrs.report.fraud.you.can") <a href="appConfig.reportFraudToHmrc" target="_blank">@messages("check.jrs.report.fraud.to.hmrc")</a> @messages("check.jrs.report.fraud.if.employers.abusing.scheme")</p>
+
+                <ul class="list list-bullet">
+                    <li>
+                        @messages("check.jrs.claiming.on.your.behalf")
+                    </li>
+                     <li>
+                        @messages("check.jrs.asking.to.work.whilst.on.furlough")
+                    </li>
+                     <li>
+                        @messages("check.jrs.making.backdated.claim")
+                    </li>
+                </ul>
+
+            </div>
         </div>
     </div>
 }
