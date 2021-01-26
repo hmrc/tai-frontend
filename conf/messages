@@ -1448,3 +1448,7 @@ check.jrs.report.fraud.if.employers.abusing.scheme=if your employers are abusing
 check.jrs.claiming.on.your.behalf=claiming on your behalf and not paying you what you’re entitled to
 check.jrs.asking.to.work.whilst.on.furlough=asking you to work whilst on furlough
 check.jrs.making.backdated.claim=making a backdated claim that includes times when you were working
+
+check.jrs.claims.no.claim.title=There are no Coronavirus Job Retention Scheme claims for you
+check.jrs.claims.no.claim.check.later=Check back later as claims can take up to 2 months to be displayed.
+check.jrs.claims.no.claim.link=Go to account home
