@@ -1431,7 +1431,7 @@ check.jrs.employer.made.multiple.claims.for.you=Mae {0} wedi gwneud hawliadau ar
 
 check.jrs.employer.should.have.claimed.single.furlough=Dylai’r cyflogwr hwn fod wedi’ch rhoi ar ffyrlo am ychydig neu’r cyfan o’r amser yn ystod y misoedd hynny.
 check.jrs.employer.should.have.claimed.multiple.furlough=Dylai’r cyflogwr hwn fod wedi’ch rhoi ar ffyrlo am ychydig neu’r cyfan o’r amser yn ystod y misoedd hynny.
-check.jrs.employers.should.have.claimed.single.furlough=These employers should have put you on furlough for some or all of the time during that month.
+check.jrs.employers.should.have.claimed.single.furlough=Dylai’r cyflogwyr hyn fod wedi’ch rhoi ar ffyrlo am ychydig neu’r cyfan o’r amser yn ystod y mis hwnnw.
 check.jrs.employers.should.have.claimed.multiple.furlough=Dylai’r cyflogwyr hyn fod wedi’ch rhoi ar ffyrlo am ychydig neu’r cyfan o’r amser yn ystod y misoedd hynny.
 
 check.jrs.employer.can.claim.heading=Faint y gall eich cyflogwr ei hawlio
