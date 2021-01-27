@@ -40,11 +40,13 @@ class JrsConnector @Inject()(httpClient: HttpClient, metrics: Metrics, servicesC
 
   val logger = Logger(this.getClass)
 
-  def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier): Future[Either[HttpResponse, JrsClaims]] = {
+  def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier): Future[Option[JrsClaims]] = {
 
     val serviceUrl: String = servicesConfig.baseUrl("coronavirus-jrs-published-employees")
+
     def jrsClaimsUrl(nino: String): String =
       s"$serviceUrl/coronavirus-jrs-published-employees/employee/$nino"
+
     lazy val bearerToken: String = "Bearer " + servicesConfig
       .getConfString("coronavirus-jrs-published-employees.authorizationToken", "local")
 
@@ -57,18 +59,23 @@ class JrsConnector @Inject()(httpClient: HttpClient, metrics: Metrics, servicesC
       response.status match {
         case OK => {
           metrics.incrementSuccessCounter(APITypes.JrsClaimAPI)
-          Right(response.json.as[JrsClaims])
+          Some(response.json.as[JrsClaims])
+        }
+        case NO_CONTENT => {
+          metrics.incrementSuccessCounter(APITypes.JrsClaimAPI)
+          Some(JrsClaims(List.empty))
         }
         case _ => {
           metrics.incrementFailedCounter(APITypes.JrsClaimAPI)
-          Left(response)
+          None
         }
       }
     } recover {
       case e => {
         metrics.incrementFailedCounter(APITypes.JrsClaimAPI)
+        logger.warn(s"${e.getMessage}")
         timerContext.stop()
-        throw e
+        None
       }
     }
   }

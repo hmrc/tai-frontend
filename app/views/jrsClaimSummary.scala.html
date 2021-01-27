@@ -45,7 +45,7 @@
                 <h1 class="heading-xlarge">@messages("check.jrs.claims.title")</h1>
 
 
-                <h2 class="heading-section">@messages("check.jrs.from", viewModel.latestEmpoymentDate)</h2>
+                <h2 class="heading-section">@messages("check.jrs.from", viewModel.firstClaimDate)</h2>
 
                 @for(employers <- viewModel.employers) {
                     @if(employers.claims.size > 1) {
@@ -77,7 +77,7 @@
 
                 <h2 class="heading-section">@messages("check.jrs.information.is.different.heading")</h2>
                 <p>@messages(s"check.jrs.speak.to.${employerVar}")</p>
-                <p>@messages("check.jrs.report.fraud.you.can") <a href="appConfig.reportFraudToHmrc" target="_blank">@messages("check.jrs.report.fraud.to.hmrc")</a> @messages(s"check.jrs.report.fraud.if.${employerVar}.abusing.scheme")</p>
+                <p>@Html(messages("check.jrs.report.fraud.if.employer.abusing.scheme"))</p>
 
                 <ul class="list list-bullet">
                     <li>

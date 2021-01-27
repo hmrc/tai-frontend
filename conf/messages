@@ -1439,10 +1439,7 @@ check.jrs.information.is.different.heading=If this information is different to w
 check.jrs.speak.to.employer=You should speak to your employer first.
 check.jrs.speak.to.employers=You should speak to your employers first.
 
-check.jrs.report.fraud.you.can=You can
-check.jrs.report.fraud.to.hmrc=report fraud to HMRC
-
-check.jrs.report.fraud.if.employer.abusing.scheme=if your employer is abusing the scheme. This could include your employer:
+check.jrs.report.fraud.if.employer.abusing.scheme=You can <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/report-fraud-to-hmrc" target="blank" rel="noopener noreferrer">report fraud to HMRC</a> if your employer is abusing the scheme. This could include your employer:
 check.jrs.report.fraud.if.employers.abusing.scheme=if your employers are abusing the scheme. This could include your employers:
 
 check.jrs.claiming.on.your.behalf=claiming on your behalf and not paying you what you’re entitled to

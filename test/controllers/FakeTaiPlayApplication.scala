@@ -40,8 +40,7 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
     "tai.cy3.enabled"                                     -> true,
     "microservice.services.feedback-survey-frontend.port" -> "3333",
     "microservice.services.company-auth.port"             -> "4444",
-    "microservice.services.citizen-auth.port"             -> "9999",
-    "metrics.enabled"                                     -> false
+    "microservice.services.citizen-auth.port"             -> "9999"
   )
 
   implicit override lazy val app: Application = new GuiceApplicationBuilder().configure(additionalConfiguration).build()

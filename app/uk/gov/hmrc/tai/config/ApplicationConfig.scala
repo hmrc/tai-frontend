@@ -37,6 +37,8 @@ class ApplicationConfig @Inject()(
   lazy val incomeTaxFormPartialLinkUrl =
     s"$dfsDigitalFormsFrontend/digital-forms/forms/personal-tax/income-tax/catalogue"
 
+  lazy val jrsClaimsFromDate: String = servicesConfig.getString("tai.jrs.claims.from.date")
+
   lazy val incomeFromEmploymentPensionLinkUrl =
     s"$dfsFrontendHost/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
   lazy val companyBenefitsLinkUrl =
@@ -94,9 +96,6 @@ class ApplicationConfig @Inject()(
   lazy val contactHelplineWelshUrl: String =
     "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/welsh-language-helplines"
 
-  lazy val reportFraudToHmrc =
-    "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/report-fraud-to-hmrc"
-
   lazy val frontendTemplatePath: String =
     getOptional[String]("microservice.services.frontend-template-provider.path").getOrElse("/template/mustache")
 
@@ -125,6 +124,7 @@ class ApplicationConfig @Inject()(
 
 trait FeatureTogglesConfig { self: ApplicationConfig =>
   val cyPlusOneEnabled: Boolean = getOptional[Boolean]("tai.cyPlusOne.enabled").getOrElse(false)
+  val jrsClaimsEnabled: Boolean = getOptional[Boolean]("tai.jrsClaims.enabled").getOrElse(false)
   val welshLanguageEnabled: Boolean = getOptional[Boolean]("tai.feature.welshLanguage.enabled").getOrElse(false)
   val companyCarForceRedirectEnabled: Boolean =
     getOptional[Boolean]("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)

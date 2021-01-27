@@ -16,19 +16,34 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import org.joda.time.LocalDate
 import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.tai.model.{Employers, JrsClaims}
+import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 
-case class JrsClaimsViewModel(latestEmpoymentDate: String, isMultipleEmployer: Boolean, employers: List[Employers])
+case class JrsClaimsViewModel(firstClaimDate: String, employers: List[Employers])
 
 object JrsClaimsViewModel {
 
-  def apply(jrsClaims: JrsClaims): JrsClaimsViewModel =
-    JrsClaimsViewModel(
-      jrsClaims.employers.head.claims.head.yearAndMonth,
-      jrsClaims.employers.size > 1,
-      jrsClaims.employers)
+  def sortClaimData(yearAndMonthList: List[YearAndMonth], jrsClaimFromDate: LocalDate) = {
 
-  implicit lazy val format: Format[JrsClaimsViewModel] = Json.format[JrsClaimsViewModel]
+    val dateTypeList =
+      for (data <- yearAndMonthList if !LocalDate.parse(data.yearAndMonth).isBefore(jrsClaimFromDate))
+        yield (LocalDate.parse(data.yearAndMonth))
+
+    val sortedDateTypeList = dateTypeList.sortBy(_.toDate)
+
+    for (a <- sortedDateTypeList)
+      yield (YearAndMonth(s"${a.monthOfYear().getAsText} ${a.year().getAsString}"))
+  }
+
+  def apply(jrsClaims: JrsClaims, jrsClaimFromDate: LocalDate): JrsClaimsViewModel = {
+
+    val employersList = for (employer <- jrsClaims.employers)
+      yield (Employers(employer.name, employer.employerReference, sortClaimData(employer.claims, jrsClaimFromDate)))
+
+    JrsClaimsViewModel(
+      s"${jrsClaimFromDate.monthOfYear().getAsText} ${jrsClaimFromDate.year().getAsString}",
+      employersList.sortBy(_.name))
+  }
 
 }

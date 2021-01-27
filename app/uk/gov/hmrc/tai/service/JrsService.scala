@@ -17,18 +17,35 @@
 package uk.gov.hmrc.tai.service
 
 import javax.inject.{Inject, Singleton}
+import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.JrsConnector
-import uk.gov.hmrc.tai.model.JrsClaims
+import uk.gov.hmrc.tai.viewModels.JrsClaimsViewModel
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class JrsService @Inject()(jrs: JrsConnector)(implicit ec: ExecutionContext) {
+class JrsService @Inject()(jrs: JrsConnector, appConfig: ApplicationConfig)(implicit ec: ExecutionContext) {
 
-  def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier): Future[Either[HttpResponse, JrsClaims]] =
+  def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier): Future[Option[JrsClaimsViewModel]] =
     jrs.getJrsClaims(nino).map { response =>
-      response
+      response match {
+        case Some(jrsClaimsData) => {
+          Some(JrsClaimsViewModel(jrsClaimsData, LocalDate.parse(appConfig.jrsClaimsFromDate)))
+        }
+        case _ => None
+      }
     }
+
+  def checkIfJrsClaimsDatExist(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] =
+    if (appConfig.jrsClaimsEnabled) {
+      jrs.getJrsClaims(nino).map { response =>
+        response match {
+          case Some(_) => true
+          case _       => false
+        }
+      }
+    } else Future(false)
 }

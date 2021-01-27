@@ -16,44 +16,32 @@
 
 package uk.gov.hmrc.tai.model
 
-import play.api.libs.json.{Format, JsPath, Json, Reads}
+import play.api.libs.json.{JsPath, Json, Reads}
 
 case class YearAndMonth(yearAndMonth: String)
 
 object YearAndMonth {
 
-  def getMonthNameAndYear(monthNumber: Array[String]): YearAndMonth = {
-    val months = Array(
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December")
-    YearAndMonth(s"${months(monthNumber(1).toInt - 1)} ${monthNumber(0)}")
-  }
-
   implicit val reads: Reads[YearAndMonth] =
-    (JsPath \ "yearAndMonth").read[String].map(a => getMonthNameAndYear(a.split("-")))
+    (JsPath \ "yearAndMonth").read[String].map(a => YearAndMonth(a.concat("-01")))
   (YearAndMonth.apply _)
 
-  implicit val writes = Json.writes[YearAndMonth]
+  implicit val formats = Json.writes[YearAndMonth]
+
 }
 
 case class Employers(name: String, employerReference: String, claims: List[YearAndMonth])
 
 object Employers {
-  implicit lazy val format: Format[Employers] = Json.format[Employers]
+
+  implicit val formats = Json.format[Employers]
+
 }
 
 case class JrsClaims(employers: List[Employers])
 
 object JrsClaims {
-  implicit lazy val format: Format[JrsClaims] = Json.format[JrsClaims]
+
+  implicit val formats = Json.format[JrsClaims]
+
 }

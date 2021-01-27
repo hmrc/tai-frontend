@@ -19,19 +19,13 @@ package controllers
 import com.google.inject.{Inject, Singleton}
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.libs.json.Json
-import play.api.mvc.Results.{BadRequest, NotFound}
 import play.api.mvc._
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HttpResponse, NotFoundException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.metrics.Metrics
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.viewModels.JrsClaimsViewModel
-
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class JrsClaimsController @Inject()(
@@ -49,26 +43,11 @@ class JrsClaimsController @Inject()(
     val nino = request.taiUser.nino
 
     jrsService.getJrsClaims(nino).map {
-      case Right(jrsClaimsData) => Ok(views.html.jrsClaimSummary(JrsClaimsViewModel(jrsClaimsData)))
-      case Left(response)       => handleNonSuccessResponse(response)
-    } recoverWith {
-      case ex: BadRequestException => Future.successful(BadRequest(ex.message))
-      case ex: NotFoundException   => Future.successful(NotFound(ex.message))
-      case ex                      => throw ex
+      case Some(jrsClaimsViewModel) => {
+        if (jrsClaimsViewModel.employers.isEmpty) NotFound(views.html.jrsClaimSummary(jrsClaimsViewModel))
+        else Ok(views.html.jrsClaimSummary(jrsClaimsViewModel))
+      }
+      case _ => NotFound(views.html.timeout())
     }
   }
-
-  def handleNonSuccessResponse(response: HttpResponse): Result =
-    response.status match {
-
-      case NOT_FOUND           => NotFound(response.body)
-      case NO_CONTENT          => NoContent
-      case FORBIDDEN           => Forbidden(response.body)
-      case BAD_REQUEST         => BadRequest(response.body)
-      case BAD_GATEWAY         => BadGateway(response.body)
-      case GATEWAY_TIMEOUT     => GatewayTimeout(response.body)
-      case SERVICE_UNAVAILABLE => ServiceUnavailable(response.body)
-      case UNAUTHORIZED        => Unauthorized(response.body)
-      case _                   => InternalServerError(response.body)
-    }
 }

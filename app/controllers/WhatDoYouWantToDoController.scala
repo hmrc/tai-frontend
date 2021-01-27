@@ -33,9 +33,10 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
+import uk.gov.hmrc.tai.viewModels.{JrsClaimsViewModel, WhatDoYouWantToDoViewModel}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Success
 
 class WhatDoYouWantToDoController @Inject()(
   employmentService: EmploymentService,
@@ -43,6 +44,7 @@ class WhatDoYouWantToDoController @Inject()(
   taxAccountService: TaxAccountService,
   val auditConnector: AuditConnector,
   auditService: AuditService,
+  jrsService: JrsService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
@@ -99,12 +101,15 @@ class WhatDoYouWantToDoController @Inject()(
       for {
         taxCodeChanged    <- hasTaxCodeChanged
         taxAccountSummary <- cy1TaxAccountSummary
+        showJrsTile       <- jrsService.checkIfJrsClaimsDatExist(nino)
+
       } yield {
         taxAccountSummary match {
           case TaiSuccessResponseWithPayload(_) => {
             val model = WhatDoYouWantToDoViewModel(
               applicationConfig.cyPlusOneEnabled,
               taxCodeChanged.changed,
+              showJrsTile,
               taxCodeChanged.mismatch)
 
             Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
@@ -115,26 +120,28 @@ class WhatDoYouWantToDoController @Inject()(
             if (response.isInstanceOf[TaiNotFoundResponse])
               Logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
 
-            val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false)
+            val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
             Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
             Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
           }
         }
       }
     } else {
-      taxCodeChangeService
-        .hasTaxCodeChanged(nino)
-        .map(hasTaxCodeChanged => {
-          val model =
-            WhatDoYouWantToDoViewModel(
-              applicationConfig.cyPlusOneEnabled,
-              hasTaxCodeChanged.changed,
-              hasTaxCodeChanged.mismatch)
+      for {
+        hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
+        showJrsTile       <- jrsService.checkIfJrsClaimsDatExist(nino)
+      } yield {
+        val model =
+          WhatDoYouWantToDoViewModel(
+            applicationConfig.cyPlusOneEnabled,
+            hasTaxCodeChanged.changed,
+            showJrsTile,
+            hasTaxCodeChanged.mismatch)
 
-          Logger.debug(s"wdywtdViewModelCYDisabled $model")
+        Logger.debug(s"wdywtdViewModelCYDisabled $model")
 
-          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
-        })
+        Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+      }
     }
   }
 
