@@ -1425,7 +1425,7 @@ global.error.InternalServerError500.tai.message.by.phone.post = ar-lein, dros y 
 check.jrs.claims=Gwirio hawliadau’r Cynllun Cadw Swyddi yn sgil Coronafeirws
 check.jrs.claims.title=Cynllun Cadw Swyddi yn sgil Coronafeirws
 check.jrs.back.link=Trosolwg o’ch Treth Incwm TWE
-check.jrs.from=O {0}
+check.jrs.from=O fis {0} ymlaen
 check.jrs.employer.made.single.claims.for.you=Mae {0} wedi gwneud hawliadau ar eich cyfer ym mis {1}.
 check.jrs.employer.made.multiple.claims.for.you=Mae {0} wedi gwneud hawliadau ar eich cyfer yn:
 
@@ -1445,16 +1445,16 @@ check.jrs.information.is.different.heading=Os yw’r wybodaeth hon yn wahanol i�
 check.jrs.speak.to.employer=Dylech siarad â’ch cyflogwr yn gyntaf
 check.jrs.speak.to.employers=Dylech siarad â’ch cyflogwyr yn gyntaf.
 
-check.jrs.report.fraud.you.can=You can
-check.jrs.report.fraud.to.hmrc=report fraud to HMRC
+check.jrs.report.fraud.you.can=Gallwch
+check.jrs.report.fraud.to.hmrc=roi gwybod i CThEM am dwyll
 
-check.jrs.report.fraud.if.employer.abusing.scheme=if your employer is abusing the scheme. This could include your employer:
-check.jrs.report.fraud.if.employers.abusing.scheme=if your employers are abusing the scheme. This could include your employers:
+check.jrs.report.fraud.if.employer.abusing.scheme=os yw’ch cyflogwr yn camddefnyddio’r cynllun. Gallai hyn gynnwys achosion pan fo’ch cyflogwr yn:
+check.jrs.report.fraud.if.employers.abusing.scheme=os yw’ch cyflogwyr yn camddefnyddio’r cynllun. Gallai hyn gynnwys achosion pan fo’ch cyflogwyr yn:
 
 check.jrs.claiming.on.your.behalf=hawlio ar eich rhan ac yn peidio â thalu i chi’r hyn y mae gennych hawl iddo
 check.jrs.asking.to.work.whilst.on.furlough=gofyn i chi weithio tra ydych ar ffyrlo
 check.jrs.making.backdated.claim=gwneud hawliad wedi’i ôl-ddyddio sy’n cynnwys adegau pan oeddech yn gweithio
 
-check.jrs.claims.no.claim.title=There are no Coronavirus Job Retention Scheme claims for you
-check.jrs.claims.no.claim.check.later=Check back later as claims can take up to 2 months to be displayed.
-check.jrs.claims.no.claim.link=Go to account home
+check.jrs.claims.no.claim.title=Nid oes unrhyw hawliadau drwy’r Cynllun Cadw Swyddi yn sgil Coronafeirws ar eich cyfer chi
+check.jrs.claims.no.claim.check.later=Gwiriwch eto yn nes ymlaen oherwydd gall gymryd hyd at 2 fis i ddangos hawliadau.
+check.jrs.claims.no.claim.link=Ewch i hafan y cyfrif
