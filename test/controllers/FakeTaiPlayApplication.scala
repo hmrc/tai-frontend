@@ -30,13 +30,12 @@ import scala.concurrent.ExecutionContext
 
 trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfiguration with TestSuite {
   this: Suite =>
-  override lazy val port = 12345
 
   val additionalConfiguration = Map[String, Any](
-    "microservice.services.contact-frontend.port"         -> port,
+    "microservice.services.contact-frontend.port"         -> "6666",
     "microservice.services.pertax-frontend.port"          -> "1111",
     "microservice.services.personal-tax-summary.port"     -> "2222",
-    "microservice.services.activity-logger.port"          -> port,
+    "microservice.services.activity-logger.port"          -> "5555",
     "tai.cy3.enabled"                                     -> true,
     "microservice.services.feedback-survey-frontend.port" -> "3333",
     "microservice.services.company-auth.port"             -> "4444",

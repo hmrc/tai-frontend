@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResp
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
-import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.{JrsService, _}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
@@ -99,7 +99,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
         doc.body().toString must include(Messages("check.tax.hasChanged.header"))
-        doc.select(".card").size mustBe 4
+        doc.body().toString must include(Messages("check.jrs.claims"))
+        doc.select(".card").size mustBe 5
       }
 
       "cyPlusOne is disabled" in {
@@ -116,7 +117,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
         doc.body().toString must include(Messages("check.tax.hasChanged.header"))
-        doc.select(".card").size mustBe 3
+        doc.select(".card").size mustBe 4
       }
     }
 
@@ -414,6 +415,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val auditService: AuditService = mock[AuditService]
   val employmentService: EmploymentService = mock[EmploymentService]
+  val jrsService: JrsService = mock[JrsService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
@@ -424,6 +426,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         taxAccountService,
         mock[AuditConnector],
         auditService,
+        jrsService,
         FakeAuthAction,
         FakeValidatePerson,
         mockAppConfig,
@@ -439,6 +442,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       .thenReturn(Future.successful(AuditResult.Success))
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
       .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary)))
+    when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
+      .thenReturn(Future.successful(true))
   }
 
 }

@@ -23,8 +23,10 @@ import play.api.mvc._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.metrics.Metrics
 import uk.gov.hmrc.tai.service._
+
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -35,6 +37,7 @@ class JrsClaimsController @Inject()(
   jrsService: JrsService,
   metrics: Metrics,
   mcc: MessagesControllerComponents,
+  appConfig: ApplicationConfig,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -43,11 +46,10 @@ class JrsClaimsController @Inject()(
     val nino = request.taiUser.nino
 
     jrsService.getJrsClaims(nino).map {
-      case Some(jrsClaimsViewModel) => {
-        if (jrsClaimsViewModel.employers.isEmpty) NotFound(views.html.jrsClaimSummary(jrsClaimsViewModel))
-        else Ok(views.html.jrsClaimSummary(jrsClaimsViewModel))
-      }
-      case _ => NotFound(views.html.timeout())
+
+      case Some(jrsClaims) => Ok(views.html.jrsClaimSummary(jrsClaims, appConfig))
+
+      case _ => NotFound(views.html.noJrsClaim())
     }
   }
 }

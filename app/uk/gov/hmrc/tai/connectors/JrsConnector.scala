@@ -33,11 +33,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class JrsConnector @Inject()(httpClient: HttpClient, metrics: Metrics, servicesConfig: ServicesConfig)(
   implicit ec: ExecutionContext) {
 
-  def withoutSuffix(nino: Nino): String = {
-    val BASIC_NINO_LENGTH = 8
-    nino.value.take(BASIC_NINO_LENGTH)
-  }
-
   val logger = Logger(this.getClass)
 
   def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier): Future[Option[JrsClaims]] = {
@@ -54,7 +49,7 @@ class JrsConnector @Inject()(httpClient: HttpClient, metrics: Metrics, servicesC
 
     val timerContext = metrics.startTimer(APITypes.JrsClaimAPI)
 
-    httpClient.GET[HttpResponse](jrsClaimsUrl(withoutSuffix(nino))) map { response =>
+    httpClient.GET[HttpResponse](jrsClaimsUrl(nino.value)) map { response =>
       timerContext.stop()
       response.status match {
         case OK => {

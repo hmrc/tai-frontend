@@ -111,7 +111,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     isCyPlusOneEnabled: Boolean,
     hasTaxCodeChanged: Boolean = false,
     taxCodeMismatch: Option[TaxCodeMismatch] = None): WhatDoYouWantToDoViewModel =
-    WhatDoYouWantToDoViewModel(isCyPlusOneEnabled, hasTaxCodeChanged, taxCodeMismatch)
+    WhatDoYouWantToDoViewModel(isCyPlusOneEnabled, hasTaxCodeChanged, false, taxCodeMismatch)
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 

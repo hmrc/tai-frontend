@@ -17,10 +17,10 @@
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 @import play.api.Play.current
 @import uk.gov.hmrc.tai.config.ApplicationConfig
-@import uk.gov.hmrc.tai.viewModels.JrsClaimsViewModel
+@import uk.gov.hmrc.tai.model.JrsClaims
 @import uk.gov.hmrc.urls.Link
 
-@(viewModel: JrsClaimsViewModel)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
 @employerVar = {@if(viewModel.employers.size > 1){employers} else {employer}}
@@ -45,7 +45,7 @@
                 <h1 class="heading-xlarge">@messages("check.jrs.claims.title")</h1>
 
 
-                <h2 class="heading-section">@messages("check.jrs.from", viewModel.firstClaimDate)</h2>
+                <h2 class="heading-section">@messages("check.jrs.from", viewModel.firstClaimDate(appConfig))</h2>
 
                 @for(employers <- viewModel.employers) {
                     @if(employers.claims.size > 1) {

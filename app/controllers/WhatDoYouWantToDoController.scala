@@ -33,10 +33,9 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.viewModels.{JrsClaimsViewModel, WhatDoYouWantToDoViewModel}
+import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Success
 
 class WhatDoYouWantToDoController @Inject()(
   employmentService: EmploymentService,
@@ -101,7 +100,7 @@ class WhatDoYouWantToDoController @Inject()(
       for {
         taxCodeChanged    <- hasTaxCodeChanged
         taxAccountSummary <- cy1TaxAccountSummary
-        showJrsTile       <- jrsService.checkIfJrsClaimsDatExist(nino)
+        showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
 
       } yield {
         taxAccountSummary match {
@@ -129,7 +128,7 @@ class WhatDoYouWantToDoController @Inject()(
     } else {
       for {
         hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
-        showJrsTile       <- jrsService.checkIfJrsClaimsDatExist(nino)
+        showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
       } yield {
         val model =
           WhatDoYouWantToDoViewModel(

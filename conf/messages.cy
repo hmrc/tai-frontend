@@ -1451,3 +1451,7 @@ check.jrs.report.fraud.if.employers.abusing.scheme=if your employers are abusing
 check.jrs.claiming.on.your.behalf=hawlio ar eich rhan ac yn peidio â thalu i chi’r hyn y mae gennych hawl iddo
 check.jrs.asking.to.work.whilst.on.furlough=gofyn i chi weithio tra ydych ar ffyrlo
 check.jrs.making.backdated.claim=gwneud hawliad wedi’i ôl-ddyddio sy’n cynnwys adegau pan oeddech yn gweithio
+
+check.jrs.claims.no.claim.title=There are no Coronavirus Job Retention Scheme claims for you
+check.jrs.claims.no.claim.check.later=Check back later as claims can take up to 2 months to be displayed.
+check.jrs.claims.no.claim.link=Go to account home
