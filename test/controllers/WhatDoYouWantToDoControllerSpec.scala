@@ -24,9 +24,8 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, status, _}
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -43,7 +42,6 @@ import utils.factories.TaxCodeMismatchFactory
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
-import scala.util.Random
 
 class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with BeforeAndAfterEach {
 
@@ -85,7 +83,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         doc.body().toString mustNot include(Messages("check.tax.hasChanged.header"))
       }
 
-      "there has been a tax code change and cyPlusOne is enabled" in {
+      "there has been a tax code change and cyPlusOne is enabled and jrs claim data does not exist" in {
         val testController = createTestController(isCyPlusOneEnabled = true)
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
@@ -99,11 +97,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
         doc.body().toString must include(Messages("check.tax.hasChanged.header"))
-        doc.body().toString must include(Messages("check.jrs.claims"))
-        doc.select(".card").size mustBe 5
+        doc.select(".card").size mustBe 4
       }
 
-      "cyPlusOne is disabled" in {
+      "cyPlusOne is disabled and jrs claim data does not exist" in {
         val testController = createTestController(isCyPlusOneEnabled = false)
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
@@ -117,6 +114,49 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
         doc.body().toString must include(Messages("check.tax.hasChanged.header"))
+        doc.select(".card").size mustBe 3
+      }
+
+      "there has been a tax code change and cyPlusOne is enabled and jrs claim data exist" in {
+        val testController = createTestController(isCyPlusOneEnabled = true)
+
+        when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
+          .thenReturn(Future.successful(true))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
+
+        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val doc = Jsoup.parse(contentAsString(result))
+
+        status(result) mustBe OK
+
+        doc.title() must include(Messages("your.paye.income.tax.overview"))
+        doc.body().toString must include(Messages("check.tax.hasChanged.header"))
+        doc.body().toString must include(Messages("check.jrs.claims"))
+
+        doc.select(".card").size mustBe 5
+      }
+
+      "cyPlusOne is disabled and jrs claim data exist" in {
+        val testController = createTestController(isCyPlusOneEnabled = false)
+
+        when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
+          .thenReturn(Future.successful(true))
+
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
+
+        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val doc = Jsoup.parse(contentAsString(result))
+
+        status(result) mustBe OK
+
+        doc.title() must include(Messages("your.paye.income.tax.overview"))
+        doc.body().toString must include(Messages("check.tax.hasChanged.header"))
+        doc.body().toString must include(Messages("check.jrs.claims"))
+
         doc.select(".card").size mustBe 4
       }
     }
@@ -443,7 +483,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
       .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary)))
     when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
-      .thenReturn(Future.successful(true))
+      .thenReturn(Future.successful(false))
   }
 
 }
