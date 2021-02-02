@@ -55,14 +55,14 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
     "display link to update or remove employer" when {
       "income source is employment" in {
-        doc must haveParagraphWithText(messages("tai.employment.income.details.updateLinkText"))
+        doc must haveParagraphWithText(messages("tai.employment.income.details.updateLinkText", "Employer"))
         doc must haveLinkWithUrlWithID(
           "updateEmployer",
           controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url)
       }
 
       "income source is pension" in {
-        pensionDoc must haveParagraphWithText(messages("tai.pension.income.details.updateLinkText"))
+        pensionDoc must haveParagraphWithText(messages("tai.pension.income.details.updateLinkText", "Pension"))
         pensionDoc must haveLinkWithUrlWithID(
           "updatePension",
           controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url)
@@ -74,7 +74,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         doc must haveHeadingH2WithText(messages("tai.income.details.estimatedTaxableIncome"))
         doc must haveParagraphWithText(messages("tai.income.details.estimatedTaxableIncome.desc"))
         doc must haveSpanWithText("£" + model.estimatedTaxableIncome)
-        doc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.update"))
+        doc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.full"))
         doc must haveLinkWithUrlWithID(
           "updateIncome",
           controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url)
@@ -84,7 +84,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         pensionDoc must haveHeadingH2WithText(messages("tai.income.details.estimatedTaxableIncome"))
         pensionDoc must haveParagraphWithText(messages("tai.income.details.estimatedTaxableIncome.desc"))
         pensionDoc must haveSpanWithText("£" + pensionModel.estimatedTaxableIncome)
-        pensionDoc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.update"))
+        pensionDoc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.full"))
         pensionDoc must haveLinkWithUrlWithID(
           "updateIncome",
           controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url)
@@ -278,7 +278,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
   private lazy val pensionModel = IncomeSourceSummaryViewModel(
     1,
     "User Name",
-    "PENSION",
+    "Pension",
     100,
     400,
     "1100L",
