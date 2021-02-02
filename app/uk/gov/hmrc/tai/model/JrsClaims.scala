@@ -58,8 +58,8 @@ case class JrsClaims(employers: List[Employers]) {
 
     val sortedDateTypeList = dateTypeList.sortBy(_.toDate)
 
-    for (a <- sortedDateTypeList)
-      yield (YearAndMonth(s"${a.monthOfYear().getAsText} ${a.getYear}"))
+    for (date <- sortedDateTypeList)
+      yield (YearAndMonth(s"${date.monthOfYear().getAsText} ${date.getYear}"))
   }
 
   def firstClaimDate(appConfig: ApplicationConfig) = {

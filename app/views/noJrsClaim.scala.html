@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.urls.Link
 
-@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
 
@@ -33,10 +33,9 @@ gaCustomTitle = None
                 <h1 class="heading-xlarge">@messages("check.jrs.claims.no.claim.title")</h1>
                 <p>@messages("check.jrs.claims.no.claim.check.later")</p>
 
-                @Link.toInternalPage(
-                    value=Some(Messages("check.jrs.claims.no.claim.link")),
-                    url = "appConfig.pertaxServiceUrl"
-                    ).toHtml
+                <p><a id="account-home-page" href="@appConfig.pertaxServiceUrl">
+                        @messages("check.jrs.claims.no.claim.link")
+                    </a>
             </div>
         </div>
     </div>

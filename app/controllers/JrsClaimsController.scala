@@ -49,7 +49,7 @@ class JrsClaimsController @Inject()(
 
       case Some(jrsClaims) => Ok(views.html.jrsClaimSummary(jrsClaims, appConfig))
 
-      case _ => NotFound(views.html.noJrsClaim())
+      case _ => NotFound(views.html.noJrsClaim(appConfig))
     }
   }
 }

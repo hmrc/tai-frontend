@@ -31,8 +31,9 @@ class JrsService @Inject()(jrsConnector: JrsConnector, appConfig: ApplicationCon
   def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier): Future[Option[JrsClaims]] =
     jrsConnector.getJrsClaims(nino).map { response =>
       response match {
-        case Some(jrsClaimsData) if (!jrsClaimsData.employers.isEmpty) =>
+        case Some(jrsClaimsData) if (!jrsClaimsData.employers.isEmpty) => {
           Some(jrsClaimsData.sortEmployerslist(appConfig))
+        }
 
         case _ => None
       }
