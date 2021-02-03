@@ -100,6 +100,16 @@
                             gaLabel=Some(messages("next.year"))
                         )
                     }
+
+
+                    @card(
+                        url = Some("/check-income-tax/income-summary"),
+                        id = "claimRelief",
+                        heading = messages("claim.tax.relief.wfh"),
+                        bodyContent = None,
+                        gaAction=Some(gaEventActionString),
+                        gaLabel=Some(messages("claim.tax.relief.wfh"))
+                    )
                 </div>
             </div>
         </div>

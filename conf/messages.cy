@@ -1419,3 +1419,5 @@ global.error.InternalServerError500.tai.title = Mae’n ddrwg gennym – nid yw�
 global.error.InternalServerError500.tai.message.you.can = Gallwch ddefnyddio’r gwasanaeth hwn yn nes ymlaen, neu gallwch
 global.error.InternalServerError500.tai.message.contact.hmrc = gysylltu â CThEM
 global.error.InternalServerError500.tai.message.by.phone.post = ar-lein, dros y ffôn neu drwy’r post.
+
+claim.tax.relief.wfh = Claim tax relief on expenses for working from home

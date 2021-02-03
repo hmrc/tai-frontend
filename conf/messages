@@ -1413,3 +1413,5 @@ global.error.InternalServerError500.tai.title = Sorry, the service is unavailabl
 global.error.InternalServerError500.tai.message.you.can = You can use this service later or you can
 global.error.InternalServerError500.tai.message.contact.hmrc = contact HMRC
 global.error.InternalServerError500.tai.message.by.phone.post = online, by phone or by post.
+
+claim.tax.relief.wfh = Claim tax relief on expenses for working from home
