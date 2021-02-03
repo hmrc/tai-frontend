@@ -20,32 +20,16 @@ import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.config.ApplicationConfig
 
-case class YearAndMonth(yearAndMonth: String)
-
-object YearAndMonth {
-
-  implicit val formats = Json.format[YearAndMonth]
-
-}
-
-case class Employers(name: String, employerReference: String, claims: List[YearAndMonth])
-
-object Employers {
-
-  implicit val formats = Json.format[Employers]
-
-}
-
 case class JrsClaims(employers: List[Employers]) {
 
   def sortEmployerslist(appConfig: ApplicationConfig): JrsClaims = {
 
     val employersList = for (employer <- employers)
       yield
-        (Employers(
+        Employers(
           employer.name,
           employer.employerReference,
-          sortClaimData(employer.claims, LocalDate.parse(appConfig.jrsClaimsFromDate))))
+          sortClaimData(employer.claims, LocalDate.parse(appConfig.jrsClaimsFromDate)))
 
     JrsClaims(employersList.sortBy(_.name))
   }
@@ -54,12 +38,12 @@ case class JrsClaims(employers: List[Employers]) {
 
     val dateTypeList =
       for (data <- yearAndMonthList if !LocalDate.parse(data.yearAndMonth).isBefore(firstClaimDate))
-        yield (LocalDate.parse(data.yearAndMonth))
+        yield LocalDate.parse(data.yearAndMonth)
 
     val sortedDateTypeList = dateTypeList.sortBy(_.toDate)
 
     for (date <- sortedDateTypeList)
-      yield (YearAndMonth(s"${date.monthOfYear().getAsText} ${date.getYear}"))
+      yield YearAndMonth(s"${date.monthOfYear().getAsText} ${date.getYear}")
   }
 
   def firstClaimDate(appConfig: ApplicationConfig) = {

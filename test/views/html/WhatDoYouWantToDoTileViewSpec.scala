@@ -16,9 +16,11 @@
 
 package views.html
 
+import mocks.MockTemplateRendererWithUrBanner
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
 import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -29,6 +31,8 @@ import utils.factories.TaxCodeMismatchFactory
 class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
   val modelWithiFormNoCyPlus1 = createViewModel(false)
+
+  override implicit val templateRenderer: TemplateRenderer = MockTemplateRendererWithUrBanner
 
   "whatDoYouWantTodo Page" should {
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))

@@ -29,8 +29,6 @@ class Metrics @Inject()(metrics: com.kenshoo.play.metrics.Metrics) {
 
   val SuccessCounterSuffix = "-success-counter"
   val FailureCounterSuffix = "-failed-counter"
-  val CacheHitCounter = "tai-cache-hit-counter"
-  val CacheMissCounter = "tai-cache-miss-counter"
   val TimerSuffix = "-timer"
 
   val metricDescriptions = Map(
@@ -43,6 +41,4 @@ class Metrics @Inject()(metrics: com.kenshoo.play.metrics.Metrics) {
   def incrementFailedCounter(api: APITypes): Unit =
     registry.counter(metricDescriptions(api) + FailureCounterSuffix).inc()
 
-  def incrementCacheHitCounter(): Unit = registry.counter(CacheHitCounter).inc()
-  def incrementCacheMissCounter(): Unit = registry.counter(CacheMissCounter).inc()
 }
