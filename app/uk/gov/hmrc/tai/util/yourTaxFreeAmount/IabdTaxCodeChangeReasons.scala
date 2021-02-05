@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.util.MonetaryUtil
 
-class IabdTaxCodeChangeReasons(totalTax: TotalTax) {
+class IabdTaxCodeChangeReasons {
 
   def reasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] =
     allowanceReasons(iabdPairs) ++ deductionReasons(iabdPairs)
@@ -57,28 +57,27 @@ class IabdTaxCodeChangeReasons(totalTax: TotalTax) {
 
   private def translateNewBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
 
-    val createNewBenefitsMessage: (TaxComponentType, BigDecimal) => String =
-      (taxComponentType: TaxComponentType, currentAmount: BigDecimal) => {
-        val createYouHaveMessage: String => String = (text: String) => {
-          val amountDue = TaxAmountDueFromUnderpayment.amountDue(currentAmount, totalTax)
-          messages(text, MonetaryUtil.withPoundPrefix(amountDue.toInt))
-        }
+    def formattedValue(value: Option[BigDecimal]) =
+      MonetaryUtil.withPoundPrefixBD(value.getOrElse(BigDecimal(0)))
 
-        taxComponentType match {
-          case EarlyYearsAdjustment         => messages("tai.taxCodeComparison.iabd.you.have.claimed.expenses")
-          case UnderPaymentFromPreviousYear => createYouHaveMessage("tai.taxCodeComparison.iabd.you.have.underpaid")
-          case EstimatedTaxYouOweThisYear =>
-            createYouHaveMessage("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid")
-          case _ =>
-            messages(
-              "tai.taxCodeComparison.iabd.added",
-              taxComponentType.toMessage(),
-              MonetaryUtil.withPoundPrefix(currentAmount.toInt)
-            )
-        }
+    pair.current.map { currentAmount =>
+      pair.componentType match {
+        case EarlyYearsAdjustment =>
+          messages("tai.taxCodeComparison.iabd.you.have.claimed.expenses")
+        case UnderPaymentFromPreviousYear =>
+          messages("tai.taxCodeComparison.iabd.you.have.underpaid", formattedValue(pair.currentInputAmount))
+        case EstimatedTaxYouOweThisYear =>
+          messages(
+            "tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid",
+            formattedValue(pair.currentInputAmount))
+        case taxComponentType =>
+          messages(
+            "tai.taxCodeComparison.iabd.added",
+            taxComponentType.toMessage(),
+            MonetaryUtil.withPoundPrefix(currentAmount.toInt)
+          )
       }
-
-    pair.current map (currentAmount => createNewBenefitsMessage(pair.componentType, currentAmount))
+    }
   }
 
   private def translateChangedBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
@@ -97,8 +96,8 @@ class IabdTaxCodeChangeReasons(totalTax: TotalTax) {
           "tai.taxCodeComparison.iabd.ammended",
           pair.componentType.toMessage(),
           adjustmentMessage,
-          MonetaryUtil.withPoundPrefix(previousAmount.toInt),
-          MonetaryUtil.withPoundPrefix(currentAmount.toInt)
+          MonetaryUtil.withPoundPrefixBD(previousAmount),
+          MonetaryUtil.withPoundPrefixBD(currentAmount)
         )
       }
 

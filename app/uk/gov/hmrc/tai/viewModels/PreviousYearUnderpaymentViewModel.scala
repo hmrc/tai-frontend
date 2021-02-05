@@ -19,36 +19,25 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.model.domain.{Employment, UnderPaymentFromPreviousYear}
 import uk.gov.hmrc.tai.util.constants.BandTypesConstants
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxAmountDueFromUnderpayment
 import uk.gov.hmrc.tai.util.{MonetaryUtil, ViewModelHelper}
 
-case class PreviousYearUnderpaymentViewModel(
+final case class PreviousYearUnderpaymentViewModel(
   allowanceReducedBy: BigDecimal,
   poundedAmountDue: String,
-  returnLink: Html) {}
+  returnLink: Html)
 
 object PreviousYearUnderpaymentViewModel extends ViewModelHelper with BandTypesConstants with ReturnLink {
 
-  def apply(
-    codingComponents: Seq[CodingComponent],
-    employments: Seq[Employment],
-    totalTax: TotalTax,
-    referer: String,
-    resourceName: String)(implicit messages: Messages): PreviousYearUnderpaymentViewModel = {
+  def apply(codingComponents: Seq[CodingComponent], referer: String, resourceName: String)(
+    implicit messages: Messages): PreviousYearUnderpaymentViewModel = {
 
-    val allowanceReducedBy = codingComponents
-      .collectFirst {
-        case CodingComponent(UnderPaymentFromPreviousYear, _, amount, _, _) => amount
-      }
-      .getOrElse(BigDecimal(0))
+    val underpaymentDue = UnderpaymentDue(codingComponents)
+    val formattedAmount = MonetaryUtil.withPoundPrefix(underpaymentDue.sourceAmount.toInt, 2)
 
-    val amountDue = TaxAmountDueFromUnderpayment.amountDue(allowanceReducedBy, totalTax)
-
-    val poundedAmountDue = MonetaryUtil.withPoundPrefix(amountDue.toInt, 2)
-
-    PreviousYearUnderpaymentViewModel(allowanceReducedBy, poundedAmountDue, createReturnLink(referer, resourceName))
+    PreviousYearUnderpaymentViewModel(
+      underpaymentDue.allowanceReducedBy,
+      formattedAmount,
+      createReturnLink(referer, resourceName))
   }
 }

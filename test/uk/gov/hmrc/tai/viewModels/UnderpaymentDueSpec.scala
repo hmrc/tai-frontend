@@ -17,30 +17,48 @@
 package uk.gov.hmrc.tai.viewModels
 
 import controllers.routes
-import uk.gov.hmrc.tai.model.domain.{GiftAidAdjustment, UnderPaymentFromPreviousYear}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.{GiftAidAdjustment, UnderPaymentFromPreviousYear}
 import uk.gov.hmrc.urls.Link
 import utils.BaseSpec
 
-class PreviousYearUnderpaymentViewModelSpec extends BaseSpec {
+class UnderpaymentDueSpec extends BaseSpec {
 
-  "PreviousYearUnderpaymentViewModel apply method" when {
+  "UnderpaymentDueSpec" when {
 
     "UnderPaymentFromPreviousYear is present should contain the correct values from the CodingComponent" in {
 
       val codingComponents =
         Seq(CodingComponent(UnderPaymentFromPreviousYear, Some(1), 500.00, "UnderPaymentFromPreviousYear", Some(123)))
 
-      val result = PreviousYearUnderpaymentViewModel(codingComponents, "", "")
+      val result = UnderpaymentDue(codingComponents)
 
       result.allowanceReducedBy mustEqual 500.00
-      result.poundedAmountDue mustEqual "£123.00"
+      result.sourceAmount mustEqual 123.00
+    }
 
-      result.returnLink mustBe Link
-        .toInternalPage(
-          routes.TaxAccountSummaryController.onPageLoad.url,
-          Some(messagesApi("return.to.your.income.tax.summary")))
-        .toHtml
+    "UnderPaymentFromPreviousYear is present but has a missing input amount" in {
+      val inputAmount: Option[BigDecimal] = None
+
+      val codingComponents =
+        Seq(CodingComponent(UnderPaymentFromPreviousYear, Some(1), 500.00, "UnderPaymentFromPreviousYear", inputAmount))
+
+      val result = UnderpaymentDue(codingComponents)
+
+      result.allowanceReducedBy mustEqual 0
+      result.sourceAmount mustEqual 0
+    }
+
+    "UnderPaymentFromPreviousYear is not present" in {
+      val inputAmount: Option[BigDecimal] = None
+
+      val codingComponents =
+        Seq(CodingComponent(GiftAidAdjustment, Some(1), 500.00, "GiftAidAdjustment", inputAmount))
+
+      val result = UnderpaymentDue(codingComponents)
+
+      result.allowanceReducedBy mustEqual 0
+      result.sourceAmount mustEqual 0
     }
   }
 }

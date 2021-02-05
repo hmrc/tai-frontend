@@ -31,7 +31,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
   val taxFreeAmountDetails = TaxFreeAmountDetails(Map.empty, Seq.empty, totalTax)
   "#TaxSummaryLabel" should {
     "return a human readable coding component and pass through the current and previous amounts" in {
-      val actual = TaxSummaryLabel(GiftAidPayments, employmentId = None, taxFreeAmountDetails, amount = 1000)
+      val actual = TaxSummaryLabel(GiftAidPayments, employmentId = None, taxFreeAmountDetails, amount = 1000, None)
       actual mustBe TaxSummaryLabel("Gift Aid Payments", None)
     }
 
@@ -40,7 +40,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
         val id = 123
         val employmentIds = Map(id -> "Employer")
         val taxFreeAmountDetails = TaxFreeAmountDetails(employmentIds, Seq.empty, totalTax)
-        val actual = TaxSummaryLabel(GiftAidPayments, Some(id), taxFreeAmountDetails, amount = 1000)
+        val actual = TaxSummaryLabel(GiftAidPayments, Some(id), taxFreeAmountDetails, amount = 1000, None)
 
         actual mustBe TaxSummaryLabel("Gift Aid Payments from Employer", None)
       }
@@ -52,7 +52,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
 
           val actual = {
             val unmatchedEmploymentId = None
-            TaxSummaryLabel(CarBenefit, unmatchedEmploymentId, taxFreeAmountDetails, amount = 1000)
+            TaxSummaryLabel(CarBenefit, unmatchedEmploymentId, taxFreeAmountDetails, amount = 1000, None)
           }
 
           actual mustBe TaxSummaryLabel("Car benefit", None)
@@ -64,7 +64,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
 
           val actual = {
             val unmatchedEmploymentId = Some(999)
-            TaxSummaryLabel(CarBenefit, unmatchedEmploymentId, taxFreeAmountDetails, amount = 1000)
+            TaxSummaryLabel(CarBenefit, unmatchedEmploymentId, taxFreeAmountDetails, amount = 1000, None)
           }
 
           actual mustBe TaxSummaryLabel("Car benefit", None)
@@ -81,7 +81,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
 
           val taxFreeAmountDetails = TaxFreeAmountDetails(employmentIds, companyCarBenefits, totalTax)
 
-          val actual = TaxSummaryLabel(CarBenefit, Some(id), taxFreeAmountDetails, amount = 1000)
+          val actual = TaxSummaryLabel(CarBenefit, Some(id), taxFreeAmountDetails, amount = 1000, None)
 
           actual mustBe TaxSummaryLabel("Make Model from Employer Name", None)
         }
@@ -90,24 +90,34 @@ class TaxSummaryLabelSpec extends BaseSpec {
 
     "show the underpayment explanation link" when {
       "tax component type is an underPaymentFromPreviousYear" in {
-        val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
+        val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url
         val id = "underPaymentFromPreviousYear"
         val link =
-          Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromPreviousYear.link", "£200"), href, id))
+          Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromPreviousYear.link", "£234"), href, id))
 
         val actual =
-          TaxSummaryLabel(UnderPaymentFromPreviousYear, employmentId = None, taxFreeAmountDetails, amount = 1000)
+          TaxSummaryLabel(
+            UnderPaymentFromPreviousYear,
+            employmentId = None,
+            taxFreeAmountDetails,
+            amount = 1000,
+            Some(234))
         actual mustBe TaxSummaryLabel("Underpayment from previous year", link)
       }
 
       "tax component type is an EstimatedTaxYouOweThisYear" in {
-        val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
+        val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url
         val id = "estimatedTaxOwedLink"
         val link =
-          Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", "£200.00"), href, id))
+          Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", "£456.00"), href, id))
 
         val actual =
-          TaxSummaryLabel(EstimatedTaxYouOweThisYear, employmentId = None, taxFreeAmountDetails, amount = 1000)
+          TaxSummaryLabel(
+            EstimatedTaxYouOweThisYear,
+            employmentId = None,
+            taxFreeAmountDetails,
+            amount = 1000,
+            Some(456))
         actual mustBe TaxSummaryLabel("Estimated tax you owe this year", link)
       }
     }
@@ -118,7 +128,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
         val taxFreeAmountDetails = TaxFreeAmountDetails(Map.empty, Seq.empty, totalTax)
 
         val actual =
-          TaxSummaryLabel(UnderPaymentFromPreviousYear, employmentId = None, taxFreeAmountDetails, amount = 1000)
+          TaxSummaryLabel(UnderPaymentFromPreviousYear, employmentId = None, taxFreeAmountDetails, amount = 1000, None)
         actual mustBe TaxSummaryLabel("Underpayment from previous year", None)
       }
     }

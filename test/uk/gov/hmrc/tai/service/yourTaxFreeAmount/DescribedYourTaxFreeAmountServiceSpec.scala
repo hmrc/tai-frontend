@@ -137,9 +137,9 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
   private val employmentService: EmploymentService = mock[EmploymentService]
   private val taxAccountService = mock[TaxAccountService]
 
-  private val deductionPair = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(1000))
+  private val deductionPair = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(1000), None)
   private val describedDeductionPair = CodingComponentPairModel("Car benefit", 1000, 1000)
-  private val allowancePair = CodingComponentPair(GiftAidPayments, None, None, Some(3000))
+  private val allowancePair = CodingComponentPair(GiftAidPayments, None, None, Some(3000), None)
   private val describedAllowancePair = CodingComponentPairModel("Gift Aid Payments", 0, 3000)
 
   private val previousTaxFreeInfo = Some(TaxFreeInfo("Previous", 1000, 1000))

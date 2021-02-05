@@ -30,4 +30,7 @@ object MonetaryUtil {
 
   def withPoundPrefix(amount: Int, decimalplaces: Int = 0): String =
     withPoundPrefix(MoneyPounds(amount, decimalplaces))
+
+  def withPoundPrefixBD(amount: BigDecimal, decimalplaces: Int = 0): String =
+    withPoundPrefix(amount.toInt, decimalplaces)
 }
