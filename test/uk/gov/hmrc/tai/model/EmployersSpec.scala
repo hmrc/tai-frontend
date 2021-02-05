@@ -47,7 +47,7 @@ class EmployersSpec extends PlaySpec {
 
     }
 
-    "deserialise invalid values" in {
+    "deserialise invalid name" in {
 
       val invalidJson = Json.obj(
         "name"              -> 123,
@@ -95,18 +95,7 @@ class EmployersSpec extends PlaySpec {
 
     "serialise to json" in {
 
-      Json.toJson(data) shouldBe Json.obj(
-        "name"              -> "ASDA",
-        "employerReference" -> "ABC-DEFGHIJ",
-        "claims" -> Json.arr(
-          Json.obj(
-            "yearAndMonth" -> "2020-12"
-          ),
-          Json.obj(
-            "yearAndMonth" -> "2021-01"
-          )
-        )
-      )
+      Json.toJson(data) shouldBe json
     }
 
     "serialise/deserialise to the same value" in {

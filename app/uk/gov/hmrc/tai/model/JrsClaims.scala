@@ -17,10 +17,13 @@
 package uk.gov.hmrc.tai.model
 
 import org.joda.time.YearMonth
+import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.config.ApplicationConfig
 
 case class JrsClaims(employers: List[Employers]) {
+
+  val fmt = DateTimeFormat.forPattern("MMMM, yyyy")
 
   def sortEmployerslist(appConfig: ApplicationConfig): JrsClaims = {
 

@@ -34,7 +34,7 @@ class YearAndMonthSpec extends PlaySpec {
 
       val result = json.as[YearAndMonth]
 
-      result shouldBe YearAndMonth("2020-12")
+      result shouldBe data
 
     }
 
@@ -68,9 +68,7 @@ class YearAndMonthSpec extends PlaySpec {
 
     "serialise to json" in {
 
-      Json.toJson(data) shouldBe Json.obj(
-        "yearAndMonth" -> "2020-12"
-      )
+      Json.toJson(data) shouldBe json
     }
 
     "serialise/deserialise to the same value" in {

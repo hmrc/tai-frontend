@@ -41,6 +41,8 @@ class JrsClaimsSpec extends PlaySpec {
       )
     )
 
+    val data = JrsClaims(List(Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"), YearAndMonth("2021-01")))))
+
     "deserialise valid values" in {
 
       val result = json.as[JrsClaims]
@@ -50,7 +52,19 @@ class JrsClaimsSpec extends PlaySpec {
 
     }
 
+    "deserialise invalid values" in {
 
+      val invalidJson = Json.obj(
+        "employers" -> "invalid"
+      )
+
+      val ex = intercept[JsResultException] {
+        invalidJson.as[YearAndMonth]
+      }
+
+      ex.getMessage shouldBe "Invalid format: \"invalid\""
+
+    }
 
     "deserialise invalid key" in {
 
@@ -75,11 +89,23 @@ class JrsClaimsSpec extends PlaySpec {
         invalidJson.as[JrsClaims]
       }
 
-      ex.getMessage shouldBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(error.path.missing),WrappedArray())))))"
+      ex.getMessage shouldBe "JsResultException(errors:List((/employers,List(JsonValidationError(List(error.path.missing),WrappedArray())))))"
 
     }
 
+    "serialise to json" in {
 
+      Json.toJson(data) shouldBe json
+
+    }
+
+    "serialise/deserialise to the same value" in {
+
+      val result = Json.toJson(data).as[JrsClaims]
+
+      result shouldBe data
+
+    }
 
   }
 
