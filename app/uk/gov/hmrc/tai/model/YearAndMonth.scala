@@ -16,12 +16,29 @@
 
 package uk.gov.hmrc.tai.model
 
-import play.api.libs.json.Json
+import java.time.format.DateTimeParseException
 
-case class YearAndMonth(yearAndMonth: String)
+import org.joda.time.YearMonth
+import play.api.libs.json._
+
+final case class YearAndMonth(yearAndMonth: YearMonth)
 
 object YearAndMonth {
 
-  implicit val formats = Json.format[YearAndMonth]
+  def apply(yearAndMonth: String): YearAndMonth = YearAndMonth(YearMonth.parse(yearAndMonth))
 
+  implicit val yearMonthFormat = new Format[YearMonth] {
+    override def writes(o: YearMonth): JsValue = JsString(o.toString())
+
+    override def reads(json: JsValue): JsResult[YearMonth] = json match {
+      case JsString(s) =>
+        try {
+          JsSuccess(YearMonth.parse(s))
+        } catch {
+          case _: DateTimeParseException => JsError("Invalid date parsed")
+        }
+    }
+  }
+
+  implicit val formats = Json.format[YearAndMonth]
 }

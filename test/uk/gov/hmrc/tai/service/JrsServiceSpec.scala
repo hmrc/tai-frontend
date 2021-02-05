@@ -22,6 +22,7 @@ import org.mockito.Mockito.when
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import utils.BaseSpec
+import org.joda.time.YearMonth
 
 import scala.concurrent.Future
 
@@ -42,8 +43,8 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
   val jrsClaimsServiceResponse = JrsClaims(
     List(
-      Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("January 2021"), YearAndMonth("February 2021"))),
-      Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("December 2020")))
+      Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02"))),
+      Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
     ))
 
   "getJrsClaims" should {

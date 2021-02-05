@@ -18,6 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
+import org.joda.time.YearMonth
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -51,8 +52,8 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
   val jrsClaimsServiceResponse = JrsClaims(
     List(
-      Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("January 2021"), YearAndMonth("February 2021"))),
-      Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("December 2020")))
+      Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02"))),
+      Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
     ))
 
   implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")

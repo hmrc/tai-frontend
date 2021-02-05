@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.connectors
 
 import com.codahale.metrics.Timer
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get}
+import org.joda.time.YearMonth
 import org.mockito.Mockito.{times, verify, when, reset => resetMock}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application

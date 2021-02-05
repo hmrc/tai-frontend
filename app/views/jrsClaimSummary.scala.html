@@ -52,12 +52,12 @@
                         <p>@messages("check.jrs.employer.made.multiple.claims.for.you", employers.name)</p>
                         <ul class="list list-bullet">
                             @for(claims <- employers.claims) {
-                                <li>@claims.yearAndMonth</li>
+                                <li>@claims</li>
                             }
                         </ul>
 
                     } else {
-                        <p>@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head.yearAndMonth)</p>
+                        <p>@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head)</p>
 
                     }
                 }
