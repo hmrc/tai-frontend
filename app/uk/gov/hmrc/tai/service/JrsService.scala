@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class JrsService @Inject()(jrsConnector: JrsConnector, appConfig: ApplicationConfig)(implicit ec: ExecutionContext) {
 
   def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier): Future[Option[JrsClaims]] =
-    jrsConnector.getJrsClaims(nino).map { response =>
+    jrsConnector.getJrsClaims(nino)(hc).map { response =>
       response match {
         case Some(jrsClaimsData) if (!jrsClaimsData.employers.isEmpty) => {
           Some(jrsClaimsData.sortEmployerslist(appConfig))
@@ -41,7 +41,7 @@ class JrsService @Inject()(jrsConnector: JrsConnector, appConfig: ApplicationCon
 
   def checkIfJrsClaimsDataExist(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] =
     if (appConfig.jrsClaimsEnabled) {
-      jrsConnector.getJrsClaims(nino).map { response =>
+      jrsConnector.getJrsClaims(nino)(hc).map { response =>
         response match {
           case Some(_) => true
           case _       => false

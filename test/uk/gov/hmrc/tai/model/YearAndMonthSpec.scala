@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.tai.model
 
+import org.joda.time.YearMonth
 import org.scalatest.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsResultException, Json}
+import utils.BaseSpec
 
-class YearAndMonthSpec extends PlaySpec {
+class YearAndMonthSpec extends PlaySpec with BaseSpec {
 
   "YearAndMonth" must {
 
@@ -76,6 +78,28 @@ class YearAndMonthSpec extends PlaySpec {
       val result = Json.toJson(data).as[YearAndMonth]
 
       result shouldBe data
+
+    }
+
+    "sort the claim data in ascending order" in {
+
+      val result =
+        YearAndMonth.sortYearAndMonth(
+          List(YearAndMonth("2021-01"), YearAndMonth("2020-12")),
+          YearMonth.parse(appConfig.jrsClaimsFromDate))
+
+      result shouldBe List(YearAndMonth("2020-12"), YearAndMonth("2021-01"))
+
+    }
+
+    "sort the claim data should remove all the dates before the first claim date" in {
+
+      val result =
+        YearAndMonth.sortYearAndMonth(
+          List(YearAndMonth("2021-02"), YearAndMonth("2020-12"), YearAndMonth("2020-11")),
+          YearMonth.parse(appConfig.jrsClaimsFromDate))
+
+      result shouldBe List(YearAndMonth("2020-12"), YearAndMonth("2021-02"))
 
     }
 

@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.connectors
 
 import com.codahale.metrics.Timer
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get}
+import com.kenshoo.play.metrics.Metrics
 import org.joda.time.YearMonth
 import org.mockito.Mockito.{times, verify, when, reset => resetMock}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -25,9 +26,9 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import uk.gov.hmrc.tai.metrics.Metrics
 import uk.gov.hmrc.tai.model.enums.APITypes
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
+import uk.gov.hmrc.tai.util.TestMetrics
 import utils.{BaseSpec, WireMockHelper}
 
 class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
@@ -36,20 +37,14 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
     .configure("microservice.services.coronavirus-jrs-published-employees.port" -> server.port)
     .build()
 
-  lazy val mockMetrics = mock[Metrics]
   lazy val httpClient = inject[HttpClient]
 
-  lazy val jrsConnector = new JrsConnector(httpClient, mockMetrics, servicesConfig)
+  val testMetrics = new TestMetrics
+
+  lazy val jrsConnector = new JrsConnector(httpClient, testMetrics, appConfig)
 
   val jrsClaimsUrl: String =
     s"/coronavirus-jrs-published-employees/employee/$nino"
-
-  override def beforeEach(): Unit = {
-    resetMock(mockMetrics, mockTimerContext)
-    super.beforeEach()
-  }
-
-  val mockTimerContext = mock[Timer.Context]
 
   "jrsConnector" should {
 
@@ -63,16 +58,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
               aResponse.withStatus(200).withBody(jrsClaimsJsonResponse.toString())
             ))
 
-        when(mockTimerContext.stop())
-          .thenReturn(123L)
-        when(mockMetrics.startTimer(APITypes.JrsClaimAPI))
-          .thenReturn(mockTimerContext)
-
-        jrsConnector.getJrsClaims(nino).futureValue mustBe Some(JrsClaims(jrsClaimsModelResponse))
-
-        verify(mockMetrics, times(1)).startTimer(APITypes.JrsClaimAPI)
-        verify(mockTimerContext, times(1)).stop()
-        verify(mockMetrics, times(1)).incrementSuccessCounter(APITypes.JrsClaimAPI)
+        jrsConnector.getJrsClaims(nino)(hc).futureValue mustBe Some(JrsClaims(jrsClaimsModelResponse))
       }
     }
 
@@ -86,16 +72,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
               aResponse.withStatus(204)
             ))
 
-        when(mockTimerContext.stop())
-          .thenReturn(123L)
-        when(mockMetrics.startTimer(APITypes.JrsClaimAPI))
-          .thenReturn(mockTimerContext)
-
-        jrsConnector.getJrsClaims(nino).futureValue mustBe Some(JrsClaims(List.empty))
-
-        verify(mockMetrics, times(1)).startTimer(APITypes.JrsClaimAPI)
-        verify(mockTimerContext, times(1)).stop()
-        verify(mockMetrics, times(1)).incrementSuccessCounter(APITypes.JrsClaimAPI)
+        jrsConnector.getJrsClaims(nino)(hc).futureValue mustBe Some(JrsClaims(List.empty))
       }
     }
 
@@ -109,16 +86,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
               aResponse.withStatus(502)
             ))
 
-        when(mockTimerContext.stop())
-          .thenReturn(123L)
-        when(mockMetrics.startTimer(APITypes.JrsClaimAPI))
-          .thenReturn(mockTimerContext)
-
-        jrsConnector.getJrsClaims(nino).futureValue mustBe None
-
-        verify(mockMetrics, times(1)).startTimer(APITypes.JrsClaimAPI)
-        verify(mockTimerContext, times(1)).stop()
-        verify(mockMetrics, times(1)).incrementFailedCounter(APITypes.JrsClaimAPI)
+        jrsConnector.getJrsClaims(nino)(hc).futureValue mustBe None
       }
 
       "when any exception is received from jrs API" in {
@@ -129,16 +97,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
               aResponse.withStatus(400).withBody("bad request exception")
             ))
 
-        when(mockTimerContext.stop())
-          .thenReturn(123L)
-        when(mockMetrics.startTimer(APITypes.JrsClaimAPI))
-          .thenReturn(mockTimerContext)
-
-        jrsConnector.getJrsClaims(nino).futureValue mustBe None
-
-        verify(mockMetrics, times(1)).startTimer(APITypes.JrsClaimAPI)
-        verify(mockTimerContext, times(1)).stop()
-        verify(mockMetrics, times(1)).incrementFailedCounter(APITypes.JrsClaimAPI)
+        jrsConnector.getJrsClaims(nino)(hc).futureValue mustBe None
       }
     }
   }

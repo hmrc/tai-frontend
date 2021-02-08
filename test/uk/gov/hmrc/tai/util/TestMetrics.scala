@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model
+package uk.gov.hmrc.tai.util
 
-import play.api.libs.json.Json
+import com.codahale.metrics.MetricRegistry
+import com.kenshoo.play.metrics.Metrics
 
-final case class Employers(name: String, employerReference: String, claims: List[YearAndMonth])
-
-object Employers {
-
-  implicit val formats = Json.format[Employers]
-
+class TestMetrics extends Metrics {
+  override def defaultRegistry: MetricRegistry = new MetricRegistry
+  override def toJson: String = ""
 }

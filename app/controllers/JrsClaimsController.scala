@@ -24,7 +24,6 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.metrics.Metrics
 import uk.gov.hmrc.tai.service._
 
 import scala.concurrent.ExecutionContext
@@ -35,7 +34,6 @@ class JrsClaimsController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   jrsService: JrsService,
-  metrics: Metrics,
   mcc: MessagesControllerComponents,
   appConfig: ApplicationConfig,
   override implicit val partialRetriever: FormPartialRetriever,

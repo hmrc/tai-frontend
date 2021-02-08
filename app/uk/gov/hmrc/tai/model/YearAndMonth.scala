@@ -19,16 +19,11 @@ package uk.gov.hmrc.tai.model
 import java.time.format.DateTimeParseException
 
 import org.joda.time.YearMonth
-import org.joda.time.format.{DateTimeFormat, DateTimeFormatter, DateTimeFormatterBuilder, ISODateTimeFormat}
 import play.api.libs.json._
 
 final case class YearAndMonth(yearAndMonth: YearMonth)
 
 object YearAndMonth {
-
-  def formatter(pattern: String): DateTimeFormatter = DateTimeFormat.forPattern(pattern)
-
-//  val fmt = ISODateTimeFormat.dateParser()
 
   def apply(yearAndMonth: String): YearAndMonth = YearAndMonth(YearMonth.parse(yearAndMonth))
 
@@ -38,7 +33,7 @@ object YearAndMonth {
     override def reads(json: JsValue): JsResult[YearMonth] = json match {
       case JsString(s) =>
         try {
-          JsSuccess(YearMonth.parse(s, formatter("MMMMM yyyy")))
+          JsSuccess(YearMonth.parse(s))
         } catch {
           case _: DateTimeParseException => JsError("Invalid date parsed")
         }
@@ -46,4 +41,14 @@ object YearAndMonth {
   }
 
   implicit val formats = Json.format[YearAndMonth]
+
+  def sortYearAndMonth(yearAndMonthList: List[YearAndMonth], firstClaimDate: YearMonth): List[YearAndMonth] = {
+
+    val dateTypeList =
+      for (data <- yearAndMonthList if !data.yearAndMonth.isBefore(firstClaimDate))
+        yield data
+
+    dateTypeList.sortWith((x, y) => x.yearAndMonth.isBefore(y.yearAndMonth))
+  }
+
 }

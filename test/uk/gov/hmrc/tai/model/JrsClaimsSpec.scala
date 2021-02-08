@@ -16,11 +16,20 @@
 
 package uk.gov.hmrc.tai.model
 
+import org.joda.time.YearMonth
+import org.mockito.Mockito.when
 import org.scalatest.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsResultException, Json}
+import utils.BaseSpec
 
-class JrsClaimsSpec extends PlaySpec {
+class JrsClaimsSpec extends PlaySpec with BaseSpec {
+
+  val jrsClaims = new JrsClaims(
+    List(
+      Employers("Co-Operative", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02"))),
+      Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
+    ))
 
   "JrsClaims" must {
 
@@ -31,24 +40,24 @@ class JrsClaimsSpec extends PlaySpec {
           "employerReference" -> "ABC-DEFGHIJ",
           "claims" -> Json.arr(
             Json.obj(
-              "yearAndMonth" -> "2020-12"
+              "yearAndMonth" -> "2021-01"
             ),
             Json.obj(
-              "yearAndMonth" -> "2021-01"
+              "yearAndMonth" -> "2020-12"
             )
           )
         )
       )
     )
 
-    val data = JrsClaims(List(Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"), YearAndMonth("2021-01")))))
+    val data = JrsClaims(List(Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2020-12")))))
 
     "deserialise valid values" in {
 
       val result = json.as[JrsClaims]
 
       result shouldBe JrsClaims(
-        List(Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"), YearAndMonth("2021-01")))))
+        List(Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2020-12")))))
 
     }
 
@@ -62,7 +71,7 @@ class JrsClaimsSpec extends PlaySpec {
         invalidJson.as[YearAndMonth]
       }
 
-      ex.getMessage shouldBe "Invalid format: \"invalid\""
+      ex.getMessage shouldBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(error.path.missing),WrappedArray())))))"
 
     }
 
@@ -104,6 +113,27 @@ class JrsClaimsSpec extends PlaySpec {
       val result = Json.toJson(data).as[JrsClaims]
 
       result shouldBe data
+
+    }
+
+    "sort the employer data in alphabetical order" in {
+
+      val result =
+        jrsClaims.sortEmployerslist(appConfig)
+
+      result shouldBe JrsClaims(
+        List(
+          Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"))),
+          Employers("Co-Operative", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02")))
+        ))
+
+    }
+
+    "first claim date should return the correct date" in {
+
+      val result = jrsClaims.firstClaimDate(appConfig)
+
+      result shouldBe YearMonth.parse("2020-12")
 
     }
 

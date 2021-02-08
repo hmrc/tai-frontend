@@ -17,30 +17,21 @@
 package uk.gov.hmrc.tai.model
 
 import org.joda.time.YearMonth
-import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.config.ApplicationConfig
 
-case class JrsClaims(employers: List[Employers]) {
-
-  val fmt = DateTimeFormat.forPattern("MMMM, yyyy")
+final case class JrsClaims(employers: List[Employers]) {
 
   def sortEmployerslist(appConfig: ApplicationConfig): JrsClaims = {
 
-    val employersList = for (employer <- employers)
-      yield
-        Employers(employer.name, employer.employerReference, sortClaimData(employer.claims, firstClaimDate(appConfig)))
+    val employersList = employers.map(
+      employer =>
+        Employers(
+          employer.name,
+          employer.employerReference,
+          YearAndMonth.sortYearAndMonth(employer.claims, firstClaimDate(appConfig))))
 
     JrsClaims(employersList.sortBy(_.name))
-  }
-
-  def sortClaimData(yearAndMonthList: List[YearAndMonth], firstClaimDate: YearMonth): List[YearAndMonth] = {
-
-    val dateTypeList =
-      for (data <- yearAndMonthList if !data.yearAndMonth.isBefore(firstClaimDate))
-        yield data
-
-    dateTypeList.sortWith((x, y) => x.yearAndMonth.isBefore(y.yearAndMonth))
   }
 
   def firstClaimDate(appConfig: ApplicationConfig): YearMonth =
