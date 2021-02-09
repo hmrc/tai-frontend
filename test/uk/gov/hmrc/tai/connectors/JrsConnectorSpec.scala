@@ -89,12 +89,34 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
         jrsConnector.getJrsClaims(nino)(hc).futureValue mustBe None
       }
 
-      "when any exception is received from jrs API" in {
+      "when Bad Request exception is received from jrs API" in {
 
         server.stubFor(
           get(jrsClaimsUrl)
             .willReturn(
               aResponse.withStatus(400).withBody("bad request exception")
+            ))
+
+        jrsConnector.getJrsClaims(nino)(hc).futureValue mustBe None
+      }
+
+      "when Unauthorized is received from jrs API" in {
+
+        server.stubFor(
+          get(jrsClaimsUrl)
+            .willReturn(
+              aResponse.withStatus(401).withBody("bad request exception")
+            ))
+
+        jrsConnector.getJrsClaims(nino)(hc).futureValue mustBe None
+      }
+
+      "when Forbidden is received from jrs API" in {
+
+        server.stubFor(
+          get(jrsClaimsUrl)
+            .willReturn(
+              aResponse.withStatus(403).withBody("bad request exception")
             ))
 
         jrsConnector.getJrsClaims(nino)(hc).futureValue mustBe None

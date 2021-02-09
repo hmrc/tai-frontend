@@ -61,6 +61,8 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
       "some jrs data is received from service" in {
 
+        when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
+
         when(jrsService.getJrsClaims(any())(any())).thenReturn(Future(Some(jrsClaimsServiceResponse)))
         when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
@@ -77,6 +79,8 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
       "no jrs data is received from service" in {
 
+        when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
+
         when(jrsService.getJrsClaims(any())(any())).thenReturn(Future(None))
 
         val result = jrsClaimsController.getJrsClaims()(request)
@@ -87,6 +91,21 @@ class JrsClaimsControllerSpec extends BaseSpec {
         doc.title must include(Messages("check.jrs.claims.no.claim.title"))
       }
     }
+
+    "internal server error page" when {
+
+      "JrsClaimsEnabled is false" in {
+
+        when(mockAppConfig.jrsClaimsEnabled).thenReturn(false)
+
+        val result = jrsClaimsController.getJrsClaims()(request)
+
+        status(result) mustBe (INTERNAL_SERVER_ERROR)
+
+      }
+
+    }
+
   }
 
 }

@@ -26,7 +26,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.service._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class JrsClaimsController @Inject()(
@@ -43,11 +43,16 @@ class JrsClaimsController @Inject()(
   def getJrsClaims(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
 
-    jrsService.getJrsClaims(nino).map {
+    if (appConfig.jrsClaimsEnabled) {
 
-      case Some(jrsClaims) => Ok(views.html.jrsClaimSummary(jrsClaims, appConfig))
+      jrsService.getJrsClaims(nino).map {
 
-      case _ => NotFound(views.html.noJrsClaim(appConfig))
+        case Some(jrsClaims) => Ok(views.html.jrsClaimSummary(jrsClaims, appConfig))
+
+        case _ => NotFound(views.html.noJrsClaim(appConfig))
+      }
+    } else {
+      Future.successful(InternalServerError(views.html.internalServerError(appConfig)))
     }
   }
 }

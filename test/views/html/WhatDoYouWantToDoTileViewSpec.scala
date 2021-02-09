@@ -74,7 +74,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       "Tax Code Change is enabled" in {
 
         val taxCodeMatched = TaxCodeMismatchFactory.matchedTaxCode
-        val modeWithCyPlus1TaxCodeChange = createViewModel(true, true, Some(taxCodeMatched))
+        val modeWithCyPlus1TaxCodeChange = createViewModel(true, true, taxCodeMismatch = Some(taxCodeMatched))
 
         val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange)
         val cards = doc(nextYearView).getElementsByClass("card")
@@ -109,13 +109,32 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       urBannerHref.text() must include(appConfig.urBannerLink)
     }
 
+    "JrsClaimTile is enabled" in {
+
+      val modelJrsTileEnabled = createViewModel(isCyPlusOneEnabled = false, showJrsTile = true)
+
+      val jrsClaimView: Html = views.html.whatDoYouWantToDoTileView(form, modelJrsTileEnabled)
+      val cards = doc(jrsClaimView).getElementsByClass("card")
+
+      cards.size mustBe 3
+
+      cards.toString must include(Messages("current.tax.year"))
+      doc(view) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
+      cards.toString mustNot include(Messages("next.year"))
+      cards.toString mustNot include(Messages("check.estimated.income"))
+      cards.toString must include(Messages("earlier"))
+      cards.toString must include(Messages("check.tax.previous.years"))
+      cards.toString must include(Messages("check.jrs.claims"))
+
+    }
   }
 
   def createViewModel(
     isCyPlusOneEnabled: Boolean,
     hasTaxCodeChanged: Boolean = false,
+    showJrsTile: Boolean = false,
     taxCodeMismatch: Option[TaxCodeMismatch] = None): WhatDoYouWantToDoViewModel =
-    WhatDoYouWantToDoViewModel(isCyPlusOneEnabled, hasTaxCodeChanged, false, taxCodeMismatch)
+    WhatDoYouWantToDoViewModel(isCyPlusOneEnabled, hasTaxCodeChanged, showJrsTile, taxCodeMismatch)
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 
