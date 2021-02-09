@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.tai.model
 
+import org.joda.time.YearMonth
 import org.scalatest.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsResultException, Json}
+import utils.BaseSpec
 
-class EmployersSpec extends PlaySpec {
+class EmployersSpec extends PlaySpec with BaseSpec {
 
   "Employers" must {
 
@@ -38,6 +40,11 @@ class EmployersSpec extends PlaySpec {
     )
 
     val data = Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"), YearAndMonth("2021-01")))
+
+    val employersList = List(
+      Employers("Co-Operative", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02"))),
+      Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
+    )
 
     "deserialise valid values" in {
 
@@ -103,6 +110,32 @@ class EmployersSpec extends PlaySpec {
       val result = Json.toJson(data).as[Employers]
 
       result shouldBe data
+
+    }
+
+    "sort the employer data in alphabetical order" in {
+
+      val result =
+        Employers.sortEmployerslist(appConfig, employersList)
+
+      result shouldBe List(
+        Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"))),
+        Employers("Co-Operative", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02")))
+      )
+
+    }
+
+    "hasMultipleClaims should return true if there is more than one claim" in {
+
+      data.hasMultipleClaims shouldBe true
+
+    }
+
+    "hasMultipleClaims should return false if there is only one claim" in {
+
+      val result = Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
+
+      result.hasMultipleClaims shouldBe false
 
     }
 

@@ -32,7 +32,7 @@ class JrsService @Inject()(jrsConnector: JrsConnector, appConfig: ApplicationCon
     jrsConnector.getJrsClaims(nino)(hc).map { response =>
       response match {
         case Some(jrsClaimsData) if (!jrsClaimsData.employers.isEmpty) => {
-          Some(jrsClaimsData.sortEmployerslist(appConfig))
+          Some(JrsClaims(appConfig, jrsClaimsData.employers))
         }
 
         case _ => None

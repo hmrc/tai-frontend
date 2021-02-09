@@ -16,30 +16,20 @@
 
 package uk.gov.hmrc.tai.model
 
-import org.joda.time.YearMonth
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.config.ApplicationConfig
 
 final case class JrsClaims(employers: List[Employers]) {
 
-  def sortEmployerslist(appConfig: ApplicationConfig): JrsClaims = {
+  val hasMultipleEmployments: Boolean = employers.size > 1
 
-    val employersList = employers.map(
-      employer =>
-        Employers(
-          employer.name,
-          employer.employerReference,
-          YearAndMonth.sortYearAndMonth(employer.claims, firstClaimDate(appConfig))))
-
-    JrsClaims(employersList.sortBy(_.name))
-  }
-
-  def firstClaimDate(appConfig: ApplicationConfig): YearMonth =
-    YearMonth.parse(appConfig.jrsClaimsFromDate)
 }
 
 object JrsClaims {
 
   implicit val formats = Json.format[JrsClaims]
+
+  def apply(appConfig: ApplicationConfig, employers: List[Employers]): JrsClaims =
+    JrsClaims(Employers.sortEmployerslist(appConfig, employers))
 
 }

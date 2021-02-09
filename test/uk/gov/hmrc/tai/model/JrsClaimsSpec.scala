@@ -116,27 +116,16 @@ class JrsClaimsSpec extends PlaySpec with BaseSpec {
 
     }
 
-    "sort the employer data in alphabetical order" in {
+    "hasMultipleEmployments should return true if there is more than one claim" in {
 
-      val result =
-        jrsClaims.sortEmployerslist(appConfig)
-
-      result shouldBe JrsClaims(
-        List(
-          Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"))),
-          Employers("Co-Operative", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02")))
-        ))
+      jrsClaims.hasMultipleEmployments shouldBe true
 
     }
 
-    "first claim date should return the correct date" in {
+    "hasMultipleEmployments should return false if there is only one claim" in {
 
-      val result = jrsClaims.firstClaimDate(appConfig)
-
-      result shouldBe YearMonth.parse("2020-12")
+      data.hasMultipleEmployments shouldBe false
 
     }
-
   }
-
 }

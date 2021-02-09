@@ -17,13 +17,13 @@
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 @import play.api.Play.current
 @import uk.gov.hmrc.tai.config.ApplicationConfig
-@import uk.gov.hmrc.tai.model.JrsClaims
+@import uk.gov.hmrc.tai.model.{JrsClaims, YearAndMonth}
 @import uk.gov.hmrc.urls.Link
 
 @(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
-@employerVar = {@if(viewModel.employers.size > 1){employers} else {employer}}
+@employerMessageKey = {@if(viewModel.hasMultipleEmployments){employers} else {employer}}
 
 @main(
     title = messages("check.jrs.claims.title"),
@@ -45,43 +45,43 @@
                 <h1 class="heading-xlarge">@messages("check.jrs.claims.title")</h1>
 
 
-                <h2 class="heading-section">@messages("check.jrs.from", viewModel.firstClaimDate(appConfig))</h2>
+                <h2 class="heading-section">@messages("check.jrs.from", YearAndMonth.formattedFirstClaimDate(appConfig))</h2>
 
                 @for(employers <- viewModel.employers) {
-                    @if(employers.claims.size > 1) {
+                    @if(employers.hasMultipleClaims) {
                         <p>@messages("check.jrs.employer.made.multiple.claims.for.you", employers.name)</p>
                         <ul class="list list-bullet">
                             @for(claims <- employers.claims) {
-                                <li>@claims</li>
+                                <li>@claims.formatYearAndMonth</li>
                             }
                         </ul>
 
                     } else {
-                        <p>@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head)</p>
+                        <p>@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head.formatYearAndMonth)</p>
 
                     }
                 }
 
-                @if(viewModel.employers.size == 1) {
-                    @if(viewModel.employers.last.claims.size > 1) {
-                        <p>@messages(s"check.jrs.${employerVar}.should.have.claimed.multiple.furlough")</p>
+                @if(!viewModel.hasMultipleEmployments) {
+                    @if(viewModel.employers.last.hasMultipleClaims) {
+                        <p>@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
                     } else {
-                        <p>@messages(s"check.jrs.${employerVar}.should.have.claimed.single.furlough")</p>
+                        <p>@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.single.furlough")</p>
                     }
                 } else {
-                    <p>@messages(s"check.jrs.${employerVar}.should.have.claimed.multiple.furlough")</p>
+                    <p>@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
                 }
 
-                <h2 class="heading-section">@messages(s"check.jrs.${employerVar}.can.claim.heading")</h2>
-                <p>@messages(s"check.jrs.${employerVar}.can.claim")</p>
+                <h2 class="heading-section">@messages(s"check.jrs.${employerMessageKey}.can.claim.heading")</h2>
+                <p>@messages(s"check.jrs.${employerMessageKey}.can.claim")</p>
 
                 <h2 class="heading-section">@messages("check.jrs.information.is.different.heading")</h2>
-                <p>@messages(s"check.jrs.speak.to.${employerVar}")</p>
+                <p>@messages(s"check.jrs.speak.to.${employerMessageKey}")</p>
                 <p>@messages("check.jrs.you.can")
                     <a id="report-fraud-link" href="@appConfig.reportToFraudLink">
                     @messages("check.jrs.report.fraud")
                 </a>
-                    @messages(s"check.jrs.report.fraud.if.${employerVar}.abusing.scheme")
+                    @messages(s"check.jrs.report.fraud.if.${employerMessageKey}.abusing.scheme")
                 </p>
 
                 <ul class="list list-bullet">

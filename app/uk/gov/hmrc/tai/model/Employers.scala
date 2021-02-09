@@ -17,11 +17,23 @@
 package uk.gov.hmrc.tai.model
 
 import play.api.libs.json.Json
+import uk.gov.hmrc.tai.config.ApplicationConfig
 
-final case class Employers(name: String, employerReference: String, claims: List[YearAndMonth])
+final case class Employers(name: String, employerReference: String, claims: List[YearAndMonth]) {
+
+  val hasMultipleClaims: Boolean = claims.size > 1
+
+}
 
 object Employers {
 
   implicit val formats = Json.format[Employers]
 
+  def sortEmployerslist(appConfig: ApplicationConfig, employers: List[Employers]): List[Employers] = {
+
+    val employersList = employers.map(employer =>
+      Employers(employer.name, employer.employerReference, YearAndMonth.sortYearAndMonth(employer.claims, appConfig)))
+
+    employersList.sortBy(_.name)
+  }
 }

@@ -84,9 +84,7 @@ class YearAndMonthSpec extends PlaySpec with BaseSpec {
     "sort the claim data in ascending order" in {
 
       val result =
-        YearAndMonth.sortYearAndMonth(
-          List(YearAndMonth("2021-01"), YearAndMonth("2020-12")),
-          YearMonth.parse(appConfig.jrsClaimsFromDate))
+        YearAndMonth.sortYearAndMonth(List(YearAndMonth("2021-01"), YearAndMonth("2020-12")), appConfig)
 
       result shouldBe List(YearAndMonth("2020-12"), YearAndMonth("2021-01"))
 
@@ -95,14 +93,31 @@ class YearAndMonthSpec extends PlaySpec with BaseSpec {
     "sort the claim data should remove all the dates before the first claim date" in {
 
       val result =
-        YearAndMonth.sortYearAndMonth(
-          List(YearAndMonth("2021-02"), YearAndMonth("2020-12"), YearAndMonth("2020-11")),
-          YearMonth.parse(appConfig.jrsClaimsFromDate))
+        YearAndMonth
+          .sortYearAndMonth(List(YearAndMonth("2021-02"), YearAndMonth("2020-12"), YearAndMonth("2020-11")), appConfig)
 
       result shouldBe List(YearAndMonth("2020-12"), YearAndMonth("2021-02"))
 
     }
 
-  }
+    "first claim date should return the correct date" in {
 
+      val result = YearAndMonth.firstClaimDate(appConfig)
+
+      result shouldBe YearMonth.parse("2020-12")
+
+    }
+
+    "YearMonth should be formatted to MMMM YYYY" in {
+
+      data.formatYearAndMonth shouldBe "December 2020"
+
+    }
+
+    "first claim date should be formatted to MMMM YYYY" in {
+
+      YearAndMonth.formattedFirstClaimDate(appConfig) shouldBe "December 2020"
+
+    }
+  }
 }

@@ -19,11 +19,20 @@ package uk.gov.hmrc.tai.model
 import java.time.format.DateTimeParseException
 
 import org.joda.time.YearMonth
+import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
+import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.model.YearAndMonth.dateFormatter
 
-final case class YearAndMonth(yearAndMonth: YearMonth)
+final case class YearAndMonth(yearAndMonth: YearMonth) {
+
+  def formatYearAndMonth: String =
+    yearAndMonth.toString(dateFormatter)
+}
 
 object YearAndMonth {
+
+  val dateFormatter = DateTimeFormat.forPattern("MMMM yyyy")
 
   def apply(yearAndMonth: String): YearAndMonth = YearAndMonth(YearMonth.parse(yearAndMonth))
 
@@ -42,13 +51,18 @@ object YearAndMonth {
 
   implicit val formats = Json.format[YearAndMonth]
 
-  def sortYearAndMonth(yearAndMonthList: List[YearAndMonth], firstClaimDate: YearMonth): List[YearAndMonth] = {
+  def sortYearAndMonth(yearAndMonthList: List[YearAndMonth], appConfig: ApplicationConfig): List[YearAndMonth] = {
 
     val dateTypeList =
-      for (data <- yearAndMonthList if !data.yearAndMonth.isBefore(firstClaimDate))
+      for (data <- yearAndMonthList if !data.yearAndMonth.isBefore(firstClaimDate(appConfig)))
         yield data
 
     dateTypeList.sortWith((x, y) => x.yearAndMonth.isBefore(y.yearAndMonth))
   }
 
+  def firstClaimDate(appConfig: ApplicationConfig): YearMonth =
+    YearMonth.parse(appConfig.jrsClaimsFromDate)
+
+  def formattedFirstClaimDate(appConfig: ApplicationConfig): String =
+    firstClaimDate(appConfig).toString(dateFormatter)
 }
