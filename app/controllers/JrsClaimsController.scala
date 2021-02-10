@@ -16,6 +16,7 @@
 
 package controllers
 
+import cats.implicits.catsStdInstancesForFuture
 import com.google.inject.{Inject, Singleton}
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
@@ -24,10 +25,9 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.metrics.Metrics
 import uk.gov.hmrc.tai.service._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class JrsClaimsController @Inject()(
@@ -35,7 +35,6 @@ class JrsClaimsController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   jrsService: JrsService,
-  metrics: Metrics,
   mcc: MessagesControllerComponents,
   appConfig: ApplicationConfig,
   override implicit val partialRetriever: FormPartialRetriever,
@@ -45,11 +44,17 @@ class JrsClaimsController @Inject()(
   def getJrsClaims(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
 
-    jrsService.getJrsClaims(nino).map {
+    if (appConfig.jrsClaimsEnabled) {
 
-      case Some(jrsClaims) => Ok(views.html.jrsClaimSummary(jrsClaims, appConfig))
-
-      case _ => NotFound(views.html.noJrsClaim(appConfig))
+      jrsService
+        .getJrsClaims(nino)
+        .fold(
+          NotFound(views.html.noJrsClaim(appConfig))
+        )(
+          jrsClaims => Ok(views.html.jrsClaimSummary(jrsClaims, appConfig))
+        )
+    } else {
+      Future.successful(InternalServerError(views.html.internalServerError(appConfig)))
     }
   }
 }

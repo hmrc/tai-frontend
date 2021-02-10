@@ -17,7 +17,10 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.OptionT
+import cats.implicits.catsStdInstancesForFuture
 import controllers.actions.FakeValidatePerson
+import org.joda.time.YearMonth
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -25,7 +28,6 @@ import play.api.i18n.Messages
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.metrics.Metrics
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import uk.gov.hmrc.tai.service.JrsService
 import utils.BaseSpec
@@ -35,7 +37,6 @@ import scala.concurrent.Future
 class JrsClaimsControllerSpec extends BaseSpec {
 
   val jrsService = mock[JrsService]
-  val metrics = mock[Metrics]
   val mockAppConfig = mock[ApplicationConfig]
 
   val jrsClaimsController = new JrsClaimsController(
@@ -43,7 +44,6 @@ class JrsClaimsControllerSpec extends BaseSpec {
     FakeAuthAction,
     FakeValidatePerson,
     jrsService,
-    metrics,
     mcc,
     mockAppConfig,
     partialRetriever,
@@ -51,8 +51,8 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
   val jrsClaimsServiceResponse = JrsClaims(
     List(
-      Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("January 2021"), YearAndMonth("February 2021"))),
-      Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("December 2020")))
+      Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02"))),
+      Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
     ))
 
   implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -63,7 +63,9 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
       "some jrs data is received from service" in {
 
-        when(jrsService.getJrsClaims(any())(any())).thenReturn(Future(Some(jrsClaimsServiceResponse)))
+        when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
+
+        when(jrsService.getJrsClaims(any())(any())).thenReturn(OptionT.pure[Future](jrsClaimsServiceResponse))
         when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
         val result = jrsClaimsController.getJrsClaims()(request)
@@ -79,7 +81,9 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
       "no jrs data is received from service" in {
 
-        when(jrsService.getJrsClaims(any())(any())).thenReturn(Future(None))
+        when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
+
+        when(jrsService.getJrsClaims(any())(any())).thenReturn(OptionT.none[Future, JrsClaims])
 
         val result = jrsClaimsController.getJrsClaims()(request)
 
@@ -89,6 +93,21 @@ class JrsClaimsControllerSpec extends BaseSpec {
         doc.title must include(Messages("check.jrs.claims.no.claim.title"))
       }
     }
+
+    "internal server error page" when {
+
+      "JrsClaimsEnabled is false" in {
+
+        when(mockAppConfig.jrsClaimsEnabled).thenReturn(false)
+
+        val result = jrsClaimsController.getJrsClaims()(request)
+
+        status(result) mustBe (INTERNAL_SERVER_ERROR)
+
+      }
+
+    }
+
   }
 
 }

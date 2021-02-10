@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model
+package uk.gov.hmrc.tai.util
 
-import play.api.libs.json.Json
-import uk.gov.hmrc.tai.config.ApplicationConfig
+import com.codahale.metrics.MetricRegistry
+import com.kenshoo.play.metrics.Metrics
 
-final case class JrsClaims(employers: List[Employers]) {
-
-  val hasMultipleEmployments: Boolean = employers.size > 1
-
-}
-
-object JrsClaims {
-
-  implicit val formats = Json.format[JrsClaims]
-
-  def apply(appConfig: ApplicationConfig, employers: List[Employers]): JrsClaims =
-    JrsClaims(Employers.sortEmployerslist(appConfig, employers))
-
+class TestMetrics extends Metrics {
+  override def defaultRegistry: MetricRegistry = new MetricRegistry
+  override def toJson: String = ""
 }

@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.OptionT
+import cats.implicits.catsStdInstancesForFuture
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -28,24 +30,19 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class JrsService @Inject()(jrsConnector: JrsConnector, appConfig: ApplicationConfig)(implicit ec: ExecutionContext) {
 
-  def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier): Future[Option[JrsClaims]] =
-    jrsConnector.getJrsClaims(nino).map { response =>
-      response match {
-        case Some(jrsClaimsData) if (!jrsClaimsData.employers.isEmpty) => {
-          Some(jrsClaimsData.sortEmployerslist(appConfig))
-        }
+  def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier): OptionT[Future, JrsClaims] = OptionT {
+    jrsConnector
+      .getJrsClaims(nino)(hc)
+      .fold[Option[JrsClaims]](None)(
+        jrsClaimsData => extractClaimsData(jrsClaimsData)
+      )
+  }
 
-        case _ => None
-      }
-    }
+  private def extractClaimsData(jrsClaimsData: JrsClaims) =
+    if (jrsClaimsData.employers.nonEmpty) Some(JrsClaims(appConfig, jrsClaimsData.employers)) else None
 
   def checkIfJrsClaimsDataExist(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] =
     if (appConfig.jrsClaimsEnabled) {
-      jrsConnector.getJrsClaims(nino).map { response =>
-        response match {
-          case Some(_) => true
-          case _       => false
-        }
-      }
+      jrsConnector.getJrsClaims(nino)(hc).fold(false)(jrsClaims => true)
     } else Future.successful(false)
 }

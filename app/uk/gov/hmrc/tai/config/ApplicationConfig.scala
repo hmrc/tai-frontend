@@ -123,6 +123,7 @@ class ApplicationConfig @Inject()(
   lazy val identityVerificationHost: String = decorateUrlForLocalDev("identity-verification.host")
   lazy val taxCalcFrontendHost: String = decorateUrlForLocalDev("taxcalc-frontend.host")
   lazy val trackFrontendHost: String = decorateUrlForLocalDev("tracking-frontend.host")
+  lazy val jrsClaimsServiceUrl: String = servicesConfig.baseUrl("coronavirus-jrs-published-employees")
 }
 
 trait FeatureTogglesConfig { self: ApplicationConfig =>

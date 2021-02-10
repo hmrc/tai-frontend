@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.OptionT
+import cats.implicits.catsStdInstancesForFuture
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.JrsConnector
 import org.mockito.Mockito.when
@@ -42,8 +44,8 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
   val jrsClaimsServiceResponse = JrsClaims(
     List(
-      Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("January 2021"), YearAndMonth("February 2021"))),
-      Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("December 2020")))
+      Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02"))),
+      Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
     ))
 
   "getJrsClaims" should {
@@ -52,13 +54,13 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns some jrs data" in {
 
-        when(jrsConnector.getJrsClaims(nino)).thenReturn(Future(Some(jrsClaimsAPIResponse)))
+        when(jrsConnector.getJrsClaims(nino)(hc)).thenReturn(OptionT.pure[Future](jrsClaimsAPIResponse))
 
         when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
-        val result = jrsService.getJrsClaims(nino).futureValue
+        val result = jrsService.getJrsClaims(nino)
 
-        result mustBe Some(jrsClaimsServiceResponse)
+        result.value.futureValue mustBe Some(jrsClaimsServiceResponse)
 
         jrsClaimsServiceResponse.toString mustNot contain("November 2020")
 
@@ -69,9 +71,9 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns empty jrs data" in {
 
-        when(jrsConnector.getJrsClaims(nino)).thenReturn(Future(Some(JrsClaims(List.empty))))
+        when(jrsConnector.getJrsClaims(nino)(hc)).thenReturn(OptionT.pure[Future](JrsClaims(List.empty)))
 
-        val result = jrsService.getJrsClaims(nino).futureValue
+        val result = jrsService.getJrsClaims(nino).value.futureValue
 
         result mustBe None
 
@@ -79,9 +81,9 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns None" in {
 
-        when(jrsConnector.getJrsClaims(nino)).thenReturn(Future(None))
+        when(jrsConnector.getJrsClaims(nino)(hc)).thenReturn(OptionT.none[Future, JrsClaims])
 
-        val result = jrsService.getJrsClaims(nino).futureValue
+        val result = jrsService.getJrsClaims(nino).value.futureValue
 
         result mustBe None
 
@@ -95,7 +97,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns jrs claim data" in {
 
-        when(jrsConnector.getJrsClaims(nino)).thenReturn(Future(Some(jrsClaimsAPIResponse)))
+        when(jrsConnector.getJrsClaims(nino)(hc)).thenReturn(OptionT.pure[Future](jrsClaimsAPIResponse))
 
         val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
 
@@ -104,7 +106,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns empty jrs claim data" in {
 
-        when(jrsConnector.getJrsClaims(nino)).thenReturn(Future(Some(JrsClaims(List.empty))))
+        when(jrsConnector.getJrsClaims(nino)(hc)).thenReturn(OptionT.pure[Future](JrsClaims(List.empty)))
 
         val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
 
@@ -116,7 +118,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns no jrs claim data" in {
 
-        when(jrsConnector.getJrsClaims(nino)).thenReturn(Future(None))
+        when(jrsConnector.getJrsClaims(nino)(hc)).thenReturn(OptionT.none[Future, JrsClaims])
 
         val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
 
