@@ -39,13 +39,14 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
         val cards = doc.getElementsByClass("card")
 
-        cards.size mustBe 2
+        cards.size mustBe 3
         cards.toString must include(Messages("current.tax.year"))
         doc(view) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
         cards.toString mustNot include(Messages("next.year"))
         cards.toString mustNot include(Messages("check.estimated.income"))
         cards.toString must include(Messages("earlier"))
         cards.toString must include(Messages("check.tax.previous.years"))
+        cards.toString must include(Messages("claim.tax.relief.wfh"))
 
       }
 
@@ -53,10 +54,10 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
         val modelNoiFormWithCyPlus1 = createViewModel(true)
 
-        val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1)
+        val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
 
-        cards.size mustBe 3
+        cards.size mustBe 4
         cards.toString must include(Messages("current.tax.year"))
         doc(nextYearView) must haveParagraphWithText(
           Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
@@ -65,6 +66,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
           Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(yearsFromNow = 1)))
         cards.toString must include(Messages("earlier"))
         cards.toString must include(Messages("check.tax.previous.years"))
+        cards.toString must include(Messages("claim.tax.relief.wfh"))
       }
 
       "Tax Code Change is enabled" in {
@@ -72,29 +74,31 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         val taxCodeMatched = TaxCodeMismatchFactory.matchedTaxCode
         val modeWithCyPlus1TaxCodeChange = createViewModel(true, true, Some(taxCodeMatched))
 
-        val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange)
+        val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
 
-        cards.size mustBe 4
+        cards.size mustBe 5
         cards.toString must include("Check your latest tax code change")
         cards.toString must include("Find out what has changed and what happens next")
+        cards.toString must include(Messages("claim.tax.relief.wfh"))
       }
 
       "Tax Code Change is disabled" in {
 
         val modelNoiFormWithCyPlus1 = createViewModel(true)
 
-        val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1)
+        val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
 
-        cards.size mustBe 3
+        cards.size mustBe 4
         cards.toString mustNot include("Check your latest tax code change")
         cards.toString mustNot include("Find out what has changed and what happens next")
+        cards.toString must include(Messages("claim.tax.relief.wfh"))
       }
     }
 
     "display UR banner" in {
-      val document: Html = views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1)
+      val document: Html = views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1, appConfig)
       val urBanner = doc(document).getElementsByAttributeValue("id", "full-width-banner")
       val urDismissedText = doc(document).getElementsByAttributeValue("id", "fullWidthBannerDismissText")
       val urBannerHref = doc(document).getElementsByAttributeValue("id", "fullWidthBannerLink")
@@ -117,5 +121,5 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
   private lazy val modelNoiFormNoCyPlus1 = createViewModel(false)
 
-  override def view: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1)
+  override def view: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1, appConfig)
 }

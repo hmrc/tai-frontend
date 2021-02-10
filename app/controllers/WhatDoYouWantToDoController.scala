@@ -109,7 +109,7 @@ class WhatDoYouWantToDoController @Inject()(
 
             Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
 
-            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
           }
           case response: TaiResponse => {
             if (response.isInstanceOf[TaiNotFoundResponse])
@@ -117,7 +117,7 @@ class WhatDoYouWantToDoController @Inject()(
 
             val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false)
             Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
-            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
           }
         }
       }
@@ -133,7 +133,7 @@ class WhatDoYouWantToDoController @Inject()(
 
           Logger.debug(s"wdywtdViewModelCYDisabled $model")
 
-          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
         })
     }
   }

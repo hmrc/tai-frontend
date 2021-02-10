@@ -18,9 +18,12 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, WhatDoYouWantToDoViewModel}
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+
 
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
-  model: WhatDoYouWantToDoViewModel
+  model: WhatDoYouWantToDoViewModel,
+    appConfig: ApplicationConfig
 )(implicit request: Request[_],
   messages: Messages,
   user: controllers.auth.AuthedUser,
@@ -103,7 +106,7 @@
 
 
                     @card(
-                        url = Some("/check-income-tax/income-summary"),
+                        url = Some(appConfig.taxReliefExpenseClaimLink),
                         id = "claimRelief",
                         heading = messages("claim.tax.relief.wfh"),
                         bodyContent = None,

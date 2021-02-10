@@ -100,6 +100,9 @@ class ApplicationConfig @Inject()(
   lazy val basGatewayFrontendSignOutUrl =
     s"$basGatewayHost/bas-gateway/sign-out-without-state?continue=$feedbackSurveyUrl"
 
+  lazy val taxReliefExpenseClaimLink =
+    "https://www.tax.service.gov.uk/claim-tax-relief-expenses/only-claiming-working-from-home-tax-relief"
+
   lazy val basGatewayFrontendSignInUrl = s"$basGatewayHost/bas-gateway/sign-in"
 
   lazy val citizenAuthFrontendSignOutUrl: String = citizenAuthHost + "/ida/signout"

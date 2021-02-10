@@ -99,7 +99,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
         doc.body().toString must include(Messages("check.tax.hasChanged.header"))
-        doc.select(".card").size mustBe 4
+
+        doc.select(".card").size mustBe 5
       }
 
       "cyPlusOne is disabled" in {
@@ -116,7 +117,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
         doc.body().toString must include(Messages("check.tax.hasChanged.header"))
-        doc.select(".card").size mustBe 3
+        doc.select(".card").size mustBe 4
       }
     }
 
