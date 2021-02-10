@@ -16,6 +16,7 @@
 
 package controllers
 
+import cats.implicits.catsStdInstancesForFuture
 import com.google.inject.{Inject, Singleton}
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
@@ -45,12 +46,13 @@ class JrsClaimsController @Inject()(
 
     if (appConfig.jrsClaimsEnabled) {
 
-      jrsService.getJrsClaims(nino).map {
-
-        case Some(jrsClaims) => Ok(views.html.jrsClaimSummary(jrsClaims, appConfig))
-
-        case _ => NotFound(views.html.noJrsClaim(appConfig))
-      }
+      jrsService
+        .getJrsClaims(nino)
+        .fold(
+          NotFound(views.html.noJrsClaim(appConfig))
+        )(
+          jrsClaims => Ok(views.html.jrsClaimSummary(jrsClaims, appConfig))
+        )
     } else {
       Future.successful(InternalServerError(views.html.internalServerError(appConfig)))
     }

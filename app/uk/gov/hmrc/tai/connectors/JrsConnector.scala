@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.connectors
 
 import java.util.UUID.randomUUID
 
+import cats.data.OptionT
 import com.google.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.http.Status._
@@ -42,15 +43,13 @@ class JrsConnector @Inject()(httpClient: HttpClient, val metrics: Metrics, appli
 
   val logger = Logger(this.getClass)
 
-  def getJrsClaims(nino: Nino)(hc: HeaderCarrier): Future[Option[JrsClaims]] = {
+  def getJrsClaims(nino: Nino)(hc: HeaderCarrier): OptionT[Future, JrsClaims] = OptionT {
 
     def jrsClaimsUrl(nino: String): String =
       s"${applicationConfig.jrsClaimsServiceUrl}/coronavirus-jrs-published-employees/employee/$nino"
 
     implicit val jrsHeaderCarrier: HeaderCarrier = hc
-      .copy(authorization = Some(Authorization(applicationConfig.bearerToken)))
       .withExtraHeaders(
-        "Environment"   -> applicationConfig.environment,
         "CorrelationId" -> randomUUID.toString
       )
 
@@ -58,7 +57,7 @@ class JrsConnector @Inject()(httpClient: HttpClient, val metrics: Metrics, appli
       httpClient.GET[HttpResponse](jrsClaimsUrl(nino.value)) map { response =>
         response.status match {
           case OK => {
-            Some(response.json.as[JrsClaims])
+            response.json.asOpt[JrsClaims]
           }
           case NO_CONTENT => {
             Some(JrsClaims(List.empty))

@@ -17,6 +17,8 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.OptionT
+import cats.implicits.catsStdInstancesForFuture
 import controllers.actions.FakeValidatePerson
 import org.joda.time.YearMonth
 import org.jsoup.Jsoup
@@ -63,7 +65,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
         when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
 
-        when(jrsService.getJrsClaims(any())(any())).thenReturn(Future(Some(jrsClaimsServiceResponse)))
+        when(jrsService.getJrsClaims(any())(any())).thenReturn(OptionT.pure[Future](jrsClaimsServiceResponse))
         when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
         val result = jrsClaimsController.getJrsClaims()(request)
@@ -81,7 +83,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
         when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
 
-        when(jrsService.getJrsClaims(any())(any())).thenReturn(Future(None))
+        when(jrsService.getJrsClaims(any())(any())).thenReturn(OptionT.none[Future, JrsClaims])
 
         val result = jrsClaimsController.getJrsClaims()(request)
 

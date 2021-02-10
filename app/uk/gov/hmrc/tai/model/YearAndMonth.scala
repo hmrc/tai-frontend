@@ -53,9 +53,7 @@ object YearAndMonth {
 
   def sortYearAndMonth(yearAndMonthList: List[YearAndMonth], appConfig: ApplicationConfig): List[YearAndMonth] = {
 
-    val dateTypeList =
-      for (data <- yearAndMonthList if !data.yearAndMonth.isBefore(firstClaimDate(appConfig)))
-        yield data
+    val dateTypeList = yearAndMonthList.filter(!_.yearAndMonth.isBefore(firstClaimDate(appConfig)))
 
     dateTypeList.sortWith((x, y) => x.yearAndMonth.isBefore(y.yearAndMonth))
   }
