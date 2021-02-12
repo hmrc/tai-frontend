@@ -26,6 +26,7 @@ import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -69,9 +70,11 @@ class AuditService @Inject()(
     nino: Nino,
     path: String,
     numberOfEmployments: Seq[Employment],
-    numberOfTaxCodeIncomes: Seq[TaxCodeIncome])(implicit hc: HeaderCarrier): Future[AuditResult] = {
+    numberOfTaxCodeIncomes: Seq[TaxCodeIncome])(
+    implicit hc: HeaderCarrier,
+    request: Request[_]): Future[AuditResult] = {
     val details = Map(
-      "authProviderId"             -> authProviderId(hc),
+      "authProviderId"             -> authProviderId,
       "nino"                       -> nino.nino,
       "noOfCurrentYearEmployments" -> numberOfEmployments.size.toString,
       "noOfTaxCodes"               -> numberOfTaxCodeIncomes.size.toString
@@ -86,9 +89,9 @@ class AuditService @Inject()(
     endDate: String,
     fuelBenefitDate: Option[String],
     isSuccessful: Boolean,
-    path: String)(implicit hc: HeaderCarrier): Future[AuditResult] = {
+    path: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[AuditResult] = {
     val details = Map(
-      "authProviderId" -> authProviderId(hc),
+      "authProviderId" -> authProviderId,
       "nino"           -> nino,
       "employmentId"   -> employmentId,
       "carSequenceNo"  -> carSeqNo,
@@ -105,7 +108,7 @@ class AuditService @Inject()(
     request: Request[AnyContent]): Future[String] = {
     def sendIformRedirectUriAuditEvent(nino: Nino, path: String, auditEvent: String) = {
       val details = Map(
-        "authProviderId" -> authProviderId(hc),
+        "authProviderId" -> authProviderId,
         "nino"           -> nino.nino
       )
       createAndSendAuditEvent(auditEvent, path, details)
@@ -128,6 +131,11 @@ class AuditService @Inject()(
   private def fetchPath(request: Request[AnyContent]) =
     request.headers.get("Referer").getOrElse("NA")
 
-  private def authProviderId(hc: HeaderCarrier) = hc.userId.map(_.value).getOrElse("-")
+  private def authProviderId(implicit request: Request[_]) =
+    request.session.get(TaiConstants.AuthProvider) match {
+      case Some(provider @ TaiConstants.AuthProviderGG)     => provider
+      case Some(provider @ TaiConstants.AuthProviderVerify) => provider
+      case _                                                => "-"
+    }
 
 }
