@@ -22,6 +22,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 final case class JrsClaims(employers: List[Employers]) {
 
   val hasMultipleEmployments: Boolean = employers.size > 1
+  val employerMessageKey = if (hasMultipleEmployments) "employers" else "employer"
 
 }
 
@@ -29,7 +30,9 @@ object JrsClaims {
 
   implicit val formats = Json.format[JrsClaims]
 
-  def apply(appConfig: ApplicationConfig, employers: List[Employers]): JrsClaims =
-    JrsClaims(Employers.sortEmployerslist(appConfig, employers))
+  def apply(appConfig: ApplicationConfig, jrsClaimsData: JrsClaims): Option[JrsClaims] =
+    if (jrsClaimsData.employers.nonEmpty)
+      Some(JrsClaims(Employers.sortEmployerslist(appConfig, jrsClaimsData.employers)))
+    else None
 
 }

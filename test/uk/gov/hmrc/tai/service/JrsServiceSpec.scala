@@ -54,7 +54,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns some jrs data" in {
 
-        when(jrsConnector.getJrsClaims(nino)(hc)).thenReturn(OptionT.pure[Future](jrsClaimsAPIResponse))
+        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.pure[Future](jrsClaimsAPIResponse))
 
         when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
@@ -71,7 +71,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns empty jrs data" in {
 
-        when(jrsConnector.getJrsClaims(nino)(hc)).thenReturn(OptionT.pure[Future](JrsClaims(List.empty)))
+        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.pure[Future](JrsClaims(List.empty)))
 
         val result = jrsService.getJrsClaims(nino).value.futureValue
 
@@ -81,7 +81,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns None" in {
 
-        when(jrsConnector.getJrsClaims(nino)(hc)).thenReturn(OptionT.none[Future, JrsClaims])
+        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.none[Future, JrsClaims])
 
         val result = jrsService.getJrsClaims(nino).value.futureValue
 
@@ -97,7 +97,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns jrs claim data" in {
 
-        when(jrsConnector.getJrsClaims(nino)(hc)).thenReturn(OptionT.pure[Future](jrsClaimsAPIResponse))
+        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.pure[Future](jrsClaimsAPIResponse))
 
         val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
 
@@ -106,7 +106,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns empty jrs claim data" in {
 
-        when(jrsConnector.getJrsClaims(nino)(hc)).thenReturn(OptionT.pure[Future](JrsClaims(List.empty)))
+        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.pure[Future](JrsClaims(List.empty)))
 
         val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
 
@@ -118,7 +118,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns no jrs claim data" in {
 
-        when(jrsConnector.getJrsClaims(nino)(hc)).thenReturn(OptionT.none[Future, JrsClaims])
+        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.none[Future, JrsClaims])
 
         val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
 

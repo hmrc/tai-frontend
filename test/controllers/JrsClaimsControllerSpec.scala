@@ -68,7 +68,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
         when(jrsService.getJrsClaims(any())(any())).thenReturn(OptionT.pure[Future](jrsClaimsServiceResponse))
         when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
-        val result = jrsClaimsController.getJrsClaims()(request)
+        val result = jrsClaimsController.onPageLoad()(request)
 
         status(result) mustBe (OK)
         val doc = Jsoup.parse(contentAsString(result))
@@ -85,7 +85,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
         when(jrsService.getJrsClaims(any())(any())).thenReturn(OptionT.none[Future, JrsClaims])
 
-        val result = jrsClaimsController.getJrsClaims()(request)
+        val result = jrsClaimsController.onPageLoad()(request)
 
         status(result) mustBe (NOT_FOUND)
         val doc = Jsoup.parse(contentAsString(result))
@@ -100,7 +100,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
         when(mockAppConfig.jrsClaimsEnabled).thenReturn(false)
 
-        val result = jrsClaimsController.getJrsClaims()(request)
+        val result = jrsClaimsController.onPageLoad()(request)
 
         status(result) mustBe (INTERNAL_SERVER_ERROR)
 

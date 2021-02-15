@@ -41,7 +41,7 @@ class JrsClaimsController @Inject()(
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def getJrsClaims(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
 
     if (appConfig.jrsClaimsEnabled) {
