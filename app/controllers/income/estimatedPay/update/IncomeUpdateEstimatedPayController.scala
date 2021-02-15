@@ -74,6 +74,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
               incomeType == TaiConstants.IncomeTypePension,
               appConfig
             ))
+        case (response: TaiFailureResponse, _) => internalServerError(response.message)
       }
     }
   }

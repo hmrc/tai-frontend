@@ -28,6 +28,7 @@ import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -45,6 +46,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
 
   val incomeService: IncomeService = mock[IncomeService]
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val mockTaxAccountService: TaxAccountService = mock[TaxAccountService]
 
   class TestIncomeUpdateEstimatedPayController
       extends IncomeUpdateEstimatedPayController(
@@ -53,6 +55,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
         incomeService,
         appConfig,
         mcc,
+        mockTaxAccountService,
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer) {
@@ -63,28 +66,53 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
   }
 
   "estimatedPayLandingPage" must {
-    object EstimatedPayLandingPageHarness {
-      sealed class EstimatedPayLandingPageHarness() {
 
-        when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-          .thenReturn(Future.successful(Seq(employer.name, employer.id.toString, TaiConstants.IncomeTypeEmployment)))
+    val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
 
-        def estimatedPayLandingPage(): Future[Result] =
-          new TestIncomeUpdateEstimatedPayController()
-            .estimatedPayLandingPage()(RequestBuilder.buildFakeGetRequestWithAuth())
-      }
+    when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+      .thenReturn(Future.successful(Seq(employer.name, employer.id.toString, TaiConstants.IncomeTypeEmployment)))
+    when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(
+      TaiSuccessResponseWithPayload(taxAccountSummary))
 
-      def setup(): EstimatedPayLandingPageHarness = new EstimatedPayLandingPageHarness()
-    }
+    def estimatedPayLandingPage(): Future[Result] =
+      new TestIncomeUpdateEstimatedPayController()
+        .estimatedPayLandingPage()(RequestBuilder.buildFakeGetRequestWithAuth())
+
     "display the estimatedPayLandingPage view" in {
-      val result = EstimatedPayLandingPageHarness
-        .setup()
-        .estimatedPayLandingPage()
+
+      val result = estimatedPayLandingPage()
 
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(messages("tai.incomes.landing.title"))
+    }
+
+    "return INTERNAL_SERVER_ERROR when TaiNotFoundResponse is returned from the service" in {
+
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(TaiNotFoundResponse(""))
+
+      val result = estimatedPayLandingPage()
+      status(result) mustBe INTERNAL_SERVER_ERROR
+
+    }
+    "return INTERNAL_SERVER_ERROR when TaiUnauthorisedResponse is returned from the service" in {
+
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(TaiUnauthorisedResponse(""))
+
+      val result = estimatedPayLandingPage()
+      status(result) mustBe INTERNAL_SERVER_ERROR
+
+    }
+
+    "return INTERNAL_SERVER_ERROR when TaiTaxAccountFailureResponse is returned from the service" in {
+
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(
+        TaiTaxAccountFailureResponse(""))
+
+      val result = estimatedPayLandingPage()
+      status(result) mustBe INTERNAL_SERVER_ERROR
+
     }
   }
 
