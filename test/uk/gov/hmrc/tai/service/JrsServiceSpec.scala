@@ -104,6 +104,10 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
         result mustBe (true)
       }
 
+    }
+
+    "return false" when {
+
       "connector returns empty jrs claim data" in {
 
         when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.pure[Future](JrsClaims(List.empty)))
@@ -112,9 +116,6 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
         result mustBe (false)
       }
-    }
-
-    "return false" when {
 
       "connector returns no jrs claim data" in {
 
