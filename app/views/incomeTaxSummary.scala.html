@@ -131,6 +131,8 @@
 
                 <h2 id="annualAmountsSummaryHeading" class="heading-section">@Messages("tai.incomeTaxSummary.annualAmounts.section.heading")</h2>
 
+                <div id="incomeTaxSummaryTotalEstimatedIncome" aria-hidden="true">
+
                 <h3>@Messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomeHeading")</h3>
                 <p class="flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomePara")</p>
                 <p class="flush">
@@ -146,6 +148,8 @@
                     cssClasses=Some(""),
                     dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")}"))).toHtml
                 </p>
+
+                </div>
 
 
                 <h3>@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeHeading")</h3>
