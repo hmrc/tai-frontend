@@ -110,7 +110,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
         val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
 
-        result mustBe (true)
+        result mustBe (false)
       }
     }
 

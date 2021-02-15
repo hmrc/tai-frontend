@@ -39,6 +39,9 @@ class JrsService @Inject()(jrsConnector: JrsConnector, appConfig: ApplicationCon
 
   def checkIfJrsClaimsDataExist(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] =
     if (appConfig.jrsClaimsEnabled) {
-      jrsConnector.getJrsClaimsForIndividual(nino)(hc).map(_ => true).getOrElse(false)
+      jrsConnector
+        .getJrsClaimsForIndividual(nino)(hc)
+        .map(_.employers.nonEmpty)
+        .getOrElse(false)
     } else Future.successful(false)
 }
