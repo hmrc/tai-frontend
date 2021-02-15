@@ -72,7 +72,7 @@ In the context of this service we use the following acronyms:
 * [URL]: Uniform Resource Locater
 
 License
--------
+--------
 
 This code is open source software licensed under the [Apache 2.0 License].
 
