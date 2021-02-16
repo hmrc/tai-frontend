@@ -19,35 +19,48 @@ package controllers
 import builders.RequestBuilder
 import cats.data.OptionT
 import cats.implicits.catsStdInstancesForFuture
-import controllers.actions.FakeValidatePerson
-import org.joda.time.YearMonth
+import controllers.actions.{DataRequiredActionImpl, FakeDataRetrievalAction, FakeDataRetrievalActionProvider, FakeValidatePerson}
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{never, reset, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.api.test.Helpers.{status, _}
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.connectors.DataCacheConnector
+import uk.gov.hmrc.tai.identifiers.JrsClaimsId
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import uk.gov.hmrc.tai.service.JrsService
+import uk.gov.hmrc.tai.util.CachedData
 import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class JrsClaimsControllerSpec extends BaseSpec {
+class JrsClaimsControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
   val jrsService = mock[JrsService]
   val mockAppConfig = mock[ApplicationConfig]
+  val mockDataCacheConnector = mock[DataCacheConnector]
 
-  val jrsClaimsController = new JrsClaimsController(
-    inject[AuditConnector],
-    FakeAuthAction,
-    FakeValidatePerson,
-    jrsService,
-    mcc,
-    mockAppConfig,
-    partialRetriever,
-    templateRenderer)
+  def retrieveAction(cacheMap: Option[CacheMap]) = new FakeDataRetrievalAction(cacheMap)
+
+  def jrsClaimsController =
+    new JrsClaimsController(
+      inject[AuditConnector],
+      FakeAuthAction,
+      FakeValidatePerson,
+      new FakeDataRetrievalActionProvider(mockDataCacheConnector, retrieveAction(None)),
+      new DataRequiredActionImpl(),
+      mockDataCacheConnector,
+      jrsService,
+      mcc,
+      mockAppConfig,
+      partialRetriever,
+      templateRenderer
+    )
 
   val jrsClaimsServiceResponse = JrsClaims(
     List(
@@ -55,17 +68,33 @@ class JrsClaimsControllerSpec extends BaseSpec {
       Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
     ))
 
+  val cachedData = CachedData(CacheMap("id", Map(JrsClaimsId.toString -> Json.toJson(jrsClaimsServiceResponse))))
+
   implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
   "jrsClaimsController" should {
 
     "success view with JRS claim data" when {
 
-      "some jrs data is received from service" in {
+      "some jrs data is received from the request" in {
+
+        def jrsClaimsController =
+          new JrsClaimsController(
+            inject[AuditConnector],
+            FakeAuthAction,
+            FakeValidatePerson,
+            new FakeDataRetrievalActionProvider(mockDataCacheConnector, retrieveAction(Some(cachedData.cacheMap))),
+            new DataRequiredActionImpl(),
+            mockDataCacheConnector,
+            jrsService,
+            mcc,
+            mockAppConfig,
+            partialRetriever,
+            templateRenderer
+          )
 
         when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
 
-        when(jrsService.getJrsClaims(any())(any())).thenReturn(OptionT.pure[Future](jrsClaimsServiceResponse))
         when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
         val result = jrsClaimsController.onPageLoad()(request)
@@ -74,6 +103,28 @@ class JrsClaimsControllerSpec extends BaseSpec {
         val doc = Jsoup.parse(contentAsString(result))
 
         doc.title must include(Messages("check.jrs.claims.title"))
+
+        verify(jrsService, never()).getJrsClaims(any())(any())
+      }
+
+      "some jrs data is received from service" in {
+
+        when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
+
+        when(jrsService.getJrsClaims(any())(any())).thenReturn(OptionT.pure[Future](jrsClaimsServiceResponse))
+        when(mockDataCacheConnector.save(any())) thenReturn Future.successful(cachedData)
+
+        when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
+
+        val result = jrsClaimsController.onPageLoad()(request)
+
+        status(result) mustBe (OK)
+        val doc = Jsoup.parse(contentAsString(result))
+
+        doc.title must include(Messages("check.jrs.claims.title"))
+
+        verify(jrsService).getJrsClaims(any())(any())
+        verify(mockDataCacheConnector).save(any())
       }
     }
 
@@ -110,4 +161,8 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
   }
 
+  override protected def beforeEach(): Unit = reset(
+    mockDataCacheConnector,
+    jrsService
+  )
 }

@@ -57,6 +57,17 @@ val wartRemovedExcludedClasses = Seq(
   "uk.gov.hmrc.BuildInfo"
 )
 
+val akkaVersion = "2.5.23"
+val akkaPackage = "com.typesafe.akka"
+
+dependencyOverrides ++= Set(
+  akkaPackage %% "akka-stream"    % akkaVersion,
+  akkaPackage %% "akka-protobuf"  % akkaVersion,
+  akkaPackage %% "akka-slf4j"     % akkaVersion,
+  akkaPackage %% "akka-actor"     % akkaVersion,
+  akkaPackage %% "akka-http-core" % "10.0.15"
+)
+
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
   .settings(playSettings ++ scoverageSettings: _*)

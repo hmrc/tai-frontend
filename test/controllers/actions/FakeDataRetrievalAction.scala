@@ -15,15 +15,22 @@
  */
 
 package controllers.actions
-import controllers.auth.{AuthenticatedRequest, InternalAuthenticatedRequest}
-import play.api.mvc.Result
+
+import controllers.auth.{AuthenticatedRequest, OptionalDataRequest}
+import uk.gov.hmrc.http.cache.client.CacheMap
 import play.api.test.Helpers.stubControllerComponents
+import uk.gov.hmrc.tai.util.CachedData
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object FakeValidatePerson extends ValidatePerson {
-  override protected def refine[A](
-    request: InternalAuthenticatedRequest[A]): Future[Either[Result, AuthenticatedRequest[A]]] =
-    Future.successful(Right(AuthenticatedRequest(request, "id", request.taiUser, "Firstname Surname")))
+class FakeDataRetrievalAction(cacheMapToReturn: Option[CacheMap]) extends DataRetrievalAction {
+
+  override protected def transform[A](request: AuthenticatedRequest[A]): Future[OptionalDataRequest[A]] =
+    cacheMapToReturn match {
+      case None => Future.successful(OptionalDataRequest(request, request.externalId, None))
+      case Some(cacheMap) =>
+        Future.successful(OptionalDataRequest(request, request.externalId, Some(new CachedData(cacheMap))))
+    }
+
   override protected def executionContext: ExecutionContext = stubControllerComponents().executionContext
 }

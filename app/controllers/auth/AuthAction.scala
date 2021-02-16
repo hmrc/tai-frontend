@@ -77,18 +77,18 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
       HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised().retrieve(
-      Retrievals.credentials and Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper) {
-      case credentials ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) => {
+      Retrievals.externalId and Retrievals.credentials and Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper) {
+      case Some(externalId) ~ credentials ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) => {
         val providerType = credentials.map(_.providerType)
         val user = AuthedUser(helper, saUtr, providerType, confidenceLevel)
 
-        authWithCredentials(request, block, credentials, user)
+        authWithCredentials(request, externalId, block, credentials, user)
       }
-      case credentials ~ nino ~ saUtr ~ confidenceLevel ~ _ => {
+      case Some(externalId) ~ credentials ~ nino ~ saUtr ~ confidenceLevel ~ _ => {
         val providerType = credentials.map(_.providerType)
         val user = AuthedUser(nino, saUtr, providerType, confidenceLevel)
 
-        authWithCredentials(request, block, credentials, user)
+        authWithCredentials(request, externalId, block, credentials, user)
       }
       case _ => throw new RuntimeException("Can't find credentials for user")
     } recover handleEntryPointFailure(request)
@@ -96,28 +96,30 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
 
   private def authWithCredentials[A](
     request: Request[A],
+    externalId: String,
     block: InternalAuthenticatedRequest[A] => Future[Result],
     credentials: Option[Credentials],
     user: AuthedUser)(implicit hc: HeaderCarrier): Future[Result] =
     credentials match {
       case Some(Credentials(_, TaiConstants.AuthProviderGG)) => {
-        processRequest(user, request, block, handleGGFailure)
+        processRequest(user, externalId, request, block, handleGGFailure)
       }
       case Some(Credentials(_, TaiConstants.AuthProviderVerify)) => {
-        processRequest(user, request, block, handleVerifyFailure)
+        processRequest(user, externalId, request, block, handleVerifyFailure)
       }
       case _ => throw new RuntimeException("Can't find valid credentials for user")
     }
 
   private def processRequest[A](
     user: AuthedUser,
+    externalId: String,
     request: Request[A],
     block: InternalAuthenticatedRequest[A] => Future[Result],
     failureHandler: PartialFunction[Throwable, Result])(implicit hc: HeaderCarrier): Future[Result] =
     (user.confidenceLevel.level match {
       case level if level >= 200 => {
         for {
-          result <- block(InternalAuthenticatedRequest(request, user))
+          result <- block(InternalAuthenticatedRequest(request, externalId, user))
         } yield {
           result
         }

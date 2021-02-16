@@ -315,7 +315,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
       "there is hod internal server error" in {
         val exceptionController = createSut
 
-        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedUser, "name")
+        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, "id", authedUser, "name")
         implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodInternalErrorResult(ninoValue)
@@ -325,7 +325,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
 
       "there is hod bad request exception" in {
         val exceptionController = createSut
-        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedUser, "name")
+        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, "id", authedUser, "name")
         implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodBadRequestResult(ninoValue)
@@ -335,7 +335,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
 
       "there is any kind of exception" in {
         val exceptionController = createSut
-        implicit val request = AuthenticatedRequest[AnyContent](FakeRequest("GET", "/"), authedUser, "name")
+        implicit val request = AuthenticatedRequest[AnyContent](FakeRequest("GET", "/"), "id", authedUser, "name")
         implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodAnyErrorResult(ninoValue)

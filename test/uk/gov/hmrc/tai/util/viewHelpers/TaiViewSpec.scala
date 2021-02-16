@@ -26,7 +26,7 @@ import play.twirl.api.Html
 import utils.BaseSpec
 
 trait TaiViewSpec extends BaseSpec with JsoupMatchers {
-  implicit val authRequest = AuthenticatedRequest(FakeRequest(), authedUser, "Firstname Surname")
+  implicit val authRequest = AuthenticatedRequest(FakeRequest(), "id", authedUser, "Firstname Surname")
 
   def view: Html
 

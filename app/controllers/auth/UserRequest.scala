@@ -17,8 +17,25 @@
 package controllers.auth
 
 import play.api.mvc.{Request, WrappedRequest}
+import uk.gov.hmrc.tai.util.CachedData
 
-case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser, fullName: String)
+case class AuthenticatedRequest[A](request: Request[A], externalId: String, taiUser: AuthedUser, fullName: String)
+    extends WrappedRequest[A](request) {
+
+  def cacheId = s"${taiUser.validNino}-$externalId"
+}
+
+case class InternalAuthenticatedRequest[A](request: Request[A], externalId: String, taiUser: AuthedUser)
     extends WrappedRequest[A](request)
 
-case class InternalAuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser) extends WrappedRequest[A](request)
+final case class DataRequest[A](
+  request: AuthenticatedRequest[A],
+  cacheId: String,
+  cachedData: CachedData
+) extends WrappedRequest[A](request)
+
+final case class OptionalDataRequest[A](
+  request: AuthenticatedRequest[A],
+  cacheId: String,
+  cachedData: Option[CachedData]
+) extends WrappedRequest[A](request)

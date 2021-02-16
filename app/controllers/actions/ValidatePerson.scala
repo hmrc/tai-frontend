@@ -43,7 +43,7 @@ class ValidatePersonImpl @Inject()(personService: PersonService)(implicit ec: Ex
     person map {
       case p if p.isDeceased     => Left(Redirect(routes.DeceasedController.deceased()))
       case p if p.hasCorruptData => Left(Redirect(routes.ServiceController.gateKeeper()))
-      case p                     => Right(AuthenticatedRequest(request, request.taiUser, p.name))
+      case p                     => Right(AuthenticatedRequest(request, request.externalId, request.taiUser, p.name))
     }
   }
   override protected def executionContext: ExecutionContext = ec

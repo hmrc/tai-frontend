@@ -34,7 +34,7 @@ object FakeAuthAction extends AuthAction {
   override def invokeBlock[A](
     request: Request[A],
     block: (InternalAuthenticatedRequest[A]) => Future[Result]): Future[Result] =
-    block(InternalAuthenticatedRequest(request, user))
+    block(InternalAuthenticatedRequest(request, "id", user))
   override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
   override protected def executionContext: ExecutionContext = cc.executionContext
 }
@@ -49,7 +49,7 @@ object FakeAuthActionVerify extends AuthAction {
   override def invokeBlock[A](
     request: Request[A],
     block: (InternalAuthenticatedRequest[A]) => Future[Result]): Future[Result] =
-    block(InternalAuthenticatedRequest(request, user))
+    block(InternalAuthenticatedRequest(request, "id", user))
   override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
   override protected def executionContext: ExecutionContext = cc.executionContext
 }
