@@ -32,17 +32,16 @@ class JrsService @Inject()(jrsConnector: JrsConnector, appConfig: ApplicationCon
 
   def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier): OptionT[Future, JrsClaims] = OptionT {
     jrsConnector
-      .getJrsClaims(nino)(hc)
-      .fold[Option[JrsClaims]](None)(
-        jrsClaimsData => extractClaimsData(jrsClaimsData)
-      )
+      .getJrsClaimsForIndividual(nino)(hc)
+      .map(JrsClaims(appConfig, _))
+      .getOrElse(None)
   }
-
-  private def extractClaimsData(jrsClaimsData: JrsClaims) =
-    if (jrsClaimsData.employers.nonEmpty) Some(JrsClaims(appConfig, jrsClaimsData.employers)) else None
 
   def checkIfJrsClaimsDataExist(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] =
     if (appConfig.jrsClaimsEnabled) {
-      jrsConnector.getJrsClaims(nino)(hc).fold(false)(jrsClaims => true)
+      jrsConnector
+        .getJrsClaimsForIndividual(nino)(hc)
+        .map(_.employers.nonEmpty)
+        .getOrElse(false)
     } else Future.successful(false)
 }

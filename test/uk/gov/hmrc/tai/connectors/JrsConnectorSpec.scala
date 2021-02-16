@@ -58,7 +58,8 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
               aResponse.withStatus(200).withBody(jrsClaimsJsonResponse.toString())
             ))
 
-        jrsConnector.getJrsClaims(nino)(hc).value.futureValue mustBe Some(JrsClaims(jrsClaimsModelResponse))
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe Some(
+          JrsClaims(jrsClaimsModelResponse))
       }
     }
 
@@ -72,7 +73,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
               aResponse.withStatus(204)
             ))
 
-        jrsConnector.getJrsClaims(nino)(hc).value.futureValue mustBe Some(JrsClaims(List.empty))
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe Some(JrsClaims(List.empty))
       }
     }
 
@@ -86,7 +87,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
               aResponse.withStatus(502)
             ))
 
-        jrsConnector.getJrsClaims(nino)(hc).value.futureValue mustBe None
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe None
       }
 
       "when Bad Request exception is received from jrs API" in {
@@ -97,7 +98,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
               aResponse.withStatus(400).withBody("bad request exception")
             ))
 
-        jrsConnector.getJrsClaims(nino)(hc).value.futureValue mustBe None
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe None
       }
 
       "when Unauthorized is received from jrs API" in {
@@ -108,7 +109,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
               aResponse.withStatus(401).withBody("bad request exception")
             ))
 
-        jrsConnector.getJrsClaims(nino)(hc).value.futureValue mustBe None
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe None
       }
 
       "when Forbidden is received from jrs API" in {
@@ -119,7 +120,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
               aResponse.withStatus(403).withBody("bad request exception")
             ))
 
-        jrsConnector.getJrsClaims(nino)(hc).value.futureValue mustBe None
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe None
       }
     }
   }

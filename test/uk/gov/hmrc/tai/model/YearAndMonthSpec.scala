@@ -17,12 +17,19 @@
 package uk.gov.hmrc.tai.model
 
 import org.joda.time.YearMonth
+import org.mockito.Mockito.when
 import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsResultException, Json}
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import utils.BaseSpec
 
-class YearAndMonthSpec extends PlaySpec with BaseSpec {
+class YearAndMonthSpec extends PlaySpec with MockitoSugar {
+
+  val appConfig = mock[ApplicationConfig]
+
+  when(appConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
   "YearAndMonth" must {
 
@@ -97,14 +104,6 @@ class YearAndMonthSpec extends PlaySpec with BaseSpec {
           .sortYearAndMonth(List(YearAndMonth("2021-02"), YearAndMonth("2020-12"), YearAndMonth("2020-11")), appConfig)
 
       result shouldBe List(YearAndMonth("2020-12"), YearAndMonth("2021-02"))
-
-    }
-
-    "first claim date should return the correct date" in {
-
-      val result = YearAndMonth.firstClaimDate(appConfig)
-
-      result shouldBe YearMonth.parse("2020-12")
 
     }
 

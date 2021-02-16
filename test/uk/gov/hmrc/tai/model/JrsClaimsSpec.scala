@@ -127,5 +127,35 @@ class JrsClaimsSpec extends PlaySpec with BaseSpec {
       data.hasMultipleEmployments shouldBe false
 
     }
+
+    "employerMessageKey should return employers when hasMultipleEmployments is true" in {
+
+      jrsClaims.employerMessageKey shouldBe "employers"
+
+    }
+
+    "employerMessageKey should return employer when hasMultipleEmployments is false" in {
+
+      data.employerMessageKey shouldBe "employer"
+
+    }
+
+    "JrsClaims apply method should return sorted data" in {
+
+      JrsClaims(appConfig, jrsClaims) shouldBe Some(
+        JrsClaims(
+          List(
+            Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"))),
+            Employers("Co-Operative", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02")))
+          )
+        ))
+    }
+
+    "JrsClaims apply method should return none for empty employer list" in {
+
+      JrsClaims(appConfig, JrsClaims(List.empty)) shouldBe None
+
+    }
+
   }
 }

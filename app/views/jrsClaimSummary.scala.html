@@ -22,8 +22,7 @@
 
 @(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-
-@employerMessageKey = {@if(viewModel.hasMultipleEmployments){employers} else {employer}}
+@employerMessageKey = @{viewModel.employerMessageKey}
 
 @main(
     title = messages("check.jrs.claims.title"),

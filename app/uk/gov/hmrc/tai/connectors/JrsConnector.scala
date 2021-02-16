@@ -43,7 +43,7 @@ class JrsConnector @Inject()(httpClient: HttpClient, val metrics: Metrics, appli
 
   val logger = Logger(this.getClass)
 
-  def getJrsClaims(nino: Nino)(hc: HeaderCarrier): OptionT[Future, JrsClaims] = OptionT {
+  def getJrsClaimsForIndividual(nino: Nino)(hc: HeaderCarrier): OptionT[Future, JrsClaims] = {
 
     def jrsClaimsUrl(nino: String): String =
       s"${applicationConfig.jrsClaimsServiceUrl}/coronavirus-jrs-published-employees/employee/$nino"
@@ -53,23 +53,25 @@ class JrsConnector @Inject()(httpClient: HttpClient, val metrics: Metrics, appli
         "CorrelationId" -> randomUUID.toString
       )
 
-    withMetricsTimerAsync("jrs-claim-data") { _ =>
-      httpClient.GET[HttpResponse](jrsClaimsUrl(nino.value)) map { response =>
-        response.status match {
-          case OK => {
-            response.json.asOpt[JrsClaims]
+    OptionT {
+      withMetricsTimerAsync("jrs-claim-data") { _ =>
+        httpClient.GET[HttpResponse](jrsClaimsUrl(nino.value)) map { response =>
+          response.status match {
+            case OK => {
+              response.json.asOpt[JrsClaims]
+            }
+            case NO_CONTENT => {
+              Some(JrsClaims(List.empty))
+            }
+            case _ => {
+              None
+            }
           }
-          case NO_CONTENT => {
-            Some(JrsClaims(List.empty))
-          }
-          case _ => {
+        } recover {
+          case e => {
+            logger.warn(s"${e.getMessage}")
             None
           }
-        }
-      } recover {
-        case e => {
-          logger.warn(s"${e.getMessage}")
-          None
         }
       }
     }

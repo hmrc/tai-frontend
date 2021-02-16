@@ -58,7 +58,7 @@ object YearAndMonth {
     dateTypeList.sortWith((x, y) => x.yearAndMonth.isBefore(y.yearAndMonth))
   }
 
-  def firstClaimDate(appConfig: ApplicationConfig): YearMonth =
+  private def firstClaimDate(appConfig: ApplicationConfig): YearMonth =
     YearMonth.parse(appConfig.jrsClaimsFromDate)
 
   def formattedFirstClaimDate(appConfig: ApplicationConfig): String =
