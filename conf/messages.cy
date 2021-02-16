@@ -1447,6 +1447,7 @@ check.jrs.speak.to.employers=Dylech siarad â’ch cyflogwyr yn gyntaf.
 
 check.jrs.you.can=Gallwch
 check.jrs.report.fraud=roi gwybod i CThEM am dwyll
+jrs.report.fraud.link=https://www.gov.uk/government/organisations/hm-revenue-customs/contact/report-fraud-to-hmrc
 check.jrs.report.fraud.if.employer.abusing.scheme=os yw’ch cyflogwr yn camddefnyddio’r cynllun. Gallai hyn gynnwys achosion pan fo’ch cyflogwr yn:
 check.jrs.report.fraud.if.employers.abusing.scheme=os yw’ch cyflogwyr yn camddefnyddio’r cynllun. Gallai hyn gynnwys achosion pan fo’ch cyflogwyr yn:
 

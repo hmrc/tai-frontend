@@ -77,8 +77,7 @@
                 <h2 class="heading-section">@messages("check.jrs.information.is.different.heading")</h2>
                 <p>@messages(s"check.jrs.speak.to.${employerMessageKey}")</p>
                 <p>@messages("check.jrs.you.can")
-                    <a id="report-fraud-link" href="@appConfig.reportToFraudLink">
-                    @messages("check.jrs.report.fraud")
+                    @Link.toExternalPage(url = messages("jrs.report.fraud.link"), id = Some("report-fraud-link"), value = Some(messages("check.jrs.report.fraud"))).toHtml
                 </a>
                     @messages(s"check.jrs.report.fraud.if.${employerMessageKey}.abusing.scheme")
                 </p>
