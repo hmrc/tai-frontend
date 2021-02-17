@@ -17,8 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import cats.data.OptionT
-import cats.implicits.catsStdInstancesForFuture
-import controllers.Assets.Ok
+import cats.implicits._
 import controllers.auth.DataRequest
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.domain.Nino
@@ -41,28 +40,40 @@ class JrsService @Inject()(
     request.cachedData.getJrsClaims
   }
 
+  private def getClaims(nino: Nino, hc: HeaderCarrier): OptionT[Future, JrsClaims] =
+    jrsConnector.getJrsClaimsForIndividual(nino)(hc)
+
   def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier, request: DataRequest[_]): OptionT[Future, JrsClaims] = {
     checkCache() match {
-      case Some(jrsData) => OptionT { Future.successful(Some(jrsData)) }
-      case None => val x =
-        jrsConnector.getJrsClaimsForIndividual(nino)(hc).flatMap { dataMap =>
-          val jrsClaimsOpt = JrsClaims(appConfig, dataMap)
-          jrsClaimsOpt.map { claims =>
+      case Some(jrsData) => OptionT(Future.successful(Some(jrsData)))
+      case None =>
+        getClaims(nino, hc).flatMap { dataMap =>
+          JrsClaims(appConfig, dataMap).map { claims =>
             val dataWithJrs = request.cachedData.set(JrsClaimsId, claims)(JrsClaims.formats)
             dataCacheConnector.save(dataWithJrs) map { _ =>
               claims
             }
-          }
-        x
-      }
+          }.fold(OptionT.none[Future, JrsClaims])(OptionT.some(_))
+        }
     }
   }
 
-  def checkIfJrsClaimsDataExist(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] =
+  def checkIfJrsClaimsDataExist(nino: Nino)(implicit hc: HeaderCarrier, request: DataRequest[_]): Future[Boolean] =
     if (appConfig.jrsClaimsEnabled) {
-      jrsConnector
-        .getJrsClaimsForIndividual(nino)(hc)
-        .map(_.employers.nonEmpty)
-        .getOrElse(false)
+
+      checkCache() match {
+        case Some(_) => Future.successful(true)
+        case None =>
+          getClaims(nino, hc).flatMap { dataMap =>
+            OptionT.liftF{
+              JrsClaims(appConfig, dataMap).fold(Future.successful(false)){ claims =>
+                val dataWithJrs = request.cachedData.set(JrsClaimsId, claims)(JrsClaims.formats)
+                dataCacheConnector.save(dataWithJrs) map { _ =>
+                  true
+                }
+              }
+            }
+          }.getOrElseF(Future.successful(false))
+      }
     } else Future.successful(false)
 }
