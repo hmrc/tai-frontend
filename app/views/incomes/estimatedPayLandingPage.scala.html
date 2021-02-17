@@ -45,7 +45,7 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     <div>
         <p>@messages("tai.incomes.landing.intro")</p>
         <p id="updateEstimatedPayTotalIncome" aria-hidden="true">@messages("tai.incomes.landing.employment.totalIncome", totalEstimatedIncome)</p>
-        <p id="updateEstimatedPayLink" aria-hidden="true"><a>@messages("tai.incomes.landing.employment.affect")</a></p>
+        <p id="updateEstimatedPayLink" aria-hidden="true"><a href="@routes.EstimatedIncomeTaxController.estimatedIncomeTax">@messages("tai.incomes.landing.employment.affect")</a></p>
         <p>
             @if(isPension) {
                 @messages("tai.incomes.landing.pension.ended", incomeName)
