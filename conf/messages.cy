@@ -617,9 +617,8 @@ tai.incomeTaxSummary.addMissingIncome.section.employerLink=Ychwanegu cyflogwr sy
 tai.incomeTaxSummary.addMissingIncome.section.heading=Rhywbeth ar goll?
 tai.incomeTaxSummary.addMissingIncome.section.otherLink=Ychwanegu incwm o ffynhonnell arall sydd ar goll
 
-tai.incomeTaxSummary.annualAmounts.section.totalIncomeHeading=???
-tai.incomeTaxSummary.annualAmounts.section.totalIncomePara=???
-
+tai.incomeTaxSummary.annualAmounts.section.totalIncomeHeading=Cyfanswm eich incwm amcangyfrifedig
+tai.incomeTaxSummary.annualAmounts.section.totalIncomePara=Cyfanswm eich incwm TWE gros y flwyddyn hon.
 tai.incomeTaxSummary.annualAmounts.section.heading=Symiau blynyddol
 tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading=Eich Treth Incwm amcangyfrifedig
 tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink=Sut mae''ch Treth Incwm yn cael ei gyfrifo
