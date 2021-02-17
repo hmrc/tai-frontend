@@ -30,7 +30,7 @@ import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.DataCacheConnector
+import uk.gov.hmrc.tai.connectors.{DataCacheConnector, DataCacheConnectorImpl}
 import uk.gov.hmrc.tai.identifiers.JrsClaimsId
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import uk.gov.hmrc.tai.service.JrsService
@@ -43,16 +43,18 @@ class JrsClaimsControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
   val jrsService = mock[JrsService]
   val mockAppConfig = mock[ApplicationConfig]
-  val mockDataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheConnector = mock[DataCacheConnectorImpl]
 
-  def retrieveAction(cacheMap: Option[CacheMap]) = new FakeDataRetrievalAction(cacheMap)
+  def createController(cachedData: Option[CachedData]) = {
+    when(mockDataCacheConnector.fetch(any())).thenReturn(Future.successful(cachedData))
 
-  def jrsClaimsController =
     new JrsClaimsController(
       inject[AuditConnector],
       FakeAuthAction,
       FakeValidatePerson,
-      new FakeDataRetrievalActionProvider(mockDataCacheConnector, retrieveAction(None)),
+      new FakeDataRetrievalActionProvider(
+        mockDataCacheConnector,
+        new FakeDataRetrievalAction(cachedData.map(_.cacheMap))),
       new DataRequiredActionImpl(),
       mockDataCacheConnector,
       jrsService,
@@ -61,6 +63,7 @@ class JrsClaimsControllerSpec extends BaseSpec with BeforeAndAfterEach {
       partialRetriever,
       templateRenderer
     )
+  }
 
   val jrsClaimsServiceResponse = JrsClaims(
     List(
@@ -78,26 +81,11 @@ class JrsClaimsControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       "some jrs data is received from the request" in {
 
-        def jrsClaimsController =
-          new JrsClaimsController(
-            inject[AuditConnector],
-            FakeAuthAction,
-            FakeValidatePerson,
-            new FakeDataRetrievalActionProvider(mockDataCacheConnector, retrieveAction(Some(cachedData.cacheMap))),
-            new DataRequiredActionImpl(),
-            mockDataCacheConnector,
-            jrsService,
-            mcc,
-            mockAppConfig,
-            partialRetriever,
-            templateRenderer
-          )
-
         when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
 
         when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
-        val result = jrsClaimsController.onPageLoad()(request)
+        val result = createController(Some(cachedData)).onPageLoad()(request)
 
         status(result) mustBe (OK)
         val doc = Jsoup.parse(contentAsString(result))
@@ -112,11 +100,14 @@ class JrsClaimsControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
 
         when(jrsService.getJrsClaims(any())(any())).thenReturn(OptionT.pure[Future](jrsClaimsServiceResponse))
+
         when(mockDataCacheConnector.save(any())) thenReturn Future.successful(cachedData)
 
         when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
-        val result = jrsClaimsController.onPageLoad()(request)
+        val result = createController(Some(CachedData(new CacheMap("id", Map.empty)))).onPageLoad()(request)
+
+        println(redirectLocation(result))
 
         status(result) mustBe (OK)
         val doc = Jsoup.parse(contentAsString(result))
@@ -136,7 +127,7 @@ class JrsClaimsControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         when(jrsService.getJrsClaims(any())(any())).thenReturn(OptionT.none[Future, JrsClaims])
 
-        val result = jrsClaimsController.onPageLoad()(request)
+        val result = createController(Some(CachedData(new CacheMap("id", Map.empty)))).onPageLoad()(request)
 
         status(result) mustBe (NOT_FOUND)
         val doc = Jsoup.parse(contentAsString(result))
@@ -151,7 +142,7 @@ class JrsClaimsControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         when(mockAppConfig.jrsClaimsEnabled).thenReturn(false)
 
-        val result = jrsClaimsController.onPageLoad()(request)
+        val result = createController(Some(CachedData(new CacheMap("id", Map.empty)))).onPageLoad()(request)
 
         status(result) mustBe (INTERNAL_SERVER_ERROR)
 

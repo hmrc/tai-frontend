@@ -18,23 +18,44 @@ package uk.gov.hmrc.tai.service
 
 import cats.data.OptionT
 import cats.implicits.catsStdInstancesForFuture
+import controllers.Assets.Ok
+import controllers.auth.DataRequest
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.JrsConnector
+import uk.gov.hmrc.tai.connectors.{DataCacheConnector, JrsConnector}
+import uk.gov.hmrc.tai.identifiers.JrsClaimsId
 import uk.gov.hmrc.tai.model.JrsClaims
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class JrsService @Inject()(jrsConnector: JrsConnector, appConfig: ApplicationConfig)(implicit ec: ExecutionContext) {
+class JrsService @Inject()(
+                            jrsConnector: JrsConnector,
+                            appConfig: ApplicationConfig,
+                            dataCacheConnector: DataCacheConnector
+                          )(implicit ec: ExecutionContext) {
 
-  def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier): OptionT[Future, JrsClaims] = OptionT {
-    jrsConnector
-      .getJrsClaimsForIndividual(nino)(hc)
-      .map(JrsClaims(appConfig, _))
-      .getOrElse(None)
+  private def checkCache()(implicit request: DataRequest[_]): Option[JrsClaims] = {
+    request.cachedData.getJrsClaims
+  }
+
+  def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier, request: DataRequest[_]): OptionT[Future, JrsClaims] = {
+    checkCache() match {
+      case Some(jrsData) => OptionT { Future.successful(Some(jrsData)) }
+      case None => val x =
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).flatMap { dataMap =>
+          val jrsClaimsOpt = JrsClaims(appConfig, dataMap)
+          jrsClaimsOpt.map { claims =>
+            val dataWithJrs = request.cachedData.set(JrsClaimsId, claims)(JrsClaims.formats)
+            dataCacheConnector.save(dataWithJrs) map { _ =>
+              claims
+            }
+          }
+        x
+      }
+    }
   }
 
   def checkIfJrsClaimsDataExist(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] =
