@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import cats.data.OptionT
-import controllers.auth.{DataRequest, OptionalDataRequest}
+import controllers.auth.OptionalDataRequest
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier

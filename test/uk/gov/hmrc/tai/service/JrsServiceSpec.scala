@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import cats.data.OptionT
 import cats.implicits.catsStdInstancesForFuture
-import controllers.auth.{AuthenticatedRequest, DataRequest, OptionalDataRequest}
+import controllers.auth.{AuthenticatedRequest, OptionalDataRequest}
 import org.mockito.Matchers.any
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.{DataCacheConnector, JrsConnector}

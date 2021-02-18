@@ -28,12 +28,6 @@ case class AuthenticatedRequest[A](request: Request[A], externalId: String, taiU
 case class InternalAuthenticatedRequest[A](request: Request[A], externalId: String, taiUser: AuthedUser)
     extends WrappedRequest[A](request)
 
-final case class DataRequest[A](
-  request: AuthenticatedRequest[A],
-  cacheId: String,
-  cachedData: CachedData
-) extends WrappedRequest[A](request)
-
 final case class OptionalDataRequest[A](
   request: AuthenticatedRequest[A],
   cacheId: String,

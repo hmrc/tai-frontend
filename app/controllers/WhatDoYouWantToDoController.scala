@@ -16,8 +16,8 @@
 
 package controllers
 
-import controllers.actions.{DataRequiredAction, DataRetrievalActionProvider, ValidatePerson}
-import controllers.auth.{AuthAction, AuthedUser, DataRequest, OptionalDataRequest}
+import controllers.actions.{DataRetrievalActionProvider, ValidatePerson}
+import controllers.auth.{AuthAction, AuthedUser, OptionalDataRequest}
 import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc._

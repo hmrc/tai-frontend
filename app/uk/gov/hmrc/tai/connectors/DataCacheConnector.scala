@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.connectors
 
 import com.google.inject.{ImplementedBy, Inject}
 import controllers.auth.OptionalDataRequest
+import org.checkerframework.checker.units.qual.s
 import play.api.libs.json.Writes
 import repositories.SessionRepository
 import uk.gov.hmrc.tai.identifiers.TypedIdentifier
@@ -30,9 +31,6 @@ class DataCacheConnectorImpl @Inject()(sessionRepository: SessionRepository)(imp
 
   override def save(cachedData: CachedData): Future[CachedData] =
     sessionRepository.upsert(cachedData.cacheMap).map(_ => cachedData)
-
-  override def remove(cacheId: String): Future[Boolean] =
-    sessionRepository.remove(cacheId)
 
   override def fetch(cacheId: String): Future[Option[CachedData]] =
     sessionRepository.get(cacheId).map(_.map(CachedData.apply))
@@ -49,8 +47,6 @@ trait DataCacheConnector {
   }
 
   def save(cachedData: CachedData): Future[CachedData]
-
-  def remove(cacheId: String): Future[Boolean]
 
   def fetch(cacheId: String): Future[Option[CachedData]]
 }
