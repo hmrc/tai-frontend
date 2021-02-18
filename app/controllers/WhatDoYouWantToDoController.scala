@@ -16,8 +16,8 @@
 
 package controllers
 
-import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.actions.{DataRequiredAction, DataRetrievalActionProvider, ValidatePerson}
+import controllers.auth.{AuthAction, AuthedUser, DataRequest}
 import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc._
@@ -48,47 +48,51 @@ class WhatDoYouWantToDoController @Inject()(
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
+  dataRetrievalAction: DataRetrievalActionProvider,
+  dataRequiredAction: DataRequiredAction,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   implicit val recoveryLocation: RecoveryLocation = classOf[WhatDoYouWantToDoController]
 
-  def whatDoYouWantToDoPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    {
-      implicit val user = request.taiUser
-      val nino = request.taiUser.nino
-      val ninoString = request.taiUser.nino.toString()
+  def whatDoYouWantToDoPage(): Action[AnyContent] =
+    (authenticate andThen validatePerson andThen dataRetrievalAction.getData() andThen dataRequiredAction).async {
+      implicit request =>
+        {
+          implicit val user = request.request.taiUser
+          val nino = user.nino
+          val ninoString = nino.toString()
 
-      val possibleRedirectFuture =
-        for {
-          taxAccountSummary   <- taxAccountService.taxAccountSummary(nino, TaxYear())
-          _                   <- employmentService.employments(nino, TaxYear())
-          prevYearEmployments <- previousYearEmployments(nino)
-        } yield {
+          val possibleRedirectFuture =
+            for {
+              taxAccountSummary   <- taxAccountService.taxAccountSummary(nino, TaxYear())
+              _                   <- employmentService.employments(nino, TaxYear())
+              prevYearEmployments <- previousYearEmployments(nino)
+            } yield {
 
-          val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
-            npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-              npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-              npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-              npsNoEmploymentResult(ninoString) orElse
-              npsTaxAccountDeceasedResult(ninoString) orElse { case _ => None }
+              val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
+                npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+                  npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+                  npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+                  npsNoEmploymentResult(ninoString) orElse
+                  npsTaxAccountDeceasedResult(ninoString) orElse { case _ => None }
 
-          npsFailureHandlingPf(taxAccountSummary)
+              npsFailureHandlingPf(taxAccountSummary)
+            }
+
+          possibleRedirectFuture.flatMap(
+            _.map(Future.successful).getOrElse(allowWhatDoYouWantToDo)
+          )
+
+        } recoverWith {
+          val nino = request.request.taiUser.nino
+
+          (hodBadRequestResult(nino.toString()) orElse hodInternalErrorResult(nino.toString()))
         }
-
-      possibleRedirectFuture.flatMap(
-        _.map(Future.successful).getOrElse(allowWhatDoYouWantToDo)
-      )
-
-    } recoverWith {
-      val nino = request.taiUser.nino
-
-      (hodBadRequestResult(nino.toString()) orElse hodInternalErrorResult(nino.toString()))
     }
-  }
 
-  private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
+  private def allowWhatDoYouWantToDo(implicit request: DataRequest[AnyContent], user: AuthedUser): Future[Result] = {
     val nino = user.nino
 
     auditNumberOfTaxCodesReturned(nino)

@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.actions.{DataRequiredActionImpl, FakeDataRetrievalAction, FakeDataRetrievalActionProvider}
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.joda.time.LocalDate
@@ -27,13 +28,16 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.connectors.DataCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.service.{JrsService, _}
+import uk.gov.hmrc.tai.util.CachedData
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
@@ -120,7 +124,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       "there has been a tax code change and cyPlusOne is enabled and jrs claim data exist" in {
         val testController = createTestController(isCyPlusOneEnabled = true)
 
-        when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
+        when(jrsService.checkIfJrsClaimsDataExist(any())(any(), any()))
           .thenReturn(Future.successful(true))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
@@ -141,7 +145,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       "cyPlusOne is disabled and jrs claim data exist" in {
         val testController = createTestController(isCyPlusOneEnabled = false)
 
-        when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
+        when(jrsService.checkIfJrsClaimsDataExist(any())(any(), any()))
           .thenReturn(Future.successful(true))
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
@@ -458,6 +462,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
   val jrsService: JrsService = mock[JrsService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true)
       extends WhatDoYouWantToDoController(
@@ -471,6 +476,11 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         FakeValidatePerson,
         mockAppConfig,
         mcc,
+        new FakeDataRetrievalActionProvider(
+          mockDataCacheConnector,
+          new FakeDataRetrievalAction(Some(new CacheMap("id", Map.empty)))
+        ),
+        new DataRequiredActionImpl(),
         partialRetriever,
         templateRenderer
       ) {
@@ -482,7 +492,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       .thenReturn(Future.successful(AuditResult.Success))
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
       .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary)))
-    when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
+    when(jrsService.checkIfJrsClaimsDataExist(any())(any(), any()))
       .thenReturn(Future.successful(false))
   }
 

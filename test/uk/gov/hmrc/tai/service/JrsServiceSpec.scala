@@ -18,11 +18,18 @@ package uk.gov.hmrc.tai.service
 
 import cats.data.OptionT
 import cats.implicits.catsStdInstancesForFuture
+import controllers.auth.{AuthenticatedRequest, DataRequest}
+import org.mockito.Matchers.any
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.JrsConnector
+import uk.gov.hmrc.tai.connectors.{DataCacheConnector, JrsConnector}
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import play.api.libs.json.Json
+import play.api.test.FakeRequest
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.tai.identifiers.JrsClaimsId
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
+import uk.gov.hmrc.tai.util.CachedData
 import utils.BaseSpec
 
 import scala.concurrent.Future
@@ -31,8 +38,15 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
   val jrsConnector = mock[JrsConnector]
   val mockAppConfig = mock[ApplicationConfig]
+  val dataCacheConnector = mock[DataCacheConnector]
+  val cachedDataObj = CachedData(CacheMap("id", Map.empty))
+  implicit val request = DataRequest(
+    AuthenticatedRequest(FakeRequest(), "id", authedUser, "Some One"),
+    "id",
+    cachedDataObj
+  )
 
-  val jrsService = new JrsService(jrsConnector, mockAppConfig)
+  val jrsService = new JrsService(jrsConnector, mockAppConfig, dataCacheConnector)
 
   when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
 
@@ -58,11 +72,30 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
         when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
+        when(dataCacheConnector.save(any())).thenReturn(Future.successful(cachedDataObj))
+
         val result = jrsService.getJrsClaims(nino)
 
         result.value.futureValue mustBe Some(jrsClaimsServiceResponse)
 
         jrsClaimsServiceResponse.toString mustNot contain("November 2020")
+
+      }
+
+      "cache returns some jrs data" in {
+
+        implicit val requestWithCache: DataRequest[_] =
+          DataRequest(
+            AuthenticatedRequest(FakeRequest(), "id", authedUser, "Some One"),
+            "id",
+            new CachedData(CacheMap("id", Map(JrsClaimsId.toString -> Json.toJson(jrsClaimsServiceResponse))))
+          )
+
+        when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
+
+        val result = jrsService.getJrsClaims(nino)
+
+        result.value.futureValue mustBe Some(jrsClaimsServiceResponse)
 
       }
     }
@@ -98,6 +131,8 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
       "connector returns jrs claim data" in {
 
         when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.pure[Future](jrsClaimsAPIResponse))
+
+        when(dataCacheConnector.save(any())).thenReturn(Future.successful(cachedDataObj))
 
         val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
 
@@ -135,6 +170,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
         result mustBe (false)
       }
     }
+
   }
 
 }

@@ -39,7 +39,6 @@ class JrsClaimsController @Inject()(
   validatePerson: ValidatePerson,
   dataRetrievalAction: DataRetrievalActionProvider,
   dataRequiredAction: DataRequiredAction,
-  dataCacheConnector: DataCacheConnector,
   jrsService: JrsService,
   mcc: MessagesControllerComponents,
   appConfig: ApplicationConfig,
@@ -55,23 +54,16 @@ class JrsClaimsController @Inject()(
 
     if (appConfig.jrsClaimsEnabled) {
 
-      request.cachedData.getJrsClaims match {
-        case Some(jrsClaims) => Future.successful(Ok(views.html.jrsClaimSummary(jrsClaims, appConfig)))
-        case None =>
-          jrsService
-            .getJrsClaims(nino)
-            .fold(
-              Future.successful(NotFound(views.html.noJrsClaim(appConfig)))
-            )(
-              jrsClaims => {
-                val dataWithJrs = request.cachedData.set(JrsClaimsId, jrsClaims)
-                dataCacheConnector.save(dataWithJrs) map { _ =>
-                  Ok(views.html.jrsClaimSummary(jrsClaims, appConfig))
-                }
-              }
-            )
-            .flatten
-      }
+      jrsService
+        .getJrsClaims(nino)
+        .fold(
+          NotFound(views.html.noJrsClaim(appConfig))
+        )(
+          jrsClaims => {
+            Ok(views.html.jrsClaimSummary(jrsClaims, appConfig))
+          }
+        )
+
     } else {
       Future.successful(InternalServerError(views.html.internalServerError(appConfig)))
     }

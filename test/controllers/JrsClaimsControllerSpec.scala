@@ -56,7 +56,6 @@ class JrsClaimsControllerSpec extends BaseSpec with BeforeAndAfterEach {
         mockDataCacheConnector,
         new FakeDataRetrievalAction(cachedData.map(_.cacheMap))),
       new DataRequiredActionImpl(),
-      mockDataCacheConnector,
       jrsService,
       mcc,
       mockAppConfig,
@@ -79,27 +78,11 @@ class JrsClaimsControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "success view with JRS claim data" when {
 
-      "some jrs data is received from the request" in {
-
-        when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
-
-        when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
-
-        val result = createController(Some(cachedData)).onPageLoad()(request)
-
-        status(result) mustBe (OK)
-        val doc = Jsoup.parse(contentAsString(result))
-
-        doc.title must include(Messages("check.jrs.claims.title"))
-
-        verify(jrsService, never()).getJrsClaims(any())(any())
-      }
-
       "some jrs data is received from service" in {
 
         when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
 
-        when(jrsService.getJrsClaims(any())(any())).thenReturn(OptionT.pure[Future](jrsClaimsServiceResponse))
+        when(jrsService.getJrsClaims(any())(any(), any())).thenReturn(OptionT.pure[Future](jrsClaimsServiceResponse))
 
         when(mockDataCacheConnector.save(any())) thenReturn Future.successful(cachedData)
 
@@ -107,15 +90,12 @@ class JrsClaimsControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         val result = createController(Some(CachedData(new CacheMap("id", Map.empty)))).onPageLoad()(request)
 
-        println(redirectLocation(result))
-
         status(result) mustBe (OK)
         val doc = Jsoup.parse(contentAsString(result))
 
         doc.title must include(Messages("check.jrs.claims.title"))
 
-        verify(jrsService).getJrsClaims(any())(any())
-        verify(mockDataCacheConnector).save(any())
+        verify(jrsService).getJrsClaims(any())(any(), any())
       }
     }
 
@@ -125,7 +105,7 @@ class JrsClaimsControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
 
-        when(jrsService.getJrsClaims(any())(any())).thenReturn(OptionT.none[Future, JrsClaims])
+        when(jrsService.getJrsClaims(any())(any(), any())).thenReturn(OptionT.none[Future, JrsClaims])
 
         val result = createController(Some(CachedData(new CacheMap("id", Map.empty)))).onPageLoad()(request)
 
