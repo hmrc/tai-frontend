@@ -148,7 +148,7 @@ class WhatDoYouWantToDoController @Inject()(
     }
   }
 
-  private def auditNumberOfTaxCodesReturned(nino: Nino)(implicit request: Request[AnyContent]) = {
+  private def auditNumberOfTaxCodesReturned(nino: Nino)(implicit request: OptionalDataRequest[AnyContent]) = {
 
     val currentTaxYearEmployments: Future[Seq[Employment]] = employmentService.employments(nino, TaxYear())
     val currentTaxYearTaxCodes: Future[TaiResponse] = taxAccountService.taxCodeIncomes(nino, TaxYear())
