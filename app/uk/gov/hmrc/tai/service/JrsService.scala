@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import cats.data.OptionT
-import controllers.auth.DataRequest
+import controllers.auth.{DataRequest, OptionalDataRequest}
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -26,6 +26,7 @@ import uk.gov.hmrc.tai.connectors.{DataCacheConnector, JrsConnector}
 import uk.gov.hmrc.tai.identifiers.JrsClaimsId
 import uk.gov.hmrc.tai.model.JrsClaims
 import cats.implicits.catsStdInstancesForFuture
+import uk.gov.hmrc.tai.util.CachedData
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,29 +37,35 @@ class JrsService @Inject()(
   dataCacheConnector: DataCacheConnector
 )(implicit ec: ExecutionContext) {
 
-  private def checkCache()(implicit request: DataRequest[_]): Option[JrsClaims] =
-    request.cachedData.getJrsClaims
+  private def checkCache()(implicit request: OptionalDataRequest[_]): Option[JrsClaims] =
+    request.cachedData.flatMap(_.getJrsClaims)
 
   private def getClaims(nino: Nino, hc: HeaderCarrier): OptionT[Future, JrsClaims] =
     jrsConnector.getJrsClaimsForIndividual(nino)(hc)
 
-  def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier, request: DataRequest[_]): OptionT[Future, JrsClaims] =
+  def getJrsClaims(
+    nino: Nino)(implicit hc: HeaderCarrier, request: OptionalDataRequest[_]): OptionT[Future, JrsClaims] =
     checkCache() match {
-      case Some(jrsData) => OptionT[Future, JrsClaims](Future.successful(Some(jrsData)))
+      case Some(jrsData) => OptionT[Future, JrsClaims](Future.successful(JrsClaims(appConfig, jrsData)))
       case None =>
         getClaims(nino, hc).flatMap { dataMap =>
           JrsClaims(appConfig, dataMap)
             .map { claims =>
-              val dataWithJrs = request.cachedData.set(JrsClaimsId, claims)(JrsClaims.formats)
-              dataCacheConnector.save(dataWithJrs) map { _ =>
-                claims
+              OptionT.liftF {
+                val dataWithJrs = request.cachedData
+                  .getOrElse(CachedData.empty(request.cacheId))
+                  .set(JrsClaimsId, claims)(JrsClaims.formats)
+                dataCacheConnector.save(dataWithJrs) map { _ =>
+                  claims
+                }
               }
             }
-            .fold(OptionT.none[Future, JrsClaims])(OptionT.liftF(_))
+            .getOrElse(OptionT.none[Future, JrsClaims])
         }
     }
 
-  def checkIfJrsClaimsDataExist(nino: Nino)(implicit hc: HeaderCarrier, request: DataRequest[_]): Future[Boolean] =
+  def checkIfJrsClaimsDataExist(
+    nino: Nino)(implicit hc: HeaderCarrier, request: OptionalDataRequest[_]): Future[Boolean] =
     if (appConfig.jrsClaimsEnabled) {
 
       checkCache() match {
@@ -68,7 +75,9 @@ class JrsService @Inject()(
             .flatMap { dataMap =>
               OptionT.liftF {
                 JrsClaims(appConfig, dataMap).fold(Future.successful(false)) { claims =>
-                  val dataWithJrs = request.cachedData.set(JrsClaimsId, claims)(JrsClaims.formats)
+                  val dataWithJrs = request.cachedData
+                    .getOrElse(CachedData.empty(request.cacheId))
+                    .set(JrsClaimsId, claims)(JrsClaims.formats)
                   dataCacheConnector.save(dataWithJrs) map { _ =>
                     true
                   }
@@ -77,5 +86,7 @@ class JrsService @Inject()(
             }
             .getOrElseF(Future.successful(false))
       }
-    } else Future.successful(false)
+    } else {
+      Future.successful(false)
+    }
 }

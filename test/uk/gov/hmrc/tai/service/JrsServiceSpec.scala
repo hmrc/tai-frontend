@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import cats.data.OptionT
 import cats.implicits.catsStdInstancesForFuture
-import controllers.auth.{AuthenticatedRequest, DataRequest}
+import controllers.auth.{AuthenticatedRequest, DataRequest, OptionalDataRequest}
 import org.mockito.Matchers.any
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.{DataCacheConnector, JrsConnector}
@@ -39,12 +39,6 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
   val jrsConnector = mock[JrsConnector]
   val mockAppConfig = mock[ApplicationConfig]
   val dataCacheConnector = mock[DataCacheConnector]
-  val cachedDataObj = CachedData(CacheMap("id", Map.empty))
-  implicit val request = DataRequest(
-    AuthenticatedRequest(FakeRequest(), "id", authedUser, "Some One"),
-    "id",
-    cachedDataObj
-  )
 
   val jrsService = new JrsService(jrsConnector, mockAppConfig, dataCacheConnector)
 
@@ -61,6 +55,13 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
       Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02"))),
       Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
     ))
+
+  val cachedDataObj = new CachedData(CacheMap("id", Map(JrsClaimsId.toString -> Json.toJson(jrsClaimsAPIResponse))))
+  implicit val request = OptionalDataRequest(
+    AuthenticatedRequest(FakeRequest(), "id", authedUser, "Some One"),
+    "id",
+    None
+  )
 
   "getJrsClaims" should {
 
@@ -84,11 +85,11 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "cache returns some jrs data" in {
 
-        implicit val requestWithCache: DataRequest[_] =
-          DataRequest(
+        implicit val requestWithCache: OptionalDataRequest[_] =
+          OptionalDataRequest(
             AuthenticatedRequest(FakeRequest(), "id", authedUser, "Some One"),
             "id",
-            new CachedData(CacheMap("id", Map(JrsClaimsId.toString -> Json.toJson(jrsClaimsServiceResponse))))
+            Some(cachedDataObj)
           )
 
         when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")

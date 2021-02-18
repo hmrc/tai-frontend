@@ -16,18 +16,15 @@
 
 package controllers
 
-import cats.implicits.catsSyntaxFlatten
 import cats.instances.future._
 import com.google.inject.{Inject, Singleton}
-import controllers.actions.{DataRequiredAction, DataRetrievalActionProvider, ValidatePerson}
+import controllers.actions.{DataRetrievalActionProvider, ValidatePerson}
 import controllers.auth.AuthAction
 import play.api.mvc._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.DataCacheConnector
-import uk.gov.hmrc.tai.identifiers.JrsClaimsId
 import uk.gov.hmrc.tai.service._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,7 +35,6 @@ class JrsClaimsController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   dataRetrievalAction: DataRetrievalActionProvider,
-  dataRequiredAction: DataRequiredAction,
   jrsService: JrsService,
   mcc: MessagesControllerComponents,
   appConfig: ApplicationConfig,
@@ -47,7 +43,7 @@ class JrsClaimsController @Inject()(
     extends TaiBaseController(mcc) {
 
   private def authorise =
-    (authenticate andThen validatePerson andThen dataRetrievalAction.getData() andThen dataRequiredAction)
+    (authenticate andThen validatePerson andThen dataRetrievalAction.getData())
 
   def onPageLoad(): Action[AnyContent] = authorise.async { implicit request =>
     val nino = request.request.taiUser.nino

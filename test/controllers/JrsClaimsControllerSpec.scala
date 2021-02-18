@@ -19,10 +19,10 @@ package controllers
 import builders.RequestBuilder
 import cats.data.OptionT
 import cats.implicits.catsStdInstancesForFuture
-import controllers.actions.{DataRequiredActionImpl, FakeDataRetrievalAction, FakeDataRetrievalActionProvider, FakeValidatePerson}
+import controllers.actions.{FakeDataRetrievalAction, FakeDataRetrievalActionProvider, FakeValidatePerson}
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{never, reset, verify, when}
+import org.mockito.Mockito.{reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -30,7 +30,7 @@ import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.{DataCacheConnector, DataCacheConnectorImpl}
+import uk.gov.hmrc.tai.connectors.DataCacheConnectorImpl
 import uk.gov.hmrc.tai.identifiers.JrsClaimsId
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import uk.gov.hmrc.tai.service.JrsService
@@ -55,7 +55,6 @@ class JrsClaimsControllerSpec extends BaseSpec with BeforeAndAfterEach {
       new FakeDataRetrievalActionProvider(
         mockDataCacheConnector,
         new FakeDataRetrievalAction(cachedData.map(_.cacheMap))),
-      new DataRequiredActionImpl(),
       jrsService,
       mcc,
       mockAppConfig,

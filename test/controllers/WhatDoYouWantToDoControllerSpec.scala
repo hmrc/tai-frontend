@@ -16,9 +16,8 @@
 
 package controllers
 
-import controllers.actions.{DataRequiredActionImpl, FakeDataRetrievalAction, FakeDataRetrievalActionProvider}
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
+import controllers.actions.{FakeDataRetrievalAction, FakeDataRetrievalActionProvider, FakeValidatePerson}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
@@ -37,7 +36,6 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.service.{JrsService, _}
-import uk.gov.hmrc.tai.util.CachedData
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
@@ -480,7 +478,6 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           mockDataCacheConnector,
           new FakeDataRetrievalAction(Some(new CacheMap("id", Map.empty)))
         ),
-        new DataRequiredActionImpl(),
         partialRetriever,
         templateRenderer
       ) {
