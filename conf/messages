@@ -1441,6 +1441,7 @@ check.jrs.speak.to.employers=You should speak to your employers first.
 
 check.jrs.you.can=You can
 check.jrs.report.fraud=report fraud to HMRC
+jrs.report.fraud.link=https://www.gov.uk/government/organisations/hm-revenue-customs/contact/report-fraud-to-hmrc
 check.jrs.report.fraud.if.employer.abusing.scheme=if your employer is abusing the scheme. This could include your employer:
 check.jrs.report.fraud.if.employers.abusing.scheme=if your employers are abusing the scheme. This could include your employers:
 

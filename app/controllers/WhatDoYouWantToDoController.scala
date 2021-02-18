@@ -154,8 +154,9 @@ class WhatDoYouWantToDoController @Inject()(
     val currentTaxYearTaxCodes: Future[TaiResponse] = taxAccountService.taxCodeIncomes(nino, TaxYear())
 
     (for {
-      employments <- currentTaxYearEmployments
-      taxCodes    <- currentTaxYearTaxCodes
+      employments    <- currentTaxYearEmployments
+      taxCodes       <- currentTaxYearTaxCodes
+      isJrsTileShown <- jrsService.checkIfJrsClaimsDataExist(nino)
     } yield {
       val noOfTaxCodes: Seq[TaxCodeIncome] = taxCodes match {
         case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => taxCodeIncomes
@@ -165,7 +166,8 @@ class WhatDoYouWantToDoController @Inject()(
         nino,
         request.headers.get("Referer").getOrElse("NA"),
         employments,
-        noOfTaxCodes)
+        noOfTaxCodes,
+        isJrsTileShown)
     }).recover {
       auditError(nino)
     }

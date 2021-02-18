@@ -39,9 +39,6 @@ class ApplicationConfig @Inject()(
 
   lazy val jrsClaimsFromDate: String = servicesConfig.getString("tai.jrs.claims.from.date")
 
-  lazy val reportToFraudLink: String =
-    "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/report-fraud-to-hmrc"
-
   lazy val incomeFromEmploymentPensionLinkUrl =
     s"$dfsFrontendHost/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
   lazy val companyBenefitsLinkUrl =
