@@ -69,12 +69,14 @@ class AuditService @Inject()(
     nino: Nino,
     path: String,
     numberOfEmployments: Seq[Employment],
-    numberOfTaxCodeIncomes: Seq[TaxCodeIncome])(implicit hc: HeaderCarrier): Future[AuditResult] = {
+    numberOfTaxCodeIncomes: Seq[TaxCodeIncome],
+    isJrsTileShown: Boolean)(implicit hc: HeaderCarrier): Future[AuditResult] = {
     val details = Map(
       "authProviderId"             -> authProviderId(hc),
       "nino"                       -> nino.nino,
       "noOfCurrentYearEmployments" -> numberOfEmployments.size.toString,
-      "noOfTaxCodes"               -> numberOfTaxCodeIncomes.size.toString
+      "noOfTaxCodes"               -> numberOfTaxCodeIncomes.size.toString,
+      "isJrsTileShown"             -> isJrsTileShown.toString
     )
     createAndSendAuditEvent(userEnterEvent, path, details)
   }
