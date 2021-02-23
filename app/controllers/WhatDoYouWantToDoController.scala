@@ -139,9 +139,8 @@ class WhatDoYouWantToDoController @Inject()(
 
         Logger.debug(s"wdywtdViewModelCYDisabled $model")
 
-
-          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
-        })
+        Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+      }
     }
   }
 
