@@ -104,7 +104,6 @@
                         )
                     }
 
-
                     @card(
                         url = Some(appConfig.taxReliefExpenseClaimLink),
                         id = "claimRelief",
@@ -113,6 +112,17 @@
                         gaAction=Some(gaEventActionString),
                         gaLabel=Some(messages("claim.tax.relief.wfh"))
                     )
+
+                    @if(model.showJrsTile){
+                    @card(
+                    url = Some("/check-income-tax/jrs-claims"),
+                    id = "jrsClaims",
+                    heading = messages("check.jrs.claims"),
+                    gaAction=Some(gaEventActionString),
+                    gaLabel=Some(messages("check.jrs.claims"))
+                    )
+                    }
+
                 </div>
             </div>
         </div>

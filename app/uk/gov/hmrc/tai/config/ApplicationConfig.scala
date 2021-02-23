@@ -37,6 +37,8 @@ class ApplicationConfig @Inject()(
   lazy val incomeTaxFormPartialLinkUrl =
     s"$dfsDigitalFormsFrontend/digital-forms/forms/personal-tax/income-tax/catalogue"
 
+  lazy val jrsClaimsFromDate: String = servicesConfig.getString("tai.jrs.claims.from.date")
+
   lazy val incomeFromEmploymentPensionLinkUrl =
     s"$dfsFrontendHost/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
   lazy val companyBenefitsLinkUrl =
@@ -121,10 +123,12 @@ class ApplicationConfig @Inject()(
   lazy val identityVerificationHost: String = decorateUrlForLocalDev("identity-verification.host")
   lazy val taxCalcFrontendHost: String = decorateUrlForLocalDev("taxcalc-frontend.host")
   lazy val trackFrontendHost: String = decorateUrlForLocalDev("tracking-frontend.host")
+  lazy val jrsClaimsServiceUrl: String = servicesConfig.baseUrl("coronavirus-jrs-published-employees")
 }
 
 trait FeatureTogglesConfig { self: ApplicationConfig =>
   val cyPlusOneEnabled: Boolean = getOptional[Boolean]("tai.cyPlusOne.enabled").getOrElse(false)
+  val jrsClaimsEnabled: Boolean = getOptional[Boolean]("tai.jrsClaims.enabled").getOrElse(false)
   val welshLanguageEnabled: Boolean = getOptional[Boolean]("tai.feature.welshLanguage.enabled").getOrElse(false)
   val companyCarForceRedirectEnabled: Boolean =
     getOptional[Boolean]("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
