@@ -161,13 +161,15 @@ class AuditServiceSpec extends BaseSpec {
             false)
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
-        Await.result(sut.sendUserEntryAuditEvent(nino, "NA", List(employment), List(taxCodeIncome)), 5.seconds)
+        Await.result(
+          sut.sendUserEntryAuditEvent(nino, "NA", List(employment), List(taxCodeIncome), isJrsTileShown = true),
+          5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           auditType = sut.userEnterEvent,
-          detail = auditDetail(sut.userEnterEvent, Some("1")))
+          detail = auditDetail(sut.userEnterEvent, Some("1"), true))
           .copy(generatedAt = now, eventId = eventId)
       }
 
@@ -178,13 +180,20 @@ class AuditServiceSpec extends BaseSpec {
         implicit val request = FakeRequest().withSession((AuthProvider, AuthProviderGG))
 
         Await
-          .result(sut.sendUserEntryAuditEvent(nino, "NA", Seq.empty[Employment], Seq.empty[TaxCodeIncome]), 5.seconds)
+          .result(
+            sut.sendUserEntryAuditEvent(
+              nino,
+              "NA",
+              Seq.empty[Employment],
+              Seq.empty[TaxCodeIncome],
+              isJrsTileShown = false),
+            5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           auditType = sut.userEnterEvent,
-          detail = auditDetail(sut.userEnterEvent, Some("0"))).copy(generatedAt = now, eventId = eventId)
+          detail = auditDetail(sut.userEnterEvent, Some("0"), false)).copy(generatedAt = now, eventId = eventId)
       }
     }
 
@@ -605,37 +614,39 @@ class AuditServiceSpec extends BaseSpec {
     }
   }
 
-  private val entryAuditDetails = (noOfEmpAndTax: String) =>
+  private val entryAuditDetails = (noOfEmpAndTax: String, isJrsTileShown: String) =>
     Map(
-      "authProviderId"             -> AuthProviderGG,
       "nino"                       -> nino.nino,
       "noOfCurrentYearEmployments" -> noOfEmpAndTax,
-      "noOfTaxCodes"               -> noOfEmpAndTax)
+      "noOfTaxCodes"               -> noOfEmpAndTax,
+      "isJrsTileShown"             -> isJrsTileShown
+  )
 
-  private val employmentOrPensionAuditDetails = Map("authProviderId" -> AuthProviderGG, "nino" -> nino.nino)
-  private val companyBenefitsAuditDetails = Map("authProviderId"     -> AuthProviderGG, "nino" -> nino.nino)
+  private val employmentOrPensionAuditDetails = Map("nino" -> nino.nino)
+  private val companyBenefitsAuditDetails = Map("nino"     -> nino.nino)
   private val endCompanyCarDetails = Map(
-    "authProviderId" -> AuthProviderGG,
-    "nino"           -> nino.nino,
-    "employmentId"   -> "1",
-    "carSequenceNo"  -> "1",
-    "carEndDate"     -> "2017-01-01",
-    "fuelEndDate"    -> "2017-01-01",
-    "isSuccessful"   -> "true"
+    "nino"          -> nino.nino,
+    "employmentId"  -> "1",
+    "carSequenceNo" -> "1",
+    "carEndDate"    -> "2017-01-01",
+    "fuelEndDate"   -> "2017-01-01",
+    "isSuccessful"  -> "true"
   )
   private val endCompanyCarDetailsNoFuel = Map(
-    "authProviderId" -> AuthProviderVerify,
-    "nino"           -> nino.nino,
-    "employmentId"   -> "1",
-    "carSequenceNo"  -> "1",
-    "carEndDate"     -> "2017-01-01",
-    "fuelEndDate"    -> "NA",
-    "isSuccessful"   -> "true"
+    "nino"          -> nino.nino,
+    "employmentId"  -> "1",
+    "carSequenceNo" -> "1",
+    "carEndDate"    -> "2017-01-01",
+    "fuelEndDate"   -> "NA",
+    "isSuccessful"  -> "true"
   )
 
-  private def auditDetail(auditType: String, noOfEmpAndTax: Option[String] = None): Map[String, String] =
+  private def auditDetail(
+    auditType: String,
+    noOfEmpAndTax: Option[String] = None,
+    isJrsTileShown: Boolean = false): Map[String, String] =
     auditType match {
-      case "userEntersService"               => entryAuditDetails(noOfEmpAndTax.getOrElse("0"))
+      case "userEntersService"               => entryAuditDetails(noOfEmpAndTax.getOrElse("0"), isJrsTileShown.toString)
       case "startedEmploymentPensionJourney" => employmentOrPensionAuditDetails
       case "finishedCompanyCarJourney"       => endCompanyCarDetails
       case "finishedCompanyCarJourneyNoFuel" => endCompanyCarDetailsNoFuel
@@ -675,7 +686,6 @@ class AuditServiceSpec extends BaseSpec {
       extends AuditService(
         appName,
         mock[AuditConnector],
-        mock[PersonService],
         appConfig
       )
 

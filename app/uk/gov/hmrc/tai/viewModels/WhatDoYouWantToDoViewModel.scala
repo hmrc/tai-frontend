@@ -25,6 +25,7 @@ import scala.collection.immutable.ListMap
 case class WhatDoYouWantToDoViewModel(
   isCyPlusOneEnabled: Boolean,
   hasTaxCodeChanged: Boolean = false,
+  showJrsTile: Boolean,
   taxCodeMismatch: Option[TaxCodeMismatch] = None) {
 
   def showTaxCodeChangeTile(): Boolean =

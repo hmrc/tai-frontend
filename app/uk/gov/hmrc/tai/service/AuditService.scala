@@ -26,7 +26,6 @@ import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -36,7 +35,6 @@ import scala.concurrent.Future
 class AuditService @Inject()(
   @Named("appName") appName: String,
   val auditConnector: AuditConnector,
-  personService: PersonService,
   appConfig: ApplicationConfig) {
 
   val userEnterEvent = "userEntersService"
@@ -70,14 +68,13 @@ class AuditService @Inject()(
     nino: Nino,
     path: String,
     numberOfEmployments: Seq[Employment],
-    numberOfTaxCodeIncomes: Seq[TaxCodeIncome])(
-    implicit hc: HeaderCarrier,
-    request: Request[_]): Future[AuditResult] = {
+    numberOfTaxCodeIncomes: Seq[TaxCodeIncome],
+    isJrsTileShown: Boolean)(implicit hc: HeaderCarrier, request: Request[_]): Future[AuditResult] = {
     val details = Map(
-      "authProviderId"             -> authProviderId,
       "nino"                       -> nino.nino,
       "noOfCurrentYearEmployments" -> numberOfEmployments.size.toString,
-      "noOfTaxCodes"               -> numberOfTaxCodeIncomes.size.toString
+      "noOfTaxCodes"               -> numberOfTaxCodeIncomes.size.toString,
+      "isJrsTileShown"             -> isJrsTileShown.toString
     )
     createAndSendAuditEvent(userEnterEvent, path, details)
   }
@@ -91,13 +88,12 @@ class AuditService @Inject()(
     isSuccessful: Boolean,
     path: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[AuditResult] = {
     val details = Map(
-      "authProviderId" -> authProviderId,
-      "nino"           -> nino,
-      "employmentId"   -> employmentId,
-      "carSequenceNo"  -> carSeqNo,
-      "carEndDate"     -> endDate,
-      "fuelEndDate"    -> fuelBenefitDate.getOrElse("NA"),
-      "isSuccessful"   -> isSuccessful.toString
+      "nino"          -> nino,
+      "employmentId"  -> employmentId,
+      "carSequenceNo" -> carSeqNo,
+      "carEndDate"    -> endDate,
+      "fuelEndDate"   -> fuelBenefitDate.getOrElse("NA"),
+      "isSuccessful"  -> isSuccessful.toString
     )
 
     createAndSendAuditEvent(finishedCompanyCarEvent, path, details)
@@ -108,8 +104,7 @@ class AuditService @Inject()(
     request: Request[AnyContent]): Future[String] = {
     def sendIformRedirectUriAuditEvent(nino: Nino, path: String, auditEvent: String) = {
       val details = Map(
-        "authProviderId" -> authProviderId,
-        "nino"           -> nino.nino
+        "nino" -> nino.nino
       )
       createAndSendAuditEvent(auditEvent, path, details)
     }
@@ -130,12 +125,5 @@ class AuditService @Inject()(
 
   private def fetchPath(request: Request[AnyContent]) =
     request.headers.get("Referer").getOrElse("NA")
-
-  private def authProviderId(implicit request: Request[_]) =
-    request.session.get(TaiConstants.AuthProvider) match {
-      case Some(provider @ TaiConstants.AuthProviderGG)     => provider
-      case Some(provider @ TaiConstants.AuthProviderVerify) => provider
-      case _                                                => "-"
-    }
 
 }
