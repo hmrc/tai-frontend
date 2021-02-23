@@ -37,7 +37,8 @@ case class TaxAccountSummaryViewModel(
   displayIyaBanner: Boolean,
   isAnyFormInProgress: TimeToProcess,
   otherIncomeSources: Seq[IncomeSourceViewModel],
-  rtiAvailable: Boolean)
+  rtiAvailable: Boolean,
+  totalEstimatedIncome: String)
 
 object TaxAccountSummaryViewModel extends ViewModelHelper {
 
@@ -65,6 +66,8 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
 
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
 
+    val totalEstimatedIncome = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
+
     TaxAccountSummaryViewModel(
       header = header,
       title = title,
@@ -77,7 +80,8 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
       displayIyaBanner = taxAccountSummary.totalInYearAdjustmentIntoCY > 0,
       isAnyFormInProgress = isAnyFormInProgress,
       otherIncomeSources = IncomeSourceViewModel(nonTaxCodeIncome),
-      rtiAvailable = incomesSources.isRtiAvailable
+      rtiAvailable = incomesSources.isRtiAvailable,
+      totalEstimatedIncome = totalEstimatedIncome
     )
   }
 }

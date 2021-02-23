@@ -30,7 +30,7 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
     isCyPlusOneEnabled: Boolean,
     hasTaxCodeChanged: Boolean = false,
     taxCodeMismatch: Option[TaxCodeMismatch] = None): WhatDoYouWantToDoViewModel =
-    WhatDoYouWantToDoViewModel(isCyPlusOneEnabled, hasTaxCodeChanged, taxCodeMismatch)
+    WhatDoYouWantToDoViewModel(isCyPlusOneEnabled, hasTaxCodeChanged, false, taxCodeMismatch)
 
   val mismatchedTaxCode = TaxCodeMismatchFactory.mismatchedTaxCodeComplex
   val matchedTaxCode = TaxCodeMismatchFactory.matchedTaxCode

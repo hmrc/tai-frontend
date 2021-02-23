@@ -43,6 +43,7 @@ class WhatDoYouWantToDoController @Inject()(
   taxAccountService: TaxAccountService,
   val auditConnector: AuditConnector,
   auditService: AuditService,
+  jrsService: JrsService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
@@ -99,12 +100,15 @@ class WhatDoYouWantToDoController @Inject()(
       for {
         taxCodeChanged    <- hasTaxCodeChanged
         taxAccountSummary <- cy1TaxAccountSummary
+        showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
+
       } yield {
         taxAccountSummary match {
           case TaiSuccessResponseWithPayload(_) => {
             val model = WhatDoYouWantToDoViewModel(
               applicationConfig.cyPlusOneEnabled,
               taxCodeChanged.changed,
+              showJrsTile,
               taxCodeChanged.mismatch)
 
             Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
@@ -115,26 +119,28 @@ class WhatDoYouWantToDoController @Inject()(
             if (response.isInstanceOf[TaiNotFoundResponse])
               Logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
 
-            val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false)
+            val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
             Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
             Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
           }
         }
       }
     } else {
-      taxCodeChangeService
-        .hasTaxCodeChanged(nino)
-        .map(hasTaxCodeChanged => {
-          val model =
-            WhatDoYouWantToDoViewModel(
-              applicationConfig.cyPlusOneEnabled,
-              hasTaxCodeChanged.changed,
-              hasTaxCodeChanged.mismatch)
+      for {
+        hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
+        showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
+      } yield {
+        val model =
+          WhatDoYouWantToDoViewModel(
+            applicationConfig.cyPlusOneEnabled,
+            hasTaxCodeChanged.changed,
+            showJrsTile,
+            hasTaxCodeChanged.mismatch)
 
-          Logger.debug(s"wdywtdViewModelCYDisabled $model")
+        Logger.debug(s"wdywtdViewModelCYDisabled $model")
 
-          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
-        })
+        Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+      }
     }
   }
 
@@ -144,8 +150,9 @@ class WhatDoYouWantToDoController @Inject()(
     val currentTaxYearTaxCodes: Future[TaiResponse] = taxAccountService.taxCodeIncomes(nino, TaxYear())
 
     (for {
-      employments <- currentTaxYearEmployments
-      taxCodes    <- currentTaxYearTaxCodes
+      employments    <- currentTaxYearEmployments
+      taxCodes       <- currentTaxYearTaxCodes
+      isJrsTileShown <- jrsService.checkIfJrsClaimsDataExist(nino)
     } yield {
       val noOfTaxCodes: Seq[TaxCodeIncome] = taxCodes match {
         case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => taxCodeIncomes
@@ -155,7 +162,8 @@ class WhatDoYouWantToDoController @Inject()(
         nino,
         request.headers.get("Referer").getOrElse("NA"),
         employments,
-        noOfTaxCodes)
+        noOfTaxCodes,
+        isJrsTileShown)
     }).recover {
       auditError(nino)
     }
