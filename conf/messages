@@ -622,7 +622,7 @@ tai.incomeTaxSummary.annualAmounts.section.taxFreeLink=What makes up your tax-fr
 tai.incomeTaxSummary.annualAmounts.section.taxFreePara=The income you can have, taking into account any adjustments, before paying tax.
 
 tai.incomeTaxSummary.annualAmounts.section.totalIncomeHeading=Your total estimated income
-tai.incomeTaxSummary.annualAmounts.section.totalIncomePara=Your total gross Income from PAYE this year
+tai.incomeTaxSummary.annualAmounts.section.totalIncomePara=Your total gross Income from PAYE this year.
 
 tai.incomeTaxSummary.ceased.section.heading=Employments that have ended since {0}
 tai.incomeTaxSummary.ceasedIncomeAmount.prefix=Your taxable income to date is
