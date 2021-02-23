@@ -25,15 +25,20 @@ import javax.inject.{Inject, Named}
 import org.joda.time.LocalDate
 import play.api.mvc._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.connectors.responses.{TaiFailureResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.IncomeService
+import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefixAndSign
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,6 +48,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
   incomeService: IncomeService,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
+  taxAccountService: TaxAccountService,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
@@ -51,16 +57,25 @@ class IncomeUpdateEstimatedPayController @Inject()(
   def estimatedPayLandingPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey) map {
-      mandatoryValues =>
-        val incomeName :: incomeId :: incomeType :: Nil = mandatoryValues.toList
-        Ok(
-          views.html.incomes.estimatedPayLandingPage(
-            incomeName,
-            incomeId.toInt,
-            incomeType == TaiConstants.IncomeTypePension,
-            appConfig
-          ))
+    for {
+      taxAccountSummary <- taxAccountService.taxAccountSummary(user.nino, TaxYear())
+      mandatoryValues <- journeyCacheService
+                          .mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
+    } yield {
+      (taxAccountSummary, mandatoryValues) match {
+        case (TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary), mandatoryValues: Seq[String]) =>
+          val totalEstimatedIncome = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
+          val incomeName :: incomeId :: incomeType :: Nil = mandatoryValues.toList
+          Ok(
+            views.html.incomes.estimatedPayLandingPage(
+              incomeName,
+              incomeId.toInt,
+              totalEstimatedIncome,
+              incomeType == TaiConstants.IncomeTypePension,
+              appConfig
+            ))
+        case (response: TaiFailureResponse, _) => internalServerError(response.message)
+      }
     }
   }
 
