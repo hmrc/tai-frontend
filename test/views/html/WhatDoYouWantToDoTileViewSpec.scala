@@ -117,10 +117,10 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       val modelJrsTileEnabled = createViewModel(isCyPlusOneEnabled = false, showJrsTile = true)
 
-      val jrsClaimView: Html = views.html.whatDoYouWantToDoTileView(form, modelJrsTileEnabled)
+      val jrsClaimView: Html = views.html.whatDoYouWantToDoTileView(form, modelJrsTileEnabled, appConfig)
       val cards = doc(jrsClaimView).getElementsByClass("card")
 
-      cards.size mustBe 3
+      cards.size mustBe 4
 
       cards.toString must include(Messages("current.tax.year"))
       doc(view) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
