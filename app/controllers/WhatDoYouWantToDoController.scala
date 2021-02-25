@@ -91,8 +91,6 @@ class WhatDoYouWantToDoController @Inject()(
   private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
     val nino = user.nino
 
-    auditNumberOfTaxCodesReturned(nino)
-
     if (applicationConfig.cyPlusOneEnabled) {
       val hasTaxCodeChanged = taxCodeChangeService.hasTaxCodeChanged(nino)
       val cy1TaxAccountSummary = taxAccountService.taxAccountSummary(nino, TaxYear().next)
@@ -113,6 +111,8 @@ class WhatDoYouWantToDoController @Inject()(
 
             Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
 
+            auditNumberOfTaxCodesReturned(nino, showJrsTile)
+
             Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
           }
           case response: TaiResponse => {
@@ -121,6 +121,9 @@ class WhatDoYouWantToDoController @Inject()(
 
             val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
             Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
+
+            auditNumberOfTaxCodesReturned(nino, showJrsTile)
+
             Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
           }
         }
@@ -139,20 +142,22 @@ class WhatDoYouWantToDoController @Inject()(
 
         Logger.debug(s"wdywtdViewModelCYDisabled $model")
 
+        auditNumberOfTaxCodesReturned(nino, showJrsTile)
+
         Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
       }
     }
   }
 
-  private def auditNumberOfTaxCodesReturned(nino: Nino)(implicit request: Request[AnyContent]) = {
+  private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(
+    implicit request: Request[AnyContent]) = {
 
     val currentTaxYearEmployments: Future[Seq[Employment]] = employmentService.employments(nino, TaxYear())
     val currentTaxYearTaxCodes: Future[TaiResponse] = taxAccountService.taxCodeIncomes(nino, TaxYear())
 
     (for {
-      employments    <- currentTaxYearEmployments
-      taxCodes       <- currentTaxYearTaxCodes
-      isJrsTileShown <- jrsService.checkIfJrsClaimsDataExist(nino)
+      employments <- currentTaxYearEmployments
+      taxCodes    <- currentTaxYearTaxCodes
     } yield {
       val noOfTaxCodes: Seq[TaxCodeIncome] = taxCodes match {
         case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => taxCodeIncomes
