@@ -31,7 +31,8 @@ case class CodingComponentPair(
   componentType: TaxComponentType,
   employmentId: Option[Int],
   previous: Option[BigDecimal],
-  current: Option[BigDecimal])
+  current: Option[BigDecimal],
+  currentInputAmount: Option[BigDecimal])
 
 case class CodingComponentPairModel(label: TaxSummaryLabel, previous: BigDecimal, current: BigDecimal)
 
@@ -49,7 +50,8 @@ object CodingComponentPairModel {
       codingComponentPair.componentType,
       codingComponentPair.employmentId,
       taxFreeAmountDetails,
-      currentAmount
+      currentAmount,
+      codingComponentPair.currentInputAmount
     )
 
     CodingComponentPairModel(label, previousAmount, currentAmount)

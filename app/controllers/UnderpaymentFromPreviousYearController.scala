@@ -24,6 +24,8 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.UnderPaymentFromPreviousYear
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
@@ -35,9 +37,6 @@ import scala.concurrent.ExecutionContext
 
 class UnderpaymentFromPreviousYearController @Inject()(
   codingComponentService: CodingComponentService,
-  employmentService: EmploymentService,
-  companyCarService: CompanyCarService,
-  taxAccountService: TaxAccountService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
@@ -50,23 +49,13 @@ class UnderpaymentFromPreviousYearController @Inject()(
 
     val nino = user.nino
     val year = TaxYear()
-    val totalTaxFuture = taxAccountService.totalTax(nino, year)
-    val employmentsFuture = employmentService.employments(nino, year.prev)
     val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, year)
 
     for {
-      employments      <- employmentsFuture
       codingComponents <- codingComponentsFuture
-      totalTax         <- totalTaxFuture
     } yield {
-      totalTax match {
-        case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
-          val model = PreviousYearUnderpaymentViewModel(codingComponents, employments, totalTax, referer, resourceName)
-
-          Ok(previousYearUnderpayment(model))
-        case _ => throw new RuntimeException("Failed to fetch total tax details")
-      }
+      val model = PreviousYearUnderpaymentViewModel(codingComponents, referer, resourceName)
+      Ok(previousYearUnderpayment(model))
     }
-
   }
 }

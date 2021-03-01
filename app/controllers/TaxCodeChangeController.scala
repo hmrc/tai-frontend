@@ -51,29 +51,23 @@ class TaxCodeChangeController @Inject()(
   def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino: Nino = request.taiUser.nino
 
-    val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
     val yourTaxFreeAmountComparisonFuture = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
 
     for {
       yourTaxFreeAmountComparison <- yourTaxFreeAmountComparisonFuture
-      totalTax                    <- totalTaxFuture
       taxCodeChange               <- taxCodeChangeService.taxCodeChange(nino)
       scottishTaxRateBands        <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
     } yield {
-      (totalTax) match {
-        case (TaiSuccessResponseWithPayload(totalTax: TotalTax)) =>
-          val iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons(totalTax)
-          val taxCodeChangeReasons = taxCodeChangeReasonsService
-            .combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons, yourTaxFreeAmountComparison.iabdPairs, taxCodeChange)
-          val isAGenericReason = taxCodeChangeReasonsService.isAGenericReason(taxCodeChangeReasons)
+      val iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons
+      val taxCodeChangeReasons = taxCodeChangeReasonsService
+        .combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons, yourTaxFreeAmountComparison.iabdPairs, taxCodeChange)
+      val isAGenericReason = taxCodeChangeReasonsService.isAGenericReason(taxCodeChangeReasons)
 
-          val viewModel =
-            TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
+      val viewModel =
+        TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
 
-          implicit val user = request.taiUser
-          Ok(views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig))
-        case _ => throw new RuntimeException("Failed to fetch total tax details for tax code comparison")
-      }
+      implicit val user = request.taiUser
+      Ok(views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig))
     }
   }
 

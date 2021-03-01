@@ -47,8 +47,8 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
     applicationConfig: ApplicationConfig)(implicit messages: Messages): TaxFreeAmountSummaryViewModel = {
 
     val personalAllowance = personalAllowanceVM(codingComponents)
-    val additions = additionsVM(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails, applicationConfig)
-    val deductions = deductionsVM(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails, applicationConfig)
+    val additions = additionsVM(codingComponents, taxFreeAmountDetails, applicationConfig)
+    val deductions = deductionsVM(codingComponents, taxFreeAmountDetails, applicationConfig)
     val total = totalRow(taxFreeAmountTotal)
 
     TaxFreeAmountSummaryViewModel(Seq(personalAllowance, additions, deductions, total))
@@ -131,7 +131,7 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
     hideHeaders = true,
     hideCaption = false,
     Messages("tai.taxFreeAmount.table.deductions.caption"),
-    deductionRows(codingComponents, taxFreeAmountDetails: TaxFreeAmountDetails, applicationConfig)
+    deductionRows(codingComponents, taxFreeAmountDetails, applicationConfig)
   )
 
   private def deductionRows(
@@ -201,11 +201,8 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
     codingComponent: CodingComponent,
     taxFreeAmountDetails: TaxFreeAmountDetails,
     applicationConfig: ApplicationConfig)(implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
-    val label: TaxSummaryLabel = TaxSummaryLabel(
-      codingComponent.componentType,
-      codingComponent.employmentId,
-      taxFreeAmountDetails,
-      codingComponent.amount)
+    val label: TaxSummaryLabel = TaxSummaryLabel(codingComponent, taxFreeAmountDetails)
+
     val value = withPoundPrefix(MoneyPounds(codingComponent.amount, 0))
     val link = createChangeLink(codingComponent, applicationConfig)
 
