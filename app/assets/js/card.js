@@ -16,7 +16,7 @@ var card = (function () {
 
   function checkSize() {
     var maxHeight = getMaxHeight('.card-body')
-    setMaxHeight('.card-body', maxHeight)
+    setMaxHeight('.card-body', (maxHeight + 15))
   }
 
   // get max height for any collection of elements
