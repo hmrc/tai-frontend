@@ -16,6 +16,7 @@ var card = (function () {
 
   function checkSize() {
     var maxHeight = getMaxHeight('.card-body')
+    //tile height increased by 15px due to issue DDCNL-3654
     setMaxHeight('.card-body', (maxHeight + 15))
   }
 
