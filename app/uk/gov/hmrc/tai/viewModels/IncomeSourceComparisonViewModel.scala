@@ -99,13 +99,18 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
         case (1) =>
           incomeSourceDetailSeq(0) match {
             case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYear) =>
-              IncomeSourceComparisonDetail(id, name, amount, TaiConstants.notApplicable.toLowerCase())
+              IncomeSourceComparisonDetail(id, name, amount, TaiConstants.notApplicable.toLowerCase(), true)
             case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYearPlusOne) =>
-              IncomeSourceComparisonDetail(id, name, TaiConstants.notApplicable.toLowerCase(), amount)
+              IncomeSourceComparisonDetail(id, name, TaiConstants.notApplicable.toLowerCase(), amount, true)
           }
         case (2) => {
           val sortedSeq = incomeSourceDetailSeq.sortBy(_.taxYearStatus)
-          IncomeSourceComparisonDetail(sortedSeq(0).empId, sortedSeq(0).name, sortedSeq(0).amount, sortedSeq(1).amount)
+          IncomeSourceComparisonDetail(
+            sortedSeq(0).empId,
+            sortedSeq(0).name,
+            sortedSeq(0).amount,
+            sortedSeq(1).amount,
+            true)
         }
       }
     }
@@ -113,5 +118,10 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
 
 }
 
-case class IncomeSourceComparisonDetail(empId: Int, name: String, amountCY: String, amountCYPlusOne: String)
+case class IncomeSourceComparisonDetail(
+  empId: Int,
+  name: String,
+  amountCY: String,
+  amountCYPlusOne: String,
+  isLive: Boolean)
 case class IncomeSourceDetail(name: String, empId: Int, amount: String, taxYearStatus: String)
