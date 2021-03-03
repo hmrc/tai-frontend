@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels.incomeTaxComparison
 
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceComparisonViewModel
 
@@ -62,6 +62,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         incomeSourceComparisonDetail.amountCY mustBe "£1,111"
         incomeSourceComparisonDetail.amountCYPlusOne mustBe "£2,222"
         incomeSourceComparisonDetail.empId mustBe 1
+        incomeSourceComparisonDetail.isLive mustBe true
       }
     }
 
@@ -103,10 +104,12 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         incomeSourceComparisonDetailCY.amountCY mustBe "£1,111"
         incomeSourceComparisonDetailCY.amountCYPlusOne mustBe NA
         incomeSourceComparisonDetailCY.empId mustBe 1
+        incomeSourceComparisonDetailCY.isLive mustBe true
 
         incomeSourceComparisonDetailCYPlusOne.amountCY mustBe NA
         incomeSourceComparisonDetailCYPlusOne.amountCYPlusOne mustBe "£2,222"
         incomeSourceComparisonDetailCYPlusOne.empId mustBe 2
+        incomeSourceComparisonDetailCYPlusOne.isLive mustBe true
 
       }
     }
@@ -143,6 +146,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         incomeSourceComparisonDetail.amountCY mustBe "£3,333"
         incomeSourceComparisonDetail.amountCYPlusOne mustBe "£4,444"
         incomeSourceComparisonDetail.empId mustBe 3
+        incomeSourceComparisonDetail.isLive mustBe true
       }
     }
 
@@ -168,16 +172,18 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         incomeSourceComparisonDetailCY.amountCY mustBe "£3,333"
         incomeSourceComparisonDetailCY.amountCYPlusOne mustBe NA
         incomeSourceComparisonDetailCY.empId mustBe 3
+        incomeSourceComparisonDetailCY.isLive mustBe true
 
         incomeSourceComparisonDetailCYPlusOne.amountCY mustBe NA
         incomeSourceComparisonDetailCYPlusOne.amountCYPlusOne mustBe "£4,444"
         incomeSourceComparisonDetailCYPlusOne.empId mustBe 4
+        incomeSourceComparisonDetailCYPlusOne.isLive mustBe true
 
       }
     }
 
     "return an empty sequence" when {
-      "no CY or CY+1 values are avialable" in {
+      "no CY or CY+1 values are available" in {
 
         val incomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Seq(), Seq(), Seq())
 
@@ -217,6 +223,45 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
 
         incomeSourceComparisonDetailCY.amountCYPlusOne mustBe NA
       }
+    }
+
+    "isLive must be false if employment is not live" in {
+
+      val taxCodeIncomesCY =
+        TaxCodeIncome(
+          EmploymentIncome,
+          Some(1),
+          1111,
+          "employment1",
+          "1150L",
+          "employment",
+          OtherBasisOfOperation,
+          Live)
+
+      val taxCodeIncomesCYPlusOne =
+        TaxCodeIncome(
+          EmploymentIncome,
+          Some(1),
+          2222,
+          "employment1",
+          "1150L",
+          "employment",
+          OtherBasisOfOperation,
+          Live)
+
+      val employmentCY =
+        Employment("employment1", Ceased, None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
+
+      val incomeSourceComparisonViewModel =
+        IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
+
+      val incomeSourceComparisonDetail = incomeSourceComparisonViewModel.employmentIncomeSourceDetail(0)
+
+      incomeSourceComparisonDetail.name mustBe employmentCY.name
+      incomeSourceComparisonDetail.amountCY mustBe "£1,111"
+      incomeSourceComparisonDetail.amountCYPlusOne mustBe "£2,222"
+      incomeSourceComparisonDetail.empId mustBe 1
+      incomeSourceComparisonDetail.isLive mustBe false
     }
   }
 

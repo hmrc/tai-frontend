@@ -21,6 +21,8 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 
 trait TaxAccountFilter {
 
+  //TODO: Returning invalid status, needs to be deleted
+
   def liveEmployment(taxCodeIncome: TaxCodeIncome) =
     taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status == Live
 
