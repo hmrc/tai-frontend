@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels.incomeTaxComparison
 
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live, OtherBasisOfOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live, NotLive, OtherBasisOfOperation, PotentiallyCeased, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceComparisonViewModel
 
@@ -239,43 +239,94 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
       }
     }
 
-    "isLive must be false if employment is not live" in {
+    Seq(Ceased, NotLive, PotentiallyCeased).foreach { taxCodeIncomeSourceStatus =>
+      s"set isLive to false if employment is $taxCodeIncomeSourceStatus" in {
 
-      val taxCodeIncomesCY =
-        TaxCodeIncome(
-          EmploymentIncome,
-          Some(1),
-          1111,
-          "employment1",
-          "1150L",
-          "employment",
-          OtherBasisOfOperation,
-          Live)
+        val taxCodeIncomesCY =
+          TaxCodeIncome(
+            EmploymentIncome,
+            Some(1),
+            1111,
+            "employment1",
+            "1150L",
+            "employment",
+            OtherBasisOfOperation,
+            Live)
 
-      val taxCodeIncomesCYPlusOne =
-        TaxCodeIncome(
-          EmploymentIncome,
-          Some(1),
-          2222,
-          "employment1",
-          "1150L",
-          "employment",
-          OtherBasisOfOperation,
-          Live)
+        val taxCodeIncomesCYPlusOne =
+          TaxCodeIncome(
+            EmploymentIncome,
+            Some(1),
+            2222,
+            "employment1",
+            "1150L",
+            "employment",
+            OtherBasisOfOperation,
+            Live)
 
-      val employmentCY =
-        Employment("employment1", Ceased, None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
+        val employmentCY =
+          Employment(
+            "employment1",
+            taxCodeIncomeSourceStatus,
+            None,
+            new LocalDate(),
+            None,
+            Nil,
+            "",
+            "",
+            1,
+            None,
+            false,
+            false)
 
-      val incomeSourceComparisonViewModel =
-        IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
+        val incomeSourceComparisonViewModel =
+          IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
 
-      val incomeSourceComparisonDetail = incomeSourceComparisonViewModel.employmentIncomeSourceDetail(0)
+        val incomeSourceComparisonDetail = incomeSourceComparisonViewModel.employmentIncomeSourceDetail(0)
 
-      incomeSourceComparisonDetail.name mustBe employmentCY.name
-      incomeSourceComparisonDetail.amountCY mustBe "£1,111"
-      incomeSourceComparisonDetail.amountCYPlusOne mustBe "£2,222"
-      incomeSourceComparisonDetail.empId mustBe 1
-      incomeSourceComparisonDetail.isLive mustBe false
+        incomeSourceComparisonDetail.name mustBe employmentCY.name
+        incomeSourceComparisonDetail.amountCY mustBe "£1,111"
+        incomeSourceComparisonDetail.amountCYPlusOne mustBe "£2,222"
+        incomeSourceComparisonDetail.empId mustBe 1
+        incomeSourceComparisonDetail.isLive mustBe false
+      }
+    }
+
+    Seq(Ceased, NotLive, PotentiallyCeased).foreach { taxCodeIncomeSourceStatus =>
+      s"set isLive to false if pension is $taxCodeIncomeSourceStatus" in {
+
+        val taxCodeIncomesCY =
+          TaxCodeIncome(PensionIncome, Some(1), 1111, "pension1", "1150L", "employment", OtherBasisOfOperation, Live)
+
+        val taxCodeIncomesCYPlusOne =
+          TaxCodeIncome(PensionIncome, Some(1), 2222, "pension1", "1150L", "employment", OtherBasisOfOperation, Live)
+
+        val employmentCY =
+          Employment(
+            "pension1",
+            taxCodeIncomeSourceStatus,
+            None,
+            new LocalDate(),
+            None,
+            Nil,
+            "",
+            "",
+            1,
+            None,
+            false,
+            false)
+
+        val incomeSourceComparisonViewModel =
+          IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
+
+        val incomeSourceComparisonDetail = incomeSourceComparisonViewModel.pensionIncomeSourceDetail(0)
+
+        incomeSourceComparisonDetail.name mustBe "pension1"
+        incomeSourceComparisonDetail.amountCY mustBe "£1,111"
+        incomeSourceComparisonDetail.amountCYPlusOne mustBe "£2,222"
+        incomeSourceComparisonDetail.empId mustBe 1
+        incomeSourceComparisonDetail.isLive mustBe false
+      }
     }
   }
 

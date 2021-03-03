@@ -36,32 +36,31 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
     employmentsCY: Seq[Employment],
     taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome]): IncomeSourceComparisonViewModel = {
 
-    val employmentTaxCodeIncomes = taxCodeIncomesCY filter liveEmployment
+    val employmentTaxCodeIncomes = taxCodeIncomesCY filter isEmployment
     val employmentIncomeSourceDetailCY =
-      incomeSourceDetail(employmentTaxCodeIncomes, employmentsCY, TaiConstants.CurrentTaxYear)
+      incomeSourceDetailCy(employmentTaxCodeIncomes, employmentsCY)
 
-    val employmentTaxCodeIncomesCYPlusOne = taxCodeIncomesCYPlusOne filter liveEmployment
+    val employmentTaxCodeIncomesCYPlusOne = taxCodeIncomesCYPlusOne filter isEmployment
     val employmentIncomeSourceDetailCYPlusOne =
-      incomeSourceDetail(employmentTaxCodeIncomesCYPlusOne, Nil, TaiConstants.CurrentTaxYearPlusOne)
+      incomeSourceDetailCyPlusOne(employmentTaxCodeIncomesCYPlusOne)
 
-    val pensionTaxCodeIncomes = taxCodeIncomesCY filter livePension
+    val pensionTaxCodeIncomes = taxCodeIncomesCY filter isPension
     val pensionIncomeSourceDetailCY =
-      incomeSourceDetail(pensionTaxCodeIncomes, employmentsCY, TaiConstants.CurrentTaxYear)
+      incomeSourceDetailCy(pensionTaxCodeIncomes, employmentsCY)
 
-    val pensionTaxCodeIncomesCYPlusOne = taxCodeIncomesCYPlusOne filter livePension
+    val pensionTaxCodeIncomesCYPlusOne = taxCodeIncomesCYPlusOne filter isPension
     val pensionIncomeSourceDetailCYPlusOne =
-      incomeSourceDetail(pensionTaxCodeIncomesCYPlusOne, Nil, TaiConstants.CurrentTaxYearPlusOne)
+      incomeSourceDetailCyPlusOne(pensionTaxCodeIncomesCYPlusOne)
 
-    val employmentIncomeSourceComparisonDetailSeq = incomeSourceComparisionDetail(
+    val employmentIncomeSourceComparisonDetailSeq = incomeSourceComparisonDetail(
       employmentIncomeSourceDetailCY,
       employmentIncomeSourceDetailCYPlusOne).sortBy(_.amountCY).reverse
 
-    val pensionIncomeSourceComparisonDetailSeq = incomeSourceComparisionDetail(
+    val pensionIncomeSourceComparisonDetailSeq = incomeSourceComparisonDetail(
       pensionIncomeSourceDetailCY,
       pensionIncomeSourceDetailCYPlusOne).sortBy(_.amountCY).reverse
 
     IncomeSourceComparisonViewModel(employmentIncomeSourceComparisonDetailSeq, pensionIncomeSourceComparisonDetailSeq)
-
   }
 
   private def isLiveEmployment(id: Int, employments: Seq[Employment]): Boolean =
@@ -70,36 +69,33 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
       case _         => false
     }
 
-  private def incomeSourceDetail(
-    taxCodeIncomes: Seq[TaxCodeIncome],
-    employments: Seq[Employment],
-    taxYearStatus: String): Seq[IncomeSourceDetail] =
-    taxYearStatus match {
-      case TaiConstants.CurrentTaxYearPlusOne =>
-        taxCodeIncomes.flatMap { taxCodeIncome =>
-          val amount = withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0))
-          taxCodeIncome.employmentId.map { id =>
-            IncomeSourceDetail(taxCodeIncome.name, id, amount, taxYearStatus, false)
-          }
-        }
-      case _ =>
-        taxCodeIncomes.flatMap { taxCodeIncome =>
-          taxCodeIncome.employmentId.flatMap { id =>
-            employments.find(_.sequenceNumber == id).map { employment =>
-              val amount = withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0))
-
-              IncomeSourceDetail(
-                employment.name,
-                employment.sequenceNumber,
-                amount,
-                taxYearStatus,
-                isLiveEmployment(id, employments))
-            }
-          }
-        }
+  private def incomeSourceDetailCyPlusOne(taxCodeIncomes: Seq[TaxCodeIncome]): Seq[IncomeSourceDetail] =
+    taxCodeIncomes.flatMap { taxCodeIncome =>
+      val amount = withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0))
+      taxCodeIncome.employmentId.map { id =>
+        IncomeSourceDetail(taxCodeIncome.name, id, amount, TaiConstants.CurrentTaxYearPlusOne, false)
+      }
     }
 
-  private def incomeSourceComparisionDetail(
+  private def incomeSourceDetailCy(
+    taxCodeIncomes: Seq[TaxCodeIncome],
+    employments: Seq[Employment]): Seq[IncomeSourceDetail] =
+    taxCodeIncomes.flatMap { taxCodeIncome =>
+      taxCodeIncome.employmentId.flatMap { id =>
+        employments.find(_.sequenceNumber == id).map { employment =>
+          val amount = withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0))
+
+          IncomeSourceDetail(
+            employment.name,
+            employment.sequenceNumber,
+            amount,
+            TaiConstants.CurrentTaxYear,
+            isLiveEmployment(id, employments))
+        }
+      }
+    }
+
+  private def incomeSourceComparisonDetail(
     incomeSourceDetailCY: Seq[IncomeSourceDetail],
     incomeSourceDetailCYPlusOne: Seq[IncomeSourceDetail]): Seq[IncomeSourceComparisonDetail] = {
 
@@ -127,7 +123,6 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
       }
     }
   }
-
 }
 
 case class IncomeSourceComparisonDetail(

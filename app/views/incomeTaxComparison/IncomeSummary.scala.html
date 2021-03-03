@@ -20,10 +20,8 @@
 @import uk.gov.hmrc.tai.viewModels.IncomeSourceComparisonViewModel
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.views.formatting.Dates
-@*
-TODO: Remove estimatedPayEnabled as its always true here
-*@
-@(incomeSourceViewModel: IncomeSourceComparisonViewModel, estimatedPayEnabled: Boolean)(implicit messages: Messages)
+
+@(incomeSourceViewModel: IncomeSourceComparisonViewModel)(implicit messages: Messages)
 
 
 @incomeSummaryHeading = @{
@@ -62,9 +60,7 @@ TODO: Remove estimatedPayEnabled as its always true here
                     @Html(messages("tai.NextTaxYear"))
                     @Html(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start)))
                 </th>
-                @if(estimatedPayEnabled) {
-                    <th scope="col">@messages("tai.incomeTaxComparison.taxCodes.table.actions")</th>
-                }
+                <th scope="col">@messages("tai.incomeTaxComparison.taxCodes.table.actions")</th>
             </tr>
         </thead>
         <tbody>
@@ -98,22 +94,23 @@ TODO: Remove estimatedPayEnabled as its always true here
                             count
                         }">@employmentIncomeSourceDetail.amountCYPlusOne</span>
                     </td>
-                    @if(estimatedPayEnabled) {
-                        @if(employmentIncomeSourceDetail.isLive) {
-                            <td>
-                            @Link.toInternalPage(
-                                id = Some(s"estimated-income-link-${employmentIncomeSourceDetail.empId}"),
-                                url = controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(employmentIncomeSourceDetail.empId).url,
-                                value = Some(messages("tai.incomeTaxComparison.incomeTax.updateEstimated")),
-                                hiddenInfo = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)}")
-                            ).toHtml
-                            </td>
-                        } else {
-                            <td>
-                                <span id="estimated-income-link-${employmentIncomeSourceDetail.empId}"/>
-                            </td>
-                        }
+                    @if(employmentIncomeSourceDetail.isLive) {
+                        <td>
+                        @Link.toInternalPage(
+                            id = Some(s"estimated-income-link-${employmentIncomeSourceDetail.empId}"),
+                            url = controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(employmentIncomeSourceDetail.empId).url,
+                            value = Some(messages("tai.incomeTaxComparison.incomeTax.updateEstimated")),
+                            hiddenInfo = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)}")
+                        ).toHtml
+                        </td>
+                    } else {
+                        <td>
+                            <span id="estimated-income-link-@{
+                                employmentIncomeSourceDetail.empId
+                            }"/>
+                        </td>
                     }
+
                 </tr>
             }
 
@@ -145,14 +142,20 @@ TODO: Remove estimatedPayEnabled as its always true here
                             count
                         }">@pensionIncomeSourceDetail.amountCYPlusOne</span>
                     </td>
-                    @if(estimatedPayEnabled) {
-                        <td class="link-update">
+                    @if(pensionIncomeSourceDetail.isLive) {
+                        <td>
                         @Link.toInternalPage(
                             id = Some(s"estimated-income-link-${pensionIncomeSourceDetail.empId}"),
                             url = controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(pensionIncomeSourceDetail.empId).url,
                             value = Some(messages("tai.incomeTaxComparison.incomeTax.updateEstimated")),
                             hiddenInfo = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)}")
                         ).toHtml
+                        </td>
+                    } else {
+                        <td>
+                            <span id="estimated-income-link-@{
+                                pensionIncomeSourceDetail.empId
+                            }"/>
                         </td>
                     }
                 </tr>
