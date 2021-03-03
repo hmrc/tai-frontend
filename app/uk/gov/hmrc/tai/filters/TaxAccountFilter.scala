@@ -28,7 +28,4 @@ trait TaxAccountFilter {
 
   def livePension(taxCodeIncome: TaxCodeIncome) =
     taxCodeIncome.componentType == PensionIncome && taxCodeIncome.status == Live
-
-  def ceasedEmployment(taxCodeIncome: TaxCodeIncome) =
-    taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status != Live
 }

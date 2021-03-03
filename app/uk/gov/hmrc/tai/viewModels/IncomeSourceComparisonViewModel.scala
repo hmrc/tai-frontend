@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.filters.TaxAccountFilter
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Live, NotLive, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants
@@ -64,6 +64,12 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
 
   }
 
+  private def isLiveEmployment(id: Int, employments: Seq[Employment]): Boolean =
+    employments.find(_.sequenceNumber == id) match {
+      case Some(emp) => emp.employmentStatus == Live
+      case _         => false
+    }
+
   private def incomeSourceDetail(
     taxCodeIncomes: Seq[TaxCodeIncome],
     employments: Seq[Employment],
@@ -73,7 +79,7 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
         taxCodeIncomes.flatMap { taxCodeIncome =>
           val amount = withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0))
           taxCodeIncome.employmentId.map { id =>
-            IncomeSourceDetail(taxCodeIncome.name, id, amount, taxYearStatus, true)
+            IncomeSourceDetail(taxCodeIncome.name, id, amount, taxYearStatus, false)
           }
         }
       case _ =>
@@ -81,7 +87,13 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
           taxCodeIncome.employmentId.flatMap { id =>
             employments.find(_.sequenceNumber == id).map { employment =>
               val amount = withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0))
-              IncomeSourceDetail(employment.name, employment.sequenceNumber, amount, taxYearStatus, true)
+
+              IncomeSourceDetail(
+                employment.name,
+                employment.sequenceNumber,
+                amount,
+                taxYearStatus,
+                isLiveEmployment(id, employments))
             }
           }
         }

@@ -20,29 +20,37 @@
 @import uk.gov.hmrc.tai.viewModels.IncomeSourceComparisonViewModel
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.views.formatting.Dates
-
-@(incomeSourceViewModel:IncomeSourceComparisonViewModel, estimatedPayEnabled: Boolean)(implicit messages: Messages)
+@*
+TODO: Remove estimatedPayEnabled as its always true here
+*@
+@(incomeSourceViewModel: IncomeSourceComparisonViewModel, estimatedPayEnabled: Boolean)(implicit messages: Messages)
 
 
 @incomeSummaryHeading = @{
     (incomeSourceViewModel.employmentIncomeSourceDetail.size > 0, incomeSourceViewModel.pensionIncomeSourceDetail.size > 0) match {
-        case(true,true) => messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions")
-        case(true,false) => messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment")
-        case(false,true) => messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions")
+        case (true, true) => messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions")
+        case (true, false) => messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment")
+        case (false, true) => messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions")
         case _ =>
     }
 }
-@gaEventActionString = @{"Income Tax comparison - current tax year and next tax year"}
-@if(incomeSourceViewModel.employmentIncomeSourceDetail.size > 0 || incomeSourceViewModel.pensionIncomeSourceDetail.size > 0){
+@gaEventActionString = @{
+    "Income Tax comparison - current tax year and next tax year"
+}
+@if(incomeSourceViewModel.employmentIncomeSourceDetail.size > 0 || incomeSourceViewModel.pensionIncomeSourceDetail.size > 0) {
 
-    <h2 id="incomeSummaryHeading" class="heading-large">@{incomeSummaryHeading}</h2>
+    <h2 id="incomeSummaryHeading" class="heading-large">@{
+        incomeSummaryHeading
+    }</h2>
 
     <p>
-        @messages("tai.incomeTaxComparison.incomeTax.fromEmployer.description")
+    @messages("tai.incomeTaxComparison.incomeTax.fromEmployer.description")
     </p>
 
     <table class="table--font-reset flush--bottom responsive" id="incomeSummaryComparisonTable" role="table">
-        <caption class="visually-hidden">@{incomeSummaryHeading}</caption>
+        <caption class="visually-hidden">@{
+            incomeSummaryHeading
+        }</caption>
         <thead id="incomeSummeryComparisonTableHeader">
             <tr role="row">
                 <th scope="col">@messages("tai.incomeTaxComparison.taxCodes.table.employer.or.pension")</th>
@@ -61,45 +69,53 @@
         </thead>
         <tbody>
 
-        @for((employmentIncomeSourceDetail, count) <- incomeSourceViewModel.employmentIncomeSourceDetail.zipWithIndex) {
+            @for((employmentIncomeSourceDetail, count) <- incomeSourceViewModel.employmentIncomeSourceDetail.zipWithIndex) {
 
-            <tr>
-                <td role="cell" class="table-title">
-                    <span class="table-heading employerName" aria-hidden="true">
+                <tr>
+                    <td role="cell" class="table-title">
+                        <span class="table-heading employerName" aria-hidden="true">
                         @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
-                    </span>
-                    <span class="carry-over">@employmentIncomeSourceDetail.name</span>
-                </td>
-
-                <td role="cell" class="numeric">
-                    <span class="table-heading" aria-hidden="true">
-                        @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
-                        @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
-                    </span>
-                    <span id="amount-cy-@{count}">@employmentIncomeSourceDetail.amountCY</span>
-                </td>
-
-                <td role="cell" class="numeric">
-                    <span class="table-heading" aria-hidden="true">
-                        @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
-                        @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
-                    </span>
-                    <span id="amount-cy-plus-one-@{count}">@employmentIncomeSourceDetail.amountCYPlusOne</span>
-                </td>
-                @if(estimatedPayEnabled) {
-                    <td>
-                        @Link.toInternalPage(
-                        id=Some(s"estimated-income-link-${employmentIncomeSourceDetail.empId}"),
-                        url=controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(employmentIncomeSourceDetail.empId).url,
-                        value=Some(messages("tai.incomeTaxComparison.incomeTax.updateEstimated")),
-                        hiddenInfo=Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)}")
-                        ).toHtml
+                        </span>
+                        <span class="carry-over">@employmentIncomeSourceDetail.name</span>
                     </td>
-                }
-            </tr>
 
-        }
+                    <td role="cell" class="numeric">
+                        <span class="table-heading" aria-hidden="true">
+                            @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
+                            @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
+                        </span>
+                        <span id="amount-cy-@{
+                            count
+                        }">@employmentIncomeSourceDetail.amountCY</span>
+                    </td>
 
+                    <td role="cell" class="numeric">
+                        <span class="table-heading" aria-hidden="true">
+                            @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
+                            @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
+                        </span>
+                        <span id="amount-cy-plus-one-@{
+                            count
+                        }">@employmentIncomeSourceDetail.amountCYPlusOne</span>
+                    </td>
+                    @if(estimatedPayEnabled) {
+                        @if(employmentIncomeSourceDetail.isLive) {
+                            <td>
+                            @Link.toInternalPage(
+                                id = Some(s"estimated-income-link-${employmentIncomeSourceDetail.empId}"),
+                                url = controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(employmentIncomeSourceDetail.empId).url,
+                                value = Some(messages("tai.incomeTaxComparison.incomeTax.updateEstimated")),
+                                hiddenInfo = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)}")
+                            ).toHtml
+                            </td>
+                        } else {
+                            <td>
+                                <span id="estimated-income-link-${employmentIncomeSourceDetail.empId}"/>
+                            </td>
+                        }
+                    }
+                </tr>
+            }
 
             @for((pensionIncomeSourceDetail, count) <- incomeSourceViewModel.pensionIncomeSourceDetail.zipWithIndex) {
 
@@ -115,7 +131,9 @@
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
                         </span>
-                        <span id="pension-amount-cy-@{count}">@pensionIncomeSourceDetail.amountCY</span>
+                        <span id="pension-amount-cy-@{
+                            count
+                        }">@pensionIncomeSourceDetail.amountCY</span>
                     </td>
 
                     <td role="cell" class="numeric">
@@ -123,16 +141,18 @@
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
                         </span>
-                        <span id="pension-amount-cy-plus-one-@{count}">@pensionIncomeSourceDetail.amountCYPlusOne</span>
+                        <span id="pension-amount-cy-plus-one-@{
+                            count
+                        }">@pensionIncomeSourceDetail.amountCYPlusOne</span>
                     </td>
                     @if(estimatedPayEnabled) {
                         <td class="link-update">
-                            @Link.toInternalPage(
-                            id=Some(s"estimated-income-link-${pensionIncomeSourceDetail.empId}"),
-                            url=controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(pensionIncomeSourceDetail.empId).url,
-                            value=Some(messages("tai.incomeTaxComparison.incomeTax.updateEstimated")),
-                            hiddenInfo=Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)}")
-                            ).toHtml
+                        @Link.toInternalPage(
+                            id = Some(s"estimated-income-link-${pensionIncomeSourceDetail.empId}"),
+                            url = controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(pensionIncomeSourceDetail.empId).url,
+                            value = Some(messages("tai.incomeTaxComparison.incomeTax.updateEstimated")),
+                            hiddenInfo = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)}")
+                        ).toHtml
                         </td>
                     }
                 </tr>

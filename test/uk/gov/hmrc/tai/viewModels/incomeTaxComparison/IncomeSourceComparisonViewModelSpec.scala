@@ -39,28 +39,40 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
             OtherBasisOfOperation,
             Live)
 
-        val taxCodeIncomesCYPlusOne =
+        val taxCodeIncomesCYPlusOne = Seq(
           TaxCodeIncome(
             EmploymentIncome,
             Some(1),
-            2222,
+            1234,
             "employment1",
             "1150L",
             "employment",
             OtherBasisOfOperation,
+            Live),
+          TaxCodeIncome(
+            EmploymentIncome,
+            Some(2),
+            5678,
+            "employment2",
+            "1150L",
+            "employment",
+            OtherBasisOfOperation,
             Live)
+        )
 
-        val employmentCY =
-          Employment("employment1", Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
+        val employmentCY = Seq(
+          Employment("employment1", Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false),
+          Employment("employment2", Live, None, new LocalDate(), None, Nil, "", "", 2, None, false, false)
+        )
 
         val incomeSourceComparisonViewModel =
-          IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
+          IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), employmentCY, taxCodeIncomesCYPlusOne)
 
         val incomeSourceComparisonDetail = incomeSourceComparisonViewModel.employmentIncomeSourceDetail(0)
 
-        incomeSourceComparisonDetail.name mustBe employmentCY.name
+        incomeSourceComparisonDetail.name mustBe "employment1"
         incomeSourceComparisonDetail.amountCY mustBe "£1,111"
-        incomeSourceComparisonDetail.amountCYPlusOne mustBe "£2,222"
+        incomeSourceComparisonDetail.amountCYPlusOne mustBe "£1,234"
         incomeSourceComparisonDetail.empId mustBe 1
         incomeSourceComparisonDetail.isLive mustBe true
       }
@@ -91,16 +103,18 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
             OtherBasisOfOperation,
             Live)
 
-        val employmentCY =
-          Employment("employment1", Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
+        val employmentCY = Seq(
+          Employment("employment1", Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false),
+          Employment("employment2", Live, None, new LocalDate(), None, Nil, "", "", 2, None, false, false)
+        )
 
         val incomeSourceComparisonViewModel =
-          IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
+          IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), employmentCY, Seq(taxCodeIncomesCYPlusOne))
 
         val incomeSourceComparisonDetailCY = incomeSourceComparisonViewModel.employmentIncomeSourceDetail(0)
         val incomeSourceComparisonDetailCYPlusOne = incomeSourceComparisonViewModel.employmentIncomeSourceDetail(1)
 
-        incomeSourceComparisonDetailCY.name mustBe employmentCY.name
+        incomeSourceComparisonDetailCY.name mustBe "employment1"
         incomeSourceComparisonDetailCY.amountCY mustBe "£1,111"
         incomeSourceComparisonDetailCY.amountCYPlusOne mustBe NA
         incomeSourceComparisonDetailCY.empId mustBe 1
@@ -109,7 +123,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         incomeSourceComparisonDetailCYPlusOne.amountCY mustBe NA
         incomeSourceComparisonDetailCYPlusOne.amountCYPlusOne mustBe "£2,222"
         incomeSourceComparisonDetailCYPlusOne.empId mustBe 2
-        incomeSourceComparisonDetailCYPlusOne.isLive mustBe true
+        incomeSourceComparisonDetailCYPlusOne.isLive mustBe false
 
       }
     }
@@ -177,7 +191,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         incomeSourceComparisonDetailCYPlusOne.amountCY mustBe NA
         incomeSourceComparisonDetailCYPlusOne.amountCYPlusOne mustBe "£4,444"
         incomeSourceComparisonDetailCYPlusOne.empId mustBe 4
-        incomeSourceComparisonDetailCYPlusOne.isLive mustBe true
+        incomeSourceComparisonDetailCYPlusOne.isLive mustBe false
 
       }
     }
