@@ -368,7 +368,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
       result.header.status mustBe OK
 
-      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any())
+      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any(), any())
     }
     "landed to the page and get TaiSuccessResponse" in {
       val testController = createTestController()
@@ -381,7 +381,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
       result.header.status mustBe OK
 
-      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any())
+      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any(), any())
     }
     "landed to the page and get failure from taxCodeIncomes" in {
       val testController = createTestController()
@@ -478,7 +478,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
-    when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any()))
+    when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any(), any()))
       .thenReturn(Future.successful(AuditResult.Success))
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
       .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary)))

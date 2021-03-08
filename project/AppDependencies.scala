@@ -9,17 +9,17 @@ private object AppDependencies {
   val compile = Seq(
     filters,
     jodaForms,
-    "uk.gov.hmrc"       %% "play-conditional-form-mapping" % s"1.2.0-$playVersion",
-    "uk.gov.hmrc"       %% s"bootstrap-$playVersion"       % "1.16.0",
-    "uk.gov.hmrc"       %% "domain"                        % s"5.10.0-$playVersion",
-    "uk.gov.hmrc"       %% "url-builder"                   % s"3.4.0-$playVersion",
-    "uk.gov.hmrc"       %% "play-partials"                 % s"6.11.0-$playVersion",
-    "uk.gov.hmrc"       %% "play-language"                 % s"4.4.0-$playVersion",
-    "uk.gov.hmrc"       %% "local-template-renderer"       % s"2.9.0-$playVersion",
-    "uk.gov.hmrc"       %% "auth-client"                   % s"3.1.0-$playVersion",
-    "uk.gov.hmrc"       %% "play-ui"                       % s"8.15.0-$playVersion",
-    "org.typelevel"     %% "cats-core"                     % "2.0.0",
-    "com.typesafe.play" %% "play-json-joda"                % "2.6.10"
+    "uk.gov.hmrc"       %% "play-conditional-form-mapping"    % s"1.2.0-$playVersion",
+    "uk.gov.hmrc"       %% s"bootstrap-frontend-$playVersion" % "3.4.0",
+    "uk.gov.hmrc"       %% "domain"                           % s"5.10.0-$playVersion",
+    "uk.gov.hmrc"       %% "url-builder"                      % s"3.4.0-$playVersion",
+    "uk.gov.hmrc"       %% "play-partials"                    % s"7.1.0-$playVersion",
+    "uk.gov.hmrc"       %% "play-language"                    % s"4.10.0-$playVersion",
+    "uk.gov.hmrc"       %% "local-template-renderer"          % s"2.10.0-$playVersion",
+    "uk.gov.hmrc"       %% "auth-client"                      % s"3.3.0-$playVersion",
+    "uk.gov.hmrc"       %% "play-ui"                          % s"8.21.0-$playVersion",
+    "org.typelevel"     %% "cats-core"                        % "2.0.0",
+    "com.typesafe.play" %% "play-json-joda"                   % "2.6.10"
   )
 
   trait TestDependencies {
