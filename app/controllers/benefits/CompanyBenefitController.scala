@@ -20,6 +20,7 @@ import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+
 import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -32,6 +33,7 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -44,7 +46,8 @@ class CompanyBenefitController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   override implicit val templateRenderer: TemplateRenderer,
-  override implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
+  override implicit val partialRetriever: FormPartialRetriever,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants {
 
   private val logger = Logger(this.getClass)
@@ -94,7 +97,7 @@ class CompanyBenefitController @Inject()(
           )
 
           journeyCacheService.cache(cache).map { _ =>
-            Ok(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel))
+            Ok(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel, webChatClient))
           }
 
         case None => throw new RuntimeException("No employment found")
@@ -130,7 +133,7 @@ class CompanyBenefitController @Inject()(
             currentCache(EndCompanyBenefit_BenefitTypeKey),
             currentCache(EndCompanyBenefit_EmploymentNameKey),
             formWithErrors)
-          BadRequest(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel))
+          BadRequest(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel, webChatClient))
         }
       },
       success => {

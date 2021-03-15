@@ -17,14 +17,16 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.confirmation_summary
 @import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(webChatClient: WebChatClient)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
 title = Messages("tai.income.previousYears.confirmation.heading"),
 authedUser = Some(user),
 articleClasses = None,
-gaCustomTitle = None) {
+gaCustomTitle = None,
+webChatClient = webChatClient) {
 
 <div class="transaction-banner--complete">
     <h1 class="transaction-banner__heading">@Messages("tai.income.previousYears.confirmation.heading")</h1>

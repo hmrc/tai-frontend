@@ -20,10 +20,11 @@
 @import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
 @import includes.forms.{inputRadioGroupStyling, submit}
 @import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 @import uk.gov.hmrc.play.views.formatting.Dates
 
-@(stopDateForm: Form[Option[String]],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(stopDateForm: Form[Option[String]],benefitType:String, empName:String, webChatClient: WebChatClient)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Remove Company Benefits Stop Date"}
 @startOfCurrentTaxYear = @{Dates.formatDate(TaxYear().start)}
@@ -44,6 +45,7 @@ title = Messages("tai.benefits.ended.stopDate.heading", benefitType, empName),
 authedUser = Some(user),
 pageHeader = Some(header),
 articleClasses = None,
+webChatClient = webChatClient,
 gaCustomTitle = Some(Messages("tai.benefits.ended.stopDate.customGaTitle"))){
 
     @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {

@@ -20,8 +20,9 @@
 @import includes.ptaHeader
 @import includes._
 @import includes.forms._
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(viewModel: RemoveCompanyBenefitCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: RemoveCompanyBenefitCheckYourAnswersViewModel, webChatClient: WebChatClient)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
   ptaHeader(
@@ -35,7 +36,8 @@
   authedUser = Some(user),
   pageHeader = Some(header),
   articleClasses = None,
-  gaCustomTitle = None
+  gaCustomTitle = None,
+  webChatClient = webChatClient
 ){
 
             @checkYourAnswers(

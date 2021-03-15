@@ -22,13 +22,15 @@
 @import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 @import play.api.mvc.Call
 @import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 @(      incomingAuthedUser: Option[controllers.auth.AuthedUser],
         viewModel: CanWeContactByPhoneViewModel,
         yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_],
         messages: Messages,
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-        partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+        partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
+        webChatClient: WebChatClient)
 
 @gaEventActionString = @{"Can we contact you by phone?"}
 
@@ -45,7 +47,8 @@
     authedUser = incomingAuthedUser,
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = None) {
+    gaCustomTitle = None,
+    webChatClient = webChatClient) {
 
     @form(action = Call("POST", viewModel.continueUrl), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
 

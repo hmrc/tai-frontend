@@ -20,6 +20,7 @@ import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+
 import javax.inject.Inject
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -37,6 +38,7 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
+import uk.gov.hmrc.webchat.client.WebChatClient
 import views.html.benefits.removeCompanyBenefitCheckYourAnswers
 
 import scala.Function.tupled
@@ -52,7 +54,8 @@ class RemoveCompanyBenefitController @Inject()(
   mcc: MessagesControllerComponents,
   langUtils: LanguageUtils,
   implicit val templateRenderer: TemplateRenderer,
-  implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants
     with RemoveCompanyBenefitStopDateConstants {
 
@@ -66,7 +69,8 @@ class RemoveCompanyBenefitController @Inject()(
         views.html.benefits.removeCompanyBenefitStopDate(
           form,
           currentCache(EndCompanyBenefit_BenefitNameKey),
-          currentCache(EndCompanyBenefit_EmploymentNameKey)))
+          currentCache(EndCompanyBenefit_EmploymentNameKey),
+          webChatClient))
     }
   }
 
@@ -78,7 +82,8 @@ class RemoveCompanyBenefitController @Inject()(
         journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey, EndCompanyBenefit_EmploymentNameKey) map {
           mandatoryValues =>
             BadRequest(
-              views.html.benefits.removeCompanyBenefitStopDate(formWithErrors, mandatoryValues(0), mandatoryValues(1)))
+              views.html.benefits
+                .removeCompanyBenefitStopDate(formWithErrors, mandatoryValues(0), mandatoryValues(1), webChatClient))
         }
       }, {
         case Some(BeforeTaxYearEnd) =>
@@ -105,7 +110,7 @@ class RemoveCompanyBenefitController @Inject()(
 
           Future.successful(
             Ok(views.html.benefits
-              .removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), form)))
+              .removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), form, webChatClient)))
         }
       }
   }
@@ -118,8 +123,12 @@ class RemoveCompanyBenefitController @Inject()(
           .mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap {
           mandatoryValues =>
             Future.successful(
-              BadRequest(views.html.benefits
-                .removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), formWithErrors)))
+              BadRequest(
+                views.html.benefits
+                  .removeBenefitTotalValue(
+                    BenefitViewModel(mandatoryValues(0), mandatoryValues(1)),
+                    formWithErrors,
+                    webChatClient)))
         }
       },
       totalValue => {
@@ -217,7 +226,9 @@ class RemoveCompanyBenefitController @Inject()(
                   stopDate,
                   optionalSeq(0),
                   mandatoryValues(3),
-                  optionalSeq(1))))
+                  optionalSeq(1)),
+                webChatClient
+              ))
           }
         }
       }
@@ -261,7 +272,7 @@ class RemoveCompanyBenefitController @Inject()(
 
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    Future.successful(Ok(views.html.benefits.removeCompanyBenefitConfirmation()))
+    Future.successful(Ok(views.html.benefits.removeCompanyBenefitConfirmation(webChatClient)))
   }
 
   private def extractViewModelFromCache(cache: Map[String, String])(implicit messages: Messages) = {

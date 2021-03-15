@@ -24,9 +24,10 @@
 @import uk.gov.hmrc.tai.viewModels.benefit.BenefitViewModel
 @import uk.gov.hmrc.tai.forms.benefits.CompanyBenefitTotalValueForm
 @import uk.gov.hmrc.play.views.formatting.Dates
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 
-@(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String], webChatClient: WebChatClient)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"What was the total value of the benefit"}
 
@@ -47,6 +48,7 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
+    webChatClient = webChatClient,
     gaCustomTitle = Some(Messages("tai.remove.company.benefit.total.value.customGaTitle"))) {
         <p>@Messages("tai.remove.company.benefit.total.value.dontKnow")</p>
         <ul class="bullets">

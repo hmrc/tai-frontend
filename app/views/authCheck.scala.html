@@ -16,8 +16,9 @@
 
 @import includes.{cancelLink, ptaHeader, backLink}
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(webChatClient: WebChatClient)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
     ptaHeader(
@@ -32,7 +33,8 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = None) {
+    gaCustomTitle = None,
+    webChatClient = webChatClient) {
 }
 
 

@@ -19,10 +19,11 @@
 @import includes.{ptaHeader, cancelLink}
 @import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 @import includes.forms.{inputRadioGroupStyling, submit}
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 @import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
-@(viewModel: CompanyBenefitDecisionViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: CompanyBenefitDecisionViewModel, webChatClient: WebChatClient)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update Or Remove Company Benefit Decision"}
 
@@ -40,7 +41,8 @@ title = Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefi
 authedUser = Some(user),
 pageHeader = Some(header),
 articleClasses = None,
-gaCustomTitle = Some(Messages("tai.benefits.updateOrRemove.decision.customGaTitle"))){
+gaCustomTitle = Some(Messages("tai.benefits.updateOrRemove.decision.customGaTitle")),
+webChatClient = webChatClient){
 
     @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
         @{inputRadioGroupStyling(
