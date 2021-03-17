@@ -91,5 +91,6 @@ class ErrorHandler @Inject()(
     )
   }
 
-  override def internalServerErrorTemplate(implicit request: Request[_]): Html = internalServerError(applicationConfig)
+  override def internalServerErrorTemplate(implicit request: Request[_]): Html =
+    internalServerError(applicationConfig, webChatClient)
 }

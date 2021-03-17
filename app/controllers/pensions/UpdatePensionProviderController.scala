@@ -95,7 +95,7 @@ class UpdatePensionProviderController @Inject()(
         case Right(mandatoryValues) => {
           val model = PensionProviderViewModel(mandatoryValues.head.toInt, mandatoryValues(1))
           val form = UpdateRemovePensionForm.form.fill(optionalValues.head)
-          Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, form))
+          Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, form, webChatClient))
         }
         case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
@@ -112,7 +112,8 @@ class UpdatePensionProviderController @Inject()(
               val model = PensionProviderViewModel(mandatoryVals.head.toInt, mandatoryVals.last)
               implicit val user: AuthedUser = request.taiUser
 
-              Future(BadRequest(views.html.pensions.update.doYouGetThisPensionIncome(model, formWithErrors)))
+              Future(
+                BadRequest(views.html.pensions.update.doYouGetThisPensionIncome(model, formWithErrors, webChatClient)))
             }, {
               case Some(YesValue) =>
                 journeyCacheService
@@ -139,7 +140,8 @@ class UpdatePensionProviderController @Inject()(
             views.html.pensions.update.whatDoYouWantToTellUs(
               mandatoryValues.head,
               mandatoryValues(1).toInt,
-              WhatDoYouWantToTellUsForm.form.fill(optionalValues.head.getOrElse(""))))
+              WhatDoYouWantToTellUsForm.form.fill(optionalValues.head.getOrElse("")),
+              webChatClient))
         }
         case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
@@ -155,7 +157,7 @@ class UpdatePensionProviderController @Inject()(
               implicit val user: AuthedUser = request.taiUser
               BadRequest(
                 views.html.pensions.update
-                  .whatDoYouWantToTellUs(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
+                  .whatDoYouWantToTellUs(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors, webChatClient))
           }
         },
         pensionDetails => {
@@ -255,7 +257,9 @@ class UpdatePensionProviderController @Inject()(
                   mandatoryValues(2),
                   mandatoryValues(3),
                   mandatoryValues(4),
-                  optionalSeq.head)))
+                  optionalSeq.head),
+                webChatClient
+              ))
           }
 
           case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
@@ -286,7 +290,7 @@ class UpdatePensionProviderController @Inject()(
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    Future.successful(Ok(views.html.pensions.update.confirmation()))
+    Future.successful(Ok(views.html.pensions.update.confirmation(webChatClient)))
   }
 
   private def redirectToWarningOrDecisionPage(
@@ -340,7 +344,8 @@ class UpdatePensionProviderController @Inject()(
               views.html.pensions.duplicateSubmissionWarning(
                 DuplicateSubmissionWarningForm.createForm,
                 mandatoryValues(0),
-                mandatoryValues(1).toInt))
+                mandatoryValues(1).toInt,
+                webChatClient))
           case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
     }
@@ -354,8 +359,13 @@ class UpdatePensionProviderController @Inject()(
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
             formWithErrors => {
               Future.successful(
-                BadRequest(views.html.pensions
-                  .duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
+                BadRequest(
+                  views.html.pensions
+                    .duplicateSubmissionWarning(
+                      formWithErrors,
+                      mandatoryValues(0),
+                      mandatoryValues(1).toInt,
+                      webChatClient)))
             },
             success => {
               success.yesNoChoice match {

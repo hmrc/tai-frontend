@@ -19,8 +19,13 @@
 @import org.joda.time.LocalDate
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(dateForm: Form[LocalDate], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(dateForm: Form[LocalDate], pensionProviderName: String, webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"When did you start receiving this pension?"}
 
@@ -39,7 +44,8 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = Some(Messages("tai.addPensionProvider.startDateForm.customGaTitle")))  {
+    gaCustomTitle = Some(Messages("tai.addPensionProvider.startDateForm.customGaTitle")),
+    webChatClient = webChatClient)  {
 
     @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionProviderStartDate(), args=(Symbol("class"), "subsection")) {
         @date(

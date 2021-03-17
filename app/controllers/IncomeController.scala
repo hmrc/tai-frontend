@@ -101,7 +101,7 @@ class IncomeController @Inject()(
         cachedData(2).toInt,
         false,
         routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString)
-      Ok(views.html.incomes.sameEstimatedPay(model))
+      Ok(views.html.incomes.sameEstimatedPay(model, webChatClient))
     }).recover {
       case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
     }
@@ -123,7 +123,7 @@ class IncomeController @Inject()(
         income.oldAmount,
         income.isOccupationalPension,
         routes.IncomeSourceSummaryController.onPageLoad(id).url)
-      Ok(views.html.incomes.sameEstimatedPay(model))
+      Ok(views.html.incomes.sameEstimatedPay(model, webChatClient))
     }).recover {
       case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
     }

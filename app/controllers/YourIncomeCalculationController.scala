@@ -81,7 +81,7 @@ class YourIncomeCalculationController @Inject()(
           if (printPage) {
             Ok(views.html.print.yourIncomeCalculation(model, appConfig))
           } else {
-            Ok(views.html.incomes.yourIncomeCalculation(model))
+            Ok(views.html.incomes.yourIncomeCalculation(model, webChatClient))
           }
         }
         case _ => internalServerError("Error while fetching RTI details", webChatClient = webChatClient)

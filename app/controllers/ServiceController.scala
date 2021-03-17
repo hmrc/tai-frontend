@@ -58,7 +58,7 @@ class ServiceController @Inject()(
   }
 
   def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent]): Future[Result] = {
-    Future.successful(Ok(views.html.manualCorrespondence()))
+    Future.successful(Ok(views.html.manualCorrespondence(webChatClient)))
   } recoverWith handleErrorResponse("getServiceUnavailable", nino, webChatClient)
 
 }

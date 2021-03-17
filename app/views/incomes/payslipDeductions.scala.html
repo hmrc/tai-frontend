@@ -15,8 +15,16 @@
  *@
 
 @import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-@(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], employer: IncomeSource)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(
+    payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm],
+    employer: IncomeSource,
+    webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
 @import includes.cancelLink
@@ -41,7 +49,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     articleClasses = Some("full-width text"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employer.name)
+    employerName = Some(employer.name),
+    webChatClient = webChatClient
 ){
 
     <div>

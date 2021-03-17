@@ -61,7 +61,7 @@ class PotentialUnderpaymentController @Inject()(
         } yield {
           auditService.createAndSendAuditEvent(PotentialUnderpayment_InYearAdjustment, Map("nino" -> nino.toString()))
           val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
-          Ok(views.html.potentialUnderpayment(vm))
+          Ok(views.html.potentialUnderpayment(vm, webChatClient))
         }
       } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", request.taiUser.nino, webChatClient)
   }

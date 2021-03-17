@@ -14,7 +14,9 @@
  * limitations under the License.
  *@
 
-@(employmentName: String, employmentId: Int, isPension: Boolean)(
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(employmentName: String, employmentId: Int, isPension: Boolean, webChatClient: WebChatClient)(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.AuthedUser,
@@ -30,7 +32,8 @@
     gaEventAction = gaEventActionString,
     title = messages("tai.updateIncome.CYPlus1.start.title"),
     heading = messages("tai.updateIncome.CYPlus1.start.heading", <span class="carry-over">{employmentName}</span>),
-    cancelText = Some("Cancel")
+    cancelText = Some("Cancel"),
+    webChatClient = webChatClient
 ){
     <div>
         <p>@messages("tai.updateIncome.CYPlus1.start.paragraph1", employmentName)</p>

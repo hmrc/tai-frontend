@@ -14,7 +14,9 @@
  * limitations under the License.
  *@
 
-@(noCYIncomeTaxErrorViewModel: uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(noCYIncomeTaxErrorViewModel: uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel, webChatClient: WebChatClient
 )(implicit request: Request[_],
   messages: Messages,
   user: controllers.auth.AuthedUser,
@@ -55,7 +57,8 @@
     title = messages("tai.noCYIncomeError.title"),
     articleClasses = None,
     authedUser = Some(user),
-    pageHeader = Some(header)
+    pageHeader = Some(header),
+    webChatClient = webChatClient
 ) {
     <p id="no-income-info">
         @noCYIncomeTaxErrorViewModel.endDate match {

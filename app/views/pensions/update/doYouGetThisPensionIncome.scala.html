@@ -21,8 +21,13 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
 @import includes.forms.inputRadioGroupStyling
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]], webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update or remove pension- Do you currently get income from this pension provider?"}
 
@@ -40,7 +45,8 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = Some(Messages("tai.updatePension.decision.customGaTitle"))) {
+    gaCustomTitle = Some(Messages("tai.updatePension.decision.customGaTitle")),
+    webChatClient = webChatClient) {
 
     @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension, Symbol("data-journey-dynamic-radios") -> "" ) {
         <div class="form-group">

@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{GrossPayPeriodTitle, PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,7 +42,8 @@ class IncomeUpdatePayslipAmountController @Inject()(
   mcc: MessagesControllerComponents,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   def payslipAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -69,7 +71,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
                 PaySlipAmountViewModel(paySlipForm, payPeriod, payPeriodInDays, employer)
               }
 
-              Ok(views.html.incomes.payslipAmount(viewModel))
+              Ok(views.html.incomes.payslipAmount(viewModel, webChatClient))
 
             case Left(_) =>
               Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
@@ -95,7 +97,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
             incomeSourceEither match {
               case Right(incomeSource) =>
                 val viewModel = PaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, incomeSource)
-                Future.successful(BadRequest(views.html.incomes.payslipAmount(viewModel)))
+                Future.successful(BadRequest(views.html.incomes.payslipAmount(viewModel, webChatClient)))
               case Left(_) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
             }
           },
@@ -134,7 +136,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
                 val form = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(taxablePayKey))
                 TaxablePaySlipAmountViewModel(form, payPeriod, payPeriodInDays, incomeSource)
               }
-              Ok(views.html.incomes.taxablePayslipAmount(viewModel))
+              Ok(views.html.incomes.taxablePayslipAmount(viewModel, webChatClient))
 
             case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
 
@@ -160,7 +162,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
             incomeSourceEither match {
               case Right(incomeSource) =>
                 val viewModel = TaxablePaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, incomeSource)
-                Future.successful(BadRequest(views.html.incomes.taxablePayslipAmount(viewModel)))
+                Future.successful(BadRequest(views.html.incomes.taxablePayslipAmount(viewModel, webChatClient)))
               case Left(_) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
             }
           },
@@ -186,7 +188,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
     } yield {
       val form = PayslipDeductionsForm.createForm().fill(PayslipDeductionsForm(payslipDeductions))
       incomeSourceEither match {
-        case Right(incomeSource) => Ok(views.html.incomes.payslipDeductions(form, incomeSource))
+        case Right(incomeSource) => Ok(views.html.incomes.payslipDeductions(form, incomeSource, webChatClient))
         case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
     }
@@ -205,8 +207,9 @@ class IncomeUpdatePayslipAmountController @Inject()(
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
             incomeSourceEither match {
-              case Right(incomeSource) => BadRequest(views.html.incomes.payslipDeductions(formWithErrors, incomeSource))
-              case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+              case Right(incomeSource) =>
+                BadRequest(views.html.incomes.payslipDeductions(formWithErrors, incomeSource, webChatClient))
+              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }
         },

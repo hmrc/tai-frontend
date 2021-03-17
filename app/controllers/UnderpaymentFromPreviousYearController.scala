@@ -16,23 +16,19 @@
 
 package controllers
 
-import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.UnderPaymentFromPreviousYear
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
+import uk.gov.hmrc.webchat.client.WebChatClient
 import views.html.previousYearUnderpayment
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class UnderpaymentFromPreviousYearController @Inject()(
@@ -41,7 +37,8 @@ class UnderpaymentFromPreviousYearController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral {
 
   def underpaymentExplanation = (authenticate andThen validatePerson).async { implicit request =>
@@ -55,7 +52,7 @@ class UnderpaymentFromPreviousYearController @Inject()(
       codingComponents <- codingComponentsFuture
     } yield {
       val model = PreviousYearUnderpaymentViewModel(codingComponents, referer, resourceName)
-      Ok(previousYearUnderpayment(model))
+      Ok(previousYearUnderpayment(model, webChatClient))
     }
   }
 }

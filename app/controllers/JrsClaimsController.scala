@@ -26,6 +26,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,7 +39,8 @@ class JrsClaimsController @Inject()(
   mcc: MessagesControllerComponents,
   appConfig: ApplicationConfig,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -51,10 +53,10 @@ class JrsClaimsController @Inject()(
         .fold(
           NotFound(views.html.noJrsClaim(appConfig))
         )(
-          jrsClaims => Ok(views.html.jrsClaimSummary(jrsClaims, appConfig))
+          jrsClaims => Ok(views.html.jrsClaimSummary(jrsClaims, appConfig, webChatClient))
         )
     } else {
-      Future.successful(InternalServerError(views.html.internalServerError(appConfig)))
+      Future.successful(InternalServerError(views.html.internalServerError(appConfig, webChatClient)))
     }
   }
 }

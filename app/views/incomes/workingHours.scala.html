@@ -14,7 +14,16 @@
  * limitations under the License.
  *@
 
-@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(
+    workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm],
+    id: Int,
+    employerName: String,
+    webChatClient: WebChatClient)(implicit request: Request[_],
+    user: controllers.auth.AuthedUser, messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
 @import includes.cancelLink
@@ -39,7 +48,8 @@
     articleClasses = Some("full-width"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName)
+    employerName = Some(employerName),
+    webChatClient = webChatClient
 ){
     <div class="section flush--bottom soft--top">
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.handleWorkingHours){

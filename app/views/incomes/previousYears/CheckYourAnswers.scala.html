@@ -21,8 +21,12 @@
 @import includes._
 @import includes.forms._
 @import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(viewModel: UpdateIncomeDetailsCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: UpdateIncomeDetailsCheckYourAnswersViewModel, webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages, user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
   ptaHeader(
@@ -35,7 +39,8 @@
   title = messages("tai.checkYourAnswers.title"),
   authedUser = Some(user),
   pageHeader = Some(header),
-  articleClasses = None
+  articleClasses = None,
+  webChatClient = webChatClient
 ){
 
     <div class="section">

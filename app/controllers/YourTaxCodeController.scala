@@ -65,7 +65,7 @@ class YourTaxCodeController @Inject()(
 
         implicit val user = request.taiUser
 
-        Ok(views.html.taxCodeDetails(taxCodeViewModel))
+        Ok(views.html.taxCodeDetails(taxCodeViewModel, webChatClient))
       }) recover {
         case NonFatal(e) => {
           internalServerError(s"Exception: ${e.getClass()}", webChatClient = webChatClient)
@@ -87,7 +87,7 @@ class YourTaxCodeController @Inject()(
         val taxCodeViewModel =
           TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year, applicationConfig)
         implicit val user = request.taiUser
-        Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
+        Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel, webChatClient))
       }) recover {
         case NonFatal(e) => {
           internalServerError(s"Exception: ${e.getClass()}", webChatClient = webChatClient)

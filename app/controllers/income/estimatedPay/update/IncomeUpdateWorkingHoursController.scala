@@ -27,6 +27,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, JourneyCacheConstants}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.ExecutionContext
 
@@ -36,7 +37,8 @@ class IncomeUpdateWorkingHoursController @Inject()(
   mcc: MessagesControllerComponents,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants {
 
   def workingHoursPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -54,7 +56,8 @@ class IncomeUpdateWorkingHoursController @Inject()(
               .workingHours(
                 HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
                 incomeSource.id,
-                incomeSource.name))
+                incomeSource.name,
+                webChatClient))
         case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
     }
@@ -70,7 +73,8 @@ class IncomeUpdateWorkingHoursController @Inject()(
         formWithErrors => {
           IncomeSource.create(journeyCacheService).map {
             case Right(incomeSource) =>
-              BadRequest(views.html.incomes.workingHours(formWithErrors, incomeSource.id, incomeSource.name))
+              BadRequest(
+                views.html.incomes.workingHours(formWithErrors, incomeSource.id, incomeSource.name, webChatClient))
             case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           }
         },

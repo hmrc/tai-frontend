@@ -70,13 +70,15 @@ class PayeControllerHistoric @Inject()(
           Ok(
             views.html.paye.RtiDisabledHistoricPayAsYouEarn(
               HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-              config
+              config,
+              webChatClient
             ))
         } else {
           Ok(
             views.html.paye.historicPayAsYouEarn(
               HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-              config
+              config,
+              webChatClient
             ))
         }
       }

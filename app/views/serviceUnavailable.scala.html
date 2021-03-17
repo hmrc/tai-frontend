@@ -14,7 +14,12 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages, user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.play.views.html.layouts.loginStatus
@@ -22,7 +27,8 @@
 @main(title = Messages("tai.gatekeeper.refuse.title"),
     authedUser = Some(user),
     articleClasses = Some("full-width"),
-    gaCustomTitle = None){
+    gaCustomTitle = None,
+    webChatClient = webChatClient){
 <header class="page-header">
     <h1>@Messages("tai.gatekeeper.refuse.title")</h1>
 </header>

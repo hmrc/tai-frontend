@@ -19,14 +19,19 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.{JrsClaims, YearAndMonth}
 @import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: JrsClaims, appConfig: ApplicationConfig, webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @employerMessageKey = @{viewModel.employerMessageKey}
 
 @main(
     title = messages("check.jrs.claims.title"),
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    webChatClient = webChatClient
 ){
 
 

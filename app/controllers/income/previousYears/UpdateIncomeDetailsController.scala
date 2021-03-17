@@ -64,7 +64,9 @@ class UpdateIncomeDetailsController @Inject()(
   def decision(taxYear: TaxYear): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.cache(Map(UpdatePreviousYearsIncome_TaxYearKey -> taxYear.year.toString)) map { _ =>
       implicit val user = request.taiUser
-      Ok(views.html.incomes.previousYears.UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear))
+      Ok(
+        views.html.incomes.previousYears
+          .UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear, webChatClient))
     }
   }
 
@@ -73,8 +75,8 @@ class UpdateIncomeDetailsController @Inject()(
 
     UpdateIncomeDetailsDecisionForm.form.bindFromRequest.fold(
       formWithErrors => {
-        Future.successful(
-          BadRequest(views.html.incomes.previousYears.UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev)))
+        Future.successful(BadRequest(
+          views.html.incomes.previousYears.UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev, webChatClient)))
       },
       decision => {
         decision match {
@@ -92,7 +94,8 @@ class UpdateIncomeDetailsController @Inject()(
       Ok(
         views.html.incomes.previousYears.UpdateIncomeDetails(
           UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
-          UpdateIncomeDetailsForm.form))
+          UpdateIncomeDetailsForm.form,
+          webChatClient))
     }
   }
 
@@ -104,7 +107,8 @@ class UpdateIncomeDetailsController @Inject()(
           BadRequest(
             views.html.incomes.previousYears.UpdateIncomeDetails(
               UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
-              formWithErrors))
+              formWithErrors,
+              webChatClient))
         }
       },
       incomeDetails => {
@@ -184,7 +188,9 @@ class UpdateIncomeDetailsController @Inject()(
                   TaxYear(mandatoryValues.head.toInt),
                   mandatoryValues(1),
                   mandatoryValues(2),
-                  optionalSeq.head)))
+                  optionalSeq.head),
+                webChatClient
+              ))
 
           case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
         }
@@ -214,7 +220,7 @@ class UpdateIncomeDetailsController @Inject()(
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    Future.successful(Ok(views.html.incomes.previousYears.UpdateIncomeDetailsConfirmation()))
+    Future.successful(Ok(views.html.incomes.previousYears.UpdateIncomeDetailsConfirmation(webChatClient)))
   }
 
 }

@@ -77,7 +77,7 @@ class UpdateIncomeNextYearController @Inject()(
           (employmentId: Int, vm: DuplicateSubmissionEstimatedPay) =>
             Ok(
               views.html.incomes.nextYear
-                .updateIncomeCYPlus1Warning(DuplicateSubmissionWarningForm.createForm, vm, employmentId))
+                .updateIncomeCYPlus1Warning(DuplicateSubmissionWarningForm.createForm, vm, employmentId, webChatClient))
         )
       }
   }
@@ -114,7 +114,9 @@ class UpdateIncomeNextYearController @Inject()(
               employmentId,
               nino,
               (employmentId: Int, vm: DuplicateSubmissionEstimatedPay) =>
-                BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId))
+                BadRequest(
+                  views.html.incomes.nextYear
+                    .updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId, webChatClient))
             )
           },
           success => {
@@ -136,7 +138,9 @@ class UpdateIncomeNextYearController @Inject()(
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-        Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension))
+        Ok(
+          views.html.incomes.nextYear
+            .updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension, webChatClient))
       }
     }
   }
@@ -262,7 +266,7 @@ class UpdateIncomeNextYearController @Inject()(
                           model.isPension,
                           controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
 
-                        Future.successful(Ok(views.html.incomes.sameEstimatedPay(samePayViewModel)))
+                        Future.successful(Ok(views.html.incomes.sameEstimatedPay(samePayViewModel, webChatClient)))
                       case _ =>
                         updateNextYearsIncomeService.setNewAmount(newIncome, employmentId, nino) map { _ =>
                           Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))

@@ -14,8 +14,18 @@
  * limitations under the License.
  *@
 
-@(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(
+    payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm],
+    id: Int,
+    employerName: String,
+    isNotDaysError : Boolean = true,
+    webChatClient: WebChatClient)(implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
 @import includes.ptaHeader
@@ -63,7 +73,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     articleClasses = None,
     authedUser = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName)
+    employerName = Some(employerName),
+    webChatClient = webChatClient
 ){
     <div class="section flush--bottom">
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){

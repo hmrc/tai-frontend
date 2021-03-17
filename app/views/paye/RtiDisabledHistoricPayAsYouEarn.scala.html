@@ -21,11 +21,17 @@
 @import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 @import controllers.auth.AuthenticatedRequest
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
-messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(
+    viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel,
+    appConfig: ApplicationConfig,
+    webChatClient: WebChatClient)(implicit request: AuthenticatedRequest[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your Pay As You Earn Income Tax"}
 
@@ -58,7 +64,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
     articleClasses = Some("full-width"),
     authedUser = Some(request.taiUser),
     pageHeader = Some(header),
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    webChatClient = webChatClient
 ){
 
 <div class="grid-row">

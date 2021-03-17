@@ -22,10 +22,16 @@
 @import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderNumberForm
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionNumberViewModel
 @import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(payrollNumberForm: Form[AddPensionProviderNumberForm], pensionNumberViewModel: PensionNumberViewModel)(implicit request: Request[_],
-        messages: Messages, user: controllers.auth.AuthedUser,
-        templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(
+    payrollNumberForm: Form[AddPensionProviderNumberForm],
+    pensionNumberViewModel: PensionNumberViewModel,
+    webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Do you know your pension number?"}
 
@@ -42,7 +48,8 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = Some(Messages("tai.addPensionProvider.pensionNumber.customGaTitle"))
+    gaCustomTitle = Some(Messages("tai.addPensionProvider.pensionNumber.customGaTitle")),
+    webChatClient = webChatClient
 ) {
 
     @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionNumber(), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {

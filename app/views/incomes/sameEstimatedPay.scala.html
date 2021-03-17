@@ -15,12 +15,13 @@
  *@
 
 @import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
-
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.util.HtmlFormatter
 @import uk.gov.hmrc.play.views.formatting.Dates
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-@(model: SameEstimatedPayViewModel)(implicit
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(model: SameEstimatedPayViewModel, webChatClient: WebChatClient)(implicit
         request: Request[_],
         messages: Messages,
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
@@ -47,7 +48,8 @@
 @main(
     title = messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
     pageHeader = Some(header),
-    articleClasses = Some("")
+    articleClasses = Some(""),
+    webChatClient = webChatClient
 ) {
     <div class="grid-row">
             <div class="inner-block">

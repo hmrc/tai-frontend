@@ -16,15 +16,21 @@
 
 @import uk.gov.hmrc.urls.Link
 @import includes.confirmation_summary
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 @import views.html.includes.confirmationSuccessBanner
-@()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(webChatClient: WebChatClient)(implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
     title = Messages("tai.pensionConfirmation.heading"),
     authedUser = Some(user),
     articleClasses = None,
-    gaCustomTitle = None) {
+    gaCustomTitle = None,
+    webChatClient = webChatClient) {
 
     @confirmationSuccessBanner()
 

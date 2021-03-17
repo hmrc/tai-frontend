@@ -19,9 +19,13 @@
 @import includes.cancelLink
 @import includes.forms.input
 @import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(viewModel: PaySlipAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
-        templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: PaySlipAmountViewModel, webChatClient: WebChatClient)(implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{
     "Update your annual taxable pay"
@@ -42,7 +46,8 @@
     articleClasses = None,
     authedUser = Some(user),
     pageHeader = Some(header),
-    employerName = Some(viewModel.employer.name)
+    employerName = Some(viewModel.employer.name),
+    webChatClient = webChatClient
 ) {
     <p>@messages("tai.payslip.p1")</p>
     <p>@messages("tai.payslip.p2")</p>

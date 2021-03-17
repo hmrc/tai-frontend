@@ -16,9 +16,13 @@
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-
-@()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(webChatClient: WebChatClient)(implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"What happens next"}
 
@@ -36,7 +40,8 @@
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
     authedUser = Some(user),
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    webChatClient = webChatClient
 ){
 
 <div class="grid-row">

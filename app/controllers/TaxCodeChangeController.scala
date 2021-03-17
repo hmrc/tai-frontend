@@ -16,7 +16,6 @@
 
 package controllers
 
-import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -24,14 +23,14 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{IabdTaxCodeChangeReasons, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
+import uk.gov.hmrc.webchat.client.WebChatClient
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxCodeChangeController @Inject()(
@@ -45,7 +44,8 @@ class TaxCodeChangeController @Inject()(
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with YourTaxFreeAmount {
 
   def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -67,7 +67,7 @@ class TaxCodeChangeController @Inject()(
         TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
 
       implicit val user = request.taiUser
-      Ok(views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig))
+      Ok(views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig, webChatClient))
     }
   }
 
@@ -78,12 +78,12 @@ class TaxCodeChangeController @Inject()(
     implicit val user = request.taiUser
 
     taxFreeAmountViewModel.map(viewModel => {
-      Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
+      Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel, webChatClient))
     })
   }
 
   def whatHappensNext: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
+    Future.successful(Ok(views.html.taxCodeChange.whatHappensNext(webChatClient)))
   }
 }

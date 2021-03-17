@@ -21,14 +21,15 @@
 @import uk.gov.hmrc.tai.model.domain.income._
 @import uk.gov.hmrc.tai.model.domain._
 @import uk.gov.hmrc.play.views.formatting.Dates
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 @import includes.ptaHeader
 
-@(model: YourIncomeCalculationViewModel)(implicit request: Request[_],
-user: controllers.auth.AuthedUser,
-messages: Messages,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(model: YourIncomeCalculationViewModel, webChatClient: WebChatClient)(implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Taxable income"}
 
@@ -56,7 +57,8 @@ partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
     pageHeader = Some(header),
     employerName = Some(model.employerName),
     gaCustomTitle = Some(Messages("tai.income.calculation.TaxableIncomeDetails.gaTitle")),
-    articleClasses = None
+    articleClasses = None,
+    webChatClient = webChatClient
 ){
 
     <div class="grid-row">

@@ -25,9 +25,14 @@
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 @import uk.gov.hmrc.tai.config.ApplicationConfig
-
+@import uk.gov.hmrc.webchat.client.WebChatClient
 @import uk.gov.hmrc.tai.util.HtmlFormatter
-@(taxCodeChangeViewModel: TaxCodeChangeViewModel, appConfig: ApplicationConfig)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@(taxCodeChangeViewModel: TaxCodeChangeViewModel, appConfig: ApplicationConfig, webChatClient: WebChatClient)(implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax code change"}
 @gaEventLabelString = @{Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}
@@ -47,8 +52,9 @@
     pageHeader = Some(header),
     authedUser = Some(user),
     gaCustomTitle = None,
-    gaSettings = GoogleAnalyticsSettings(dimensions = Some(taxCodeChangeViewModel.gaDimensions))
-    ) {
+    gaSettings = GoogleAnalyticsSettings(dimensions = Some(taxCodeChangeViewModel.gaDimensions)),
+    webChatClient = webChatClient
+) {
 
     <div class="column-two-thirds">
         <div class="grid-row">

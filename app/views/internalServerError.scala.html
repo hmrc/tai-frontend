@@ -17,13 +17,18 @@
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 @import play.api.Play.current
 @import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(applicationConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(applicationConfig: ApplicationConfig, webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
 @main(
     title = messages("global.error.InternalServerError500.tai.title"),
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    webChatClient = webChatClient
 ){
 
     <div class="grid-row pertax-error">

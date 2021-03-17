@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.ExecutionContext
 
@@ -38,7 +39,8 @@ class IncomeUpdatePayPeriodController @Inject()(
   mcc: MessagesControllerComponents,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   def payPeriodPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -51,8 +53,9 @@ class IncomeUpdatePayPeriodController @Inject()(
     } yield {
       val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
       incomeSourceEither match {
-        case Right(incomeSource) => Ok(views.html.incomes.payPeriod(form, incomeSource.id, incomeSource.name))
-        case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+        case Right(incomeSource) =>
+          Ok(views.html.incomes.payPeriod(form, incomeSource.id, incomeSource.name, webChatClient = webChatClient))
+        case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
     }
   }
@@ -77,7 +80,8 @@ class IncomeUpdatePayPeriodController @Inject()(
             incomeSourceEither match {
               case Right(incomeSource) =>
                 BadRequest(
-                  views.html.incomes.payPeriod(formWithErrors, incomeSource.id, incomeSource.name, !isDaysError))
+                  views.html.incomes
+                    .payPeriod(formWithErrors, incomeSource.id, incomeSource.name, !isDaysError, webChatClient))
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }

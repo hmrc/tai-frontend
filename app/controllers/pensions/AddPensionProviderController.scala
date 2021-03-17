@@ -76,7 +76,8 @@ class AddPensionProviderController @Inject()(
   def addPensionProviderName(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.currentValue(AddPensionProvider_NameKey) map { pensionName =>
       implicit val user: AuthedUser = request.taiUser
-      Ok(views.html.pensions.addPensionName(PensionProviderNameForm.form.fill(pensionName.getOrElse(""))))
+      Ok(
+        views.html.pensions.addPensionName(PensionProviderNameForm.form.fill(pensionName.getOrElse("")), webChatClient))
     }
   }
 
@@ -85,7 +86,7 @@ class AddPensionProviderController @Inject()(
       implicit val user: AuthedUser = request.taiUser
       PensionProviderNameForm.form.bindFromRequest.fold(
         formWithErrors => {
-          Future.successful(BadRequest(views.html.pensions.addPensionName(formWithErrors)))
+          Future.successful(BadRequest(views.html.pensions.addPensionName(formWithErrors, webChatClient)))
         },
         pensionProviderName => {
           journeyCacheService
@@ -105,7 +106,8 @@ class AddPensionProviderController @Inject()(
             Ok(
               views.html.pensions.addPensionReceivedFirstPay(
                 AddPensionProviderFirstPayForm.form.fill(optionalVals(0)),
-                mandatoryValues(0)))
+                mandatoryValues(0),
+                webChatClient))
           case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
     }
@@ -119,7 +121,8 @@ class AddPensionProviderController @Inject()(
       .fold(
         formWithErrors => {
           journeyCacheService.mandatoryValue(AddPensionProvider_NameKey).map { pensionProviderName =>
-            BadRequest(views.html.pensions.addPensionReceivedFirstPay(formWithErrors, pensionProviderName))
+            BadRequest(
+              views.html.pensions.addPensionReceivedFirstPay(formWithErrors, pensionProviderName, webChatClient))
           }
         },
         yesNo => {
@@ -142,7 +145,7 @@ class AddPensionProviderController @Inject()(
         .createAndSendAuditEvent(AddPension_CantAddPensionProvider, Map("nino" -> request.taiUser.nino.toString()))
       implicit val user: AuthedUser = request.taiUser
 
-      Ok(views.html.pensions.addPensionErrorPage(pensionProviderName))
+      Ok(views.html.pensions.addPensionErrorPage(pensionProviderName, webChatClient))
     }
   }
 
@@ -160,7 +163,7 @@ class AddPensionProviderController @Inject()(
                   PensionAddDateForm(mandatorySequence(0)).form.fill(new LocalDate(userDateString))
                 case _ => PensionAddDateForm(mandatorySequence(0)).form
               }
-              Ok(views.html.pensions.addPensionStartDate(form, mandatorySequence(0)))
+              Ok(views.html.pensions.addPensionStartDate(form, mandatorySequence(0), webChatClient))
 
             }
             case Left(_) => Redirect(taxAccountSummaryRedirect)
@@ -179,8 +182,8 @@ class AddPensionProviderController @Inject()(
           .bindFromRequest()
           .fold(
             formWithErrors => {
-              Future.successful(BadRequest(
-                views.html.pensions.addPensionStartDate(formWithErrors, currentCache(AddPensionProvider_NameKey))))
+              Future.successful(BadRequest(views.html.pensions
+                .addPensionStartDate(formWithErrors, currentCache(AddPensionProvider_NameKey), webChatClient)))
             },
             date => {
               journeyCacheService.cache(AddPensionProvider_StartDateKey, date.toString) map { _ =>
@@ -205,7 +208,9 @@ class AddPensionProviderController @Inject()(
         views.html.pensions.addPensionNumber(
           AddPensionProviderNumberForm.form.fill(
             AddPensionProviderNumberForm(cache.get(AddPensionProvider_PayrollNumberChoice), payrollNo)),
-          viewModel))
+          viewModel,
+          webChatClient
+        ))
     }
   }
 
@@ -218,7 +223,7 @@ class AddPensionProviderController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { cache =>
             val viewModel = PensionNumberViewModel(cache)
-            BadRequest(views.html.pensions.addPensionNumber(formWithErrors, viewModel))
+            BadRequest(views.html.pensions.addPensionNumber(formWithErrors, viewModel, webChatClient))
           }
         },
         form => {
@@ -302,7 +307,7 @@ class AddPensionProviderController @Inject()(
               mandatoryValues(3),
               optionalVals.head
             )
-            Ok(views.html.pensions.addPensionCheckYourAnswers(model))
+            Ok(views.html.pensions.addPensionCheckYourAnswers(model, webChatClient))
           }
           case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
@@ -341,7 +346,7 @@ class AddPensionProviderController @Inject()(
   def confirmation: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    Future.successful(Ok(views.html.pensions.addPensionConfirmation()))
+    Future.successful(Ok(views.html.pensions.addPensionConfirmation(webChatClient)))
   }
 
 }
