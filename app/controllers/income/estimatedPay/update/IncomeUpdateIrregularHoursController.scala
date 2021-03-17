@@ -19,24 +19,24 @@ package controllers.income.estimatedPay.update
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import javax.inject.{Inject, Named}
-import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Payment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
+import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.webchat.client.WebChatClient
 
+import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -49,7 +49,8 @@ class IncomeUpdateIrregularHoursController @Inject()(
   mcc: MessagesControllerComponents,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants {
 
   private val taxCodeIncomeInfoToCache = (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
@@ -77,12 +78,16 @@ class IncomeUpdateIrregularHoursController @Inject()(
             (taxCodeIncomeInfoToCache.tupled andThen journeyCacheService.cache)(tci, payment) map { _ =>
               val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
 
-              Ok(views.html.incomes.editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
+              Ok(
+                views.html.incomes
+                  .editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel, webChatClient))
             }
           }
           case Left(TaiUnauthorisedResponse(_)) =>
             Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
-          case _ => Future.successful(internalServerError("Failed to find tax code income for employment"))
+          case _ =>
+            Future.successful(
+              internalServerError("Failed to find tax code income for employment", webChatClient = webChatClient))
         }
       }
   }
@@ -106,10 +111,10 @@ class IncomeUpdateIrregularHoursController @Inject()(
         } else {
           val vm =
             ConfirmAmountEnteredViewModel(employmentId, name, paymentToDate.toInt, newIrregularPay.toInt, IrregularPay)
-          Ok(views.html.incomes.confirmAmountEntered(vm))
+          Ok(views.html.incomes.confirmAmountEntered(vm, webChatClient))
         }
       }).recover {
-        case NonFatal(e) => internalServerError(e.getMessage)
+        case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
       }
   }
 
@@ -127,7 +132,8 @@ class IncomeUpdateIrregularHoursController @Inject()(
             formWithErrors => {
 
               val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, paymentToDate)
-              Future.successful(BadRequest(views.html.incomes.editIncomeIrregularHours(formWithErrors, viewModel)))
+              Future.successful(
+                BadRequest(views.html.incomes.editIncomeIrregularHours(formWithErrors, viewModel, webChatClient)))
             },
             validForm =>
               validForm.income.fold(throw new RuntimeException) { income =>
@@ -150,7 +156,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
 
       val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) => {
         journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newPay) map { _ =>
-          Ok(views.html.incomes.editSuccess(incomeName, incomeId.toInt))
+          Ok(views.html.incomes.editSuccess(incomeName, incomeId.toInt, webChatClient))
         }
       }
 
@@ -170,7 +176,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
 
         })
         .recover {
-          case NonFatal(e) => internalServerError(e.getMessage)
+          case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
         }
   }
 

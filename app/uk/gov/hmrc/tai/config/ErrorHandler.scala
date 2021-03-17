@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.config
 
-import javax.inject.Inject
 import play.api.Configuration
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Request
@@ -25,26 +24,30 @@ import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.urls.Link
+import uk.gov.hmrc.webchat.client.WebChatClient
 import views.html.internalServerError
+
+import javax.inject.Inject
 
 class ErrorHandler @Inject()(
   applicationConfig: ApplicationConfig,
   val messagesApi: MessagesApi,
   val configuration: Configuration)(
   implicit localTemplateRenderer: TemplateRenderer,
-  taiHtmlPartialRetriever: FormPartialRetriever)
+  taiHtmlPartialRetriever: FormPartialRetriever,
+  webChatClient: WebChatClient)
     extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(
     implicit request: Request[_]) =
-    views.html.error_template_noauth(pageTitle, heading, message, List.empty)
+    views.html.error_template_noauth(pageTitle, heading, message, List.empty, webChatClient)
 
   def badRequestErrorTemplate(
     pageTitle: String,
     heading: String,
     message1: String,
     additionalMessages: List[String] = List.empty)(implicit request: Request[_]): Html =
-    views.html.error_template_noauth(pageTitle, heading, message1, additionalMessages)
+    views.html.error_template_noauth(pageTitle, heading, message1, additionalMessages, webChatClient)
 
   override def badRequestTemplate(implicit request: Request[_]): Html = badRequestErrorTemplate(
     Messages("global.error.badRequest400.title"),

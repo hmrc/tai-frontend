@@ -20,8 +20,13 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary, input}
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(employerName: String, webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"We can’t add this employer yet"}
 
@@ -34,11 +39,12 @@
 
 
 @main(
-  title = Messages("tai.addEmployment.employmentErrorPage.title"),
-  authedUser = Some(user),
-  pageHeader = Some(header),
-  articleClasses = None,
-  gaCustomTitle = None) {
+      title = Messages("tai.addEmployment.employmentErrorPage.title"),
+      authedUser = Some(user),
+      pageHeader = Some(header),
+      articleClasses = None,
+      gaCustomTitle = None,
+      webChatClient = webChatClient) {
 
     <div class="subsection">
         <p>@Messages("tai.addEmployment.employmentErrorPage.para1", employerName)</p>

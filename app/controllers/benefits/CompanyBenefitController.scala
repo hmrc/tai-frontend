@@ -20,8 +20,6 @@ import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-
-import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -35,6 +33,7 @@ import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, Upda
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import uk.gov.hmrc.webchat.client.WebChatClient
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
@@ -103,7 +102,7 @@ class CompanyBenefitController @Inject()(
         case None => throw new RuntimeException("No employment found")
       }
     }).flatMap(identity) recover {
-      case NonFatal(e) => internalServerError("CompanyBenefitController exception", Some(e))
+      case NonFatal(e) => internalServerError("CompanyBenefitController exception", Some(e), webChatClient)
     }
   }
 

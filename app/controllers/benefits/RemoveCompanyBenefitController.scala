@@ -20,8 +20,6 @@ import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-
-import javax.inject.Inject
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.language.LanguageUtils
@@ -41,6 +39,7 @@ import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefi
 import uk.gov.hmrc.webchat.client.WebChatClient
 import views.html.benefits.removeCompanyBenefitCheckYourAnswers
 
+import javax.inject.Inject
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal.RoundingMode
@@ -152,7 +151,7 @@ class RemoveCompanyBenefitController @Inject()(
             currentCache.get(EndCompanyBenefit_TelephoneNumberKey))
         )
 
-      Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, form))
+      Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, form, webChatClient))
     }
   }
 
@@ -168,7 +167,8 @@ class RemoveCompanyBenefitController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
-            BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors))
+            BadRequest(
+              views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors, webChatClient))
           }
         },
         form => {

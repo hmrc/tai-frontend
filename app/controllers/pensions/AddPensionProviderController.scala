@@ -36,6 +36,7 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Jour
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -52,7 +53,8 @@ class AddPensionProviderController @Inject()(
   @Named("Add Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with AuditConstants with FormValuesConstants
     with EmptyCacheRedirect {
 
@@ -165,7 +167,7 @@ class AddPensionProviderController @Inject()(
 
           }
       }).recover {
-        case NonFatal(e) => internalServerError(e.getMessage)
+        case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
       }
   }
 
@@ -244,7 +246,8 @@ class AddPensionProviderController @Inject()(
         views.html.can_we_contact_by_phone(
           user,
           contactPhonePensionProvider,
-          YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
+          YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo)),
+          webChatClient))
     }
   }
 
@@ -259,7 +262,8 @@ class AddPensionProviderController @Inject()(
         formWithErrors => {
           val user = Some(request.taiUser)
           Future.successful(
-            BadRequest(views.html.can_we_contact_by_phone(user, contactPhonePensionProvider, formWithErrors)))
+            BadRequest(
+              views.html.can_we_contact_by_phone(user, contactPhonePensionProvider, formWithErrors, webChatClient)))
         },
         form => {
           val mandatoryData = Map(
@@ -304,7 +308,7 @@ class AddPensionProviderController @Inject()(
         }
       }
     } catch {
-      case NonFatal(e) => Future.successful(internalServerError(e.getMessage))
+      case NonFatal(e) => Future.successful(internalServerError(e.getMessage, webChatClient = webChatClient))
     }
   }
 

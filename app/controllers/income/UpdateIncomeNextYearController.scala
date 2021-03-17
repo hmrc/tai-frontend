@@ -38,6 +38,7 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionCYPlus1EmploymentViewModel, DuplicateSubmissionCYPlus1PensionViewModel, DuplicateSubmissionEstimatedPay}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -50,7 +51,8 @@ class UpdateIncomeNextYearController @Inject()(
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with FormValuesConstants with I18nSupport {
 
   def onPageLoad(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -152,7 +154,8 @@ class UpdateIncomeNextYearController @Inject()(
               employmentId,
               model.isPension,
               model.currentValue,
-              AmountComparatorForm.createForm()))
+              AmountComparatorForm.createForm(),
+              webChatClient))
         }
       }
     }
@@ -166,7 +169,7 @@ class UpdateIncomeNextYearController @Inject()(
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
         Ok(
           views.html.incomes.nextYear
-            .updateIncomeCYPlus1Same(model.employmentName, model.employmentId, model.currentValue))
+            .updateIncomeCYPlus1Same(model.employmentName, model.employmentId, model.currentValue, webChatClient))
       }
     }
   }
@@ -177,7 +180,7 @@ class UpdateIncomeNextYearController @Inject()(
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-        Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName, model.isPension))
+        Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName, model.isPension, webChatClient))
       }
     }
   }
@@ -194,7 +197,7 @@ class UpdateIncomeNextYearController @Inject()(
               case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue) => {
                 val vm =
                   ConfirmAmountEnteredViewModel(employmentId, employmentName, currentValue, newAmount, NextYearPay)
-                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm))
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm, webChatClient))
               }
             }
         case Left(error) =>
@@ -213,10 +216,10 @@ class UpdateIncomeNextYearController @Inject()(
           case TaiSuccessResponse => Redirect(routes.UpdateIncomeNextYearController.success(employmentId))
           case _                  => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
         }).recover {
-          case NonFatal(e) => internalServerError(e.getMessage)
+          case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
         }
       } else {
-        Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+        Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"), webChatClient)))
       }
 
     }
@@ -240,7 +243,8 @@ class UpdateIncomeNextYearController @Inject()(
                     employmentId,
                     model.isPension,
                     model.currentValue,
-                    formWithErrors)))
+                    formWithErrors,
+                    webChatClient)))
             },
             validForm => {
               validForm.income.fold(throw new RuntimeException) {
@@ -276,6 +280,6 @@ class UpdateIncomeNextYearController @Inject()(
     if (applicationConfig.cyPlusOneEnabled) {
       action
     } else {
-      Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+      Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"), webChatClient)))
     }
 }

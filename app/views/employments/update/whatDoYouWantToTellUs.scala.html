@@ -19,9 +19,16 @@
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 @import uk.gov.hmrc.play.views.html.helpers.{form}
 @import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-
-@(viewmodel: EmploymentViewModel, updateEmploymentDetailsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(
+    viewmodel: EmploymentViewModel,
+    updateEmploymentDetailsForm: Form[String],
+    webChatClient: WebChatClient)(implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{Messages("tai.updateEmployment.whatDoYouWantToTellUs.title")}
 
@@ -40,7 +47,8 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.customGaTitle"))) {
+    gaCustomTitle = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.customGaTitle")),
+    webChatClient = webChatClient) {
 
     @form(action = controllers.employments.routes.UpdateEmploymentController.submitUpdateEmploymentDetails(viewmodel.empId), args=(Symbol("class"), "subsection")) {
 

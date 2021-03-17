@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -43,7 +44,8 @@ class TaxFreeAmountController @Inject()(
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def taxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -68,7 +70,7 @@ class TaxFreeAmountController @Inject()(
         case _                      => throw new RuntimeException("Failed to fetch total tax details")
       }
     }) recover {
-      case NonFatal(e) => internalServerError(s"Could not get tax free amount", Some(e))
+      case NonFatal(e) => internalServerError(s"Could not get tax free amount", Some(e), webChatClient = webChatClient)
     }
   }
 }

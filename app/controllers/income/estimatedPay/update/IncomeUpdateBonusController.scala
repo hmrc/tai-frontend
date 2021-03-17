@@ -28,6 +28,7 @@ import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, BonusPaymentsForm, YesNoF
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,7 +38,8 @@ class IncomeUpdateBonusController @Inject()(
   mcc: MessagesControllerComponents,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants
     with UpdatedEstimatedPayJourneyCache {
   def bonusPaymentsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -49,7 +51,7 @@ class IncomeUpdateBonusController @Inject()(
     } yield {
       val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
       incomeSourceEither match {
-        case Right(incomeSource) => Ok(views.html.incomes.bonusPayments(form, incomeSource))
+        case Right(incomeSource) => Ok(views.html.incomes.bonusPayments(form, incomeSource, webChatClient))
         case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
     }
@@ -66,8 +68,9 @@ class IncomeUpdateBonusController @Inject()(
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
             incomeSourceEither match {
-              case Right(incomeSource) => BadRequest(views.html.incomes.bonusPayments(formWithErrors, incomeSource))
-              case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+              case Right(incomeSource) =>
+                BadRequest(views.html.incomes.bonusPayments(formWithErrors, incomeSource, webChatClient))
+              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }
         },
@@ -96,7 +99,7 @@ class IncomeUpdateBonusController @Inject()(
     } yield {
       val form = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
       incomeSourceEither match {
-        case Right(incomeSource) => Ok(views.html.incomes.bonusPaymentAmount(form, incomeSource))
+        case Right(incomeSource) => Ok(views.html.incomes.bonusPaymentAmount(form, incomeSource, webChatClient))
         case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
 
@@ -116,7 +119,7 @@ class IncomeUpdateBonusController @Inject()(
           } yield {
             incomeSourceEither match {
               case Right(incomeSource) =>
-                BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, incomeSource))
+                BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, incomeSource, webChatClient))
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }

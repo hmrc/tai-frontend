@@ -18,10 +18,10 @@
 @import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 @import uk.gov.hmrc.tai.util.MonetaryUtil
-@(viewModel: ConfirmAmountEnteredViewModel
-)(implicit request: Request[_],
+@(viewModel: ConfirmAmountEnteredViewModel, webChatClient: WebChatClient)(implicit request: Request[_],
   messages: Messages,
   user: controllers.auth.AuthedUser,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
@@ -37,7 +37,8 @@
     title = messages("tai.irregular.title"),
     heading = messages("tai.incomes.confirm.save.heading", viewModel.yearRange),
     showCancel = false,
-    gaSettings = viewModel.gaSettings
+    gaSettings = viewModel.gaSettings,
+    webChatClient = webChatClient
 ){
 
     <div class="section flush--bottom soft--ends">

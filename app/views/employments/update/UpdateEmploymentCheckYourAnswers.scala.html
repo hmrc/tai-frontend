@@ -20,15 +20,20 @@
 @import includes._
 @import includes.forms._
 @import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(viewModel: UpdateEmploymentCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: UpdateEmploymentCheckYourAnswersViewModel, webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
     ptaHeader(
-    displayBackLink = true,
-    mainHeadingText = Messages("tai.checkYourAnswers.title"),
-    preHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")
-)
+        displayBackLink = true,
+        mainHeadingText = Messages("tai.checkYourAnswers.title"),
+        preHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")
+    )
 }
 
 @main(
@@ -36,7 +41,8 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    webChatClient = webChatClient
 ) {
     @checkYourAnswers(
         title = Some(viewModel.employerName),

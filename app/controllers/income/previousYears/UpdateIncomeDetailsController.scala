@@ -34,6 +34,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
+import uk.gov.hmrc.webchat.client.WebChatClient
 import views.html.incomes.previousYears.CheckYourAnswers
 
 import scala.Function.tupled
@@ -47,7 +48,8 @@ class UpdateIncomeDetailsController @Inject()(
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {
 
   def telephoneNumberViewModel(taxYear: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel =
@@ -121,7 +123,8 @@ class UpdateIncomeDetailsController @Inject()(
         views.html.can_we_contact_by_phone(
           Some(user),
           telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
-          YesNoTextEntryForm.form()))
+          YesNoTextEntryForm.form(),
+          webChatClient))
     }
   }
 
@@ -141,7 +144,8 @@ class UpdateIncomeDetailsController @Inject()(
               views.html.can_we_contact_by_phone(
                 Some(user),
                 telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
-                formWithErrors))
+                formWithErrors,
+                webChatClient))
           }
         },
         form => {

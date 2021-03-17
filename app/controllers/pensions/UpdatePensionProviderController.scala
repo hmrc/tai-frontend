@@ -41,6 +41,7 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersViewModel
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -57,7 +58,8 @@ class UpdatePensionProviderController @Inject()(
   @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -180,7 +182,9 @@ class UpdatePensionProviderController @Inject()(
             views.html.can_we_contact_by_phone(
               user,
               telephoneNumberViewModel(mandatoryPensionId),
-              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
+              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1))),
+              webChatClient
+            ))
         }
         case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
@@ -204,7 +208,8 @@ class UpdatePensionProviderController @Inject()(
               views.html.can_we_contact_by_phone(
                 user,
                 telephoneNumberViewModel(currentCache(UpdatePensionProvider_IdKey).toInt),
-                formWithErrors))
+                formWithErrors,
+                webChatClient))
           }
         },
         form => {
@@ -320,7 +325,7 @@ class UpdatePensionProviderController @Inject()(
         }
       case _ => throw new RuntimeException("Tax code income source is not available")
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
     }
 
   }

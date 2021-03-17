@@ -15,12 +15,17 @@
  *@
 
 @import uk.gov.hmrc.tai.util.HtmlFormatter
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
     title = messages("tai.deceased.title"),
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    webChatClient = webChatClient
 ){
 
     <header class="page-header">

@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -40,7 +41,8 @@ class DetailedIncomeTaxEstimateController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def taxExplanationPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -72,13 +74,14 @@ class DetailedIncomeTaxEstimateController @Inject()(
             taxAccountSummary,
             codingComponents,
             nonTaxCodeIncome)
-          Ok(views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model))
+          Ok(views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model, webChatClient))
         case _ => {
-          internalServerError("Failed to fetch total tax details")
+          internalServerError("Failed to fetch total tax details", webChatClient = webChatClient)
         }
       }
     }).recover {
-      case NonFatal(e) => internalServerError("Failed to fetch total tax details", Some(e))
+      case NonFatal(e) =>
+        internalServerError("Failed to fetch total tax details", Some(e), webChatClient = webChatClient)
     }
   }
 }

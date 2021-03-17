@@ -19,8 +19,16 @@
 @import org.joda.time.LocalDate
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(dateForm: Form[LocalDate], employmentName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(
+    dateForm: Form[LocalDate],
+    employmentName: String,
+    webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"When did you start working for this employer?"}
 
@@ -39,7 +47,8 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = Some(Messages("tai.addEmployment.startDateForm.customGaTitle")))  {
+    gaCustomTitle = Some(Messages("tai.addEmployment.startDateForm.customGaTitle")),
+    webChatClient = webChatClient)  {
 
     @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentStartDate(), args=(Symbol("class"), "subsection")) {
         @date(

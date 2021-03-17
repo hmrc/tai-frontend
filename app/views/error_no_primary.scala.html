@@ -14,13 +14,19 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.urls.Link
 
 @main(
     title=Messages("tai.noPrimary.heading"),
-    gaCustomTitle = None){
+    gaCustomTitle = None,
+    webChatClient = webChatClient){
     <div class="section">
         <h1 class="h1-heading">@Messages("tai.noPrimary.heading")</h1>
         <div class="grid grid-2-3">

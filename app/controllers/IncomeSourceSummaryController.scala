@@ -80,7 +80,7 @@ class IncomeSourceSummaryController @Inject()(
         case _ => throw new RuntimeException("Error while fetching income summary details")
       }
     }) recover {
-      case NonFatal(e) => internalServerError("IncomeSourceSummaryController exception", Some(e))
+      case NonFatal(e) => internalServerError("IncomeSourceSummaryController exception", Some(e), webChatClient)
     }
   }
 }

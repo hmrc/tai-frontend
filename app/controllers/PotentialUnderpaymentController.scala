@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, TaxAccount
 import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.ExecutionContext
 
@@ -40,7 +41,8 @@ class PotentialUnderpaymentController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with AuditConstants with Referral {
 
   def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -61,6 +63,6 @@ class PotentialUnderpaymentController @Inject()(
           val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
           Ok(views.html.potentialUnderpayment(vm))
         }
-      } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", request.taiUser.nino)
+      } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", request.taiUser.nino, webChatClient)
   }
 }

@@ -30,6 +30,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -44,7 +45,8 @@ class TaxAccountSummaryController @Inject()(
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with AuditConstants {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -63,7 +65,7 @@ class TaxAccountSummaryController @Inject()(
           Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
         case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
           taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
-            Ok(views.html.incomeTaxSummary(vm, appConfig))
+            Ok(views.html.incomeTaxSummary(vm, appConfig, webChatClient))
           }
         case TaiTaxAccountFailureResponse(message) =>
           throw new RuntimeException(s"Failed to fetch tax account summary details with exception: $message")
@@ -74,7 +76,7 @@ class TaxAccountSummaryController @Inject()(
         case e: UnauthorizedException =>
           Logger.warn("taxAccountSummary failed with: " + e.getMessage)
           Redirect(controllers.routes.UnauthorisedController.onPageLoad())
-        case NonFatal(e) => internalServerError(e.getMessage, Some(e))
+        case NonFatal(e) => internalServerError(e.getMessage, Some(e), webChatClient)
       }
   }
 }

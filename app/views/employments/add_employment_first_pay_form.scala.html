@@ -20,8 +20,13 @@
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.tai.forms.employments.AddEmploymentFirstPayForm
 @import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(firstPayForm: Form[Option[String]], employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(firstPayForm: Form[Option[String]], employerName: String, webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Have you received your first pay from?"}
 
@@ -34,11 +39,12 @@
         preHeadingText = Messages("add.missing.employment"))}
 
 @main(
-title = Messages("tai.addEmployment.employmentFirstPay.title", employerName),
-authedUser = Some(user),
-pageHeader = Some(header),
-articleClasses = None,
-gaCustomTitle = Some(Messages("tai.addEmployment.employmentFirstPay.customGaTitle"))
+    title = Messages("tai.addEmployment.employmentFirstPay.title", employerName),
+    authedUser = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = Some(Messages("tai.addEmployment.employmentFirstPay.customGaTitle")),
+    webChatClient = webChatClient
 ) {
 
     @form(action = controllers.employments.routes.AddEmploymentController.submitFirstPay(), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {

@@ -20,8 +20,13 @@
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.formatting.Money._
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(viewModel: DetailedIncomeTaxEstimateViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: DetailedIncomeTaxEstimateViewModel, webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{Messages("tai.estimatedIncome.detailedEstimate.title")}
 
@@ -44,7 +49,8 @@
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
     authedUser = Some(user),
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    webChatClient = webChatClient
 ){
     <div class="grid-row">
         <div class="grid grid-2-3">

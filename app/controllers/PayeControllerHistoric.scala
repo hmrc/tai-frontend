@@ -27,6 +27,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{Employment, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,7 +39,8 @@ class PayeControllerHistoric @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def lastYearPaye(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -90,10 +92,10 @@ class PayeControllerHistoric @Inject()(
     implicit val rl: RecoveryLocation = classOf[WhatDoYouWantToDoController]
     val nino = request.taiUser.nino.toString()
 
-    npsEmploymentAbsentResult(nino) orElse
-      rtiEmploymentAbsentResult(nino) orElse
-      hodBadRequestResult(nino) orElse
-      hodInternalErrorResult(nino) orElse
-      hodAnyErrorResult(nino)
+    npsEmploymentAbsentResult(nino, webChatClient) orElse
+      rtiEmploymentAbsentResult(nino, webChatClient) orElse
+      hodBadRequestResult(nino, webChatClient) orElse
+      hodInternalErrorResult(nino, webChatClient) orElse
+      hodAnyErrorResult(nino, webChatClient)
   }
 }

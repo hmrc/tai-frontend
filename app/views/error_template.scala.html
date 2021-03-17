@@ -14,13 +14,16 @@
  * limitations under the License.
  *@
 
-@(pageTitle: String, heading: String, message1: String, message2: Option[String] = None)(implicit request: Request[_],
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(pageTitle: String, heading: String, message1: String, message2: Option[String] = None, webChatClient: WebChatClient)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
     title=pageTitle,
     authedUser = Some(user),
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    webChatClient = webChatClient
 ){
     <div class="section">
         <h1 class="h1-heading">@heading</h1>

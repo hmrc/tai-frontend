@@ -19,21 +19,25 @@
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import includes.ptaHeader
-
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexTaxView,SimpleTaxView, ZeroTaxView,TaxViewType}
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ComplexEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
-request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(
+    viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ComplexEstimatedIncomeTaxViewModel,
+    iFormLinks: Html,
+    webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{Messages("tai.estimatedIncome.title")}
 
 @taxYearRangeString = @{
     viewModel.currentTaxYearRangeHtmlNonBreak
-
-
 }
 
 @header = @{
@@ -43,7 +47,7 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
         mainHeadingText = Messages("tai.estimatedIncome.title"),
         preHeadingText = taxYearRangeString,
         preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading")
-)
+    )
 }
 
 @main(
@@ -51,7 +55,8 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
     pageHeader = Some(header),
     articleClasses = Some("full-width"),
     authedUser = Some(user),
-    gaCustomTitle = None){
+    gaCustomTitle = None,
+    webChatClient = webChatClient){
 
     <div class="grid-row">
         <div class="grid grid-2-3">

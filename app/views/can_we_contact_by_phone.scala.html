@@ -26,11 +26,11 @@
 
 @(      incomingAuthedUser: Option[controllers.auth.AuthedUser],
         viewModel: CanWeContactByPhoneViewModel,
-        yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_],
+        yesNoForm: Form[YesNoTextEntryForm],
+        webChatClient: WebChatClient)(implicit request: Request[_],
         messages: Messages,
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-        partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
-        webChatClient: WebChatClient)
+        partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Can we contact you by phone?"}
 

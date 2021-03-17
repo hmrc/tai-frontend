@@ -25,6 +25,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,7 +35,8 @@ class ServiceController @Inject()(
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def timeoutPage() = Action.async { implicit request =>
@@ -57,6 +59,6 @@ class ServiceController @Inject()(
 
   def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent]): Future[Result] = {
     Future.successful(Ok(views.html.manualCorrespondence()))
-  } recoverWith handleErrorResponse("getServiceUnavailable", nino)
+  } recoverWith handleErrorResponse("getServiceUnavailable", nino, webChatClient)
 
 }

@@ -25,6 +25,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.Future
 
@@ -32,7 +33,8 @@ class UnauthorisedController @Inject()(
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)
     extends TaiBaseController(mcc) {
 
   def upliftUrl: String = applicationConfig.sa16UpliftUrl
@@ -99,6 +101,7 @@ class UnauthorisedController @Inject()(
             id = Some("sign-in")
           )
           .toString()
-      )
+      ),
+      webChatClient
     )
 }

@@ -17,10 +17,12 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages,
-user: controllers.auth.AuthedUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(appConfig: ApplicationConfig, webChatClient: WebChatClient)(implicit request: Request[_], messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Get help"}
 
@@ -38,7 +40,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     articleClasses = Some("full-width"),
     authedUser = Some(user),
     gaCustomTitle = None,
-    pageHeader = Some(header)
+    pageHeader = Some(header),
+    webChatClient = webChatClient
 ){
 
 <p>@Messages("tai.getHelp.p1")</p>

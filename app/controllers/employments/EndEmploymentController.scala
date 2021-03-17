@@ -20,9 +20,8 @@ import com.google.inject.name.Named
 import controllers._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import javax.inject.Inject
 import org.joda.time.LocalDate
-import play.api.i18n.{Lang, Messages}
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -39,7 +38,9 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
+import uk.gov.hmrc.webchat.client.WebChatClient
 
+import javax.inject.Inject
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -53,7 +54,8 @@ class EndEmploymentController @Inject()(
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
   implicit val templateRenderer: TemplateRenderer,
-  implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with IrregularPayConstants
     with AuditConstants with EmptyCacheRedirect {
 
@@ -81,7 +83,8 @@ class EndEmploymentController @Inject()(
             views.html.employments.update_remove_employment_decision(
               UpdateRemoveEmploymentForm.form,
               mandatoryValues(0),
-              mandatoryValues(1).toInt))
+              mandatoryValues(1).toInt,
+              webChatClient))
         case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
   }
@@ -127,8 +130,13 @@ class EndEmploymentController @Inject()(
           UpdateRemoveEmploymentForm.form.bindFromRequest.fold(
             formWithErrors => {
               Future(
-                BadRequest(views.html.employments
-                  .update_remove_employment_decision(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
+                BadRequest(
+                  views.html.employments
+                    .update_remove_employment_decision(
+                      formWithErrors,
+                      mandatoryValues(0),
+                      mandatoryValues(1).toInt,
+                      webChatClient)))
             }, {
               case Some(YesValue) =>
                 Future(
@@ -175,7 +183,8 @@ class EndEmploymentController @Inject()(
         val date = new LocalDate(data.head)
         Ok(
           views.html.employments.endEmploymentWithinSixWeeksError(
-            WithinSixWeeksViewModel(date.plusWeeks(6).plusDays(1), data(1), date, data(2).toInt)))
+            WithinSixWeeksViewModel(date.plusWeeks(6).plusDays(1), data(1), date, data(2).toInt),
+            webChatClient))
     }
   }
 
@@ -185,7 +194,8 @@ class EndEmploymentController @Inject()(
       Ok(
         views.html.employments.EndEmploymentIrregularPaymentError(
           IrregularPayForm.createForm,
-          EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt)))
+          EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt),
+          webChatClient))
     }
   }
 
@@ -198,7 +208,8 @@ class EndEmploymentController @Inject()(
             BadRequest(
               views.html.employments.EndEmploymentIrregularPaymentError(
                 formWithErrors,
-                EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt)))
+                EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt),
+                webChatClient))
           },
           formData => {
             formData.irregularPayDecision match {
@@ -227,12 +238,15 @@ class EndEmploymentController @Inject()(
                 Ok(
                   views.html.employments.endEmployment(
                     EmploymentEndDateForm(mandatorySequence(0)).form.fill(new LocalDate(date)),
-                    EmploymentViewModel(mandatorySequence(0), mandatorySequence(1).toInt)))
+                    EmploymentViewModel(mandatorySequence(0), mandatorySequence(1).toInt),
+                    webChatClient
+                  ))
               case _ =>
                 Ok(
                   views.html.employments.endEmployment(
                     EmploymentEndDateForm(mandatorySequence(0)).form,
-                    EmploymentViewModel(mandatorySequence(0), mandatorySequence(1).toInt)))
+                    EmploymentViewModel(mandatorySequence(0), mandatorySequence(1).toInt),
+                    webChatClient))
             }
           }
           case Left(_) => Redirect(taxAccountSummaryRedirect)
@@ -251,7 +265,7 @@ class EndEmploymentController @Inject()(
             formWithErrors => {
               Future.successful(
                 BadRequest(views.html.employments
-                  .endEmployment(formWithErrors, EmploymentViewModel(employment.name, employmentId))))
+                  .endEmployment(formWithErrors, EmploymentViewModel(employment.name, employmentId), webChatClient)))
             },
             date => {
               val employmentJourneyCacheData = Map(EndEmployment_EndDateKey -> date.toString)
@@ -281,7 +295,9 @@ class EndEmploymentController @Inject()(
             views.html.can_we_contact_by_phone(
               Some(user),
               telephoneNumberViewModel(mandatoryEmploymentId),
-              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
+              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1))),
+              webChatClient
+            ))
         case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
     }
@@ -301,7 +317,11 @@ class EndEmploymentController @Inject()(
         formWithErrors => {
           journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey) map { employmentId =>
             BadRequest(
-              views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
+              views.html.can_we_contact_by_phone(
+                Some(user),
+                telephoneNumberViewModel(employmentId),
+                formWithErrors,
+                webChatClient))
           }
         },
         form => {
@@ -340,7 +360,7 @@ class EndEmploymentController @Inject()(
               controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
               controllers.employments.routes.EndEmploymentController.cancel(mandatoryValues.head.toInt).url
             )
-            Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
+            Ok(views.html.incomes.addIncomeCheckYourAnswers(model, webChatClient))
           }
           case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
@@ -374,7 +394,8 @@ class EndEmploymentController @Inject()(
           views.html.employments.duplicateSubmissionWarning(
             DuplicateSubmissionWarningForm.createForm,
             mandatoryValues(0),
-            mandatoryValues(1).toInt))
+            mandatoryValues(1).toInt,
+            webChatClient))
       case Left(_) => Redirect(taxAccountSummaryRedirect)
     }
   }
@@ -389,8 +410,8 @@ class EndEmploymentController @Inject()(
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
             formWithErrors => {
               Future.successful(
-                BadRequest(
-                  views.html.employments.duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), empId)))
+                BadRequest(views.html.employments
+                  .duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), empId, webChatClient)))
             },
             success => {
               success.yesNoChoice match {
@@ -406,6 +427,6 @@ class EndEmploymentController @Inject()(
   }
 
   def showConfirmationPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    Future.successful(Ok(views.html.employments.confirmation()))
+    Future.successful(Ok(views.html.employments.confirmation(webChatClient)))
   }
 }

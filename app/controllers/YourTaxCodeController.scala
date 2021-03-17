@@ -28,6 +28,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -40,7 +41,8 @@ class YourTaxCodeController @Inject()(
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   private[controllers] def renderTaxCodes(employmentId: Option[Int]): Action[AnyContent] =
@@ -66,7 +68,7 @@ class YourTaxCodeController @Inject()(
         Ok(views.html.taxCodeDetails(taxCodeViewModel))
       }) recover {
         case NonFatal(e) => {
-          internalServerError(s"Exception: ${e.getClass()}")
+          internalServerError(s"Exception: ${e.getClass()}", webChatClient = webChatClient)
         }
       }
     }
@@ -88,7 +90,7 @@ class YourTaxCodeController @Inject()(
         Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
       }) recover {
         case NonFatal(e) => {
-          internalServerError(s"Exception: ${e.getClass()}")
+          internalServerError(s"Exception: ${e.getClass()}", webChatClient = webChatClient)
         }
       }
   }

@@ -22,8 +22,15 @@
 @import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm
 @import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 @import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(payrollNumberForm: Form[AddEmploymentPayrollNumberForm], payrollNumberViewModel: PayrollNumberViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(
+    payrollNumberForm: Form[AddEmploymentPayrollNumberForm],
+    payrollNumberViewModel: PayrollNumberViewModel,
+    webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages, user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Do you know your payroll number for this employer?"}
 
@@ -40,7 +47,8 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = Some(Messages("tai.addEmployment.employmentPayrollNumber.customGaTitle"))
+    gaCustomTitle = Some(Messages("tai.addEmployment.employmentPayrollNumber.customGaTitle")),
+    webChatClient = webChatClient
 ) {
 
     <p>@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>

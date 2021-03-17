@@ -39,6 +39,7 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewMod
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefixAndSign
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -51,7 +52,8 @@ class IncomeUpdateEstimatedPayController @Inject()(
   taxAccountService: TaxAccountService,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   def estimatedPayLandingPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -72,9 +74,10 @@ class IncomeUpdateEstimatedPayController @Inject()(
               incomeId.toInt,
               totalEstimatedIncome,
               incomeType == TaiConstants.IncomeTypePension,
-              appConfig
+              appConfig,
+              webChatClient
             ))
-        case (response: TaiFailureResponse, _) => internalServerError(response.message)
+        case (response: TaiFailureResponse, _) => internalServerError(response.message, webChatClient = webChatClient)
       }
     }
   }
@@ -119,12 +122,17 @@ class IncomeUpdateEstimatedPayController @Inject()(
               calculatedPay.startDate,
               incomeSource)
 
-            Ok(views.html.incomes.estimatedPay(viewModel))
+            Ok(views.html.incomes.estimatedPay(viewModel, webChatClient))
           }
         case _ =>
           Future.successful(
-            Ok(views.html.incomes
-              .incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), incomeSource.id)))
+            Ok(
+              views.html.incomes
+                .incorrectTaxableIncome(
+                  payYearToDate,
+                  paymentDate.getOrElse(new LocalDate),
+                  incomeSource.id,
+                  webChatClient)))
       }
     }
 

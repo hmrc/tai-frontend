@@ -34,6 +34,7 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -49,7 +50,8 @@ class IncomeUpdateCalculatorController @Inject()(
   mcc: MessagesControllerComponents,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants
     with UpdatedEstimatedPayJourneyCache with FormValuesConstants {
 
@@ -69,7 +71,7 @@ class IncomeUpdateCalculatorController @Inject()(
         Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage())
       }
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
     }
   }
 
@@ -103,7 +105,9 @@ class IncomeUpdateCalculatorController @Inject()(
           DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
         }
 
-        Ok(views.html.incomes.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt))
+        Ok(
+          views.html.incomes
+            .duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt, webChatClient))
       }
   }
 
@@ -127,7 +131,8 @@ class IncomeUpdateCalculatorController @Inject()(
             }
 
             Future.successful(
-              BadRequest(views.html.incomes.duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
+              BadRequest(
+                views.html.incomes.duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt, webChatClient)))
           },
           success => {
             success.yesNoChoice match {
@@ -177,7 +182,7 @@ class IncomeUpdateCalculatorController @Inject()(
           bonusPaymentAmount,
           employer)
 
-        Ok(views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel))
+        Ok(views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel, webChatClient))
       }
     }
   }
@@ -200,10 +205,10 @@ class IncomeUpdateCalculatorController @Inject()(
       } else {
 
         val vm = ConfirmAmountEnteredViewModel(employmentName, employmentAmount.oldAmount, employmentAmount.newAmount)
-        Ok(views.html.incomes.confirmAmountEntered(vm))
+        Ok(views.html.incomes.confirmAmountEntered(vm, webChatClient))
       }
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
     }
   }
 

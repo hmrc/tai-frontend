@@ -15,8 +15,14 @@
  *@
 
 @import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(appConfig: ApplicationConfig)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(
+    appConfig: ApplicationConfig, webChatClient: WebChatClient)(implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.model.TaxYear
@@ -26,7 +32,8 @@
     title = Messages("tai.gatekeeper.heading", s"${Dates.formatDate(TaxYear().start)}", s"${Dates.formatDate(TaxYear().end)}"),
     articleClasses = Some("full-width"),
     authedUser = Some(user),
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    webChatClient = webChatClient
 ){
     <header class="page-header">
         <h1 id="gatekeeper-title" class="flush--bottom">@Messages("tai.gatekeeper.heading")</h1>

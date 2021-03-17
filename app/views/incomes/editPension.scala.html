@@ -15,8 +15,18 @@
  *@
 
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-@(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm], hasMultipleIncomes: Boolean, employmentId: Int, pensionToDate: String = "0")(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(
+    income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm],
+    hasMultipleIncomes: Boolean,
+    employmentId: Int,
+    pensionToDate: String = "0",
+    webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.urls.Link
@@ -42,7 +52,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    employerName = income("name").value
+    employerName = income("name").value,
+    webChatClient = webChatClient
 ){
 <div>
     <h2 class="heading-medium">@messages("tai.incomes.edit.incomeTax.update.heading", income("name").value.getOrElse(""))</h2>

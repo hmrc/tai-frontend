@@ -15,15 +15,20 @@
  *@
 
 @import uk.gov.hmrc.tai.util.ViewModelHelper.htmlNonBroken
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(employerName: String, employerId: Int)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(employerName: String, employerId: Int, webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
     title = messages("tai.incomes.updated.check.title"),
     articleClasses = Some("full-width"),
     authedUser = Some(user),
-    employerName = Some(employerName)
+    employerName = Some(employerName),
+    webChatClient = webChatClient
 ){
     <div class="column-two-thirds">
         <header class="grid-row margin-bottom-large">

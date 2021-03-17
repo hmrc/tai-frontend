@@ -19,8 +19,13 @@
 @import uk.gov.hmrc.urls.Link
 @import includes._
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(viewModel: CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: CheckYourAnswersViewModel, webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
     ptaHeader(
@@ -34,7 +39,8 @@
     title = messages("tai.checkYourAnswers.title"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None
+    articleClasses = None,
+    webChatClient = webChatClient
 ){
 
 

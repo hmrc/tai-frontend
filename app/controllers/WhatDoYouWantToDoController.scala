@@ -34,6 +34,7 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -49,7 +50,8 @@ class WhatDoYouWantToDoController @Inject()(
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   implicit val recoveryLocation: RecoveryLocation = classOf[WhatDoYouWantToDoController]
@@ -69,9 +71,9 @@ class WhatDoYouWantToDoController @Inject()(
 
           val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
             npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-              npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-              npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-              npsNoEmploymentResult(ninoString) orElse
+              npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString, webChatClient) orElse
+              npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString, webChatClient) orElse
+              npsNoEmploymentResult(ninoString, webChatClient) orElse
               npsTaxAccountDeceasedResult(ninoString) orElse { case _ => None }
 
           npsFailureHandlingPf(taxAccountSummary)
@@ -84,7 +86,9 @@ class WhatDoYouWantToDoController @Inject()(
     } recoverWith {
       val nino = request.taiUser.nino
 
-      (hodBadRequestResult(nino.toString()) orElse hodInternalErrorResult(nino.toString()))
+      (hodBadRequestResult(nino.toString(), webChatClient) orElse hodInternalErrorResult(
+        nino.toString(),
+        webChatClient))
     }
   }
 

@@ -14,16 +14,24 @@
  * limitations under the License.
  *@
 
+@import controllers.auth.AuthenticatedRequest
 @import includes.ptaHeader
-@import uk.gov.hmrc.play.views.formatting.Dates
 @import incomeTaxComparison._
+@import uk.gov.hmrc.play.views.formatting.Dates
 @import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{IncomeTaxComparisonViewModel, EstimatedIncomeTaxComparisonViewModel}
 @import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@import controllers.auth.AuthenticatedRequest
-@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(
+    incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel,
+    appConfig: ApplicationConfig,
+    webChatClient: WebChatClient)(implicit request: AuthenticatedRequest[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
 @gaEventActionString = @{"Income Tax comparison - current and next tax years"}
 @backLinkToChooseTaxYear = {
     <p class="flush--bottom">
@@ -58,7 +66,8 @@
 @main(title = headingText,
     gaCustomTitle = Some(headingText),
     pageHeader = Some(header),
-    authedUser = Some(request.taiUser)) {
+    authedUser = Some(request.taiUser),
+    webChatClient = webChatClient) {
 
     <div class="grid-row">
         <div class="column-two-thirds">

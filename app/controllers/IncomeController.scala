@@ -38,6 +38,7 @@ import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, SameEstimatedPayViewModel}
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -53,7 +54,8 @@ class IncomeController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -80,9 +82,10 @@ class IncomeController @Inject()(
           EditIncomeForm.create(employmentAmount),
           false,
           employmentAmount.employmentId,
-          amountYearToDate.toString))
+          amountYearToDate.toString,
+          webChatClient = webChatClient))
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
     }
   }
 
@@ -100,7 +103,7 @@ class IncomeController @Inject()(
         routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString)
       Ok(views.html.incomes.sameEstimatedPay(model))
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
     }
   }
 
@@ -122,7 +125,7 @@ class IncomeController @Inject()(
         routes.IncomeSourceSummaryController.onPageLoad(id).url)
       Ok(views.html.incomes.sameEstimatedPay(model))
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
     }
   }
 
@@ -141,8 +144,15 @@ class IncomeController @Inject()(
           .bind(employerName, payToDate, date)
           .fold(
             (formWithErrors: Form[EditIncomeForm]) => {
-              Future.successful(BadRequest(views.html.incomes
-                .editIncome(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head)))
+              Future.successful(
+                BadRequest(
+                  views.html.incomes
+                    .editIncome(
+                      formWithErrors,
+                      false,
+                      mandatorySeq(1).toInt,
+                      mandatorySeq.head,
+                      webChatClient = webChatClient)))
             },
             (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome)
           )
@@ -173,14 +183,14 @@ class IncomeController @Inject()(
               val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
               val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
-              Ok(views.html.incomes.confirmAmountEntered(vm))
+              Ok(views.html.incomes.confirmAmountEntered(vm, webChatClient))
 
             case _ => throw new RuntimeException(s"Not able to found employment with id $id")
           }
         case _ => throw new RuntimeException("Exception while reading employment and tax code details")
       }
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
     }
   }
 
@@ -202,8 +212,9 @@ class IncomeController @Inject()(
       request: Request[AnyContent]): Result = {
       journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newAmount)
       incomeType match {
-        case TaiConstants.IncomeTypePension => Ok(views.html.incomes.editPensionSuccess(employerName, employerId))
-        case _                              => Ok(views.html.incomes.editSuccess(employerName, employerId))
+        case TaiConstants.IncomeTypePension =>
+          Ok(views.html.incomes.editPensionSuccess(employerName, employerId, webChatClient))
+        case _ => Ok(views.html.incomes.editSuccess(employerName, employerId, webChatClient))
       }
     }
 
@@ -231,7 +242,7 @@ class IncomeController @Inject()(
         }
       })
       .recover {
-        case NonFatal(e) => internalServerError(e.getMessage, Some(e))
+        case NonFatal(e) => internalServerError(e.getMessage, Some(e), webChatClient = webChatClient)
       }
   }
 
@@ -252,9 +263,10 @@ class IncomeController @Inject()(
           EditIncomeForm.create(employmentAmount),
           false,
           employmentAmount.employmentId,
-          amountYearToDate.toString()))
+          amountYearToDate.toString(),
+          webChatClient))
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
     }
   }
 
@@ -286,7 +298,7 @@ class IncomeController @Inject()(
           .fold(
             formWithErrors => {
               Future.successful(BadRequest(views.html.incomes
-                .editPension(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head)))
+                .editPension(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head, webChatClient)))
             },
             (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome)
           )
@@ -313,13 +325,13 @@ class IncomeController @Inject()(
               val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
               val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
-              Ok(views.html.incomes.confirmAmountEntered(vm))
+              Ok(views.html.incomes.confirmAmountEntered(vm, webChatClient))
             case _ => throw new RuntimeException(s"Not able to found employment with id $id")
           }
         case _ => throw new RuntimeException("Exception while reading employment and tax code details")
       }
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
     }
   }
 

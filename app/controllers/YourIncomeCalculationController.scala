@@ -28,6 +28,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,7 +42,8 @@ class YourIncomeCalculationController @Inject()(
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -82,7 +84,7 @@ class YourIncomeCalculationController @Inject()(
             Ok(views.html.incomes.yourIncomeCalculation(model))
           }
         }
-        case _ => internalServerError("Error while fetching RTI details")
+        case _ => internalServerError("Error while fetching RTI details", webChatClient = webChatClient)
       }
     }
   }
@@ -105,15 +107,20 @@ class YourIncomeCalculationController @Inject()(
             (printPage, historicIncomeCalculationViewModel.realTimeStatus.toString) match {
               case (_, "TemporarilyUnavailable") =>
                 internalServerError(
-                  "Employment contains stub annual account data found meaning payment information can't be displayed")
+                  "Employment contains stub annual account data found meaning payment information can't be displayed",
+                  webChatClient = webChatClient)
               case (true, _) =>
                 Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel, appConfig))
-              case (false, _) => Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel))
+              case (false, _) =>
+                Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel, webChatClient))
             }
           }
 
         } else {
-          Future.successful(internalServerError(s"yourIncomeCalculationHistoricYears: Doesn't support year $year"))
+          Future.successful(
+            internalServerError(
+              s"yourIncomeCalculationHistoricYears: Doesn't support year $year",
+              webChatClient = webChatClient))
         }
       }
     }

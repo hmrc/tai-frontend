@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -46,7 +47,8 @@ class IncomeTaxComparisonController @Inject()(
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -114,12 +116,13 @@ class IncomeTaxComparisonController @Inject()(
             isEstimatedPayJourneyComplete
           )
 
-          Ok(views.html.incomeTaxComparison.Main(model, applicationConfig))
+          Ok(views.html.incomeTaxComparison.Main(model, applicationConfig, webChatClient))
         }
         case _ => throw new RuntimeException("Not able to fetch income tax comparision details")
       }
     }) recover {
-      case NonFatal(e) => internalServerError("IncomeTaxComparisonController exception", Some(e))
+      case NonFatal(e) =>
+        internalServerError("IncomeTaxComparisonController exception", Some(e), webChatClient = webChatClient)
     }
   }
 

@@ -22,13 +22,17 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.helpers._
 @import uk.gov.hmrc.play.views.formatting.Dates
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.util.MonetaryUtil
 
-@(viewModel: EstimatedPayViewModel)(implicit request: Request[_],messages: Messages, user: controllers.auth.AuthedUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: EstimatedPayViewModel, webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your estimated pay for the year"}
 @grossAnnualPay = @{MoneyPounds(viewModel.grossAnnualPay.getOrElse(0),0)}
@@ -48,7 +52,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     articleClasses = Some("full-width text"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    employerName = Some(viewModel.employer.name)
+    employerName = Some(viewModel.employer.name),
+    webChatClient = webChatClient
 ){
     <div>
         <p>@messages("tai.estimatedPay.weHaveCalculated")</p>

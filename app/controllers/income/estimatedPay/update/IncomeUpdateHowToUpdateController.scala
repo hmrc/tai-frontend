@@ -33,6 +33,7 @@ import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService, TaxAccountServ
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -46,7 +47,8 @@ class IncomeUpdateHowToUpdateController @Inject()(
   mcc: MessagesControllerComponents,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   private def incomeTypeIdentifier(isPension: Boolean): String =
@@ -90,7 +92,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
         }
       case None => throw new RuntimeException("Not able to find employment")
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => internalServerError(e.getMessage, webChatClient = webChatClient)
     }
   }
 
@@ -108,11 +110,11 @@ class IncomeUpdateHowToUpdateController @Inject()(
           val form = HowToUpdateForm.createForm().fill(HowToUpdateForm(howToUpdate))
 
           if (incomeService.editableIncomes(taxCodeIncomes).size > 1) {
-            Ok(views.html.incomes.howToUpdate(form, id, employmentName))
+            Ok(views.html.incomes.howToUpdate(form, id, employmentName, webChatClient))
           } else {
             incomeService.singularIncomeId(taxCodeIncomes) match {
 
-              case Some(incomeId) => Ok(views.html.incomes.howToUpdate(form, incomeId, employmentName))
+              case Some(incomeId) => Ok(views.html.incomes.howToUpdate(form, incomeId, employmentName, webChatClient))
 
               case None => throw new RuntimeException("Employment id not present")
             }
@@ -138,7 +140,8 @@ class IncomeUpdateHowToUpdateController @Inject()(
           } yield {
             incomeSourceEither match {
               case Right(incomeSource) =>
-                BadRequest(views.html.incomes.howToUpdate(formWithErrors, incomeSource.id, incomeSource.name))
+                BadRequest(
+                  views.html.incomes.howToUpdate(formWithErrors, incomeSource.id, incomeSource.name, webChatClient))
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }

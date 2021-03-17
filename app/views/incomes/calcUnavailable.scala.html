@@ -14,7 +14,9 @@
  * limitations under the License.
  *@
 
-@(employmentId: Int, employerName: String)(implicit request: Request[_], messages: Messages,
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(employmentId: Int, employerName: String, webChatClient: WebChatClient)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -40,8 +42,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     authedUser = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName),
-    gaCustomTitle = None
-){
+    webChatClient = webChatClient){
 <div>
     <h2 class="heading-medium flush--top">@messages("tai.unableToCalculate.nextSteps")</h2>
     <p>@messages("tai.unableToCalculate.cantCalc")</p>

@@ -16,25 +16,31 @@
 
 @import uk.gov.hmrc.urls.Link
 @import includes.confirmation_summary
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 @import views.html.includes.confirmationSuccessBanner
-@()(implicit request: Request[_], authedUser: Option[controllers.auth.AuthedUser] = None, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(webChatClient: WebChatClient)(implicit request: Request[_],
+    authedUser: Option[controllers.auth.AuthedUser] = None,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
-title = Messages("tai.employmentConfirmation.heading"),
-authedUser = authedUser,
-articleClasses = None,
-gaCustomTitle = None) {
+    title = Messages("tai.employmentConfirmation.heading"),
+    authedUser = authedUser,
+    articleClasses = None,
+    gaCustomTitle = None,
+    webChatClient = webChatClient) {
 
-    @confirmationSuccessBanner()
+        @confirmationSuccessBanner()
 
-    @confirmation_summary("tai.confirmation.paraTwo")
+        @confirmation_summary("tai.confirmation.paraTwo")
 
-@includes.link(
-    id=Some("returnToSummary"),
-    copy=Messages("return.to.your.income.tax.summary"),
-    url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
-    isButton=true
-)
+        @includes.link(
+            id=Some("returnToSummary"),
+            copy=Messages("return.to.your.income.tax.summary"),
+            url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
+            isButton=true
+        )
 
 }

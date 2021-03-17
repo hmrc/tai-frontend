@@ -20,10 +20,11 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.IFormInProgressBannerViewModel
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 @import controllers.auth.AuthenticatedRequest
 
-@(viewModel: TaxAccountSummaryViewModel, appConfig: ApplicationConfig
+@(viewModel: TaxAccountSummaryViewModel, appConfig: ApplicationConfig, webChatClient: WebChatClient
 )(implicit request: AuthenticatedRequest[_],
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
@@ -57,7 +58,8 @@
     title = viewModel.title,
     authedUser = Some(request.taiUser),
     pageHeader = Some(header),
-    articleClasses = Some("full-width")
+    articleClasses = Some("full-width"),
+    webChatClient = webChatClient
     ){
 
 @includes.iFormInProgressBanner(IFormInProgressBannerViewModel(viewModel.isAnyFormInProgress), appConfig)

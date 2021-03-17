@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import uk.gov.hmrc.urls.Link
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.Future
 
@@ -40,7 +41,9 @@ trait ErrorPagesHandler {
 
   type RecoveryLocation = Class[_]
 
-  def error4xxPageWithLink(pageTitle: String)(implicit request: Request[_], messages: Messages) =
+  def error4xxPageWithLink(pageTitle: String, webChatClient: WebChatClient)(
+    implicit request: Request[_],
+    messages: Messages) =
     views.html.error_template_noauth(
       pageTitle,
       messages("tai.errorMessage.heading"),
@@ -54,41 +57,48 @@ trait ErrorPagesHandler {
               cssClasses = Some("report-error__toggle"),
               value = Some(messages("tai.errorMessage.reportAProblem")))
             .toHtml
-        ))
+        )),
+      webChatClient
     )
 
-  def badRequestPageWrongVersion(implicit request: Request[_], messages: Messages) =
+  def badRequestPageWrongVersion(webChatClient: WebChatClient)(implicit request: Request[_], messages: Messages) =
     views.html.error_template_noauth(
       messages("global.error.badRequest400.title"),
       messages("tai.errorMessage.heading"),
       messages("tai.errorMessage.frontend400.message1.version"),
-      List.empty
+      List.empty,
+      webChatClient
     )
 
-  def error4xxFromNps(pageTitle: String)(implicit request: Request[_], messages: Messages) =
+  def error4xxFromNps(pageTitle: String, webChatClient: WebChatClient)(
+    implicit request: Request[_],
+    messages: Messages) =
     views.html.error_template_noauth(
       pageTitle,
       messages("tai.errorMessage.heading.nps"),
       messages("tai.errorMessage.frontend400.message1.nps"),
-      List(messages("tai.errorMessage.frontend400.message2.nps"))
+      List(messages("tai.errorMessage.frontend400.message2.nps")),
+      webChatClient
     )
 
-  def error5xx(pageBody: String)(implicit request: Request[_], messages: Messages) =
+  def error5xx(pageBody: String, webChatClient: WebChatClient)(implicit request: Request[_], messages: Messages) =
     views.html.error_template_noauth(
       messages("global.error.InternalServerError500.title"),
       messages("tai.technical.error.heading"),
       pageBody,
-      List.empty)
+      List.empty,
+      webChatClient)
 
   @deprecated("Prefer chaining of named partial functions for clarity", "Introduction of new WDYWTD page")
-  def handleErrorResponse(methodName: String, nino: Nino)(
+  def handleErrorResponse(methodName: String, nino: Nino, webChatClient: WebChatClient)(
     implicit request: Request[_],
     messages: Messages): PartialFunction[Throwable, Future[Result]] =
     PartialFunction[Throwable, Future[Result]] { throwable: Throwable =>
       throwable match {
         case e: Upstream4xxResponse => {
           Logger.warn(s"<Upstream4xxResponse> - $methodName nino $nino")
-          Future.successful(BadRequest(error4xxPageWithLink(messages("global.error.badRequest400.title"))))
+          Future.successful(
+            BadRequest(error4xxPageWithLink(messages("global.error.badRequest400.title"), webChatClient)))
         }
 
         case e: BadRequestException => {
@@ -106,7 +116,7 @@ trait ErrorPagesHandler {
           incorrectVersion match {
             case true =>
               Logger.warn(s"<Incorrect Version Number> - $methodName nino $nino")
-              Future.successful(BadRequest(badRequestPageWrongVersion))
+              Future.successful(BadRequest(badRequestPageWrongVersion(webChatClient)))
             case _ =>
               e.getMessage().contains("appStatusMessage") match {
                 case true =>
@@ -115,10 +125,12 @@ trait ErrorPagesHandler {
                       s"<Cannot complete a coding calculation without Primary Employment> - $methodName nino $nino")
                     Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
                   } else {
-                    Future.successful(BadRequest(error4xxFromNps(messages("global.error.badRequest400.title"))))
+                    Future.successful(
+                      BadRequest(error4xxFromNps(messages("global.error.badRequest400.title"), webChatClient)))
                   }
                 case _ =>
-                  Future.successful(BadRequest(error4xxPageWithLink(messages("global.error.badRequest400.title"))))
+                  Future.successful(
+                    BadRequest(error4xxPageWithLink(messages("global.error.badRequest400.title"), webChatClient)))
               }
           }
         }
@@ -135,58 +147,62 @@ trait ErrorPagesHandler {
               if (noCyInfo) {
                 Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
               } else {
-                Future.successful(NotFound(error4xxFromNps(messages("global.error.pageNotFound404.title"))))
+                Future.successful(
+                  NotFound(error4xxFromNps(messages("global.error.pageNotFound404.title"), webChatClient)))
               }
             case _ =>
-              Future.successful(NotFound(error4xxPageWithLink(messages("global.error.pageNotFound404.title"))))
+              Future.successful(
+                NotFound(error4xxPageWithLink(messages("global.error.pageNotFound404.title"), webChatClient)))
           }
         }
 
         case e: InternalServerException => {
           Logger.warn(s"<InternalServerException> - $methodName nino $nino")
-          Future.successful(InternalServerError(error5xx(messages("tai.technical.error.npsdown.message"))))
+          Future.successful(
+            InternalServerError(error5xx(messages("tai.technical.error.npsdown.message"), webChatClient)))
         }
 
         case e: Upstream5xxResponse => {
           Logger.warn(s"<Upstream5xxResponse> - $methodName nino $nino")
-          Future.successful(InternalServerError(error5xx(messages("tai.technical.error.npsdown.message"))))
+          Future.successful(
+            InternalServerError(error5xx(messages("tai.technical.error.npsdown.message"), webChatClient)))
         }
 
         case e => {
           Logger.warn(s"<Unknown Exception> - $methodName nino $nino", e)
-          Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"))))
+          Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"), webChatClient)))
         }
       }
     }
 
-  def npsEmploymentAbsentResult(nino: String)(
+  def npsEmploymentAbsentResult(nino: String, webChatClient: WebChatClient)(
     implicit request: Request[AnyContent],
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: NotFoundException if e.getMessage.toLowerCase.contains(NpsAppStatusMsg) =>
       Logger.warn(s"<Not found response received from NPS> - for nino $nino @${rl.getName}")
-      Future.successful(NotFound(error4xxFromNps(messages("global.error.pageNotFound404.title"))))
+      Future.successful(NotFound(error4xxFromNps(messages("global.error.pageNotFound404.title"), webChatClient)))
   }
 
-  def rtiEmploymentAbsentResult(nino: String)(
+  def rtiEmploymentAbsentResult(nino: String, webChatClient: WebChatClient)(
     implicit request: Request[AnyContent],
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: NotFoundException =>
       Logger.warn(s"<Not found response received from rti> - for nino $nino @${rl.getName}")
-      Future.successful(NotFound(error4xxPageWithLink(messages("global.error.pageNotFound404.title"))))
+      Future.successful(NotFound(error4xxPageWithLink(messages("global.error.pageNotFound404.title"), webChatClient)))
   }
 
-  def hodInternalErrorResult(nino: String)(
+  def hodInternalErrorResult(nino: String, webChatClient: WebChatClient)(
     implicit request: Request[AnyContent],
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e @ (_: InternalServerException | _: HttpException) =>
       Logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
-      Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"))))
+      Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"), webChatClient)))
   }
 
-  def hodBadRequestResult(nino: String)(
+  def hodBadRequestResult(nino: String, webChatClient: WebChatClient)(
     implicit request: Request[AnyContent],
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
@@ -194,16 +210,16 @@ trait ErrorPagesHandler {
       Logger.warn(
         s"<Bad request exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass}",
         e)
-      Future.successful(BadRequest(error4xxPageWithLink(messages("global.error.badRequest400.title"))))
+      Future.successful(BadRequest(error4xxPageWithLink(messages("global.error.badRequest400.title"), webChatClient)))
   }
 
-  def hodAnyErrorResult(nino: String)(
+  def hodAnyErrorResult(nino: String, webChatClient: WebChatClient)(
     implicit request: Request[AnyContent],
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e =>
       Logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
-      Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"))))
+      Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"), webChatClient)))
   }
 
   def npsTaxAccountDeceasedResult(nino: String)(
@@ -215,7 +231,10 @@ trait ErrorPagesHandler {
       Some(Redirect(routes.DeceasedController.deceased()))
     }
   }
-  def npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(
+  def npsTaxAccountCYAbsentResult_withEmployCheck(
+    prevYearEmployments: Seq[Employment],
+    nino: String,
+    webChatClient: WebChatClient)(
     implicit request: Request[AnyContent],
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
@@ -224,7 +243,7 @@ trait ErrorPagesHandler {
         case Nil => {
           Logger.warn(
             s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
-          Some(BadRequest(views.html.error_no_primary()))
+          Some(BadRequest(views.html.error_no_primary(webChatClient)))
         }
         case _ => {
           Logger.info(
@@ -255,17 +274,20 @@ trait ErrorPagesHandler {
     }
   }
 
-  def npsNoEmploymentResult(nino: String)(
+  def npsNoEmploymentResult(nino: String, webChatClient: WebChatClient)(
     implicit request: Request[AnyContent],
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentsRecorded) => {
       Logger.warn(s"<No data returned from nps employments> - for nino $nino @${rl.getName}")
-      Some(BadRequest(views.html.error_no_primary()))
+      Some(BadRequest(views.html.error_no_primary(webChatClient)))
     }
   }
 
-  def npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(
+  def npsNoEmploymentForCYResult_withEmployCheck(
+    prevYearEmployments: Seq[Employment],
+    nino: String,
+    webChatClient: WebChatClient)(
     implicit request: Request[AnyContent],
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
@@ -275,7 +297,7 @@ trait ErrorPagesHandler {
         case Nil => {
           Logger.warn(
             s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
-          Some(BadRequest(views.html.error_no_primary()))
+          Some(BadRequest(views.html.error_no_primary(webChatClient)))
         }
         case _ => {
           Logger.info(
@@ -286,11 +308,11 @@ trait ErrorPagesHandler {
     }
   }
 
-  def internalServerError(logMessage: String, ex: Option[Throwable] = None)(
+  def internalServerError(logMessage: String, ex: Option[Throwable] = None, webChatClient: WebChatClient)(
     implicit request: Request[_],
     messages: Messages): Result = {
     Logger.warn(logMessage)
     ex.map(x => Logger.error(x.getMessage(), x))
-    InternalServerError(error5xx(messages("tai.technical.error.message")))
+    InternalServerError(error5xx(messages("tai.technical.error.message"), webChatClient))
   }
 }

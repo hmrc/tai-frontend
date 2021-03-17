@@ -15,11 +15,14 @@
  *@
 
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
 @(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm],
     hasMultipleIncomes: Boolean,
     employmentId: Int,
     payToDate: String = "0",
-    payDate: Option[org.joda.time.LocalDate] = None
+    payDate: Option[org.joda.time.LocalDate] = None,
+    webChatClient: WebChatClient
 )(implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.AuthedUser,
@@ -53,7 +56,8 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = Some(""),
-    employerName = income("name").value){
+    employerName = income("name").value,
+    webChatClient = webChatClient){
 
     <div>
         <p>@messages("tai.incomes.edit.average.hours", TaxYearRangeUtil.currentTaxYearRange)</p>

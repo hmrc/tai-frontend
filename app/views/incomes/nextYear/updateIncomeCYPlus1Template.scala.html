@@ -17,6 +17,7 @@
 @import includes.ptaHeader
 @import includes.cancelLink
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 @(employerName: String,
   form: Option[Form[_]],
@@ -25,8 +26,8 @@
   title: String,
   showCancel: Boolean = true,
   cancelText : Option[String] = None,
-  gaSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings()
-
+  gaSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(),
+  webChatClient: WebChatClient
 )(content: Html
 )(implicit request: Request[_],
   user: controllers.auth.AuthedUser,
@@ -50,7 +51,8 @@
     pageHeader = Some(header),
     employerName = Some(employerName),
     gaCustomTitle = None,
-    gaSettings = gaSettings
+    gaSettings = gaSettings,
+    webChatClient = webChatClient
 ){
     <div class="section flush--bottom soft--top soft--bottom">
         @content

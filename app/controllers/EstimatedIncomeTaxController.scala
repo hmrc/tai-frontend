@@ -32,6 +32,7 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.ExecutionContext
 
@@ -43,7 +44,8 @@ class EstimatedIncomeTaxController @Inject()(
   validatePerson: ValidatePerson,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer,
-  mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
+  mcc: MessagesControllerComponents,
+  webChatClient: WebChatClient)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def estimatedIncomeTax(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -76,31 +78,31 @@ class EstimatedIncomeTaxController @Inject()(
             taxCodeIncomes.nonEmpty
           )
           taxViewType match {
-            case NoIncomeTaxView => Ok(views.html.estimatedIncomeTax.noCurrentIncome())
+            case NoIncomeTaxView => Ok(views.html.estimatedIncomeTax.noCurrentIncome(webChatClient))
             case ComplexTaxView => {
               val model =
                 ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
               Ok(
                 views.html.estimatedIncomeTax
-                  .complexEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+                  .complexEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html(""), webChatClient))
             }
             case SimpleTaxView => {
               val model =
                 SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
               Ok(
                 views.html.estimatedIncomeTax
-                  .simpleEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+                  .simpleEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html(""), webChatClient))
             }
             case ZeroTaxView => {
               val model =
                 ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
               Ok(
                 views.html.estimatedIncomeTax
-                  .zeroTaxEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+                  .zeroTaxEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html(""), webChatClient))
             }
           }
         case _ => {
-          internalServerError("Failed to get estimated income tax")
+          internalServerError("Failed to get estimated income tax", webChatClient = webChatClient)
         }
       }
     }

@@ -21,8 +21,16 @@
 @import uk.gov.hmrc.tai.forms.employments.IrregularPayFormData
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 @import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
-@(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(
+    irregularPayForm: Form[IrregularPayFormData],
+    model: EmploymentViewModel,
+    webChatClient: WebChatClient)(implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Irregular Pay"}
 
@@ -39,7 +47,8 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = None) {
+    gaCustomTitle = None,
+    webChatClient = webChatClient) {
 
     <p>
         <span class="lede">@Messages("tai.irregular.para1", model.employerName)</span>

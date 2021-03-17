@@ -14,8 +14,17 @@
  * limitations under the License.
  *@
 
-@(howToUpdateForm: Form[uk.gov.hmrc.tai.forms.HowToUpdateForm], id: Int, employerName: String)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(
+    howToUpdateForm: Form[uk.gov.hmrc.tai.forms.HowToUpdateForm],
+    id: Int,
+    employerName: String,
+    webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -40,7 +49,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     articleClasses = Some("full-width text"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName)){
+    employerName = Some(employerName),
+    webChatClient = webChatClient){
 
     <div class="section flush--bottom">
         @form(action=income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.handleChooseHowToUpdate){

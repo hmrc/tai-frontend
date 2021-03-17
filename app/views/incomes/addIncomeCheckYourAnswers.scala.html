@@ -14,7 +14,13 @@
  * limitations under the License.
  *@
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@import uk.gov.hmrc.webchat.client.WebChatClient
+
+@(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel, webChatClient: WebChatClient)(implicit request: Request[_],
+    messages: Messages,
+    authedUser: Option[controllers.auth.AuthedUser] = None,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.urls.Link
@@ -39,7 +45,8 @@
     title = Messages("tai.checkYourAnswers.title"),
     authedUser = authedUser,
     pageHeader = Some(header),
-    articleClasses = None
+    articleClasses = None,
+    webChatClient = webChatClient
 ) {
 
     @form(action=Call("POST", viewModel.submissionUrl), args=(Symbol("class"), "subsection")) {
