@@ -51,12 +51,8 @@ class ServiceController @Inject()(
     }
   }
 
-  def gateKeeper() = (authenticate andThen validatePerson).async { implicit request =>
-    getGateKeeper(request.taiUser.nino)
-  }
-
-  def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent]): Future[Result] = {
+  def mciErrorPage() = authenticate.async { implicit request =>
     Future.successful(Ok(views.html.manualCorrespondence()))
-  } recoverWith handleErrorResponse("getServiceUnavailable", nino)
+  }
 
 }
