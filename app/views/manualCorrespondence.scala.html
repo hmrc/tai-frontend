@@ -14,24 +14,31 @@
  * limitations under the License.
  *@
 
+@import views.html.includes.ptaHeader
+
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@main(
-title=messages("mci.title")){
+    @header = @{
+        ptaHeader(
+            mainHeadingText = messages("mci.title"),
+            preHeadingText = "",
+            displayBackLink = true
+        )
+    }
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
-      <header class="page-header">
-          <h1>@messages("mci.title")</h1>
-      </header>
+    @main(
+        title = messages("mci.title"),
+        pageHeader = Some(header)) {
 
-        <p>@messages("mci.p1")</p>
+        <div class="grid-row">
+            <div class="column-two-thirds">
+                <p>@messages("mci.p1")</p>
 
-        <p>
-            @messages("mci.p2") <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees">
+                <p>
+                    @messages("mci.p2") <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees">
                 @messages("mci.link.text")</a>.
-        </p>
-    </div>
-  </div>
+                </p>
+            </div>
+        </div>
 
-}
+    }
