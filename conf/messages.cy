@@ -64,7 +64,6 @@ estimate.uk.bandtype.SR=Cyfradd gychwynnol ar gyfer cynilion
 estimate.uk.bandtype.pa=Lwfans rhydd o dreth
 gift.aid.savings=Cynilion Rhodd Cymorth
 gift.aid.tax.relief=Gwnaethoch gyfraniadau Rhodd Cymorth o £{0} yn ystod y flwyddyn dreth hon sy’n rhoi rhyddhad treth i chi ac yn arbed £{1} o Dreth Incwm
-label.opens_in_a_new_window=(yn agor ffenestr newydd)
 language.day.plural=diwrnodau
 language.day.singular=diwrnod
 language.to=i
@@ -375,17 +374,10 @@ tai.extendedTaxReliefs.payments=Taliadau
 tai.extendedTaxReliefs.relief=Arbedion treth (£)
 tai.extendedTaxReliefs.source=Swm a dalwyd (£)
 tai.extendedTaxReliefs=Mae''ch amcangyfrif yn cynnwys unrhyw <a href="{0}">ryddhad treth</a> efallai y bydd hawl gennych iddo.
-tai.gateKeeper.description.p1=Mae ein cofnodion yn dangos nad oes gennych incwm trethadwy yn y flwyddyn dreth hon, oherwydd daeth eich cyflogaeth i ben cyn {0}.
-tai.gateKeeper.description.p2.1={0} i {1}
-tai.gateKeeper.description.p2=Gellir ond dangos manylion ar gyfer y flwyddyn dreth o:
-tai.gatekeeper.contact=Os oes angen gwybodaeth arnoch am y Dreth Incwm a dalwyd gennych yn ystod blynyddoedd cynharach, neu os yw ein cofnodion yn anghywir, cysylltwch â ni:
+
 tai.gatekeeper.findout.more=Rhagor o wybodaeth am Dreth Incwm ar
-tai.gatekeeper.heading=Amcangyfrif o''ch Treth Incwm TWE
-tai.gatekeeper.outsideUk=o du allan i''r DU: +44 300 200 1900
 tai.gatekeeper.refuse.message=Rydym yn dal i ddatblygu ein gwasanaeth TWE ar-lein. Yn anffodus, ni ellir ei ddefnyddio gan bawb eto ac ni allwn ddangos eich Treth Incwm amcangyfrifedig. Does dim rhaid i chi gysylltu â ni am hyn.
 tai.gatekeeper.refuse.title=Nid yw''r gwasanaeth ar gael
-tai.gatekeeper.telephone=ffôn: 0300 200 1900
-tai.gatekeeper.textphone=Ffôn testun: 0300 200 3319
 
 tai.getHelp.h1=Methu talu''r dreth sydd arnoch eleni?
 tai.getHelp.p1=Cysylltwch â CThEM am help ac i drefnu ffyrdd o dalu.

@@ -64,7 +64,6 @@ estimate.uk.bandtype.SR=Starting rate for savings
 estimate.uk.bandtype.pa=Tax-free amount
 gift.aid.savings=Gift Aid savings
 gift.aid.tax.relief=You made Gift Aid donations of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}.
-label.opens_in_a_new_window=(opens in a new window)
 language.day.plural=days
 language.day.singular=day
 language.to=to
@@ -375,17 +374,9 @@ tai.extendedTaxReliefs.payments=Payment
 tai.extendedTaxReliefs.relief=Tax&nbsp;saving (£)
 tai.extendedTaxReliefs.source=Amount&nbsp;paid (£)
 tai.extendedTaxReliefs=Your estimate includes any <a href="{0}">tax relief</a> you may be entitled to.
-tai.gateKeeper.description.p1=Our records show you have no taxable income in this tax year, because your employment ended before {0}.
-tai.gateKeeper.description.p2.1={0} to {1}
-tai.gateKeeper.description.p2=Details can be shown only for the tax year from:
-tai.gatekeeper.contact=If you need information about the Income Tax you paid in earlier years, or our records are wrong, contact us:
 tai.gatekeeper.findout.more=Find out more about Income Tax on
-tai.gatekeeper.heading=Your PAYE Income Tax estimate
-tai.gatekeeper.outsideUk=from outside the UK: +44 135 535 9022
 tai.gatekeeper.refuse.message=We are still developing our PAYE online service. Unfortunately it cannot be used by everybody yet and we cannot show your Income Tax estimate. You do not need to contact us about this.
 tai.gatekeeper.refuse.title=Service Unavailable
-tai.gatekeeper.telephone=telephone: 0300 200 3300
-tai.gatekeeper.textphone=textphone: 0300 200 3319
 
 tai.getHelp.h1=Cannot pay the tax you owe this year
 tai.getHelp.p1=Contact HMRC for help and to arrange ways to pay.
