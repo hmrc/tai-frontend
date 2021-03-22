@@ -157,7 +157,6 @@ tai.addPensionProvider.startDateForm.title=Pryd gawsoch chi''ch taliad pensiwn c
 tai.addPensionProvider.startDateForm.pagetitle=Pryd cawsoch eich taliad pensiwn cyntaf gan y cyflogwr hwn?
 tai.amount=Swm
 tai.back-link.upper=Yn ôl
-tai.backToHome-link.upper=Yn ôl i hafan y cyfrif
 tai.bandtype.incomeTaxEstimate=Amcangyfrif o''r Dreth Incwm
 tai.bandtype.nonZeroBand.incomeDetails=Cyfradd Sylfaenol
 tai.bandtype.nonZeroBand=Incwm yr ydych yn talu treth arno

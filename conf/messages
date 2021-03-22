@@ -157,7 +157,6 @@ tai.addPensionProvider.startDateForm.title=When did you get your first pension p
 tai.addPensionProvider.startDateForm.pagetitle=When did you get your first pension payment from this employer?
 tai.amount=Amount
 tai.back-link.upper=Back
-tai.backToHome-link.upper=Back to account home
 tai.bandtype.incomeTaxEstimate=Income Tax estimate
 tai.bandtype.nonZeroBand.incomeDetails=Basic Rate
 tai.bandtype.nonZeroBand=Income you do pay tax on
