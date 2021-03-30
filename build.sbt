@@ -16,7 +16,7 @@ lazy val playSettings: Seq[Setting[_]] = Seq(
     "_root_.uk.gov.hmrc.tai.binders.BenefitComponentTypeBinder._"),
   unmanagedResourceDirectories in Assets += baseDirectory.value / "app" / "assets",
   excludeFilter in Assets := "js*" || "sass*"
-) ++ JavaScriptBuild.javaScriptUiSettings
+)
 
 lazy val scoverageSettings = {
 
