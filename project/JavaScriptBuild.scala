@@ -1,6 +1,7 @@
 import sbt._
 import sbt.Keys._
 import com.typesafe.sbt.packager.Keys._
+import scala.sys.process.Process
 
 /**
  * Build of UI in JavaScript
@@ -20,10 +21,10 @@ object JavaScriptBuild {
   val javaScriptUiSettings = Seq(
 
     // the JavaScript application resides in "ui"
-    jsDirectory <<= (baseDirectory in Compile) { _ /"app" / "assets" / "js"},
+    jsDirectory := baseDirectory.value /"app" / "assets" / "js",
 
     // add "npm" and "grunt" commands in sbt
-    commands <++= jsDirectory { base => Seq(Grunt.gruntCommand(base), npmCommand(base))},
+    commands ++= jsDirectory { base => Seq(Grunt.gruntCommand(base), npmCommand(base))}.value,
 
     npmInstall := {
       val result = Grunt.npmProcess(jsDirectory.value, "install").run().exitValue()
@@ -46,13 +47,13 @@ object JavaScriptBuild {
       result
     },
 
-    gruntBuild <<= gruntBuild dependsOn npmInstall,
+    gruntBuild := (gruntBuild dependsOn npmInstall).value,
 
     // runs grunt before staging the application
-    dist <<= dist dependsOn gruntBuild,
+    dist := (dist dependsOn gruntBuild).value,
 
     // integrate JavaScript build into play build
-    playRunHooks <+= jsDirectory.map(ui => Grunt(ui))
+    playRunHooks += jsDirectory.map(ui => Grunt(ui)).value
   )
 
   def npmCommand(base: File) = Command.args("npm", "<npm-command>") { (state, args) =>
