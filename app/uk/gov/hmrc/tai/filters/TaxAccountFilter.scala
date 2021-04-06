@@ -21,12 +21,9 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 
 trait TaxAccountFilter {
 
-  def liveEmployment(taxCodeIncome: TaxCodeIncome) =
-    taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status == Live
+  def isEmployment(taxCodeIncome: TaxCodeIncome) =
+    taxCodeIncome.componentType == EmploymentIncome
 
-  def livePension(taxCodeIncome: TaxCodeIncome) =
-    taxCodeIncome.componentType == PensionIncome && taxCodeIncome.status == Live
-
-  def ceasedEmployment(taxCodeIncome: TaxCodeIncome) =
-    taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status != Live
+  def isPension(taxCodeIncome: TaxCodeIncome) =
+    taxCodeIncome.componentType == PensionIncome
 }

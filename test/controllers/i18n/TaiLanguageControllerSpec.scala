@@ -16,20 +16,13 @@
 
 package controllers.i18n
 
-import builders.RequestBuilder
-import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.tai.config.ApplicationConfig
+import play.api.test.Helpers._
 import utils.BaseSpec
-
-import scala.concurrent.Await
-import scala.concurrent.duration._
 
 class TaiLanguageControllerSpec extends BaseSpec {
 
   def sut = new TaiLanguageController(
-    appConfig,
     langUtils,
     stubControllerComponents(),
     partialRetriever,
