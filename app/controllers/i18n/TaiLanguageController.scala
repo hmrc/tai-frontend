@@ -22,15 +22,13 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.ApplicationConfig
 
 class TaiLanguageController @Inject()(
-  applicationConfig: ApplicationConfig,
   languageUtils: LanguageUtils,
   cc: ControllerComponents,
   val partialRetriever: FormPartialRetriever,
   val templateRenderer: TemplateRenderer)(implicit messagesApi: MessagesApi)
-    extends LanguageController(applicationConfig.runModeConfiguration, languageUtils, cc) {
+    extends LanguageController(languageUtils, cc) {
 
   override protected def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),

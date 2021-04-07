@@ -620,6 +620,10 @@ tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara=An estimate of the tota
 tai.incomeTaxSummary.annualAmounts.section.taxFreeHeading=Your tax-free amount
 tai.incomeTaxSummary.annualAmounts.section.taxFreeLink=What makes up your tax-free amount
 tai.incomeTaxSummary.annualAmounts.section.taxFreePara=The income you can have, taking into account any adjustments, before paying tax.
+
+tai.incomeTaxSummary.annualAmounts.section.totalIncomeHeading=Your total estimated income
+tai.incomeTaxSummary.annualAmounts.section.totalIncomePara=Your total gross Income from PAYE this year.
+
 tai.incomeTaxSummary.ceased.section.heading=Employments that have ended since {0}
 tai.incomeTaxSummary.ceasedIncomeAmount.prefix=Your taxable income to date is
 tai.incomeTaxSummary.employment.link=View employment details
@@ -661,6 +665,8 @@ tai.incomes.landing.title=Update your estimated income
 tai.incomes.landing.intro=You should update your estimated income if there has been a recent change to your income and you think it will affect your current tax band.
 tai.incomes.landing.employment.ended=If you no longer work for {0}
 tai.incomes.landing.employment.ended.link=you can tell us when your employment ended.
+tai.incomes.landing.employment.totalIncome=Your total income from PAYE is estimated at {0} this tax year.
+tai.incomes.landing.employment.affect=You can check if it will affect your tax band.
 tai.incomes.landing.pension.ended=If you no longer get income from {0}
 tai.incomes.landing.pension.ended.link=you can tell us when this ended.
 tai.incomes.amount.current=Current amount

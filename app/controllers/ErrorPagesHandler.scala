@@ -286,11 +286,6 @@ trait ErrorPagesHandler {
     }
   }
 
-  def badGatewayError(logMessage: String)(implicit request: Request[_], messages: Messages): Result = {
-    Logger.warn(logMessage)
-    BadGateway(error5xx(messages("tai.technical.error.message")))
-  }
-
   def internalServerError(logMessage: String, ex: Option[Throwable] = None)(
     implicit request: Request[_],
     messages: Messages): Result = {

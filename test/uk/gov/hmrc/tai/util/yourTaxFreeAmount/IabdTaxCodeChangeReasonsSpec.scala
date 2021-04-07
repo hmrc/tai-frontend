@@ -24,15 +24,11 @@ import utils.BaseSpec
 class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
 
   val taxFreeInfo = TaxFreeInfo("12-12-2015", 2000, 1000)
-  val jobExpensesIncrease = CodingComponentPair(JobExpenses, Some(2), Some(50), Some(100))
-  val carBenefitDecrease = CodingComponentPair(CarBenefit, Some(1), Some(5555), Some(2345))
+  val jobExpensesIncrease = CodingComponentPair(JobExpenses, Some(2), Some(50), Some(100), None)
+  val carBenefitDecrease = CodingComponentPair(CarBenefit, Some(1), Some(5555), Some(2345), None)
   val taxCodeChange = mock[TaxCodeChange]
 
-  val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
-  val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-  val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
-
-  val iabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons(totalTax)
+  val iabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons
 
   "iabdReasons method" must {
     "have no reasons" when {
@@ -44,7 +40,7 @@ class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
       }
 
       "there is no current amount" in {
-        val noCurrentAmount = CodingComponentPair(JobExpenses, None, Some(123), None)
+        val noCurrentAmount = CodingComponentPair(JobExpenses, None, Some(123), None, None)
         val pairs = AllowancesAndDeductionPairs(Seq(noCurrentAmount), Seq.empty)
 
         val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
@@ -56,8 +52,8 @@ class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
 
   "starting a new benefit" must {
     "give multiple reasons when you have multiple new benefits" in {
-      val newBenefit1 = CodingComponentPair(JobExpenses, None, None, Some(12345))
-      val newBenefit2 = CodingComponentPair(CarBenefit, None, None, Some(98765))
+      val newBenefit1 = CodingComponentPair(JobExpenses, None, None, Some(12345), None)
+      val newBenefit2 = CodingComponentPair(CarBenefit, None, None, Some(98765), None)
 
       val pairs = AllowancesAndDeductionPairs(Seq(newBenefit1), Seq(newBenefit2))
 
@@ -70,11 +66,13 @@ class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
     }
 
     "return all new allowances/deductions in the correct order when you have multiple new allowances/deductions" in {
-      val newDebt = CodingComponentPair(EstimatedTaxYouOweThisYear, None, None, Some(123))
-      val newAllowance = CodingComponentPair(JobExpenses, None, None, Some(123))
-      val changedAllowance = CodingComponentPair(VehicleExpenses, None, Some(100), Some(123))
-      val newDeduction = CodingComponentPair(CarBenefit, None, None, Some(123))
-      val changedDeduction = CodingComponentPair(MedicalInsurance, None, Some(200), Some(123))
+      val inputAmount = Some(BigDecimal(12345))
+
+      val newDebt = CodingComponentPair(EstimatedTaxYouOweThisYear, None, None, Some(123), inputAmount)
+      val newAllowance = CodingComponentPair(JobExpenses, None, None, Some(123), None)
+      val changedAllowance = CodingComponentPair(VehicleExpenses, None, Some(100), Some(123), None)
+      val newDeduction = CodingComponentPair(CarBenefit, None, None, Some(123), None)
+      val changedDeduction = CodingComponentPair(MedicalInsurance, None, Some(200), Some(123), None)
 
       val pairs =
         AllowancesAndDeductionPairs(Seq(changedAllowance, newAllowance), Seq(changedDeduction, newDebt, newDeduction))
@@ -96,12 +94,12 @@ class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
           messagesApi("tai.taxCodeComparison.iabd.reduced"),
           "£200",
           "£123"),
-        messagesApi("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid", "£24")
+        messagesApi("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid", "£12,345")
       )
     }
 
     "give a reason for an earlier year's adjustment" in {
-      val newBenefit = CodingComponentPair(EarlyYearsAdjustment, None, None, Some(123))
+      val newBenefit = CodingComponentPair(EarlyYearsAdjustment, None, None, Some(123), None)
       val pairs = AllowancesAndDeductionPairs(Seq(newBenefit), Seq.empty)
 
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
@@ -109,25 +107,29 @@ class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
     }
 
     "give a reason with the amount for underpaid from a previous year" in {
-      val newBenefit = CodingComponentPair(UnderPaymentFromPreviousYear, None, None, Some(123))
+      val inputAmount = Some(BigDecimal(4567))
+
+      val newBenefit = CodingComponentPair(UnderPaymentFromPreviousYear, None, None, Some(123), inputAmount)
       val pairs = AllowancesAndDeductionPairs(Seq(newBenefit), Seq.empty)
 
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
-      reasons mustBe Seq(messagesApi("tai.taxCodeComparison.iabd.you.have.underpaid", "£24"))
+      reasons mustBe Seq(messagesApi("tai.taxCodeComparison.iabd.you.have.underpaid", "£4,567"))
     }
 
     "give a reason with the amount for estimated tax owed this year" in {
-      val newBenefit = CodingComponentPair(EstimatedTaxYouOweThisYear, None, None, Some(123))
+      val inputAmount = Some(BigDecimal(890))
+
+      val newBenefit = CodingComponentPair(EstimatedTaxYouOweThisYear, None, None, Some(123), inputAmount)
       val pairs = AllowancesAndDeductionPairs(Seq(newBenefit), Seq.empty)
 
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
-      reasons mustBe Seq(messagesApi("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid", "£24"))
+      reasons mustBe Seq(messagesApi("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid", "£890"))
     }
   }
 
   "amending a benefit" must {
     "have no reasons if the previous and current amounts are the same" in {
-      val sameAmountAllowance = CodingComponentPair(JobExpenses, Some(2), Some(12345), Some(12345))
+      val sameAmountAllowance = CodingComponentPair(JobExpenses, Some(2), Some(12345), Some(12345), None)
       val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq(sameAmountAllowance))
 
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)

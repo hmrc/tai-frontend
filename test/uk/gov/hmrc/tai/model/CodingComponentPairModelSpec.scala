@@ -30,7 +30,8 @@ class CodingComponentPairModelSpec extends BaseSpec {
       val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
       val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
-      val codingComponentPair = CodingComponentPair(GiftAidPayments, None, Some(previousAmount), Some(currentAmount))
+      val codingComponentPair =
+        CodingComponentPair(GiftAidPayments, None, Some(previousAmount), Some(currentAmount), None)
       val actual = CodingComponentPairModel(
         codingComponentPair,
         TaxFreeAmountDetails(employmentIdNameMap = Map.empty, companyCarBenefits = Seq.empty, totalTax = totalTax))

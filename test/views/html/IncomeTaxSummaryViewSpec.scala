@@ -55,7 +55,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         false,
         NoTimeToProcess,
         Seq(otherIncomeSourceViewModel),
-        true
+        true,
+        "0"
       )
       def view: Html = views.html.incomeTaxSummary(vm, appConfig)
       doc(view) must not(haveElementWithId("isAnyFormInProgressBanner"))
@@ -124,7 +125,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           true,
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
-          true)
+          true,
+          "0")
 
         val docWithIyaBanner = doc(views.html.incomeTaxSummary(vm, appConfig))
         docWithIyaBanner must haveElementAtPathWithText(
@@ -167,7 +169,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           false,
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
-          true
+          true,
+          "0"
         )
         val docWithMultipleEmployments = doc(views.html.incomeTaxSummary(vm, appConfig))
         docWithMultipleEmployments.select("#incomeFromEmploymentSection h3").size mustBe 3
@@ -214,7 +217,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           false,
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
-          true
+          true,
+          "0"
         )
         val docWithMultiplePensionIncomes = doc(views.html.incomeTaxSummary(vm, appConfig))
         docWithMultiplePensionIncomes.select("#incomeFromPensionSection h3").size mustBe 4
@@ -262,7 +266,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           false,
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
-          true
+          true,
+          "0"
         )
         val docWithMultipleEndedIncomes = doc(views.html.incomeTaxSummary(vm, appConfig))
         docWithMultipleEndedIncomes.select("#endedIncomeSection h3").size mustBe 4
@@ -316,7 +321,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         false,
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
-        true)
+        true,
+        "0")
 
       val document = doc(views.html.incomeTaxSummary(vm, appConfig))
 
@@ -342,7 +348,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         false,
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
-        true)
+        true,
+        "0")
 
       val document = doc(views.html.incomeTaxSummary(vm, appConfig))
 
@@ -363,7 +370,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         false,
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
-        true)
+        true,
+        "0")
 
       val document = doc(views.html.incomeTaxSummary(vm, appConfig))
       document must haveElementAtPathWithText(
@@ -395,7 +403,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         false,
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
-        true
+        true,
+        "0"
       )
 
       val document = doc(views.html.incomeTaxSummary(vm, appConfig))
@@ -404,6 +413,30 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   }
 
   "annual amounts section" must {
+
+    "display your total estimated income details" in {
+      doc must haveElementAtPathWithText(
+        "#annualAmountsSummarySection h3",
+        messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomeHeading"))
+
+      doc must haveElementAtPathWithText(
+        "#annualAmountsSummarySection p",
+        messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomePara"))
+
+      doc must haveElementAtPathWithText(
+        "#annualAmountsSummarySection p",
+        s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.totalEstimatedIncome}")
+
+      doc must haveElementAtPathWithText(
+        "#annualAmountsSummarySection a",
+        messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink"))
+
+      doc must haveElementAtPathWithAttribute(
+        "#annualAmountsSummarySection a",
+        "href",
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax().url)
+
+    }
 
     "display tax free amount details" in {
       doc must haveElementAtPathWithText(
@@ -547,7 +580,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     false,
     ThreeWeeks,
     Seq(otherIncomeSourceViewModel),
-    true
+    true,
+    "0"
   )
 
   val noSectionsVm = TaxAccountSummaryViewModel(
@@ -562,7 +596,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     false,
     ThreeWeeks,
     Seq(otherIncomeSourceViewModel),
-    true)
+    true,
+    "0")
 
   override def view: Html = views.html.incomeTaxSummary(vm, appConfig)
 }

@@ -16,7 +16,7 @@
 
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@(incomeName: String, id: Int, isPension: Boolean, appConfig: ApplicationConfig)(implicit request: Request[_],
+@(incomeName: String, id: Int, totalEstimatedIncome: String, isPension: Boolean, appConfig: ApplicationConfig)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -44,6 +44,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
 ){
     <div>
         <p>@messages("tai.incomes.landing.intro")</p>
+        <p id="updateEstimatedPayTotalIncome" aria-hidden="true">@messages("tai.incomes.landing.employment.totalIncome", totalEstimatedIncome)</p>
+        <p id="updateEstimatedPayLink" aria-hidden="true"><a href="@routes.EstimatedIncomeTaxController.estimatedIncomeTax">@messages("tai.incomes.landing.employment.affect")</a></p>
         <p>
             @if(isPension) {
                 @messages("tai.incomes.landing.pension.ended", incomeName)

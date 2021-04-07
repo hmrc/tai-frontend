@@ -54,8 +54,15 @@ object AllowancesAndDeductionPairs {
             addition.componentType,
             addition.employmentId,
             Some(previousMatched.amount),
-            Some(addition.amount))
-        case None => CodingComponentPair(addition.componentType, addition.employmentId, None, Some(addition.amount))
+            Some(addition.amount),
+            addition.inputAmount)
+        case None =>
+          CodingComponentPair(
+            addition.componentType,
+            addition.employmentId,
+            None,
+            Some(addition.amount),
+            addition.inputAmount)
       }
     })
 
@@ -64,7 +71,13 @@ object AllowancesAndDeductionPairs {
       pairs.find(matchingCodingComponents(_, addition)) match {
         case Some(_) => None
         case None =>
-          Some(CodingComponentPair(addition.componentType, addition.employmentId, Some(addition.amount), None))
+          Some(
+            CodingComponentPair(
+              addition.componentType,
+              addition.employmentId,
+              Some(addition.amount),
+              None,
+              addition.inputAmount))
       }
     })
 

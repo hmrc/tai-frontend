@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.config
 import javax.inject.Inject
 import play.api.{ConfigLoader, Configuration}
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
-import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 class ApplicationConfig @Inject()(
   val runModeConfiguration: Configuration,

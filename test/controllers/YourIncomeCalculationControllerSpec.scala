@@ -99,14 +99,14 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       }
     }
 
-    "throw bad gateway" when {
+    "throw internal server error" when {
       "RTI throws service unavailable" in {
         when(employmentService.employments(any(), any())(any()))
           .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
         val result =
           sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe BAD_GATEWAY
+        status(result) mustBe INTERNAL_SERVER_ERROR
 
       }
     }
@@ -140,14 +140,14 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       }
     }
 
-    "throw bad gateway" when {
+    "throw internal server error" when {
       "RTI throws service unavailable" in {
         when(employmentService.employments(any(), any())(any()))
           .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
         val result =
           sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe BAD_GATEWAY
+        status(result) mustBe INTERNAL_SERVER_ERROR
 
       }
     }
