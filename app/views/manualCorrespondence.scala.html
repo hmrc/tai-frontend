@@ -15,8 +15,9 @@
  *@
 
 @import views.html.includes.ptaHeader
+@import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(contactUrl: String)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
     @header = @{
         ptaHeader(
@@ -35,7 +36,7 @@
                 <p>@messages("mci.p1")</p>
 
                 <p>
-                    @messages("mci.p2") <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees">
+                    @messages("mci.p2") <a href=@contactUrl>
                 @messages("mci.link.text")</a>.
                 </p>
             </div>

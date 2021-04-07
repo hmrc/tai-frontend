@@ -52,7 +52,12 @@ class ServiceController @Inject()(
   }
 
   def mciErrorPage() = authenticate.async { implicit request =>
-    Future.successful(Ok(views.html.manualCorrespondence()))
+    val contactUrl = request2Messages.lang.code match {
+      case "cy" => applicationConfig.contactHelplineWelshUrl
+      case _    => applicationConfig.contactHelplineUrl
+    }
+
+    Future.successful(Ok(views.html.manualCorrespondence(contactUrl)))
   }
 
 }

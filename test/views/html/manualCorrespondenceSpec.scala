@@ -21,11 +21,14 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class manualCorrespondenceSpec extends TaiViewSpec {
 
-  override def view = views.html.manualCorrespondence()
+  override def view = views.html.manualCorrespondence("https://contacturl")
 
   "manual correspondence page" should {
     behave like pageWithTitle(messages("mci.title"))
     behave like pageWithHeader(messages("mci.title"))
-  }
 
+    "have the contactUrl" in {
+      doc.body().toString must include("https://contacturl")
+    }
+  }
 }
