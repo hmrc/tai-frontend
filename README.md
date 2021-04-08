@@ -25,7 +25,7 @@ Optional
 ------------
 Assets compilation can be done quickly by specifying sbt-web plugin to use NodeJS (if it is installed) by adding the following environment variable.
 export SBT_OPTS="$SBT_OPTS -Dsbt.jse.engineType=Node"
-
+For more information see: https://www.playframework.com/documentation/2.8.x/AssetsOverview#Managed-assets
 
 Authentication
 ------------
