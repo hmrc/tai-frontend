@@ -103,7 +103,7 @@ class ApplicationConfig @Inject()(
     s"$basGatewayHost/bas-gateway/sign-out-without-state?continue=$feedbackSurveyUrl"
 
   lazy val taxReliefExpenseClaimLink =
-    "https://www.tax.service.gov.uk/claim-tax-relief-expenses/only-claiming-working-from-home-tax-relief"
+    taxReliefExpenseClaimHost + "/claim-tax-relief-expenses/only-claiming-working-from-home-tax-relief"
 
   lazy val basGatewayFrontendSignInUrl = s"$basGatewayHost/bas-gateway/sign-in"
 
@@ -111,6 +111,7 @@ class ApplicationConfig @Inject()(
 
   //These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
   lazy val citizenAuthHost: String = decorateUrlForLocalDev("citizen-auth.host")
+  lazy val taxReliefExpenseClaimHost: String = decorateUrlForLocalDev("p87-frontend.host")
   lazy val basGatewayHost: String = decorateUrlForLocalDev("bas-gateway-frontend.host")
   lazy val feedbackHost: String = decorateUrlForLocalDev("feedback-survey-frontend.host")
   lazy val unauthorisedSignOutUrl: String = decorateUrlForLocalDev("company-auth.unauthorised-url")
