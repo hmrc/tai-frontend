@@ -21,6 +21,12 @@ Requirements
 This service is written in [Scala 2.11](http://www.scala-lang.org/) and [Play 2.5](http://playframework.com/), so needs at least a [JRE 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index.html) to run.
 
 
+Optional
+------------
+Assets compilation can be done quickly by specifying sbt-web plugin to use NodeJS (if it is installed) by adding the following environment variable.
+export SBT_OPTS="$SBT_OPTS -Dsbt.jse.engineType=Node"
+
+
 Authentication
 ------------
 
@@ -29,7 +35,6 @@ This customer logs into this service using [GOV.UK Verify](https://www.gov.uk/go
 
 Acronyms
 --------
-
 In the context of this service we use the following acronyms:
 
 * [API]: Application Programming Interface
