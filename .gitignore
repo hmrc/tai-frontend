@@ -18,6 +18,7 @@ lib
 lib_managed
 log
 logs
+modules
 /out
 precompiled
 /.project
@@ -41,6 +42,7 @@ bin
 # Ignore css map files
 *.map
 *.css
+!**/sass/modules/
 
 #ignore public javascript
 public/javascript/
@@ -61,8 +63,8 @@ lib-cov
 # Coverage directory used by tools like istanbul
 coverage
 
-
-
+# Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
 
 # node-waf configuration
 .lock-wscript
@@ -70,9 +72,9 @@ coverage
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
-
-
-
+# Dependency directory
+# https://docs.npmjs.com/misc/faq#should-i-check-my-node-modules-folder-into-git
+node_modules
 
 # # cache files for sublime text
 *.tmlanguage.cache
