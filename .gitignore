@@ -18,7 +18,6 @@ lib
 lib_managed
 log
 logs
-modules
 /out
 precompiled
 /.project
@@ -42,7 +41,6 @@ bin
 # Ignore css map files
 *.map
 *.css
-!**/sass/modules/
 
 #ignore public javascript
 public/javascript/

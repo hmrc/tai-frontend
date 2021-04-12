@@ -1,0 +1,31 @@
+$govuk-secondary-text-colour : #6F777B;
+
+.faded-text-dark {
+    color: #4B5053;
+}
+
+.u-align-mid {
+    vertical-align: middle;
+}
+
+.u-text-std.u-text-std {
+    font-weight: normal;
+}
+
+.highlight {
+    background: #F8F8F8;
+    padding-top: 0.5em;
+}
+
+.icon-plus {
+    background-image: url(/check-income-tax/assets/images/icon-plus.svg);
+    background-position: 0 3px;
+    padding-left: 25px;
+}
+
+.lte-ie8 {
+    .icon-plus {
+        background-image: url(/check-income-tax/assets/images/icon-plus-ie8.png);
+        padding-left: 25px;
+    }
+}

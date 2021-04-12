@@ -1,0 +1,85 @@
+.tax-code-change {
+  margin: 0 -30px 20px -30px;
+
+  .tai-description-list {
+    margin-top: 0;
+  }
+  .tai-description-list > *:last-child > * {
+    border-bottom: none;
+  }
+
+  .tai-description-list > *:first-child > * {
+    border-top: none;
+  }
+
+  .section-title {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+  }
+
+  .tax-code-change__explanation {
+    margin-bottom: 15px;
+  }
+
+  .tax-code-change__payroll,
+  .tax-code-change__date,
+  .tax-code-change__tax-code {
+    margin-bottom: 20px;
+  }
+
+  .tax-code-change__pod {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 30px;
+  }
+
+  .list-bullet {
+    list-style-type: disc;
+    padding-left: 12%;
+    padding-right: 6%;
+  }
+}
+
+.tax-free-amount-comparison-table.responsive-table {
+
+  margin-top: 20px;
+
+  .tax-free-amount-comparison-table-header-cell {
+    @media (min-width: 768px) {
+      width: 30%;
+    }
+  }
+
+  tbody {
+    .table-heading {
+      font-weight: normal;
+    }
+  }
+
+  .tax-free-amount-comparison-row-title {
+    @media (max-width: 767px) {
+      font-weight: 700;
+    }
+  }
+
+  h3 {
+    margin: 0;
+
+    &.tax-free-amount-comparison-row-summary {
+      margin: 10px 0;
+    }
+  }
+
+  .tax-free-amount-comparison-row-heading {
+    @media (max-width: 767px) {
+      font-size: 22px;
+    }
+
+    @media (max-width: 641px) {
+      font-size: 19px;
+    }
+  }
+
+  .tax-free-amount-comparison-row-heading {
+    margin-bottom: 0;
+  }
+}
