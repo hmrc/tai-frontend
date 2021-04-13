@@ -1,0 +1,22 @@
+#global-breadcrumb {
+  border-bottom: 0;
+  padding-bottom: 0;
+  ol {
+    padding: .75em 0 .55em;
+    li a:focus {
+      outline: 3px solid #ffbf47;
+    }
+  }
+}
+
+#global-header .header-wrapper .header-proposition .menu.js-hidden {
+  display: block !important;
+}
+@media (min-width: 769px) {
+  #global-header .header-wrapper .header-proposition .menu.js-hidden {
+    display: none !important;
+  }
+}
+#global-header .header-wrapper .header-proposition #proposition-links li {
+  width: 100%;
+}
