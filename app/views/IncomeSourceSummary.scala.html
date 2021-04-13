@@ -32,25 +32,25 @@
 
 @mainHeading = @{
     if(model.isPension){
-        messages("tai.pension.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+        messages("tai.pension.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
     } else {
-        messages("tai.employment.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+        messages("tai.employment.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
     }
 }
 
 @mainTitle = @{
     if(model.isPension){
-        messages("tai.pension.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+        messages("tai.pension.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
     } else {
-        messages("tai.employment.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+        messages("tai.employment.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
     }
 }
 
 @title = @{
     if(model.isPension){
-        messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+        messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange)
     } else {
-        messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+        messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange)
     }
 }
 @backLinkToTaxAccountSummary= {

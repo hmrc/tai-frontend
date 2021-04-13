@@ -31,7 +31,7 @@
         formForErrorSummary = Some(bonusOvertimeAmountForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited),
+        mainHeadingText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading", employer.name)
     )
 }
@@ -50,7 +50,7 @@
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusOvertimeAmount){
             @includes.forms.input(
                 field = bonusOvertimeAmountForm("amount"),
-                labelText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited),
+                labelText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRange),
                 labelClass = "visuallyhidden",
                 bold = true,
                 classes = Seq("form-control-1-4"),

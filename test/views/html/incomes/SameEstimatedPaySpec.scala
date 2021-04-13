@@ -36,10 +36,9 @@ class SameEstimatedPaySpec extends TaiViewSpec {
 
   "Same estimated pay page" must {
     behave like pageWithBackLink
-    behave like pageWithTitle(
-      messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+    behave like pageWithTitle(messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRange))
     behave like pageWithHeader(
-      messages("tai.updateEmployemnt.incomeSame.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      messages("tai.updateEmployemnt.incomeSame.heading", TaxYearRangeUtil.currentTaxYearRange))
 
     "display the new estimated income" in {
       val newEstimateMessage = messages("tai.updateEmployment.incomeSame.newEstimate.text")
@@ -49,10 +48,7 @@ class SameEstimatedPaySpec extends TaiViewSpec {
     "display a paragraph" in {
 
       doc must haveParagraphWithText(
-        messages(
-          "tai.updateEmployment.incomeSame.description",
-          employerName,
-          TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        messages("tai.updateEmployment.incomeSame.description", employerName, TaxYearRangeUtil.currentTaxYearRange))
     }
 
     "display return to employment details link" in {

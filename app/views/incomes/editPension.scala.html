@@ -32,13 +32,13 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
         formForErrorSummary = Some(income),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
+        mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = messages("tai.howToUpdate.preHeading", income("name").value.getOrElse(""))
     )
 }
 
 @main(
-    title = messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
+    title = messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRange),
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,

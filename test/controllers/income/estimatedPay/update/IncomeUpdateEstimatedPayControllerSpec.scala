@@ -151,7 +151,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        doc.title() must include(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRange))
       }
 
       "payYearToDate is None" in {
@@ -163,7 +163,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        doc.title() must include(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRange))
       }
     }
 

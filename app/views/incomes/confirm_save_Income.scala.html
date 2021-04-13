@@ -33,13 +33,13 @@
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        mainHeadingText = messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
+        mainHeadingText = messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = messages("tai.incomes.edit.preHeading", income.name)
     )
 }
 
 @main(
-    title = messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
+    title = messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
     authedUser = Some(user),

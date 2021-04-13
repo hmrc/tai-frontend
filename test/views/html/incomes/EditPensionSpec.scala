@@ -33,7 +33,7 @@ class EditPensionSpec extends TaiViewSpec {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.howToUpdate.preHeading", employerName),
-      messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+      messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange)
     )
   }
 

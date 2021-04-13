@@ -44,8 +44,8 @@ class EstimatedPaySpec extends TaiViewSpec {
       Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url))
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employer.name),
-      messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
-    behave like pageWithTitle(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRange))
+    behave like pageWithTitle(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRange))
 
     "display summary sub-title paragraph" in {
       doc must haveParagraphWithText(messages("tai.estimatedPay.weHaveCalculated"))
