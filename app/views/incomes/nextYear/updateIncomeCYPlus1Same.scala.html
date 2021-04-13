@@ -34,7 +34,7 @@
     gaEventAction = "Your estimated pay for next year same",
     title = messages("tai.updateIncome.CYPlus1.same.title"),
     cancelText = Some(messages("tai.updateIncome.CYPlus1.same.cancel")),
-    heading = messages("tai.updateIncome.CYPlus1.same.heading", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
+    heading = messages("tai.updateIncome.CYPlus1.same.heading", TaxYearRangeUtil.futureTaxYearRange(1))
 ){
     <div>
 
@@ -46,7 +46,7 @@
         </p>
 
         <div class="panel panel-border-narrow">
-            <p>@messages("tai.updateEmployment.incomeSame.description", employmentName, TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))</p>
+            <p>@messages("tai.updateEmployment.incomeSame.description", employmentName, TaxYearRangeUtil.futureTaxYearRange(1))</p>
         </div>
     </div>
 }

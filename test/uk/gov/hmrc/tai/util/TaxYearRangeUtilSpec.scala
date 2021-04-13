@@ -34,16 +34,6 @@ class TaxYearRangeUtilSpec extends BaseSpec {
       TaxYearRangeUtil.currentTaxYearRange mustBe expectedTaxYear
     }
 
-    "return the current tax year as a range delimited with the word 'to' formatted on one line " in {
-      val expectedTaxYear = HtmlFormatter.htmlNonBroken(
-        messages(
-          "tai.taxYear",
-          HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
-          HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy"))))
-
-      TaxYearRangeUtil.currentTaxYearRangeSingleLine mustBe expectedTaxYear
-    }
-
     "return the current tax year as a range delimited with the word 'and' " in {
       val expectedTaxYear = messages(
         "tai.taxYear.between",
@@ -52,17 +42,6 @@ class TaxYearRangeUtilSpec extends BaseSpec {
       )
 
       TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited mustBe expectedTaxYear
-    }
-
-    "return the current tax year as a range delimited with the word 'and' formatted on one line" in {
-      val expectedTaxYear = HtmlFormatter.htmlNonBroken(
-        messages(
-          "tai.taxYear.between",
-          HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
-          HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy"))
-        ))
-
-      TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited mustBe expectedTaxYear
     }
 
     "return the current tax year as a range that only contains the year" in {
@@ -91,14 +70,5 @@ class TaxYearRangeUtilSpec extends BaseSpec {
       caught.getMessage mustBe s"From date:$now cannot be after To date:$yesterday"
     }
 
-    "futureTaxYearRangeHtmlNonBreak" when {
-      "returns a future date" in {
-        val thisYear = TaxYear().next
-        val message = s"${Dates.formatDate(thisYear.start)} to ${Dates.formatDate(thisYear.end)}"
-        val nonBrokenDateRange = s"${HtmlFormatter.htmlNonBroken(message)}"
-
-        TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1) mustBe nonBrokenDateRange
-      }
-    }
   }
 }

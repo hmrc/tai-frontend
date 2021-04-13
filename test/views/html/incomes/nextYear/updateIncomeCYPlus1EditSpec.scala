@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.util.ViewModelHelper.{currentTaxYearRangeHtmlNonBreak, withPoundPrefix}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil.futureTaxYearRange
 
 class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
 
@@ -37,7 +37,7 @@ class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeader(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRangeHtmlNonBreak(1)))
+      messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRange(1)))
 
     behave like pageWithContinueInputForm(
       controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url)

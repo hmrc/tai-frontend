@@ -101,7 +101,7 @@ class UpdateIncomeCYPlus1WarningSpec extends TaiViewSpec with FormValuesConstant
         messages(
           "tai.incomes.warning.cyPlus1.text1",
           MonetaryUtil.withPoundPrefix(newAmount),
-          TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)))
+          TaxYearRangeUtil.futureTaxYearRange(1)))
 
       doc(pensionView) must haveInputLabelWithText(
         s"$YesNoChoice-yes",

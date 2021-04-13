@@ -33,13 +33,13 @@
     form = Some(incomeForm),
     gaEventAction = gaEventActionString,
     title = messages("tai.updateIncome.CYPlus1.edit.title"),
-    heading = messages("tai.updateIncome.CYPlus1.edit.heading", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(yearsFromNow = 1)),
+    heading = messages("tai.updateIncome.CYPlus1.edit.heading", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1)),
     cancelText = Some("Cancel")
 ){
 
     @if(!isPension) {
         <div>
-            <p>@messages("tai.incomes.edit.average.hours", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(yearsFromNow = 1))</p>
+            <p>@messages("tai.incomes.edit.average.hours", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1))</p>
         </div>
         <div class="panel panel-border-narrow">
             <h2 class="heading-small">@messages("tai.incomes.edit.what.should.you.include")</h2>

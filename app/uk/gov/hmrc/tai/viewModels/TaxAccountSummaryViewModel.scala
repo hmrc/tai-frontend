@@ -50,7 +50,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     nonMatchingCeasedEmployments: Seq[Employment])(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
     val header = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRange)
-    val title = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+    val title = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRange)
 
     val taxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
     val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))

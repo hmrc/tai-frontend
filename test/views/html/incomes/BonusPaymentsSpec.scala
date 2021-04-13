@@ -44,7 +44,7 @@ class BonusPaymentsSpec extends TaiViewSpec with FormValuesConstants {
       messages("tai.bonusPayments.preHeading", employer.name),
       messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRange)
     )
-    behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
+    behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRange))
     behave like pageWithContinueButtonForm("/check-income-tax/update-income/bonus-payments")
 
     "return no errors with valid 'yes' choice" in {

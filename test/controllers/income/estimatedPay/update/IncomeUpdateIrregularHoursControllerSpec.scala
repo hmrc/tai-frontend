@@ -273,8 +273,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(
-        messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
     }
 
     "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {

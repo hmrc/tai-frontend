@@ -67,7 +67,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
           Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
         cards.toString must include(Messages("next.year"))
         doc(nextYearView) must haveParagraphWithText(
-          Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(yearsFromNow = 1)))
+          Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1)))
         cards.toString must include(Messages("earlier"))
         cards.toString must include(Messages("check.tax.previous.years"))
         cards.toString must include(Messages("claim.tax.relief.wfh"))
