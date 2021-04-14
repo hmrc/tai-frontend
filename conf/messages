@@ -1420,6 +1420,9 @@ global.error.InternalServerError500.tai.message.you.can = You can use this servi
 global.error.InternalServerError500.tai.message.contact.hmrc = contact HMRC
 global.error.InternalServerError500.tai.message.by.phone.post = online, by phone or by post.
 
+
+claim.tax.relief.wfh = Claim tax relief on expenses for working from home
+
 check.jrs.claims=Check Coronavirus Job Retention Scheme claims
 check.jrs.claims.title=Coronavirus Job Retention Scheme
 check.jrs.back.link=Your PAYE Income Tax overview
@@ -1456,3 +1459,4 @@ check.jrs.making.backdated.claim=making a backdated claim that includes times wh
 check.jrs.claims.no.claim.title=There are no Coronavirus Job Retention Scheme claims for you
 check.jrs.claims.no.claim.check.later=Check back later as claims can take up to 2 months to be displayed.
 check.jrs.claims.no.claim.link=Go to account home
+
