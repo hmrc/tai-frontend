@@ -22,6 +22,8 @@
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 @import includes.forms.inputRadioGroupStyling
 
+@this(main: main)
+
 @(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Irregular Pay"}

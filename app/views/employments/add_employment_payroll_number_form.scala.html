@@ -23,6 +23,8 @@
 @import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 @import includes.forms.inputRadioGroupStyling
 
+@this(main: main)
+
 @(payrollNumberForm: Form[AddEmploymentPayrollNumberForm], payrollNumberViewModel: PayrollNumberViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Do you know your payroll number for this employer?"}
