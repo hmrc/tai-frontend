@@ -26,6 +26,8 @@
 
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
+@this(main: main)
+
 @(model: IncomeSourceSummaryViewModel)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your employment details for current tax year"}
