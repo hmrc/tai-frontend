@@ -19,7 +19,8 @@ package controllers
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import javax.inject.Inject
+
+import javax.inject.{Inject, Singleton}
 import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.Lang
@@ -38,11 +39,13 @@ import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, SameEstimatedPayViewModel}
+import views.html.incomes.{confirmAmountEntered, editPension, editPensionSuccess, editSuccess}
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
+@Singleton
 class IncomeController @Inject()(
   @Named("Update Income") journeyCacheService: JourneyCacheService,
   taxAccountService: TaxAccountService,
@@ -52,6 +55,10 @@ class IncomeController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  confirmAmountEntered: confirmAmountEntered,
+  editSuccess: editSuccess,
+  editPension: editPension,
+  editPensionSuccess: editPensionSuccess,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {
@@ -173,7 +180,7 @@ class IncomeController @Inject()(
               val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
               val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
-              Ok(views.html.incomes.confirmAmountEntered(vm))
+              Ok(confirmAmountEntered(vm))
 
             case _ => throw new RuntimeException(s"Not able to found employment with id $id")
           }
@@ -202,11 +209,11 @@ class IncomeController @Inject()(
       request: Request[AnyContent]): Result = {
       journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newAmount)
       incomeType match {
-        case TaiConstants.IncomeTypePension => Ok(views.html.incomes.editPensionSuccess(employerName, employerId))
-        case _                              => Ok(views.html.incomes.editSuccess(employerName, employerId))
+        case TaiConstants.IncomeTypePension => Ok(editPensionSuccess(employerName, employerId))
+        case _                              => Ok(editSuccess(employerName, employerId))
       }
     }
-
+    editPensionSuccess
     journeyCacheService
       .mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
       .flatMap(cache => {
@@ -248,7 +255,7 @@ class IncomeController @Inject()(
     } yield {
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
-        views.html.incomes.editPension(
+        editPension(
           EditIncomeForm.create(employmentAmount),
           false,
           employmentAmount.employmentId,
@@ -285,8 +292,8 @@ class IncomeController @Inject()(
           .bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date)
           .fold(
             formWithErrors => {
-              Future.successful(BadRequest(views.html.incomes
-                .editPension(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head)))
+              Future.successful(
+                BadRequest(editPension(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head)))
             },
             (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome)
           )
@@ -313,7 +320,7 @@ class IncomeController @Inject()(
               val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
               val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
-              Ok(views.html.incomes.confirmAmountEntered(vm))
+              Ok(confirmAmountEntered(vm))
             case _ => throw new RuntimeException(s"Not able to found employment with id $id")
           }
         case _ => throw new RuntimeException("Exception while reading employment and tax code details")

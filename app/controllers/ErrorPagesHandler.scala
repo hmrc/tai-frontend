@@ -16,10 +16,11 @@
 
 package controllers
 
+import javax.inject.{Inject, Singleton}
 import play.Logger
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.Results._
-import play.api.mvc.{AnyContent, Request, Result}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -29,19 +30,24 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import uk.gov.hmrc.urls.Link
-
+import views.html.error_template_noauth
+import views.html.error_no_primary
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-trait ErrorPagesHandler {
-
-  implicit def templateRenderer: TemplateRenderer
-
-  implicit def partialRetriever: FormPartialRetriever
+@Singleton
+class ErrorPagesHandler @Inject()(
+  mcc: MessagesControllerComponents,
+  error_template_noauth: error_template_noauth,
+  error_no_primary: error_no_primary,
+  override implicit val partialRetriever: FormPartialRetriever,
+  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+    extends TaiBaseController(mcc) {
 
   type RecoveryLocation = Class[_]
 
   def error4xxPageWithLink(pageTitle: String)(implicit request: Request[_], messages: Messages) =
-    views.html.error_template_noauth(
+    error_template_noauth(
       pageTitle,
       messages("tai.errorMessage.heading"),
       messages("tai.errorMessage.frontend400.message1"),
@@ -58,7 +64,7 @@ trait ErrorPagesHandler {
     )
 
   def badRequestPageWrongVersion(implicit request: Request[_], messages: Messages) =
-    views.html.error_template_noauth(
+    error_template_noauth(
       messages("global.error.badRequest400.title"),
       messages("tai.errorMessage.heading"),
       messages("tai.errorMessage.frontend400.message1.version"),
@@ -66,7 +72,7 @@ trait ErrorPagesHandler {
     )
 
   def error4xxFromNps(pageTitle: String)(implicit request: Request[_], messages: Messages) =
-    views.html.error_template_noauth(
+    error_template_noauth(
       pageTitle,
       messages("tai.errorMessage.heading.nps"),
       messages("tai.errorMessage.frontend400.message1.nps"),
@@ -74,7 +80,7 @@ trait ErrorPagesHandler {
     )
 
   def error5xx(pageBody: String)(implicit request: Request[_], messages: Messages) =
-    views.html.error_template_noauth(
+    error_template_noauth(
       messages("global.error.InternalServerError500.title"),
       messages("tai.technical.error.heading"),
       pageBody,
@@ -224,7 +230,7 @@ trait ErrorPagesHandler {
         case Nil => {
           Logger.warn(
             s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
-          Some(BadRequest(views.html.error_no_primary()))
+          Some(BadRequest(error_no_primary()))
         }
         case _ => {
           Logger.info(
@@ -261,7 +267,7 @@ trait ErrorPagesHandler {
     rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentsRecorded) => {
       Logger.warn(s"<No data returned from nps employments> - for nino $nino @${rl.getName}")
-      Some(BadRequest(views.html.error_no_primary()))
+      Some(BadRequest(error_no_primary()))
     }
   }
 
@@ -275,7 +281,7 @@ trait ErrorPagesHandler {
         case Nil => {
           Logger.warn(
             s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
-          Some(BadRequest(views.html.error_no_primary()))
+          Some(BadRequest(error_no_primary()))
         }
         case _ => {
           Logger.info(

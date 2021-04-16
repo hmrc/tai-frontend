@@ -37,8 +37,8 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
-import views.html.benefits.removeCompanyBenefitCheckYourAnswers
-
+import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYourAnswers, removeCompanyBenefitStopDate}
+import views.html.can_we_contact_by_phone
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal.RoundingMode
@@ -51,8 +51,12 @@ class RemoveCompanyBenefitController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   langUtils: LanguageUtils,
-  implicit val templateRenderer: TemplateRenderer,
-  implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
+  removeCompanyBenefitCheckYourAnswers: removeCompanyBenefitCheckYourAnswers,
+  removeCompanyBenefitStopDate: removeCompanyBenefitStopDate,
+  removeBenefitTotalValue: removeBenefitTotalValue,
+  can_we_contact_by_phone: can_we_contact_by_phone,
+  override implicit val templateRenderer: TemplateRenderer,
+  override implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants
     with RemoveCompanyBenefitStopDateConstants {
 
@@ -63,7 +67,7 @@ class RemoveCompanyBenefitController @Inject()(
       val form = RemoveCompanyBenefitStopDateForm.form.fill(currentCache.get(EndCompanyBenefit_BenefitStopDateKey))
 
       Ok(
-        views.html.benefits.removeCompanyBenefitStopDate(
+        removeCompanyBenefitStopDate(
           form,
           currentCache(EndCompanyBenefit_BenefitNameKey),
           currentCache(EndCompanyBenefit_EmploymentNameKey)))
@@ -77,8 +81,7 @@ class RemoveCompanyBenefitController @Inject()(
       formWithErrors => {
         journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey, EndCompanyBenefit_EmploymentNameKey) map {
           mandatoryValues =>
-            BadRequest(
-              views.html.benefits.removeCompanyBenefitStopDate(formWithErrors, mandatoryValues(0), mandatoryValues(1)))
+            BadRequest(removeCompanyBenefitStopDate(formWithErrors, mandatoryValues(0), mandatoryValues(1)))
         }
       }, {
         case Some(BeforeTaxYearEnd) =>
@@ -103,9 +106,7 @@ class RemoveCompanyBenefitController @Inject()(
         {
           val form = CompanyBenefitTotalValueForm.form.fill((optionalValues(0)).getOrElse(""))
 
-          Future.successful(
-            Ok(views.html.benefits
-              .removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), form)))
+          Future.successful(Ok(removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), form)))
         }
       }
   }
@@ -118,8 +119,8 @@ class RemoveCompanyBenefitController @Inject()(
           .mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap {
           mandatoryValues =>
             Future.successful(
-              BadRequest(views.html.benefits
-                .removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), formWithErrors)))
+              BadRequest(
+                removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), formWithErrors)))
         }
       },
       totalValue => {
@@ -143,7 +144,7 @@ class RemoveCompanyBenefitController @Inject()(
             currentCache.get(EndCompanyBenefit_TelephoneNumberKey))
         )
 
-      Ok(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, form))
+      Ok(can_we_contact_by_phone(Some(user), telephoneNumberViewModel, form))
     }
   }
 
@@ -159,7 +160,7 @@ class RemoveCompanyBenefitController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
-            BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors))
+            BadRequest(can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors))
           }
         },
         form => {

@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -29,16 +29,19 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
+import views.html.estimatedIncomeTax.detailedIncomeTaxEstimate
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
+@Singleton
 class DetailedIncomeTaxEstimateController @Inject()(
   taxAccountService: TaxAccountService,
   codingComponentService: CodingComponentService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  detailedIncomeTaxEstimate: detailedIncomeTaxEstimate,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -72,7 +75,7 @@ class DetailedIncomeTaxEstimateController @Inject()(
             taxAccountSummary,
             codingComponents,
             nonTaxCodeIncome)
-          Ok(views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model))
+          Ok(detailedIncomeTaxEstimate(model))
         case _ => {
           internalServerError("Failed to fetch total tax details")
         }

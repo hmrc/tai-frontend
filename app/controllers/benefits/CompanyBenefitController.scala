@@ -32,6 +32,7 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
+import views.html.benefits.updateOrRemoveCompanyBenefitDecision
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -43,6 +44,7 @@ class CompanyBenefitController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  updateOrRemoveCompanyBenefitDecision: updateOrRemoveCompanyBenefitDecision,
   override implicit val templateRenderer: TemplateRenderer,
   override implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants {
@@ -94,7 +96,7 @@ class CompanyBenefitController @Inject()(
           )
 
           journeyCacheService.cache(cache).map { _ =>
-            Ok(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel))
+            Ok(updateOrRemoveCompanyBenefitDecision(viewModel))
           }
 
         case None => throw new RuntimeException("No employment found")
@@ -130,7 +132,7 @@ class CompanyBenefitController @Inject()(
             currentCache(EndCompanyBenefit_BenefitTypeKey),
             currentCache(EndCompanyBenefit_EmploymentNameKey),
             formWithErrors)
-          BadRequest(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel))
+          BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel))
         }
       },
       success => {

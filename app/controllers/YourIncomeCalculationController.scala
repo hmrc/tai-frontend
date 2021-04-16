@@ -28,6 +28,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
+import views.html.incomes.historicIncomeCalculation
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,6 +41,7 @@ class YourIncomeCalculationController @Inject()(
   validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
+  historicIncomeCalculation: historicIncomeCalculation,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -108,7 +110,7 @@ class YourIncomeCalculationController @Inject()(
                   "Employment contains stub annual account data found meaning payment information can't be displayed")
               case (true, _) =>
                 Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel, appConfig))
-              case (false, _) => Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel))
+              case (false, _) => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
             }
           }
 

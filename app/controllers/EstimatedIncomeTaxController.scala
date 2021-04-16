@@ -16,7 +16,7 @@
 
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.i18n.MessagesApi
@@ -32,15 +32,18 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
+import views.html.estimatedIncomeTax.noCurrentIncome
 
 import scala.concurrent.ExecutionContext
 
+@Singleton
 class EstimatedIncomeTaxController @Inject()(
   codingComponentService: CodingComponentService,
   partialService: HasFormPartialService,
   taxAccountService: TaxAccountService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
+  noCurrentIncome: noCurrentIncome,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer,
   mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
@@ -76,7 +79,7 @@ class EstimatedIncomeTaxController @Inject()(
             taxCodeIncomes.nonEmpty
           )
           taxViewType match {
-            case NoIncomeTaxView => Ok(views.html.estimatedIncomeTax.noCurrentIncome())
+            case NoIncomeTaxView => Ok(noCurrentIncome())
             case ComplexTaxView => {
               val model =
                 ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)

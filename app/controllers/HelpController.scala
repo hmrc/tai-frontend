@@ -23,6 +23,7 @@ import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import views.html.help.getHelp
 
 import scala.concurrent.Future
 
@@ -31,6 +32,7 @@ class HelpController @Inject()(
   validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
+  getHelp: getHelp,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
@@ -38,7 +40,7 @@ class HelpController @Inject()(
   def helpPage() = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    Future.successful(Ok(views.html.help.getHelp(appConfig)))
+    Future.successful(Ok(getHelp(appConfig)))
   }
 
 }
