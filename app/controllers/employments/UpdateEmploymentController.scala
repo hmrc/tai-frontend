@@ -36,7 +36,9 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Jour
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
-
+import views.html.employments.update.{UpdateEmploymentCheckYourAnswers, whatDoYouWantToTellUs}
+import views.html.can_we_contact_by_phone
+import views.html.employments.confirmation
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -47,6 +49,10 @@ class UpdateEmploymentController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  whatDoYouWantToTellUs: whatDoYouWantToTellUs,
+  can_we_contact_by_phone: can_we_contact_by_phone,
+  UpdateEmploymentCheckYourAnswers: UpdateEmploymentCheckYourAnswers,
+  confirmationView: confirmation,
   @Named("Update Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
@@ -85,7 +91,7 @@ class UpdateEmploymentController @Inject()(
                              .map(
                                _ =>
                                  Ok(
-                                   views.html.employments.update.whatDoYouWantToTellUs(
+                                   whatDoYouWantToTellUs(
                                      EmploymentViewModel(emp.name, empId),
                                      UpdateEmploymentDetailsForm.form.fill(userSuppliedDetails.getOrElse("")))))
                          }
@@ -104,9 +110,7 @@ class UpdateEmploymentController @Inject()(
           journeyCacheService.currentCache map { currentCache =>
             implicit val user: AuthedUser = request.taiUser
             BadRequest(
-              views.html.employments.update.whatDoYouWantToTellUs(
-                EmploymentViewModel(currentCache(UpdateEmployment_NameKey), empId),
-                formWithErrors))
+              whatDoYouWantToTellUs(EmploymentViewModel(currentCache(UpdateEmployment_NameKey), empId), formWithErrors))
           }
         },
         employmentDetails => {
@@ -127,7 +131,7 @@ class UpdateEmploymentController @Inject()(
       employmentId match {
         case Right(empId) =>
           Ok(
-            views.html.can_we_contact_by_phone(
+            can_we_contact_by_phone(
               Some(user),
               telephoneNumberViewModel(empId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
@@ -149,7 +153,7 @@ class UpdateEmploymentController @Inject()(
           journeyCacheService.currentCache map { currentCache =>
             implicit val user: AuthedUser = request.taiUser
             BadRequest(
-              views.html.can_we_contact_by_phone(
+              can_we_contact_by_phone(
                 Some(user),
                 telephoneNumberViewModel(currentCache(UpdateEmployment_EmploymentIdKey).toInt),
                 formWithErrors))
@@ -188,7 +192,7 @@ class UpdateEmploymentController @Inject()(
           mandatorySeq match {
             case Right(mandatoryValues) =>
               Ok(
-                views.html.employments.update.UpdateEmploymentCheckYourAnswers(
+                UpdateEmploymentCheckYourAnswers(
                   UpdateEmploymentCheckYourAnswersViewModel(
                     mandatoryValues.head.toInt,
                     mandatoryValues(1),
@@ -221,6 +225,6 @@ class UpdateEmploymentController @Inject()(
 
   def confirmation: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    Future.successful(Ok(views.html.employments.confirmation()))
+    Future.successful(Ok(confirmationView()))
   }
 }

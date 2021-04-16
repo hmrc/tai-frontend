@@ -19,6 +19,7 @@ package controllers.income.estimatedPay.update
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+
 import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -34,6 +35,8 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
+import views.html.incomes.{confirmAmountEntered, duplicateSubmissionWarning}
+import views.html.incomes.estimatedPayment.update.checkYourAnswers
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,6 +50,9 @@ class IncomeUpdateCalculatorController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  duplicateSubmissionWarning: duplicateSubmissionWarning,
+  checkYourAnswers: checkYourAnswers,
+  confirmAmountEntered: confirmAmountEntered,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
@@ -103,7 +109,7 @@ class IncomeUpdateCalculatorController @Inject()(
           DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
         }
 
-        Ok(views.html.incomes.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt))
+        Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt))
       }
   }
 
@@ -126,8 +132,7 @@ class IncomeUpdateCalculatorController @Inject()(
               DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
             }
 
-            Future.successful(
-              BadRequest(views.html.incomes.duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
+            Future.successful(BadRequest(duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
           },
           success => {
             success.yesNoChoice match {
@@ -177,7 +182,7 @@ class IncomeUpdateCalculatorController @Inject()(
           bonusPaymentAmount,
           employer)
 
-        Ok(views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel))
+        Ok(checkYourAnswers(viewModel))
       }
     }
   }
@@ -200,7 +205,7 @@ class IncomeUpdateCalculatorController @Inject()(
       } else {
 
         val vm = ConfirmAmountEnteredViewModel(employmentName, employmentAmount.oldAmount, employmentAmount.newAmount)
-        Ok(views.html.incomes.confirmAmountEntered(vm))
+        Ok(confirmAmountEntered(vm))
       }
     }).recover {
       case NonFatal(e) => internalServerError(e.getMessage)

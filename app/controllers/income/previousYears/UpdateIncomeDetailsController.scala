@@ -19,6 +19,7 @@ package controllers.income.previousYears
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+
 import javax.inject.{Inject, Named}
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,6 +35,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
+import views.html.can_we_contact_by_phone
 import views.html.incomes.previousYears.CheckYourAnswers
 
 import scala.Function.tupled
@@ -44,6 +46,7 @@ class UpdateIncomeDetailsController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  can_we_contact_by_phone: can_we_contact_by_phone,
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
@@ -118,7 +121,7 @@ class UpdateIncomeDetailsController @Inject()(
 
     journeyCacheService.currentCache map { currentCache =>
       Ok(
-        views.html.can_we_contact_by_phone(
+        can_we_contact_by_phone(
           Some(user),
           telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
           YesNoTextEntryForm.form()))
@@ -138,7 +141,7 @@ class UpdateIncomeDetailsController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             BadRequest(
-              views.html.can_we_contact_by_phone(
+              can_we_contact_by_phone(
                 Some(user),
                 telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
                 formWithErrors))

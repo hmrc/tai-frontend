@@ -19,6 +19,7 @@ package controllers.income.estimatedPay.update
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+
 import javax.inject.{Inject, Named}
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -36,6 +37,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import views.html.incomes.{confirmAmountEntered, editIncomeIrregularHours, editSuccess}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -47,6 +49,9 @@ class IncomeUpdateIrregularHoursController @Inject()(
   taxAccountService: TaxAccountService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   mcc: MessagesControllerComponents,
+  editSuccess: editSuccess,
+  editIncomeIrregularHours: editIncomeIrregularHours,
+  confirmAmountEntered: confirmAmountEntered,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
@@ -77,7 +82,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
             (taxCodeIncomeInfoToCache.tupled andThen journeyCacheService.cache)(tci, payment) map { _ =>
               val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
 
-              Ok(views.html.incomes.editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
+              Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
             }
           }
           case Left(TaiUnauthorisedResponse(_)) =>
@@ -106,7 +111,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
         } else {
           val vm =
             ConfirmAmountEnteredViewModel(employmentId, name, paymentToDate.toInt, newIrregularPay.toInt, IrregularPay)
-          Ok(views.html.incomes.confirmAmountEntered(vm))
+          Ok(confirmAmountEntered(vm))
         }
       }).recover {
         case NonFatal(e) => internalServerError(e.getMessage)
@@ -127,7 +132,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
             formWithErrors => {
 
               val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, paymentToDate)
-              Future.successful(BadRequest(views.html.incomes.editIncomeIrregularHours(formWithErrors, viewModel)))
+              Future.successful(BadRequest(editIncomeIrregularHours(formWithErrors, viewModel)))
             },
             validForm =>
               validForm.income.fold(throw new RuntimeException) { income =>
@@ -150,7 +155,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
 
       val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) => {
         journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newPay) map { _ =>
-          Ok(views.html.incomes.editSuccess(incomeName, incomeId.toInt))
+          Ok(editSuccess(incomeName, incomeId.toInt))
         }
       }
 

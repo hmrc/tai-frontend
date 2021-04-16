@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@this(main: main)
+
 @(howToUpdateForm: Form[uk.gov.hmrc.tai.forms.HowToUpdateForm], id: Int, employerName: String)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 

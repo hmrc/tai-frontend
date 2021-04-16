@@ -21,6 +21,7 @@ import cats.implicits._
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+
 import javax.inject.{Inject, Named}
 import org.joda.time.LocalDate
 import play.api.mvc._
@@ -39,6 +40,7 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewMod
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefixAndSign
+import views.html.incomes.{estimatedPay, estimatedPayLandingPage}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -49,6 +51,8 @@ class IncomeUpdateEstimatedPayController @Inject()(
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   taxAccountService: TaxAccountService,
+  estimatedPayLandingPage: estimatedPayLandingPage,
+  estimatedPay: estimatedPay,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
@@ -67,7 +71,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
           val totalEstimatedIncome = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
           val incomeName :: incomeId :: incomeType :: Nil = mandatoryValues.toList
           Ok(
-            views.html.incomes.estimatedPayLandingPage(
+            estimatedPayLandingPage(
               incomeName,
               incomeId.toInt,
               totalEstimatedIncome,
@@ -119,7 +123,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
               calculatedPay.startDate,
               incomeSource)
 
-            Ok(views.html.incomes.estimatedPay(viewModel))
+            Ok(estimatedPay(viewModel))
           }
         case _ =>
           Future.successful(

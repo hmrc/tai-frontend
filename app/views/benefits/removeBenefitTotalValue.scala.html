@@ -25,6 +25,7 @@
 @import uk.gov.hmrc.tai.forms.benefits.CompanyBenefitTotalValueForm
 @import uk.gov.hmrc.play.views.formatting.Dates
 
+@this(main: main)
 
 @(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 

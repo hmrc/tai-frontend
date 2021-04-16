@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@this(main: main)
+
 @(pageTitle: String, heading: String, message1: String, additionalMessages: List[String])(implicit request: Request[_],
         messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 

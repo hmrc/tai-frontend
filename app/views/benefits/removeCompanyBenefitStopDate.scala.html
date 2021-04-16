@@ -23,6 +23,8 @@
 
 @import uk.gov.hmrc.play.views.formatting.Dates
 
+@this(main: main)
+
 @(stopDateForm: Form[Option[String]],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Remove Company Benefits Stop Date"}

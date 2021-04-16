@@ -19,6 +19,7 @@ package controllers.pensions
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+
 import javax.inject.{Inject, Named}
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
@@ -36,6 +37,7 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Jour
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
+import views.html.can_we_contact_by_phone
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -49,6 +51,7 @@ class AddPensionProviderController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  can_we_contact_by_phone: can_we_contact_by_phone,
   @Named("Add Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
@@ -241,7 +244,7 @@ class AddPensionProviderController @Inject()(
       val user = Some(request.taiUser)
 
       Ok(
-        views.html.can_we_contact_by_phone(
+        can_we_contact_by_phone(
           user,
           contactPhonePensionProvider,
           YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
@@ -258,8 +261,7 @@ class AddPensionProviderController @Inject()(
       .fold(
         formWithErrors => {
           val user = Some(request.taiUser)
-          Future.successful(
-            BadRequest(views.html.can_we_contact_by_phone(user, contactPhonePensionProvider, formWithErrors)))
+          Future.successful(BadRequest(can_we_contact_by_phone(user, contactPhonePensionProvider, formWithErrors)))
         },
         form => {
           val mandatoryData = Map(

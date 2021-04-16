@@ -22,6 +22,8 @@
 
 @import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
+@this(main: main)
+
 @(viewModel: CompanyBenefitDecisionViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update Or Remove Company Benefit Decision"}

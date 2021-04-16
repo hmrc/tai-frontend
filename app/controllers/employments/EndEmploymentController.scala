@@ -39,6 +39,8 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
+import views.html.employments.update_remove_employment_decision
+import views.html.employments.{EndEmploymentIrregularPaymentError, endEmployment, endEmploymentWithinSixWeeksError}
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -48,6 +50,10 @@ class EndEmploymentController @Inject()(
   employmentService: EmploymentService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
+  update_remove_employment_decision: update_remove_employment_decision,
+  endEmploymentWithinSixWeeksError: endEmploymentWithinSixWeeksError,
+  EndEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentError,
+  endEmploymentView: endEmployment,
   @Named("End Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   val auditConnector: AuditConnector,
@@ -78,7 +84,7 @@ class EndEmploymentController @Inject()(
       journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map {
         case Right(mandatoryValues) =>
           Ok(
-            views.html.employments.update_remove_employment_decision(
+            update_remove_employment_decision(
               UpdateRemoveEmploymentForm.form,
               mandatoryValues(0),
               mandatoryValues(1).toInt))
@@ -127,8 +133,8 @@ class EndEmploymentController @Inject()(
           UpdateRemoveEmploymentForm.form.bindFromRequest.fold(
             formWithErrors => {
               Future(
-                BadRequest(views.html.employments
-                  .update_remove_employment_decision(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
+                BadRequest(
+                  update_remove_employment_decision(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
             }, {
               case Some(YesValue) =>
                 Future(
@@ -174,7 +180,7 @@ class EndEmploymentController @Inject()(
       data =>
         val date = new LocalDate(data.head)
         Ok(
-          views.html.employments.endEmploymentWithinSixWeeksError(
+          endEmploymentWithinSixWeeksError(
             WithinSixWeeksViewModel(date.plusWeeks(6).plusDays(1), data(1), date, data(2).toInt)))
     }
   }
@@ -183,7 +189,7 @@ class EndEmploymentController @Inject()(
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
       Ok(
-        views.html.employments.EndEmploymentIrregularPaymentError(
+        EndEmploymentIrregularPaymentError(
           IrregularPayForm.createForm,
           EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt)))
     }
@@ -196,7 +202,7 @@ class EndEmploymentController @Inject()(
         IrregularPayForm.createForm.bindFromRequest.fold(
           formWithErrors => {
             BadRequest(
-              views.html.employments.EndEmploymentIrregularPaymentError(
+              EndEmploymentIrregularPaymentError(
                 formWithErrors,
                 EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt)))
           },
@@ -225,12 +231,12 @@ class EndEmploymentController @Inject()(
             optionalSeq match {
               case Seq(Some(date)) =>
                 Ok(
-                  views.html.employments.endEmployment(
+                  endEmploymentView(
                     EmploymentEndDateForm(mandatorySequence(0)).form.fill(new LocalDate(date)),
                     EmploymentViewModel(mandatorySequence(0), mandatorySequence(1).toInt)))
               case _ =>
                 Ok(
-                  views.html.employments.endEmployment(
+                  endEmploymentView(
                     EmploymentEndDateForm(mandatorySequence(0)).form,
                     EmploymentViewModel(mandatorySequence(0), mandatorySequence(1).toInt)))
             }

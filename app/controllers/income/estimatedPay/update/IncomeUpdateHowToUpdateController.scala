@@ -19,6 +19,7 @@ package controllers.income.estimatedPay.update
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+
 import javax.inject.{Inject, Named}
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -33,6 +34,7 @@ import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService, TaxAccountServ
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import views.html.incomes.howToUpdate
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -44,6 +46,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,
   mcc: MessagesControllerComponents,
+  howToUpdate: howToUpdate,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
@@ -108,11 +111,11 @@ class IncomeUpdateHowToUpdateController @Inject()(
           val form = HowToUpdateForm.createForm().fill(HowToUpdateForm(howToUpdate))
 
           if (incomeService.editableIncomes(taxCodeIncomes).size > 1) {
-            Ok(views.html.incomes.howToUpdate(form, id, employmentName))
+            Ok(howToUpdate(form, id, employmentName))
           } else {
             incomeService.singularIncomeId(taxCodeIncomes) match {
 
-              case Some(incomeId) => Ok(views.html.incomes.howToUpdate(form, incomeId, employmentName))
+              case Some(incomeId) => Ok(howToUpdate(form, incomeId, employmentName))
 
               case None => throw new RuntimeException("Employment id not present")
             }
@@ -138,7 +141,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
           } yield {
             incomeSourceEither match {
               case Right(incomeSource) =>
-                BadRequest(views.html.incomes.howToUpdate(formWithErrors, incomeSource.id, incomeSource.name))
+                BadRequest(howToUpdate(formWithErrors, incomeSource.id, incomeSource.name))
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }

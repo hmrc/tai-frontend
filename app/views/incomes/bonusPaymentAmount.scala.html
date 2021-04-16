@@ -21,6 +21,9 @@
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 @import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+
+@this(main: main)
+
 @(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages,
         user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 

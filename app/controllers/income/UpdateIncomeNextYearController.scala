@@ -38,6 +38,7 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionCYPlus1EmploymentViewModel, DuplicateSubmissionCYPlus1PensionViewModel, DuplicateSubmissionEstimatedPay}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
+import views.html.incomes.nextYear.{updateIncomeCYPlus1Confirm, updateIncomeCYPlus1Success}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -49,6 +50,8 @@ class UpdateIncomeNextYearController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
+  updateIncomeCYPlus1Success: updateIncomeCYPlus1Success,
+  updateIncomeCYPlus1Confirm: updateIncomeCYPlus1Confirm,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with FormValuesConstants with I18nSupport {
@@ -177,7 +180,7 @@ class UpdateIncomeNextYearController @Inject()(
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-        Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName, model.isPension))
+        Ok(updateIncomeCYPlus1Success(model.employmentName, model.isPension))
       }
     }
   }
@@ -194,7 +197,7 @@ class UpdateIncomeNextYearController @Inject()(
               case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue) => {
                 val vm =
                   ConfirmAmountEnteredViewModel(employmentId, employmentName, currentValue, newAmount, NextYearPay)
-                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm))
+                Ok(updateIncomeCYPlus1Confirm(vm))
               }
             }
         case Left(error) =>

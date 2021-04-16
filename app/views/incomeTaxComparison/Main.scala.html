@@ -23,6 +23,9 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 
 @import controllers.auth.AuthenticatedRequest
+
+@this(main: main)
+
 @(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 @gaEventActionString = @{"Income Tax comparison - current and next tax years"}
 @backLinkToChooseTaxYear = {

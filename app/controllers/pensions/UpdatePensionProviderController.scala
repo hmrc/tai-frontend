@@ -19,6 +19,7 @@ package controllers.pensions
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+
 import javax.inject.{Inject, Named}
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.{Lang, Messages}
@@ -41,6 +42,7 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersViewModel
+import views.html.can_we_contact_by_phone
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -54,6 +56,7 @@ class UpdatePensionProviderController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
+  can_we_contact_by_phone: can_we_contact_by_phone,
   @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
@@ -177,7 +180,7 @@ class UpdatePensionProviderController @Inject()(
           val user = Some(request.taiUser)
 
           Ok(
-            views.html.can_we_contact_by_phone(
+            can_we_contact_by_phone(
               user,
               telephoneNumberViewModel(mandatoryPensionId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
@@ -201,7 +204,7 @@ class UpdatePensionProviderController @Inject()(
             val user = Some(request.taiUser)
 
             BadRequest(
-              views.html.can_we_contact_by_phone(
+              can_we_contact_by_phone(
                 user,
                 telephoneNumberViewModel(currentCache(UpdatePensionProvider_IdKey).toInt),
                 formWithErrors))
