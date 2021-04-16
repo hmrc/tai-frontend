@@ -16,10 +16,8 @@
 
 package controllers
 
-import javax.inject.{Inject, Singleton}
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -32,11 +30,12 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
-import views.html.estimatedIncomeTax.noCurrentIncome
+import views.html.estimatedIncomeTax.{complexEstimatedIncomeTax, noCurrentIncome, simpleEstimatedIncomeTax, zeroTaxEstimatedIncomeTax}
+import views.html.{error_no_primary, error_template_noauth}
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-@Singleton
 class EstimatedIncomeTaxController @Inject()(
   codingComponentService: CodingComponentService,
   partialService: HasFormPartialService,
@@ -44,6 +43,11 @@ class EstimatedIncomeTaxController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   noCurrentIncome: noCurrentIncome,
+  complexEstimatedIncomeTax: complexEstimatedIncomeTax,
+  simpleEstimatedIncomeTax: simpleEstimatedIncomeTax,
+  zeroTaxEstimatedIncomeTax: zeroTaxEstimatedIncomeTax,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer,
   mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
@@ -83,23 +87,17 @@ class EstimatedIncomeTaxController @Inject()(
             case ComplexTaxView => {
               val model =
                 ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
-              Ok(
-                views.html.estimatedIncomeTax
-                  .complexEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+              Ok(complexEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
             }
             case SimpleTaxView => {
               val model =
                 SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
-              Ok(
-                views.html.estimatedIncomeTax
-                  .simpleEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+              Ok(simpleEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
             }
             case ZeroTaxView => {
               val model =
                 ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
-              Ok(
-                views.html.estimatedIncomeTax
-                  .zeroTaxEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+              Ok(zeroTaxEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
             }
           }
         case _ => {

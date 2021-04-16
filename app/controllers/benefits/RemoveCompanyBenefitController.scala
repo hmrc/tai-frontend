@@ -39,6 +39,7 @@ import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
 import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYourAnswers, removeCompanyBenefitStopDate}
 import views.html.can_we_contact_by_phone
+import views.html.benefits.removeCompanyBenefitConfirmation
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal.RoundingMode
@@ -55,6 +56,7 @@ class RemoveCompanyBenefitController @Inject()(
   removeCompanyBenefitStopDate: removeCompanyBenefitStopDate,
   removeBenefitTotalValue: removeBenefitTotalValue,
   can_we_contact_by_phone: can_we_contact_by_phone,
+  removeCompanyBenefitConfirmation: removeCompanyBenefitConfirmation,
   override implicit val templateRenderer: TemplateRenderer,
   override implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants
@@ -262,7 +264,7 @@ class RemoveCompanyBenefitController @Inject()(
 
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    Future.successful(Ok(views.html.benefits.removeCompanyBenefitConfirmation()))
+    Future.successful(Ok(removeCompanyBenefitConfirmation()))
   }
 
   private def extractViewModelFromCache(cache: Map[String, String])(implicit messages: Messages) = {

@@ -16,11 +16,10 @@
 
 package controllers
 
-import javax.inject.{Inject, Singleton}
 import play.Logger
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.mvc.Results._
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -30,19 +29,18 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import uk.gov.hmrc.urls.Link
-import views.html.error_template_noauth
-import views.html.error_no_primary
-import scala.concurrent.ExecutionContext
+import views.html.{error_no_primary, error_template_noauth}
+
 import scala.concurrent.Future
 
-@Singleton
-class ErrorPagesHandler @Inject()(
-  mcc: MessagesControllerComponents,
-  error_template_noauth: error_template_noauth,
-  error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) {
+trait ErrorPagesHandler {
+
+  val error_template_noauth: error_template_noauth
+  val error_no_primary: error_no_primary
+
+  implicit def templateRenderer: TemplateRenderer
+
+  implicit def partialRetriever: FormPartialRetriever
 
   type RecoveryLocation = Class[_]
 

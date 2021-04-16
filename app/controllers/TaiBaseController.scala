@@ -18,12 +18,16 @@ package controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.MessagesControllerComponents
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import views.html.{error_no_primary, error_template_noauth}
 
 abstract class TaiBaseController(mcc: MessagesControllerComponents)
     extends FrontendController(mcc) with ErrorPagesHandler with I18nSupport {
+
+  val error_template_noauth: error_template_noauth
+  val error_no_primary: error_no_primary
 
   implicit def templateRenderer: TemplateRenderer
   implicit def partialRetriever: FormPartialRetriever

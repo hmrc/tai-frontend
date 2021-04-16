@@ -41,6 +41,10 @@ import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWee
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 import views.html.employments.update_remove_employment_decision
 import views.html.employments.{EndEmploymentIrregularPaymentError, endEmployment, endEmploymentWithinSixWeeksError}
+import views.html.can_we_contact_by_phone
+import views.html.employments.duplicateSubmissionWarning
+import views.html.employments.confirmation
+import views.html.employments.endEmployment
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,6 +62,9 @@ class EndEmploymentController @Inject()(
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
+  can_we_contact_by_phone: can_we_contact_by_phone,
+  duplicateSubmissionWarning: duplicateSubmissionWarning,
+  confirmation: confirmation,
   implicit val templateRenderer: TemplateRenderer,
   implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with IrregularPayConstants
@@ -256,8 +263,7 @@ class EndEmploymentController @Inject()(
           EmploymentEndDateForm(employment.name).form.bindFromRequest.fold(
             formWithErrors => {
               Future.successful(
-                BadRequest(views.html.employments
-                  .endEmployment(formWithErrors, EmploymentViewModel(employment.name, employmentId))))
+                BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, employmentId))))
             },
             date => {
               val employmentJourneyCacheData = Map(EndEmployment_EndDateKey -> date.toString)
@@ -284,7 +290,7 @@ class EndEmploymentController @Inject()(
       employmentId match {
         case Right(mandatoryEmploymentId) =>
           Ok(
-            views.html.can_we_contact_by_phone(
+            can_we_contact_by_phone(
               Some(user),
               telephoneNumberViewModel(mandatoryEmploymentId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
@@ -306,8 +312,7 @@ class EndEmploymentController @Inject()(
       .fold(
         formWithErrors => {
           journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey) map { employmentId =>
-            BadRequest(
-              views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
+            BadRequest(can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
           }
         },
         form => {
@@ -377,7 +382,7 @@ class EndEmploymentController @Inject()(
     journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map {
       case Right(mandatoryValues) =>
         Ok(
-          views.html.employments.duplicateSubmissionWarning(
+          duplicateSubmissionWarning(
             DuplicateSubmissionWarningForm.createForm,
             mandatoryValues(0),
             mandatoryValues(1).toInt))
@@ -394,9 +399,7 @@ class EndEmploymentController @Inject()(
 
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
             formWithErrors => {
-              Future.successful(
-                BadRequest(
-                  views.html.employments.duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), empId)))
+              Future.successful(BadRequest(duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), empId)))
             },
             success => {
               success.yesNoChoice match {
@@ -412,6 +415,6 @@ class EndEmploymentController @Inject()(
   }
 
   def showConfirmationPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    Future.successful(Ok(views.html.employments.confirmation()))
+    Future.successful(Ok(confirmation()))
   }
 }
