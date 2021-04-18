@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
-import views.html.incomes.historicIncomeCalculation
+import views.html.incomes.{historicIncomeCalculation, yourIncomeCalculation}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,6 +42,7 @@ class YourIncomeCalculationController @Inject()(
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   historicIncomeCalculation: historicIncomeCalculation,
+  yourIncomeCalculation: yourIncomeCalculation,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -81,7 +82,7 @@ class YourIncomeCalculationController @Inject()(
           if (printPage) {
             Ok(views.html.print.yourIncomeCalculation(model, appConfig))
           } else {
-            Ok(views.html.incomes.yourIncomeCalculation(model))
+            Ok(yourIncomeCalculation(model))
           }
         }
         case _ => internalServerError("Error while fetching RTI details")

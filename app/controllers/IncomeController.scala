@@ -39,7 +39,7 @@ import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, SameEstimatedPayViewModel}
-import views.html.incomes.{confirmAmountEntered, editPension, editPensionSuccess, editSuccess}
+import views.html.incomes.{confirmAmountEntered, editIncome, editPension, editPensionSuccess, editSuccess, sameEstimatedPay}
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -59,6 +59,8 @@ class IncomeController @Inject()(
   editSuccess: editSuccess,
   editPension: editPension,
   editPensionSuccess: editPensionSuccess,
+  editIncome: editIncome,
+  sameEstimatedPay: sameEstimatedPay,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {
@@ -81,9 +83,8 @@ class IncomeController @Inject()(
       _ <- journeyCacheService.cache(cacheData)
     } yield {
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
-
       Ok(
-        views.html.incomes.editIncome(
+        editIncome(
           EditIncomeForm.create(employmentAmount),
           false,
           employmentAmount.employmentId,
@@ -105,7 +106,7 @@ class IncomeController @Inject()(
         cachedData(2).toInt,
         false,
         routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString)
-      Ok(views.html.incomes.sameEstimatedPay(model))
+      Ok(sameEstimatedPay(model))
     }).recover {
       case NonFatal(e) => internalServerError(e.getMessage)
     }
@@ -127,7 +128,7 @@ class IncomeController @Inject()(
         income.oldAmount,
         income.isOccupationalPension,
         routes.IncomeSourceSummaryController.onPageLoad(id).url)
-      Ok(views.html.incomes.sameEstimatedPay(model))
+      Ok(sameEstimatedPay(model))
     }).recover {
       case NonFatal(e) => internalServerError(e.getMessage)
     }
@@ -148,8 +149,7 @@ class IncomeController @Inject()(
           .bind(employerName, payToDate, date)
           .fold(
             (formWithErrors: Form[EditIncomeForm]) => {
-              Future.successful(BadRequest(views.html.incomes
-                .editIncome(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head)))
+              Future.successful(BadRequest(editIncome(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head)))
             },
             (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome)
           )

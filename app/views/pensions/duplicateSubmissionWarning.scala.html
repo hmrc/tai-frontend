@@ -18,6 +18,8 @@
 @import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.{errorSummary, form}
 
+@this(main: main)
+
 @(duplicateSubmissionWarningForm: Form[YesNoForm], pensionName: String, pensionId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update received"}

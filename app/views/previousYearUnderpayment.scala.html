@@ -18,10 +18,12 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 @import uk.gov.hmrc.urls.Link
-
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.views.formatting.Dates
+
+@this(main: main)
+
 @(viewModel: PreviousYearUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Underpayment from previous year"}

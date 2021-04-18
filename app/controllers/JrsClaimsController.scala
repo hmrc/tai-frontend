@@ -26,6 +26,8 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.service._
+import views.html.jrsClaimSummary
+import views.html.internalServerError
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,6 +39,8 @@ class JrsClaimsController @Inject()(
   jrsService: JrsService,
   mcc: MessagesControllerComponents,
   appConfig: ApplicationConfig,
+  jrsClaimSummary: jrsClaimSummary,
+  internalServerError: internalServerError,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -51,10 +55,10 @@ class JrsClaimsController @Inject()(
         .fold(
           NotFound(views.html.noJrsClaim(appConfig))
         )(
-          jrsClaims => Ok(views.html.jrsClaimSummary(jrsClaims, appConfig))
+          jrsClaims => Ok(jrsClaimSummary(jrsClaims, appConfig))
         )
     } else {
-      Future.successful(InternalServerError(views.html.internalServerError(appConfig)))
+      Future.successful(InternalServerError(internalServerError(appConfig)))
     }
   }
 }

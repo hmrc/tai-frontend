@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionCYPlus1EmploymentViewModel, DuplicateSubmissionCYPlus1PensionViewModel, DuplicateSubmissionEstimatedPay}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
-import views.html.incomes.nextYear.{updateIncomeCYPlus1Confirm, updateIncomeCYPlus1Success}
+import views.html.incomes.nextYear.{updateIncomeCYPlus1Confirm, updateIncomeCYPlus1Edit, updateIncomeCYPlus1Start, updateIncomeCYPlus1Success, updateIncomeCYPlus1Warning}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -52,6 +52,9 @@ class UpdateIncomeNextYearController @Inject()(
   applicationConfig: ApplicationConfig,
   updateIncomeCYPlus1Success: updateIncomeCYPlus1Success,
   updateIncomeCYPlus1Confirm: updateIncomeCYPlus1Confirm,
+  updateIncomeCYPlus1Warning: updateIncomeCYPlus1Warning,
+  updateIncomeCYPlus1Start: updateIncomeCYPlus1Start,
+  updateIncomeCYPlus1Edit: updateIncomeCYPlus1Edit,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with FormValuesConstants with I18nSupport {
@@ -76,9 +79,7 @@ class UpdateIncomeNextYearController @Inject()(
           employmentId,
           nino,
           (employmentId: Int, vm: DuplicateSubmissionEstimatedPay) =>
-            Ok(
-              views.html.incomes.nextYear
-                .updateIncomeCYPlus1Warning(DuplicateSubmissionWarningForm.createForm, vm, employmentId))
+            Ok(updateIncomeCYPlus1Warning(DuplicateSubmissionWarningForm.createForm, vm, employmentId))
         )
       }
   }
@@ -115,7 +116,7 @@ class UpdateIncomeNextYearController @Inject()(
               employmentId,
               nino,
               (employmentId: Int, vm: DuplicateSubmissionEstimatedPay) =>
-                BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId))
+                BadRequest(updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId))
             )
           },
           success => {
@@ -137,7 +138,7 @@ class UpdateIncomeNextYearController @Inject()(
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-        Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension))
+        Ok(updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension))
       }
     }
   }
@@ -238,7 +239,7 @@ class UpdateIncomeNextYearController @Inject()(
             formWithErrors => {
               Future.successful(
                 BadRequest(
-                  views.html.incomes.nextYear.updateIncomeCYPlus1Edit(
+                  updateIncomeCYPlus1Edit(
                     model.employmentName,
                     employmentId,
                     model.isPension,

@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
+import views.html.taxFreeAmount
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -42,6 +43,7 @@ class TaxFreeAmountController @Inject()(
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
+  taxFreeAmount: taxFreeAmount,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -63,7 +65,7 @@ class TaxFreeAmountController @Inject()(
             applicationConfig
           )
           implicit val user = request.taiUser
-          Ok(views.html.taxFreeAmount(viewModel, applicationConfig))
+          Ok(taxFreeAmount(viewModel, applicationConfig))
         case TaiNotFoundResponse(_) => Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
         case _                      => throw new RuntimeException("Failed to fetch total tax details")
       }

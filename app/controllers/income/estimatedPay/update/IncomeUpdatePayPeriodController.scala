@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import views.html.incomes.payPeriod
 
 import scala.concurrent.ExecutionContext
 
@@ -36,6 +37,7 @@ class IncomeUpdatePayPeriodController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  payPeriod: payPeriod,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
@@ -51,7 +53,7 @@ class IncomeUpdatePayPeriodController @Inject()(
     } yield {
       val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
       incomeSourceEither match {
-        case Right(incomeSource) => Ok(views.html.incomes.payPeriod(form, incomeSource.id, incomeSource.name))
+        case Right(incomeSource) => Ok(payPeriod(form, incomeSource.id, incomeSource.name))
         case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
     }
@@ -76,8 +78,7 @@ class IncomeUpdatePayPeriodController @Inject()(
             }
             incomeSourceEither match {
               case Right(incomeSource) =>
-                BadRequest(
-                  views.html.incomes.payPeriod(formWithErrors, incomeSource.id, incomeSource.name, !isDaysError))
+                BadRequest(payPeriod(formWithErrors, incomeSource.id, incomeSource.name, !isDaysError))
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }

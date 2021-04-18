@@ -22,6 +22,8 @@
 @import includes.forms.inputRadioGroupStyling
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
+@this(main: main)
+
 @(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update or remove pension- Do you currently get income from this pension provider?"}

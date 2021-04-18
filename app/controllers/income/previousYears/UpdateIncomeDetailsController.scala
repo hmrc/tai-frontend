@@ -16,28 +16,14 @@
 
 package controllers.income.previousYears
 
-import controllers.TaiBaseController
-import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
-
-import javax.inject.{Inject, Named}
-import play.api.i18n.{Lang, Messages}
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
-import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
-import uk.gov.hmrc.tai.forms.income.previousYears.{UpdateIncomeDetailsDecisionForm, UpdateIncomeDetailsForm}
-import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.IncorrectIncome
-import uk.gov.hmrc.tai.service.PreviousYearsIncomeService
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
-import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
-import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
 import views.html.can_we_contact_by_phone
-import views.html.incomes.previousYears.CheckYourAnswers
+import views.html.incomes.previousYears.{CheckYourAnswers, UpdateIncomeDetails, UpdateIncomeDetailsConfirmation, UpdateIncomeDetailsDecision}
 
+import javax.inject.{Inject, Named}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -47,6 +33,10 @@ class UpdateIncomeDetailsController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   can_we_contact_by_phone: can_we_contact_by_phone,
+  CheckYourAnswers: CheckYourAnswers,
+  UpdateIncomeDetailsDecision: UpdateIncomeDetailsDecision,
+  UpdateIncomeDetails: UpdateIncomeDetails,
+  UpdateIncomeDetailsConfirmation: UpdateIncomeDetailsConfirmation,
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
@@ -65,7 +55,7 @@ class UpdateIncomeDetailsController @Inject()(
   def decision(taxYear: TaxYear): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.cache(Map(UpdatePreviousYearsIncome_TaxYearKey -> taxYear.year.toString)) map { _ =>
       implicit val user = request.taiUser
-      Ok(views.html.incomes.previousYears.UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear))
+      Ok(UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear))
     }
   }
 
@@ -74,8 +64,7 @@ class UpdateIncomeDetailsController @Inject()(
 
     UpdateIncomeDetailsDecisionForm.form.bindFromRequest.fold(
       formWithErrors => {
-        Future.successful(
-          BadRequest(views.html.incomes.previousYears.UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev)))
+        Future.successful(BadRequest(UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev)))
       },
       decision => {
         decision match {
@@ -91,7 +80,7 @@ class UpdateIncomeDetailsController @Inject()(
     implicit val user = request.taiUser
     journeyCacheService.currentCache map { currentCache =>
       Ok(
-        views.html.incomes.previousYears.UpdateIncomeDetails(
+        UpdateIncomeDetails(
           UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
           UpdateIncomeDetailsForm.form))
     }
@@ -103,7 +92,7 @@ class UpdateIncomeDetailsController @Inject()(
       formWithErrors => {
         journeyCacheService.currentCache map { currentCache =>
           BadRequest(
-            views.html.incomes.previousYears.UpdateIncomeDetails(
+            UpdateIncomeDetails(
               UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
               formWithErrors))
         }
@@ -213,7 +202,7 @@ class UpdateIncomeDetailsController @Inject()(
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    Future.successful(Ok(views.html.incomes.previousYears.UpdateIncomeDetailsConfirmation()))
+    Future.successful(Ok(UpdateIncomeDetailsConfirmation()))
   }
 
 }

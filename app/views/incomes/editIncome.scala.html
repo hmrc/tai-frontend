@@ -15,6 +15,9 @@
  *@
 
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+
+@this(main: main)
+
 @(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm],
     hasMultipleIncomes: Boolean,
     employmentId: Int,
@@ -33,8 +36,6 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.cancelLink
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
-
-@this(main: main)
 
 @gaEventActionString = @{"Update your annual taxable pay"}
 

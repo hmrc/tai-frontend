@@ -20,6 +20,8 @@
 @import uk.gov.hmrc.tai.model.{JrsClaims, YearAndMonth}
 @import uk.gov.hmrc.urls.Link
 
+@this(main: main)
+
 @(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @employerMessageKey = @{viewModel.employerMessageKey}

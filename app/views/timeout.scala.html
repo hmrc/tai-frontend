@@ -17,8 +17,12 @@
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 @import play.api.Play.current
 
+@this(main: main)
+
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
 @import uk.gov.hmrc.urls.Link
+
 @main(
     title = messages("tai.timeout.title"),
     gaCustomTitle = None

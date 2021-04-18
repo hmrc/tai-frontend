@@ -28,6 +28,8 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
+import views.html.taxCodeDetails
+import views.html.taxCodeDetailsPreviousYears
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -39,6 +41,8 @@ class YourTaxCodeController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
+  taxCodeDetails: taxCodeDetails,
+  taxCodeDetailsPreviousYears: taxCodeDetailsPreviousYears,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -63,7 +67,7 @@ class YourTaxCodeController @Inject()(
 
         implicit val user = request.taiUser
 
-        Ok(views.html.taxCodeDetails(taxCodeViewModel))
+        Ok(taxCodeDetails(taxCodeViewModel))
       }) recover {
         case NonFatal(e) => {
           internalServerError(s"Exception: ${e.getClass()}")
@@ -85,7 +89,7 @@ class YourTaxCodeController @Inject()(
         val taxCodeViewModel =
           TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year, applicationConfig)
         implicit val user = request.taiUser
-        Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
+        Ok(taxCodeDetailsPreviousYears(taxCodeViewModel))
       }) recover {
         case NonFatal(e) => {
           internalServerError(s"Exception: ${e.getClass()}")

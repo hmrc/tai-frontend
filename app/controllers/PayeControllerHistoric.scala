@@ -27,6 +27,8 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{Employment, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
+import views.html.paye.RtiDisabledHistoricPayAsYouEarn
+import views.html.paye.historicPayAsYouEarn
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,6 +39,8 @@ class PayeControllerHistoric @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  RtiDisabledHistoricPayAsYouEarn: RtiDisabledHistoricPayAsYouEarn,
+  historicPayAsYouEarn: historicPayAsYouEarn,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -66,16 +70,14 @@ class PayeControllerHistoric @Inject()(
         implicit val user = request.taiUser
         if (isRtiUnavailable(employments)) {
           Ok(
-            views.html.paye.RtiDisabledHistoricPayAsYouEarn(
+            RtiDisabledHistoricPayAsYouEarn(
               HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-              config
-            ))
+              config))
         } else {
           Ok(
-            views.html.paye.historicPayAsYouEarn(
+            historicPayAsYouEarn(
               HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-              config
-            ))
+              config))
         }
       }
     }

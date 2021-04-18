@@ -19,6 +19,8 @@
 @import includes.taxFreeAmountSummaryComparison
 @import uk.gov.hmrc.urls.Link
 
+@this(main: main)
+
 @(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax-free amount"}

@@ -26,9 +26,11 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.urls.Link
 import views.html.internalServerError
+import views.html.error_template_noauth
 
 class ErrorHandler @Inject()(
   applicationConfig: ApplicationConfig,
+  error_template_noauth: error_template_noauth,
   val messagesApi: MessagesApi,
   val configuration: Configuration)(
   implicit localTemplateRenderer: TemplateRenderer,
@@ -36,15 +38,14 @@ class ErrorHandler @Inject()(
     extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(
-    implicit request: Request[_]) =
-    views.html.error_template_noauth(pageTitle, heading, message, List.empty)
+    implicit request: Request[_]) = error_template_noauth(pageTitle, heading, message, List.empty)
 
   def badRequestErrorTemplate(
     pageTitle: String,
     heading: String,
     message1: String,
     additionalMessages: List[String] = List.empty)(implicit request: Request[_]): Html =
-    views.html.error_template_noauth(pageTitle, heading, message1, additionalMessages)
+    error_template_noauth(pageTitle, heading, message1, additionalMessages)
 
   override def badRequestTemplate(implicit request: Request[_]): Html = badRequestErrorTemplate(
     Messages("global.error.badRequest400.title"),

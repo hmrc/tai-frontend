@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{GrossPayPeriodTitle, PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
+import views.html.incomes.{payslipAmount, taxablePayslipAmount}
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,6 +40,8 @@ class IncomeUpdatePayslipAmountController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  payslipAmount: payslipAmount,
+  taxablePayslipAmount: taxablePayslipAmount,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
@@ -69,7 +72,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
                 PaySlipAmountViewModel(paySlipForm, payPeriod, payPeriodInDays, employer)
               }
 
-              Ok(views.html.incomes.payslipAmount(viewModel))
+              Ok(payslipAmount(viewModel))
 
             case Left(_) =>
               Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
@@ -95,7 +98,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
             incomeSourceEither match {
               case Right(incomeSource) =>
                 val viewModel = PaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, incomeSource)
-                Future.successful(BadRequest(views.html.incomes.payslipAmount(viewModel)))
+                Future.successful(BadRequest(payslipAmount(viewModel)))
               case Left(_) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
             }
           },
@@ -134,7 +137,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
                 val form = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(taxablePayKey))
                 TaxablePaySlipAmountViewModel(form, payPeriod, payPeriodInDays, incomeSource)
               }
-              Ok(views.html.incomes.taxablePayslipAmount(viewModel))
+              Ok(taxablePayslipAmount(viewModel))
 
             case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
 
@@ -160,7 +163,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
             incomeSourceEither match {
               case Right(incomeSource) =>
                 val viewModel = TaxablePaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, incomeSource)
-                Future.successful(BadRequest(views.html.incomes.taxablePayslipAmount(viewModel)))
+                Future.successful(BadRequest(taxablePayslipAmount(viewModel)))
               case Left(_) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
             }
           },

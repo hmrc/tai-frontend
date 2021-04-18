@@ -14,13 +14,15 @@
  * limitations under the License.
  *@
 
+@this(main: main)
+
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.urls.Link
 
 @main(
-title=Messages("tai.gatekeeper.refuse.title"),
-gaCustomTitle = None
+    title=Messages("tai.gatekeeper.refuse.title"),
+    gaCustomTitle = None
 ){
 
   <div class="grid-row">

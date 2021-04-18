@@ -24,11 +24,13 @@
 
 @import includes.ptaHeader
 
+@this(main: main)
+
 @(model: YourIncomeCalculationViewModel)(implicit request: Request[_],
-user: controllers.auth.AuthedUser,
-messages: Messages,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Taxable income"}
 

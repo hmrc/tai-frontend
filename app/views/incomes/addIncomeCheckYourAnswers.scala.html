@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@this(main: main)
+
 @(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -24,8 +26,6 @@
 @import includes.forms._
 @import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 @import play.api.mvc.Call
-
-@this(main: main)
 
 @gaEventActionString = @{"Check your add missing employment answers"}
 

@@ -31,6 +31,9 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{IabdTaxCodeChangeReasons, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
+import views.html.taxCodeChange.taxCodeComparison
+import views.html.taxCodeChange.yourTaxFreeAmount
+import views.html.taxCodeChange.whatHappensNext
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,6 +47,9 @@ class TaxCodeChangeController @Inject()(
   taxCodeChangeReasonsService: TaxCodeChangeReasonsService,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
+  taxCodeComparison: taxCodeComparison,
+  yourTaxFreeAmount: yourTaxFreeAmount,
+  whatHappensNext: whatHappensNext,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with YourTaxFreeAmount {
@@ -67,7 +73,7 @@ class TaxCodeChangeController @Inject()(
         TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
 
       implicit val user = request.taiUser
-      Ok(views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig))
+      Ok(taxCodeComparison(viewModel, appConfig))
     }
   }
 
@@ -78,12 +84,12 @@ class TaxCodeChangeController @Inject()(
     implicit val user = request.taiUser
 
     taxFreeAmountViewModel.map(viewModel => {
-      Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
+      Ok(yourTaxFreeAmount(viewModel))
     })
   }
 
   def whatHappensNext: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
+    Future.successful(Ok(whatHappensNext()))
   }
 }

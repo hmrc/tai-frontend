@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsForm
 @import includes.forms.{submit, textArea}
 
+@this(main: main)
 
 @(viewModel: UpdateHistoricIncomeDetailsViewModel, updateIncomeDetailsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 

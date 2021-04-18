@@ -25,6 +25,8 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants
+import views.html.timeout
+import views.html.manualCorrespondence
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,12 +35,14 @@ class ServiceController @Inject()(
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
+  timeout: timeout,
+  manualCorrespondence: manualCorrespondence,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def timeoutPage() = Action.async { implicit request =>
-    Future.successful(Ok(views.html.timeout()))
+    Future.successful(Ok(timeout()))
   }
 
   def serviceSignout = (authenticate andThen validatePerson).async { implicit request =>
@@ -56,7 +60,7 @@ class ServiceController @Inject()(
   }
 
   def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent]): Future[Result] = {
-    Future.successful(Ok(views.html.manualCorrespondence()))
+    Future.successful(Ok(manualCorrespondence()))
   } recoverWith handleErrorResponse("getServiceUnavailable", nino)
 
 }

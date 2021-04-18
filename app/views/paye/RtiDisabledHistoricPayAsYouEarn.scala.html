@@ -24,6 +24,8 @@
 
 @import controllers.auth.AuthenticatedRequest
 
+@this(main: main)
+
 @(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
 messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 

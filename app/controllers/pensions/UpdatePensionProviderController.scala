@@ -16,34 +16,18 @@
 
 package controllers.pensions
 
-import controllers.TaiBaseController
-import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
-
-import javax.inject.{Inject, Named}
+import controllers.Assets.Redirect
 import play.api.data.validation.{Constraint, Invalid, Valid}
-import play.api.i18n.{Lang, Messages}
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
-import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneRegex
-import uk.gov.hmrc.tai.forms.pensions.{DuplicateSubmissionWarningForm, UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
-import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.domain.{IncorrectPensionProvider, PensionIncome}
-import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
-import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
-import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
-import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
-import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersViewModel
 import views.html.can_we_contact_by_phone
+import views.html.pensions.duplicateSubmissionWarning
+import views.html.pensions.update.{confirmation, doYouGetThisPensionIncome, updatePensionCheckYourAnswers, whatDoYouWantToTellUs}
 
+import javax.inject.{Inject, Named}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -57,6 +41,11 @@ class UpdatePensionProviderController @Inject()(
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
   can_we_contact_by_phone: can_we_contact_by_phone,
+  doYouGetThisPensionIncome: doYouGetThisPensionIncome,
+  whatDoYouWantToTellUs: whatDoYouWantToTellUs,
+  updatePensionCheckYourAnswers: updatePensionCheckYourAnswers,
+  confirmationView: confirmation,
+  duplicateSubmissionWarning: duplicateSubmissionWarning,
   @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
@@ -96,7 +85,7 @@ class UpdatePensionProviderController @Inject()(
         case Right(mandatoryValues) => {
           val model = PensionProviderViewModel(mandatoryValues.head.toInt, mandatoryValues(1))
           val form = UpdateRemovePensionForm.form.fill(optionalValues.head)
-          Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, form))
+          Ok(doYouGetThisPensionIncome(model, form))
         }
         case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
@@ -113,7 +102,7 @@ class UpdatePensionProviderController @Inject()(
               val model = PensionProviderViewModel(mandatoryVals.head.toInt, mandatoryVals.last)
               implicit val user: AuthedUser = request.taiUser
 
-              Future(BadRequest(views.html.pensions.update.doYouGetThisPensionIncome(model, formWithErrors)))
+              Future(BadRequest(doYouGetThisPensionIncome(model, formWithErrors)))
             }, {
               case Some(YesValue) =>
                 journeyCacheService
@@ -137,7 +126,7 @@ class UpdatePensionProviderController @Inject()(
         case Right(mandatoryValues) => {
           implicit val user: AuthedUser = request.taiUser
           Ok(
-            views.html.pensions.update.whatDoYouWantToTellUs(
+            whatDoYouWantToTellUs(
               mandatoryValues.head,
               mandatoryValues(1).toInt,
               WhatDoYouWantToTellUsForm.form.fill(optionalValues.head.getOrElse(""))))
@@ -154,9 +143,7 @@ class UpdatePensionProviderController @Inject()(
           journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map {
             mandatoryValues =>
               implicit val user: AuthedUser = request.taiUser
-              BadRequest(
-                views.html.pensions.update
-                  .whatDoYouWantToTellUs(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
+              BadRequest(whatDoYouWantToTellUs(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
           }
         },
         pensionDetails => {
@@ -246,7 +233,7 @@ class UpdatePensionProviderController @Inject()(
             implicit val user: AuthedUser = request.taiUser
 
             Ok(
-              views.html.pensions.update.updatePensionCheckYourAnswers(
+              updatePensionCheckYourAnswers(
                 UpdatePensionCheckYourAnswersViewModel(
                   mandatoryValues.head.toInt,
                   mandatoryValues(1),
@@ -284,7 +271,7 @@ class UpdatePensionProviderController @Inject()(
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    Future.successful(Ok(views.html.pensions.update.confirmation()))
+    Future.successful(Ok(confirmationView()))
   }
 
   private def redirectToWarningOrDecisionPage(
@@ -335,7 +322,7 @@ class UpdatePensionProviderController @Inject()(
         mandatoryVals match {
           case Right(mandatoryValues) =>
             Ok(
-              views.html.pensions.duplicateSubmissionWarning(
+              duplicateSubmissionWarning(
                 DuplicateSubmissionWarningForm.createForm,
                 mandatoryValues(0),
                 mandatoryValues(1).toInt))
@@ -352,8 +339,7 @@ class UpdatePensionProviderController @Inject()(
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
             formWithErrors => {
               Future.successful(
-                BadRequest(views.html.pensions
-                  .duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
+                BadRequest(duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
             },
             success => {
               success.yesNoChoice match {

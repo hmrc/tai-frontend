@@ -45,7 +45,7 @@ import views.html.can_we_contact_by_phone
 import views.html.employments.duplicateSubmissionWarning
 import views.html.employments.confirmation
 import views.html.employments.endEmployment
-
+import views.html.incomes.addIncomeCheckYourAnswers
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -58,13 +58,14 @@ class EndEmploymentController @Inject()(
   endEmploymentWithinSixWeeksError: endEmploymentWithinSixWeeksError,
   EndEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentError,
   endEmploymentView: endEmployment,
-  @Named("End Employment") journeyCacheService: JourneyCacheService,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
   can_we_contact_by_phone: can_we_contact_by_phone,
   duplicateSubmissionWarning: duplicateSubmissionWarning,
   confirmation: confirmation,
+  addIncomeCheckYourAnswers: addIncomeCheckYourAnswers,
+  @Named("End Employment") journeyCacheService: JourneyCacheService,
+  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,
   implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with IrregularPayConstants
@@ -351,7 +352,7 @@ class EndEmploymentController @Inject()(
               controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
               controllers.employments.routes.EndEmploymentController.cancel(mandatoryValues.head.toInt).url
             )
-            Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
+            Ok(addIncomeCheckYourAnswers(model))
           }
           case Left(_) => Redirect(taxAccountSummaryRedirect)
         }

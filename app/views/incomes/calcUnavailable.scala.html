@@ -14,14 +14,14 @@
  * limitations under the License.
  *@
 
+@this(main: main)
+
 @(employmentId: Int, employerName: String)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.urls.Link
-
-@this(main: main)
 
 @gaEventActionString = @{"We are unable to calculate your pay"}
 

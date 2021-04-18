@@ -34,6 +34,7 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
+import views.html.whatDoYouWantToDoTileView
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -48,6 +49,7 @@ class WhatDoYouWantToDoController @Inject()(
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
+  whatDoYouWantToDoTileView: whatDoYouWantToDoTileView,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -113,7 +115,7 @@ class WhatDoYouWantToDoController @Inject()(
 
             auditNumberOfTaxCodesReturned(nino, showJrsTile)
 
-            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+            Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
 
           }
           case response: TaiResponse => {
@@ -125,7 +127,7 @@ class WhatDoYouWantToDoController @Inject()(
 
             auditNumberOfTaxCodesReturned(nino, showJrsTile)
 
-            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+            Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
 
           }
         }
@@ -146,7 +148,7 @@ class WhatDoYouWantToDoController @Inject()(
 
         auditNumberOfTaxCodesReturned(nino, showJrsTile)
 
-        Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+        Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
 
       }
     }

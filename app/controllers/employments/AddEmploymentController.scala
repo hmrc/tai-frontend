@@ -40,6 +40,7 @@ import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 import views.html.can_we_contact_by_phone
 import views.html.employments.{add_employment_error_page, add_employment_first_pay_form, add_employment_name_form, add_employment_payroll_number_form, add_employment_start_date_form, confirmation}
+import views.html.incomes.addIncomeCheckYourAnswers
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -60,6 +61,7 @@ class AddEmploymentController @Inject()(
   add_employment_payroll_number_form: add_employment_payroll_number_form,
   can_we_contact_by_phone: can_we_contact_by_phone,
   confirmationView: confirmation,
+  addIncomeCheckYourAnswers: addIncomeCheckYourAnswers,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with AuditConstants with FormValuesConstants
@@ -304,7 +306,7 @@ class AddEmploymentController @Inject()(
                 controllers.employments.routes.AddEmploymentController.cancel().url
               )
             implicit val user: AuthedUser = request.taiUser
-            Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
+            Ok(addIncomeCheckYourAnswers(model))
           }
           case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
