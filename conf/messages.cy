@@ -1401,6 +1401,9 @@ global.error.InternalServerError500.tai.message.you.can = Gallwch ddefnyddio’r
 global.error.InternalServerError500.tai.message.contact.hmrc = gysylltu â CThEM
 global.error.InternalServerError500.tai.message.by.phone.post = ar-lein, dros y ffôn neu drwy’r post.
 
+
+claim.tax.relief.wfh = Hawlio rhyddhad treth ar dreuliau ar gyfer gweithio gartref
+
 check.jrs.claims=Gwirio hawliadau’r Cynllun Cadw Swyddi yn sgil Coronafeirws
 check.jrs.claims.title=Cynllun Cadw Swyddi yn sgil Coronafeirws
 check.jrs.back.link=Trosolwg o’ch Treth Incwm TWE

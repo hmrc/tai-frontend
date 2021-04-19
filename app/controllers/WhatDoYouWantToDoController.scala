@@ -113,7 +113,8 @@ class WhatDoYouWantToDoController @Inject()(
 
             auditNumberOfTaxCodesReturned(nino, showJrsTile)
 
-            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+
           }
           case response: TaiResponse => {
             if (response.isInstanceOf[TaiNotFoundResponse])
@@ -124,7 +125,8 @@ class WhatDoYouWantToDoController @Inject()(
 
             auditNumberOfTaxCodesReturned(nino, showJrsTile)
 
-            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+
           }
         }
       }
@@ -144,7 +146,8 @@ class WhatDoYouWantToDoController @Inject()(
 
         auditNumberOfTaxCodesReturned(nino, showJrsTile)
 
-        Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+        Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+
       }
     }
   }
