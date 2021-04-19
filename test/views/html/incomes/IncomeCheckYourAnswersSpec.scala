@@ -25,6 +25,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class IncomeCheckYourAnswersSpec extends TaiViewSpec {
 
   val preHeading = "add missing income"
+  private def addIncomeCheckYourAnswers = inject[addIncomeCheckYourAnswers]
 
   "Income Check Your Answers page" must {
 
@@ -59,7 +60,7 @@ class IncomeCheckYourAnswersSpec extends TaiViewSpec {
           None,
           "/fake/submission/url",
           "/fake/cancel/url")
-        def view: Html = views.html.incomes.addIncomeCheckYourAnswers(viewModel)
+        def view: Html = addIncomeCheckYourAnswers(viewModel)
         doc(view) must not(haveParagraphWithText(messages("tai.checkYourAnswers.confirmText")))
       }
 
@@ -99,5 +100,5 @@ class IncomeCheckYourAnswersSpec extends TaiViewSpec {
     "/fake/submission/url",
     "/fake/cancel/url")
 
-  override def view: Html = views.html.incomes.addIncomeCheckYourAnswers(viewModel)
+  override def view: Html = addIncomeCheckYourAnswers(viewModel)
 }

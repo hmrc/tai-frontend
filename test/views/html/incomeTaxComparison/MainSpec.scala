@@ -26,6 +26,8 @@ import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxCompari
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
 
 class MainSpec extends TaiViewSpec with ViewModelHelper {
+
+  private val main = inject[Main]
   "Cy plus one view" must {
 
     val welshMessage = messagesApi.preferred(Seq(Lang("cy")))
@@ -209,13 +211,10 @@ class MainSpec extends TaiViewSpec with ViewModelHelper {
     buildIncomeTaxComparisonViewModel(currentYearItem, currentYearItem)
 
   def viewWithMore(implicit currMessages: Messages): Html =
-    views.html.incomeTaxComparison
-      .Main(incomeTaxComparisonViewModelMore, appConfig)(authRequest, currMessages, templateRenderer, partialRetriever)
+    main(incomeTaxComparisonViewModelMore, appConfig)(authRequest, currMessages, templateRenderer, partialRetriever)
   def viewWithLess(implicit currMessages: Messages): Html =
-    views.html.incomeTaxComparison
-      .Main(incomeTaxComparisonViewModelLess, appConfig)(authRequest, currMessages, templateRenderer, partialRetriever)
+    main(incomeTaxComparisonViewModelLess, appConfig)(authRequest, currMessages, templateRenderer, partialRetriever)
   def viewWithSame(implicit currMessages: Messages): Html =
-    views.html.incomeTaxComparison
-      .Main(incomeTaxComparisonViewModelSame, appConfig)(authRequest, currMessages, templateRenderer, partialRetriever)
+    main(incomeTaxComparisonViewModelSame, appConfig)(authRequest, currMessages, templateRenderer, partialRetriever)
   override def view: Html = viewWithSame
 }

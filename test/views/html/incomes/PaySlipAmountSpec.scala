@@ -51,5 +51,6 @@ class PaySlipAmountSpec extends TaiViewSpec with EditIncomePayPeriodConstants {
 
   val payslipViewModel = PaySlipAmountViewModel(payslipForm, Some(MONTHLY), None, employer)
 
-  override def view: Html = views.html.incomes.payslipAmount(payslipViewModel)
+  private def payslipAmount = inject[payslipAmount]
+  override def view: Html = payslipAmount(payslipViewModel)
 }

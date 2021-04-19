@@ -52,6 +52,6 @@ class EditPensionSpec extends TaiViewSpec {
 
   when(editIncomeForm.errors(anyString())).thenReturn(Nil)
 
-  override def view: Html =
-    views.html.incomes.editPension(editIncomeForm, hasMultipleIncomes = false, empId, "0")
+  private def editPension = inject[editPension]
+  override def view: Html = editPension(editIncomeForm, hasMultipleIncomes = false, empId, "0")
 }

@@ -18,7 +18,7 @@ package views.html.estimatedIncomeTax
 
 import controllers.routes
 import play.api.i18n.Messages
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -32,6 +32,8 @@ import uk.gov.hmrc.tai.viewModels.{HelpLink, TaxSummaryLabel}
 import uk.gov.hmrc.urls.Link
 
 class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants {
+
+  private val detailedIncomeTaxEstimate = inject[detailedIncomeTaxEstimate]
 
   "view" must {
 
@@ -189,7 +191,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
           Seq.empty[CodingComponent],
           nonTaxCodeIncome)
 
-        val viewWithNonSavings: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+        val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel)
         doc(viewWithNonSavings) must haveTdWithText("£32,010")
         doc(viewWithNonSavings) must haveTdWithText(messages("estimate.uk.bandtype.B"))
         doc(viewWithNonSavings) must haveTdWithText("20%")
@@ -223,7 +225,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
           Seq.empty[CodingComponent],
           nonTaxCodeIncome)
 
-        val viewWithNonSavings: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+        val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel)
 
         doc(viewWithNonSavings) must haveTdWithText("£32,010")
         doc(viewWithNonSavings) must haveTdWithText(messages("estimate.scottish.bandtype.B"))
@@ -257,7 +259,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
           Seq.empty[CodingComponent],
           nonTaxCodeIncome)
 
-        val viewWithSavings: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+        val viewWithSavings: Html = detailedIncomeTaxEstimate(viewModel)
 
         doc(viewWithSavings) must haveTdWithText("£32,010")
         doc(viewWithSavings) must haveTdWithText(messages("estimate.uk.bandtype.LSR"))
@@ -291,7 +293,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
           Seq.empty[CodingComponent],
           nonTaxCodeIncome)
 
-        val viewWithSavings: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+        val viewWithSavings: Html = detailedIncomeTaxEstimate(viewModel)
 
         doc(viewWithSavings) must haveTdWithText("£32,010")
         doc(viewWithSavings) must haveTdWithText(messages("estimate.scottish.bandtype.LSR"))
@@ -325,7 +327,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
           Seq.empty[CodingComponent],
           nonTaxCodeIncome)
 
-        val viewWithDividends: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+        val viewWithDividends: Html = detailedIncomeTaxEstimate(viewModel)
 
         doc(viewWithDividends) must haveTdWithText("£32,010")
         doc(viewWithDividends) must haveTdWithText(messages("estimate.uk.bandtype.LDR"))
@@ -360,7 +362,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
           Seq.empty[CodingComponent],
           nonTaxCodeIncome)
 
-        val viewWithDividends: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+        val viewWithDividends: Html = detailedIncomeTaxEstimate(viewModel)
 
         doc(viewWithDividends) must haveTdWithText("£32,010")
         doc(viewWithDividends) must haveTdWithText(messages("estimate.scottish.bandtype.LDR"))
@@ -406,7 +408,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         val savingsBands = Seq(taxBandSR, taxBandPSR)
         val model = defaultViewModel.copy(savings = savingsBands)
 
-        def view = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
+        def view: HtmlFormat.Appendable = detailedIncomeTaxEstimate(model)
 
         doc(view) must haveH2HeadingWithText(
           messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading"))
@@ -433,7 +435,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         val savingsBands = Seq(taxBandSR, taxBandPSR, taxBandHSR1)
         val model = defaultViewModel.copy(savings = savingsBands)
 
-        def view = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
+        def view: Html = detailedIncomeTaxEstimate(model)
 
         doc(view) must haveH2HeadingWithText(
           messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading"))
@@ -444,7 +446,6 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.savings.desc.higherRate", "200"))
 
       }
-
     }
   }
 
@@ -482,7 +483,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     )
     val model = createViewModel(additionalRows, Seq.empty[ReductionTaxRow])
 
-    def additionalDetailView: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
+    def additionalDetailView: Html = detailedIncomeTaxEstimate(model)
 
     doc(additionalDetailView).select("#additionalTaxTable").size() mustBe 1
     doc(additionalDetailView).select("#additionalTaxTable-heading").text mustBe Messages(
@@ -557,7 +558,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
     val model = createViewModel(Seq.empty[AdditionalTaxDetailRow], reductionTaxRows)
 
-    def reductionTaxDetailView: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
+    def reductionTaxDetailView: Html = detailedIncomeTaxEstimate(model)
 
     doc(reductionTaxDetailView).select("#taxPaidElsewhereTable").size() mustBe 1
     doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-heading").text() mustBe Messages(
@@ -630,8 +631,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       "£11,500")
   )
 
-  def view(vm: DetailedIncomeTaxEstimateViewModel = defaultViewModel): Html =
-    views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(vm)
+  def view(vm: DetailedIncomeTaxEstimateViewModel = defaultViewModel): Html = detailedIncomeTaxEstimate(vm)
 
   override def view: Html = view(defaultViewModel)
 
@@ -654,5 +654,4 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       taxOnIncomeTypeHeading = "",
       taxOnIncomeTypeDescription = ""
     )
-
 }

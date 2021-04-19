@@ -41,6 +41,7 @@ class EditIncomeSpec extends TaiViewSpec {
 
   val field = mock[Field]
   val intField = mock[Field]
+  private val editIncome = inject[editIncome]
 
   when(field.value).thenReturn(Some("fakeFieldValue"))
   when(field.name).thenReturn("fakeFieldValue")
@@ -52,6 +53,5 @@ class EditIncomeSpec extends TaiViewSpec {
 
   when(editIncomeForm.errors(anyString())).thenReturn(Nil)
 
-  override def view: Html =
-    views.html.incomes.editIncome(editIncomeForm, hasMultipleIncomes = false, empId, "0", None)
+  override def view: Html = editIncome(editIncomeForm, hasMultipleIncomes = false, empId, "0", None)
 }

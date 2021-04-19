@@ -23,6 +23,7 @@ class CalcUnavailableSpec extends TaiViewSpec {
 
   val id = 1
   val employerName = "Employer"
+  private val calcUnavailable = inject[calcUnavailable]
 
   "Calculation unavailable page" should {
     behave like pageWithBackLink
@@ -31,5 +32,5 @@ class CalcUnavailableSpec extends TaiViewSpec {
       messages("tai.unableToCalculate.title"))
   }
 
-  override def view: Html = views.html.incomes.calcUnavailable(id, employerName)
+  override def view: Html = calcUnavailable(id, employerName)
 }

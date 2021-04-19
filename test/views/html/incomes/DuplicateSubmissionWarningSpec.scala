@@ -43,6 +43,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionEmploymentViewModel, DuplicateSubmissionPensionViewModel}
 
 class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstants {
+  private val duplicateSubmissionWarning = inject[duplicateSubmissionWarning]
   val employmentName = "Employment Name"
   val empId = 1
   val duplicateSubmissionWarningForm: Form[YesNoForm] = DuplicateSubmissionWarningForm.createForm
@@ -86,15 +87,14 @@ class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstant
       val invalidatedForm = duplicateSubmissionWarningForm.bind(invalidChoice)
       val emptySelectionErrorMessage = messages("tai.employment.warning.error")
 
-      val errorView = views.html.incomes.duplicateSubmissionWarning(invalidatedForm, employmentViewModel, empId)
+      val errorView: Html = duplicateSubmissionWarning(invalidatedForm, employmentViewModel, empId)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
     }
 
     "display the correct content when the income source is a pension" in {
       val pensionViewModel = DuplicateSubmissionPensionViewModel(employmentName, newAmount)
-      val pensionView: Html =
-        views.html.incomes.duplicateSubmissionWarning(duplicateSubmissionWarningForm, pensionViewModel, empId)
+      val pensionView: Html = duplicateSubmissionWarning(duplicateSubmissionWarningForm, pensionViewModel, empId)
 
       doc(pensionView) must haveHeadingWithText(messages("tai.incomes.warning.pension.heading", employmentName))
       doc(pensionView) must haveParagraphWithText(
@@ -111,6 +111,5 @@ class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstant
 
   val newAmount = 20000
   val employmentViewModel = DuplicateSubmissionEmploymentViewModel(employmentName, newAmount)
-  override def view: Html =
-    views.html.incomes.duplicateSubmissionWarning(duplicateSubmissionWarningForm, employmentViewModel, empId)
+  override def view: Html = duplicateSubmissionWarning(duplicateSubmissionWarningForm, employmentViewModel, empId)
 }
