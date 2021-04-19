@@ -28,8 +28,6 @@ import org.mockito.{Matchers, Mockito}
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.income.Live
@@ -38,10 +36,12 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
+import views.html.can_we_contact_by_phone
+import views.html.employments.confirmation
+import views.html.employments.update.{UpdateEmploymentCheckYourAnswers, whatDoYouWantToTellUs}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
-import scala.util.Random
 
 class UpdateEmploymentControllerSpec
     extends BaseSpec with JourneyCacheConstants with AuditConstants with FormValuesConstants with BeforeAndAfter
@@ -481,8 +481,14 @@ class UpdateEmploymentControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        inject[whatDoYouWantToTellUs],
+        inject[can_we_contact_by_phone],
+        inject[UpdateEmploymentCheckYourAnswers],
+        inject[confirmation],
         journeyCacheService,
         successfulJourneyCacheService,
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       )

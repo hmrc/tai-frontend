@@ -29,8 +29,6 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm._
@@ -40,6 +38,9 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
+import views.html.can_we_contact_by_phone
+import views.html.employments._
+import views.html.incomes.addIncomeCheckYourAnswers
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -810,6 +811,16 @@ class AddEmploymentControllerSpec
         trackSuccessJourneyCacheService,
         mock[AuditConnector],
         mcc,
+        inject[add_employment_start_date_form],
+        inject[add_employment_name_form],
+        inject[add_employment_first_pay_form],
+        inject[add_employment_error_page],
+        inject[add_employment_payroll_number_form],
+        inject[can_we_contact_by_phone],
+        inject[confirmation],
+        inject[addIncomeCheckYourAnswers],
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

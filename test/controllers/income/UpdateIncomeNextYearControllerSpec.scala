@@ -41,11 +41,19 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.DuplicateSubmission
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 import utils.BaseSpec
 import views.html.incomes.nextYear._
+import views.html.incomes.sameEstimatedPay
 
 import scala.concurrent.Future
 
 class UpdateIncomeNextYearControllerSpec
     extends BaseSpec with FormValuesConstants with ControllerViewTestHelper with BeforeAndAfterEach {
+
+  private val updateIncomeCYPlus1ConfirmView = inject[updateIncomeCYPlus1Confirm]
+  private val updateIncomeCYPlus1SuccessView = inject[updateIncomeCYPlus1Success]
+  private val updateIncomeCYPlus1SameView = inject[updateIncomeCYPlus1Same]
+  private val updateIncomeCYPlus1EditView = inject[updateIncomeCYPlus1Edit]
+  private val updateIncomeCYPlus1StartView = inject[updateIncomeCYPlus1Start]
+  private val updateIncomeCYPlus1WarningView = inject[updateIncomeCYPlus1Warning]
 
   val employmentID = 1
   val currentEstPay = 1234
@@ -56,7 +64,7 @@ class UpdateIncomeNextYearControllerSpec
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  override def beforeEach() = reset(mockAppConfig)
+  override def beforeEach(): Unit = reset(mockAppConfig)
 
   "onPageLoad" must {
     "redirect to the duplicateSubmissionWarning url" when {
@@ -98,7 +106,7 @@ class UpdateIncomeNextYearControllerSpec
 
       status(result) mustBe OK
 
-      result rendersTheSameViewAs updateIncomeCYPlus1Warning(
+      result rendersTheSameViewAs updateIncomeCYPlus1WarningView(
         DuplicateSubmissionWarningForm.createForm,
         vm,
         employmentID)(request, authedUser, messages, templateRenderer, partialRetriever)
@@ -115,7 +123,7 @@ class UpdateIncomeNextYearControllerSpec
 
       val result = testController.duplicateWarning(employmentID)(fakeRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
     }
   }
 
@@ -160,7 +168,7 @@ class UpdateIncomeNextYearControllerSpec
           .buildFakeRequestWithAuth("POST"))
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
     }
   }
 
@@ -176,7 +184,7 @@ class UpdateIncomeNextYearControllerSpec
         val result: Future[Result] = testController.start(employmentID)(request)
 
         status(result) mustBe OK
-        result rendersTheSameViewAs updateIncomeCYPlus1Start(employerName, employmentID, isPension)(
+        result rendersTheSameViewAs updateIncomeCYPlus1StartView(employerName, employmentID, isPension)(
           request,
           messages,
           authedUser,
@@ -211,7 +219,7 @@ class UpdateIncomeNextYearControllerSpec
         val result: Future[Result] = testController.edit(employmentID)(request)
 
         status(result) mustBe OK
-        result rendersTheSameViewAs updateIncomeCYPlus1Edit(
+        result rendersTheSameViewAs updateIncomeCYPlus1EditView(
           employerName,
           employmentID,
           isPension,
@@ -320,7 +328,7 @@ class UpdateIncomeNextYearControllerSpec
 
         status(result) mustBe BAD_REQUEST
 
-        result rendersTheSameViewAs updateIncomeCYPlus1Edit(
+        result rendersTheSameViewAs updateIncomeCYPlus1EditView(
           employerName,
           employmentID,
           isPension,
@@ -356,7 +364,7 @@ class UpdateIncomeNextYearControllerSpec
           val result: Future[Result] = testController.same(employmentID)(request)
 
           status(result) mustBe OK
-          result rendersTheSameViewAs updateIncomeCYPlus1Same(employerName, employmentID, currentEstPay)(
+          result rendersTheSameViewAs updateIncomeCYPlus1SameView(employerName, employmentID, currentEstPay)(
             request,
             messages,
             authedUser,
@@ -391,7 +399,7 @@ class UpdateIncomeNextYearControllerSpec
           val result: Future[Result] = testController.success(employmentID)(request)
 
           status(result) mustBe OK
-          result rendersTheSameViewAs updateIncomeCYPlus1Success(employerName, isPension)(
+          result rendersTheSameViewAs updateIncomeCYPlus1SuccessView(employerName, isPension)(
             request,
             messages,
             authedUser,
@@ -425,7 +433,7 @@ class UpdateIncomeNextYearControllerSpec
           val newAmount = 123
           val currentAmount = 1
 
-          val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, false, 1)
+          val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, isPension = false, 1)
           when(
             updateNextYearsIncomeService.get(meq(employmentID), meq(nino))(any())
           ).thenReturn(
@@ -433,8 +441,9 @@ class UpdateIncomeNextYearControllerSpec
           )
 
           val vm = ConfirmAmountEnteredViewModel(employmentID, employerName, currentAmount, newAmount, NextYearPay)
+          // TODO: Should this be used in the test?
           val expectedView =
-            updateIncomeCYPlus1Confirm(vm)(request, messages, authedUser, templateRenderer, partialRetriever)
+            updateIncomeCYPlus1ConfirmView(vm)(request, messages, authedUser, templateRenderer, partialRetriever)
 
           val result = controller.confirm(employmentID)(request)
 
@@ -456,7 +465,7 @@ class UpdateIncomeNextYearControllerSpec
           val result = controller.confirm(employmentID)(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
+          redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
         }
       }
     }
@@ -518,6 +527,15 @@ class UpdateIncomeNextYearControllerSpec
         FakeValidatePerson,
         mcc,
         mockAppConfig,
+        updateIncomeCYPlus1SuccessView,
+        updateIncomeCYPlus1ConfirmView,
+        updateIncomeCYPlus1WarningView,
+        updateIncomeCYPlus1StartView,
+        updateIncomeCYPlus1EditView,
+        updateIncomeCYPlus1SameView,
+        inject[sameEstimatedPay],
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       )

@@ -23,7 +23,6 @@ import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
-import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -46,14 +45,23 @@ class IncomeUpdateBonusControllerSpec
 
   override implicit val fakeRequest: FakeRequest[AnyContent] = RequestBuilder.buildFakeGetRequestWithAuth()
 
+  private val bonusPaymentsView = inject[bonusPayments]
+
+  private val bonusPaymentAmountView = inject[bonusPaymentAmount]
+
   class TestIncomeUpdateBonusController
       extends IncomeUpdateBonusController(
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        bonusPaymentsView,
+        bonusPaymentAmountView,
         journeyCacheService,
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
-        MockTemplateRenderer) {
+        MockTemplateRenderer
+      ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
       .thenReturn(Future.successful(Right(employer.id)))
     when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
@@ -86,7 +94,7 @@ class IncomeUpdateBonusControllerSpec
 
       val expectedForm = BonusPaymentsForm.createForm.fill(YesNoForm(Some(cachedAmount)))
       val expectedView =
-        bonusPayments(expectedForm, employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
+        bonusPaymentsView(expectedForm, employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
 
       result rendersTheSameViewAs expectedView
     }
@@ -167,7 +175,7 @@ class IncomeUpdateBonusControllerSpec
           .handleBonusPayments(fakeRequest)
 
         status(result) mustBe BAD_REQUEST
-        result rendersTheSameViewAs bonusPayments(
+        result rendersTheSameViewAs bonusPaymentsView(
           BonusPaymentsForm.createForm.bindFromRequest()(fakeRequest),
           employer)(
           fakeRequest,
@@ -226,7 +234,7 @@ class IncomeUpdateBonusControllerSpec
       status(result) mustBe OK
 
       val expectedForm = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(Some(cachedAmount)))
-      result rendersTheSameViewAs bonusPaymentAmount(expectedForm, employer)(
+      result rendersTheSameViewAs bonusPaymentAmountView(expectedForm, employer)(
         fakeRequest,
         messages,
         authedUser,
@@ -298,7 +306,7 @@ class IncomeUpdateBonusControllerSpec
 
         status(result) mustBe BAD_REQUEST
 
-        result rendersTheSameViewAs bonusPaymentAmount(
+        result rendersTheSameViewAs bonusPaymentAmountView(
           BonusOvertimeAmountForm.createForm().bindFromRequest()(fakeRequest),
           employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
       }

@@ -37,6 +37,7 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
+import views.html.incomes.howToUpdate
 
 import scala.concurrent.Future
 
@@ -59,7 +60,10 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
         incomeService,
         taxAccountService,
         mcc,
+        inject[howToUpdate],
         journeyCacheService,
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

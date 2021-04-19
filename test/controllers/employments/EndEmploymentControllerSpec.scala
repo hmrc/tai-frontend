@@ -42,6 +42,9 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants, JourneyCacheConstants}
 import utils.BaseSpec
+import views.html.can_we_contact_by_phone
+import views.html.employments.{EndEmploymentIrregularPaymentError, confirmation, duplicateSubmissionWarning, endEmployment, endEmploymentWithinSixWeeksError, update_remove_employment_decision}
+import views.html.incomes.addIncomeCheckYourAnswers
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -801,10 +804,20 @@ class EndEmploymentControllerSpec
         employmentService,
         FakeAuthAction,
         FakeValidatePerson,
-        endEmploymentJourneyCacheService,
-        trackSuccessJourneyCacheService,
         mock[AuditConnector],
         mcc,
+        inject[update_remove_employment_decision],
+        inject[endEmploymentWithinSixWeeksError],
+        inject[EndEmploymentIrregularPaymentError],
+        inject[endEmployment],
+        inject[can_we_contact_by_phone],
+        inject[duplicateSubmissionWarning],
+        inject[confirmation],
+        inject[addIncomeCheckYourAnswers],
+        endEmploymentJourneyCacheService,
+        trackSuccessJourneyCacheService,
+        error_template_noauth,
+        error_no_primary,
         MockTemplateRenderer,
         MockPartialRetriever
       ) {

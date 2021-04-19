@@ -26,7 +26,6 @@ import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
-import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -40,6 +39,8 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{EditIncomePayPeriodConstants, _}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
+import views.html.incomes.estimatedPayment.update.checkYourAnswers
+import views.html.incomes.{confirmAmountEntered, duplicateSubmissionWarning}
 
 import scala.concurrent.Future
 
@@ -67,7 +68,12 @@ class IncomeUpdateCalculatorControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        inject[duplicateSubmissionWarning],
+        inject[checkYourAnswers],
+        inject[confirmAmountEntered],
         journeyCacheService,
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {
