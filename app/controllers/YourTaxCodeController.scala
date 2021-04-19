@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -28,8 +29,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
-import views.html.taxCodeDetails
-import views.html.taxCodeDetailsPreviousYears
+import views.html.{error_no_primary, error_template_noauth, taxCodeDetails, taxCodeDetailsPreviousYears}
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -43,6 +43,8 @@ class YourTaxCodeController @Inject()(
   applicationConfig: ApplicationConfig,
   taxCodeDetails: taxCodeDetails,
   taxCodeDetailsPreviousYears: taxCodeDetailsPreviousYears,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {

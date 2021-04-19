@@ -18,7 +18,6 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthenticatedRequest}
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -27,9 +26,10 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{Employment, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
-import views.html.paye.RtiDisabledHistoricPayAsYouEarn
-import views.html.paye.historicPayAsYouEarn
+import views.html.paye.{RtiDisabledHistoricPayAsYouEarn, historicPayAsYouEarn}
+import views.html.{error_no_primary, error_template_noauth}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PayeControllerHistoric @Inject()(
@@ -41,6 +41,8 @@ class PayeControllerHistoric @Inject()(
   mcc: MessagesControllerComponents,
   RtiDisabledHistoricPayAsYouEarn: RtiDisabledHistoricPayAsYouEarn,
   historicPayAsYouEarn: historicPayAsYouEarn,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {

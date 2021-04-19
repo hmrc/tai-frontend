@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, NotLive}
 import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
+import views.html.{error_no_primary, error_template_noauth}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,6 +38,8 @@ class TaxAccountSummaryService @Inject()(
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
   mcc: MessagesControllerComponents,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {

@@ -19,12 +19,9 @@ package controllers
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-
-import javax.inject.{Inject, Singleton}
 import org.joda.time.LocalDate
 import play.api.data.Form
-import play.api.i18n.Lang
-import play.api.mvc.{request, _}
+import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -39,8 +36,10 @@ import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, SameEstimatedPayViewModel}
-import views.html.incomes.{confirmAmountEntered, editIncome, editPension, editPensionSuccess, editSuccess, sameEstimatedPay}
+import views.html.incomes._
+import views.html.{error_no_primary, error_template_noauth}
 
+import javax.inject.{Inject, Singleton}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -61,6 +60,8 @@ class IncomeController @Inject()(
   editPensionSuccess: editPensionSuccess,
   editIncome: editIncome,
   sameEstimatedPay: sameEstimatedPay,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {

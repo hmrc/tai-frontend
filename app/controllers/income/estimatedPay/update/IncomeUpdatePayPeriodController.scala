@@ -19,26 +19,29 @@ package controllers.income.estimatedPay.update
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import javax.inject.{Inject, Named}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.PayPeriodForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import views.html.incomes.payPeriod
+import views.html.{error_no_primary, error_template_noauth}
 
+import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
 class IncomeUpdatePayPeriodController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  payPeriod: payPeriod,
+  payPeriodView: payPeriod,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
@@ -53,7 +56,7 @@ class IncomeUpdatePayPeriodController @Inject()(
     } yield {
       val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
       incomeSourceEither match {
-        case Right(incomeSource) => Ok(payPeriod(form, incomeSource.id, incomeSource.name))
+        case Right(incomeSource) => Ok(payPeriodView(form, incomeSource.id, incomeSource.name))
         case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
     }
@@ -78,7 +81,7 @@ class IncomeUpdatePayPeriodController @Inject()(
             }
             incomeSourceEither match {
               case Right(incomeSource) =>
-                BadRequest(payPeriod(formWithErrors, incomeSource.id, incomeSource.name, !isDaysError))
+                BadRequest(payPeriodView(formWithErrors, incomeSource.id, incomeSource.name, !isDaysError))
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }

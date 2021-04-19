@@ -26,8 +26,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.service._
-import views.html.jrsClaimSummary
-import views.html.internalServerError
+import views.html.{error_no_primary, error_template_noauth, internalServerError, jrsClaimSummary}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,6 +40,8 @@ class JrsClaimsController @Inject()(
   appConfig: ApplicationConfig,
   jrsClaimSummary: jrsClaimSummary,
   internalServerError: internalServerError,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {

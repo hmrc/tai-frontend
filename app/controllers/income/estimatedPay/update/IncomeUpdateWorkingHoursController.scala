@@ -27,6 +27,7 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, JourneyCacheConstants}
 import views.html.incomes.workingHours
+import views.html.{error_no_primary, error_template_noauth}
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
@@ -35,8 +36,10 @@ class IncomeUpdateWorkingHoursController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  workingHours: workingHours,
+  workingHoursView: workingHours,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants {
@@ -52,7 +55,7 @@ class IncomeUpdateWorkingHoursController @Inject()(
       incomeSourceEither match {
         case Right(incomeSource) =>
           Ok(
-            workingHours(
+            workingHoursView(
               HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
               incomeSource.id,
               incomeSource.name))
@@ -71,7 +74,7 @@ class IncomeUpdateWorkingHoursController @Inject()(
         formWithErrors => {
           IncomeSource.create(journeyCacheService).map {
             case Right(incomeSource) =>
-              BadRequest(workingHours(formWithErrors, incomeSource.id, incomeSource.name))
+              BadRequest(workingHoursView(formWithErrors, incomeSource.id, incomeSource.name))
             case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           }
         },

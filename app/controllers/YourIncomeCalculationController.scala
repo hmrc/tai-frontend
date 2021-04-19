@@ -18,7 +18,6 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth._
-import javax.inject.Inject
 import play.api.mvc._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -29,7 +28,9 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
 import views.html.incomes.{historicIncomeCalculation, yourIncomeCalculation}
+import views.html.{error_no_primary, error_template_noauth}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class YourIncomeCalculationController @Inject()(
@@ -43,6 +44,8 @@ class YourIncomeCalculationController @Inject()(
   mcc: MessagesControllerComponents,
   historicIncomeCalculation: historicIncomeCalculation,
   yourIncomeCalculation: yourIncomeCalculation,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {

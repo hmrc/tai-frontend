@@ -20,6 +20,7 @@ import com.google.inject.name.Named
 import controllers._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+
 import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.i18n.{Lang, Messages}
@@ -41,11 +42,12 @@ import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWee
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 import views.html.employments.update_remove_employment_decision
 import views.html.employments.{EndEmploymentIrregularPaymentError, endEmployment, endEmploymentWithinSixWeeksError}
-import views.html.can_we_contact_by_phone
+import views.html.{can_we_contact_by_phone, error_no_primary, error_template_noauth}
 import views.html.employments.duplicateSubmissionWarning
 import views.html.employments.confirmation
 import views.html.employments.endEmployment
 import views.html.incomes.addIncomeCheckYourAnswers
+
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -66,6 +68,8 @@ class EndEmploymentController @Inject()(
   addIncomeCheckYourAnswers: addIncomeCheckYourAnswers,
   @Named("End Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   implicit val templateRenderer: TemplateRenderer,
   implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with IrregularPayConstants

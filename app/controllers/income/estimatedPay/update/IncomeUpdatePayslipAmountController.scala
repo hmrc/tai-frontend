@@ -19,8 +19,6 @@ package controllers.income.estimatedPay.update
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import javax.inject.{Inject, Named}
-import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -32,7 +30,9 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{GrossPayPeriodTitle, PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
 import views.html.incomes.{payslipAmount, payslipDeductions, taxablePayslipAmount}
+import views.html.{error_no_primary, error_template_noauth}
 
+import javax.inject.{Inject, Named}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,8 +42,10 @@ class IncomeUpdatePayslipAmountController @Inject()(
   mcc: MessagesControllerComponents,
   payslipAmount: payslipAmount,
   taxablePayslipAmount: taxablePayslipAmount,
-  payslipDeductions: payslipDeductions,
+  payslipDeductionsView: payslipDeductions,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
@@ -190,7 +192,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
     } yield {
       val form = PayslipDeductionsForm.createForm().fill(PayslipDeductionsForm(payslipDeductions))
       incomeSourceEither match {
-        case Right(incomeSource) => Ok(payslipDeductions(form, incomeSource))
+        case Right(incomeSource) => Ok(payslipDeductionsView(form, incomeSource))
         case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
     }
@@ -209,7 +211,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
             incomeSourceEither match {
-              case Right(incomeSource) => BadRequest(payslipDeductions(formWithErrors, incomeSource))
+              case Right(incomeSource) => BadRequest(payslipDeductionsView(formWithErrors, incomeSource))
               case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }

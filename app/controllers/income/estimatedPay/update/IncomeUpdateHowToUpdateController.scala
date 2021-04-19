@@ -47,7 +47,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,
   mcc: MessagesControllerComponents,
-  howToUpdate: howToUpdate,
+  howToUpdateView: howToUpdate,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
@@ -114,11 +114,11 @@ class IncomeUpdateHowToUpdateController @Inject()(
           val form = HowToUpdateForm.createForm().fill(HowToUpdateForm(howToUpdate))
 
           if (incomeService.editableIncomes(taxCodeIncomes).size > 1) {
-            Ok(howToUpdate(form, id, employmentName))
+            Ok(howToUpdateView(form, id, employmentName))
           } else {
             incomeService.singularIncomeId(taxCodeIncomes) match {
 
-              case Some(incomeId) => Ok(howToUpdate(form, incomeId, employmentName))
+              case Some(incomeId) => Ok(howToUpdateView(form, incomeId, employmentName))
 
               case None => throw new RuntimeException("Employment id not present")
             }
@@ -144,7 +144,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
           } yield {
             incomeSourceEither match {
               case Right(incomeSource) =>
-                BadRequest(howToUpdate(formWithErrors, incomeSource.id, incomeSource.name))
+                BadRequest(howToUpdateView(formWithErrors, incomeSource.id, incomeSource.name))
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }

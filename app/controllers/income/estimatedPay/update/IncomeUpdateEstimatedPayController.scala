@@ -21,8 +21,6 @@ import cats.implicits._
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-
-import javax.inject.{Inject, Named}
 import org.joda.time.LocalDate
 import play.api.mvc._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -30,19 +28,20 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiFailureResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.FormHelper
-import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
+import uk.gov.hmrc.tai.connectors.responses.{TaiFailureResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
+import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefixAndSign
-import views.html.incomes.{estimatedPay, estimatedPayLandingPage}
-import views.html.incomes.incorrectTaxableIncome
+import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
+import views.html.incomes.{estimatedPay, estimatedPayLandingPage, incorrectTaxableIncome}
+import views.html.{error_no_primary, error_template_noauth}
 
+import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdateEstimatedPayController @Inject()(
@@ -56,6 +55,8 @@ class IncomeUpdateEstimatedPayController @Inject()(
   estimatedPay: estimatedPay,
   incorrectTaxableIncome: incorrectTaxableIncome,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {

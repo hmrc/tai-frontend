@@ -32,7 +32,8 @@ class ErrorHandler @Inject()(
   applicationConfig: ApplicationConfig,
   error_template_noauth: error_template_noauth,
   val messagesApi: MessagesApi,
-  val configuration: Configuration)(
+  val configuration: Configuration,
+  internalServerError: internalServerError)(
   implicit localTemplateRenderer: TemplateRenderer,
   taiHtmlPartialRetriever: FormPartialRetriever)
     extends FrontendErrorHandler {
