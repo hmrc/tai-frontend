@@ -38,6 +38,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
 import utils.factories.TaxCodeMismatchFactory
+import views.html.whatDoYouWantToDoTileView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -472,6 +473,9 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         FakeValidatePerson,
         mockAppConfig,
         mcc,
+        inject[whatDoYouWantToDoTileView],
+        error_template_noauth,
+        error_no_primary,
         partialRetriever,
         templateRenderer
       ) {

@@ -18,13 +18,13 @@ package controllers
 
 import controllers.actions.FakeValidatePerson
 import controllers.auth.AuthAction
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
+import views.html.{manualCorrespondence, timeout}
 
 class ServiceControllerSpec extends BaseSpec {
 
@@ -80,6 +80,10 @@ class ServiceControllerSpec extends BaseSpec {
         FakeValidatePerson,
         appConfig,
         mcc,
+        inject[timeout],
+        inject[manualCorrespondence],
+        error_template_noauth,
+        error_no_primary,
         partialRetriever,
         templateRenderer
       )

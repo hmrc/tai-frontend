@@ -23,7 +23,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
@@ -35,6 +35,7 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import utils.BaseSpec
+import views.html.IncomeSourceSummary
 
 import scala.concurrent.Future
 
@@ -127,7 +128,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     false,
     false)
 
-  val taxCodeIncomes = Seq(
+  private val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
   )
@@ -151,6 +152,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     FakeValidatePerson,
     appConfig,
     mcc,
+    inject[IncomeSourceSummary],
+    error_template_noauth,
+    error_no_primary,
     partialRetriever,
     templateRenderer
   )
