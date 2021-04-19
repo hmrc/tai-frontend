@@ -29,6 +29,7 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec {
   private val employerName = "employerName"
   private val currentAmount = 1000
   private val employmentId = 1
+  private val editIncomeIrregularHours = inject[editIncomeIrregularHours]
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink
@@ -63,5 +64,5 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec {
 
   private val viewModel = EditIncomeIrregularHoursViewModel(employmentId, employerName, currentAmount)
   private val editIncomeForm = AmountComparatorForm.createForm()
-  override def view: Html = views.html.incomes.editIncomeIrregularHours(editIncomeForm, viewModel)
+  override def view: Html = editIncomeIrregularHours(editIncomeForm, viewModel)
 }

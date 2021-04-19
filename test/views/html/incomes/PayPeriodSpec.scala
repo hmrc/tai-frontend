@@ -48,5 +48,6 @@ class PayPeriodSpec extends TaiViewSpec {
   when(payPeriodForm.errors(anyString())).thenReturn(Nil)
   when(payPeriodForm.hasErrors).thenReturn(false)
 
-  override def view: Html = views.html.incomes.payPeriod(payPeriodForm, id, employerName, true)
+  private def payPeriod = inject[payPeriod]
+  override def view: Html = payPeriod(payPeriodForm, id, employerName, true)
 }

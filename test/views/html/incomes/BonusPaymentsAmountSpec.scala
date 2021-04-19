@@ -18,7 +18,7 @@ package views.html.incomes
 
 import play.api.libs.json.Json
 import play.api.mvc.Call
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -28,8 +28,9 @@ class BonusPaymentsAmountSpec extends TaiViewSpec {
 
   val employer = IncomeSource(id = 1, name = "Employer")
   val bonusPaymentsAmountForm = BonusOvertimeAmountForm.createForm()
+  private val bonusPaymentAmount = inject[bonusPaymentAmount]
 
-  override def view: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm, employer)
+  override def view: Html = bonusPaymentAmount(bonusPaymentsAmountForm, employer)
 
   "Bonus payments amount view" should {
     behave like pageWithBackLink
@@ -68,7 +69,7 @@ class BonusPaymentsAmountSpec extends TaiViewSpec {
         val invalidRequest = Json.obj("amount" -> "")
         val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 
-        val errorView = views.html.incomes.bonusPaymentAmount(invalidatedForm, employer)
+        val errorView: HtmlFormat.Appendable = bonusPaymentAmount(invalidatedForm, employer)
         doc(errorView) must haveErrorLinkWithText(emptySelectionErrorMessage)
         doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
       }
@@ -78,12 +79,10 @@ class BonusPaymentsAmountSpec extends TaiViewSpec {
         val invalidRequest = Json.obj("amount" -> "£10,0")
         val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 
-        val errorView = views.html.incomes.bonusPaymentAmount(invalidatedForm, employer)
+        val errorView: HtmlFormat.Appendable = bonusPaymentAmount(invalidatedForm, employer)
         doc(errorView) must haveErrorLinkWithText(invalidAmountErrorMessage)
         doc(errorView) must haveClassWithText(messages(invalidAmountErrorMessage), "error-message")
       }
     }
-
   }
-
 }

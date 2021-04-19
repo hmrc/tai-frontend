@@ -24,6 +24,7 @@ class EstimatedPayLandingPageSpec extends TaiViewSpec {
 
   val empId = 1
   val employerName = "fakeFieldValue"
+  private val estimatedPayLandingPage = inject[estimatedPayLandingPage]
 
   "Estimated Pay Landing Page" should {
     behave like pageWithBackLink
@@ -43,8 +44,7 @@ class EstimatedPayLandingPageSpec extends TaiViewSpec {
     }
 
     "contain the correct content when income is from pension" in {
-      val testView: Html =
-        views.html.incomes.estimatedPayLandingPage(employerName, empId, "", isPension = true, appConfig)
+      val testView: Html = estimatedPayLandingPage(employerName, empId, "", isPension = true, appConfig)
       doc(testView).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))
       doc(testView) must haveLinkWithText(messages("tai.incomes.landing.pension.ended.link"))
       doc(testView) must haveLinkWithUrlWithID("updatePension", appConfig.incomeFromEmploymentPensionLinkUrl)
@@ -53,6 +53,5 @@ class EstimatedPayLandingPageSpec extends TaiViewSpec {
     }
   }
 
-  override def view: Html =
-    views.html.incomes.estimatedPayLandingPage(employerName, empId, "", isPension = false, appConfig)
+  override def view: Html = estimatedPayLandingPage(employerName, empId, "", isPension = false, appConfig)
 }

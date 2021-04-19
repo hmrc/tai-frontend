@@ -27,7 +27,8 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewMod
 
 class EstimatedPaySpec extends TaiViewSpec {
 
-  override def view: Html = views.html.incomes.estimatedPay(createViewModel())
+  private val estimatedPay = inject[estimatedPay]
+  override def view: Html = estimatedPay(createViewModel())
 
   val employer = IncomeSource(id = 1, name = "Employer")
 
@@ -67,7 +68,7 @@ class EstimatedPaySpec extends TaiViewSpec {
       "the gross pay is apportioned" in {
         val employmentStartDate = TaxYear().start.plusMonths(2)
 
-        val detailedSummaryView = views.html.incomes.estimatedPay(createViewModel(Some(employmentStartDate)))
+        val detailedSummaryView = estimatedPay(createViewModel(Some(employmentStartDate)))
 
         doc(detailedSummaryView) must haveSummaryWithText(messages("tai.estimatedPay.whyLower.title"))
 
@@ -79,7 +80,7 @@ class EstimatedPaySpec extends TaiViewSpec {
         val netAnnualPay = 20000
         val grossEqualsNet = true
 
-        val grossEqualsNetView = views.html.incomes.estimatedPay(createViewModel())
+        val grossEqualsNetView = estimatedPay(createViewModel())
 
         doc(grossEqualsNetView) must haveSummaryWithText(messages("tai.estimatedPay.whySame.title"))
 
@@ -99,5 +100,4 @@ class EstimatedPaySpec extends TaiViewSpec {
       )
     }
   }
-
 }
