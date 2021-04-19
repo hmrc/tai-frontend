@@ -24,6 +24,7 @@ import org.mockito.Mockito._
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service.AuditService
 import utils.BaseSpec
+import views.html.error_no_primary
 
 import scala.concurrent.Future
 
@@ -60,6 +61,8 @@ class AuditControllerSpec extends BaseSpec {
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

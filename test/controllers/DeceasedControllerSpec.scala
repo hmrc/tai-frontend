@@ -22,6 +22,7 @@ import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers._
 import utils.BaseSpec
+import views.html.deceased_helpline
 
 import scala.language.postfixOps
 
@@ -45,6 +46,9 @@ class DeceasedControllerSpec extends BaseSpec {
   def createSut = new DeceasedController(
     FakeAuthAction,
     mcc,
+    inject[deceased_helpline],
+    error_template_noauth,
+    error_no_primary,
     MockPartialRetriever,
     MockTemplateRenderer
   )

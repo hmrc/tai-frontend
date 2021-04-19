@@ -116,6 +116,8 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        error_template_noauth,
+        error_no_primary,
         partialRetriever,
         templateRenderer
       )

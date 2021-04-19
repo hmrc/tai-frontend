@@ -27,11 +27,14 @@ import play.api.mvc.Results.{BadRequest, Redirect}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiTaxAccountFailureResponse
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import utils.BaseSpec
+import views.html.{error_no_primary, error_template_noauth}
 
 import scala.concurrent.Future
 
@@ -221,7 +224,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
         val handler = createSut
         val partialErrorFunction = handler.npsNoEmploymentResult(ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsNoEmploymentsRecorded))
-        result mustBe Some(BadRequest(views.html.error_no_primary()))
+        result mustBe Some(BadRequest(error_no_primary()))
       }
 
       "nps tax account responds with a 'no primary employment' message (data is absent), but employment data is available for previous year" in {
@@ -277,7 +280,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
         val handler = createSut
         val partialErrorFunction = handler.npsTaxAccountCYAbsentResult_withEmployCheck(Nil, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsTaxAccountCYDataAbsentMsg))
-        result mustBe Some(BadRequest(views.html.error_no_primary()))
+        result mustBe Some(BadRequest(error_no_primary()))
       }
 
       "nps tax account responds with a 'no employments recorded for current tax year' message, but employment data is available for previous year" in {
@@ -306,7 +309,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
         val exceptionController = createSut
         val partialErrorFunction = exceptionController.npsNoEmploymentForCYResult_withEmployCheck(Nil, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsNoEmploymentForCurrentTaxYear))
-        result mustBe Some(BadRequest(views.html.error_no_primary()))
+        result mustBe Some(BadRequest(error_no_primary()))
       }
     }
 
@@ -350,8 +353,10 @@ class ErrorPagesHandlerSpec extends BaseSpec {
   val createSut = new SUT
 
   class SUT extends ErrorPagesHandler {
-    override implicit def templateRenderer = MockTemplateRenderer
-    override implicit def partialRetriever = MockPartialRetriever
+    override val error_template_noauth: error_template_noauth = error_template_noauth
+    override val error_no_primary: error_no_primary = error_no_primary
+    override implicit def templateRenderer: TemplateRenderer = MockTemplateRenderer
+    override implicit def partialRetriever: FormPartialRetriever = MockPartialRetriever
 
     val recoveryLocation: RecoveryLocation = classOf[SUT]
   }

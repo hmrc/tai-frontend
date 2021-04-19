@@ -36,12 +36,17 @@ import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import uk.gov.hmrc.urls.Link
 import utils.BaseSpec
+import views.html.estimatedIncomeTax.{complexEstimatedIncomeTax, noCurrentIncome, simpleEstimatedIncomeTax, zeroTaxEstimatedIncomeTax}
 
 import scala.concurrent.Future
 
 class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants with TaxRegionConstants {
 
   implicit val request = FakeRequest()
+  private val noCurrentIncomeView = inject[noCurrentIncome]
+  private val simpleEstimatedIncomeTaxView = inject[simpleEstimatedIncomeTax]
+  private val complexEstimatedIncomeTaxView = inject[complexEstimatedIncomeTax]
+  private val zeroTaxEstimatedIncomeTaxView = inject[zeroTaxEstimatedIncomeTax]
 
   "EstimatedIncomeTaxController" must {
     "return Ok" when {
@@ -158,8 +163,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual views.html.estimatedIncomeTax
-          .simpleEstimatedIncomeTax(viewModel, Html("<title/>"))
+        contentAsString(result) mustEqual simpleEstimatedIncomeTaxView(viewModel, Html("<title/>"))
           .toString()
       }
 
@@ -257,8 +261,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual (views.html.estimatedIncomeTax
-          .complexEstimatedIncomeTax(expectedViewModel, Html("<title/>"))
+        contentAsString(result) mustEqual (complexEstimatedIncomeTaxView(expectedViewModel, Html("<title/>"))
           .toString())
 
       }
@@ -347,8 +350,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual (views.html.estimatedIncomeTax
-          .zeroTaxEstimatedIncomeTax(expectedViewModel, Html("<title/>"))
+        contentAsString(result) mustEqual (zeroTaxEstimatedIncomeTaxView(expectedViewModel, Html("<title/>"))
           .toString())
 
       }
@@ -385,7 +387,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual (views.html.estimatedIncomeTax.noCurrentIncome().toString())
+        contentAsString(result) mustEqual (noCurrentIncomeView().toString())
       }
 
     }
@@ -435,6 +437,12 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
         taxAccountService,
         FakeAuthAction,
         FakeValidatePerson,
+        noCurrentIncomeView,
+        complexEstimatedIncomeTaxView,
+        simpleEstimatedIncomeTaxView,
+        zeroTaxEstimatedIncomeTaxView,
+        error_template_noauth,
+        error_no_primary,
         partialRetriever,
         templateRenderer,
         mcc
