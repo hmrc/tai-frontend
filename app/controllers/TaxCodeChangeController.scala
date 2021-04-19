@@ -49,7 +49,7 @@ class TaxCodeChangeController @Inject()(
   mcc: MessagesControllerComponents,
   taxCodeComparison: taxCodeComparison,
   yourTaxFreeAmount: yourTaxFreeAmount,
-  whatHappensNext: whatHappensNext,
+  whatHappensNextView: whatHappensNext,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with YourTaxFreeAmount {
@@ -90,6 +90,6 @@ class TaxCodeChangeController @Inject()(
 
   def whatHappensNext: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
-    Future.successful(Ok(whatHappensNext()))
+    Future.successful(Ok(whatHappensNextView()))
   }
 }

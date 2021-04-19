@@ -19,21 +19,23 @@ package controllers.income.estimatedPay.update
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, JourneyCacheConstants}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
+import views.html.incomes.workingHours
 
+import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
 class IncomeUpdateWorkingHoursController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  workingHours: workingHours,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
@@ -50,11 +52,10 @@ class IncomeUpdateWorkingHoursController @Inject()(
       incomeSourceEither match {
         case Right(incomeSource) =>
           Ok(
-            views.html.incomes
-              .workingHours(
-                HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
-                incomeSource.id,
-                incomeSource.name))
+            workingHours(
+              HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
+              incomeSource.id,
+              incomeSource.name))
         case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
     }
@@ -70,7 +71,7 @@ class IncomeUpdateWorkingHoursController @Inject()(
         formWithErrors => {
           IncomeSource.create(journeyCacheService).map {
             case Right(incomeSource) =>
-              BadRequest(views.html.incomes.workingHours(formWithErrors, incomeSource.id, incomeSource.name))
+              BadRequest(workingHours(formWithErrors, incomeSource.id, incomeSource.name))
             case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           }
         },

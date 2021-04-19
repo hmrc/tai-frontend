@@ -16,14 +16,31 @@
 
 package controllers.pensions
 
-import controllers.Assets.Redirect
+import controllers.TaiBaseController
+import controllers.actions.ValidatePerson
+import controllers.auth.{AuthAction, AuthedUser}
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import views.html.can_we_contact_by_phone
+import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
+import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneRegex
+import uk.gov.hmrc.tai.forms.pensions.{DuplicateSubmissionWarningForm, UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.domain.{IncorrectPensionProvider, PensionIncome}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{AuditService, PensionProviderService, TaxAccountService}
+import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
+import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
+import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
+import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersViewModel
+import views.html.{can_we_contact_by_phone, error_no_primary, error_template_noauth}
 import views.html.pensions.duplicateSubmissionWarning
 import views.html.pensions.update.{confirmation, doYouGetThisPensionIncome, updatePensionCheckYourAnswers, whatDoYouWantToTellUs}
 
@@ -48,6 +65,8 @@ class UpdatePensionProviderController @Inject()(
   duplicateSubmissionWarning: duplicateSubmissionWarning,
   @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with EmptyCacheRedirect {

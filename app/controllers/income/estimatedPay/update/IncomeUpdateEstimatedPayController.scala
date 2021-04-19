@@ -41,6 +41,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefixAndSign
 import views.html.incomes.{estimatedPay, estimatedPayLandingPage}
+import views.html.incomes.incorrectTaxableIncome
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -53,6 +54,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
   taxAccountService: TaxAccountService,
   estimatedPayLandingPage: estimatedPayLandingPage,
   estimatedPay: estimatedPay,
+  incorrectTaxableIncome: incorrectTaxableIncome,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
@@ -127,8 +129,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
           }
         case _ =>
           Future.successful(
-            Ok(views.html.incomes
-              .incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), incomeSource.id)))
+            Ok(incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), incomeSource.id)))
       }
     }
 

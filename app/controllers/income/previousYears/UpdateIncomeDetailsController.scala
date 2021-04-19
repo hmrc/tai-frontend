@@ -16,12 +16,25 @@
 
 package controllers.income.previousYears
 
+import controllers.TaiBaseController
+import controllers.actions.ValidatePerson
+import controllers.auth.AuthAction
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import views.html.can_we_contact_by_phone
+import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
+import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
+import uk.gov.hmrc.tai.forms.income.previousYears.{UpdateIncomeDetailsDecisionForm, UpdateIncomeDetailsForm}
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.IncorrectIncome
+import uk.gov.hmrc.tai.service.PreviousYearsIncomeService
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
+import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
 import views.html.incomes.previousYears.{CheckYourAnswers, UpdateIncomeDetails, UpdateIncomeDetailsConfirmation, UpdateIncomeDetailsDecision}
+import views.html.{can_we_contact_by_phone, error_no_primary, error_template_noauth}
 
 import javax.inject.{Inject, Named}
 import scala.Function.tupled
@@ -39,6 +52,8 @@ class UpdateIncomeDetailsController @Inject()(
   UpdateIncomeDetailsConfirmation: UpdateIncomeDetailsConfirmation,
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {

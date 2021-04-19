@@ -16,13 +16,26 @@
 
 package controllers.pensions
 
+import controllers.TaiBaseController
+import controllers.actions.ValidatePerson
+import controllers.auth.{AuthAction, AuthedUser}
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import views.html.can_we_contact_by_phone
+import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
+import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
+import uk.gov.hmrc.tai.forms.pensions.{AddPensionProviderFirstPayForm, AddPensionProviderNumberForm, PensionAddDateForm, PensionProviderNameForm}
+import uk.gov.hmrc.tai.model.domain.AddPensionProvider
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{AuditService, PensionProviderService}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
+import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
+import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
+import views.html.{can_we_contact_by_phone, error_no_primary, error_template_noauth}
 import views.html.pensions._
 
 import javax.inject.{Inject, Named}
@@ -48,6 +61,8 @@ class AddPensionProviderController @Inject()(
   addPensionStartDate: addPensionStartDate,
   @Named("Add Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with AuditConstants with FormValuesConstants

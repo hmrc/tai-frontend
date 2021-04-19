@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{GrossPayPeriodTitle, PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
-import views.html.incomes.{payslipAmount, taxablePayslipAmount}
+import views.html.incomes.{payslipAmount, payslipDeductions, taxablePayslipAmount}
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,6 +42,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
   mcc: MessagesControllerComponents,
   payslipAmount: payslipAmount,
   taxablePayslipAmount: taxablePayslipAmount,
+  payslipDeductions: payslipDeductions,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
@@ -189,7 +190,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
     } yield {
       val form = PayslipDeductionsForm.createForm().fill(PayslipDeductionsForm(payslipDeductions))
       incomeSourceEither match {
-        case Right(incomeSource) => Ok(views.html.incomes.payslipDeductions(form, incomeSource))
+        case Right(incomeSource) => Ok(payslipDeductions(form, incomeSource))
         case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
     }
@@ -208,7 +209,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
             incomeSourceEither match {
-              case Right(incomeSource) => BadRequest(views.html.incomes.payslipDeductions(formWithErrors, incomeSource))
+              case Right(incomeSource) => BadRequest(payslipDeductions(formWithErrors, incomeSource))
               case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }

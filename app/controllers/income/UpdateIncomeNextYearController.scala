@@ -19,7 +19,6 @@ package controllers.income
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import javax.inject.Inject
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc._
@@ -36,10 +35,13 @@ import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionCYPlus1EmploymentViewModel, DuplicateSubmissionCYPlus1PensionViewModel, DuplicateSubmissionEstimatedPay}
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
-import views.html.incomes.nextYear.{updateIncomeCYPlus1Confirm, updateIncomeCYPlus1Edit, updateIncomeCYPlus1Start, updateIncomeCYPlus1Success, updateIncomeCYPlus1Warning}
+import views.html.{error_no_primary, error_template_noauth}
+import views.html.incomes.nextYear._
+import views.html.incomes.sameEstimatedPay
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -55,6 +57,10 @@ class UpdateIncomeNextYearController @Inject()(
   updateIncomeCYPlus1Warning: updateIncomeCYPlus1Warning,
   updateIncomeCYPlus1Start: updateIncomeCYPlus1Start,
   updateIncomeCYPlus1Edit: updateIncomeCYPlus1Edit,
+  updateIncomeCYPlus1Same: updateIncomeCYPlus1Same,
+  sameEstimatedPay: sameEstimatedPay,
+  override val error_template_noauth: error_template_noauth,
+  override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with FormValuesConstants with I18nSupport {
@@ -151,7 +157,7 @@ class UpdateIncomeNextYearController @Inject()(
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
         {
           Ok(
-            views.html.incomes.nextYear.updateIncomeCYPlus1Edit(
+            updateIncomeCYPlus1Edit(
               model.employmentName,
               employmentId,
               model.isPension,
@@ -168,9 +174,7 @@ class UpdateIncomeNextYearController @Inject()(
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-        Ok(
-          views.html.incomes.nextYear
-            .updateIncomeCYPlus1Same(model.employmentName, model.employmentId, model.currentValue))
+        Ok(updateIncomeCYPlus1Same(model.employmentName, model.employmentId, model.currentValue))
       }
     }
   }
@@ -262,7 +266,7 @@ class UpdateIncomeNextYearController @Inject()(
                           model.isPension,
                           controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
 
-                        Future.successful(Ok(views.html.incomes.sameEstimatedPay(samePayViewModel)))
+                        Future.successful(Ok(sameEstimatedPay(samePayViewModel)))
                       case _ =>
                         updateNextYearsIncomeService.setNewAmount(newIncome, employmentId, nino) map { _ =>
                           Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
