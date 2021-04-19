@@ -23,6 +23,9 @@ import uk.gov.hmrc.tai.forms.employments.EmploymentNameForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class AddEmploymentNameFormSpec extends TaiViewSpec {
+
+  private val add_employment_name_form = inject[add_employment_name_form]
+
   "Add employment name form page" should {
     behave like pageWithTitle(messages("tai.addEmployment.addNameForm.title"))
     behave like pageWithCombinedHeader(
@@ -34,7 +37,7 @@ class AddEmploymentNameFormSpec extends TaiViewSpec {
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {
-        val view: Html = views.html.employments.add_employment_name_form(formWithErrors)
+        val view: Html = add_employment_name_form(formWithErrors)
 
         doc(view) must haveErrorLinkWithText(Messages("tai.employmentName.error.blank"))
       }
@@ -51,5 +54,5 @@ class AddEmploymentNameFormSpec extends TaiViewSpec {
       "employmentName" -> "the company"
     ))
 
-  override def view: Html = views.html.employments.add_employment_name_form(employmentNameForm)
+  override def view: Html = add_employment_name_form(employmentNameForm)
 }

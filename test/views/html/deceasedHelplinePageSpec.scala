@@ -22,7 +22,8 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class deceasedHelplinePageSpec extends TaiViewSpec {
 
-  override def view: Html = views.html.deceased_helpline()
+  private val deceased_helpline = inject[deceased_helpline]
+  override def view: Html = deceased_helpline()
 
   "Deceased helpline page" should {
     behave like pageWithTitle(messages("tai.deceased.title"))
@@ -51,14 +52,12 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
     "include a telephone description section " in {
       doc must haveParagraphWithText(messages("tai.deceased.telephone.advice"))
     }
-
   }
 
   "contain a textphone section which " should {
 
     "include a textphone title" in {
       doc must haveHeadingH3WithText(messages("tai.deceased.textphone.title"))
-
     }
 
     "include a textphone number" in {
@@ -83,7 +82,6 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
     "include an outside of uk telephone number" in {
       doc must haveParagraphWithText(messages("tai.deceased.outsideUK.number"))
     }
-
   }
 
   "contain an opening times section which" should {
@@ -104,7 +102,5 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
     "state daysClosed" in {
       doc must haveParagraphWithText(messages("tai.deceased.daysClosed"))
     }
-
   }
-
 }

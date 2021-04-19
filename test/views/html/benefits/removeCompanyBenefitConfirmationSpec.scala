@@ -20,7 +20,9 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class removeCompanyBenefitConfirmationSpec extends TaiViewSpec {
-  override def view: Html = views.html.benefits.removeCompanyBenefitConfirmation()
+
+  private val removeCompanyBenefitConfirmation = inject[removeCompanyBenefitConfirmation]
+  override def view: Html = removeCompanyBenefitConfirmation()
 
   "Update Income Details Confirmation View" must {
 
@@ -28,5 +30,4 @@ class removeCompanyBenefitConfirmationSpec extends TaiViewSpec {
     behave like haveReturnToSummaryButtonWithUrl(controllers.routes.TaxAccountSummaryController.onPageLoad())
 
   }
-
 }

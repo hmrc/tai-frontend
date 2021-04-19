@@ -26,6 +26,8 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec {
 
+  private val removeCompanyBenefitStopDate = inject[removeCompanyBenefitStopDate]
+
   "stop date" should {
 
     behave like pageWithTitle(messages("tai.benefits.ended.stopDate.heading", benefitType, empName))
@@ -53,15 +55,14 @@ class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec {
 
     "display error message" when {
       "form has error" in {
-        val errorView = views.html.benefits.removeCompanyBenefitStopDate(formWithErrors, benefitType, empName)
+        val errorView = removeCompanyBenefitStopDate(formWithErrors, benefitType, empName)
         doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
       }
 
       "a decision has not been made" in {
-        val errorView = views.html.benefits.removeCompanyBenefitStopDate(formWithErrors, benefitType, empName)
+        val errorView = removeCompanyBenefitStopDate(formWithErrors, benefitType, empName)
         doc(errorView) must haveErrorLinkWithText(messages("tai.error.chooseOneOption"))
       }
-
     }
   }
 
@@ -77,7 +78,6 @@ class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec {
       StopDateChoice -> ""
     ))
 
-  override def view =
-    views.html.benefits.removeCompanyBenefitStopDate(RemoveCompanyBenefitStopDateForm.form, benefitType, empName)
-
+  override def view: Html =
+    removeCompanyBenefitStopDate(RemoveCompanyBenefitStopDateForm.form, benefitType, empName)
 }

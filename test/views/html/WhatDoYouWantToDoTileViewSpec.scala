@@ -32,6 +32,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
   val modelWithiFormNoCyPlus1 = createViewModel(false)
 
+  private val whatDoYouWantToDoTileView = inject[whatDoYouWantToDoTileView]
+
   override implicit val templateRenderer: TemplateRenderer = MockTemplateRendererWithUrBanner
 
   "whatDoYouWantTodo Page" should {
@@ -58,7 +60,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
         val modelNoiFormWithCyPlus1 = createViewModel(true)
 
-        val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1, appConfig)
+        val nextYearView: Html = whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
 
         cards.size mustBe 4
@@ -78,7 +80,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         val taxCodeMatched = TaxCodeMismatchFactory.matchedTaxCode
         val modeWithCyPlus1TaxCodeChange = createViewModel(true, true, taxCodeMismatch = Some(taxCodeMatched))
 
-        val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange, appConfig)
+        val nextYearView: Html = whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
 
         cards.size mustBe 5
@@ -91,7 +93,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
         val modelNoiFormWithCyPlus1 = createViewModel(true)
 
-        val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1, appConfig)
+        val nextYearView: Html = whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
 
         cards.size mustBe 4
@@ -102,7 +104,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     }
 
     "display UR banner" in {
-      val document: Html = views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1, appConfig)
+
+      val document: Html = whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1, appConfig)
       val urBanner = doc(document).getElementsByAttributeValue("id", "full-width-banner")
       val urDismissedText = doc(document).getElementsByAttributeValue("id", "fullWidthBannerDismissText")
       val urBannerHref = doc(document).getElementsByAttributeValue("id", "fullWidthBannerLink")
@@ -117,7 +120,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       val modelJrsTileEnabled = createViewModel(isCyPlusOneEnabled = false, showJrsTile = true)
 
-      val jrsClaimView: Html = views.html.whatDoYouWantToDoTileView(form, modelJrsTileEnabled, appConfig)
+      val jrsClaimView: Html = whatDoYouWantToDoTileView(form, modelJrsTileEnabled, appConfig)
       val cards = doc(jrsClaimView).getElementsByClass("card")
 
       cards.size mustBe 4
@@ -144,5 +147,5 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
   private lazy val modelNoiFormNoCyPlus1 = createViewModel(false)
 
-  override def view: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1, appConfig)
+  override def view: Html = whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1, appConfig)
 }

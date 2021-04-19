@@ -18,12 +18,15 @@ package views.html.benefits
 
 import play.api.data.Form
 import play.api.i18n.Messages
+import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
 class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec {
+
+  private val updateOrRemoveCompanyBenefitDecision = inject[updateOrRemoveCompanyBenefitDecision]
 
   "decision" should {
     behave like pageWithTitle(messages("tai.benefits.updateOrRemove.decision.heading", benefitType, employerName))
@@ -50,13 +53,13 @@ class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec {
 
     "display error message" when {
       "form has error" in {
-        val errorView = views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModelWithErrors)
+        val errorView = updateOrRemoveCompanyBenefitDecision(viewModelWithErrors)
         doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
       }
     }
 
     "a decision has not been made" in {
-      val errorView = views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModelWithErrors)
+      val errorView = updateOrRemoveCompanyBenefitDecision(viewModelWithErrors)
       doc(errorView) must haveErrorLinkWithText(messages("tai.error.chooseOneOption"))
     }
 
@@ -75,5 +78,5 @@ class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec {
     CompanyBenefitDecisionViewModel(benefitType, employerName, UpdateOrRemoveCompanyBenefitDecisionForm.form)
   private lazy val viewModelWithErrors = CompanyBenefitDecisionViewModel(benefitType, employerName, formWithErrors)
 
-  override def view = views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel)
+  override def view: Html = updateOrRemoveCompanyBenefitDecision(viewModel)
 }
