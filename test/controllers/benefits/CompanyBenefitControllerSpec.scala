@@ -29,8 +29,6 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, status, _}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.income.Live
@@ -133,7 +131,7 @@ class CompanyBenefitControllerSpec
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
         val result = SUT.decision()(request)
 
-        result rendersTheSameViewAs updateOrRemoveCompanyBenefitDecision(expectedViewModel)
+        result rendersTheSameViewAs updateOrRemoveCompanyBenefitDecisionView(expectedViewModel)
       }
     }
 
@@ -327,6 +325,8 @@ class CompanyBenefitControllerSpec
   val journeyCacheService = mock[JourneyCacheService]
   val decisionCacheWrapper = mock[DecisionCacheWrapper]
 
+  private val updateOrRemoveCompanyBenefitDecisionView = inject[updateOrRemoveCompanyBenefitDecision]
+
   class SUT
       extends CompanyBenefitController(
         employmentService,
@@ -335,6 +335,9 @@ class CompanyBenefitControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        updateOrRemoveCompanyBenefitDecisionView,
+        error_template_noauth,
+        error_no_primary,
         MockTemplateRenderer,
         MockPartialRetriever
       ) {

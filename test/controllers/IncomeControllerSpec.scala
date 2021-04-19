@@ -16,7 +16,7 @@
 
 package controllers
 
-import builders.{RequestBuilder, UserBuilder}
+import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -28,7 +28,7 @@ import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
-import uk.gov.hmrc.http.HeaderCarrier
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
@@ -41,6 +41,7 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 import utils.BaseSpec
+import views.html.incomes._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -751,6 +752,10 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
     false)
 
   private def createTestIncomeController() = new TestIncomeController()
+
+  private val editSuccessView = inject[editSuccess]
+  private val editPensionSuccessView = inject[editPensionSuccess]
+
   private class TestIncomeController()
       extends IncomeController(
         journeyCacheService,
@@ -761,6 +766,14 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        inject[confirmAmountEntered],
+        editSuccessView,
+        inject[editPension],
+        editPensionSuccessView,
+        inject[editIncome],
+        inject[sameEstimatedPay],
+        error_template_noauth,
+        error_no_primary,
         partialRetriever,
         templateRenderer
       ) {
@@ -768,16 +781,18 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
     when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
     when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
-    def renderSuccess(employerName: String, employerId: Int) = { implicit request: FakeRequest[_] =>
-      {
-        views.html.incomes.editSuccess(employerName, employerId)
-      }
+    def renderSuccess(employerName: String, employerId: Int): FakeRequest[_] => HtmlFormat.Appendable = {
+      implicit request: FakeRequest[_] =>
+        {
+          editSuccessView(employerName, employerId)
+        }
     }
 
-    def renderPensionSuccess(employerName: String, employerId: Int) = { implicit request: FakeRequest[_] =>
-      {
-        views.html.incomes.editPensionSuccess(employerName, employerId)
-      }
+    def renderPensionSuccess(employerName: String, employerId: Int): FakeRequest[_] => HtmlFormat.Appendable = {
+      implicit request: FakeRequest[_] =>
+        {
+          editPensionSuccessView(employerName, employerId)
+        }
     }
 
     val editIncomeForm = EditIncomeForm("Test", "Test", 1, None, 10, None, None, None, None)

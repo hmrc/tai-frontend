@@ -41,7 +41,8 @@ import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstant
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
 import utils.BaseSpec
-import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYourAnswers}
+import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYourAnswers, removeCompanyBenefitConfirmation, removeCompanyBenefitStopDate}
+import views.html.can_we_contact_by_phone
 
 import scala.concurrent.Future
 
@@ -86,7 +87,7 @@ class RemoveCompanyBenefitControllerSpec
 
       val expectedView = {
         val form = RemoveCompanyBenefitStopDateForm.form.fill(cache.get(EndCompanyBenefit_BenefitStopDateKey))
-        views.html.benefits.removeCompanyBenefitStopDate(
+        removeCompanyBenefitStopDateView(
           form,
           cache(EndCompanyBenefit_BenefitNameKey),
           cache(EndCompanyBenefit_EmploymentNameKey))
@@ -198,7 +199,7 @@ class RemoveCompanyBenefitControllerSpec
 
       val expectedForm = CompanyBenefitTotalValueForm.form.fill(valueOfBenefit.get)
       val expectedViewModel = BenefitViewModel(employmentName, benefitName)
-      result rendersTheSameViewAs removeBenefitTotalValue(expectedViewModel, expectedForm)
+      result rendersTheSameViewAs removeBenefitTotalValueView(expectedViewModel, expectedForm)
     }
   }
 
@@ -488,7 +489,7 @@ class RemoveCompanyBenefitControllerSpec
         "Yes",
         Some("123456789"))
 
-      result rendersTheSameViewAs removeCompanyBenefitCheckYourAnswers(expectedViewModel)
+      result rendersTheSameViewAs removeCompanyBenefitCheckYourAnswersView(expectedViewModel)
     }
 
     "redirect to the summary page if a value is missing from the cache " in {
@@ -694,6 +695,12 @@ class RemoveCompanyBenefitControllerSpec
   val removeCompanyBenefitJourneyCacheService = mock[JourneyCacheService]
   val trackSuccessJourneyCacheService = mock[JourneyCacheService]
 
+  private val removeCompanyBenefitCheckYourAnswersView = inject[removeCompanyBenefitCheckYourAnswers]
+
+  private val removeBenefitTotalValueView = inject[removeBenefitTotalValue]
+
+  private val removeCompanyBenefitStopDateView = inject[removeCompanyBenefitStopDate]
+
   class SUT
       extends RemoveCompanyBenefitController(
         removeCompanyBenefitJourneyCacheService,
@@ -703,6 +710,13 @@ class RemoveCompanyBenefitControllerSpec
         FakeValidatePerson,
         mcc,
         langUtils,
+        removeCompanyBenefitCheckYourAnswersView,
+        removeCompanyBenefitStopDateView,
+        removeBenefitTotalValueView,
+        inject[can_we_contact_by_phone],
+        inject[removeCompanyBenefitConfirmation],
+        error_template_noauth,
+        error_no_primary,
         templateRenderer,
         partialRetriever
       )

@@ -23,7 +23,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import utils.BaseSpec
+import views.html.{taxCodeDetails, taxCodeDetailsPreviousYears}
 
 import scala.concurrent.Future
 
@@ -46,6 +47,10 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
     FakeValidatePerson,
     mcc,
     appConfig,
+    inject[taxCodeDetails],
+    inject[taxCodeDetailsPreviousYears],
+    error_template_noauth,
+    error_no_primary,
     partialRetriever,
     templateRenderer
   )

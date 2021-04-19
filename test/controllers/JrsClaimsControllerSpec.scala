@@ -20,24 +20,26 @@ import builders.RequestBuilder
 import cats.data.OptionT
 import cats.implicits.catsStdInstancesForFuture
 import controllers.actions.FakeValidatePerson
-import org.joda.time.YearMonth
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.Messages
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import uk.gov.hmrc.tai.service.JrsService
 import utils.BaseSpec
+import views.html.{internalServerError, jrsClaimSummary}
 
 import scala.concurrent.Future
 
 class JrsClaimsControllerSpec extends BaseSpec {
 
-  val jrsService = mock[JrsService]
-  val mockAppConfig = mock[ApplicationConfig]
+  private val jrsService = mock[JrsService]
+  private val mockAppConfig = mock[ApplicationConfig]
 
   val jrsClaimsController = new JrsClaimsController(
     inject[AuditConnector],
@@ -46,8 +48,13 @@ class JrsClaimsControllerSpec extends BaseSpec {
     jrsService,
     mcc,
     mockAppConfig,
+    inject[jrsClaimSummary],
+    inject[internalServerError],
+    error_template_noauth,
+    error_no_primary,
     partialRetriever,
-    templateRenderer)
+    templateRenderer
+  )
 
   val jrsClaimsServiceResponse = JrsClaims(
     List(
@@ -55,7 +62,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
       Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
     ))
 
-  implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+  implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
   "jrsClaimsController" should {
 
@@ -70,7 +77,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
         val result = jrsClaimsController.onPageLoad()(request)
 
-        status(result) mustBe (OK)
+        status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
 
         doc.title must include(Messages("check.jrs.claims.title"))
@@ -87,7 +94,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
         val result = jrsClaimsController.onPageLoad()(request)
 
-        status(result) mustBe (NOT_FOUND)
+        status(result) mustBe NOT_FOUND
         val doc = Jsoup.parse(contentAsString(result))
 
         doc.title must include(Messages("check.jrs.claims.no.claim.title"))
@@ -102,7 +109,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
         val result = jrsClaimsController.onPageLoad()(request)
 
-        status(result) mustBe (INTERNAL_SERVER_ERROR)
+        status(result) mustBe INTERNAL_SERVER_ERROR
 
       }
 

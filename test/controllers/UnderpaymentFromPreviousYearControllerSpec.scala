@@ -23,12 +23,13 @@ import org.mockito.Mockito.when
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service._
 import utils.BaseSpec
+import views.html.previousYearUnderpayment
 
 import scala.concurrent.Future
 
 class UnderpaymentFromPreviousYearControllerSpec extends BaseSpec {
 
-  val referralMap = Map("Referer" -> "http://somelocation/somePageResource")
+  private val referralMap = Map("Referer" -> "http://somelocation/somePageResource")
 
   "UnderPaymentFromPreviousYearController" should {
     "respond with OK" when {
@@ -49,6 +50,9 @@ class UnderpaymentFromPreviousYearControllerSpec extends BaseSpec {
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        inject[previousYearUnderpayment],
+        error_template_noauth,
+        error_no_primary,
         partialRetriever,
         templateRenderer
       ) {

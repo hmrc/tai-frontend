@@ -33,6 +33,7 @@ import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountServ
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import utils.BaseSpec
+import views.html.taxCodeChange.{taxCodeComparison, whatHappensNext, yourTaxFreeAmount}
 
 import scala.concurrent.Future
 
@@ -47,7 +48,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
 
         status(result) mustBe OK
 
-        result rendersTheSameViewAs views.html.taxCodeChange.whatHappensNext()
+        result rendersTheSameViewAs whatHappensNextView()
       }
     }
   }
@@ -72,7 +73,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
 
         status(result) mustBe OK
 
-        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
+        result rendersTheSameViewAs yourTaxFreeAmountView(expectedViewModel)
       }
     }
   }
@@ -102,7 +103,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
       val expectedViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates, reasons, false)
 
       status(result) mustBe OK
-      result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel, appConfig)
+      result rendersTheSameViewAs taxCodeComparisonView(expectedViewModel, appConfig)
     }
   }
 
@@ -130,6 +131,12 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
 
   private def createController() = new TaxCodeChangeTestController
 
+  private val whatHappensNextView = inject[whatHappensNext]
+
+  private val yourTaxFreeAmountView = inject[yourTaxFreeAmount]
+
+  private val taxCodeComparisonView = inject[taxCodeComparison]
+
   private class TaxCodeChangeTestController
       extends TaxCodeChangeController(
         taxCodeChangeService,
@@ -141,6 +148,11 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         taxCodeChangeReasonsService,
         appConfig,
         mcc,
+        taxCodeComparisonView,
+        yourTaxFreeAmountView,
+        whatHappensNextView,
+        error_template_noauth,
+        error_no_primary,
         partialRetriever,
         templateRenderer
       ) {

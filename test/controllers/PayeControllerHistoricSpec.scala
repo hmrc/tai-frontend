@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import utils.BaseSpec
-import views.html.paye.historicPayAsYouEarn
+import views.html.paye.{RtiDisabledHistoricPayAsYouEarn, historicPayAsYouEarn}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -223,6 +223,10 @@ class PayeControllerHistoricSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        inject[RtiDisabledHistoricPayAsYouEarn],
+        inject[historicPayAsYouEarn],
+        error_template_noauth,
+        error_no_primary,
         partialRetriever,
         templateRenderer
       ) {

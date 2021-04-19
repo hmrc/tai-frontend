@@ -24,9 +24,11 @@ import utils.BaseSpec
 
 class UnauthorisedControllerSpec extends BaseSpec {
 
-  val controller = new UnauthorisedController(
+  private val controller = new UnauthorisedController(
     mcc,
     appConfig,
+    error_template_noauth,
+    error_no_primary,
     partialRetriever,
     templateRenderer
   ) {

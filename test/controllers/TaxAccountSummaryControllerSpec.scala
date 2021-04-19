@@ -23,7 +23,6 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import play.api.i18n.I18nSupport
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
@@ -36,6 +35,7 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import utils.{BaseSpec, TaxAccountSummaryTestData}
+import views.html.incomeTaxSummary
 
 import scala.concurrent.Future
 
@@ -221,12 +221,13 @@ class TaxAccountSummaryControllerSpec
 
   }
 
+  private val testAmount: BigDecimal = 100
   override val nonTaxCodeIncome = NonTaxCodeIncome(
     Some(
       uk.gov.hmrc.tai.model.domain.income
-        .UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest", Seq.empty[BankAccount])),
+        .UntaxedInterest(UntaxedInterestIncome, None, testAmount, "Untaxed Interest", Seq.empty[BankAccount])),
     Seq(
-      OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
+      OtherNonTaxCodeIncome(Profit, None, testAmount, "Profit")
     )
   )
 
@@ -244,6 +245,9 @@ class TaxAccountSummaryControllerSpec
     FakeValidatePerson,
     appConfig,
     mcc,
+    inject[incomeTaxSummary],
+    error_template_noauth,
+    error_no_primary,
     partialRetriever,
     templateRenderer
   )

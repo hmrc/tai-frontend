@@ -33,6 +33,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService, UpdateNextYearsIncomeService}
 import utils.BaseSpec
+import views.html.incomeTaxComparison.Main
 
 import scala.concurrent.Future
 
@@ -203,6 +204,9 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
         FakeValidatePerson,
         appConfig,
         mcc,
+        inject[Main],
+        error_template_noauth,
+        error_no_primary,
         partialRetriever,
         templateRenderer
       ) {
