@@ -16,13 +16,12 @@
 
 package views.html.employments
 
-import controllers.routes
-import uk.gov.hmrc.tai.forms.employments.{IrregularPayForm, IrregularPayFormData}
-import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 import play.api.data.Form
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.forms.employments.{IrregularPayForm, IrregularPayFormData}
 import uk.gov.hmrc.tai.util.constants.IrregularPayConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
 class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with IrregularPayConstants {
 
@@ -51,7 +50,7 @@ class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with Irregu
 
     "display error message" when {
       "form has error" in {
-        val errorView = views.html.employments.EndEmploymentIrregularPaymentError(formWithErrors, model)
+        val errorView = template(formWithErrors, model)
         doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
       }
     }
@@ -69,5 +68,7 @@ class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with Irregu
 
   private lazy val model = EmploymentViewModel("TEST", 1)
 
-  override def view: Html = views.html.employments.EndEmploymentIrregularPaymentError(validForm, model)
+  private val template = inject[EndEmploymentIrregularPaymentError]
+
+  override def view: Html = template(validForm, model)
 }
