@@ -21,12 +21,12 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class UpdateIncomeDetailsConfirmationSpec extends TaiViewSpec {
-  override def view: Html = views.html.incomes.previousYears.UpdateIncomeDetailsConfirmation()
+  private val UpdateIncomeDetailsConfirmation = inject[UpdateIncomeDetailsConfirmation]
+  override def view: Html = UpdateIncomeDetailsConfirmation()
 
   "Update Income Details Confirmation View" must {
 
     behave like pageWithTitle(messages("tai.income.previousYears.confirmation.heading"))
     behave like haveReturnToSummaryButtonWithUrl(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev))
-
   }
 }

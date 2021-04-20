@@ -17,7 +17,7 @@
 package views.html.incomes.previousYears
 
 import play.api.data.Form
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsDecisionForm
 import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice
 import uk.gov.hmrc.tai.model.TaxYear
@@ -27,6 +27,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class UpdateIncomeDetailsDecisionSpec extends TaiViewSpec {
 
   val taxYear = TaxYear().prev
+  private val UpdateIncomeDetailsDecision = inject[UpdateIncomeDetailsDecision]
 
   "decision" should {
 
@@ -62,14 +63,14 @@ class UpdateIncomeDetailsDecisionSpec extends TaiViewSpec {
 
   "display error message" when {
     "form has error" in {
-      val errorView = views.html.incomes.previousYears.UpdateIncomeDetailsDecision(formWithErrors, taxYear)
+      val errorView: HtmlFormat.Appendable = UpdateIncomeDetailsDecision(formWithErrors, taxYear)
       doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
     }
   }
 
   "display error message" when {
     "a decision has not been made" in {
-      val view: Html = views.html.incomes.previousYears.UpdateIncomeDetailsDecision(formWithErrors, taxYear)
+      val view: HtmlFormat.Appendable = UpdateIncomeDetailsDecision(formWithErrors, taxYear)
       doc(view) must haveErrorLinkWithText(messages("tai.error.chooseOneOption"))
     }
   }
@@ -79,6 +80,5 @@ class UpdateIncomeDetailsDecisionSpec extends TaiViewSpec {
       UpdateIncomeChoice -> ""
     ))
 
-  override def view =
-    views.html.incomes.previousYears.UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear)
+  override def view: HtmlFormat.Appendable = UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear)
 }

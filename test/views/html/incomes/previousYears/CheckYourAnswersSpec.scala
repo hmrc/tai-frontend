@@ -16,6 +16,7 @@
 
 package views.html.incomes.previousYears
 
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateIncomeDetailsCheckYourAnswersViewModel
@@ -73,6 +74,6 @@ class CheckYourAnswersSpec extends TaiViewSpec {
   }
 
   val viewModel = UpdateIncomeDetailsCheckYourAnswersViewModel("2016", "whatYouToldUs", "Yes", Some("123456789"))
-
-  override def view = views.html.incomes.previousYears.CheckYourAnswers(viewModel)
+  private val CheckYourAnswers = inject[CheckYourAnswers]
+  override def view: HtmlFormat.Appendable = CheckYourAnswers(viewModel)
 }
