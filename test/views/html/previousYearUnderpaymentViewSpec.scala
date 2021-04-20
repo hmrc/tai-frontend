@@ -17,7 +17,7 @@
 package views.html
 
 import play.api.i18n.Messages
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -65,7 +65,8 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
 
   val test = Dates.formatDate(TaxYear().start)
 
-  override def view =
+  private val previousYearUnderpayment = inject[previousYearUnderpayment]
+  override def view: HtmlFormat.Appendable =
     previousYearUnderpayment(PreviousYearUnderpaymentViewModel(allowanceReducedBy, poundedAmountDue, Html("some-link")))
 
 }

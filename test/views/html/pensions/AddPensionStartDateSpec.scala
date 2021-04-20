@@ -34,7 +34,8 @@ class AddPensionStartDateSpec extends TaiViewSpec {
       "month"                    -> "6",
       "year"                     -> "2017"
     ))
-  override def view: Html = views.html.pensions.addPensionStartDate(pensionStartDateForm, pensionName)
+  private val addPensionStartDate = inject[addPensionStartDate]
+  override def view: Html = addPensionStartDate(pensionStartDateForm, pensionName)
 
   "Add pension start date form" should {
     behave like pageWithTitle(messages("tai.addPensionProvider.startDateForm.pagetitle"))
@@ -47,7 +48,7 @@ class AddPensionStartDateSpec extends TaiViewSpec {
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {
-        def view: Html = views.html.pensions.addPensionStartDate(formWithErrors, pensionName)
+        def view: Html = addPensionStartDate(formWithErrors, pensionName)
 
         val errorSummary = doc(view).select("#error-summary-display a").text
 
@@ -96,7 +97,7 @@ class AddPensionStartDateSpec extends TaiViewSpec {
 
     "have an error message with the form inputs" when {
       "there is a form with an error" in {
-        def view: Html = views.html.pensions.addPensionStartDate(formWithErrors, pensionName)
+        def view: Html = addPensionStartDate(formWithErrors, pensionName)
 
         val errorMessage = doc(view).select(".error-message").text
         val fieldSetError = doc(view).select("form > div").hasClass("form-group-error")

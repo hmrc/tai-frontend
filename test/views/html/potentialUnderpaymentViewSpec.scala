@@ -17,6 +17,8 @@
 package views.html
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
@@ -43,10 +45,11 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
   val resourceName = "tax-free-allowance"
 
   val viewModel = PotentialUnderpaymentViewModel(tas, ccs, referalPath, resourceName)
-  def document(viewModel: PotentialUnderpaymentViewModel = viewModel) =
-    Jsoup.parseBodyFragment(views.html.potentialUnderpayment(viewModel).toString)
+  private val potentialUnderpayment = inject[potentialUnderpayment]
+  def document(viewModel: PotentialUnderpaymentViewModel = viewModel): Document =
+    Jsoup.parseBodyFragment(potentialUnderpayment(viewModel).toString)
 
-  override def view = views.html.potentialUnderpayment(viewModel)
+  override def view: HtmlFormat.Appendable = potentialUnderpayment(viewModel)
 
   "Potential Underpayment" must {
     behave like pageWithBackLink

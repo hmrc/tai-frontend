@@ -16,21 +16,20 @@
 
 package views.html.pensions.updatePensions
 
-import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 import uk.gov.hmrc.tai.forms.pensions.WhatDoYouWantToTellUsForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
+import views.html.pensions.update.whatDoYouWantToTellUs
 
 class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
 
   private val pensionName = "testPension"
   private val pensionId = 1
+  private val whatDoYouWantToTellUs = inject[whatDoYouWantToTellUs]
 
   override def view: Html =
-    views.html.pensions.update.whatDoYouWantToTellUs(pensionName, pensionId, WhatDoYouWantToTellUsForm.form)
+    whatDoYouWantToTellUs(pensionName, pensionId, WhatDoYouWantToTellUsForm.form)
 
   "whatDoYouWantToTellUs" must {
     behave like pageWithTitle(Messages("tai.updatePension.whatDoYouWantToTellUs.pagetitle"))

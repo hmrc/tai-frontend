@@ -22,8 +22,11 @@ import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
+import views.html.pensions.update.doYouGetThisPensionIncome
 
 class DoYouGetThisPensionIncomePageSpec extends TaiViewSpec with FormValuesConstants {
+
+  private val doYouGetThisPensionIncome = inject[doYouGetThisPensionIncome]
 
   "IncorrectPension page" must {
     behave like pageWithTitle(messages("tai.updatePension.decision.pagetitle"))
@@ -46,8 +49,7 @@ class DoYouGetThisPensionIncomePageSpec extends TaiViewSpec with FormValuesConst
       "form contains error" in {
         val pensionUpdateRemoveFormWithError =
           UpdateRemovePensionForm.form.bind(Map(UpdateRemovePensionForm.IncorrectPensionDecision -> ""))
-        val viewWithError: Html =
-          views.html.pensions.update.doYouGetThisPensionIncome(model, pensionUpdateRemoveFormWithError)
+        val viewWithError: Html = doYouGetThisPensionIncome(model, pensionUpdateRemoveFormWithError)
 
         val errorDoc = doc(viewWithError)
 
@@ -60,5 +62,5 @@ class DoYouGetThisPensionIncomePageSpec extends TaiViewSpec with FormValuesConst
   private lazy val pensionUpdateRemoveForm =
     UpdateRemovePensionForm.form.bind(Map(UpdateRemovePensionForm.IncorrectPensionDecision -> YesValue))
   private lazy val model = PensionProviderViewModel(1, "Test Pension")
-  override def view: Html = views.html.pensions.update.doYouGetThisPensionIncome(model, pensionUpdateRemoveForm)
+  override def view: Html = doYouGetThisPensionIncome(model, pensionUpdateRemoveForm)
 }

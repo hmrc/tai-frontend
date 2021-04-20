@@ -19,7 +19,7 @@ package views.html.taxCodeChange
 import controllers.routes
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -236,8 +236,9 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
   val taxFreeAmount: YourTaxFreeAmountViewModel = createViewModel()
   val currentOnlyTaxFreeAmount: YourTaxFreeAmountViewModel = createViewModel(showPreviousTaxFreeInfo = false)
 
-  def createView(viewModel: YourTaxFreeAmountViewModel = taxFreeAmount) =
-    views.html.taxCodeChange.yourTaxFreeAmount(viewModel)
+  private val yourTaxFreeAmount = inject[yourTaxFreeAmount]
+  def createView(viewModel: YourTaxFreeAmountViewModel = taxFreeAmount): HtmlFormat.Appendable =
+    yourTaxFreeAmount(viewModel)
 
   override def view = createView()
   private lazy val currentOnlyView = createView(viewModel = currentOnlyTaxFreeAmount)
