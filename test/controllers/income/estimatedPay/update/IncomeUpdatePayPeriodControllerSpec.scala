@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
+import views.html.incomes.payPeriod
 
 import scala.concurrent.Future
 
@@ -46,9 +47,13 @@ class IncomeUpdatePayPeriodControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        inject[payPeriod],
         journeyCacheService,
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
-        MockTemplateRenderer) {
+        MockTemplateRenderer
+      ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
       .thenReturn(Future.successful(Right(employer.id)))
     when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
@@ -66,7 +71,7 @@ class IncomeUpdatePayPeriodControllerSpec
 
         def payPeriodPage(): Future[Result] =
           new TestIncomeUpdatePayPeriodController()
-            .payPeriodPage()(RequestBuilder.buildFakeGetRequestWithAuth)
+            .payPeriodPage()(RequestBuilder.buildFakeGetRequestWithAuth())
       }
 
       def setup(): PayPeriodPageHarness =

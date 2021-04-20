@@ -34,6 +34,9 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, IncorrectPensionDecisionConstants, JourneyCacheConstants}
 import utils.BaseSpec
+import views.html.can_we_contact_by_phone
+import views.html.pensions.duplicateSubmissionWarning
+import views.html.pensions.update.{confirmation, doYouGetThisPensionIncome, updatePensionCheckYourAnswers, whatDoYouWantToTellUs}
 
 import scala.concurrent.Future
 
@@ -603,8 +606,16 @@ class UpdatePensionProviderControllerSpec
         FakeValidatePerson,
         mcc,
         appConfig,
+        inject[can_we_contact_by_phone],
+        inject[doYouGetThisPensionIncome],
+        inject[whatDoYouWantToTellUs],
+        inject[updatePensionCheckYourAnswers],
+        inject[confirmation],
+        inject[duplicateSubmissionWarning],
         journeyCacheService,
         successfulJourneyCacheService,
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       )

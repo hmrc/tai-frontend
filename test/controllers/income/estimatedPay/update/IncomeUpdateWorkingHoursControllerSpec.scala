@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
+import views.html.incomes.workingHours
 
 import scala.concurrent.Future
 
@@ -46,9 +47,13 @@ class IncomeUpdateWorkingHoursControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        inject[workingHours],
         journeyCacheService,
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
-        MockTemplateRenderer) {
+        MockTemplateRenderer
+      ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
       .thenReturn(Future.successful(Right(employer.id)))
     when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
@@ -65,7 +70,7 @@ class IncomeUpdateWorkingHoursControllerSpec
 
         def workingHoursPage(): Future[Result] =
           new TestIncomeUpdateWorkingHoursController()
-            .workingHoursPage()(RequestBuilder.buildFakeGetRequestWithAuth)
+            .workingHoursPage()(RequestBuilder.buildFakeGetRequestWithAuth())
       }
 
       def setup(): WorkingHoursPageHarness =

@@ -25,10 +25,8 @@ import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito._
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
@@ -36,9 +34,10 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, UpdateHistoricIncomeChoiceConstants}
 import utils.BaseSpec
+import views.html.can_we_contact_by_phone
+import views.html.incomes.previousYears.{CheckYourAnswers, UpdateIncomeDetails, UpdateIncomeDetailsConfirmation, UpdateIncomeDetailsDecision}
 
 import scala.concurrent.Future
-import scala.util.Random
 
 class UpdateIncomeDetailsControllerSpec
     extends BaseSpec with FormValuesConstants with UpdateHistoricIncomeChoiceConstants with JourneyCacheConstants
@@ -395,8 +394,15 @@ class UpdateIncomeDetailsControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        inject[can_we_contact_by_phone],
+        inject[CheckYourAnswers],
+        inject[UpdateIncomeDetailsDecision],
+        inject[UpdateIncomeDetails],
+        inject[UpdateIncomeDetailsConfirmation],
         trackingjourneyCacheService,
         journeyCacheService,
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       )

@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
 import utils.BaseSpec
-import views.html.incomes.{payslipAmount, taxablePayslipAmount}
+import views.html.incomes.{payslipAmount, payslipDeductions, taxablePayslipAmount}
 
 import scala.concurrent.Future
 
@@ -45,14 +45,24 @@ class IncomeUpdatePayslipAmountControllerSpec
 
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
+  private val payslipAmountView = inject[payslipAmount]
+
+  private val taxablePayslipAmountView = inject[taxablePayslipAmount]
+
   class TestIncomeUpdatePayslipAmountController
       extends IncomeUpdatePayslipAmountController(
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        payslipAmountView,
+        taxablePayslipAmountView,
+        inject[payslipDeductions],
         journeyCacheService,
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
-        MockTemplateRenderer) {
+        MockTemplateRenderer
+      ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
       .thenReturn(Future.successful(Right(employer.id)))
     when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
@@ -112,7 +122,7 @@ class IncomeUpdatePayslipAmountControllerSpec
           .fill(PayslipForm(cachedAmount))
 
         val expectedViewModel = PaySlipAmountViewModel(expectedForm, payPeriod, None, employer)
-        val expectedView = payslipAmount(expectedViewModel)
+        val expectedView = payslipAmountView(expectedViewModel)
 
         result rendersTheSameViewAs expectedView
       }
@@ -233,7 +243,7 @@ class IncomeUpdatePayslipAmountControllerSpec
 
         val expectedForm = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(cachedAmount))
         val expectedViewModel = TaxablePaySlipAmountViewModel(expectedForm, payPeriod, None, employer)
-        result rendersTheSameViewAs taxablePayslipAmount(expectedViewModel)
+        result rendersTheSameViewAs taxablePayslipAmountView(expectedViewModel)
       }
     }
 

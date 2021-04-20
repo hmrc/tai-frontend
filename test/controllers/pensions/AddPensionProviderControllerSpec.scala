@@ -26,11 +26,9 @@ import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{when, _}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, status, _}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderNumberForm._
@@ -40,6 +38,8 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
+import views.html.can_we_contact_by_phone
+import views.html.pensions._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -936,8 +936,18 @@ class AddPensionProviderControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        inject[can_we_contact_by_phone],
+        inject[addPensionConfirmation],
+        inject[addPensionCheckYourAnswers],
+        inject[addPensionNumber],
+        inject[addPensionErrorPage],
+        inject[addPensionReceivedFirstPay],
+        inject[addPensionName],
+        inject[addPensionStartDate],
         addPensionProviderJourneyCacheService,
         trackSuccessJourneyCacheService,
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

@@ -37,6 +37,7 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
+import views.html.incomes.{confirmAmountEntered, editIncomeIrregularHours, editSuccess}
 
 import scala.concurrent.Future
 
@@ -58,7 +59,12 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         taxAccountService,
         estimatedPayJourneyCompletionService,
         mcc,
+        inject[editSuccess],
+        inject[editIncomeIrregularHours],
+        inject[confirmAmountEntered],
         journeyCacheService,
+        error_template_noauth,
+        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

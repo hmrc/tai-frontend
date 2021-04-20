@@ -206,6 +206,8 @@ class TaxAccountSummaryServiceSpec
         trackingService = trackingService,
         employmentService = employmentService,
         taxAccountService = taxAccountService,
+        error_template_noauth = error_template_noauth,
+        error_no_primary = error_no_primary,
         partialRetriever = MockPartialRetriever,
         templateRenderer = MockTemplateRenderer,
         mcc = mcc

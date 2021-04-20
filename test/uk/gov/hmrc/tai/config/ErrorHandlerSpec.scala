@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
+package uk.gov.hmrc.tai.config
+
 import org.jsoup.Jsoup
-import play.api.test.FakeRequest
-import uk.gov.hmrc.tai.config.ErrorHandler
-import utils.BaseSpec
 import org.jsoup.nodes.Document
 import play.api.Configuration
+import play.api.test.FakeRequest
+import utils.BaseSpec
+import views.html.internalServerError
 
 class ErrorHandlerSpec extends BaseSpec {
   implicit val request = FakeRequest()
 
   lazy val errorHandler: ErrorHandler = new ErrorHandler(
     appConfig,
+    error_template_noauth,
     messagesApi,
-    app.injector.instanceOf[Configuration]
+    inject[Configuration],
+    inject[internalServerError]
   )
 
   "standardTemplate" in {
