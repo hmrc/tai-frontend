@@ -16,6 +16,7 @@
 
 package views.html.incomes.estimatedPayment.update
 
+import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
@@ -32,7 +33,9 @@ class CheckYourAnswersSpec extends TaiViewSpec {
   val totalBonusOrOvertime = Some("3000")
   val payPeriodInDays = Some("3")
 
-  override def view = views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel)
+  private val template = inject[checkYourAnswers]
+
+  override def view: Html = template(viewModel)
 
   def viewModel =
     CheckYourAnswersViewModel(

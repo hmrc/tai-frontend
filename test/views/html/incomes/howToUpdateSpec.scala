@@ -33,5 +33,7 @@ class howToUpdateSpec extends TaiViewSpec {
       messages("tai.howToUpdate.heading", employerName))
   }
 
-  override def view: Html = views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), empId, employerName)
+  private val template = inject[howToUpdate]
+
+  override def view: Html = template(HowToUpdateForm.createForm(), empId, employerName)
 }
