@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, IrregularPay}
 
-class UpdateIncomeCYPlus1Confirm extends TaiViewSpec {
+class UpdateIncomeCYPlus1ConfirmSpec extends TaiViewSpec {
 
   val employerName = "employerName"
   val currentAmount = 1234

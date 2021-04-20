@@ -350,11 +350,12 @@ class ErrorPagesHandlerSpec extends BaseSpec {
 
   val ninoValue = nino.value
 
-  val createSut = new SUT
+  val createSut = new SUT(error_template_noauth, error_no_primary)
 
-  class SUT extends ErrorPagesHandler {
-    override val error_template_noauth: error_template_noauth = error_template_noauth
-    override val error_no_primary: error_no_primary = error_no_primary
+  class SUT(
+    override val error_template_noauth: error_template_noauth,
+    override val error_no_primary: error_no_primary
+  ) extends ErrorPagesHandler {
     override implicit def templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit def partialRetriever: FormPartialRetriever = MockPartialRetriever
 
