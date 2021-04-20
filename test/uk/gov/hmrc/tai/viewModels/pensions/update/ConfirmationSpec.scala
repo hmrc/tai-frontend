@@ -19,9 +19,11 @@ package uk.gov.hmrc.tai.viewModels.pensions.update
 import controllers.routes
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import views.html.pensions.update.confirmation
 
 class ConfirmationSpec extends TaiViewSpec {
-  override def view: Html = views.html.pensions.update.confirmation()
+  private val template: confirmation = inject[confirmation]
+  override def view: Html = template()
 
   "Confirmation View" must {
 

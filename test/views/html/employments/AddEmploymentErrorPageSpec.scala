@@ -28,7 +28,7 @@ class AddEmploymentErrorPageSpec extends TaiViewSpec {
       messages("tai.addEmployment.employmentErrorPage.title"))
 
     "have link" in {
-      doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad.url)
+      doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad().url)
     }
 
     "have paragraph" in {
@@ -38,6 +38,7 @@ class AddEmploymentErrorPageSpec extends TaiViewSpec {
 
     behave like pageWithBackLink
   }
+  private val template = inject[add_employment_error_page]
 
-  override def view: Html = views.html.employments.add_employment_error_page("fake employer")
+  override def view: Html = template("fake employer")
 }

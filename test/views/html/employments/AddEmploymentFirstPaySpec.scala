@@ -16,7 +16,6 @@
 
 package views.html.employments
 
-import controllers.routes
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.AddEmploymentFirstPayForm
@@ -42,7 +41,7 @@ class AddEmploymentFirstPaySpec extends TaiViewSpec with FormValuesConstants {
         val noPayrollNumberChooseError = messages("tai.error.chooseOneOption")
         val formWithErrors: Form[Option[String]] =
           AddEmploymentFirstPayForm.form.withError(AddEmploymentFirstPayForm.FirstPayChoice, noPayrollNumberChooseError)
-        def view: Html = views.html.employments.add_employment_first_pay_form(formWithErrors, employerName)
+        def view: Html = template(formWithErrors, employerName)
 
         val errorMessage = doc(view).select(".error-message").text
         errorMessage mustBe noPayrollNumberChooseError
@@ -56,6 +55,7 @@ class AddEmploymentFirstPaySpec extends TaiViewSpec with FormValuesConstants {
     Map(
       AddEmploymentFirstPayForm.FirstPayChoice -> YesValue
     ))
+  private val template = inject[add_employment_first_pay_form]
 
-  override def view: Html = views.html.employments.add_employment_first_pay_form(employmentFirstPayForm, employerName)
+  override def view: Html = template(employmentFirstPayForm, employerName)
 }

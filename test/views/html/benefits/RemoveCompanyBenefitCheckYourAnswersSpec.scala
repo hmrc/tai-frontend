@@ -16,6 +16,7 @@
 
 package views.html.benefits
 
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.benefit.RemoveCompanyBenefitCheckYourAnswersViewModel
@@ -31,7 +32,7 @@ class RemoveCompanyBenefitCheckYourAnswersSpec extends TaiViewSpec {
     behave like pageWithButtonForm(
       "/check-income-tax/remove-company-benefit/submit-your-answers",
       messages("tai.confirmAndSend"))
-    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel)
+    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
     behave like pageWithCheckYourAnswersSummary
 
     "display a back button" in {
@@ -91,5 +92,7 @@ class RemoveCompanyBenefitCheckYourAnswersSpec extends TaiViewSpec {
       "Yes",
       Some("123456789"))
 
-  override def view = views.html.benefits.removeCompanyBenefitCheckYourAnswers(viewModel)
+  private val template = inject[removeCompanyBenefitCheckYourAnswers]
+
+  override def view: Html = template(viewModel)
 }

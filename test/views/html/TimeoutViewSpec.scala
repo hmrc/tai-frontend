@@ -17,6 +17,7 @@
 package views.html
 
 import play.api.i18n.Messages
+import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class TimeoutViewSpec extends TaiViewSpec {
@@ -36,6 +37,7 @@ class TimeoutViewSpec extends TaiViewSpec {
         controllers.routes.TaxAccountSummaryController.onPageLoad().url)
     }
   }
+  private val template = inject[timeout]
 
-  override def view = views.html.timeout()
+  override def view: Html = template()
 }

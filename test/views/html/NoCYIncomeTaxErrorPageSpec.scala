@@ -17,11 +17,10 @@
 package views.html
 
 import controllers.routes
-import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.constants.TaiConstants.EmployeePensionIForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
 
 class NoCYIncomeTaxErrorPageSpec extends TaiViewSpec {
 
@@ -37,7 +36,7 @@ class NoCYIncomeTaxErrorPageSpec extends TaiViewSpec {
       "name and end date of employer is present" in {
         val endDate = "9 June 2016"
 
-        def view: Html = views.html.noCYIncomeTaxErrorPage(NoCYIncomeTaxErrorViewModel(Some(endDate)))
+        def view: Html = template(NoCYIncomeTaxErrorViewModel(Some(endDate)))
         doc(view) must haveParagraphWithText(messages("tai.noCYIncomeError.body.with.employment", endDate))
       }
     }
@@ -58,6 +57,7 @@ class NoCYIncomeTaxErrorPageSpec extends TaiViewSpec {
         .toString
     }
   }
+  private val template = inject[noCYIncomeTaxErrorPage]
 
-  override def view: Html = views.html.noCYIncomeTaxErrorPage(NoCYIncomeTaxErrorViewModel(None))
+  override def view: Html = template(NoCYIncomeTaxErrorViewModel(None))
 }
