@@ -28,8 +28,9 @@ class updateIncomeCYPlus1SameSpec extends TaiViewSpec {
   val employerName = "Employer Name"
   val employmentID = 1
   val newAmount = 1234
+  private val updateIncomeCYPlus1Same = inject[updateIncomeCYPlus1Same]
 
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Same(employerName, employmentID, newAmount)
+  override def view: Html = updateIncomeCYPlus1Same(employerName, employmentID, newAmount)
 
   "CYPlus1 Same Page" should {
     behave like pageWithBackLink

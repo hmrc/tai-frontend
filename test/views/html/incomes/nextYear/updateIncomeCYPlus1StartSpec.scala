@@ -25,6 +25,7 @@ class updateIncomeCYPlus1StartSpec extends TaiViewSpec {
   val employerName = "Employer Name"
   val employmentID = 1
   val isPension = false
+  private val updateIncomeCYPlus1Start = inject[updateIncomeCYPlus1Start]
 
   "CYPlus1 Start Page" should {
     behave like pageWithBackLink
@@ -46,8 +47,7 @@ class updateIncomeCYPlus1StartSpec extends TaiViewSpec {
 
     "contain the correct content when income is from pension" in {
       val isPension = true
-      val pensionView: Html =
-        views.html.incomes.nextYear.updateIncomeCYPlus1Start(employerName, employmentID, isPension)
+      val pensionView: Html = updateIncomeCYPlus1Start(employerName, employmentID, isPension)
       doc(pensionView).getElementsByTag("p").text must include(
         messages("tai.updateIncome.CYPlus1.start.paragraph1", employerName))
       doc(pensionView).getElementsByTag("p").text mustNot include(
@@ -63,5 +63,5 @@ class updateIncomeCYPlus1StartSpec extends TaiViewSpec {
 
   }
 
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Start(employerName, employmentID, isPension)
+  override def view: Html = updateIncomeCYPlus1Start(employerName, employmentID, isPension)
 }

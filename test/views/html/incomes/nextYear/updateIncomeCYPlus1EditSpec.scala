@@ -55,8 +55,10 @@ class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
     }
   }
 
+  private val updateIncomeCYPlus1Edit = inject[updateIncomeCYPlus1Edit]
+
   override def view: Html =
-    views.html.incomes.nextYear.updateIncomeCYPlus1Edit(
+    updateIncomeCYPlus1Edit(
       employerName,
       employmentID,
       isPension,

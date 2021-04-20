@@ -30,7 +30,8 @@ class UpdateIncomeDetailsSpec extends TaiViewSpec {
   private val formattedTaxYear = TaxPeriodLabelService.taxPeriodLabelSingleLine(taxYear)
   private val givenTaxYear: TaxYear = TaxYear(taxYear)
   private val UpdateIncomeDetails = inject[UpdateIncomeDetails]
-  override def view: Html = UpdateIncomeDetails(UpdateHistoricIncomeDetailsViewModel(taxYear), UpdateIncomeDetailsForm.form)
+  override def view: Html =
+    UpdateIncomeDetails(UpdateHistoricIncomeDetailsViewModel(taxYear), UpdateIncomeDetailsForm.form)
 
   "UpdateIncomeDetails" must {
     behave like pageWithTitle(Messages("tai.income.previousYears.details.title"))
