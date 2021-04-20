@@ -18,6 +18,7 @@ package views.html.taxCodeChange
 
 import controllers.routes
 import play.api.i18n.Messages
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
@@ -50,7 +51,8 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
   val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
 
-  override def view = views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig)
+  private val taxCodeComparison = inject[taxCodeComparison]
+  override def view: HtmlFormat.Appendable = taxCodeComparison(viewModel, appConfig)
 
   def testTaxCodeRecordFormat(record: TaxCodeRecord) = {
     doc must haveParagraphWithText(record.employerName)
@@ -138,7 +140,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
         val viewModel: TaxCodeChangeViewModel =
           TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), false)
 
-        val view = views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig)
+        val view: HtmlFormat.Appendable = taxCodeComparison(viewModel, appConfig)
         doc(view) must haveClassCount("tax-code-reason", 2)
       }
 
@@ -146,7 +148,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
         val viewModel: TaxCodeChangeViewModel =
           TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), true)
 
-        val view = views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig)
+        val view: HtmlFormat.Appendable = taxCodeComparison(viewModel, appConfig)
         doc(view) must haveClassCount("tax-code-reason", 1)
       }
     }

@@ -16,12 +16,13 @@
 
 package views.html
 
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class manualCorrespondenceSpec extends TaiViewSpec {
 
-  override def view = views.html.manualCorrespondence()
+  private val manualCorrespondence = inject[manualCorrespondence]
+  override def view: HtmlFormat.Appendable = manualCorrespondence()
 
   "manual correspondence page" should {
     behave like pageWithTitle(messages("tai.gatekeeper.refuse.title"))

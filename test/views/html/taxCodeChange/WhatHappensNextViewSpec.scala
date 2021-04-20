@@ -17,7 +17,7 @@
 package views.html.taxCodeChange
 
 import controllers.routes
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.urls.Link
 
@@ -66,6 +66,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
 
   }
 
-  override def view = views.html.taxCodeChange.whatHappensNext()
+  private val whatHappensNext = inject[whatHappensNext]
+  override def view: HtmlFormat.Appendable = whatHappensNext()
 
 }

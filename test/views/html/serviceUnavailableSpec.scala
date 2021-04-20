@@ -16,11 +16,13 @@
 
 package views.html
 
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class serviceUnavailableSpec extends TaiViewSpec {
 
-  override def view = views.html.serviceUnavailable()
+  private val serviceUnavailable = inject[serviceUnavailable]
+  override def view: HtmlFormat.Appendable = serviceUnavailable()
 
   "Service Unavailable Page" should {
     behave like pageWithHeader(messages("tai.gatekeeper.refuse.title"))
