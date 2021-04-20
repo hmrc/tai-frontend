@@ -23,7 +23,9 @@ class UpdateIncomeCYPlus1SuccessSpec extends TaiViewSpec {
 
   val employerName = "Employer Name"
   val isPension = false
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Success(employerName, isPension)
+  private val template = inject[updateIncomeCYPlus1Success]
+
+  override def view: Html = template(employerName, isPension)
 
   "CYPlus1 Success Page" should {
     "contain the success heading" in {
@@ -43,7 +45,7 @@ class UpdateIncomeCYPlus1SuccessSpec extends TaiViewSpec {
 
     "contain the may change paragraph when income is from pension" in {
       val isPension = true
-      val pensionView: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Success(employerName, isPension)
+      val pensionView: Html = template(employerName, isPension)
       doc(pensionView).getElementsByTag("p").text must include(
         messages("tai.updateIncome.CYPlus1.success.pension.p2", employerName))
     }

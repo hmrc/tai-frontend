@@ -31,7 +31,9 @@ class UpdateIncomeCYPlus1Confirm extends TaiViewSpec {
   val employmentId = 1
 
   val vm = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedAmount, IrregularPay)
-  override lazy val view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm)
+  private val template = inject[updateIncomeCYPlus1Confirm]
+
+  override lazy val view: Html = template(vm)
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink

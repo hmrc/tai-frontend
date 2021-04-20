@@ -37,16 +37,17 @@ import play.api.libs.json.Json
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.YesNoForm
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
-import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionCYPlus1EmploymentViewModel, DuplicateSubmissionCYPlus1PensionViewModel, DuplicateSubmissionEmploymentViewModel, DuplicateSubmissionPensionViewModel}
+import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionCYPlus1EmploymentViewModel, DuplicateSubmissionCYPlus1PensionViewModel}
+import views.html.incomes.duplicateSubmissionWarning
 
 class UpdateIncomeCYPlus1WarningSpec extends TaiViewSpec with FormValuesConstants {
   val employmentName = "Employment Name"
   val empId = 1
   val duplicateSubmissionWarningForm: Form[YesNoForm] = DuplicateSubmissionWarningForm.createForm
-  val choice = YesNoForm.YesNoChoice
+  val choice: String = YesNoForm.YesNoChoice
 
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.incomes.warning.customGaTitle"))
@@ -86,7 +87,9 @@ class UpdateIncomeCYPlus1WarningSpec extends TaiViewSpec with FormValuesConstant
       val invalidatedForm = duplicateSubmissionWarningForm.bind(invalidChoice)
       val emptySelectionErrorMessage = messages("tai.employment.warning.error")
 
-      val errorView = views.html.incomes.duplicateSubmissionWarning(invalidatedForm, employmentViewModel, empId)
+      val warningTemplate = inject[duplicateSubmissionWarning]
+
+      val errorView = warningTemplate(invalidatedForm, employmentViewModel, empId)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
     }
@@ -94,7 +97,7 @@ class UpdateIncomeCYPlus1WarningSpec extends TaiViewSpec with FormValuesConstant
     "display the correct content when the income source is a pension" in {
       val pensionViewModel = DuplicateSubmissionCYPlus1PensionViewModel(employmentName, newAmount)
       val pensionView: Html =
-        views.html.incomes.nextYear.updateIncomeCYPlus1Warning(duplicateSubmissionWarningForm, pensionViewModel, empId)
+        template(duplicateSubmissionWarningForm, pensionViewModel, empId)
 
       doc(pensionView) must haveHeadingWithText(messages("tai.incomes.warning.cyPlus1.heading", employmentName))
       doc(pensionView) must haveParagraphWithText(
@@ -114,6 +117,8 @@ class UpdateIncomeCYPlus1WarningSpec extends TaiViewSpec with FormValuesConstant
 
   val newAmount = 20000
   val employmentViewModel = DuplicateSubmissionCYPlus1EmploymentViewModel(employmentName, newAmount)
+  private val template = inject[updateIncomeCYPlus1Warning]
+
   override def view: Html =
-    views.html.incomes.nextYear.updateIncomeCYPlus1Warning(duplicateSubmissionWarningForm, employmentViewModel, empId)
+    template(duplicateSubmissionWarningForm, employmentViewModel, empId)
 }
