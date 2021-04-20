@@ -16,21 +16,21 @@
 
 package views.html.employments.update
 
-import controllers.routes
-import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
 class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
 
   private val employerName = "testEmployer"
   val empId = 1
 
+  private val template = inject[whatDoYouWantToTellUs]
+
   override def view: Html =
-    views.html.employments.update
-      .whatDoYouWantToTellUs(EmploymentViewModel(employerName, empId), UpdateEmploymentDetailsForm.form)
+    template(EmploymentViewModel(employerName, empId), UpdateEmploymentDetailsForm.form)
 
   "whatDoYouWantToTellUs" must {
     behave like pageWithTitle(Messages("tai.updateEmployment.whatDoYouWantToTellUs.pagetitle"))

@@ -68,7 +68,7 @@ class simpleEstimatedIncomeTaxSpec extends TaiViewSpec {
           Link
             .toInternalPage(
               id = Some("taxCodesLink"),
-              url = routes.YourTaxCodeController.taxCodes.url.toString,
+              url = routes.YourTaxCodeController.taxCodes().url.toString,
               value = Some(Messages("tai.estimatedIncome.taxCodes.link")))
             .toHtml
         )).body
@@ -201,15 +201,15 @@ class simpleEstimatedIncomeTaxSpec extends TaiViewSpec {
       doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
       doc must haveLinkElement(
         "taxCodesSideLink",
-        routes.YourTaxCodeController.taxCodes.url,
+        routes.YourTaxCodeController.taxCodes().url,
         messages("check.your.tax.codes"))
       doc must haveLinkElement(
         "taxFreeAmountSideLink",
-        routes.TaxFreeAmountController.taxFreeAmount.url,
+        routes.TaxFreeAmountController.taxFreeAmount().url,
         messages("check.your.tax.free.amount"))
       doc must haveLinkElement(
         "taxSummarySideLink",
-        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+        controllers.routes.TaxAccountSummaryController.onPageLoad().url,
         messages("return.to.your.income.tax.summary"))
     }
   }
@@ -236,8 +236,10 @@ class simpleEstimatedIncomeTaxSpec extends TaiViewSpec {
       "£11,500")
   )
 
+  private val template = inject[simpleEstimatedIncomeTax]
+
   def view(vm: SimpleEstimatedIncomeTaxViewModel): Html =
-    views.html.estimatedIncomeTax.simpleEstimatedIncomeTax(vm, Html("<Html><head></head><body>Test</body></Html>"))
+    template(vm, Html("<Html><head></head><body>Test</body></Html>"))
 
   override def view: Html = view(ukViewModel)
 

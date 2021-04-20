@@ -26,14 +26,16 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmoun
 
 class TaxablePaySlipAmountSpec extends TaiViewSpec with EditIncomePayPeriodConstants {
 
-  val employerName = "Employer"
-  val employer = IncomeSource(id = 1, employerName)
-  val taxablePayslipViewModel = createViewModel()
+  private val employerName = "Employer"
+  private val employer = IncomeSource(id = 1, employerName)
+  private val taxablePayslipViewModel = createViewModel()
 
   def createViewModel(form: Form[TaxablePayslipForm] = TaxablePayslipForm.createForm(None, Some(MONTHLY), None)) =
     TaxablePaySlipAmountViewModel(form, Some(MONTHLY), None, employer)
 
-  override def view: Html = views.html.incomes.taxablePayslipAmount(taxablePayslipViewModel)
+  private val template = inject[taxablePayslipAmount]
+
+  override def view: Html = template(taxablePayslipViewModel)
 
   "Taxable Pay slip amount view" should {
     behave like pageWithTitle(messages("tai.taxablePayslip.title.month", MONTHLY))
@@ -54,7 +56,7 @@ class TaxablePaySlipAmountSpec extends TaiViewSpec with EditIncomePayPeriodConst
     "the taxable pay has not been entered" in {
       val formWithErrors = TaxablePayslipForm.createForm(None, Some("blah"), None).bind(Map("taxablePay" -> ""))
       val viewModelError = createViewModel(formWithErrors)
-      val errorView = views.html.incomes.taxablePayslipAmount(viewModelError)
+      val errorView = template(viewModelError)
       doc(errorView) must haveErrorLinkWithText(messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory"))
     }
 

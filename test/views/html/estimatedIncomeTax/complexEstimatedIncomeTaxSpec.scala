@@ -50,7 +50,7 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
 
       doc(view) must haveLinkElement(
         "detailEstimateView",
-        routes.DetailedIncomeTaxEstimateController.taxExplanationPage.url,
+        routes.DetailedIncomeTaxEstimateController.taxExplanationPage().url,
         messages("tai.estimatedIncome.detailedEstimate.Link"))
 
     }
@@ -63,15 +63,15 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
       doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
       doc must haveLinkElement(
         "taxCodesSideLink",
-        routes.YourTaxCodeController.taxCodes.url,
+        routes.YourTaxCodeController.taxCodes().url,
         messages("check.your.tax.codes"))
       doc must haveLinkElement(
         "taxFreeAmountSideLink",
-        routes.TaxFreeAmountController.taxFreeAmount.url,
+        routes.TaxFreeAmountController.taxFreeAmount().url,
         messages("check.your.tax.free.amount"))
       doc must haveLinkElement(
         "taxSummarySideLink",
-        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+        controllers.routes.TaxAccountSummaryController.onPageLoad().url,
         messages("return.to.your.income.tax.summary"))
     }
 
@@ -87,7 +87,8 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
 
   val viewModel = ComplexEstimatedIncomeTaxViewModel(15000, 48000, 11500, bandedGraph, "UK")
 
+  private val template = inject[complexEstimatedIncomeTax]
+
   override def view: Html =
-    views.html.estimatedIncomeTax
-      .complexEstimatedIncomeTax(viewModel, Html("<Html><head></head><body>Test</body></Html>"))
+    template(viewModel, Html("<Html><head></head><body>Test</body></Html>"))
 }

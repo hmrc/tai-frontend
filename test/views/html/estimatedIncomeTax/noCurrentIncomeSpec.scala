@@ -16,6 +16,7 @@
 
 package views.html.estimatedIncomeTax
 
+import play.twirl.api.Html
 import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -40,6 +41,8 @@ class noCurrentIncomeSpec extends TaiViewSpec {
     }
   }
 
-  override def view = views.html.estimatedIncomeTax.noCurrentIncome()
+  private val template = inject[noCurrentIncome]
+
+  override def view: Html = template()
 
 }
