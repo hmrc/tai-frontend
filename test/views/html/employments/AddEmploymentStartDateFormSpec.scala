@@ -34,8 +34,10 @@ class AddEmploymentStartDateFormSpec extends TaiViewSpec {
       "month"                       -> "1",
       "year"                        -> "2017"
     ))
+  private val template = inject[add_employment_start_date_form]
+
   override def view: Html =
-    views.html.employments.add_employment_start_date_form(employmentStartDateForm, employmentName)
+    template(employmentStartDateForm, employmentName)
 
   "Add employment start date form" should {
     behave like pageWithTitle(messages("tai.addEmployment.startDateForm.pagetitle"))
@@ -48,7 +50,7 @@ class AddEmploymentStartDateFormSpec extends TaiViewSpec {
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {
-        def view: Html = views.html.employments.add_employment_start_date_form(formWithErrors, employmentName)
+        def view: Html = template(formWithErrors, employmentName)
 
         val errorSummary = doc(view).select("#error-summary-display a").text
 
@@ -97,7 +99,7 @@ class AddEmploymentStartDateFormSpec extends TaiViewSpec {
 
     "have an error message with the form inputs" when {
       "there is a form with an error" in {
-        def view: Html = views.html.employments.add_employment_start_date_form(formWithErrors, employmentName)
+        def view: Html = template(formWithErrors, employmentName)
 
         val errorMessage = doc(view).select(".error-message").text
         val fieldSetError = doc(view).select("form > div").hasClass("form-group-error")
