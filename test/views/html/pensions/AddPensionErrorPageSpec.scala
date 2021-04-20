@@ -38,6 +38,6 @@ class AddPensionErrorPageSpec extends TaiViewSpec {
 
     behave like pageWithBackLink
   }
-
-  override def view: Html = views.html.pensions.addPensionErrorPage("fake pension provider")
+  private val addPensionErrorPage = inject[addPensionErrorPage]
+  override def view: Html = addPensionErrorPage("fake pension provider")
 }
