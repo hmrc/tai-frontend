@@ -26,13 +26,16 @@ class SameEstimatedPaySpec extends TaiViewSpec {
 
   val employerName = "Employer"
   val amount = "£20,000"
+  val amountAsInt = 20000
   val employerId = 1
   val url = "some url"
 
-  override def view: Html = views.html.incomes.sameEstimatedPay(createViewModel())
+  private val template = inject[sameEstimatedPay]
+
+  override def view: Html = template(createViewModel())
 
   def createViewModel(employmentStartDate: Option[LocalDate] = None) =
-    SameEstimatedPayViewModel(employerName, employerId, amount = 20000, false, url)
+    SameEstimatedPayViewModel(employerName, employerId, amount = amountAsInt, isPension = false, url)
 
   "Same estimated pay page" must {
     behave like pageWithBackLink

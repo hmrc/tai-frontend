@@ -16,20 +16,22 @@
 
 package views.html.incomes
 
-import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 import org.joda.time.LocalDate
-import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import org.jsoup.nodes.Document
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 
 class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
-  val historicIncomeCalculationVM = createHistoricIncomeCalculationVM(Nil, Nil, Unavailable, TaxYear().prev)
+  private val historicIncomeCalculationVM = createHistoricIncomeCalculationVM(Nil, Nil, Unavailable, TaxYear().prev)
 
-  override def view: Html = views.html.incomes.historicIncomeCalculation(historicIncomeCalculationVM)
+  private val template = inject[historicIncomeCalculation]
+
+  override def view: Html = template(historicIncomeCalculationVM)
 
   "The income calculation previous year page" should {
     behave like pageWithTitle(messages("tai.yourIncome.heading"))
@@ -194,7 +196,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     nationalInsuranceAmountYearToDate = 200,
     payFrequency = Annually
   )
-  val samplePayments = Seq(samplePaymentWithoutNic, samplePaymentWithNic)
+  val samplePayments: Seq[Payment] = Seq(samplePaymentWithoutNic, samplePaymentWithNic)
 
   def createHistoricIncomeCalculationVM(
     payments: Seq[Payment],
@@ -216,7 +218,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     year: TaxYear = TaxYear().prev) = {
     val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel =
       createHistoricIncomeCalculationVM(payments, eyuMessage, realTimeStatus, year)
-    views.html.incomes.historicIncomeCalculation(historicIncomeCalculationVM)
+    template(historicIncomeCalculationVM)
   }
 
 }

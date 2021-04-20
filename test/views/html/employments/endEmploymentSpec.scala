@@ -41,7 +41,9 @@ class endEmploymentSpec extends TaiViewSpec {
 
   private val viewmodel = EmploymentViewModel(employmentName, employmentId)
 
-  override def view: Html = views.html.employments.endEmployment(employmentEndDateForm, viewmodel)
+  private val template = inject[endEmployment]
+
+  override def view: Html = template(employmentEndDateForm, viewmodel)
 
   "Tell us about your employments page" should {
 
@@ -57,7 +59,7 @@ class endEmploymentSpec extends TaiViewSpec {
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {
-        def view: Html = views.html.employments.endEmployment(formWithErrors, viewmodel)
+        def view: Html = template(formWithErrors, viewmodel)
         val errorSummary = doc(view).select("#error-summary-display a").text
 
         errorSummary mustBe globalErrorMessage
@@ -65,7 +67,7 @@ class endEmploymentSpec extends TaiViewSpec {
     }
 
     "have a legend in the form" in {
-      def view: Html = views.html.employments.endEmployment(employmentEndDateForm, viewmodel)
+      def view: Html = template(employmentEndDateForm, viewmodel)
       val legendItem1 = doc(view).select("legend .form-label").text
 
       legendItem1 mustBe Messages("tai.endEmployment.endDateForm.label", employmentName)
@@ -106,7 +108,7 @@ class endEmploymentSpec extends TaiViewSpec {
 
     "have an error message with the form inputs" when {
       "there is a form with an error" in {
-        def view: Html = views.html.employments.endEmployment(formWithErrors, viewmodel)
+        def view: Html = template(formWithErrors, viewmodel)
         val errorMessage = doc(view).select(".error-message").text
         val fieldSetError = doc(view).select("form > div").hasClass("form-group-error")
 

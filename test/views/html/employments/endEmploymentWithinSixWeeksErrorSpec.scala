@@ -24,7 +24,9 @@ import uk.gov.hmrc.tai.viewModels.employments.WithinSixWeeksViewModel
 
 class endEmploymentWithinSixWeeksErrorSpec extends TaiViewSpec {
 
-  override def view: Html = views.html.employments.endEmploymentWithinSixWeeksError(model)
+  private val template = inject[endEmploymentWithinSixWeeksError]
+
+  override def view: Html = template(model)
 
   "endEmploymentWithinSixWeeksError" must {
     behave like pageWithTitle(messages("tai.endEmploymentWithinSixWeeksError.heading", model.earliestUpdateDateInHtml))
@@ -54,7 +56,7 @@ class endEmploymentWithinSixWeeksErrorSpec extends TaiViewSpec {
     }
 
     "have link" in {
-      doc must haveLinkWithUrlWithID("returnToYourSummary", routes.TaxAccountSummaryController.onPageLoad.url)
+      doc must haveLinkWithUrlWithID("returnToYourSummary", routes.TaxAccountSummaryController.onPageLoad().url)
     }
   }
 
