@@ -23,6 +23,8 @@ import uk.gov.hmrc.tai.forms.pensions.PensionProviderNameForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class AddPensionNameSpec extends TaiViewSpec {
+  private val addPensionName = inject[addPensionName]
+
   "Add Pension Provider name form page" should {
     behave like pageWithTitle(messages("tai.addPensionProvider.addNameForm.title"))
     behave like pageWithCombinedHeader(
@@ -34,7 +36,7 @@ class AddPensionNameSpec extends TaiViewSpec {
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {
-        val view: Html = views.html.pensions.addPensionName(formWithErrors)
+        val view: Html = addPensionName(formWithErrors)
 
         doc(view) must haveErrorLinkWithText(Messages("tai.pensionProviderName.error.blank"))
       }
@@ -51,5 +53,5 @@ class AddPensionNameSpec extends TaiViewSpec {
       "pensionProviderName" -> "the company"
     ))
 
-  override def view: Html = views.html.pensions.addPensionName(pensionProviderNameForm)
+  override def view: Html = addPensionName(pensionProviderNameForm)
 }

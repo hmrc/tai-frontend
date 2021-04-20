@@ -32,16 +32,15 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
   private val cyMinusTwoTaxYear: TaxYear = TaxYear(currentYear - 2)
   private val cyMinusThreeTaxYear: TaxYear = TaxYear(currentYear - 3)
   private val cyMinusFourTaxYear: TaxYear = TaxYear(currentYear - 4)
-
+  private val RtiDisabledHistoricPayAsYouEarn = inject[RtiDisabledHistoricPayAsYouEarn]
   private val employment: EmploymentViewModel =
     EmploymentViewModel("test employment", 123.32, 1, false, Some("payrollNumber"))
 
   override def view: Html =
-    views.html.paye
-      .RtiDisabledHistoricPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), appConfig)
+    RtiDisabledHistoricPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), appConfig)
 
   private def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html =
-    views.html.paye.RtiDisabledHistoricPayAsYouEarn(vm, appConfig)
+    RtiDisabledHistoricPayAsYouEarn(vm, appConfig)
 
   "RtiDisabledHistoricPayAsYouEarn view" should {
 
@@ -65,10 +64,9 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
       "taxCodeChangeEnabled is true && showTaxCodeDescription is true" in {
         val employment: EmploymentViewModel =
           EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
-        val view: Html = views.html.paye
-          .RtiDisabledHistoricPayAsYouEarn(
-            HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true),
-            appConfig)
+        val view: Html = RtiDisabledHistoricPayAsYouEarn(
+          HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true),
+          appConfig)
 
         doc(view) must haveLinkWithUrlWithClass(
           "taxCodeDescription",
@@ -79,10 +77,9 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
     "showTaxCodeDescription is false" in {
       val employment: EmploymentViewModel =
         EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
-      val view: Html = views.html.paye
-        .RtiDisabledHistoricPayAsYouEarn(
-          HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, false),
-          appConfig)
+      val view: Html = RtiDisabledHistoricPayAsYouEarn(
+        HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, false),
+        appConfig)
 
       doc(view).toString mustNot include(messages("tai.taxCode.description.link"))
     }
@@ -100,20 +97,18 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
       "when you have a employment" in {
         val employment: EmploymentViewModel =
           EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
-        val view: Html = views.html.paye
-          .RtiDisabledHistoricPayAsYouEarn(
-            HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true),
-            appConfig)
+        val view: Html = RtiDisabledHistoricPayAsYouEarn(
+          HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true),
+          appConfig)
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
 
       "when you have a pension" in {
         val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true, Some("payrollNumber"))
-        val view: Html = views.html.paye
-          .RtiDisabledHistoricPayAsYouEarn(
-            HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true, true),
-            appConfig)
+        val view: Html = RtiDisabledHistoricPayAsYouEarn(
+          HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true, true),
+          appConfig)
         doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
@@ -122,7 +117,7 @@ class RtiDownHistoricPayAsYouEarnSpec extends TaiViewSpec {
         val employment: EmploymentViewModel =
           EmploymentViewModel("test employment", 0.00, 1, false, Some("payrollNumber"))
         val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true, Some("payrollNumber"))
-        val view: Html = views.html.paye.RtiDisabledHistoricPayAsYouEarn(
+        val view: Html = RtiDisabledHistoricPayAsYouEarn(
           HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Seq(employment), true, true),
           appConfig)
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
