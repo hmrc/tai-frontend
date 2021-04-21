@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.service._
-import views.html.{error_no_primary, error_template_noauth, internalServerError, jrsClaimSummary}
+import views.html._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,6 +40,7 @@ class JrsClaimsController @Inject()(
   appConfig: ApplicationConfig,
   jrsClaimSummary: jrsClaimSummary,
   internalServerError: internalServerError,
+  noJrsClaim: noJrsClaim,
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
@@ -54,7 +55,7 @@ class JrsClaimsController @Inject()(
       jrsService
         .getJrsClaims(nino)
         .fold(
-          NotFound(views.html.noJrsClaim(appConfig))
+          NotFound(noJrsClaim(appConfig))
         )(
           jrsClaims => Ok(jrsClaimSummary(jrsClaims, appConfig))
         )

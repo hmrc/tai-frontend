@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import uk.gov.hmrc.tai.service.JrsService
 import utils.BaseSpec
-import views.html.{internalServerError, jrsClaimSummary}
+import views.html.{internalServerError, jrsClaimSummary, noJrsClaim}
 
 import scala.concurrent.Future
 
@@ -50,6 +50,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
     mockAppConfig,
     inject[jrsClaimSummary],
     inject[internalServerError],
+    inject[noJrsClaim],
     error_template_noauth,
     error_no_primary,
     partialRetriever,
