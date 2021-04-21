@@ -23,18 +23,24 @@ import org.joda.time.YearMonth
 import org.mockito.Mockito.{times, verify, when, reset => resetMock}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.tai.model.enums.APITypes
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import uk.gov.hmrc.tai.util.TestMetrics
+import uk.gov.hmrc.webchat.client.WebChatClient
+import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
 import utils.{BaseSpec, WireMockHelper}
 
 class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
   override lazy val app: Application = GuiceApplicationBuilder()
     .configure("microservice.services.coronavirus-jrs-published-employees.port" -> server.port)
+    .overrides(
+      bind[WebChatClient].toInstance(new WebChatClientStub)
+    )
     .build()
 
   lazy val httpClient = inject[HttpClient]

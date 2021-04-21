@@ -24,6 +24,7 @@ import org.mockito.Mockito.when
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
 import play.api.http.ContentTypes
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json._
 import play.api.test.Helpers.CONTENT_TYPE
@@ -35,6 +36,8 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax._
+import uk.gov.hmrc.webchat.client.WebChatClient
+import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
 import utils.{BaseSpec, WireMockHelper}
 
 import scala.concurrent.duration._
@@ -45,6 +48,9 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
 
   override lazy val app: Application = GuiceApplicationBuilder()
     .configure("microservice.services.tai.port" -> server.port)
+    .overrides(
+      bind[WebChatClient].toInstance(new WebChatClientStub)
+    )
     .build()
 
   lazy val taxAccountUrl = s"/tai/$ninoAsString/tax-account/${currentTaxYear.year}/income/tax-code-incomes"

@@ -20,7 +20,7 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "play-ui"                          % s"8.21.0-$playVersion",
     "org.typelevel"     %% "cats-core"                        % "2.0.0",
     "com.typesafe.play" %% "play-json-joda"                   % "2.6.10",
-    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % "0.14.0-play-26"
+    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.14.0-$playVersion"
   )
 
   trait TestDependencies {
