@@ -17,10 +17,10 @@
 @import includes.forms.{submit, textArea}
 @import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
-@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 
-@this(main: main)
+@this(main: main, form: FormWithCSRF)
 
 @(viewmodel: EmploymentViewModel, updateEmploymentDetailsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 

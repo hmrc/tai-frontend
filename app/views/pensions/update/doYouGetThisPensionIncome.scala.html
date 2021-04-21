@@ -18,11 +18,12 @@
 @import includes.forms.submit
 @import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
 @import includes.ptaHeader
-@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
+@import uk.gov.hmrc.play.views.html.helpers.{errorSummary}
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import includes.forms.inputRadioGroupStyling
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
-@this(main: main)
+@this(main: main, form: FormWithCSRF)
 
 @(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
