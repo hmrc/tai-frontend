@@ -14,16 +14,16 @@
  * limitations under the License.
  *@
 
-@this(main: main)
+@import includes.ptaHeader
+@import includes.cancelLink
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.tai.forms.PayPeriodForm
+
+@this(main: main, form: FormWithCSRF)
 
 @(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
-@import includes.ptaHeader
-@import includes.cancelLink
-@import uk.gov.hmrc.play.views.html.helpers._
-@import includes.forms.inputRadioGroupStyling
-@import uk.gov.hmrc.tai.forms.PayPeriodForm
 
 @gaEventActionString = @{"How often do you get paid?"}
 

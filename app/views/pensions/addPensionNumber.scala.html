@@ -17,13 +17,13 @@
 @import includes.backLink
 @import includes.forms.{submit, input}
 @import includes.{cancelLink, ptaHeader}
-@import uk.gov.hmrc.play.views.html.helpers.{errorSummary, form}
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderNumberForm
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionNumberViewModel
 @import includes.forms.inputRadioGroupStyling
 
-@this(main: main)
+@this(main: main, form: FormWithCSRF)
 
 @(payrollNumberForm: Form[AddPensionProviderNumberForm], pensionNumberViewModel: PensionNumberViewModel)(implicit request: Request[_],
         messages: Messages, user: controllers.auth.AuthedUser,

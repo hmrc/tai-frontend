@@ -214,7 +214,6 @@ class IncomeController @Inject()(
         case _                              => Ok(editSuccess(employerName, employerId))
       }
     }
-    editPensionSuccess
     journeyCacheService
       .mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
       .flatMap(cache => {

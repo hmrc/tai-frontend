@@ -20,7 +20,7 @@
 @import includes.forms.input
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@this(main: main)
+@this(main: main, form: FormWithCSRF)
 
 @(viewModel: PaySlipAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)

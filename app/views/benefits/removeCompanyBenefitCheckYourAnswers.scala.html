@@ -15,13 +15,14 @@
  *@
 
 @import uk.gov.hmrc.tai.viewModels.benefit.RemoveCompanyBenefitCheckYourAnswersViewModel
-@import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+
 @import includes._
 @import includes.forms._
 
-@this(main: main)
+@this(main: main, form: FormWithCSRF)
 
 @(viewModel: RemoveCompanyBenefitCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
