@@ -16,9 +16,8 @@
 
 @import uk.gov.hmrc.tai.forms.YesNoForm
 @import includes.{cancelLink, ptaHeader}
-@import uk.gov.hmrc.play.views.html.helpers.{errorSummary, form}
 
-@this(main: main)
+@this(main: main, duplicateSubmissionWarning: includes.duplicateSubmissionWarning)
 
 @(duplicateSubmissionWarningForm: Form[YesNoForm], pensionName: String, pensionId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -41,7 +40,7 @@
     articleClasses = None,
     gaCustomTitle = Some(messages("tai.pension.warning.customGaTitle"))) {
 
-    @includes.duplicateSubmissionWarning(
+    @duplicateSubmissionWarning(
         duplicateSubmissionWarningForm,
         messages("tai.pension.warning.radio1", pensionName),
         messages("tai.pension.warning.radio2"),
