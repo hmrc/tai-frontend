@@ -18,32 +18,24 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
 import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import utils.BaseSpec
 import views.html.paye.{RtiDisabledHistoricPayAsYouEarn, historicPayAsYouEarn}
 
 import scala.concurrent.Future
-import scala.util.Random
 
 class PayeControllerHistoricSpec
     extends BaseSpec with JsoupMatchers with ControllerViewTestHelper with BeforeAndAfterEach {

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
-import org.scalatest.prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import utils.BaseSpec
 
 class CheckYourAnswersViewModelSpec
-    extends BaseSpec with ViewModelHelper with PropertyChecks with EditIncomePayPeriodConstants {
+    extends BaseSpec with ViewModelHelper with ScalaCheckPropertyChecks with EditIncomePayPeriodConstants {
 
   "Update income estimate check your answers view model" must {
     "return all journey lines" when {
@@ -88,14 +88,14 @@ class CheckYourAnswersViewModelSpec
 
       val validValues =
         Table(
-          ("values"),
-          ("£10000"),
-          ("10000"),
-          ("10,000"),
-          ("10000.00")
+          "values",
+          "£10000",
+          "10000",
+          "10,000",
+          "10000.00"
         )
 
-      forAll(validValues) { (monetaryValue: String) =>
+      forAll(validValues) { monetaryValue: String =>
         val viewModel = createViewModel(taxablePay = Some(monetaryValue))
         val taxablePayAnwser = viewModel.journeyConfirmationLines
           .filter(checkYourAnswerConfirmationLine => checkYourAnswerConfirmationLine.question == taxablePayQuestion)
@@ -139,7 +139,7 @@ class CheckYourAnswersViewModelSpec
 
   val zeroDecimalPlaces = 0
 
-  lazy val monthlyPaymentFrequencyAnswer = createPaymentFrequencyConfirmationLine()
+  private lazy val monthlyPaymentFrequencyAnswer = createPaymentFrequencyConfirmationLine()
 
   lazy val totalPayAnswer = CheckYourAnswersConfirmationLine(
     messagesApi("tai.estimatedPay.update.checkYourAnswers.grossPay.month"),

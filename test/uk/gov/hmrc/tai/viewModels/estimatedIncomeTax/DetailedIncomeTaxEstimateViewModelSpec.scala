@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 import controllers.routes
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
-import org.scalatest.prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.viewModels.{HelpLink, TaxSummaryLabel}
 import uk.gov.hmrc.urls.Link
 import utils.BaseSpec
 
-class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesConstants with PropertyChecks {
+class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesConstants with ScalaCheckPropertyChecks {
 
   "DetailedIncomeTaxEstimateViewModel" when {
 

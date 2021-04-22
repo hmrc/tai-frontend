@@ -21,7 +21,7 @@ import org.mockito.Matchers.anyString
 import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalatest.compatible.Assertion
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{AsyncWordSpecLike, BeforeAndAfterAll, Matchers, OptionValues}
 import play.api.mvc.{BaseController, ControllerComponents, Results}
 import play.api.test.{FakeRequest, Helpers}
