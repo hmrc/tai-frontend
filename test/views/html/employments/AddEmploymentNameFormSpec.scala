@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class AddEmploymentNameFormSpec extends TaiViewSpec {
 
-  private val add_employment_name_form = inject[add_employment_name_form]
+  private val add_employment_name_form = inject[AddEmploymentNameFormView]
 
   "Add employment name form page" should {
     behave like pageWithTitle(messages("tai.addEmployment.addNameForm.title"))

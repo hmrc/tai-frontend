@@ -37,8 +37,8 @@ import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
-import views.html.employments.confirmation
-import views.html.employments.update.{UpdateEmploymentCheckYourAnswers, whatDoYouWantToTellUs}
+import views.html.employments.ConfirmationView
+import views.html.employments.update.{UpdateEmploymentCheckYourAnswersView, WhatDoYouWantToTellUsView}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -482,10 +482,10 @@ class UpdateEmploymentControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[whatDoYouWantToTellUs],
+        inject[WhatDoYouWantToTellUsView],
         inject[CanWeContactByPhoneView],
-        inject[UpdateEmploymentCheckYourAnswers],
-        inject[confirmation],
+        inject[UpdateEmploymentCheckYourAnswersView],
+        inject[ConfirmationView],
         journeyCacheService,
         successfulJourneyCacheService,
         MockPartialRetriever,

@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.viewModels.employments.WithinSixWeeksViewModel
 
 class endEmploymentWithinSixWeeksErrorSpec extends TaiViewSpec {
 
-  private val template = inject[endEmploymentWithinSixWeeksError]
+  private val template = inject[EndEmploymentWithinSixWeeksErrorView]
 
   override def view: Html = template(model)
 

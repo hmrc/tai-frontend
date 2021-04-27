@@ -34,7 +34,7 @@ class AddEmploymentStartDateFormSpec extends TaiViewSpec {
       "month"                       -> "1",
       "year"                        -> "2017"
     ))
-  private val template = inject[add_employment_start_date_form]
+  private val template = inject[AddEmploymentStartDateFormView]
 
   override def view: Html =
     template(employmentStartDateForm, employmentName)

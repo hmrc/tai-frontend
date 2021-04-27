@@ -38,7 +38,7 @@ class AddEmploymentErrorPageSpec extends TaiViewSpec {
 
     behave like pageWithBackLink
   }
-  private val template = inject[add_employment_error_page]
+  private val template = inject[AddEmploymentErrorPageView]
 
   override def view: Html = template("fake employer")
 }

@@ -28,7 +28,7 @@ class UpdateRemoveEmploymentDecisionSpec extends TaiViewSpec with FormValuesCons
   val updateRemoveEmploymentForm: Form[Option[String]] =
     UpdateRemoveEmploymentForm.form.bind(Map(UpdateRemoveEmploymentForm.EmploymentDecision -> YesValue))
 
-  private val template = inject[update_remove_employment_decision]
+  private val template = inject[UpdateRemoveEmploymentDecisionView]
 
   override def view: Html =
     template(updateRemoveForm = updateRemoveEmploymentForm, employmentName = employmentName, empId = empId)
