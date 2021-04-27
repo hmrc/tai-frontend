@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class serviceUnavailableSpec extends TaiViewSpec {
 
-  private val serviceUnavailable = inject[serviceUnavailable]
+  private val serviceUnavailable = inject[ServiceUnavailableView]
   override def view: HtmlFormat.Appendable = serviceUnavailable()
 
   "Service Unavailable Page" should {

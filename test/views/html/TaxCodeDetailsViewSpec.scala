@@ -100,7 +100,7 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
     Some(employerId)
   )
 
-  private val template = inject[taxCodeDetails]
+  private val template = inject[TaxCodeDetailsView]
 
   override def view: Html = template(viewModel)
 }

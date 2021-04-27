@@ -32,7 +32,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
   val modelWithiFormNoCyPlus1 = createViewModel(false)
 
-  private val whatDoYouWantToDoTileView = inject[whatDoYouWantToDoTileView]
+  private val whatDoYouWantToDoTileView = inject[WhatDoYouWantToDoTileView]
 
   override implicit val templateRenderer: TemplateRenderer = MockTemplateRendererWithUrBanner
 

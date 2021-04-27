@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import utils.BaseSpec
-import views.html.{taxCodeDetails, taxCodeDetailsPreviousYears}
+import views.html.{TaxCodeDetailsPreviousYearsView, TaxCodeDetailsView}
 
 import scala.concurrent.Future
 
@@ -47,8 +47,8 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
     FakeValidatePerson,
     mcc,
     appConfig,
-    inject[taxCodeDetails],
-    inject[taxCodeDetailsPreviousYears],
+    inject[TaxCodeDetailsView],
+    inject[TaxCodeDetailsPreviousYearsView],
     partialRetriever,
     templateRenderer,
     inject[ErrorPagesHandler]

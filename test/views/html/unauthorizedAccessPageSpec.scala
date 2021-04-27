@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class unauthorizedAccessPageSpec extends TaiViewSpec {
 
-  private val unauthorizeAccess = inject[unauthorizeAccess]
+  private val unauthorizeAccess = inject[UnauthorizedAccessView]
   override def view: HtmlFormat.Appendable = unauthorizeAccess()
 
   "Unauthorized Access Page" should {

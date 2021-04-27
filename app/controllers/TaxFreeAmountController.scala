@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
-import views.html.taxFreeAmount
+import views.html.TaxFreeAmountView
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -43,7 +43,7 @@ class TaxFreeAmountController @Inject()(
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  taxFreeAmount: taxFreeAmount,
+  taxFreeAmount: TaxFreeAmountView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)

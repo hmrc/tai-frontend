@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
-import views.html.{taxCodeDetails, taxCodeDetailsPreviousYears}
+import views.html.{TaxCodeDetailsPreviousYearsView, TaxCodeDetailsView}
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -40,8 +40,8 @@ class YourTaxCodeController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
-  taxCodeDetails: taxCodeDetails,
-  taxCodeDetailsPreviousYears: taxCodeDetailsPreviousYears,
+  taxCodeDetails: TaxCodeDetailsView,
+  taxCodeDetailsPreviousYears: TaxCodeDetailsPreviousYearsView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)

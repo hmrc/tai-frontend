@@ -230,7 +230,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
   val viewModel: TaxFreeAmountViewModel =
     TaxFreeAmountViewModel("main heading", "main heading", "£2020", taxFreeAmountSummaryViewModel)
 
-  private val template = inject[taxFreeAmount]
+  private val template = inject[TaxFreeAmountView]
 
   override def view: Html = template(viewModel, appConfig)
 }

@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
-import views.html.previousYearUnderpayment
+import views.html.PreviousYearUnderpaymentView
 
 import scala.concurrent.ExecutionContext
 
@@ -35,7 +35,7 @@ class UnderpaymentFromPreviousYearController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  previousYearUnderpayment: previousYearUnderpayment,
+  previousYearUnderpayment: PreviousYearUnderpaymentView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral {

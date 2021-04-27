@@ -37,7 +37,7 @@ class TimeoutViewSpec extends TaiViewSpec {
         controllers.routes.TaxAccountSummaryController.onPageLoad().url)
     }
   }
-  private val template = inject[timeout]
+  private val template = inject[TimeoutView]
 
   override def view: Html = template()
 }

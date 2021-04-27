@@ -23,7 +23,7 @@ import org.mockito.Mockito.when
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service._
 import utils.BaseSpec
-import views.html.previousYearUnderpayment
+import views.html.PreviousYearUnderpaymentView
 
 import scala.concurrent.Future
 
@@ -50,7 +50,7 @@ class UnderpaymentFromPreviousYearControllerSpec extends BaseSpec {
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[previousYearUnderpayment],
+        inject[PreviousYearUnderpaymentView],
         partialRetriever,
         templateRenderer
       ) {
