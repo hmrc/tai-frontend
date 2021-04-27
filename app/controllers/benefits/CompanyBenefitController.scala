@@ -17,7 +17,7 @@
 package controllers.benefits
 
 import com.google.inject.name.Named
-import controllers.TaiBaseController
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.Logger
@@ -33,8 +33,8 @@ import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, Upda
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import views.html.benefits.updateOrRemoveCompanyBenefitDecision
 import views.html.{error_no_primary, error_template_noauth}
-
 import javax.inject.Inject
+
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
@@ -49,7 +49,8 @@ class CompanyBenefitController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val templateRenderer: TemplateRenderer,
-  override implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
+  override implicit val partialRetriever: FormPartialRetriever,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants {
 
   private val logger = Logger(this.getClass)
@@ -105,7 +106,7 @@ class CompanyBenefitController @Inject()(
         case None => throw new RuntimeException("No employment found")
       }
     }).flatMap(identity) recover {
-      case NonFatal(e) => internalServerError("CompanyBenefitController exception", Some(e))
+      case NonFatal(e) => errorPagesHandler.internalServerError("CompanyBenefitController exception", Some(e))
     }
   }
 

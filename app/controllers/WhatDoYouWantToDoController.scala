@@ -53,10 +53,11 @@ class WhatDoYouWantToDoController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  implicit val recoveryLocation: RecoveryLocation = classOf[WhatDoYouWantToDoController]
+  private implicit val recoveryLocation: errorPagesHandler.RecoveryLocation = classOf[WhatDoYouWantToDoController]
 
   def whatDoYouWantToDoPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     {
@@ -72,11 +73,11 @@ class WhatDoYouWantToDoController @Inject()(
         } yield {
 
           val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
-            npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-              npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-              npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-              npsNoEmploymentResult(ninoString) orElse
-              npsTaxAccountDeceasedResult(ninoString) orElse { case _ => None }
+            errorPagesHandler.npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+              errorPagesHandler.npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+              errorPagesHandler.npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+              errorPagesHandler.npsNoEmploymentResult(ninoString) orElse
+              errorPagesHandler.npsTaxAccountDeceasedResult(ninoString) orElse { case _ => None }
 
           npsFailureHandlingPf(taxAccountSummary)
         }
@@ -88,7 +89,8 @@ class WhatDoYouWantToDoController @Inject()(
     } recoverWith {
       val nino = request.taiUser.nino
 
-      (hodBadRequestResult(nino.toString()) orElse hodInternalErrorResult(nino.toString()))
+      (errorPagesHandler.hodBadRequestResult(nino.toString()) orElse errorPagesHandler.hodInternalErrorResult(
+        nino.toString()))
     }
   }
 

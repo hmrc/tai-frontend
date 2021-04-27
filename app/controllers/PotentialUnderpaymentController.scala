@@ -44,7 +44,8 @@ class PotentialUnderpaymentController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with AuditConstants with Referral {
 
   def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -65,6 +66,6 @@ class PotentialUnderpaymentController @Inject()(
           val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
           Ok(potentialUnderpayment(vm))
         }
-      } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", request.taiUser.nino)
+      } recoverWith errorPagesHandler.handleErrorResponse("getPotentialUnderpaymentPage", request.taiUser.nino)
   }
 }

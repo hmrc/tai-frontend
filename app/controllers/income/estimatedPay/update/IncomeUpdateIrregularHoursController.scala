@@ -16,7 +16,7 @@
 
 package controllers.income.estimatedPay.update
 
-import controllers.TaiBaseController
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -36,8 +36,8 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
 import views.html.incomes.{confirmAmountEntered, editIncomeIrregularHours, editSuccess}
 import views.html.{error_no_primary, error_template_noauth}
-
 import javax.inject.{Inject, Named}
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -55,7 +55,8 @@ class IncomeUpdateIrregularHoursController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants {
 
   private val taxCodeIncomeInfoToCache = (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
@@ -88,7 +89,8 @@ class IncomeUpdateIrregularHoursController @Inject()(
           }
           case Left(TaiUnauthorisedResponse(_)) =>
             Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
-          case _ => Future.successful(internalServerError("Failed to find tax code income for employment"))
+          case _ =>
+            Future.successful(errorPagesHandler.internalServerError("Failed to find tax code income for employment"))
         }
       }
   }
@@ -115,7 +117,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
           Ok(confirmAmountEntered(vm))
         }
       }).recover {
-        case NonFatal(e) => internalServerError(e.getMessage)
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
       }
   }
 
@@ -176,7 +178,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
 
         })
         .recover {
-          case NonFatal(e) => internalServerError(e.getMessage)
+          case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
         }
   }
 

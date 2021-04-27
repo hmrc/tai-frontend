@@ -16,10 +16,9 @@
 
 package controllers.employments
 
-import controllers.TaiBaseController
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-
 import javax.inject.{Inject, Named}
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -60,7 +59,8 @@ class UpdateEmploymentController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral with JourneyCacheConstants with AuditConstants with FormValuesConstants
     with EmptyCacheRedirect {
 
@@ -102,7 +102,7 @@ class UpdateEmploymentController @Inject()(
                          case _ => throw new RuntimeException("Error during employment details retrieval")
                        }
       } yield futureResult).recover {
-        case NonFatal(exception) => internalServerError(exception.getMessage)
+        case NonFatal(exception) => errorPagesHandler.internalServerError(exception.getMessage)
       }
 
   }

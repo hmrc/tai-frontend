@@ -50,7 +50,8 @@ class EstimatedIncomeTaxController @Inject()(
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
   override implicit val templateRenderer: TemplateRenderer,
-  mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
+  mcc: MessagesControllerComponents,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def estimatedIncomeTax(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -101,7 +102,7 @@ class EstimatedIncomeTaxController @Inject()(
             }
           }
         case _ => {
-          internalServerError("Failed to get estimated income tax")
+          errorPagesHandler.internalServerError("Failed to get estimated income tax")
         }
       }
     }

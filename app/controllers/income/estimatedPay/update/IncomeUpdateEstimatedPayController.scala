@@ -18,7 +18,7 @@ package controllers.income.estimatedPay.update
 
 import cats.data._
 import cats.implicits._
-import controllers.TaiBaseController
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import org.joda.time.LocalDate
@@ -40,8 +40,8 @@ import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
 import views.html.incomes.{estimatedPay, estimatedPayLandingPage, incorrectTaxableIncome}
 import views.html.{error_no_primary, error_template_noauth}
-
 import javax.inject.{Inject, Named}
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdateEstimatedPayController @Inject()(
@@ -58,7 +58,8 @@ class IncomeUpdateEstimatedPayController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   def estimatedPayLandingPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -81,7 +82,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
               incomeType == TaiConstants.IncomeTypePension,
               appConfig
             ))
-        case (response: TaiFailureResponse, _) => internalServerError(response.message)
+        case (response: TaiFailureResponse, _) => errorPagesHandler.internalServerError(response.message)
       }
     }
   }

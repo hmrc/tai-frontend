@@ -36,7 +36,8 @@ class ExternalServiceRedirectController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] =
@@ -49,7 +50,7 @@ class ExternalServiceRedirectController @Inject()(
         } yield {
           Redirect(redirectUri)
         }) recover {
-          case _ => internalServerError("Unable to audit and redirect")
+          case _ => errorPagesHandler.internalServerError("Unable to audit and redirect")
         }
       }
     }
@@ -63,7 +64,7 @@ class ExternalServiceRedirectController @Inject()(
         } yield {
           Redirect(redirectUri)
         }) recover {
-          case _ => internalServerError("Unable to audit and redirect")
+          case _ => errorPagesHandler.internalServerError("Unable to audit and redirect")
         }
       }
     }

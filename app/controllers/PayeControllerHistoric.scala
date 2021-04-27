@@ -44,7 +44,8 @@ class PayeControllerHistoric @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def lastYearPaye(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -91,13 +92,13 @@ class PayeControllerHistoric @Inject()(
   private def hodStatusRedirect(
     implicit request: AuthenticatedRequest[AnyContent]): PartialFunction[Throwable, Future[Result]] = {
 
-    implicit val rl: RecoveryLocation = classOf[WhatDoYouWantToDoController]
+    implicit val rl: errorPagesHandler.RecoveryLocation = classOf[WhatDoYouWantToDoController]
     val nino = request.taiUser.nino.toString()
 
-    npsEmploymentAbsentResult(nino) orElse
-      rtiEmploymentAbsentResult(nino) orElse
-      hodBadRequestResult(nino) orElse
-      hodInternalErrorResult(nino) orElse
-      hodAnyErrorResult(nino)
+    errorPagesHandler.npsEmploymentAbsentResult(nino) orElse
+      errorPagesHandler.rtiEmploymentAbsentResult(nino) orElse
+      errorPagesHandler.hodBadRequestResult(nino) orElse
+      errorPagesHandler.hodInternalErrorResult(nino) orElse
+      errorPagesHandler.hodAnyErrorResult(nino)
   }
 }

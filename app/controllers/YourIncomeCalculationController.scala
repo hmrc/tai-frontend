@@ -47,7 +47,8 @@ class YourIncomeCalculationController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -88,7 +89,7 @@ class YourIncomeCalculationController @Inject()(
             Ok(yourIncomeCalculation(model))
           }
         }
-        case _ => internalServerError("Error while fetching RTI details")
+        case _ => errorPagesHandler.internalServerError("Error while fetching RTI details")
       }
     }
   }
@@ -110,7 +111,7 @@ class YourIncomeCalculationController @Inject()(
 
             (printPage, historicIncomeCalculationViewModel.realTimeStatus.toString) match {
               case (_, "TemporarilyUnavailable") =>
-                internalServerError(
+                errorPagesHandler.internalServerError(
                   "Employment contains stub annual account data found meaning payment information can't be displayed")
               case (true, _) =>
                 Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel, appConfig))
@@ -119,7 +120,8 @@ class YourIncomeCalculationController @Inject()(
           }
 
         } else {
-          Future.successful(internalServerError(s"yourIncomeCalculationHistoricYears: Doesn't support year $year"))
+          Future.successful(
+            errorPagesHandler.internalServerError(s"yourIncomeCalculationHistoricYears: Doesn't support year $year"))
         }
       }
     }

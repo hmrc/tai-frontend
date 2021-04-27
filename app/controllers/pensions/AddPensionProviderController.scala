@@ -16,7 +16,7 @@
 
 package controllers.pensions
 
-import controllers.TaiBaseController
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import org.joda.time.LocalDate
@@ -37,8 +37,8 @@ import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
 import views.html.{can_we_contact_by_phone, error_no_primary, error_template_noauth}
 import views.html.pensions._
-
 import javax.inject.{Inject, Named}
+
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
@@ -64,7 +64,8 @@ class AddPensionProviderController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with AuditConstants with FormValuesConstants
     with EmptyCacheRedirect {
 
@@ -175,7 +176,7 @@ class AddPensionProviderController @Inject()(
 
           }
       }).recover {
-        case NonFatal(e) => internalServerError(e.getMessage)
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
       }
   }
 
@@ -313,7 +314,7 @@ class AddPensionProviderController @Inject()(
         }
       }
     } catch {
-      case NonFatal(e) => Future.successful(internalServerError(e.getMessage))
+      case NonFatal(e) => Future.successful(errorPagesHandler.internalServerError(e.getMessage))
     }
   }
 

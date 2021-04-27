@@ -16,7 +16,7 @@
 
 package controllers.pensions
 
-import controllers.TaiBaseController
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.data.validation.{Constraint, Invalid, Valid}
@@ -43,8 +43,8 @@ import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersV
 import views.html.{can_we_contact_by_phone, error_no_primary, error_template_noauth}
 import views.html.pensions.duplicateSubmissionWarning
 import views.html.pensions.update.{confirmation, doYouGetThisPensionIncome, updatePensionCheckYourAnswers, whatDoYouWantToTellUs}
-
 import javax.inject.{Inject, Named}
+
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -68,7 +68,8 @@ class UpdatePensionProviderController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -329,7 +330,7 @@ class UpdatePensionProviderController @Inject()(
         }
       case _ => throw new RuntimeException("Tax code income source is not available")
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
 
   }

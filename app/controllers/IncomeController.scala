@@ -63,7 +63,8 @@ class IncomeController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -91,7 +92,7 @@ class IncomeController @Inject()(
           employmentAmount.employmentId,
           amountYearToDate.toString))
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
@@ -109,7 +110,7 @@ class IncomeController @Inject()(
         routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString)
       Ok(sameEstimatedPay(model))
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
@@ -131,7 +132,7 @@ class IncomeController @Inject()(
         routes.IncomeSourceSummaryController.onPageLoad(id).url)
       Ok(sameEstimatedPay(model))
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
@@ -188,7 +189,7 @@ class IncomeController @Inject()(
         case _ => throw new RuntimeException("Exception while reading employment and tax code details")
       }
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
@@ -238,7 +239,7 @@ class IncomeController @Inject()(
         }
       })
       .recover {
-        case NonFatal(e) => internalServerError(e.getMessage, Some(e))
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage, Some(e))
       }
   }
 
@@ -261,7 +262,7 @@ class IncomeController @Inject()(
           employmentAmount.employmentId,
           amountYearToDate.toString()))
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
@@ -326,7 +327,7 @@ class IncomeController @Inject()(
         case _ => throw new RuntimeException("Exception while reading employment and tax code details")
       }
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 

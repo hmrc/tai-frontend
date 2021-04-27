@@ -16,7 +16,7 @@
 
 package controllers.income
 
-import controllers.TaiBaseController
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.Logger
@@ -40,8 +40,8 @@ import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYea
 import views.html.{error_no_primary, error_template_noauth}
 import views.html.incomes.nextYear._
 import views.html.incomes.sameEstimatedPay
-
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -62,7 +62,8 @@ class UpdateIncomeNextYearController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with FormValuesConstants with I18nSupport {
 
   def onPageLoad(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -221,10 +222,11 @@ class UpdateIncomeNextYearController @Inject()(
           case TaiSuccessResponse => Redirect(routes.UpdateIncomeNextYearController.success(employmentId))
           case _                  => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
         }).recover {
-          case NonFatal(e) => internalServerError(e.getMessage)
+          case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
         }
       } else {
-        Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+        Future.successful(
+          NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
       }
 
     }
@@ -284,6 +286,7 @@ class UpdateIncomeNextYearController @Inject()(
     if (applicationConfig.cyPlusOneEnabled) {
       action
     } else {
-      Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+      Future.successful(
+        NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
     }
 }

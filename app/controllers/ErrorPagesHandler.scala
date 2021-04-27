@@ -16,6 +16,7 @@
 
 package controllers
 
+import javax.inject.Inject
 import play.Logger
 import play.api.i18n.Messages
 import play.api.mvc.Results._
@@ -33,15 +34,12 @@ import views.html.{error_no_primary, error_template_noauth}
 
 import scala.concurrent.Future
 
-trait ErrorPagesHandler {
-
-  val error_template_noauth: error_template_noauth
-  val error_no_primary: error_no_primary
-
-  implicit def templateRenderer: TemplateRenderer
-
-  implicit def partialRetriever: FormPartialRetriever
-
+class ErrorPagesHandler @Inject()(
+  val error_template_noauth: error_template_noauth,
+  val error_no_primary: error_no_primary,
+  implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever
+) {
   type RecoveryLocation = Class[_]
 
   def error4xxPageWithLink(pageTitle: String)(implicit request: Request[_], messages: Messages) =

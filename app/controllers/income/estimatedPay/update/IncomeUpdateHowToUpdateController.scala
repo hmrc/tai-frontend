@@ -16,10 +16,9 @@
 
 package controllers.income.estimatedPay.update
 
-import controllers.TaiBaseController
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-
 import javax.inject.{Inject, Named}
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -52,7 +51,8 @@ class IncomeUpdateHowToUpdateController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   private def incomeTypeIdentifier(isPension: Boolean): String =
@@ -96,7 +96,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
         }
       case None => throw new RuntimeException("Not able to find employment")
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 

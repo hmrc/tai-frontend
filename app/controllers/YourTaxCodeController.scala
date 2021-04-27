@@ -46,7 +46,8 @@ class YourTaxCodeController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   private[controllers] def renderTaxCodes(employmentId: Option[Int]): Action[AnyContent] =
@@ -72,7 +73,7 @@ class YourTaxCodeController @Inject()(
         Ok(taxCodeDetails(taxCodeViewModel))
       }) recover {
         case NonFatal(e) => {
-          internalServerError(s"Exception: ${e.getClass()}")
+          errorPagesHandler.internalServerError(s"Exception: ${e.getClass()}")
         }
       }
     }
@@ -94,7 +95,7 @@ class YourTaxCodeController @Inject()(
         Ok(taxCodeDetailsPreviousYears(taxCodeViewModel))
       }) recover {
         case NonFatal(e) => {
-          internalServerError(s"Exception: ${e.getClass()}")
+          errorPagesHandler.internalServerError(s"Exception: ${e.getClass()}")
         }
       }
   }

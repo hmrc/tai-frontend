@@ -39,7 +39,8 @@ class ServiceController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def timeoutPage() = Action.async { implicit request =>
@@ -62,6 +63,6 @@ class ServiceController @Inject()(
 
   def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent]): Future[Result] = {
     Future.successful(Ok(manualCorrespondence()))
-  } recoverWith handleErrorResponse("getServiceUnavailable", nino)
+  } recoverWith errorPagesHandler.handleErrorResponse("getServiceUnavailable", nino)
 
 }

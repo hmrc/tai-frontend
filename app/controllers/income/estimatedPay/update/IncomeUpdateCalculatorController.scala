@@ -16,7 +16,7 @@
 
 package controllers.income.estimatedPay.update
 
-import controllers.TaiBaseController
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -36,8 +36,8 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import views.html.incomes.estimatedPayment.update.checkYourAnswers
 import views.html.incomes.{confirmAmountEntered, duplicateSubmissionWarning}
 import views.html.{error_no_primary, error_template_noauth}
-
 import javax.inject.{Inject, Named}
+
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -57,7 +57,8 @@ class IncomeUpdateCalculatorController @Inject()(
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
   override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  override implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants
     with UpdatedEstimatedPayJourneyCache with FormValuesConstants {
 
@@ -77,7 +78,7 @@ class IncomeUpdateCalculatorController @Inject()(
         Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage())
       }
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
@@ -210,7 +211,7 @@ class IncomeUpdateCalculatorController @Inject()(
         Ok(confirmAmountEntered(vm))
       }
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
