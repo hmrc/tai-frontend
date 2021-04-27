@@ -41,7 +41,7 @@ class noCurrentIncomeSpec extends TaiViewSpec {
     }
   }
 
-  private val template = inject[noCurrentIncome]
+  private val template = inject[NoCurrentIncomeView]
 
   override def view: Html = template()
 

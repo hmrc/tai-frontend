@@ -115,7 +115,7 @@ class zeroTaxEstimatedIncomeTaxSpec extends TaiViewSpec {
   }
 
   def view(vm: ZeroTaxEstimatedIncomeTaxViewModel): Html = {
-    val zeroTaxEstimatedIncomeTax = inject[zeroTaxEstimatedIncomeTax]
+    val zeroTaxEstimatedIncomeTax = inject[ZeroTaxEstimatedIncomeTaxView]
     val htmlDocument = Html("<Html><head></head><body>Test</body></Html>")
     zeroTaxEstimatedIncomeTax(vm, htmlDocument)
   }

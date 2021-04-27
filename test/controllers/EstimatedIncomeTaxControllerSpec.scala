@@ -36,17 +36,17 @@ import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import uk.gov.hmrc.urls.Link
 import utils.BaseSpec
-import views.html.estimatedIncomeTax.{complexEstimatedIncomeTax, noCurrentIncome, simpleEstimatedIncomeTax, zeroTaxEstimatedIncomeTax}
+import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIncomeView, SimpleEstimatedIncomeTaxView, ZeroTaxEstimatedIncomeTaxView}
 
 import scala.concurrent.Future
 
 class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants with TaxRegionConstants {
 
   implicit val request = FakeRequest()
-  private val noCurrentIncomeView = inject[noCurrentIncome]
-  private val simpleEstimatedIncomeTaxView = inject[simpleEstimatedIncomeTax]
-  private val complexEstimatedIncomeTaxView = inject[complexEstimatedIncomeTax]
-  private val zeroTaxEstimatedIncomeTaxView = inject[zeroTaxEstimatedIncomeTax]
+  private val noCurrentIncomeView = inject[NoCurrentIncomeView]
+  private val simpleEstimatedIncomeTaxView = inject[SimpleEstimatedIncomeTaxView]
+  private val complexEstimatedIncomeTaxView = inject[ComplexEstimatedIncomeTaxView]
+  private val zeroTaxEstimatedIncomeTaxView = inject[ZeroTaxEstimatedIncomeTaxView]
 
   "EstimatedIncomeTaxController" must {
     "return Ok" when {

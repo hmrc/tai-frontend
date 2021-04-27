@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
-import views.html.estimatedIncomeTax.{complexEstimatedIncomeTax, noCurrentIncome, simpleEstimatedIncomeTax, zeroTaxEstimatedIncomeTax}
+import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIncomeView, SimpleEstimatedIncomeTaxView, ZeroTaxEstimatedIncomeTaxView}
 
 import scala.concurrent.ExecutionContext
 
@@ -41,10 +41,10 @@ class EstimatedIncomeTaxController @Inject()(
   taxAccountService: TaxAccountService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  noCurrentIncome: noCurrentIncome,
-  complexEstimatedIncomeTax: complexEstimatedIncomeTax,
-  simpleEstimatedIncomeTax: simpleEstimatedIncomeTax,
-  zeroTaxEstimatedIncomeTax: zeroTaxEstimatedIncomeTax,
+  noCurrentIncome: NoCurrentIncomeView,
+  complexEstimatedIncomeTax: ComplexEstimatedIncomeTaxView,
+  simpleEstimatedIncomeTax: SimpleEstimatedIncomeTaxView,
+  zeroTaxEstimatedIncomeTax: ZeroTaxEstimatedIncomeTaxView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   mcc: MessagesControllerComponents,
