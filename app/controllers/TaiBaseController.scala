@@ -23,12 +23,4 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import views.html.{error_no_primary, error_template_noauth}
 
-abstract class TaiBaseController(mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
-
-  val error_template_noauth: error_template_noauth
-  val error_no_primary: error_no_primary
-
-  implicit def templateRenderer: TemplateRenderer
-  implicit def partialRetriever: FormPartialRetriever
-
-}
+abstract class TaiBaseController(mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport

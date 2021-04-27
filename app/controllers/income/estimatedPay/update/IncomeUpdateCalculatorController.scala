@@ -16,9 +16,10 @@
 
 package controllers.income.estimatedPay.update
 
-import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+import controllers.{ErrorPagesHandler, TaiBaseController}
+import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -35,8 +36,6 @@ import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import views.html.incomes.estimatedPayment.update.checkYourAnswers
 import views.html.incomes.{confirmAmountEntered, duplicateSubmissionWarning}
-import views.html.{error_no_primary, error_template_noauth}
-import javax.inject.{Inject, Named}
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -54,10 +53,8 @@ class IncomeUpdateCalculatorController @Inject()(
   checkYourAnswers: checkYourAnswers,
   confirmAmountEntered: confirmAmountEntered,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants
     with UpdatedEstimatedPayJourneyCache with FormValuesConstants {
