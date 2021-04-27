@@ -20,6 +20,7 @@ import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -37,11 +38,10 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
+import views.html.can_we_contact_by_phone
 import views.html.employments._
 import views.html.incomes.addIncomeCheckYourAnswers
-import views.html.{can_we_contact_by_phone, error_no_primary, error_template_noauth}
 
-import javax.inject.Inject
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -62,10 +62,8 @@ class AddEmploymentController @Inject()(
   can_we_contact_by_phone: can_we_contact_by_phone,
   confirmationView: confirmation,
   addIncomeCheckYourAnswers: addIncomeCheckYourAnswers,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with AuditConstants with FormValuesConstants
     with EmptyCacheRedirect {
 
@@ -117,7 +115,7 @@ class AddEmploymentController @Inject()(
                 EmploymentAddDateForm(mandatorySequence.head).form.fill(new LocalDate(dateString))
               case _ => EmploymentAddDateForm(mandatorySequence.head).form
             }
-            implicit val user = request.taiUser
+            implicit val user: AuthedUser = request.taiUser
 
             Ok(add_employment_start_date_form(form, mandatorySequence.head))
           case Left(_) => Redirect(taxAccountSummaryRedirect)

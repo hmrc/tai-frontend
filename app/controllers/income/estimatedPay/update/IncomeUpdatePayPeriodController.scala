@@ -18,7 +18,8 @@ package controllers.income.estimatedPay.update
 
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.{Inject, Named}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -29,9 +30,7 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import views.html.incomes.payPeriod
-import views.html.{error_no_primary, error_template_noauth}
 
-import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
 class IncomeUpdatePayPeriodController @Inject()(
@@ -40,14 +39,12 @@ class IncomeUpdatePayPeriodController @Inject()(
   mcc: MessagesControllerComponents,
   payPeriodView: payPeriod,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   def payPeriodPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)
@@ -63,7 +60,7 @@ class IncomeUpdatePayPeriodController @Inject()(
   }
 
   def handlePayPeriod: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     val payPeriod: Option[String] = request.body.asFormUrlEncoded.flatMap(m => m.get("payPeriod").flatMap(_.headOption))
 
