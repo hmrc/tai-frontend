@@ -46,8 +46,8 @@ class YourIncomeCalculationController @Inject()(
   yourIncomeCalculation: yourIncomeCalculation,
   override val error_template_noauth: error_template_noauth,
   override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

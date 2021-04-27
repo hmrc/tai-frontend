@@ -18,7 +18,7 @@ package controllers.income.estimatedPay.update
 
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -27,7 +27,6 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, JourneyCacheConstants}
 import views.html.incomes.workingHours
-import views.html.{error_no_primary, error_template_noauth}
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
@@ -38,14 +37,12 @@ class IncomeUpdateWorkingHoursController @Inject()(
   mcc: MessagesControllerComponents,
   workingHoursView: workingHours,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants {
 
   def workingHoursPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)
@@ -65,7 +62,7 @@ class IncomeUpdateWorkingHoursController @Inject()(
   }
 
   def handleWorkingHours: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     HoursWorkedForm
       .createForm()
@@ -85,13 +82,12 @@ class IncomeUpdateWorkingHoursController @Inject()(
           } yield {
 
             id match {
-              case Right(id) => {
+              case Right(id) =>
                 formData.workingHours match {
                   case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage())
                   case Some(IRREGULAR_HOURS) =>
                     Redirect(routes.IncomeUpdateIrregularHoursController.editIncomeIrregularHours(id))
                 }
-              }
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }
