@@ -18,13 +18,10 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.service.{AuditService, SessionService}
-import views.html.{error_no_primary, error_template_noauth}
-
 import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.tai.service.{AuditService, SessionService}
+
 import scala.concurrent.ExecutionContext
 
 class ExternalServiceRedirectController @Inject()(
@@ -33,10 +30,6 @@ class ExternalServiceRedirectController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

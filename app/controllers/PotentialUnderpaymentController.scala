@@ -17,7 +17,8 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -28,9 +29,8 @@ import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, TaxAccount
 import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
-import views.html.{error_no_primary, error_template_noauth, potentialUnderpayment}
+import views.html.potentialUnderpayment
 
-import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class PotentialUnderpaymentController @Inject()(
@@ -41,10 +41,8 @@ class PotentialUnderpaymentController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   potentialUnderpayment: potentialUnderpayment,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with AuditConstants with Referral {
 
@@ -52,7 +50,7 @@ class PotentialUnderpaymentController @Inject()(
     implicit request =>
       {
 
-        implicit val user = request.taiUser
+        implicit val user: AuthedUser = request.taiUser
         val nino = user.nino
 
         val tasFuture = taxAccountService.taxAccountSummary(nino, TaxYear())

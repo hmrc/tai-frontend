@@ -17,15 +17,14 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
-import play.api.mvc.MessagesControllerComponents
+import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import views.html.help.getHelp
-import views.html.{error_no_primary, error_template_noauth}
 
-import javax.inject.Inject
 import scala.concurrent.Future
 
 class HelpController @Inject()(
@@ -34,14 +33,12 @@ class HelpController @Inject()(
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   getHelp: getHelp,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
 
-  def helpPage() = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+  def helpPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user: AuthedUser = request.taiUser
 
     Future.successful(Ok(getHelp(appConfig)))
   }

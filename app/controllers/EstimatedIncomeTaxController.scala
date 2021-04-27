@@ -17,7 +17,8 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -31,9 +32,7 @@ import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import views.html.estimatedIncomeTax.{complexEstimatedIncomeTax, noCurrentIncome, simpleEstimatedIncomeTax, zeroTaxEstimatedIncomeTax}
-import views.html.{error_no_primary, error_template_noauth}
 
-import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class EstimatedIncomeTaxController @Inject()(
@@ -46,10 +45,8 @@ class EstimatedIncomeTaxController @Inject()(
   complexEstimatedIncomeTax: complexEstimatedIncomeTax,
   simpleEstimatedIncomeTax: simpleEstimatedIncomeTax,
   zeroTaxEstimatedIncomeTax: zeroTaxEstimatedIncomeTax,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   mcc: MessagesControllerComponents,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -71,7 +68,7 @@ class EstimatedIncomeTaxController @Inject()(
             TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax),
             TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
             TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
-          implicit val user = request.taiUser
+          implicit val user: AuthedUser = request.taiUser
 
           val taxBands = totalTaxDetails.incomeCategories.flatMap(_.taxBands).toList
           val taxViewType = EstimatedIncomeTaxService.taxViewType(
@@ -85,25 +82,21 @@ class EstimatedIncomeTaxController @Inject()(
           )
           taxViewType match {
             case NoIncomeTaxView => Ok(noCurrentIncome())
-            case ComplexTaxView => {
+            case ComplexTaxView =>
               val model =
                 ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
               Ok(complexEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
-            }
-            case SimpleTaxView => {
+            case SimpleTaxView =>
               val model =
                 SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
               Ok(simpleEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
-            }
-            case ZeroTaxView => {
+            case ZeroTaxView =>
               val model =
                 ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
               Ok(zeroTaxEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
-            }
           }
-        case _ => {
+        case _ =>
           errorPagesHandler.internalServerError("Failed to get estimated income tax")
-        }
       }
     }
   }

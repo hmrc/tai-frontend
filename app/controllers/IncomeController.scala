@@ -19,6 +19,7 @@ package controllers
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.{Inject, Singleton}
 import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.mvc._
@@ -37,9 +38,7 @@ import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, SameEstimatedPayViewModel}
 import views.html.incomes._
-import views.html.{error_no_primary, error_template_noauth}
 
-import javax.inject.{Inject, Singleton}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -60,10 +59,8 @@ class IncomeController @Inject()(
   editPensionSuccess: editPensionSuccess,
   editIncome: editIncome,
   sameEstimatedPay: sameEstimatedPay,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {
 
@@ -74,7 +71,7 @@ class IncomeController @Inject()(
   }
 
   def regularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     (for {
@@ -88,7 +85,7 @@ class IncomeController @Inject()(
       Ok(
         editIncome(
           EditIncomeForm.create(employmentAmount),
-          false,
+          hasMultipleIncomes = false,
           employmentAmount.employmentId,
           amountYearToDate.toString))
     }).recover {
@@ -103,10 +100,10 @@ class IncomeController @Inject()(
     } yield {
       val employerId = cachedData(1).toInt
       val model = SameEstimatedPayViewModel(
-        cachedData(0),
+        cachedData.head,
         employerId,
         cachedData(2).toInt,
-        false,
+        isPension = false,
         routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString)
       Ok(sameEstimatedPay(model))
     }).recover {
@@ -125,7 +122,7 @@ class IncomeController @Inject()(
       income     <- incomeService.employmentAmount(nino, id)
     } yield {
       val model = SameEstimatedPayViewModel(
-        cachedData(0),
+        cachedData.head,
         id,
         income.oldAmount,
         income.isOccupationalPension,
@@ -137,7 +134,7 @@ class IncomeController @Inject()(
   }
 
   def editRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService.collectedValues(
       Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
@@ -151,9 +148,10 @@ class IncomeController @Inject()(
           .bind(employerName, payToDate, date)
           .fold(
             (formWithErrors: Form[EditIncomeForm]) => {
-              Future.successful(BadRequest(editIncome(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head)))
+              Future.successful(BadRequest(
+                editIncome(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)))
             },
-            (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome)
+            (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome())
           )
       }
     }
@@ -166,7 +164,7 @@ class IncomeController @Inject()(
     FormHelper.areEqual(Some(income.oldAmount.toString), income.newAmount)
 
   def confirmRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     (for {
@@ -204,7 +202,7 @@ class IncomeController @Inject()(
   }
 
   def updateEstimatedIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(
       implicit user: AuthedUser,
@@ -228,11 +226,10 @@ class IncomeController @Inject()(
               FormHelper.stripNumber(newAmount).toInt,
               TaxYear(),
               incomeId.toInt) flatMap {
-              case TaiSuccessResponse => {
+              case TaiSuccessResponse =>
                 estimatedPayJourneyCompletionService.journeyCompleted(incomeId).map { _ =>
                   respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
                 }
-              }
               case failure: TaiFailureResponse =>
                 throw new RuntimeException(s"Failed to update estimated income with exception: ${failure.message}")
             }
@@ -244,7 +241,7 @@ class IncomeController @Inject()(
   }
 
   def pensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     (for {
@@ -258,7 +255,7 @@ class IncomeController @Inject()(
       Ok(
         editPension(
           EditIncomeForm.create(employmentAmount),
-          false,
+          hasMultipleIncomes = false,
           employmentAmount.employmentId,
           amountYearToDate.toString()))
     }).recover {
@@ -282,7 +279,7 @@ class IncomeController @Inject()(
     }
 
   def editPensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService.collectedValues(
       Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
@@ -293,10 +290,10 @@ class IncomeController @Inject()(
           .bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date)
           .fold(
             formWithErrors => {
-              Future.successful(
-                BadRequest(editPension(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head)))
+              Future.successful(BadRequest(
+                editPension(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)))
             },
-            (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome)
+            (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome())
           )
       }
     }
@@ -304,7 +301,7 @@ class IncomeController @Inject()(
   }
 
   def confirmPensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     (for {

@@ -17,8 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
-
+import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -30,7 +29,6 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
-import views.html.{error_no_primary, error_template_noauth}
 import views.html.estimatedIncomeTax.detailedIncomeTaxEstimate
 
 import scala.concurrent.ExecutionContext
@@ -44,10 +42,8 @@ class DetailedIncomeTaxEstimateController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   detailedIncomeTaxEstimate: detailedIncomeTaxEstimate,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
@@ -73,7 +69,7 @@ class DetailedIncomeTaxEstimateController @Inject()(
             TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
             TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)
             ) =>
-          implicit val user = request.taiUser
+          implicit val user: AuthedUser = request.taiUser
           val model = DetailedIncomeTaxEstimateViewModel(
             totalTax,
             taxCodeIncomes,
@@ -81,9 +77,8 @@ class DetailedIncomeTaxEstimateController @Inject()(
             codingComponents,
             nonTaxCodeIncome)
           Ok(detailedIncomeTaxEstimate(model))
-        case _ => {
+        case _ =>
           errorPagesHandler.internalServerError("Failed to fetch total tax details")
-        }
       }
     }).recover {
       case NonFatal(e) => errorPagesHandler.internalServerError("Failed to fetch total tax details", Some(e))

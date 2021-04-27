@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -31,9 +32,7 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 import views.html.incomeTaxComparison.Main
-import views.html.{error_no_primary, error_template_noauth}
 
-import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
@@ -48,10 +47,8 @@ class IncomeTaxComparisonController @Inject()(
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   main: Main,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
