@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, IncorrectPensionDecisionConstants, JourneyCacheConstants}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
-import views.html.pensions.duplicateSubmissionWarning
+import views.html.pensions.DuplicateSubmissionWarningView
 import views.html.pensions.update.{confirmation, doYouGetThisPensionIncome, updatePensionCheckYourAnswers, whatDoYouWantToTellUs}
 
 import scala.concurrent.Future
@@ -595,7 +595,7 @@ class UpdatePensionProviderControllerSpec
 
   val pensionProviderService: PensionProviderService = mock[PensionProviderService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val journeyCacheService = mock[JourneyCacheService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   class UpdatePensionProviderTestController
@@ -612,7 +612,7 @@ class UpdatePensionProviderControllerSpec
         inject[whatDoYouWantToTellUs],
         inject[updatePensionCheckYourAnswers],
         inject[confirmation],
-        inject[duplicateSubmissionWarning],
+        inject[DuplicateSubmissionWarningView],
         journeyCacheService,
         successfulJourneyCacheService,
         MockPartialRetriever,

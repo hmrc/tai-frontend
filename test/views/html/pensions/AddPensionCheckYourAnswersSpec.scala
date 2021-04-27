@@ -19,7 +19,6 @@ package views.html.pensions
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
-import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.CheckYourAnswersViewModel
 
 class AddPensionCheckYourAnswersSpec extends TaiViewSpec {
@@ -80,7 +79,7 @@ class AddPensionCheckYourAnswersSpec extends TaiViewSpec {
     CheckYourAnswersConfirmationLine("q5", "a5", "q5/url")
   )
 
-  val viewModel = CheckYourAnswersViewModel(
+  val viewModel: CheckYourAnswersViewModel = CheckYourAnswersViewModel(
     preHeading,
     "fake/backlink/url",
     "cya title",
@@ -89,6 +88,6 @@ class AddPensionCheckYourAnswersSpec extends TaiViewSpec {
     "/fake/submission/url",
     "/fake/cancel/url")
 
-  private val addPensionCheckYourAnswers = inject[addPensionCheckYourAnswers]
+  private val addPensionCheckYourAnswers = inject[AddPensionCheckYourAnswersView]
   override def view: Html = addPensionCheckYourAnswers(viewModel)
 }

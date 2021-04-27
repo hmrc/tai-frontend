@@ -41,7 +41,7 @@ import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersViewModel
 import views.html.CanWeContactByPhoneView
-import views.html.pensions.duplicateSubmissionWarning
+import views.html.pensions.DuplicateSubmissionWarningView
 import views.html.pensions.update.{confirmation, doYouGetThisPensionIncome, updatePensionCheckYourAnswers, whatDoYouWantToTellUs}
 import javax.inject.{Inject, Named}
 import scala.Function.tupled
@@ -61,7 +61,7 @@ class UpdatePensionProviderController @Inject()(
   whatDoYouWantToTellUs: whatDoYouWantToTellUs,
   updatePensionCheckYourAnswers: updatePensionCheckYourAnswers,
   confirmationView: confirmation,
-  duplicateSubmissionWarning: duplicateSubmissionWarning,
+  duplicateSubmissionWarningView: DuplicateSubmissionWarningView,
   @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   implicit val partialRetriever: FormPartialRetriever,
@@ -339,7 +339,7 @@ class UpdatePensionProviderController @Inject()(
         mandatoryVals match {
           case Right(mandatoryValues) =>
             Ok(
-              duplicateSubmissionWarning(
+              duplicateSubmissionWarningView(
                 DuplicateSubmissionWarningForm.createForm,
                 mandatoryValues(0),
                 mandatoryValues(1).toInt))
@@ -356,7 +356,8 @@ class UpdatePensionProviderController @Inject()(
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
             formWithErrors => {
               Future.successful(
-                BadRequest(duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
+                BadRequest(
+                  duplicateSubmissionWarningView(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
             },
             success => {
               success.yesNoChoice match {

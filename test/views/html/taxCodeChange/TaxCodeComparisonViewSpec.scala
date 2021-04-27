@@ -17,6 +17,7 @@
 package views.html.taxCodeChange
 
 import controllers.routes
+import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.play.views.formatting.Dates
@@ -29,19 +30,19 @@ import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 
 class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
-  val startDate = TaxYear().start
-  val taxCodeRecord1 = TaxCodeRecord(
+  val startDate: LocalDate = TaxYear().start
+  val taxCodeRecord1: TaxCodeRecord = TaxCodeRecord(
     "1185L",
     startDate,
     startDate.plusMonths(1),
     OtherBasisOfOperation,
     "Employer 1",
-    true,
+    pensionIndicator = true,
     Some("1234"),
-    true)
-  val taxCodeRecord2 =
+    primary = true)
+  val taxCodeRecord2: TaxCodeRecord =
     taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYear().end, payrollNumber = None)
-  val taxCodeRecord3 = taxCodeRecord1.copy(
+  val taxCodeRecord3: TaxCodeRecord = taxCodeRecord1.copy(
     taxCode = "BR",
     startDate = startDate.plusDays(3),
     endDate = TaxYear().end,
@@ -51,10 +52,10 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
   val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
 
-  private val taxCodeComparison = inject[taxCodeComparison]
+  private val taxCodeComparison = inject[TaxCodeComparisonView]
   override def view: HtmlFormat.Appendable = taxCodeComparison(viewModel, appConfig)
 
-  def testTaxCodeRecordFormat(record: TaxCodeRecord) = {
+  def testTaxCodeRecordFormat(record: TaxCodeRecord): Unit = {
     doc must haveParagraphWithText(record.employerName)
     doc must haveClassWithText(
       Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)),
@@ -107,7 +108,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       doc must haveLinkElement(
         "" +
           "check-your-tax-button",
-        routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString,
+        routes.TaxCodeChangeController.yourTaxFreeAmount().url,
         Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")
       )
     }
@@ -138,7 +139,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     "display tax code change reasons" when {
       "primary employments have changed" in {
         val viewModel: TaxCodeChangeViewModel =
-          TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), false)
+          TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), isAGenericReason = false)
 
         val view: HtmlFormat.Appendable = taxCodeComparison(viewModel, appConfig)
         doc(view) must haveClassCount("tax-code-reason", 2)
@@ -146,7 +147,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
       "display a generic tax code reason" in {
         val viewModel: TaxCodeChangeViewModel =
-          TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), true)
+          TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"))
 
         val view: HtmlFormat.Appendable = taxCodeComparison(viewModel, appConfig)
         doc(view) must haveClassCount("tax-code-reason", 1)

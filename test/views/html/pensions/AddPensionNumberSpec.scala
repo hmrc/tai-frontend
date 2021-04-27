@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.viewModels.pensions.PensionNumberViewModel
 
 class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
 
-  private val addPensionNumber = inject[addPensionNumber]
+  private val addPensionNumber = inject[AddPensionNumberView]
   override def view: Html = addPensionNumber(pensionNumberForm, pensionNumberViewModel)
 
   "Add payroll number form page" must {

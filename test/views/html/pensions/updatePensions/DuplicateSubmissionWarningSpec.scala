@@ -39,14 +39,14 @@ import uk.gov.hmrc.tai.forms.YesNoForm
 import uk.gov.hmrc.tai.forms.pensions.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import views.html.pensions.duplicateSubmissionWarning
+import views.html.pensions.DuplicateSubmissionWarningView
 
 class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstants {
   val pensionName = "pension Name"
   val pensionId = 1
   val duplicateSubmissionWarningForm: Form[YesNoForm] = DuplicateSubmissionWarningForm.createForm
   val choice = YesNoForm.YesNoChoice
-  private val duplicateSubmissionWarning = inject[duplicateSubmissionWarning]
+  private val duplicateSubmissionWarningView = inject[DuplicateSubmissionWarningView]
 
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.pension.warning.customGaTitle"))
@@ -85,11 +85,11 @@ class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstant
       val invalidatedForm = duplicateSubmissionWarningForm.bind(invalidChoice)
       val emptySelectionErrorMessage = messages("tai.pension.warning.error")
 
-      val errorView: HtmlFormat.Appendable = duplicateSubmissionWarning(invalidatedForm, pensionName, pensionId)
+      val errorView: HtmlFormat.Appendable = duplicateSubmissionWarningView(invalidatedForm, pensionName, pensionId)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
     }
   }
 
-  override def view: Html = duplicateSubmissionWarning(duplicateSubmissionWarningForm, pensionName, pensionId)
+  override def view: Html = duplicateSubmissionWarningView(duplicateSubmissionWarningForm, pensionName, pensionId)
 }

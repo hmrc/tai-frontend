@@ -34,7 +34,7 @@ class AddPensionStartDateSpec extends TaiViewSpec {
       "month"                    -> "6",
       "year"                     -> "2017"
     ))
-  private val addPensionStartDate = inject[addPensionStartDate]
+  private val addPensionStartDate = inject[AddPensionStartDateView]
   override def view: Html = addPensionStartDate(pensionStartDateForm, pensionName)
 
   "Add pension start date form" should {
