@@ -28,7 +28,6 @@ class UnauthorisedControllerSpec extends BaseSpec {
     mcc,
     appConfig,
     error_template_noauth,
-    error_no_primary,
     partialRetriever,
     templateRenderer
   ) {

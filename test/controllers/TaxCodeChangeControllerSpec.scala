@@ -151,8 +151,6 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         taxCodeComparisonView,
         yourTaxFreeAmountView,
         whatHappensNextView,
-        error_template_noauth,
-        error_no_primary,
         partialRetriever,
         templateRenderer
       ) {

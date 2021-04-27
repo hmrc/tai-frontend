@@ -82,10 +82,9 @@ class ServiceControllerSpec extends BaseSpec {
         mcc,
         inject[timeout],
         inject[manualCorrespondence],
-        error_template_noauth,
-        error_no_primary,
         partialRetriever,
-        templateRenderer
+        templateRenderer,
+        inject[ErrorPagesHandler]
       )
 
 }

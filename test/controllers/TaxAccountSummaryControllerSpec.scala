@@ -246,10 +246,9 @@ class TaxAccountSummaryControllerSpec
     appConfig,
     mcc,
     inject[incomeTaxSummary],
-    error_template_noauth,
-    error_no_primary,
     partialRetriever,
-    templateRenderer
+    templateRenderer,
+    inject[ErrorPagesHandler]
   )
 
 }

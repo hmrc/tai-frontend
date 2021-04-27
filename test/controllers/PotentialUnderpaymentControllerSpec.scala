@@ -112,10 +112,9 @@ class PotentialUnderpaymentControllerSpec
         FakeValidatePerson,
         mcc,
         inject[potentialUnderpayment],
-        error_template_noauth,
-        error_no_primary,
         partialRetriever,
-        templateRenderer
+        templateRenderer,
+        inject[ErrorPagesHandler]
       ) {
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
       Future.successful(

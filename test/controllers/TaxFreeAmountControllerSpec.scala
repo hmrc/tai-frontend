@@ -113,9 +113,8 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
         appConfig,
         mcc,
         inject[taxFreeAmount],
-        error_template_noauth,
-        error_no_primary,
         partialRetriever,
-        templateRenderer
+        templateRenderer,
+        inject[ErrorPagesHandler]
       )
 }

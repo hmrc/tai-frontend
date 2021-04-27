@@ -51,8 +51,6 @@ class UnderpaymentFromPreviousYearControllerSpec extends BaseSpec {
         FakeValidatePerson,
         mcc,
         inject[previousYearUnderpayment],
-        error_template_noauth,
-        error_no_primary,
         partialRetriever,
         templateRenderer
       ) {
