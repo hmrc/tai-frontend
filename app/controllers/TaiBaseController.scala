@@ -19,8 +19,5 @@ package controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
-import views.html.{error_no_primary, error_template_noauth}
 
 abstract class TaiBaseController(mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport

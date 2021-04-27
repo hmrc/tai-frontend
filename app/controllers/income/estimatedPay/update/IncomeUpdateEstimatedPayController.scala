@@ -18,9 +18,9 @@ package controllers.income.estimatedPay.update
 
 import cats.data._
 import cats.implicits._
-import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import org.joda.time.LocalDate
 import play.api.mvc._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -39,9 +39,8 @@ import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefixAndSign
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
 import views.html.incomes.{estimatedPay, estimatedPayLandingPage, incorrectTaxableIncome}
-import views.html.{error_no_primary, error_template_noauth}
-import javax.inject.{Inject, Named}
 
+import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdateEstimatedPayController @Inject()(
@@ -55,15 +54,13 @@ class IncomeUpdateEstimatedPayController @Inject()(
   estimatedPay: estimatedPay,
   incorrectTaxableIncome: incorrectTaxableIncome,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   def estimatedPayLandingPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     for {
       taxAccountSummary <- taxAccountService.taxAccountSummary(user.nino, TaxYear())
@@ -91,7 +88,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
     FormHelper.areEqual(cache.get(UpdateIncome_ConfirmedNewAmountKey), newAmount map (_.toString()))
 
   def estimatedPayPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     val employerFuture = IncomeSource.create(journeyCacheService)
@@ -108,7 +105,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
       val paymentDate: Option[LocalDate] = payment.map(_.date)
 
       calculatedPay.grossAnnualPay match {
-        case newAmount if (isCachedAmountSameAsEnteredAmount(cache, newAmount)) =>
+        case newAmount if isCachedAmountSameAsEnteredAmount(cache, newAmount) =>
           Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache()))
         case Some(newAmount) if newAmount > payYearToDate =>
           val cache = Map(

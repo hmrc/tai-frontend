@@ -16,9 +16,9 @@
 
 package controllers.income.estimatedPay.update
 
-import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -35,9 +35,8 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
 import views.html.incomes.{confirmAmountEntered, editIncomeIrregularHours, editSuccess}
-import views.html.{error_no_primary, error_template_noauth}
-import javax.inject.{Inject, Named}
 
+import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -52,10 +51,8 @@ class IncomeUpdateIrregularHoursController @Inject()(
   editIncomeIrregularHours: editIncomeIrregularHours,
   confirmAmountEntered: confirmAmountEntered,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants {
 
@@ -71,7 +68,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
 
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       val nino = user.nino
 
@@ -80,13 +77,12 @@ class IncomeUpdateIrregularHoursController @Inject()(
 
       paymentRequest flatMap { payment =>
         taxCodeIncomeRequest flatMap {
-          case Right(Some(tci)) => {
+          case Right(Some(tci)) =>
             (taxCodeIncomeInfoToCache.tupled andThen journeyCacheService.cache)(tci, payment) map { _ =>
               val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
 
               Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
             }
-          }
           case Left(TaiUnauthorisedResponse(_)) =>
             Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
           case _ =>
@@ -149,7 +145,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
 
   def submitIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
 
       val updateJourneyCompletion: String => Future[Map[String, String]] = (incomeId: String) => {
@@ -168,11 +164,10 @@ class IncomeUpdateIrregularHoursController @Inject()(
           val incomeName :: newPay :: incomeId :: Nil = cache.toList
 
           taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId) flatMap {
-            case TaiSuccessResponse => {
+            case TaiSuccessResponse =>
               updateJourneyCompletion(incomeId) flatMap { _ =>
                 cacheAndRespond(incomeName, incomeId, newPay)
               }
-            }
             case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
           }
 

@@ -48,10 +48,8 @@ class IncomeUpdateHowToUpdateController @Inject()(
   mcc: MessagesControllerComponents,
   howToUpdateView: howToUpdate,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
@@ -76,7 +74,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
     }
 
   def howToUpdatePage(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     (employmentService.employment(nino, id) flatMap {
@@ -106,8 +104,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
     incomeToEdit: EmploymentAmount,
     taxCodeIncomeDetails: TaiResponse)(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] =
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, taxCodeIncomeDetails) match {
-      case (true, false, TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) => {
-
+      case (true, false, TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
         for {
           howToUpdate <- journeyCacheService.currentValue(UpdateIncome_HowToUpdateKey)
         } yield {
@@ -125,14 +122,12 @@ class IncomeUpdateHowToUpdateController @Inject()(
           }
 
         }
-
-      }
       case (false, false, _) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
       case _                 => Future.successful(Redirect(controllers.routes.IncomeController.pensionIncome()))
     }
 
   def handleChooseHowToUpdate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     HowToUpdateForm
       .createForm()
@@ -152,12 +147,9 @@ class IncomeUpdateHowToUpdateController @Inject()(
         formData => {
           journeyCacheService.cache(UpdateIncome_HowToUpdateKey, formData.howToUpdate.getOrElse("")).map { _ =>
             formData.howToUpdate match {
-              case Some("incomeCalculator") => {
+              case Some("incomeCalculator") =>
                 Redirect(routes.IncomeUpdateWorkingHoursController.workingHoursPage())
-              }
-              case _ => {
-                Redirect(controllers.routes.IncomeController.viewIncomeForEdit())
-              }
+              case _ => Redirect(controllers.routes.IncomeController.viewIncomeForEdit())
             }
           }
         }

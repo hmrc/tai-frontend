@@ -17,9 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
-
-import javax.inject.Inject
+import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -29,8 +27,9 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
-import views.html.{error_no_primary, error_template_noauth, taxCodeDetails, taxCodeDetailsPreviousYears}
+import views.html.{taxCodeDetails, taxCodeDetailsPreviousYears}
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
@@ -43,10 +42,8 @@ class YourTaxCodeController @Inject()(
   applicationConfig: ApplicationConfig,
   taxCodeDetails: taxCodeDetails,
   taxCodeDetailsPreviousYears: taxCodeDetailsPreviousYears,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
@@ -63,18 +60,17 @@ class YourTaxCodeController @Inject()(
 
         val filteredTaxCodes =
           employmentId.fold(taxCodeIncomes) { id =>
-            taxCodeIncomes.filter(_.employmentId == Some(id))
+            taxCodeIncomes.filter(_.employmentId.contains(id))
           }
 
         val taxCodeViewModel = TaxCodeViewModel(filteredTaxCodes, scottishTaxRateBands, employmentId, applicationConfig)
 
-        implicit val user = request.taiUser
+        implicit val user: AuthedUser = request.taiUser
 
         Ok(taxCodeDetails(taxCodeViewModel))
       }) recover {
-        case NonFatal(e) => {
-          errorPagesHandler.internalServerError(s"Exception: ${e.getClass()}")
-        }
+        case NonFatal(e) =>
+          errorPagesHandler.internalServerError(s"Exception: ${e.getClass}")
       }
     }
 
@@ -91,12 +87,11 @@ class YourTaxCodeController @Inject()(
       } yield {
         val taxCodeViewModel =
           TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year, applicationConfig)
-        implicit val user = request.taiUser
+        implicit val user: AuthedUser = request.taiUser
         Ok(taxCodeDetailsPreviousYears(taxCodeViewModel))
       }) recover {
-        case NonFatal(e) => {
+        case NonFatal(e) =>
           errorPagesHandler.internalServerError(s"Exception: ${e.getClass()}")
-        }
       }
   }
 }
