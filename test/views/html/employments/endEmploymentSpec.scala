@@ -41,7 +41,7 @@ class endEmploymentSpec extends TaiViewSpec {
 
   private val viewmodel = EmploymentViewModel(employmentName, employmentId)
 
-  private val template = inject[endEmployment]
+  private val template = inject[EndEmploymentView]
 
   override def view: Html = template(employmentEndDateForm, viewmodel)
 

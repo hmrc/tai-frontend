@@ -55,7 +55,7 @@ class AddEmploymentFirstPaySpec extends TaiViewSpec with FormValuesConstants {
     Map(
       AddEmploymentFirstPayForm.FirstPayChoice -> YesValue
     ))
-  private val template = inject[add_employment_first_pay_form]
+  private val template = inject[AddEmploymentFirstPayFormView]
 
   override def view: Html = template(employmentFirstPayForm, employerName)
 }

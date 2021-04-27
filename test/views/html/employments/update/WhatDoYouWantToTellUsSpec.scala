@@ -27,7 +27,7 @@ class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
   private val employerName = "testEmployer"
   val empId = 1
 
-  private val template = inject[whatDoYouWantToTellUs]
+  private val template = inject[WhatDoYouWantToTellUsView]
 
   override def view: Html =
     template(EmploymentViewModel(employerName, empId), UpdateEmploymentDetailsForm.form)

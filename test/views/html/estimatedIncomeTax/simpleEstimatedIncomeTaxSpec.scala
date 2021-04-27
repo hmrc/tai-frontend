@@ -236,7 +236,7 @@ class simpleEstimatedIncomeTaxSpec extends TaiViewSpec {
       "£11,500")
   )
 
-  private val template = inject[simpleEstimatedIncomeTax]
+  private val template = inject[SimpleEstimatedIncomeTaxView]
 
   def view(vm: SimpleEstimatedIncomeTaxViewModel): Html =
     template(vm, Html("<Html><head></head><body>Test</body></Html>"))

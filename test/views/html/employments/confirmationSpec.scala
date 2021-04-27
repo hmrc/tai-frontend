@@ -21,7 +21,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class confirmationSpec extends TaiViewSpec {
-  private val template = inject[confirmation]
+  private val template = inject[ConfirmationView]
 
   override def view: Html = template()
 

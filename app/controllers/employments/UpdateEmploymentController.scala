@@ -36,8 +36,8 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
 import views.html.CanWeContactByPhoneView
-import views.html.employments.confirmation
-import views.html.employments.update.{UpdateEmploymentCheckYourAnswers, whatDoYouWantToTellUs}
+import views.html.employments.ConfirmationView
+import views.html.employments.update.{UpdateEmploymentCheckYourAnswersView, WhatDoYouWantToTellUsView}
 import javax.inject.{Inject, Named}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -49,10 +49,10 @@ class UpdateEmploymentController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  whatDoYouWantToTellUs: whatDoYouWantToTellUs,
+  whatDoYouWantToTellUs: WhatDoYouWantToTellUsView,
   can_we_contact_by_phone: CanWeContactByPhoneView,
-  UpdateEmploymentCheckYourAnswers: UpdateEmploymentCheckYourAnswers,
-  confirmationView: confirmation,
+  UpdateEmploymentCheckYourAnswers: UpdateEmploymentCheckYourAnswersView,
+  confirmationView: ConfirmationView,
   @Named("Update Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   implicit val partialRetriever: FormPartialRetriever,

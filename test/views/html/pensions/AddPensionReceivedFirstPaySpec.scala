@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.forms.employments.AddEmploymentFirstPayForm
 import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderFirstPayForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import views.html.employments.add_employment_first_pay_form
+import views.html.employments.AddEmploymentFirstPayFormView
 
 class AddPensionReceivedFirstPaySpec extends TaiViewSpec with FormValuesConstants {
 
@@ -44,7 +44,7 @@ class AddPensionReceivedFirstPaySpec extends TaiViewSpec with FormValuesConstant
         val noPayrollNumberChooseError = messages("tai.error.chooseOneOption")
         val formWithErrors: Form[Option[String]] =
           AddEmploymentFirstPayForm.form.withError(AddEmploymentFirstPayForm.FirstPayChoice, noPayrollNumberChooseError)
-        val add_employment_first_pay_form = inject[add_employment_first_pay_form]
+        val add_employment_first_pay_form = inject[AddEmploymentFirstPayFormView]
         def view: Html = add_employment_first_pay_form(formWithErrors, pensionProviderName)
 
         val errorMessage = doc(view).select(".error-message").text

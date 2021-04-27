@@ -87,7 +87,7 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
 
   val viewModel = ComplexEstimatedIncomeTaxViewModel(15000, 48000, 11500, bandedGraph, "UK")
 
-  private val template = inject[complexEstimatedIncomeTax]
+  private val template = inject[ComplexEstimatedIncomeTaxView]
 
   override def view: Html =
     template(viewModel, Html("<Html><head></head><body>Test</body></Html>"))

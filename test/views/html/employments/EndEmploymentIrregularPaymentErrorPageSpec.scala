@@ -68,7 +68,7 @@ class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with Irregu
 
   private lazy val model = EmploymentViewModel("TEST", 1)
 
-  private val template = inject[EndEmploymentIrregularPaymentError]
+  private val template = inject[EndEmploymentIrregularPaymentErrorView]
 
   override def view: Html = template(validForm, model)
 }

@@ -77,7 +77,7 @@ class UpdateEmploymentCheckYourAnswersSpec extends TaiViewSpec {
   val viewModel =
     UpdateEmploymentCheckYourAnswersViewModel(employmentId, "TEST", "whatYouToldUs", "Yes", Some("123456789"))
 
-  private val template = inject[UpdateEmploymentCheckYourAnswers]
+  private val template = inject[UpdateEmploymentCheckYourAnswersView]
 
   override def view: Html = template(viewModel)
 }
