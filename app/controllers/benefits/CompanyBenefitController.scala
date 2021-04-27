@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
-import views.html.benefits.updateOrRemoveCompanyBenefitDecision
+import views.html.benefits.UpdateOrRemoveCompanyBenefitDecisionView
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -44,7 +44,7 @@ class CompanyBenefitController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  updateOrRemoveCompanyBenefitDecision: updateOrRemoveCompanyBenefitDecision,
+  updateOrRemoveCompanyBenefitDecision: UpdateOrRemoveCompanyBenefitDecisionView,
   implicit val templateRenderer: TemplateRenderer,
   implicit val partialRetriever: FormPartialRetriever,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)

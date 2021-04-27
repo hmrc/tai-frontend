@@ -41,7 +41,7 @@ import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstant
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import utils.BaseSpec
-import views.html.benefits.updateOrRemoveCompanyBenefitDecision
+import views.html.benefits.UpdateOrRemoveCompanyBenefitDecisionView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -328,7 +328,7 @@ class CompanyBenefitControllerSpec
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val decisionCacheWrapper: DecisionCacheWrapper = mock[DecisionCacheWrapper]
 
-  private val updateOrRemoveCompanyBenefitDecisionView = inject[updateOrRemoveCompanyBenefitDecision]
+  private val updateOrRemoveCompanyBenefitDecisionView = inject[UpdateOrRemoveCompanyBenefitDecisionView]
 
   class SUT
       extends CompanyBenefitController(

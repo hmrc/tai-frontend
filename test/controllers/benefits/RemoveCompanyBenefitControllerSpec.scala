@@ -42,7 +42,7 @@ import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstant
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
 import utils.BaseSpec
-import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYourAnswers, removeCompanyBenefitConfirmation, removeCompanyBenefitStopDate}
+import views.html.benefits.{RemoveBenefitTotalValueView, RemoveCompanyBenefitCheckYourAnswersView, RemoveCompanyBenefitConfirmationView, RemoveCompanyBenefitStopDateView}
 import views.html.CanWeContactByPhoneView
 
 import scala.concurrent.Future
@@ -697,11 +697,11 @@ class RemoveCompanyBenefitControllerSpec
   val removeCompanyBenefitJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
-  private val removeCompanyBenefitCheckYourAnswersView = inject[removeCompanyBenefitCheckYourAnswers]
+  private val removeCompanyBenefitCheckYourAnswersView = inject[RemoveCompanyBenefitCheckYourAnswersView]
 
-  private val removeBenefitTotalValueView = inject[removeBenefitTotalValue]
+  private val removeBenefitTotalValueView = inject[RemoveBenefitTotalValueView]
 
-  private val removeCompanyBenefitStopDateView = inject[removeCompanyBenefitStopDate]
+  private val removeCompanyBenefitStopDateView = inject[RemoveCompanyBenefitStopDateView]
 
   class SUT
       extends RemoveCompanyBenefitController(
@@ -716,7 +716,7 @@ class RemoveCompanyBenefitControllerSpec
         removeCompanyBenefitStopDateView,
         removeBenefitTotalValueView,
         inject[CanWeContactByPhoneView],
-        inject[removeCompanyBenefitConfirmation],
+        inject[RemoveCompanyBenefitConfirmationView],
         templateRenderer,
         partialRetriever
       )

@@ -92,7 +92,7 @@ class RemoveCompanyBenefitCheckYourAnswersSpec extends TaiViewSpec {
       "Yes",
       Some("123456789"))
 
-  private val template = inject[removeCompanyBenefitCheckYourAnswers]
+  private val template = inject[RemoveCompanyBenefitCheckYourAnswersView]
 
   override def view: Html = template(viewModel)
 }

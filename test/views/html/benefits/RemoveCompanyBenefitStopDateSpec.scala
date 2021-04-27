@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec {
 
-  private val removeCompanyBenefitStopDate = inject[removeCompanyBenefitStopDate]
+  private val removeCompanyBenefitStopDate = inject[RemoveCompanyBenefitStopDateView]
 
   "stop date" should {
 

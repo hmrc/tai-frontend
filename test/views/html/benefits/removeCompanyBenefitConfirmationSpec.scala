@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class removeCompanyBenefitConfirmationSpec extends TaiViewSpec {
 
-  private val removeCompanyBenefitConfirmation = inject[removeCompanyBenefitConfirmation]
+  private val removeCompanyBenefitConfirmation = inject[RemoveCompanyBenefitConfirmationView]
   override def view: Html = removeCompanyBenefitConfirmation()
 
   "Update Income Details Confirmation View" must {

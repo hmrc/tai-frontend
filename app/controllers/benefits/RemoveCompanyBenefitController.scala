@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
-import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYourAnswers, removeCompanyBenefitConfirmation, removeCompanyBenefitStopDate}
+import views.html.benefits.{RemoveBenefitTotalValueView, RemoveCompanyBenefitCheckYourAnswersView, RemoveCompanyBenefitConfirmationView, RemoveCompanyBenefitStopDateView}
 import views.html.CanWeContactByPhoneView
 
 import scala.Function.tupled
@@ -52,11 +52,11 @@ class RemoveCompanyBenefitController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   langUtils: LanguageUtils,
-  removeCompanyBenefitCheckYourAnswers: removeCompanyBenefitCheckYourAnswers,
-  removeCompanyBenefitStopDate: removeCompanyBenefitStopDate,
-  removeBenefitTotalValue: removeBenefitTotalValue,
+  removeCompanyBenefitCheckYourAnswers: RemoveCompanyBenefitCheckYourAnswersView,
+  removeCompanyBenefitStopDate: RemoveCompanyBenefitStopDateView,
+  removeBenefitTotalValue: RemoveBenefitTotalValueView,
   can_we_contact_by_phone: CanWeContactByPhoneView,
-  removeCompanyBenefitConfirmation: removeCompanyBenefitConfirmation,
+  removeCompanyBenefitConfirmation: RemoveCompanyBenefitConfirmationView,
   implicit val templateRenderer: TemplateRenderer,
   implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants

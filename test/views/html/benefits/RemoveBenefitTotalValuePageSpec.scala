@@ -72,7 +72,7 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
   private lazy val employerName = "HMRC"
   private lazy val benefitName = "Other Benefit"
 
-  private val template = inject[removeBenefitTotalValue]
+  private val template = inject[RemoveBenefitTotalValueView]
 
   override def view: Html =
     template(BenefitViewModel(employerName, benefitName), CompanyBenefitTotalValueForm.form)

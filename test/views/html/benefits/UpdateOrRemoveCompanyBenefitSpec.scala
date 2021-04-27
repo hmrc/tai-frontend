@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
 class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec {
 
-  private val updateOrRemoveCompanyBenefitDecision = inject[updateOrRemoveCompanyBenefitDecision]
+  private val updateOrRemoveCompanyBenefitDecision = inject[UpdateOrRemoveCompanyBenefitDecisionView]
 
   "decision" should {
     behave like pageWithTitle(messages("tai.benefits.updateOrRemove.decision.heading", benefitType, employerName))
