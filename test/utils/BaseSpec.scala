@@ -30,7 +30,6 @@ import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import views.html.{error_no_primary, error_template_noauth}
 
 import scala.reflect.ClassTag
 
@@ -42,8 +41,6 @@ trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar wi
   lazy val appConfig: ApplicationConfig = inject[ApplicationConfig]
   lazy val servicesConfig: ServicesConfig = inject[ServicesConfig]
   lazy val langUtils: LanguageUtils = inject[LanguageUtils]
-  lazy val error_template_noauth: error_template_noauth = inject[error_template_noauth]
-  lazy val error_no_primary: error_no_primary = inject[error_no_primary]
 
   implicit lazy val messagesApi: MessagesApi = inject[MessagesApi]
   implicit lazy val provider: MessagesProvider = inject[MessagesProvider]

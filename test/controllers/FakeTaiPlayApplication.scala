@@ -51,7 +51,9 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
   implicit override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(additionalConfiguration)
     .overrides(
-      bind[WebChatClient].toInstance(new WebChatClientStub)
+      bind[WebChatClient].toInstance(new WebChatClientStub),
+      bind[TemplateRenderer].toInstance(MockTemplateRenderer),
+      bind[FormPartialRetriever].toInstance(MockPartialRetriever)
     )
     .build()
 

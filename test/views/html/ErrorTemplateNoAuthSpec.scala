@@ -28,6 +28,8 @@ class ErrorTemplateNoAuthSpec extends TaiViewSpec {
   val additionalMessage = "Please sign in"
   val link = """<a id="sign-in-link" href="fake-path/fake-endpoint">Sign in</a>"""
 
+  lazy val error_template_noauth: error_template_noauth = inject[error_template_noauth]
+
   override def view: Html = error_template_noauth(
     pageTitle,
     pageHeading,
