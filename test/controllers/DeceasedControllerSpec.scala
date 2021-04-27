@@ -47,8 +47,6 @@ class DeceasedControllerSpec extends BaseSpec {
     FakeAuthAction,
     mcc,
     inject[deceased_helpline],
-    error_template_noauth,
-    error_no_primary,
     MockPartialRetriever,
     MockTemplateRenderer
   )

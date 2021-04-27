@@ -53,18 +53,14 @@ class AuditControllerSpec extends BaseSpec {
 
   private val redirectUri = "redirectUri"
 
-  val auditService = mock[AuditService]
+  val auditService: AuditService = mock[AuditService]
 
   class TestAuditController
       extends AuditController(
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
-        mcc,
-        error_template_noauth,
-        error_no_primary,
-        MockPartialRetriever,
-        MockTemplateRenderer
+        mcc
       ) {
 
     when(auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any()))

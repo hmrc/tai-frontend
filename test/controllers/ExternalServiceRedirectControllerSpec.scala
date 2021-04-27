@@ -18,13 +18,11 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
-import play.api.i18n.MessagesApi
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.service.{AuditService, SessionService}
 import utils.BaseSpec
 
@@ -116,9 +114,6 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        error_template_noauth,
-        error_no_primary,
-        partialRetriever,
-        templateRenderer
+        inject[ErrorPagesHandler]
       )
 }

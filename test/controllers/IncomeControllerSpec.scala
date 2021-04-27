@@ -772,10 +772,9 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         editPensionSuccessView,
         inject[editIncome],
         inject[sameEstimatedPay],
-        error_template_noauth,
-        error_no_primary,
         partialRetriever,
-        templateRenderer
+        templateRenderer,
+        inject[ErrorPagesHandler]
       ) {
 
     when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))

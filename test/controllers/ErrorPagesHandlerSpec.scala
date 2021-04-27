@@ -27,14 +27,11 @@ import play.api.mvc.Results.{BadRequest, Redirect}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiTaxAccountFailureResponse
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import utils.BaseSpec
-import views.html.{error_no_primary, error_template_noauth}
 
 import scala.concurrent.Future
 
@@ -350,16 +347,10 @@ class ErrorPagesHandlerSpec extends BaseSpec {
 
   val ninoValue = nino.value
 
-  val createSut = new SUT(error_template_noauth, error_no_primary)
+  val createSut = new SUT
 
   class SUT(
-    override val error_template_noauth: error_template_noauth,
-    override val error_no_primary: error_no_primary
-  ) extends ErrorPagesHandler {
-    override implicit def templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit def partialRetriever: FormPartialRetriever = MockPartialRetriever
-
+    ) extends ErrorPagesHandler(error_template_noauth, error_no_primary, MockTemplateRenderer, MockPartialRetriever) {
     val recoveryLocation: RecoveryLocation = classOf[SUT]
   }
-
 }

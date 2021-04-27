@@ -217,10 +217,9 @@ class PayeControllerHistoricSpec
         mcc,
         inject[RtiDisabledHistoricPayAsYouEarn],
         inject[historicPayAsYouEarn],
-        error_template_noauth,
-        error_no_primary,
         partialRetriever,
-        templateRenderer
+        templateRenderer,
+        inject[ErrorPagesHandler]
       ) {
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))

@@ -43,8 +43,6 @@ class HelpControllerSpec extends BaseSpec with JsoupMatchers {
     appConfig,
     mcc,
     inject[getHelp],
-    error_template_noauth,
-    error_no_primary,
     MockPartialRetriever,
     MockTemplateRenderer
   )
