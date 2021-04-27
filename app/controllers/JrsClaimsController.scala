@@ -41,10 +41,8 @@ class JrsClaimsController @Inject()(
   jrsClaimSummary: jrsClaimSummary,
   internalServerError: internalServerError,
   noJrsClaim: noJrsClaim,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

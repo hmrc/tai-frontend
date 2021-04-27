@@ -17,17 +17,17 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
-import play.api.mvc.MessagesControllerComponents
+import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
-import views.html.{error_no_primary, error_template_noauth, previousYearUnderpayment}
+import views.html.previousYearUnderpayment
 
-import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class UnderpaymentFromPreviousYearController @Inject()(
@@ -36,14 +36,12 @@ class UnderpaymentFromPreviousYearController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   previousYearUnderpayment: previousYearUnderpayment,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral {
 
-  def underpaymentExplanation = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+  def underpaymentExplanation: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user: AuthedUser = request.taiUser
 
     val nino = user.nino
     val year = TaxYear()

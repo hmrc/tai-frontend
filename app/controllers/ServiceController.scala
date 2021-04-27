@@ -18,15 +18,15 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Request, Result}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-import views.html.{error_no_primary, error_template_noauth, manualCorrespondence, timeout}
+import views.html.{manualCorrespondence, timeout}
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ServiceController @Inject()(
@@ -36,18 +36,16 @@ class ServiceController @Inject()(
   mcc: MessagesControllerComponents,
   timeout: timeout,
   manualCorrespondence: manualCorrespondence,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def timeoutPage() = Action.async { implicit request =>
+  def timeoutPage(): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(timeout()))
   }
 
-  def serviceSignout = (authenticate andThen validatePerson).async { implicit request =>
+  def serviceSignout: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     request.taiUser.providerType match {
       case Some(TaiConstants.AuthProviderVerify) =>
         Future.successful(
@@ -57,7 +55,7 @@ class ServiceController @Inject()(
     }
   }
 
-  def gateKeeper() = (authenticate andThen validatePerson).async { implicit request =>
+  def gateKeeper(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     getGateKeeper(request.taiUser.nino)
   }
 
