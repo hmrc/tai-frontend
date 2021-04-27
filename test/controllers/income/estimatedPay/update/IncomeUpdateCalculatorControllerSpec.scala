@@ -18,7 +18,7 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction}
+import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -48,9 +48,21 @@ class IncomeUpdateCalculatorControllerSpec
     extends BaseSpec with JsoupMatchers with JourneyCacheConstants with EditIncomeIrregularPayConstants
     with FormValuesConstants with ControllerViewTestHelper with EditIncomePayPeriodConstants with ScalaFutures {
 
-  val employer = IncomeSource(id = 1, name = "sample employer")
-  val defaultEmployment =
-    Employment("company", Live, Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1, None, false, false)
+  val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
+  val defaultEmployment: Employment =
+    Employment(
+      "company",
+      Live,
+      Some("123"),
+      new LocalDate("2016-05-26"),
+      None,
+      Nil,
+      "",
+      "",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false)
 
   val incomeService: IncomeService = mock[IncomeService]
   val employmentService: EmploymentService = mock[EmploymentService]
@@ -72,10 +84,9 @@ class IncomeUpdateCalculatorControllerSpec
         inject[checkYourAnswers],
         inject[confirmAmountEntered],
         journeyCacheService,
-        error_template_noauth,
-        error_no_primary,
         MockPartialRetriever,
-        MockTemplateRenderer
+        MockTemplateRenderer,
+        inject[ErrorPagesHandler]
       ) {
     when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
       .thenReturn(Future.successful(employer.id))
@@ -96,7 +107,7 @@ class IncomeUpdateCalculatorControllerSpec
 
         def onPageLoad(employerId: Int = 1): Future[Result] =
           new TestIncomeUpdateCalculatorController()
-            .onPageLoad(employerId)(RequestBuilder.buildFakeGetRequestWithAuth)
+            .onPageLoad(employerId)(RequestBuilder.buildFakeGetRequestWithAuth())
       }
       def setup(hasJourneyCompleted: Boolean, returnedEmployment: Option[Employment]): OnPageLoadHarness =
         new OnPageLoadHarness(hasJourneyCompleted, returnedEmployment)
@@ -105,7 +116,7 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect to the duplicateSubmissionWarning url" when {
       "an income update has already been performed" in {
         val result = OnPageLoadHarness
-          .setup(true, Some(defaultEmployment))
+          .setup(hasJourneyCompleted = true, Some(defaultEmployment))
           .onPageLoad()
 
         status(result) mustBe SEE_OTHER
@@ -119,7 +130,7 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect to the estimatedPayLanding url" when {
       "an income update has already been performed" in {
         val result = OnPageLoadHarness
-          .setup(false, Some(defaultEmployment))
+          .setup(hasJourneyCompleted = false, Some(defaultEmployment))
           .onPageLoad()
 
         status(result) mustBe SEE_OTHER
@@ -134,7 +145,7 @@ class IncomeUpdateCalculatorControllerSpec
       "no employments are found" in {
 
         val result = OnPageLoadHarness
-          .setup(false, None)
+          .setup(hasJourneyCompleted = false, None)
           .onPageLoad()
 
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -151,7 +162,7 @@ class IncomeUpdateCalculatorControllerSpec
 
         def duplicateSubmissionWarning(): Future[Result] =
           new TestIncomeUpdateCalculatorController()
-            .duplicateSubmissionWarningPage()(RequestBuilder.buildFakeGetRequestWithAuth)
+            .duplicateSubmissionWarningPage()(RequestBuilder.buildFakeGetRequestWithAuth())
       }
 
       def setup(): DuplicateSubmissionWarningHarness = new DuplicateSubmissionWarningHarness()

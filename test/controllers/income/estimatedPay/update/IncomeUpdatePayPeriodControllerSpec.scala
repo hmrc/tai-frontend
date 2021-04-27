@@ -38,7 +38,7 @@ import scala.concurrent.Future
 class IncomeUpdatePayPeriodControllerSpec
     extends BaseSpec with JourneyCacheConstants with EditIncomePayPeriodConstants {
 
-  val employer = IncomeSource(id = 1, name = "sample employer")
+  val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
@@ -49,8 +49,6 @@ class IncomeUpdatePayPeriodControllerSpec
         mcc,
         inject[payPeriod],
         journeyCacheService,
-        error_template_noauth,
-        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

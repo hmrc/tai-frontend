@@ -41,7 +41,7 @@ import scala.concurrent.Future
 class IncomeUpdatePayslipAmountControllerSpec
     extends BaseSpec with EditIncomePayPeriodConstants with ControllerViewTestHelper with JourneyCacheConstants {
 
-  val employer = IncomeSource(id = 1, name = "sample employer")
+  val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
@@ -58,8 +58,6 @@ class IncomeUpdatePayslipAmountControllerSpec
         taxablePayslipAmountView,
         inject[payslipDeductions],
         journeyCacheService,
-        error_template_noauth,
-        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {
@@ -109,7 +107,7 @@ class IncomeUpdatePayslipAmountControllerSpec
         val cachedAmount = Some("998787")
         val payPeriod = Some(MONTHLY)
 
-        implicit val request = RequestBuilder.buildFakeGetRequestWithAuth()
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val result = PayslipAmountPageHarness
           .setup(payPeriod, cachedAmount)
@@ -130,7 +128,7 @@ class IncomeUpdatePayslipAmountControllerSpec
 
     "Redirect user to /income-summary" when {
       "there is no data in the cache" in {
-        implicit val request = RequestBuilder.buildFakeGetRequestWithAuth()
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val cachedAmount = None
         val payPeriod = None
@@ -230,7 +228,7 @@ class IncomeUpdatePayslipAmountControllerSpec
     "display taxablePayslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
 
-        implicit val request = RequestBuilder.buildFakeGetRequestWithAuth()
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val cachedAmount = Some("9888787")
         val payPeriod = Some(MONTHLY)
@@ -250,7 +248,7 @@ class IncomeUpdatePayslipAmountControllerSpec
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 
-        implicit val request = RequestBuilder.buildFakeGetRequestWithAuth()
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val cachedAmount = None
         val payPeriod = None
@@ -351,7 +349,7 @@ class IncomeUpdatePayslipAmountControllerSpec
 
         def payslipDeductionsPage(): Future[Result] =
           new TestIncomeUpdatePayslipAmountController()
-            .payslipDeductionsPage()(RequestBuilder.buildFakeGetRequestWithAuth)
+            .payslipDeductionsPage()(RequestBuilder.buildFakeGetRequestWithAuth())
       }
 
       def setup(): PayslipDeductionsPageHarness =

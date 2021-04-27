@@ -36,7 +36,6 @@ import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstant
 import utils.BaseSpec
 import views.html.can_we_contact_by_phone
 import views.html.incomes.previousYears.{CheckYourAnswers, UpdateIncomeDetails, UpdateIncomeDetailsConfirmation, UpdateIncomeDetailsDecision}
-
 import scala.concurrent.Future
 
 class UpdateIncomeDetailsControllerSpec
@@ -384,9 +383,9 @@ class UpdateIncomeDetailsControllerSpec
 
   private def createSUT = new SUT
 
-  val journeyCacheService = mock[JourneyCacheService]
-  val trackingjourneyCacheService = mock[JourneyCacheService]
-  val previousYearsIncomeService = mock[PreviousYearsIncomeService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val trackingjourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val previousYearsIncomeService: PreviousYearsIncomeService = mock[PreviousYearsIncomeService]
 
   private class SUT
       extends UpdateIncomeDetailsController(
@@ -401,8 +400,6 @@ class UpdateIncomeDetailsControllerSpec
         inject[UpdateIncomeDetailsConfirmation],
         trackingjourneyCacheService,
         journeyCacheService,
-        error_template_noauth,
-        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       )

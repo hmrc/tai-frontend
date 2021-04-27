@@ -17,8 +17,8 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
-import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -43,7 +43,7 @@ import scala.concurrent.Future
 
 class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCacheConstants {
 
-  val employer = IncomeSource(id = 1, name = "sample employer")
+  val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
   val incomeService: IncomeService = mock[IncomeService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
@@ -63,10 +63,9 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         inject[editIncomeIrregularHours],
         inject[confirmAmountEntered],
         journeyCacheService,
-        error_template_noauth,
-        error_no_primary,
         MockPartialRetriever,
-        MockTemplateRenderer
+        MockTemplateRenderer,
+        inject[ErrorPagesHandler]
       ) {
     when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
       .thenReturn(Future.successful(employer.id))
@@ -174,7 +173,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
       status(result) mustBe SEE_OTHER
 
       redirectLocation(result) mustBe Some(
-        routes.IncomeUpdateIrregularHoursController.confirmIncomeIrregularHours(1).url.toString)
+        routes.IncomeUpdateIrregularHoursController.confirmIncomeIrregularHours(1).url)
     }
 
     "respond with BAD_REQUEST" when {
@@ -246,7 +245,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         confirmedNewAmount: Int,
         payToDate: Int) {
 
-        val future =
+        val future: Future[(Seq[String], Seq[Some[String]])] =
           if (failure) {
             Future.failed(new Exception)
           } else {

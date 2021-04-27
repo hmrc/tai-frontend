@@ -17,8 +17,8 @@
 package controllers.pensions
 
 import builders.RequestBuilder
-import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
@@ -58,7 +58,7 @@ class UpdatePensionProviderControllerSpec
       when(
         journeyCacheService.collectedJourneyValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(
           any()))
-        .thenReturn(Future.successful(Right(Seq(pensionId.toString, pensionName)), Seq(Some(PensionQuestionKey))))
+        .thenReturn(Future.successful(Right(Seq(pensionId, pensionName)), Seq(Some(PensionQuestionKey))))
 
       val result = createController.doYouGetThisPension()(fakeGetRequest)
 
@@ -450,7 +450,7 @@ class UpdatePensionProviderControllerSpec
 
   "redirectUpdatePension" must {
 
-    def cacheMap = Map(UpdatePensionProvider_IdKey -> pensionId.toString, UpdatePensionProvider_NameKey -> pensionName)
+    def cacheMap = Map(UpdatePensionProvider_IdKey -> pensionId, UpdatePensionProvider_NameKey -> pensionName)
 
     def taxAccountServiceCall =
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -483,7 +483,7 @@ class UpdatePensionProviderControllerSpec
 
       val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.UpdatePensionProviderController.duplicateSubmissionWarning.url
+      redirectLocation(result).get mustBe routes.UpdatePensionProviderController.duplicateSubmissionWarning().url
     }
 
     "return Internal Server error" when {
@@ -512,7 +512,7 @@ class UpdatePensionProviderControllerSpec
     "show duplicateSubmissionWarning view" in {
 
       when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
-        .thenReturn(Future.successful(Right(Seq(pensionName, pensionId.toString))))
+        .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
 
       val result = createController.duplicateSubmissionWarning(fakeGetRequest)
       val doc = Jsoup.parse(contentAsString(result))
@@ -537,7 +537,7 @@ class UpdatePensionProviderControllerSpec
 
     def journeyCacheCall =
       when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-        .thenReturn(Future.successful(Seq(pensionName, pensionId.toString)))
+        .thenReturn(Future.successful(Seq(pensionName, pensionId)))
 
     "redirect to the update remove employment decision page" when {
       "I want to update my employment is selected" in {
@@ -573,7 +573,7 @@ class UpdatePensionProviderControllerSpec
       "there is a form validation error (standard form validation)" in {
 
         when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-          .thenReturn(Future.successful(Seq(pensionName, pensionId.toString)))
+          .thenReturn(Future.successful(Seq(pensionName, pensionId)))
 
         val result =
           createController.submitDuplicateSubmissionWarning(fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> ""))
@@ -588,14 +588,15 @@ class UpdatePensionProviderControllerSpec
   private def fakeGetRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
   private def fakePostRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
 
-  val pensionTaxCodeIncome =
+  val pensionTaxCodeIncome: TaxCodeIncome =
     TaxCodeIncome(PensionIncome, Some(pensionId.toInt), 100, "", "", pensionName, Week1Month1BasisOfOperation, Live)
-  val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "", "", Week1Month1BasisOfOperation, Live)
+  val empTaxCodeIncome: TaxCodeIncome =
+    TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "", "", Week1Month1BasisOfOperation, Live)
 
-  val pensionProviderService = mock[PensionProviderService]
-  val taxAccountService = mock[TaxAccountService]
+  val pensionProviderService: PensionProviderService = mock[PensionProviderService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val journeyCacheService = mock[JourneyCacheService]
-  val successfulJourneyCacheService = mock[JourneyCacheService]
+  val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   class UpdatePensionProviderTestController
       extends UpdatePensionProviderController(
@@ -614,9 +615,8 @@ class UpdatePensionProviderControllerSpec
         inject[duplicateSubmissionWarning],
         journeyCacheService,
         successfulJourneyCacheService,
-        error_template_noauth,
-        error_no_primary,
         MockPartialRetriever,
-        MockTemplateRenderer
+        MockTemplateRenderer,
+        inject[ErrorPagesHandler]
       )
 }

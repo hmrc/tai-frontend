@@ -17,8 +17,8 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
-import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -43,9 +43,21 @@ import scala.concurrent.Future
 
 class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheConstants with ScalaFutures {
 
-  val employer = IncomeSource(id = 1, name = "sample employer")
-  val defaultEmployment =
-    Employment("company", Live, Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1, None, false, false)
+  val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
+  val defaultEmployment: Employment =
+    Employment(
+      "company",
+      Live,
+      Some("123"),
+      new LocalDate("2016-05-26"),
+      None,
+      Nil,
+      "",
+      "",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false)
 
   val incomeService: IncomeService = mock[IncomeService]
   val employmentService: EmploymentService = mock[EmploymentService]
@@ -62,10 +74,9 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
         mcc,
         inject[howToUpdate],
         journeyCacheService,
-        error_template_noauth,
-        error_no_primary,
         MockPartialRetriever,
-        MockTemplateRenderer
+        MockTemplateRenderer,
+        inject[ErrorPagesHandler]
       ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
       .thenReturn(Future.successful(Right(employer.id)))
@@ -73,7 +84,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
       .thenReturn(Future.successful(Right(employer.name)))
   }
 
-  def BuildEmploymentAmount(isLive: Boolean = false, isOccupationPension: Boolean = true) =
+  def BuildEmploymentAmount(isLive: Boolean = false, isOccupationPension: Boolean = true): EmploymentAmount =
     EmploymentAmount(
       name = "name",
       description = "description",
@@ -83,7 +94,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
       isLive = isLive,
       isOccupationalPension = isOccupationPension)
 
-  def BuildTaxCodeIncomes(incomeCount: Int) = {
+  def BuildTaxCodeIncomes(incomeCount: Int): Seq[TaxCodeIncome] = {
 
     val taxCodeIncome1 =
       TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
@@ -118,7 +129,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
 
         def howToUpdatePage(): Future[Result] =
           new TestIncomeUpdateHowToUpdateController()
-            .howToUpdatePage(1)(RequestBuilder.buildFakeGetRequestWithAuth)
+            .howToUpdatePage(1)(RequestBuilder.buildFakeGetRequestWithAuth())
       }
 
       def setup(
@@ -228,7 +239,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
       }
 
       "employment amount is not occupation income" in {
-        val employmentAmount = BuildEmploymentAmount(false, false)
+        val employmentAmount = BuildEmploymentAmount(isOccupationPension = false)
         val result = ProcessHowToUpdatePageHarness
           .setup()
           .processHowToUpdatePage(employmentAmount)
@@ -245,7 +256,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
 
         val result = ProcessHowToUpdatePageHarness
           .setup(2, Some("incomeCalculator"))
-          .processHowToUpdatePage(BuildEmploymentAmount(true, false))
+          .processHowToUpdatePage(BuildEmploymentAmount(isLive = true, isOccupationPension = false))
 
         whenReady(result) { r =>
           r.header.status mustBe OK
@@ -258,7 +269,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
 
         val result = ProcessHowToUpdatePageHarness
           .setup(2)
-          .processHowToUpdatePage(BuildEmploymentAmount(true, false))
+          .processHowToUpdatePage(BuildEmploymentAmount(isLive = true, isOccupationPension = false))
 
         whenReady(result) { r =>
           r.header.status mustBe OK
@@ -271,7 +282,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
 
         val result = ProcessHowToUpdatePageHarness
           .setup(1, Some("incomeCalculator"))
-          .processHowToUpdatePage(BuildEmploymentAmount(true, false))
+          .processHowToUpdatePage(BuildEmploymentAmount(isLive = true, isOccupationPension = false))
 
         whenReady(result) { r =>
           r.header.status mustBe OK
@@ -284,7 +295,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
 
         val result = ProcessHowToUpdatePageHarness
           .setup(1)
-          .processHowToUpdatePage(BuildEmploymentAmount(true, false))
+          .processHowToUpdatePage(BuildEmploymentAmount(isLive = true, isOccupationPension = false))
 
         whenReady(result) { r =>
           r.header.status mustBe OK
@@ -297,7 +308,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
 
         val result = ProcessHowToUpdatePageHarness
           .setup(0, Some("incomeCalculator"))
-          .processHowToUpdatePage(BuildEmploymentAmount(true, false))
+          .processHowToUpdatePage(BuildEmploymentAmount(isLive = true, isOccupationPension = false))
 
         val ex = the[RuntimeException] thrownBy whenReady(result) { r =>
           r
@@ -310,7 +321,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
 
         val result = ProcessHowToUpdatePageHarness
           .setup(0, Some("incomeCalculator"))
-          .processHowToUpdatePage(BuildEmploymentAmount(true, false))
+          .processHowToUpdatePage(BuildEmploymentAmount(isLive = true, isOccupationPension = false))
 
         val ex = the[RuntimeException] thrownBy whenReady(result) { r =>
           r

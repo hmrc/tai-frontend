@@ -17,8 +17,8 @@
 package controllers.pensions
 
 import builders.RequestBuilder
-import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -65,7 +65,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.addNameForm.title"))
-        doc.toString must not include ("testPensionName123")
+        doc.toString must not include "testPensionName123"
       }
     }
   }
@@ -325,7 +325,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.startDateForm.pagetitle"))
-        doc.toString must not include ("2037")
+        doc.toString must not include "2037"
       }
 
       "the request has an authorised session and a previously cached date is present" in {
@@ -946,13 +946,12 @@ class AddPensionProviderControllerSpec
         inject[addPensionStartDate],
         addPensionProviderJourneyCacheService,
         trackSuccessJourneyCacheService,
-        error_template_noauth,
-        error_no_primary,
         MockPartialRetriever,
-        MockTemplateRenderer
+        MockTemplateRenderer,
+        inject[ErrorPagesHandler]
       ) {
 
-    val pensionStartDateForm = PensionAddDateForm("pension provider")
+    val pensionStartDateForm: PensionAddDateForm = PensionAddDateForm("pension provider")
   }
 
 }
