@@ -22,14 +22,14 @@ import play.api.i18n.Lang
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import views.html.help.getHelp
+import views.html.help.GetHelpView
 
 class GetHelpPageSpec extends TaiViewSpec {
 
   implicit val user = UserBuilder()
   implicit val request = FakeRequest()
 
-  private val template = inject[getHelp]
+  private val template = inject[GetHelpView]
   override def view: Html = template(appConfig)
 
   "show get help page" must {

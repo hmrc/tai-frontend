@@ -23,7 +23,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import views.html.help.getHelp
+import views.html.help.GetHelpView
 
 import scala.concurrent.Future
 
@@ -32,7 +32,7 @@ class HelpController @Inject()(
   validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  getHelp: getHelp,
+  getHelp: GetHelpView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
