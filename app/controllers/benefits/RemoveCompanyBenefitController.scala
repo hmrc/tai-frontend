@@ -19,7 +19,8 @@ package controllers.benefits
 import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.Inject
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.language.LanguageUtils
@@ -37,9 +38,8 @@ import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstant
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
 import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYourAnswers, removeCompanyBenefitConfirmation, removeCompanyBenefitStopDate}
-import views.html.{can_we_contact_by_phone, error_no_primary, error_template_noauth}
+import views.html.can_we_contact_by_phone
 
-import javax.inject.Inject
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal.RoundingMode
@@ -57,15 +57,13 @@ class RemoveCompanyBenefitController @Inject()(
   removeBenefitTotalValue: removeBenefitTotalValue,
   can_we_contact_by_phone: can_we_contact_by_phone,
   removeCompanyBenefitConfirmation: removeCompanyBenefitConfirmation,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val templateRenderer: TemplateRenderer,
-  override implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
+  implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants
     with RemoveCompanyBenefitStopDateConstants {
 
   def stopDate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService.currentCache map { currentCache =>
       val form = RemoveCompanyBenefitStopDateForm.form.fill(currentCache.get(EndCompanyBenefit_BenefitStopDateKey))
@@ -79,13 +77,13 @@ class RemoveCompanyBenefitController @Inject()(
   }
 
   def submitStopDate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     RemoveCompanyBenefitStopDateForm.form.bindFromRequest.fold(
       formWithErrors => {
         journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey, EndCompanyBenefit_EmploymentNameKey) map {
           mandatoryValues =>
-            BadRequest(removeCompanyBenefitStopDate(formWithErrors, mandatoryValues(0), mandatoryValues(1)))
+            BadRequest(removeCompanyBenefitStopDate(formWithErrors, mandatoryValues.head, mandatoryValues(1)))
         }
       }, {
         case Some(BeforeTaxYearEnd) =>
@@ -101,14 +99,14 @@ class RemoveCompanyBenefitController @Inject()(
   }
 
   def totalValueOfBenefit(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val mandatoryKeys = Seq(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey)
     val optionalKeys = Seq(EndCompanyBenefit_BenefitValueKey)
 
     journeyCacheService.collectedValues(mandatoryKeys, optionalKeys) flatMap
       tupled { (mandatoryValues, optionalValues) =>
         {
-          val form = CompanyBenefitTotalValueForm.form.fill((optionalValues(0)).getOrElse(""))
+          val form = CompanyBenefitTotalValueForm.form.fill(optionalValues.head.getOrElse(""))
 
           Future.successful(Ok(removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), form)))
         }
@@ -116,7 +114,7 @@ class RemoveCompanyBenefitController @Inject()(
   }
 
   def submitBenefitValue(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     CompanyBenefitTotalValueForm.form.bindFromRequest.fold(
       formWithErrors => {
         journeyCacheService
@@ -184,7 +182,7 @@ class RemoveCompanyBenefitController @Inject()(
   }
 
   def checkYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService.collectedJourneyValues(
       Seq(
@@ -203,8 +201,7 @@ class RemoveCompanyBenefitController @Inject()(
 
         mandatorySeq match {
           case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-          case Right(mandatoryValues) => {
-
+          case Right(mandatoryValues) =>
             val stopDate = {
               val startOfTaxYear = langUtils.Dates.formatDate(TaxYear().start)
 
@@ -223,14 +220,13 @@ class RemoveCompanyBenefitController @Inject()(
                   optionalSeq(0),
                   mandatoryValues(3),
                   optionalSeq(1))))
-          }
         }
       }
     }
   }
 
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     for {
       (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedValues(
@@ -261,11 +257,11 @@ class RemoveCompanyBenefitController @Inject()(
     for {
       mandatoryValues <- journeyCacheService.mandatoryValues(EndCompanyBenefit_RefererKey)
       _               <- journeyCacheService.flush
-    } yield Redirect(mandatoryValues(0))
+    } yield Redirect(mandatoryValues.head)
   }
 
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     Future.successful(Ok(removeCompanyBenefitConfirmation()))
   }
 
@@ -274,7 +270,7 @@ class RemoveCompanyBenefitController @Inject()(
       if (cache.contains(EndCompanyBenefit_BenefitValueKey)) {
         controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
       } else {
-        controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url
+        controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
       }
 
     CanWeContactByPhoneViewModel(
@@ -282,7 +278,7 @@ class RemoveCompanyBenefitController @Inject()(
       messages("tai.canWeContactByPhone.title"),
       backUrl,
       controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url,
-      controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
+      controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
     )
   }
 

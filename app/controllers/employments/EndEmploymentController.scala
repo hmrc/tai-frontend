@@ -20,10 +20,9 @@ import com.google.inject.name.Named
 import controllers._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-
 import javax.inject.Inject
 import org.joda.time.LocalDate
-import play.api.i18n.{Lang, Messages}
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -40,12 +39,8 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
-import views.html.employments.update_remove_employment_decision
-import views.html.employments.{EndEmploymentIrregularPaymentError, endEmployment, endEmploymentWithinSixWeeksError}
-import views.html.{can_we_contact_by_phone, error_no_primary, error_template_noauth}
-import views.html.employments.duplicateSubmissionWarning
-import views.html.employments.confirmation
-import views.html.employments.endEmployment
+import views.html.can_we_contact_by_phone
+import views.html.employments._
 import views.html.incomes.addIncomeCheckYourAnswers
 
 import scala.Function.tupled
@@ -68,8 +63,6 @@ class EndEmploymentController @Inject()(
   addIncomeCheckYourAnswers: addIncomeCheckYourAnswers,
   @Named("End Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
   implicit val templateRenderer: TemplateRenderer,
   implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with IrregularPayConstants
@@ -123,8 +116,7 @@ class EndEmploymentController @Inject()(
     val nino = user.nino
 
     employmentService.employment(nino, empId) flatMap {
-      case Some(employment) => {
-
+      case Some(employment) =>
         val journeyCacheFuture = journeyCacheService.cache(
           Map(EndEmployment_EmploymentIdKey -> empId.toString, EndEmployment_NameKey -> employment.name))
 
@@ -132,7 +124,6 @@ class EndEmploymentController @Inject()(
           successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId")
 
         redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
-      }
       case _ => throw new RuntimeException("No employment found")
     }
   }
@@ -410,7 +401,7 @@ class EndEmploymentController @Inject()(
               success.yesNoChoice match {
                 case Some(YesValue) =>
                   Future.successful(
-                    Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision))
+                    Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()))
                 case Some(NoValue) =>
                   Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
               }

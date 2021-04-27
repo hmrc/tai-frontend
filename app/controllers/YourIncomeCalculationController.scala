@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth._
+import javax.inject.Inject
 import play.api.mvc._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -28,9 +29,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
 import views.html.incomes.{historicIncomeCalculation, yourIncomeCalculation}
-import views.html.{error_no_primary, error_template_noauth}
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class YourIncomeCalculationController @Inject()(
@@ -44,21 +43,19 @@ class YourIncomeCalculationController @Inject()(
   mcc: MessagesControllerComponents,
   historicIncomeCalculation: historicIncomeCalculation,
   yourIncomeCalculation: yourIncomeCalculation,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      incomeCalculationPage(empId, false)
+      incomeCalculationPage(empId, printPage = false)
   }
 
   def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      incomeCalculationPage(empId, true)
+      incomeCalculationPage(empId, printPage = true)
 
   }
 
@@ -74,31 +71,30 @@ class YourIncomeCalculationController @Inject()(
       employmentDetails    <- employmentFuture
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
-        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) => {
+        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
           val paymentDetails = paymentsService.filterDuplicates(employment)
 
           val model = YourIncomeCalculationViewModel(
             taxCodeIncomes.find(_.employmentId.contains(empId)),
             employment,
             paymentDetails)
-          implicit val user = request.taiUser
+          implicit val user: AuthedUser = request.taiUser
 
           if (printPage) {
             Ok(views.html.print.yourIncomeCalculation(model, appConfig))
           } else {
             Ok(yourIncomeCalculation(model))
           }
-        }
         case _ => errorPagesHandler.internalServerError("Error while fetching RTI details")
       }
     }
   }
 
   def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] =
-    yourIncomeCalculationHistoricYears(year, empId, false)
+    yourIncomeCalculationHistoricYears(year, empId, printPage = false)
 
   def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] =
-    yourIncomeCalculationHistoricYears(year, empId, true)
+    yourIncomeCalculationHistoricYears(year, empId, printPage = true)
 
   private def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int, printPage: Boolean): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>

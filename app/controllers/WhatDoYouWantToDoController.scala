@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
@@ -33,8 +34,7 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
-import views.html.{error_no_primary, error_template_noauth, whatDoYouWantToDoTileView}
-import javax.inject.Inject
+import views.html.whatDoYouWantToDoTileView
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -50,10 +50,8 @@ class WhatDoYouWantToDoController @Inject()(
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   whatDoYouWantToDoTileView: whatDoYouWantToDoTileView,
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
@@ -89,8 +87,8 @@ class WhatDoYouWantToDoController @Inject()(
     } recoverWith {
       val nino = request.taiUser.nino
 
-      (errorPagesHandler.hodBadRequestResult(nino.toString()) orElse errorPagesHandler.hodInternalErrorResult(
-        nino.toString()))
+      errorPagesHandler.hodBadRequestResult(nino.toString()) orElse errorPagesHandler.hodInternalErrorResult(
+        nino.toString())
     }
   }
 
