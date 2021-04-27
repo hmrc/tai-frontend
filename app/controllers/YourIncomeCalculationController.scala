@@ -43,11 +43,6 @@ class YourIncomeCalculationController @Inject()(
   mcc: MessagesControllerComponents,
   historicIncomeCalculation: historicIncomeCalculation,
   yourIncomeCalculation: yourIncomeCalculation,
-<<<<<<< HEAD
-  override val error_template_noauth: error_template_noauth,
-  override val error_no_primary: error_no_primary,
-=======
->>>>>>> 19a680c85b99cbf4226fbcd546ffe78e2fae7c96
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)

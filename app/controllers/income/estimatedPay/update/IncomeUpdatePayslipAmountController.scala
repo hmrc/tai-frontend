@@ -19,10 +19,7 @@ package controllers.income.estimatedPay.update
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-<<<<<<< HEAD
-=======
 import javax.inject.{Inject, Named}
->>>>>>> 19a680c85b99cbf4226fbcd546ffe78e2fae7c96
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
