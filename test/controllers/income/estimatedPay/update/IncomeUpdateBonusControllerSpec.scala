@@ -39,7 +39,7 @@ import scala.concurrent.Future
 class IncomeUpdateBonusControllerSpec
     extends BaseSpec with JourneyCacheConstants with ControllerViewTestHelper with FormValuesConstants {
 
-  val employer = IncomeSource(id = 1, name = "sample employer")
+  val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
@@ -57,8 +57,6 @@ class IncomeUpdateBonusControllerSpec
         bonusPaymentsView,
         bonusPaymentAmountView,
         journeyCacheService,
-        error_template_noauth,
-        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {
@@ -168,7 +166,8 @@ class IncomeUpdateBonusControllerSpec
     "redirect user back to how to bonusPayments page" when {
       "user input has error" in {
 
-        implicit val fakeRequest = RequestBuilder.buildFakePostRequestWithAuth()
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
+          RequestBuilder.buildFakePostRequestWithAuth()
 
         val result = HandleBonusPaymentsHarness
           .setup()
@@ -190,7 +189,7 @@ class IncomeUpdateBonusControllerSpec
     "Redirect to /income-summary page" when {
       "IncomeSource.create returns a left" in {
 
-        implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val controller = new TestIncomeUpdateBonusController
 
@@ -225,7 +224,7 @@ class IncomeUpdateBonusControllerSpec
 
     "display bonusPaymentAmount" in {
       val cachedAmount = "313321"
-      implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
+      implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
       val result = BonusOvertimeAmountPageHarness
         .setup()
@@ -246,7 +245,7 @@ class IncomeUpdateBonusControllerSpec
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 
-        implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val controller = new TestIncomeUpdateBonusController
 
@@ -297,7 +296,7 @@ class IncomeUpdateBonusControllerSpec
     "redirect the user to bonusPaymentAmount page" when {
       "user input has error" in {
 
-        implicit val fakeRequest =
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
           RequestBuilder.buildFakePostRequestWithAuth("amount" -> "")
 
         val result = HandleBonusOvertimeAmountHarness
@@ -315,7 +314,7 @@ class IncomeUpdateBonusControllerSpec
     "Redirect to /income-summary page" when {
       "IncomeSource.create returns a left" in {
 
-        implicit val fakeRequest =
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
           RequestBuilder.buildFakePostRequestWithAuth("" -> "")
 
         val controller = new TestIncomeUpdateBonusController

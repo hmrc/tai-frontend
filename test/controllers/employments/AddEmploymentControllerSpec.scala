@@ -796,10 +796,10 @@ class AddEmploymentControllerSpec
 
   private def createSUT = new SUT
 
-  val auditService = mock[AuditService]
-  val employmentService = mock[EmploymentService]
-  val addEmploymentJourneyCacheService = mock[JourneyCacheService]
-  val trackSuccessJourneyCacheService = mock[JourneyCacheService]
+  val auditService: AuditService = mock[AuditService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val addEmploymentJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   private class SUT
       extends AddEmploymentController(
@@ -819,13 +819,11 @@ class AddEmploymentControllerSpec
         inject[can_we_contact_by_phone],
         inject[confirmation],
         inject[addIncomeCheckYourAnswers],
-        error_template_noauth,
-        error_no_primary,
         MockPartialRetriever,
         MockTemplateRenderer
       ) {
 
-    val employmentStartDateForm = EmploymentAddDateForm("employer")
+    val employmentStartDateForm: EmploymentAddDateForm = EmploymentAddDateForm("employer")
 
   }
 

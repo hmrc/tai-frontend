@@ -17,8 +17,8 @@
 package controllers.employments
 
 import builders.RequestBuilder
-import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -464,15 +464,16 @@ class UpdateEmploymentControllerSpec
     "",
     2,
     None,
-    false,
-    false)
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
 
   private def createSUT = new SUT
 
   val personService: PersonService = mock[PersonService]
-  val journeyCacheService = mock[JourneyCacheService]
-  val successfulJourneyCacheService = mock[JourneyCacheService]
-  val employmentService = mock[EmploymentService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val employmentService: EmploymentService = mock[EmploymentService]
 
   private class SUT
       extends UpdateEmploymentController(
@@ -487,10 +488,9 @@ class UpdateEmploymentControllerSpec
         inject[confirmation],
         journeyCacheService,
         successfulJourneyCacheService,
-        error_template_noauth,
-        error_no_primary,
         MockPartialRetriever,
-        MockTemplateRenderer
+        MockTemplateRenderer,
+        inject[ErrorPagesHandler]
       )
 
 }

@@ -38,7 +38,7 @@ import scala.concurrent.Future
 class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val taxAccountService = mock[TaxAccountService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
 
   def sut = new YourTaxCodeController(
     taxAccountService,
@@ -49,10 +49,9 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
     appConfig,
     inject[taxCodeDetails],
     inject[taxCodeDetailsPreviousYears],
-    error_template_noauth,
-    error_no_primary,
     partialRetriever,
-    templateRenderer
+    templateRenderer,
+    inject[ErrorPagesHandler]
   )
 
   override def beforeEach: Unit =
@@ -136,9 +135,9 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
         startDate.plusMonths(1),
         OtherBasisOfOperation,
         "A Employer 1",
-        false,
+        pensionIndicator = false,
         Some("1234"),
-        false)
+        primary = false)
 
       val taxCodeRecords = Seq(previousTaxCodeRecord1)
 

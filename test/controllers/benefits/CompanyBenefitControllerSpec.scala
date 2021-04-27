@@ -18,7 +18,7 @@ package controllers.benefits
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction}
+import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -28,6 +28,8 @@ import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.data.Form
 import play.api.i18n.Messages
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
@@ -128,7 +130,7 @@ class CompanyBenefitControllerSpec
           UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(YesIGetThisBenefit))
         val expectedViewModel = CompanyBenefitDecisionViewModel(benefitType, empName, expectedForm)
 
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
         val result = SUT.decision()(request)
 
         result rendersTheSameViewAs updateOrRemoveCompanyBenefitDecisionView(expectedViewModel)
@@ -307,7 +309,7 @@ class CompanyBenefitControllerSpec
 
   def createSUT = new SUT
 
-  val employment = Employment(
+  val employment: Employment = Employment(
     "company name",
     Live,
     Some("123"),
@@ -318,12 +320,13 @@ class CompanyBenefitControllerSpec
     "",
     2,
     None,
-    false,
-    false)
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
 
-  val employmentService = mock[EmploymentService]
-  val journeyCacheService = mock[JourneyCacheService]
-  val decisionCacheWrapper = mock[DecisionCacheWrapper]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val decisionCacheWrapper: DecisionCacheWrapper = mock[DecisionCacheWrapper]
 
   private val updateOrRemoveCompanyBenefitDecisionView = inject[updateOrRemoveCompanyBenefitDecision]
 
@@ -336,10 +339,9 @@ class CompanyBenefitControllerSpec
         FakeValidatePerson,
         mcc,
         updateOrRemoveCompanyBenefitDecisionView,
-        error_template_noauth,
-        error_no_primary,
         MockTemplateRenderer,
-        MockPartialRetriever
+        MockPartialRetriever,
+        inject[ErrorPagesHandler]
       ) {
     when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
   }

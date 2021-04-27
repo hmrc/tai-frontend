@@ -18,7 +18,7 @@ package controllers.income
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction}
+import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -260,7 +260,7 @@ class UpdateIncomeNextYearControllerSpec
 
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.confirm(employmentID).url.toString)
+        redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.confirm(employmentID).url)
       }
 
       "redirect to the no change page" when {
@@ -272,7 +272,7 @@ class UpdateIncomeNextYearControllerSpec
               .buildFakeRequestWithOnlySession(POST)
               .withFormUrlEncodedBody("income" -> newEstPay))
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url.toString)
+          redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url)
         }
 
         "valid input is passed and no current amount has been cached" in {
@@ -291,7 +291,7 @@ class UpdateIncomeNextYearControllerSpec
               .withFormUrlEncodedBody("income" -> newEstPay))
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url.toString)
+          redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url)
         }
 
         "valid input is passed and the new amount is the same as the current cached amount" in {
@@ -507,8 +507,9 @@ class UpdateIncomeNextYearControllerSpec
   }
 
   private def createTestIncomeController(isCyPlusOneEnabled: Boolean = true): UpdateIncomeNextYearController =
-    new TestUpdateIncomeNextYearController(isCyPlusOneEnabled) {
-      val model = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay)
+    new TestUpdateIncomeNextYearController() {
+      val model: UpdateNextYearsIncomeCacheModel =
+        UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay)
 
       when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled
 
@@ -519,7 +520,7 @@ class UpdateIncomeNextYearControllerSpec
         .thenReturn(Future.successful(Right(newEstPay)))
     }
 
-  private class TestUpdateIncomeNextYearController(isCyPlusOneEnabled: Boolean)
+  private class TestUpdateIncomeNextYearController()
       extends UpdateIncomeNextYearController(
         updateNextYearsIncomeService,
         mock[AuditConnector],
@@ -534,9 +535,8 @@ class UpdateIncomeNextYearControllerSpec
         updateIncomeCYPlus1EditView,
         updateIncomeCYPlus1SameView,
         inject[sameEstimatedPay],
-        error_template_noauth,
-        error_no_primary,
         MockPartialRetriever,
-        MockTemplateRenderer
+        MockTemplateRenderer,
+        inject[ErrorPagesHandler]
       )
 }

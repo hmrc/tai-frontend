@@ -202,18 +202,18 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
     }
   }
 
-  val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-  val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-  val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
-  val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
+  val firstPayment: Payment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  val secondPayment: Payment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+  val thirdPayment: Payment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+  val latestPayment: Payment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
-  val annualAccount = AnnualAccount(
+  val annualAccount: AnnualAccount = AnnualAccount(
     "KEY",
     uk.gov.hmrc.tai.model.TaxYear(),
     Available,
     Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
     Nil)
-  val employment = Employment(
+  val employment: Employment = Employment(
     "test employment",
     Live,
     Some("EMPLOYER1"),
@@ -224,8 +224,9 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
     "",
     2,
     None,
-    false,
-    false)
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
 
   val sampleEmployment = Seq(
     Employment(
@@ -239,8 +240,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "payeNumber",
       1,
       None,
-      false,
-      false
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
     ),
     Employment(
       "employer2",
@@ -253,8 +254,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "payeNumber",
       2,
       None,
-      false,
-      false
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
     )
   )
   val sampleEmploymentForRtiUnavailable = Seq(
@@ -269,8 +270,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "payeNumber",
       1,
       None,
-      false,
-      false
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
     ),
     Employment(
       "employer2",
@@ -283,8 +284,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "payeNumber",
       2,
       None,
-      false,
-      false
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
     )
   )
 
@@ -311,10 +312,9 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       mcc,
       inject[historicIncomeCalculation],
       inject[yourIncomeCalculation],
-      error_template_noauth,
-      error_no_primary,
       partialRetriever,
-      templateRenderer
+      templateRenderer,
+      inject[ErrorPagesHandler]
     ) {
       when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     }

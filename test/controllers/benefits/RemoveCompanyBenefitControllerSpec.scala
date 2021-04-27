@@ -26,6 +26,7 @@ import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
+import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.views.formatting.Dates
@@ -82,7 +83,7 @@ class RemoveCompanyBenefitControllerSpec
 
       when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
-      implicit val request = (RequestBuilder.buildFakeRequestWithAuth("GET"))
+      implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
       val result = SUT.stopDate()(request)
 
       val expectedView = {
@@ -193,7 +194,7 @@ class RemoveCompanyBenefitControllerSpec
           ))
       )
 
-      implicit val request = fakeRequest
+      implicit val request: FakeRequest[AnyContent] = fakeRequest
 
       val result = SUT.totalValueOfBenefit()(fakeRequest)
 
@@ -377,7 +378,7 @@ class RemoveCompanyBenefitControllerSpec
         doc must haveBackLink
         doc
           .getElementById("cancelLink")
-          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
+          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
       }
     }
   }
@@ -673,7 +674,7 @@ class RemoveCompanyBenefitControllerSpec
     }
   }
 
-  val employment = Employment(
+  val employment: Employment = Employment(
     "company name",
     Live,
     Some("123"),
@@ -684,16 +685,17 @@ class RemoveCompanyBenefitControllerSpec
     "",
     2,
     None,
-    false,
-    false)
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
 
-  val startOfTaxYear = Dates.formatDate(TaxYear().start)
+  val startOfTaxYear: String = Dates.formatDate(TaxYear().start)
 
   def createSUT = new SUT
 
-  val benefitsService = mock[BenefitsService]
-  val removeCompanyBenefitJourneyCacheService = mock[JourneyCacheService]
-  val trackSuccessJourneyCacheService = mock[JourneyCacheService]
+  val benefitsService: BenefitsService = mock[BenefitsService]
+  val removeCompanyBenefitJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   private val removeCompanyBenefitCheckYourAnswersView = inject[removeCompanyBenefitCheckYourAnswers]
 
@@ -715,8 +717,6 @@ class RemoveCompanyBenefitControllerSpec
         removeBenefitTotalValueView,
         inject[can_we_contact_by_phone],
         inject[removeCompanyBenefitConfirmation],
-        error_template_noauth,
-        error_no_primary,
         templateRenderer,
         partialRetriever
       )
