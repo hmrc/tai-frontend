@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.forms.pensions.PensionProviderNameForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class AddPensionNameSpec extends TaiViewSpec {
-  private val addPensionName = inject[addPensionName]
+  private val addPensionName = inject[AddPensionNameView]
 
   "Add Pension Provider name form page" should {
     behave like pageWithTitle(messages("tai.addPensionProvider.addNameForm.title"))

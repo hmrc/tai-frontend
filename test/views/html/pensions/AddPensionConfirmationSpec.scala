@@ -21,7 +21,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class AddPensionConfirmationSpec extends TaiViewSpec {
-  private val addPensionConfirmation = inject[addPensionConfirmation]
+  private val addPensionConfirmation = inject[AddPensionConfirmationView]
   override def view: Html = addPensionConfirmation()
 
   "Confirmation View" must {

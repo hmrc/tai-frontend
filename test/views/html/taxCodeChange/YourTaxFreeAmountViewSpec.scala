@@ -115,12 +115,12 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     "have a 'see what happens next' button" in {
       doc must haveLinkElement(
         "seeWhatHappensNext",
-        routes.TaxCodeChangeController.whatHappensNext.url,
+        routes.TaxCodeChangeController.whatHappensNext().url,
         messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link"))
     }
   }
 
-  val personalAllowanceCategory = TaxFreeAmountSummaryCategoryViewModel(
+  val personalAllowanceCategory: TaxFreeAmountSummaryCategoryViewModel = TaxFreeAmountSummaryCategoryViewModel(
     Messages("tai.taxFreeAmount.table.columnOneHeader"),
     Messages("tai.taxFreeAmount.table.columnTwoHeader"),
     hideHeaders = false,
@@ -130,7 +130,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       TaxFreeAmountSummaryRowViewModel(
         Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
         "£1150",
-        ChangeLinkViewModel(false, "", "")
+        ChangeLinkViewModel(isDisplayed = false)
       ))
   )
 
@@ -138,21 +138,22 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     TaxFreeAmountSummaryRowViewModel(
       Messages("tai.taxFreeAmount.table.additions.noAddition"),
       "£0",
-      ChangeLinkViewModel(false, "", "")
+      ChangeLinkViewModel(isDisplayed = false)
     ))
 
   val nonEmptyAdditionRows = Seq(
     TaxFreeAmountSummaryRowViewModel(
       Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceReceived"),
       "£200",
-      ChangeLinkViewModel(false, "", "")),
+      ChangeLinkViewModel(isDisplayed = false)),
     TaxFreeAmountSummaryRowViewModel(
       Messages("tai.taxFreeAmount.table.additions.total"),
       "£200",
-      ChangeLinkViewModel(false, "", ""))
+      ChangeLinkViewModel(isDisplayed = false))
   )
 
-  def createAdditionsCatetgory(additionRows: Seq[TaxFreeAmountSummaryRowViewModel]) =
+  def createAdditionsCatetgory(
+    additionRows: Seq[TaxFreeAmountSummaryRowViewModel]): TaxFreeAmountSummaryCategoryViewModel =
     TaxFreeAmountSummaryCategoryViewModel(
       Messages("tai.taxFreeAmount.table.columnOneHeader"),
       Messages("tai.taxFreeAmount.table.columnTwoHeader"),
@@ -166,21 +167,22 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     TaxFreeAmountSummaryRowViewModel(
       Messages("tai.taxFreeAmount.table.deductions.noDeduction"),
       "£0",
-      ChangeLinkViewModel(false, "", "")
+      ChangeLinkViewModel(isDisplayed = false)
     ))
 
   val nonEmptyDeductionRows = Seq(
     TaxFreeAmountSummaryRowViewModel(
       Messages("tai.taxFreeAmount.table.deductions.total"),
       "£100",
-      ChangeLinkViewModel(false, "", "")),
+      ChangeLinkViewModel(isDisplayed = false)),
     TaxFreeAmountSummaryRowViewModel(
       Messages("tai.taxFreeAmount.table.taxComponent.DividendTax"),
       "£100",
-      ChangeLinkViewModel(false, "", ""))
+      ChangeLinkViewModel(isDisplayed = false))
   )
 
-  def createDeductionsCategory(deductionRows: Seq[TaxFreeAmountSummaryRowViewModel]) =
+  def createDeductionsCategory(
+    deductionRows: Seq[TaxFreeAmountSummaryRowViewModel]): TaxFreeAmountSummaryCategoryViewModel =
     TaxFreeAmountSummaryCategoryViewModel(
       Messages("tai.taxFreeAmount.table.columnOneHeader"),
       Messages("tai.taxFreeAmount.table.columnTwoHeader"),
@@ -190,7 +192,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       deductionRows
     )
 
-  def createTotalCategory(totalAmountFormatted: String) =
+  def createTotalCategory(totalAmountFormatted: String): TaxFreeAmountSummaryCategoryViewModel =
     TaxFreeAmountSummaryCategoryViewModel(
       Messages("tai.taxFreeAmount.table.columnOneHeader"),
       Messages("tai.taxFreeAmount.table.columnTwoHeader"),
@@ -201,14 +203,14 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
         TaxFreeAmountSummaryRowViewModel(
           Messages("tai.taxFreeAmount.table.totals.label"),
           totalAmountFormatted,
-          ChangeLinkViewModel(false, "", "")
+          ChangeLinkViewModel(isDisplayed = false)
         ))
     )
 
   def createTaxFreeAmountSummaryViewModel(
     additionRows: Seq[TaxFreeAmountSummaryRowViewModel] = nonEmptyAdditionRows,
     deductionRows: Seq[TaxFreeAmountSummaryRowViewModel] = nonEmptyDeductionRows,
-    totalFormattedAmount: String = "£1250") =
+    totalFormattedAmount: String = "£1250"): TaxFreeAmountSummaryViewModel =
     TaxFreeAmountSummaryViewModel(
       Seq(
         personalAllowanceCategory,
@@ -236,10 +238,10 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
   val taxFreeAmount: YourTaxFreeAmountViewModel = createViewModel()
   val currentOnlyTaxFreeAmount: YourTaxFreeAmountViewModel = createViewModel(showPreviousTaxFreeInfo = false)
 
-  private val yourTaxFreeAmount = inject[yourTaxFreeAmount]
+  private val yourTaxFreeAmount = inject[YourTaxFreeAmountView]
   def createView(viewModel: YourTaxFreeAmountViewModel = taxFreeAmount): HtmlFormat.Appendable =
     yourTaxFreeAmount(viewModel)
 
-  override def view = createView()
+  override def view: HtmlFormat.Appendable = createView()
   private lazy val currentOnlyView = createView(viewModel = currentOnlyTaxFreeAmount)
 }

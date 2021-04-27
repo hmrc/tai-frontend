@@ -60,6 +60,6 @@ class AddPensionReceivedFirstPaySpec extends TaiViewSpec with FormValuesConstant
       AddPensionProviderFirstPayForm.FirstPayChoice -> YesValue
     ))
 
-  private val addPensionReceivedFirstPay = inject[addPensionReceivedFirstPay]
+  private val addPensionReceivedFirstPay = inject[AddPensionReceivedFirstPayView]
   override def view: Html = addPensionReceivedFirstPay(pensionFirstPayForm, pensionProviderName)
 }

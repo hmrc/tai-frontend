@@ -28,7 +28,7 @@ class AddPensionErrorPageSpec extends TaiViewSpec {
       messages("tai.addPensionProvider.errorPage.title"))
 
     "have link" in {
-      doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad.url)
+      doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad().url)
     }
 
     "have paragraph" in {
@@ -38,6 +38,6 @@ class AddPensionErrorPageSpec extends TaiViewSpec {
 
     behave like pageWithBackLink
   }
-  private val addPensionErrorPage = inject[addPensionErrorPage]
+  private val addPensionErrorPage = inject[AddPensionErrorView]
   override def view: Html = addPensionErrorPage("fake pension provider")
 }

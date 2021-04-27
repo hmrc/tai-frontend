@@ -922,11 +922,11 @@ class AddPensionProviderControllerSpec
 
   private def createSUT = new SUT
 
-  val pensionProviderService = mock[PensionProviderService]
-  val auditService = mock[AuditService]
-  val personService = mock[PersonService]
-  val addPensionProviderJourneyCacheService = mock[JourneyCacheService]
-  val trackSuccessJourneyCacheService = mock[JourneyCacheService]
+  val pensionProviderService: PensionProviderService = mock[PensionProviderService]
+  val auditService: AuditService = mock[AuditService]
+  val personService: PersonService = mock[PersonService]
+  val addPensionProviderJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   private class SUT
       extends AddPensionProviderController(
@@ -937,13 +937,13 @@ class AddPensionProviderControllerSpec
         FakeValidatePerson,
         mcc,
         inject[CanWeContactByPhoneView],
-        inject[addPensionConfirmation],
-        inject[addPensionCheckYourAnswers],
-        inject[addPensionNumber],
-        inject[addPensionErrorPage],
-        inject[addPensionReceivedFirstPay],
-        inject[addPensionName],
-        inject[addPensionStartDate],
+        inject[AddPensionConfirmationView],
+        inject[AddPensionCheckYourAnswersView],
+        inject[AddPensionNumberView],
+        inject[AddPensionErrorView],
+        inject[AddPensionReceivedFirstPayView],
+        inject[AddPensionNameView],
+        inject[AddPensionStartDateView],
         addPensionProviderJourneyCacheService,
         trackSuccessJourneyCacheService,
         MockPartialRetriever,

@@ -16,22 +16,21 @@
 
 package views.html.print
 
-import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.jsoup.nodes.{Document, Element}
+import org.jsoup.nodes.Document
 import play.twirl.api.Html
-import play.api.i18n.MessagesApi
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{RealTimeStatus, _}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 
 class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
   val dateFormatPattern = "d MMMM yyyy"
   val printTableDateFormatPattern = "d MMM yyyy"
 
-  val samplePaymentWithoutNic = Payment(
+  val samplePaymentWithoutNic: Payment = Payment(
     date = new LocalDate(2016, 4, 7),
     amount = 111,
     amountYearToDate = 150,
@@ -41,7 +40,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     nationalInsuranceAmountYearToDate = 0,
     payFrequency = Monthly
   )
-  val samplePaymentWithNic = Payment(
+  val samplePaymentWithNic: Payment = Payment(
     date = new LocalDate(2017, 4, 7),
     amount = 222,
     amountYearToDate = 150,
@@ -57,7 +56,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     payments: Seq[Payment],
     eyuMessage: Seq[String],
     realTimeStatus: RealTimeStatus,
-    year: TaxYear) =
+    year: TaxYear): HistoricIncomeCalculationViewModel =
     HistoricIncomeCalculationViewModel(
       employerName = Some("Foo"),
       employmentId = 1,
@@ -73,11 +72,12 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     year: TaxYear = TaxYear().prev) = {
     val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel =
       createHistoricIncomeCalculationVM(payments, eyuMessage, realTimeStatus, year)
-    views.html.print.historicIncomeCalculation(historicIncomeCalculationVM, appConfig)
+    views.html.print.HistoricIncomeCalculationView(historicIncomeCalculationVM, appConfig)
   }
 
-  val historicIncomeCalculationVM = createHistoricIncomeCalculationVM(Nil, Nil, Unavailable, TaxYear().prev)
-  override def view: Html = views.html.print.historicIncomeCalculation(historicIncomeCalculationVM, appConfig)
+  val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel =
+    createHistoricIncomeCalculationVM(Nil, Nil, Unavailable, TaxYear().prev)
+  override def view: Html = views.html.print.HistoricIncomeCalculationView(historicIncomeCalculationVM, appConfig)
 
   "The previous year income calculation print page" should {
 
