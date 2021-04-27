@@ -153,9 +153,8 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     appConfig,
     mcc,
     inject[IncomeSourceSummary],
-    error_template_noauth,
-    error_no_primary,
     partialRetriever,
-    templateRenderer
+    templateRenderer,
+    inject[ErrorPagesHandler]
   )
 }

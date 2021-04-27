@@ -95,8 +95,6 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
         FakeValidatePerson,
         mcc,
         inject[noCYIncomeTaxErrorPage],
-        error_template_noauth,
-        error_no_primary,
         partialRetriever,
         templateRenderer
       ) {

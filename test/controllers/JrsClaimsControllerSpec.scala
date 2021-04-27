@@ -51,8 +51,6 @@ class JrsClaimsControllerSpec extends BaseSpec {
     inject[jrsClaimSummary],
     inject[internalServerError],
     inject[noJrsClaim],
-    error_template_noauth,
-    error_no_primary,
     partialRetriever,
     templateRenderer
   )

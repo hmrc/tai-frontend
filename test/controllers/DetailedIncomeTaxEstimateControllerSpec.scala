@@ -34,8 +34,8 @@ import scala.concurrent.Future
 class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
 
   val personService: PersonService = mock[PersonService]
-  val codingComponentService = mock[CodingComponentService]
-  val taxAccountService = mock[TaxAccountService]
+  val codingComponentService: CodingComponentService = mock[CodingComponentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
 
   def sut =
     new DetailedIncomeTaxEstimateController(
@@ -45,10 +45,9 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
       FakeValidatePerson,
       mcc,
       inject[detailedIncomeTaxEstimate],
-      error_template_noauth,
-      error_no_primary,
       partialRetriever,
-      templateRenderer
+      templateRenderer,
+      inject[ErrorPagesHandler]
     )
 
   when(taxAccountService.totalTax(any(), any())(any()))
