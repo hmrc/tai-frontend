@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowan
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import utils.BaseSpec
-import views.html.potentialUnderpayment
+import views.html.PotentialUnderpaymentView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -111,7 +111,7 @@ class PotentialUnderpaymentControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[potentialUnderpayment],
+        inject[PotentialUnderpaymentView],
         partialRetriever,
         templateRenderer,
         inject[ErrorPagesHandler]

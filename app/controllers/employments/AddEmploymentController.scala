@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
-import views.html.can_we_contact_by_phone
+import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.addIncomeCheckYourAnswers
 
@@ -59,7 +59,7 @@ class AddEmploymentController @Inject()(
   add_employment_first_pay_form: add_employment_first_pay_form,
   add_employment_error_page: add_employment_error_page,
   add_employment_payroll_number_form: add_employment_payroll_number_form,
-  can_we_contact_by_phone: can_we_contact_by_phone,
+  can_we_contact_by_phone: CanWeContactByPhoneView,
   confirmationView: confirmation,
   addIncomeCheckYourAnswers: addIncomeCheckYourAnswers,
   implicit val partialRetriever: FormPartialRetriever,

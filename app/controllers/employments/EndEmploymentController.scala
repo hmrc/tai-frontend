@@ -39,7 +39,7 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
-import views.html.can_we_contact_by_phone
+import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.addIncomeCheckYourAnswers
 
@@ -57,7 +57,7 @@ class EndEmploymentController @Inject()(
   endEmploymentWithinSixWeeksError: endEmploymentWithinSixWeeksError,
   EndEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentError,
   endEmploymentView: endEmployment,
-  can_we_contact_by_phone: can_we_contact_by_phone,
+  can_we_contact_by_phone: CanWeContactByPhoneView,
   duplicateSubmissionWarning: duplicateSubmissionWarning,
   confirmation: confirmation,
   addIncomeCheckYourAnswers: addIncomeCheckYourAnswers,

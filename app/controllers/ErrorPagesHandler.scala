@@ -30,13 +30,13 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import uk.gov.hmrc.urls.Link
-import views.html.{error_no_primary, error_template_noauth}
+import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
 
 import scala.concurrent.Future
 
 class ErrorPagesHandler @Inject()(
-  val error_template_noauth: error_template_noauth,
-  val error_no_primary: error_no_primary,
+  val error_template_noauth: ErrorTemplateNoauth,
+  val error_no_primary: ErrorNoPrimary,
   implicit val templateRenderer: TemplateRenderer,
   implicit val partialRetriever: FormPartialRetriever
 ) {

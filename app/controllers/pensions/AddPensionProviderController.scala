@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Jour
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
-import views.html.can_we_contact_by_phone
+import views.html.CanWeContactByPhoneView
 import views.html.pensions._
 import javax.inject.{Inject, Named}
 import scala.Function.tupled
@@ -50,7 +50,7 @@ class AddPensionProviderController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  can_we_contact_by_phone: can_we_contact_by_phone,
+  can_we_contact_by_phone: CanWeContactByPhoneView,
   addPensionConfirmation: addPensionConfirmation,
   addPensionCheckYourAnswers: addPensionCheckYourAnswers,
   addPensionNumber: addPensionNumber,

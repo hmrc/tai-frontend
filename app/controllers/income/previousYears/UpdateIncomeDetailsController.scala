@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
-import views.html.can_we_contact_by_phone
+import views.html.CanWeContactByPhoneView
 import views.html.incomes.previousYears.{CheckYourAnswers, UpdateIncomeDetails, UpdateIncomeDetailsConfirmation, UpdateIncomeDetailsDecision}
 
 import javax.inject.{Inject, Named}
@@ -45,7 +45,7 @@ class UpdateIncomeDetailsController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  can_we_contact_by_phone: can_we_contact_by_phone,
+  can_we_contact_by_phone: CanWeContactByPhoneView,
   CheckYourAnswers: CheckYourAnswers,
   UpdateIncomeDetailsDecision: UpdateIncomeDetailsDecision,
   UpdateIncomeDetails: UpdateIncomeDetails,

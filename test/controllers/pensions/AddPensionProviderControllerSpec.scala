@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
-import views.html.can_we_contact_by_phone
+import views.html.CanWeContactByPhoneView
 import views.html.pensions._
 
 import scala.concurrent.duration._
@@ -936,7 +936,7 @@ class AddPensionProviderControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[can_we_contact_by_phone],
+        inject[CanWeContactByPhoneView],
         inject[addPensionConfirmation],
         inject[addPensionCheckYourAnswers],
         inject[addPensionNumber],

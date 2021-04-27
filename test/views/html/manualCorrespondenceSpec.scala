@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class manualCorrespondenceSpec extends TaiViewSpec {
 
-  private val manualCorrespondence = inject[manualCorrespondence]
+  private val manualCorrespondence = inject[ManualCorrespondenceView]
   override def view: HtmlFormat.Appendable = manualCorrespondence()
 
   "manual correspondence page" should {

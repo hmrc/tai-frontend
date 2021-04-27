@@ -31,13 +31,13 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import utils.BaseSpec
-import views.html.error_no_primary
+import views.html.ErrorNoPrimary
 
 import scala.concurrent.Future
 
 class ErrorPagesHandlerSpec extends BaseSpec {
 
-  private lazy val error_no_primary: error_no_primary = inject[error_no_primary]
+  private lazy val error_no_primary: ErrorNoPrimary = inject[ErrorNoPrimary]
   private val ninoValue = nino.value
   private val createSut = inject[ErrorPagesHandler]
 

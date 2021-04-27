@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Jour
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
-import views.html.can_we_contact_by_phone
+import views.html.CanWeContactByPhoneView
 import views.html.employments.confirmation
 import views.html.employments.update.{UpdateEmploymentCheckYourAnswers, whatDoYouWantToTellUs}
 import javax.inject.{Inject, Named}
@@ -50,7 +50,7 @@ class UpdateEmploymentController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   whatDoYouWantToTellUs: whatDoYouWantToTellUs,
-  can_we_contact_by_phone: can_we_contact_by_phone,
+  can_we_contact_by_phone: CanWeContactByPhoneView,
   UpdateEmploymentCheckYourAnswers: UpdateEmploymentCheckYourAnswers,
   confirmationView: confirmation,
   @Named("Update Employment") journeyCacheService: JourneyCacheService,

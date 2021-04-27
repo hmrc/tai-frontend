@@ -45,7 +45,7 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
   val resourceName = "tax-free-allowance"
 
   val viewModel = PotentialUnderpaymentViewModel(tas, ccs, referalPath, resourceName)
-  private val potentialUnderpayment = inject[potentialUnderpayment]
+  private val potentialUnderpayment = inject[PotentialUnderpaymentView]
   def document(viewModel: PotentialUnderpaymentViewModel = viewModel): Document =
     Jsoup.parseBodyFragment(potentialUnderpayment(viewModel).toString)
 

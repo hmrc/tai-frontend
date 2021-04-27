@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class deceasedHelplinePageSpec extends TaiViewSpec {
 
-  private val deceased_helpline = inject[deceased_helpline]
+  private val deceased_helpline = inject[DeceasedHelplineView]
   override def view: Html = deceased_helpline()
 
   "Deceased helpline page" should {

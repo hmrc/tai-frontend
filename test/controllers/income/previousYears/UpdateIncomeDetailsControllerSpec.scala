@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, UpdateHistoricIncomeChoiceConstants}
 import utils.BaseSpec
-import views.html.can_we_contact_by_phone
+import views.html.CanWeContactByPhoneView
 import views.html.incomes.previousYears.{CheckYourAnswers, UpdateIncomeDetails, UpdateIncomeDetailsConfirmation, UpdateIncomeDetailsDecision}
 import scala.concurrent.Future
 
@@ -393,7 +393,7 @@ class UpdateIncomeDetailsControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[can_we_contact_by_phone],
+        inject[CanWeContactByPhoneView],
         inject[CheckYourAnswers],
         inject[UpdateIncomeDetailsDecision],
         inject[UpdateIncomeDetails],

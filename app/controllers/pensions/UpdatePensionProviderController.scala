@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersViewModel
-import views.html.can_we_contact_by_phone
+import views.html.CanWeContactByPhoneView
 import views.html.pensions.duplicateSubmissionWarning
 import views.html.pensions.update.{confirmation, doYouGetThisPensionIncome, updatePensionCheckYourAnswers, whatDoYouWantToTellUs}
 import javax.inject.{Inject, Named}
@@ -56,7 +56,7 @@ class UpdatePensionProviderController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
-  can_we_contact_by_phone: can_we_contact_by_phone,
+  can_we_contact_by_phone: CanWeContactByPhoneView,
   doYouGetThisPensionIncome: doYouGetThisPensionIncome,
   whatDoYouWantToTellUs: whatDoYouWantToTellUs,
   updatePensionCheckYourAnswers: updatePensionCheckYourAnswers,

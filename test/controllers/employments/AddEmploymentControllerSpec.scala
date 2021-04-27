@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
-import views.html.can_we_contact_by_phone
+import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.addIncomeCheckYourAnswers
 
@@ -816,7 +816,7 @@ class AddEmploymentControllerSpec
         inject[add_employment_first_pay_form],
         inject[add_employment_error_page],
         inject[add_employment_payroll_number_form],
-        inject[can_we_contact_by_phone],
+        inject[CanWeContactByPhoneView],
         inject[confirmation],
         inject[addIncomeCheckYourAnswers],
         MockPartialRetriever,

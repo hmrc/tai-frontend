@@ -21,14 +21,14 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import views.html.deceased_helpline
+import views.html.DeceasedHelplineView
 
 import scala.concurrent.Future
 
 class DeceasedController @Inject()(
   authenticate: AuthAction,
   mcc: MessagesControllerComponents,
-  deceased_helpline: deceased_helpline,
+  deceased_helpline: DeceasedHelplineView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {

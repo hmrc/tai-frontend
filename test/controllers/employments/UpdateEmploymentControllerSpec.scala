@@ -36,7 +36,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
-import views.html.can_we_contact_by_phone
+import views.html.CanWeContactByPhoneView
 import views.html.employments.confirmation
 import views.html.employments.update.{UpdateEmploymentCheckYourAnswers, whatDoYouWantToTellUs}
 
@@ -483,7 +483,7 @@ class UpdateEmploymentControllerSpec
         FakeValidatePerson,
         mcc,
         inject[whatDoYouWantToTellUs],
-        inject[can_we_contact_by_phone],
+        inject[CanWeContactByPhoneView],
         inject[UpdateEmploymentCheckYourAnswers],
         inject[confirmation],
         journeyCacheService,

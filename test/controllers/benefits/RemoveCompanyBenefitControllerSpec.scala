@@ -43,7 +43,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
 import utils.BaseSpec
 import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYourAnswers, removeCompanyBenefitConfirmation, removeCompanyBenefitStopDate}
-import views.html.can_we_contact_by_phone
+import views.html.CanWeContactByPhoneView
 
 import scala.concurrent.Future
 
@@ -715,7 +715,7 @@ class RemoveCompanyBenefitControllerSpec
         removeCompanyBenefitCheckYourAnswersView,
         removeCompanyBenefitStopDateView,
         removeBenefitTotalValueView,
-        inject[can_we_contact_by_phone],
+        inject[CanWeContactByPhoneView],
         inject[removeCompanyBenefitConfirmation],
         templateRenderer,
         partialRetriever

@@ -21,17 +21,17 @@ import org.jsoup.nodes.Document
 import play.api.Configuration
 import play.api.test.FakeRequest
 import utils.BaseSpec
-import views.html.{error_template_noauth, internalServerError}
+import views.html.{ErrorTemplateNoauth, InternalServerErrorView}
 
 class ErrorHandlerSpec extends BaseSpec {
   implicit val request = FakeRequest()
 
   lazy val errorHandler: ErrorHandler = new ErrorHandler(
     appConfig,
-    inject[error_template_noauth],
+    inject[ErrorTemplateNoauth],
     messagesApi,
     inject[Configuration],
-    inject[internalServerError]
+    inject[InternalServerErrorView]
   )
 
   "standardTemplate" in {

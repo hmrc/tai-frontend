@@ -57,7 +57,7 @@ class NoCYIncomeTaxErrorPageSpec extends TaiViewSpec {
         .toString
     }
   }
-  private val template = inject[noCYIncomeTaxErrorPage]
+  private val template = inject[NoCYIncomeTaxErrorPage]
 
   override def view: Html = template(NoCYIncomeTaxErrorViewModel(None))
 }

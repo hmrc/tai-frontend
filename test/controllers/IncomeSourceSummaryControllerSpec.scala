@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import utils.BaseSpec
-import views.html.IncomeSourceSummary
+import views.html.IncomeSourceSummaryView
 
 import scala.concurrent.Future
 
@@ -152,7 +152,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     FakeValidatePerson,
     appConfig,
     mcc,
-    inject[IncomeSourceSummary],
+    inject[IncomeSourceSummaryView],
     partialRetriever,
     templateRenderer,
     inject[ErrorPagesHandler]

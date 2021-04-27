@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, TaxAccount
 import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
-import views.html.potentialUnderpayment
+import views.html.PotentialUnderpaymentView
 
 import scala.concurrent.ExecutionContext
 
@@ -40,7 +40,7 @@ class PotentialUnderpaymentController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  potentialUnderpayment: potentialUnderpayment,
+  potentialUnderpayment: PotentialUnderpaymentView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)

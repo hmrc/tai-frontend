@@ -25,15 +25,15 @@ import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.urls.Link
-import views.html.internalServerError
-import views.html.error_template_noauth
+import views.html.InternalServerErrorView
+import views.html.ErrorTemplateNoauth
 
 class ErrorHandler @Inject()(
   applicationConfig: ApplicationConfig,
-  error_template_noauth: error_template_noauth,
+  error_template_noauth: ErrorTemplateNoauth,
   val messagesApi: MessagesApi,
   val configuration: Configuration,
-  internalServerError: internalServerError)(
+  internalServerError: InternalServerErrorView)(
   implicit localTemplateRenderer: TemplateRenderer,
   taiHtmlPartialRetriever: FormPartialRetriever)
     extends FrontendErrorHandler {

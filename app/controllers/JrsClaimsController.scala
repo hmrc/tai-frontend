@@ -38,9 +38,9 @@ class JrsClaimsController @Inject()(
   jrsService: JrsService,
   mcc: MessagesControllerComponents,
   appConfig: ApplicationConfig,
-  jrsClaimSummary: jrsClaimSummary,
-  internalServerError: internalServerError,
-  noJrsClaim: noJrsClaim,
+  jrsClaimSummary: JrsClaimSummaryView,
+  internalServerError: InternalServerErrorView,
+  noJrsClaim: NoJrsClaimView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {

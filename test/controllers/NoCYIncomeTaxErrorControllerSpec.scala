@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, Person}
 import uk.gov.hmrc.tai.service.EmploymentService
 import utils.BaseSpec
-import views.html.noCYIncomeTaxErrorPage
+import views.html.NoCYIncomeTaxErrorPage
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -94,7 +94,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[noCYIncomeTaxErrorPage],
+        inject[NoCYIncomeTaxErrorPage],
         partialRetriever,
         templateRenderer
       ) {

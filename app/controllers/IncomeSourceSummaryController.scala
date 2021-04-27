@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
-import views.html.IncomeSourceSummary
+import views.html.IncomeSourceSummaryView
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -47,7 +47,7 @@ class IncomeSourceSummaryController @Inject()(
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  incomeSourceSummary: IncomeSourceSummary,
+  incomeSourceSummary: IncomeSourceSummaryView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)

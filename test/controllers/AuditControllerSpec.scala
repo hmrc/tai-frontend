@@ -24,7 +24,7 @@ import org.mockito.Mockito._
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service.AuditService
 import utils.BaseSpec
-import views.html.error_no_primary
+import views.html.ErrorNoPrimary
 
 import scala.concurrent.Future
 

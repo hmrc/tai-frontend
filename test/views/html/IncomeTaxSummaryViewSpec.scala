@@ -603,7 +603,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "0"
   )
 
-  private val template = inject[incomeTaxSummary]
+  private val template = inject[IncomeTaxSummaryView]
 
   override def view: Html = template(vm, appConfig)
 }

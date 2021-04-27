@@ -41,7 +41,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants, JourneyCacheConstants}
 import utils.BaseSpec
-import views.html.can_we_contact_by_phone
+import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.addIncomeCheckYourAnswers
 
@@ -811,7 +811,7 @@ class EndEmploymentControllerSpec
         inject[endEmploymentWithinSixWeeksError],
         inject[EndEmploymentIrregularPaymentError],
         inject[endEmployment],
-        inject[can_we_contact_by_phone],
+        inject[CanWeContactByPhoneView],
         inject[duplicateSubmissionWarning],
         inject[confirmation],
         inject[addIncomeCheckYourAnswers],

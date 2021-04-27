@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import utils.{BaseSpec, TaxAccountSummaryTestData}
-import views.html.incomeTaxSummary
+import views.html.IncomeTaxSummaryView
 
 import scala.concurrent.Future
 
@@ -245,7 +245,7 @@ class TaxAccountSummaryControllerSpec
     FakeValidatePerson,
     appConfig,
     mcc,
-    inject[incomeTaxSummary],
+    inject[IncomeTaxSummaryView],
     partialRetriever,
     templateRenderer,
     inject[ErrorPagesHandler]

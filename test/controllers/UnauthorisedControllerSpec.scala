@@ -21,14 +21,14 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import utils.BaseSpec
-import views.html.error_template_noauth
+import views.html.ErrorTemplateNoauth
 
 class UnauthorisedControllerSpec extends BaseSpec {
 
   private val controller = new UnauthorisedController(
     mcc,
     appConfig,
-    inject[error_template_noauth],
+    inject[ErrorTemplateNoauth],
     partialRetriever,
     templateRenderer
   ) {

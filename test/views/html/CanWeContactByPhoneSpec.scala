@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
-  private val template = inject[can_we_contact_by_phone]
+  private val template = inject[CanWeContactByPhoneView]
   override def view: Html = template(Some(authedUser), viewModel, form)
 
   "CanWeContactByPhone page" must {
