@@ -25,6 +25,8 @@ import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -33,7 +35,7 @@ import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, Tempo
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
-import views.html.paye.{RtiDisabledHistoricPayAsYouEarn, historicPayAsYouEarn}
+import views.html.paye.{HistoricPayAsYouEarnView, RtiDisabledHistoricPayAsYouEarn}
 
 import scala.concurrent.Future
 
@@ -44,7 +46,6 @@ class PayeControllerHistoricSpec
     Mockito.reset(employmentService)
 
   private val currentYear: Int = TaxYear().year
-  private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
 
   "Calling the payePage method with an authorised session" must {
 
@@ -65,7 +66,7 @@ class PayeControllerHistoricSpec
     "display the last year paye page successfully " in {
       val testController = createTestController()
 
-      implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+      implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
       when(employmentService.employments(any(), any())(any()))
         .thenReturn(Future.successful(sampleEmployment))
 
@@ -216,7 +217,7 @@ class PayeControllerHistoricSpec
         FakeValidatePerson,
         mcc,
         inject[RtiDisabledHistoricPayAsYouEarn],
-        inject[historicPayAsYouEarn],
+        inject[HistoricPayAsYouEarnView],
         partialRetriever,
         templateRenderer,
         inject[ErrorPagesHandler]
@@ -242,8 +243,8 @@ class PayeControllerHistoricSpec
       "payeNumber",
       1,
       None,
-      false,
-      false
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
     ),
     Employment(
       "employer2",
@@ -256,8 +257,8 @@ class PayeControllerHistoricSpec
       "payeNumber",
       2,
       None,
-      false,
-      false
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
     )
   )
 
@@ -273,8 +274,8 @@ class PayeControllerHistoricSpec
       "payeNumber",
       1,
       None,
-      false,
-      false
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
     ),
     Employment(
       "employer2",
@@ -287,8 +288,8 @@ class PayeControllerHistoricSpec
       "payeNumber",
       2,
       None,
-      false,
-      false
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
     )
   )
 
@@ -304,8 +305,8 @@ class PayeControllerHistoricSpec
       "payeNumber",
       1,
       None,
-      false,
-      false
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
     ),
     Employment(
       "employer2",
@@ -318,8 +319,8 @@ class PayeControllerHistoricSpec
       "payeNumber",
       2,
       None,
-      false,
-      false
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
     )
   )
 
