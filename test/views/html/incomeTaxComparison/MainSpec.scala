@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, TaxCodeCompa
 
 class MainSpec extends TaiViewSpec with ViewModelHelper {
 
-  private val main = inject[Main]
+  private val main = inject[MainView]
   "Cy plus one view" must {
 
     val welshMessage = messagesApi.preferred(Seq(Lang("cy")))

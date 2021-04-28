@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 
-class AddEmploymentPayrollNumberSpec extends TaiViewSpec with FormValuesConstants {
+class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValuesConstants {
 
   private val add_employment_payroll_number_form = inject[AddEmploymentPayrollNumberFormView]
 

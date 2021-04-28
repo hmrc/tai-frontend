@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.forms.employments.AddEmploymentFirstPayForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class AddEmploymentFirstPaySpec extends TaiViewSpec with FormValuesConstants {
+class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec with FormValuesConstants {
 
   "Add first pay form page" must {
     behave like pageWithTitle(messages("tai.addEmployment.employmentFirstPay.title", employerName))

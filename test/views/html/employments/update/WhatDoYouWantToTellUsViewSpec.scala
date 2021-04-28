@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
-class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
+class WhatDoYouWantToTellUsViewSpec extends TaiViewSpec {
 
   private val employerName = "testEmployer"
   val empId = 1

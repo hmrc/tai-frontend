@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package views.html.employments
+package views.html.benefits
 
-import controllers.routes
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class confirmationSpec extends TaiViewSpec {
-  private val template = inject[ConfirmationView]
+class RemoveCompanyBenefitConfirmationViewSpec extends TaiViewSpec {
 
-  override def view: Html = template()
+  private val removeCompanyBenefitConfirmation = inject[RemoveCompanyBenefitConfirmationView]
+  override def view: Html = removeCompanyBenefitConfirmation()
 
-  "Confirmation View" must {
+  "Update Income Details Confirmation View" must {
 
-    behave like pageWithTitle(messages("tai.employmentConfirmation.heading"))
-    behave like haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithTitle(messages("tai.income.previousYears.confirmation.heading"))
+    behave like haveReturnToSummaryButtonWithUrl(controllers.routes.TaxAccountSummaryController.onPageLoad())
 
   }
 }

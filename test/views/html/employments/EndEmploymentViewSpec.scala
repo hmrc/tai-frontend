@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
-class endEmploymentSpec extends TaiViewSpec {
+class EndEmploymentViewSpec extends TaiViewSpec {
 
   private val employmentId: Int = 0
   private val employmentName = "employer name"

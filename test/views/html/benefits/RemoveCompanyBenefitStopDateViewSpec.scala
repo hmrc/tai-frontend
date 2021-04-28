@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm.StopDateC
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec {
+class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
 
   private val removeCompanyBenefitStopDate = inject[RemoveCompanyBenefitStopDateView]
 

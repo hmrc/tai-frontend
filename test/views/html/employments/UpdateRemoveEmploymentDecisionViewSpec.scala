@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.forms.employments.UpdateRemoveEmploymentForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class UpdateRemoveEmploymentDecisionSpec extends TaiViewSpec with FormValuesConstants {
+class UpdateRemoveEmploymentDecisionViewSpec extends TaiViewSpec with FormValuesConstants {
   val employmentName = "Employment Name"
   val empId = 1
   val updateRemoveEmploymentForm: Form[Option[String]] =

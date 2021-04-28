@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm.D
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
-class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec {
+class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
 
   private val updateOrRemoveCompanyBenefitDecision = inject[UpdateOrRemoveCompanyBenefitDecisionView]
 

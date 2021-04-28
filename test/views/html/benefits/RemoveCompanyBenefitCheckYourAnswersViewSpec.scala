@@ -21,7 +21,7 @@ import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.benefit.RemoveCompanyBenefitCheckYourAnswersViewModel
 
-class RemoveCompanyBenefitCheckYourAnswersSpec extends TaiViewSpec {
+class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
 
   "checkYourAnswers" should {
 

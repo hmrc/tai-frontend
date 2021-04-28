@@ -22,7 +22,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.EmploymentNameForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class AddEmploymentNameFormSpec extends TaiViewSpec {
+class AddEmploymentNameFormViewSpec extends TaiViewSpec {
 
   private val add_employment_name_form = inject[AddEmploymentNameFormView]
 

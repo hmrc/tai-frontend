@@ -20,7 +20,7 @@ import uk.gov.hmrc.tai.viewModels.employments.UpdateEmploymentCheckYourAnswersVi
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class UpdateEmploymentCheckYourAnswersSpec extends TaiViewSpec {
+class UpdateEmploymentCheckYourAnswersViewSpec extends TaiViewSpec {
 
   "check your answers page" must {
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))

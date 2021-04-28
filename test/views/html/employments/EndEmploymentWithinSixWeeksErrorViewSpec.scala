@@ -22,7 +22,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.WithinSixWeeksViewModel
 
-class endEmploymentWithinSixWeeksErrorSpec extends TaiViewSpec {
+class EndEmploymentWithinSixWeeksErrorViewSpec extends TaiViewSpec {
 
   private val template = inject[EndEmploymentWithinSixWeeksErrorView]
 

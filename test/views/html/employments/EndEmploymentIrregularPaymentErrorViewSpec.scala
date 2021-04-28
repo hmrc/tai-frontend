@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.constants.IrregularPayConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
-class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with IrregularPayConstants {
+class EndEmploymentIrregularPaymentErrorViewSpec extends TaiViewSpec with IrregularPayConstants {
 
   "Irregular pay page" must {
     behave like pageWithTitle(messages("tai.irregular.preHeadingText"))

@@ -23,7 +23,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class AddEmploymentStartDateFormSpec extends TaiViewSpec {
+class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
   private val employmentName = "Employer name"
   private val addDateForm = EmploymentAddDateForm(employmentName)
   private val globalErrorMessage: String = "day error message"

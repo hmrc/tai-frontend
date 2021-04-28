@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstants {
+class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesConstants {
   val employmentName = "Employment Name"
   val empId = 1
   val duplicateSubmissionWarningForm: Form[YesNoForm] = DuplicateSubmissionWarningForm.createForm
