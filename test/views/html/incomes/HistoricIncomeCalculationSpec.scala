@@ -29,7 +29,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
   private val historicIncomeCalculationVM = createHistoricIncomeCalculationVM(Nil, Nil, Unavailable, TaxYear().prev)
 
-  private val template = inject[historicIncomeCalculation]
+  private val template = inject[HistoricIncomeCalculationView]
 
   override def view: Html = template(historicIncomeCalculationVM)
 

@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{GrossPayPeriodTitle, PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
-import views.html.incomes.{payslipAmount, payslipDeductions, taxablePayslipAmount}
+import views.html.incomes.{PayslipAmountView, PayslipDeductionsView, TaxablePayslipAmountView}
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,9 +39,9 @@ class IncomeUpdatePayslipAmountController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  payslipAmount: payslipAmount,
-  taxablePayslipAmount: taxablePayslipAmount,
-  payslipDeductionsView: payslipDeductions,
+  payslipAmount: PayslipAmountView,
+  taxablePayslipAmount: TaxablePayslipAmountView,
+  payslipDeductionsView: PayslipDeductionsView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)

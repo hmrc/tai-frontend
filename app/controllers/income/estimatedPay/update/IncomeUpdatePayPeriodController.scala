@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.forms.PayPeriodForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
-import views.html.incomes.payPeriod
+import views.html.incomes.PayPeriodView
 
 import scala.concurrent.ExecutionContext
 
@@ -37,7 +37,7 @@ class IncomeUpdatePayPeriodController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  payPeriodView: payPeriod,
+  payPeriodView: PayPeriodView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)

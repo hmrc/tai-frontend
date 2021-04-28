@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 import views.html.incomes.nextYear._
-import views.html.incomes.sameEstimatedPay
+import views.html.incomes.SameEstimatedPayView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -50,13 +50,13 @@ class UpdateIncomeNextYearController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
-  updateIncomeCYPlus1Success: updateIncomeCYPlus1Success,
-  updateIncomeCYPlus1Confirm: updateIncomeCYPlus1Confirm,
-  updateIncomeCYPlus1Warning: updateIncomeCYPlus1Warning,
-  updateIncomeCYPlus1Start: updateIncomeCYPlus1Start,
-  updateIncomeCYPlus1Edit: updateIncomeCYPlus1Edit,
-  updateIncomeCYPlus1Same: updateIncomeCYPlus1Same,
-  sameEstimatedPay: sameEstimatedPay,
+  updateIncomeCYPlus1Success: UpdateIncomeCYPlus1SuccessView,
+  updateIncomeCYPlus1Confirm: UpdateIncomeCYPlus1ConfirmView,
+  updateIncomeCYPlus1Warning: UpdateIncomeCYPlus1WarningView,
+  updateIncomeCYPlus1Start: UpdateIncomeCYPlus1StartView,
+  updateIncomeCYPlus1Edit: UpdateIncomeCYPlus1EditView,
+  updateIncomeCYPlus1Same: UpdateIncomeCYPlus1SameView,
+  sameEstimatedPay: SameEstimatedPayView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)

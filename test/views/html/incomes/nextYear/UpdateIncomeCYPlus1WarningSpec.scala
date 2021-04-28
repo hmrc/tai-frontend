@@ -41,7 +41,7 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.{MonetaryUtil, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionCYPlus1EmploymentViewModel, DuplicateSubmissionCYPlus1PensionViewModel}
-import views.html.incomes.duplicateSubmissionWarning
+import views.html.incomes.DuplicateSubmissionWarningView
 
 class UpdateIncomeCYPlus1WarningSpec extends TaiViewSpec with FormValuesConstants {
   val employmentName = "Employment Name"
@@ -87,7 +87,7 @@ class UpdateIncomeCYPlus1WarningSpec extends TaiViewSpec with FormValuesConstant
       val invalidatedForm = duplicateSubmissionWarningForm.bind(invalidChoice)
       val emptySelectionErrorMessage = messages("tai.employment.warning.error")
 
-      val warningTemplate = inject[duplicateSubmissionWarning]
+      val warningTemplate = inject[DuplicateSubmissionWarningView]
 
       val errorView = warningTemplate(invalidatedForm, employmentViewModel, empId)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
@@ -117,7 +117,7 @@ class UpdateIncomeCYPlus1WarningSpec extends TaiViewSpec with FormValuesConstant
 
   val newAmount = 20000
   val employmentViewModel = DuplicateSubmissionCYPlus1EmploymentViewModel(employmentName, newAmount)
-  private val template = inject[updateIncomeCYPlus1Warning]
+  private val template = inject[UpdateIncomeCYPlus1WarningView]
 
   override def view: Html =
     template(duplicateSubmissionWarningForm, employmentViewModel, empId)

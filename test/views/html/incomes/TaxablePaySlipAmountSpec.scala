@@ -33,7 +33,7 @@ class TaxablePaySlipAmountSpec extends TaiViewSpec with EditIncomePayPeriodConst
   def createViewModel(form: Form[TaxablePayslipForm] = TaxablePayslipForm.createForm(None, Some(MONTHLY), None)) =
     TaxablePaySlipAmountViewModel(form, Some(MONTHLY), None, employer)
 
-  private val template = inject[taxablePayslipAmount]
+  private val template = inject[TaxablePayslipAmountView]
 
   override def view: Html = template(taxablePayslipViewModel)
 

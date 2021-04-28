@@ -29,7 +29,7 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec {
   private val employerName = "employerName"
   private val currentAmount = 1000
   private val employmentId = 1
-  private val editIncomeIrregularHours = inject[editIncomeIrregularHours]
+  private val editIncomeIrregularHours = inject[EditIncomeIrregularHoursView]
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink

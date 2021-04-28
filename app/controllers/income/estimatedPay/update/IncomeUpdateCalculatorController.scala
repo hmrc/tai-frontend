@@ -34,8 +34,8 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
-import views.html.incomes.estimatedPayment.update.checkYourAnswers
-import views.html.incomes.{confirmAmountEntered, duplicateSubmissionWarning}
+import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
+import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -49,9 +49,9 @@ class IncomeUpdateCalculatorController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  duplicateSubmissionWarning: duplicateSubmissionWarning,
-  checkYourAnswers: checkYourAnswers,
-  confirmAmountEntered: confirmAmountEntered,
+  duplicateSubmissionWarning: DuplicateSubmissionWarningView,
+  checkYourAnswers: CheckYourAnswersView,
+  confirmAmountEntered: ConfirmAmountEnteredView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,

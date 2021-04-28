@@ -29,7 +29,7 @@ class UpdateIncomeDetailsSpec extends TaiViewSpec {
   private val taxYear: Int = 2016
   private val formattedTaxYear = TaxPeriodLabelService.taxPeriodLabelSingleLine(taxYear)
   private val givenTaxYear: TaxYear = TaxYear(taxYear)
-  private val UpdateIncomeDetails = inject[UpdateIncomeDetails]
+  private val UpdateIncomeDetails = inject[UpdateIncomeDetailsView]
   override def view: Html =
     UpdateIncomeDetails(UpdateHistoricIncomeDetailsViewModel(taxYear), UpdateIncomeDetailsForm.form)
 

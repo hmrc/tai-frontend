@@ -45,6 +45,6 @@ class EditSuccessSpec extends TaiViewSpec {
     }
   }
 
-  private def editSuccess = inject[editSuccess]
+  private def editSuccess = inject[EditSuccessView]
   override def view: Html = editSuccess(employerName, employerId)
 }

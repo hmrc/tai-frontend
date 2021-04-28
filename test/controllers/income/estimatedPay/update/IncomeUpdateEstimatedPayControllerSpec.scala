@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
-import views.html.incomes.{estimatedPay, estimatedPayLandingPage, incorrectTaxableIncome}
+import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, IncorrectTaxableIncomeView}
 
 import scala.concurrent.Future
 
@@ -57,9 +57,9 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
         appConfig,
         mcc,
         mockTaxAccountService,
-        inject[estimatedPayLandingPage],
-        inject[estimatedPay],
-        inject[incorrectTaxableIncome],
+        inject[EstimatedPayLandingPageView],
+        inject[EstimatedPayView],
+        inject[IncorrectTaxableIncomeView],
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer,

@@ -36,8 +36,8 @@ class IncomeUpdateBonusController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  bonusPayments: bonusPayments,
-  bonusPaymentAmount: bonusPaymentAmount,
+  bonusPayments: BonusPaymentsView,
+  bonusPaymentAmount: BonusPaymentAmountView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)

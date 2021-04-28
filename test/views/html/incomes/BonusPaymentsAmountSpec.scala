@@ -28,7 +28,7 @@ class BonusPaymentsAmountSpec extends TaiViewSpec {
 
   val employer = IncomeSource(id = 1, name = "Employer")
   val bonusPaymentsAmountForm = BonusOvertimeAmountForm.createForm()
-  private val bonusPaymentAmount = inject[bonusPaymentAmount]
+  private val bonusPaymentAmount = inject[BonusPaymentAmountView]
 
   override def view: Html = bonusPaymentAmount(bonusPaymentsAmountForm, employer)
 

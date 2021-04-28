@@ -27,7 +27,7 @@ class ConfirmAmountEnteredSpec extends TaiViewSpec {
   val currentAmount = 1234
   val estimatedAmount = 1000
   val employmentId = 1
-  private val confirmAmountEntered = inject[confirmAmountEntered]
+  private val confirmAmountEntered = inject[ConfirmAmountEnteredView]
 
   val vm = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedAmount, IrregularPay)
   override lazy val view: Html = confirmAmountEntered(vm)

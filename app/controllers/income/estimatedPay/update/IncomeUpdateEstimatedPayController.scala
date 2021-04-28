@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefixAndSign
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
-import views.html.incomes.{estimatedPay, estimatedPayLandingPage, incorrectTaxableIncome}
+import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, IncorrectTaxableIncomeView}
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
@@ -50,9 +50,9 @@ class IncomeUpdateEstimatedPayController @Inject()(
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   taxAccountService: TaxAccountService,
-  estimatedPayLandingPage: estimatedPayLandingPage,
-  estimatedPay: estimatedPay,
-  incorrectTaxableIncome: incorrectTaxableIncome,
+  estimatedPayLandingPage: EstimatedPayLandingPageView,
+  estimatedPay: EstimatedPayView,
+  incorrectTaxableIncome: IncorrectTaxableIncomeView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,

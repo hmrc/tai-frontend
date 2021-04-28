@@ -28,7 +28,7 @@ class updateIncomeCYPlus1SameSpec extends TaiViewSpec {
   val employerName = "Employer Name"
   val employmentID = 1
   val newAmount = 1234
-  private val updateIncomeCYPlus1Same = inject[updateIncomeCYPlus1Same]
+  private val updateIncomeCYPlus1Same = inject[UpdateIncomeCYPlus1SameView]
 
   override def view: Html = updateIncomeCYPlus1Same(employerName, employmentID, newAmount)
 

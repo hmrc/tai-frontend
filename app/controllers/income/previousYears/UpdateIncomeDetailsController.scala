@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstant
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
 import views.html.CanWeContactByPhoneView
-import views.html.incomes.previousYears.{CheckYourAnswers, UpdateIncomeDetails, UpdateIncomeDetailsConfirmation, UpdateIncomeDetailsDecision}
+import views.html.incomes.previousYears.{CheckYourAnswersView, UpdateIncomeDetailsConfirmationView, UpdateIncomeDetailsDecisionView, UpdateIncomeDetailsView}
 
 import javax.inject.{Inject, Named}
 import scala.Function.tupled
@@ -46,10 +46,10 @@ class UpdateIncomeDetailsController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   can_we_contact_by_phone: CanWeContactByPhoneView,
-  CheckYourAnswers: CheckYourAnswers,
-  UpdateIncomeDetailsDecision: UpdateIncomeDetailsDecision,
-  UpdateIncomeDetails: UpdateIncomeDetails,
-  UpdateIncomeDetailsConfirmation: UpdateIncomeDetailsConfirmation,
+  CheckYourAnswers: CheckYourAnswersView,
+  UpdateIncomeDetailsDecision: UpdateIncomeDetailsDecisionView,
+  UpdateIncomeDetails: UpdateIncomeDetailsView,
+  UpdateIncomeDetailsConfirmation: UpdateIncomeDetailsConfirmationView,
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
   implicit val partialRetriever: FormPartialRetriever,

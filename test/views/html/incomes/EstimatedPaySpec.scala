@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewMod
 
 class EstimatedPaySpec extends TaiViewSpec {
 
-  private val estimatedPay = inject[estimatedPay]
+  private val estimatedPay = inject[EstimatedPayView]
   override def view: Html = estimatedPay(createViewModel())
 
   val employer = IncomeSource(id = 1, name = "Employer")

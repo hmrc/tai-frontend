@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
-import views.html.incomes.workingHours
+import views.html.incomes.WorkingHoursView
 import scala.concurrent.Future
 
 class IncomeUpdateWorkingHoursControllerSpec
@@ -46,7 +46,7 @@ class IncomeUpdateWorkingHoursControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[workingHours],
+        inject[WorkingHoursView],
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer

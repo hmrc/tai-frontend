@@ -41,19 +41,19 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.DuplicateSubmission
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 import utils.BaseSpec
 import views.html.incomes.nextYear._
-import views.html.incomes.sameEstimatedPay
+import views.html.incomes.SameEstimatedPayView
 
 import scala.concurrent.Future
 
 class UpdateIncomeNextYearControllerSpec
     extends BaseSpec with FormValuesConstants with ControllerViewTestHelper with BeforeAndAfterEach {
 
-  private val updateIncomeCYPlus1ConfirmView = inject[updateIncomeCYPlus1Confirm]
-  private val updateIncomeCYPlus1SuccessView = inject[updateIncomeCYPlus1Success]
-  private val updateIncomeCYPlus1SameView = inject[updateIncomeCYPlus1Same]
-  private val updateIncomeCYPlus1EditView = inject[updateIncomeCYPlus1Edit]
-  private val updateIncomeCYPlus1StartView = inject[updateIncomeCYPlus1Start]
-  private val updateIncomeCYPlus1WarningView = inject[updateIncomeCYPlus1Warning]
+  private val updateIncomeCYPlus1ConfirmView = inject[UpdateIncomeCYPlus1ConfirmView]
+  private val updateIncomeCYPlus1SuccessView = inject[UpdateIncomeCYPlus1SuccessView]
+  private val updateIncomeCYPlus1SameView = inject[UpdateIncomeCYPlus1SameView]
+  private val updateIncomeCYPlus1EditView = inject[UpdateIncomeCYPlus1EditView]
+  private val updateIncomeCYPlus1StartView = inject[UpdateIncomeCYPlus1StartView]
+  private val updateIncomeCYPlus1WarningView = inject[UpdateIncomeCYPlus1WarningView]
 
   val employmentID = 1
   val currentEstPay = 1234
@@ -534,7 +534,7 @@ class UpdateIncomeNextYearControllerSpec
         updateIncomeCYPlus1StartView,
         updateIncomeCYPlus1EditView,
         updateIncomeCYPlus1SameView,
-        inject[sameEstimatedPay],
+        inject[SameEstimatedPayView],
         MockPartialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]

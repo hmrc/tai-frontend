@@ -30,7 +30,7 @@ class SameEstimatedPaySpec extends TaiViewSpec {
   val employerId = 1
   val url = "some url"
 
-  private val template = inject[sameEstimatedPay]
+  private val template = inject[SameEstimatedPayView]
 
   override def view: Html = template(createViewModel())
 

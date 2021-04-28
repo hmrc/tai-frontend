@@ -41,7 +41,7 @@ import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWee
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 import views.html.CanWeContactByPhoneView
 import views.html.employments._
-import views.html.incomes.addIncomeCheckYourAnswers
+import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,9 +58,9 @@ class EndEmploymentController @Inject()(
   EndEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentErrorView,
   endEmploymentView: EndEmploymentView,
   can_we_contact_by_phone: CanWeContactByPhoneView,
-  duplicateSubmissionWarning: duplicateSubmissionWarning,
+  duplicateSubmissionWarning: DuplicateSubmissionWarningView,
   confirmation: ConfirmationView,
-  addIncomeCheckYourAnswers: addIncomeCheckYourAnswers,
+  addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   @Named("End Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,

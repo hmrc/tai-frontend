@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class IncomeCheckYourAnswersSpec extends TaiViewSpec {
 
   val preHeading = "add missing income"
-  private def addIncomeCheckYourAnswers = inject[addIncomeCheckYourAnswers]
+  private def addIncomeCheckYourAnswers = inject[AddIncomeCheckYourAnswersView]
 
   "Income Check Your Answers page" must {
 

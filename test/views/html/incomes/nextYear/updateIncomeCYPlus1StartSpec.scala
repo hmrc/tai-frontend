@@ -25,7 +25,7 @@ class updateIncomeCYPlus1StartSpec extends TaiViewSpec {
   val employerName = "Employer Name"
   val employmentID = 1
   val isPension = false
-  private val updateIncomeCYPlus1Start = inject[updateIncomeCYPlus1Start]
+  private val updateIncomeCYPlus1Start = inject[UpdateIncomeCYPlus1StartView]
 
   "CYPlus1 Start Page" should {
     behave like pageWithBackLink

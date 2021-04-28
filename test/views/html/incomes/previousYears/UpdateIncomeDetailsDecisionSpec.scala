@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class UpdateIncomeDetailsDecisionSpec extends TaiViewSpec {
 
   val taxYear = TaxYear().prev
-  private val UpdateIncomeDetailsDecision = inject[UpdateIncomeDetailsDecision]
+  private val UpdateIncomeDetailsDecision = inject[UpdateIncomeDetailsDecisionView]
 
   "decision" should {
 

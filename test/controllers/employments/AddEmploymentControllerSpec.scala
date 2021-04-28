@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Jour
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.employments._
-import views.html.incomes.addIncomeCheckYourAnswers
+import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -818,7 +818,7 @@ class AddEmploymentControllerSpec
         inject[AddEmploymentPayrollNumberFormView],
         inject[CanWeContactByPhoneView],
         inject[ConfirmationView],
-        inject[addIncomeCheckYourAnswers],
+        inject[AddIncomeCheckYourAnswersView],
         MockPartialRetriever,
         MockTemplateRenderer
       ) {

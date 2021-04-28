@@ -231,7 +231,7 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
   lazy val dateFormatPattern = "d MMMM yyyy"
   lazy val model = incomeCalculationViewModel()
 
-  private val template = inject[yourIncomeCalculation]
+  private val template = inject[YourIncomeCalculationView]
 
   override def view: Html = template(model)
 

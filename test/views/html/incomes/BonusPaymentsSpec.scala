@@ -35,7 +35,7 @@ class BonusPaymentsSpec extends TaiViewSpec with FormValuesConstants {
   val bonusPaymentsForm = BonusPaymentsForm.createForm
   val choice = YesNoForm.YesNoChoice
 
-  private val bonusPayments = inject[bonusPayments]
+  private val bonusPayments = inject[BonusPaymentsView]
 
   override def view: Html = bonusPayments(bonusPaymentsForm, employer)
 

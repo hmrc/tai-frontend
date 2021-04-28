@@ -24,7 +24,7 @@ class EstimatedPayLandingPageSpec extends TaiViewSpec {
 
   val empId = 1
   val employerName = "fakeFieldValue"
-  private val estimatedPayLandingPage = inject[estimatedPayLandingPage]
+  private val estimatedPayLandingPage = inject[EstimatedPayLandingPageView]
 
   "Estimated Pay Landing Page" should {
     behave like pageWithBackLink

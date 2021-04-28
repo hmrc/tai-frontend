@@ -48,6 +48,6 @@ class PaySlipDeductionsSpec extends TaiViewSpec {
   when(payslipDeductionsForm.errors(anyString())).thenReturn(Nil)
   when(payslipDeductionsForm.hasErrors).thenReturn(false)
 
-  private def payslipDeductions = inject[payslipDeductions]
+  private def payslipDeductions = inject[PayslipDeductionsView]
   override def view: Html = payslipDeductions(payslipDeductionsForm, employer)
 }
