@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.forms.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, JourneyCacheConstants}
-import views.html.incomes.workingHours
+import views.html.incomes.WorkingHoursView
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
@@ -35,7 +35,7 @@ class IncomeUpdateWorkingHoursController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  workingHoursView: workingHours,
+  workingHoursView: WorkingHoursView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)

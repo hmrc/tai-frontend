@@ -33,7 +33,7 @@ class CheckYourAnswersSpec extends TaiViewSpec {
   val totalBonusOrOvertime = Some("3000")
   val payPeriodInDays = Some("3")
 
-  private val template = inject[checkYourAnswers]
+  private val template = inject[CheckYourAnswersView]
 
   override def view: Html = template(viewModel)
 

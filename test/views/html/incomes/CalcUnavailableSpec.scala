@@ -23,7 +23,7 @@ class CalcUnavailableSpec extends TaiViewSpec {
 
   val id = 1
   val employerName = "Employer"
-  private val calcUnavailable = inject[calcUnavailable]
+  private val calcUnavailable = inject[CalcUnavailableView]
 
   "Calculation unavailable page" should {
     behave like pageWithBackLink

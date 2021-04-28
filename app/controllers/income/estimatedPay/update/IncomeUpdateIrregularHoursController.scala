@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
-import views.html.incomes.{confirmAmountEntered, editIncomeIrregularHours, editSuccess}
+import views.html.incomes.{ConfirmAmountEnteredView, EditIncomeIrregularHoursView, EditSuccessView}
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,9 +47,9 @@ class IncomeUpdateIrregularHoursController @Inject()(
   taxAccountService: TaxAccountService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   mcc: MessagesControllerComponents,
-  editSuccess: editSuccess,
-  editIncomeIrregularHours: editIncomeIrregularHours,
-  confirmAmountEntered: confirmAmountEntered,
+  editSuccess: EditSuccessView,
+  editIncomeIrregularHours: EditIncomeIrregularHoursView,
+  confirmAmountEntered: ConfirmAmountEnteredView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,

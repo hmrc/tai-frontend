@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
-import views.html.incomes.{bonusPaymentAmount, bonusPayments}
+import views.html.incomes.{BonusPaymentAmountView, BonusPaymentsView}
 
 import scala.concurrent.Future
 
@@ -45,9 +45,9 @@ class IncomeUpdateBonusControllerSpec
 
   override implicit val fakeRequest: FakeRequest[AnyContent] = RequestBuilder.buildFakeGetRequestWithAuth()
 
-  private val bonusPaymentsView = inject[bonusPayments]
+  private val bonusPaymentsView = inject[BonusPaymentsView]
 
-  private val bonusPaymentAmountView = inject[bonusPaymentAmount]
+  private val bonusPaymentAmountView = inject[BonusPaymentAmountView]
 
   class TestIncomeUpdateBonusController
       extends IncomeUpdateBonusController(

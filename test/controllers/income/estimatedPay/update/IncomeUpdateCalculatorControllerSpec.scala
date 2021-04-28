@@ -39,8 +39,8 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{EditIncomePayPeriodConstants, _}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
-import views.html.incomes.estimatedPayment.update.checkYourAnswers
-import views.html.incomes.{confirmAmountEntered, duplicateSubmissionWarning}
+import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
+import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
 
 import scala.concurrent.Future
 
@@ -80,9 +80,9 @@ class IncomeUpdateCalculatorControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[duplicateSubmissionWarning],
-        inject[checkYourAnswers],
-        inject[confirmAmountEntered],
+        inject[DuplicateSubmissionWarningView],
+        inject[CheckYourAnswersView],
+        inject[ConfirmAmountEnteredView],
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer,

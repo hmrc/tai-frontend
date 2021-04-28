@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
 import utils.BaseSpec
-import views.html.incomes.{historicIncomeCalculation, yourIncomeCalculation}
+import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
 
 import scala.concurrent.Future
 
@@ -310,8 +310,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       FakeValidatePerson,
       appConfig,
       mcc,
-      inject[historicIncomeCalculation],
-      inject[yourIncomeCalculation],
+      inject[HistoricIncomeCalculationView],
+      inject[YourIncomeCalculationView],
       partialRetriever,
       templateRenderer,
       inject[ErrorPagesHandler]

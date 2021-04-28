@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
 import utils.BaseSpec
-import views.html.incomes.{payslipAmount, payslipDeductions, taxablePayslipAmount}
+import views.html.incomes.{PayslipAmountView, PayslipDeductionsView, TaxablePayslipAmountView}
 
 import scala.concurrent.Future
 
@@ -45,9 +45,9 @@ class IncomeUpdatePayslipAmountControllerSpec
 
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
-  private val payslipAmountView = inject[payslipAmount]
+  private val payslipAmountView = inject[PayslipAmountView]
 
-  private val taxablePayslipAmountView = inject[taxablePayslipAmount]
+  private val taxablePayslipAmountView = inject[TaxablePayslipAmountView]
 
   class TestIncomeUpdatePayslipAmountController
       extends IncomeUpdatePayslipAmountController(
@@ -56,7 +56,7 @@ class IncomeUpdatePayslipAmountControllerSpec
         mcc,
         payslipAmountView,
         taxablePayslipAmountView,
-        inject[payslipDeductions],
+        inject[PayslipDeductionsView],
         journeyCacheService,
         MockPartialRetriever,
         MockTemplateRenderer

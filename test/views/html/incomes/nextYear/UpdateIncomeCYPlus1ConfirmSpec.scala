@@ -31,7 +31,7 @@ class UpdateIncomeCYPlus1ConfirmSpec extends TaiViewSpec {
   val employmentId = 1
 
   val vm = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedAmount, IrregularPay)
-  private val template = inject[updateIncomeCYPlus1Confirm]
+  private val template = inject[UpdateIncomeCYPlus1ConfirmView]
 
   override lazy val view: Html = template(vm)
 

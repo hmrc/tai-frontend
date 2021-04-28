@@ -23,7 +23,7 @@ class UpdateIncomeCYPlus1SuccessSpec extends TaiViewSpec {
 
   val employerName = "Employer Name"
   val isPension = false
-  private val template = inject[updateIncomeCYPlus1Success]
+  private val template = inject[UpdateIncomeCYPlus1SuccessView]
 
   override def view: Html = template(employerName, isPension)
 

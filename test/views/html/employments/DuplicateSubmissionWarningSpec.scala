@@ -89,7 +89,7 @@ class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstant
     }
   }
 
-  private val template = inject[duplicateSubmissionWarning]
+  private val template = inject[DuplicateSubmissionWarningView]
 
   override def view: Html = template(duplicateSubmissionWarningForm, employmentName, empId)
 }

@@ -753,8 +753,8 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
   private def createTestIncomeController() = new TestIncomeController()
 
-  private val editSuccessView = inject[editSuccess]
-  private val editPensionSuccessView = inject[editPensionSuccess]
+  private val editSuccessView = inject[EditSuccessView]
+  private val editPensionSuccessView = inject[EditPensionSuccessView]
 
   private class TestIncomeController()
       extends IncomeController(
@@ -766,12 +766,12 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[confirmAmountEntered],
+        inject[ConfirmAmountEnteredView],
         editSuccessView,
-        inject[editPension],
+        inject[EditPensionView],
         editPensionSuccessView,
-        inject[editIncome],
-        inject[sameEstimatedPay],
+        inject[EditIncomeView],
+        inject[SameEstimatedPayView],
         partialRetriever,
         templateRenderer,
         inject[ErrorPagesHandler]

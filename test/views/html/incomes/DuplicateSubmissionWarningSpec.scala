@@ -43,7 +43,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionEmploymentViewModel, DuplicateSubmissionPensionViewModel}
 
 class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstants {
-  private val duplicateSubmissionWarning = inject[duplicateSubmissionWarning]
+  private val duplicateSubmissionWarning = inject[DuplicateSubmissionWarningView]
   val employmentName = "Employment Name"
   val empId = 1
   val duplicateSubmissionWarningForm: Form[YesNoForm] = DuplicateSubmissionWarningForm.createForm

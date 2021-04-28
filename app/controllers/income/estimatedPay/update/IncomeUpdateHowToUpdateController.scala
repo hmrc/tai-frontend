@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
-import views.html.incomes.howToUpdate
+import views.html.incomes.HowToUpdateView
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -46,7 +46,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,
   mcc: MessagesControllerComponents,
-  howToUpdateView: howToUpdate,
+  howToUpdateView: HowToUpdateView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,

@@ -55,7 +55,7 @@ class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
     }
   }
 
-  private val updateIncomeCYPlus1Edit = inject[updateIncomeCYPlus1Edit]
+  private val updateIncomeCYPlus1Edit = inject[UpdateIncomeCYPlus1EditView]
 
   override def view: Html =
     updateIncomeCYPlus1Edit(

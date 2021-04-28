@@ -41,7 +41,7 @@ class EditIncomeSpec extends TaiViewSpec {
 
   val field = mock[Field]
   val intField = mock[Field]
-  private val editIncome = inject[editIncome]
+  private val editIncome = inject[EditIncomeView]
 
   when(field.value).thenReturn(Some("fakeFieldValue"))
   when(field.name).thenReturn("fakeFieldValue")

@@ -34,7 +34,7 @@ class WorkingHoursSpec extends TaiViewSpec {
       messages("tai.workingHours.heading"))
   }
 
-  private val template = inject[workingHours]
+  private val template = inject[WorkingHoursView]
 
   override def view: Html = template(HoursWorkedForm.createForm(), empId, employerName)
 }

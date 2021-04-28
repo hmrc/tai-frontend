@@ -33,7 +33,7 @@ import uk.gov.hmrc.urls.Link
 
 class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants {
 
-  private val detailedIncomeTaxEstimate = inject[detailedIncomeTaxEstimate]
+  private val detailedIncomeTaxEstimate = inject[DetailedIncomeTaxEstimateView]
 
   "view" must {
 

@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 import views.html.CanWeContactByPhoneView
 import views.html.employments._
-import views.html.incomes.addIncomeCheckYourAnswers
+import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -61,7 +61,7 @@ class AddEmploymentController @Inject()(
   add_employment_payroll_number_form: AddEmploymentPayrollNumberFormView,
   can_we_contact_by_phone: CanWeContactByPhoneView,
   confirmationView: ConfirmationView,
-  addIncomeCheckYourAnswers: addIncomeCheckYourAnswers,
+  addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with AuditConstants with FormValuesConstants

@@ -43,7 +43,7 @@ import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesCo
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.employments._
-import views.html.incomes.addIncomeCheckYourAnswers
+import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -812,9 +812,9 @@ class EndEmploymentControllerSpec
         inject[EndEmploymentIrregularPaymentErrorView],
         inject[EndEmploymentView],
         inject[CanWeContactByPhoneView],
-        inject[duplicateSubmissionWarning],
+        inject[DuplicateSubmissionWarningView],
         inject[ConfirmationView],
-        inject[addIncomeCheckYourAnswers],
+        inject[AddIncomeCheckYourAnswersView],
         endEmploymentJourneyCacheService,
         trackSuccessJourneyCacheService,
         MockTemplateRenderer,

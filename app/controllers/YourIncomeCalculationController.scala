@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
-import views.html.incomes.{historicIncomeCalculation, yourIncomeCalculation}
+import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,8 +41,8 @@ class YourIncomeCalculationController @Inject()(
   validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  historicIncomeCalculation: historicIncomeCalculation,
-  yourIncomeCalculation: yourIncomeCalculation,
+  historicIncomeCalculation: HistoricIncomeCalculationView,
+  yourIncomeCalculation: YourIncomeCalculationView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
