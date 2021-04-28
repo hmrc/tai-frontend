@@ -36,7 +36,7 @@ import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, IncorrectPensionDeci
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.pensions.DuplicateSubmissionWarningView
-import views.html.pensions.update.{confirmation, doYouGetThisPensionIncome, updatePensionCheckYourAnswers, whatDoYouWantToTellUs}
+import views.html.pensions.update.{ConfirmationView, DoYouGetThisPensionIncomeView, UpdatePensionCheckYourAnswersView, WhatDoYouWantToTellUsView}
 
 import scala.concurrent.Future
 
@@ -608,10 +608,10 @@ class UpdatePensionProviderControllerSpec
         mcc,
         appConfig,
         inject[CanWeContactByPhoneView],
-        inject[doYouGetThisPensionIncome],
-        inject[whatDoYouWantToTellUs],
-        inject[updatePensionCheckYourAnswers],
-        inject[confirmation],
+        inject[DoYouGetThisPensionIncomeView],
+        inject[WhatDoYouWantToTellUsView],
+        inject[UpdatePensionCheckYourAnswersView],
+        inject[ConfirmationView],
         inject[DuplicateSubmissionWarningView],
         journeyCacheService,
         successfulJourneyCacheService,

@@ -16,11 +16,10 @@
 
 package views.html.pensions.updatePensions
 
-import uk.gov.hmrc.tai.viewModels.employments.UpdateEmploymentCheckYourAnswersViewModel
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersViewModel
-import views.html.pensions.update.updatePensionCheckYourAnswers
+import views.html.pensions.update.UpdatePensionCheckYourAnswersView
 
 class UpdatePensionsCheckYourAnswersSpec extends TaiViewSpec {
 
@@ -74,9 +73,9 @@ class UpdatePensionsCheckYourAnswersSpec extends TaiViewSpec {
   }
 
   lazy val pensionId = 1
-  val viewModel =
+  val viewModel: UpdatePensionCheckYourAnswersViewModel =
     UpdatePensionCheckYourAnswersViewModel(pensionId, "TEST", "Yes", "whatYouToldUs", "Yes", Some("123456789"))
-  private val updatePensionCheckYourAnswers = inject[updatePensionCheckYourAnswers]
+  private val updatePensionCheckYourAnswersView = inject[UpdatePensionCheckYourAnswersView]
 
-  override def view: Html = updatePensionCheckYourAnswers(viewModel)
+  override def view: Html = updatePensionCheckYourAnswersView(viewModel)
 }

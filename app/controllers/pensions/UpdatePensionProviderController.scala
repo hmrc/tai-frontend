@@ -42,7 +42,8 @@ import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersViewModel
 import views.html.CanWeContactByPhoneView
 import views.html.pensions.DuplicateSubmissionWarningView
-import views.html.pensions.update.{confirmation, doYouGetThisPensionIncome, updatePensionCheckYourAnswers, whatDoYouWantToTellUs}
+import views.html.pensions.update.{ConfirmationView, DoYouGetThisPensionIncomeView, UpdatePensionCheckYourAnswersView, WhatDoYouWantToTellUsView}
+
 import javax.inject.{Inject, Named}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -57,10 +58,10 @@ class UpdatePensionProviderController @Inject()(
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
   can_we_contact_by_phone: CanWeContactByPhoneView,
-  doYouGetThisPensionIncome: doYouGetThisPensionIncome,
-  whatDoYouWantToTellUs: whatDoYouWantToTellUs,
-  updatePensionCheckYourAnswers: updatePensionCheckYourAnswers,
-  confirmationView: confirmation,
+  doYouGetThisPensionIncome: DoYouGetThisPensionIncomeView,
+  whatDoYouWantToTellUsView: WhatDoYouWantToTellUsView,
+  updatePensionCheckYourAnswers: UpdatePensionCheckYourAnswersView,
+  confirmationView: ConfirmationView,
   duplicateSubmissionWarningView: DuplicateSubmissionWarningView,
   @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
@@ -78,7 +79,7 @@ class UpdatePensionProviderController @Inject()(
   def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) =>
       textContent match {
-        case txt if txt.length < 8 || txt.length > 30 || !telephoneRegex.findAllMatchIn(txt).exists(_ => true) =>
+        case txt if txt.length < 8 || txt.length > 30 || telephoneRegex.findAllMatchIn(txt).isEmpty =>
           Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
         case _ => Valid
     })
@@ -99,11 +100,10 @@ class UpdatePensionProviderController @Inject()(
       Seq(UpdatePensionProvider_IdKey, UpdatePensionProvider_NameKey),
       Seq(UpdatePensionProvider_ReceivePensionQuestionKey)) map tupled { (mandatoryVal, optionalValues) =>
       mandatoryVal match {
-        case Right(mandatoryValues) => {
+        case Right(mandatoryValues) =>
           val model = PensionProviderViewModel(mandatoryValues.head.toInt, mandatoryValues(1))
           val form = UpdateRemovePensionForm.form.fill(optionalValues.head)
           Ok(doYouGetThisPensionIncome(model, form))
-        }
         case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
     }
@@ -140,14 +140,13 @@ class UpdatePensionProviderController @Inject()(
                                          Seq(UpdatePensionProvider_DetailsKey))
     } yield {
       mandatoryVal match {
-        case Right(mandatoryValues) => {
+        case Right(mandatoryValues) =>
           implicit val user: AuthedUser = request.taiUser
           Ok(
-            whatDoYouWantToTellUs(
+            whatDoYouWantToTellUsView(
               mandatoryValues.head,
               mandatoryValues(1).toInt,
               WhatDoYouWantToTellUsForm.form.fill(optionalValues.head.getOrElse(""))))
-        }
         case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
     }
@@ -160,7 +159,7 @@ class UpdatePensionProviderController @Inject()(
           journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map {
             mandatoryValues =>
               implicit val user: AuthedUser = request.taiUser
-              BadRequest(whatDoYouWantToTellUs(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
+              BadRequest(whatDoYouWantToTellUsView(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
           }
         },
         pensionDetails => {
@@ -171,7 +170,7 @@ class UpdatePensionProviderController @Inject()(
       )
   }
 
-  def addTelephoneNumber: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     for {
       pensionId <- journeyCacheService.mandatoryJourneyValueAsInt(UpdatePensionProvider_IdKey)
       telephoneCache <- journeyCacheService.optionalValues(
@@ -180,15 +179,14 @@ class UpdatePensionProviderController @Inject()(
     } yield {
 
       pensionId match {
-        case Right(mandatoryPensionId) => {
+        case Right(mandatoryPensionId) =>
           val user = Some(request.taiUser)
 
           Ok(
             can_we_contact_by_phone(
               user,
               telephoneNumberViewModel(mandatoryPensionId),
-              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
-        }
+              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
         case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
 
@@ -245,8 +243,7 @@ class UpdatePensionProviderController @Inject()(
 
         mandatorySeq match {
 
-          case Right(mandatoryValues) => {
-
+          case Right(mandatoryValues) =>
             implicit val user: AuthedUser = request.taiUser
 
             Ok(
@@ -258,7 +255,6 @@ class UpdatePensionProviderController @Inject()(
                   mandatoryValues(3),
                   mandatoryValues(4),
                   optionalSeq.head)))
-          }
 
           case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
         }
@@ -335,16 +331,13 @@ class UpdatePensionProviderController @Inject()(
   def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService.mandatoryJourneyValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map {
-      mandatoryVals =>
-        mandatoryVals match {
-          case Right(mandatoryValues) =>
-            Ok(
-              duplicateSubmissionWarningView(
-                DuplicateSubmissionWarningForm.createForm,
-                mandatoryValues(0),
-                mandatoryValues(1).toInt))
-          case Left(_) => Redirect(taxAccountSummaryRedirect)
-        }
+      case Right(mandatoryValues) =>
+        Ok(
+          duplicateSubmissionWarningView(
+            DuplicateSubmissionWarningForm.createForm,
+            mandatoryValues.head,
+            mandatoryValues(1).toInt))
+      case Left(_) => Redirect(taxAccountSummaryRedirect)
     }
   }
 
@@ -357,7 +350,7 @@ class UpdatePensionProviderController @Inject()(
             formWithErrors => {
               Future.successful(
                 BadRequest(
-                  duplicateSubmissionWarningView(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
+                  duplicateSubmissionWarningView(formWithErrors, mandatoryValues.head, mandatoryValues(1).toInt)))
             },
             success => {
               success.yesNoChoice match {

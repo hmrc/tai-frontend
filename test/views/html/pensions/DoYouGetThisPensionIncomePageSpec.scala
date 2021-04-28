@@ -22,11 +22,11 @@ import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
-import views.html.pensions.update.doYouGetThisPensionIncome
+import views.html.pensions.update.DoYouGetThisPensionIncomeView
 
 class DoYouGetThisPensionIncomePageSpec extends TaiViewSpec with FormValuesConstants {
 
-  private val doYouGetThisPensionIncome = inject[doYouGetThisPensionIncome]
+  private val doYouGetThisPensionIncome = inject[DoYouGetThisPensionIncomeView]
 
   "IncorrectPension page" must {
     behave like pageWithTitle(messages("tai.updatePension.decision.pagetitle"))
