@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, De
 import uk.gov.hmrc.tai.viewModels.{HelpLink, TaxSummaryLabel}
 import uk.gov.hmrc.urls.Link
 
-class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants {
+class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConstants {
 
   private val detailedIncomeTaxEstimate = inject[DetailedIncomeTaxEstimateView]
 

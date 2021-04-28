@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, ZeroTaxEstimatedIncomeTaxViewModel}
 import uk.gov.hmrc.urls.Link
 
-class zeroTaxEstimatedIncomeTaxSpec extends TaiViewSpec {
+class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
   "Zero Tax Estimated Income Tax Page" must {
     behave like pageWithCombinedHeader(
       messages(

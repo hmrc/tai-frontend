@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
-class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
+class ComplexEstimatedIncomeTaxViewSpec extends TaiViewSpec {
 
   "Estimated Income Tax Page" must {
     behave like pageWithCombinedHeader(
