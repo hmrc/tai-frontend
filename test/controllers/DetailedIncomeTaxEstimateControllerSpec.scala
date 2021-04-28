@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, PersonService, TaxAccountService}
 import utils.BaseSpec
-import views.html.estimatedIncomeTax.detailedIncomeTaxEstimate
+import views.html.estimatedIncomeTax.DetailedIncomeTaxEstimateView
 
 import scala.concurrent.Future
 
@@ -44,7 +44,7 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
       FakeAuthAction,
       FakeValidatePerson,
       mcc,
-      inject[detailedIncomeTaxEstimate],
+      inject[DetailedIncomeTaxEstimateView],
       partialRetriever,
       templateRenderer,
       inject[ErrorPagesHandler]

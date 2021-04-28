@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
-import views.html.estimatedIncomeTax.detailedIncomeTaxEstimate
+import views.html.estimatedIncomeTax.DetailedIncomeTaxEstimateView
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -41,7 +41,7 @@ class DetailedIncomeTaxEstimateController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  detailedIncomeTaxEstimate: detailedIncomeTaxEstimate,
+  detailedIncomeTaxEstimate: DetailedIncomeTaxEstimateView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
