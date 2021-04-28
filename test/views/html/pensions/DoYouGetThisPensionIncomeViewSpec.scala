@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 import views.html.pensions.update.DoYouGetThisPensionIncomeView
 
-class DoYouGetThisPensionIncomePageSpec extends TaiViewSpec with FormValuesConstants {
+class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec with FormValuesConstants {
 
   private val doYouGetThisPensionIncome = inject[DoYouGetThisPensionIncomeView]
 

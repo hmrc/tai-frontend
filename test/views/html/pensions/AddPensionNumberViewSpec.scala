@@ -16,7 +16,6 @@
 
 package views.html.pensions
 
-import controllers.routes
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -26,7 +25,7 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.pensions.PensionNumberViewModel
 
-class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
+class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
 
   private val addPensionNumber = inject[AddPensionNumberView]
   override def view: Html = addPensionNumber(pensionNumberForm, pensionNumberViewModel)
@@ -44,7 +43,6 @@ class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "have gone back to firstPayChoice page" in {
-      val payrollNumberViewModel = PensionNumberViewModel(pensionProviderName, true)
       def view: Html = addPensionNumber(pensionNumberForm, pensionNumberViewModel)
       def doc: Document = Jsoup.parse(view.toString())
       doc must haveBackLink
@@ -83,5 +81,5 @@ class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
     ))
 
   private lazy val pensionProviderName = "Aviva"
-  private lazy val pensionNumberViewModel = PensionNumberViewModel(pensionProviderName, false)
+  private lazy val pensionNumberViewModel = PensionNumberViewModel(pensionProviderName, firstPayChoice = false)
 }

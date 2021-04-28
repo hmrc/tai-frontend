@@ -20,7 +20,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class deceasedHelplinePageSpec extends TaiViewSpec {
+class DeceasedHelplineViewSpec extends TaiViewSpec {
 
   private val deceased_helpline = inject[DeceasedHelplineView]
   override def view: Html = deceased_helpline()

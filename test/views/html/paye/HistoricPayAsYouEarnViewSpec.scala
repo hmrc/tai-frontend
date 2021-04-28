@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 
-class HistoricPayAsYouEarnSpec extends TaiViewSpec {
+class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
   private val currentYear: Int = TaxYear().year
   private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)

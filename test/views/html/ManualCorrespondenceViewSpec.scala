@@ -19,7 +19,7 @@ package views.html
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class manualCorrespondenceSpec extends TaiViewSpec {
+class ManualCorrespondenceViewSpec extends TaiViewSpec {
 
   private val manualCorrespondence = inject[ManualCorrespondenceView]
   override def view: HtmlFormat.Appendable = manualCorrespondence()

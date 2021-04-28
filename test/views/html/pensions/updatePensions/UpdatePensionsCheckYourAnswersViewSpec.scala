@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersViewModel
 import views.html.pensions.update.UpdatePensionCheckYourAnswersView
 
-class UpdatePensionsCheckYourAnswersSpec extends TaiViewSpec {
+class UpdatePensionsCheckYourAnswersViewSpec extends TaiViewSpec {
 
   "check your answers page" must {
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))

@@ -23,7 +23,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.pensions.PensionAddDateForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class AddPensionStartDateSpec extends TaiViewSpec {
+class AddPensionStartDateViewSpec extends TaiViewSpec {
   private val pensionName = "Pension name"
   private val addDateForm = PensionAddDateForm(pensionName)
   private val globalErrorMessage: String = "day error message"

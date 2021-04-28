@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 
-class previousYearUnderpaymentViewSpec extends TaiViewSpec {
+class PreviousYearUnderpaymentViewSpec extends TaiViewSpec {
 
   "previousYearUnderpaymentView" must {
 
@@ -63,7 +63,7 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
   val allowanceReducedBy = 500
   val poundedAmountDue = "£100.00"
 
-  val test = Dates.formatDate(TaxYear().start)
+  val test: String = Dates.formatDate(TaxYear().start)
 
   private val previousYearUnderpayment = inject[PreviousYearUnderpaymentView]
   override def view: HtmlFormat.Appendable =

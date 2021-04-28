@@ -16,7 +16,6 @@
 
 package views.html.pensions
 
-import controllers.routes
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.AddEmploymentFirstPayForm
@@ -25,7 +24,7 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import views.html.employments.AddEmploymentFirstPayFormView
 
-class AddPensionReceivedFirstPaySpec extends TaiViewSpec with FormValuesConstants {
+class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec with FormValuesConstants {
 
   "Add first pay form page" must {
     behave like pageWithTitle(messages("tai.addPensionProvider.firstPay.pagetitle"))

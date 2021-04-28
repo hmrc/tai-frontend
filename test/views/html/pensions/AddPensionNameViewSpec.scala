@@ -22,7 +22,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.pensions.PensionProviderNameForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class AddPensionNameSpec extends TaiViewSpec {
+class AddPensionNameViewSpec extends TaiViewSpec {
   private val addPensionName = inject[AddPensionNameView]
 
   "Add Pension Provider name form page" should {

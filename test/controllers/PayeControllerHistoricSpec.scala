@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, Tempo
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
-import views.html.paye.{HistoricPayAsYouEarnView, RtiDisabledHistoricPayAsYouEarn}
+import views.html.paye.{HistoricPayAsYouEarnView, RtiDisabledHistoricPayAsYouEarnView}
 
 import scala.concurrent.Future
 
@@ -44,8 +44,6 @@ class PayeControllerHistoricSpec
 
   override def beforeEach: Unit =
     Mockito.reset(employmentService)
-
-  private val currentYear: Int = TaxYear().year
 
   "Calling the payePage method with an authorised session" must {
 
@@ -216,7 +214,7 @@ class PayeControllerHistoricSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[RtiDisabledHistoricPayAsYouEarn],
+        inject[RtiDisabledHistoricPayAsYouEarnView],
         inject[HistoricPayAsYouEarnView],
         partialRetriever,
         templateRenderer,

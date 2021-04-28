@@ -19,29 +19,23 @@ package views.html
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class unauthorizedAccessPageSpec extends TaiViewSpec {
+class ServiceUnavailableViewSpec extends TaiViewSpec {
 
-  private val unauthorizeAccess = inject[UnauthorizedAccessView]
-  override def view: HtmlFormat.Appendable = unauthorizeAccess()
+  private val serviceUnavailable = inject[ServiceUnavailableView]
+  override def view: HtmlFormat.Appendable = serviceUnavailable()
 
-  "Unauthorized Access Page" should {
+  "Service Unavailable Page" should {
     behave like pageWithHeader(messages("tai.gatekeeper.refuse.title"))
     behave like pageWithTitle(messages("tai.gatekeeper.refuse.title"))
 
-    "display the appropriate information in the paragraph" in {
-      doc must haveParagraphWithText(messages("tai.gatekeeper.refuse.message"))
+    "display the correct error message in a paragraph" in {
+      doc must haveParagraphWithText(messages("tai.service.error.message"))
     }
 
-    "have find out more information message displayed" in {
-      val findOutMore = doc.getElementById("find-out-more")
-      findOutMore.text must include(messages("tai.gov.uk.text"))
-      findOutMore.text must include(messages("tai.gatekeeper.findout.more"))
-    }
-
-    "have income tax page link" in {
-      val incomeTaxPageLink = doc.getElementById("income-tax-link")
-      incomeTaxPageLink must haveLinkURL(messages("tai.link.income_tax.url"))
+    "have a no update incomes link" in {
+      val noUpdateIncomeLink = doc.getElementById("no-update-incomes-link")
+      noUpdateIncomeLink.text must include(messages("tai.hmrc.enquiry.text"))
+      noUpdateIncomeLink must haveLinkURL(messages("tai.hmrc.enquiry.url"))
     }
   }
-
 }

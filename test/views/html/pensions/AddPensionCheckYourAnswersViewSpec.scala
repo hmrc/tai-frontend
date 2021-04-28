@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import uk.gov.hmrc.tai.viewModels.pensions.CheckYourAnswersViewModel
 
-class AddPensionCheckYourAnswersSpec extends TaiViewSpec {
+class AddPensionCheckYourAnswersViewSpec extends TaiViewSpec {
 
   val preHeading = "add missing pension"
 

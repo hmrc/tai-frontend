@@ -29,22 +29,22 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 
-class potentialUnderpaymentViewSpec extends TaiViewSpec {
+class PotentialUnderpaymentViewSpec extends TaiViewSpec {
 
-  val tas = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
+  val tas: TaxAccountSummary = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
   val ccs = Seq(
     CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
     CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")
   )
 
-  val tasNoUnderpay = TaxAccountSummary(11.11, 22.22, 0, 44.44, 0)
-  val tasCYOnly = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
-  val tasCYAndCyPlusOne = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
-  val tasCyPlusOneOnly = TaxAccountSummary(11.11, 22.22, 0, 44.44, 55.55)
+  val tasNoUnderpay: TaxAccountSummary = TaxAccountSummary(11.11, 22.22, 0, 44.44, 0)
+  val tasCYOnly: TaxAccountSummary = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
+  val tasCYAndCyPlusOne: TaxAccountSummary = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
+  val tasCyPlusOneOnly: TaxAccountSummary = TaxAccountSummary(11.11, 22.22, 0, 44.44, 55.55)
   val referalPath = "http://somelocation/tax-free-allowance"
   val resourceName = "tax-free-allowance"
 
-  val viewModel = PotentialUnderpaymentViewModel(tas, ccs, referalPath, resourceName)
+  val viewModel: PotentialUnderpaymentViewModel = PotentialUnderpaymentViewModel(tas, ccs, referalPath, resourceName)
   private val potentialUnderpayment = inject[PotentialUnderpaymentView]
   def document(viewModel: PotentialUnderpaymentViewModel = viewModel): Document =
     Jsoup.parseBodyFragment(potentialUnderpayment(viewModel).toString)
@@ -67,7 +67,7 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
     "display get help link" in {
       document() must haveLinkElement(
         "getHelpLink",
-        controllers.routes.HelpController.helpPage.url,
+        controllers.routes.HelpController.helpPage().url,
         messages("tai.iya.paidTooLittle.get.help.linkText"))
     }
 

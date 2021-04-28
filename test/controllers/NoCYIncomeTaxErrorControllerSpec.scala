@@ -33,10 +33,11 @@ import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, Person}
 import uk.gov.hmrc.tai.service.EmploymentService
 import utils.BaseSpec
-import views.html.NoCYIncomeTaxErrorPage
+import views.html.NoCYIncomeTaxErrorView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I18nSupport with BeforeAndAfterEach {
 
@@ -80,12 +81,12 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
     }
   }
 
-  val defaultPerson = fakePerson(nino)
+  val defaultPerson: Person = fakePerson(nino)
 
   def createSUT(person: Person = defaultPerson, employmentDataFailure: Option[Throwable] = None) =
     new SUT(person, employmentDataFailure)
 
-  val employmentService = mock[EmploymentService]
+  val employmentService: EmploymentService = mock[EmploymentService]
 
   class SUT(person: Person, employmentDataFailure: Option[Throwable])
       extends NoCYIncomeTaxErrorController(
@@ -94,7 +95,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[NoCYIncomeTaxErrorPage],
+        inject[NoCYIncomeTaxErrorView],
         partialRetriever,
         templateRenderer
       ) {
@@ -111,8 +112,8 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
         "payeNumber",
         1,
         None,
-        false,
-        false))
+        hasPayrolledBenefit = false,
+        receivingOccupationalPension = false))
 
     employmentDataFailure match {
       case None =>

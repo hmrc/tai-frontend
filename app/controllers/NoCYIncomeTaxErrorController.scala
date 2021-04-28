@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
-import views.html.NoCYIncomeTaxErrorPage
+import views.html.NoCYIncomeTaxErrorView
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,7 +39,7 @@ class NoCYIncomeTaxErrorController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  noCYIncomeTaxErrorPage: NoCYIncomeTaxErrorPage,
+  noCYIncomeTaxErrorView: NoCYIncomeTaxErrorView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -51,7 +51,7 @@ class NoCYIncomeTaxErrorController @Inject()(
         emp <- previousYearEmployments(request.taiUser.nino)
       } yield {
         implicit val user: AuthedUser = request.taiUser
-        Ok(noCYIncomeTaxErrorPage(NoCYIncomeTaxErrorViewModel(emp)))
+        Ok(noCYIncomeTaxErrorView(NoCYIncomeTaxErrorViewModel(emp)))
       }
     }
   }

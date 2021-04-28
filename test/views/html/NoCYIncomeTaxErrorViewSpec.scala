@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants.EmployeePensionIForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
 
-class NoCYIncomeTaxErrorPageSpec extends TaiViewSpec {
+class NoCYIncomeTaxErrorViewSpec extends TaiViewSpec {
 
   "noCYIncomeTaxErrorPage" should {
     behave like pageWithTitle(messages("tai.noCYIncomeError.heading"))
@@ -57,7 +57,7 @@ class NoCYIncomeTaxErrorPageSpec extends TaiViewSpec {
         .toString
     }
   }
-  private val template = inject[NoCYIncomeTaxErrorPage]
+  private val template = inject[NoCYIncomeTaxErrorView]
 
   override def view: Html = template(NoCYIncomeTaxErrorViewModel(None))
 }

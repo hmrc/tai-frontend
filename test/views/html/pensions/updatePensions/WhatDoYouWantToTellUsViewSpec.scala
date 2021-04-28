@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.forms.pensions.WhatDoYouWantToTellUsForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import views.html.pensions.update.WhatDoYouWantToTellUsView
 
-class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
+class WhatDoYouWantToTellUsViewSpec extends TaiViewSpec {
 
   private val pensionName = "testPension"
   private val pensionId = 1
