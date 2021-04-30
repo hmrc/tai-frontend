@@ -35,8 +35,8 @@ import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
 import scala.concurrent.Future
 
 class ErrorPagesHandler @Inject()(
-  val error_template_noauth: ErrorTemplateNoauth,
-  val error_no_primary: ErrorNoPrimary,
+  error_template_noauth: ErrorTemplateNoauth,
+  error_no_primary: ErrorNoPrimary,
   implicit val templateRenderer: TemplateRenderer,
   implicit val partialRetriever: FormPartialRetriever
 ) {

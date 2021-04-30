@@ -55,7 +55,7 @@ class EndEmploymentController @Inject()(
   mcc: MessagesControllerComponents,
   update_remove_employment_decision: UpdateRemoveEmploymentDecisionView,
   endEmploymentWithinSixWeeksError: EndEmploymentWithinSixWeeksErrorView,
-  EndEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentErrorView,
+  endEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentErrorView,
   endEmploymentView: EndEmploymentView,
   can_we_contact_by_phone: CanWeContactByPhoneView,
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
@@ -192,7 +192,7 @@ class EndEmploymentController @Inject()(
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
       Ok(
-        EndEmploymentIrregularPaymentError(
+        endEmploymentIrregularPaymentError(
           IrregularPayForm.createForm,
           EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt)))
     }
@@ -205,7 +205,7 @@ class EndEmploymentController @Inject()(
         IrregularPayForm.createForm.bindFromRequest.fold(
           formWithErrors => {
             BadRequest(
-              EndEmploymentIrregularPaymentError(
+              endEmploymentIrregularPaymentError(
                 formWithErrors,
                 EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt)))
           },

@@ -51,7 +51,7 @@ class UpdateEmploymentController @Inject()(
   mcc: MessagesControllerComponents,
   whatDoYouWantToTellUs: WhatDoYouWantToTellUsView,
   can_we_contact_by_phone: CanWeContactByPhoneView,
-  UpdateEmploymentCheckYourAnswers: UpdateEmploymentCheckYourAnswersView,
+  updateEmploymentCheckYourAnswers: UpdateEmploymentCheckYourAnswersView,
   confirmationView: ConfirmationView,
   @Named("Update Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
@@ -192,7 +192,7 @@ class UpdateEmploymentController @Inject()(
           mandatorySeq match {
             case Right(mandatoryValues) =>
               Ok(
-                UpdateEmploymentCheckYourAnswers(
+                updateEmploymentCheckYourAnswers(
                   UpdateEmploymentCheckYourAnswersViewModel(
                     mandatoryValues.head.toInt,
                     mandatoryValues(1),

@@ -245,7 +245,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         confirmedNewAmount: Int,
         payToDate: Int) {
 
-        val future: Future[(Seq[String], Seq[Some[String]])] =
+        val future: Future[(Seq[String], Seq[Option[String]])] =
           if (failure) {
             Future.failed(new Exception)
           } else {

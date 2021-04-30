@@ -72,12 +72,12 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     year: TaxYear = TaxYear().prev) = {
     val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel =
       createHistoricIncomeCalculationVM(payments, eyuMessage, realTimeStatus, year)
-    views.html.print.HistoricIncomeCalculationView(historicIncomeCalculationVM, appConfig)
+    views.html.print.historicIncomeCalculationView(historicIncomeCalculationVM, appConfig)
   }
 
   val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel =
     createHistoricIncomeCalculationVM(Nil, Nil, Unavailable, TaxYear().prev)
-  override def view: Html = views.html.print.HistoricIncomeCalculationView(historicIncomeCalculationVM, appConfig)
+  override def view: Html = views.html.print.historicIncomeCalculationView(historicIncomeCalculationVM, appConfig)
 
   "The previous year income calculation print page" should {
 

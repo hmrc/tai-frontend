@@ -430,7 +430,7 @@ class UpdateIncomeNextYearControllerSpec
           val request = RequestBuilder.buildFakeRequestWithAuth("GET")
           val controller = createTestIncomeController()
 
-          val newAmount = 123
+          val newAmount = newEstPay
           val currentAmount = 1
 
           val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, isPension = false, 1)
@@ -441,13 +441,19 @@ class UpdateIncomeNextYearControllerSpec
           )
 
           val vm = ConfirmAmountEnteredViewModel(employmentID, employerName, currentAmount, newAmount, NextYearPay)
-          // TODO: Should this be used in the test?
-          val expectedView =
-            updateIncomeCYPlus1ConfirmView(vm)(request, messages, authedUser, templateRenderer, partialRetriever)
+          val expectedView = updateIncomeCYPlus1ConfirmView(vm)(
+            request,
+            messages,
+            authedUser,
+            templateRenderer,
+            partialRetriever
+          )
 
           val result = controller.confirm(employmentID)(request)
 
           status(result) mustBe OK
+
+          result rendersTheSameViewAs expectedView
         }
       }
 

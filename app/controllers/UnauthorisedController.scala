@@ -32,7 +32,7 @@ import scala.concurrent.Future
 class UnauthorisedController @Inject()(
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
-  val error_template_noauth: ErrorTemplateNoauth,
+  error_template_noauth: ErrorTemplateNoauth,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
