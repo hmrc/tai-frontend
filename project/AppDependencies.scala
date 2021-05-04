@@ -17,7 +17,7 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "play-language"                    % s"4.10.0-$playVersion",
     "uk.gov.hmrc"       %% "local-template-renderer"          % s"2.10.0-$playVersion",
     "uk.gov.hmrc"       %% "auth-client"                      % s"3.3.0-$playVersion",
-    "uk.gov.hmrc"       %% "play-ui"                          % s"8.21.0-$playVersion",
+    "uk.gov.hmrc"       %% "play-ui"                          % s"9.2.0-$playVersion",
     "org.typelevel"     %% "cats-core"                        % "2.0.0",
     "com.typesafe.play" %% "play-json-joda"                   % "2.6.10"
   )
