@@ -18,12 +18,13 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+
 import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -92,96 +93,92 @@ class WhatDoYouWantToDoController @Inject()(
     val nino = user.nino
 
     if (applicationConfig.cyPlusOneEnabled) {
-      val hasTaxCodeChanged = taxCodeChangeService.hasTaxCodeChanged(nino)
-      val cy1TaxAccountSummary = taxAccountService.taxAccountSummary(nino, TaxYear().next)
-
-      for {
-        taxCodeChanged    <- hasTaxCodeChanged
-        taxAccountSummary <- cy1TaxAccountSummary
-        showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
-
-      } yield {
-        taxAccountSummary match {
-          case TaiSuccessResponseWithPayload(_) => {
-            val model = WhatDoYouWantToDoViewModel(
-              applicationConfig.cyPlusOneEnabled,
-              taxCodeChanged.changed,
-              showJrsTile,
-              taxCodeChanged.mismatch)
-
-            Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
-
-            auditNumberOfTaxCodesReturned(nino, showJrsTile)
-
-            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
-
-          }
-          case response: TaiResponse => {
-            if (response.isInstanceOf[TaiNotFoundResponse])
-              Logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
-
-            val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
-            Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
-
-            auditNumberOfTaxCodesReturned(nino, showJrsTile)
-
-            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
-
-          }
-        }
-      }
+      handleCyPlusOneEnabled(nino)
     } else {
-      for {
-        hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
-        showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
-      } yield {
-        val model =
-          WhatDoYouWantToDoViewModel(
+      handleNotCyPlusOneEnabled(nino)
+    }
+  }
+
+  private def handleCyPlusOneEnabled(
+    nino: Nino)(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
+    val hasTaxCodeChanged = taxCodeChangeService.hasTaxCodeChanged(nino)
+    val cy1TaxAccountSummary = taxAccountService.taxAccountSummary(nino, TaxYear().next)
+
+    for {
+      taxCodeChanged    <- hasTaxCodeChanged
+      taxAccountSummary <- cy1TaxAccountSummary
+      showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
+      _                 <- auditNumberOfTaxCodesReturned(nino, showJrsTile)
+    } yield {
+      taxAccountSummary match {
+        case TaiSuccessResponseWithPayload(_) => {
+          val model = WhatDoYouWantToDoViewModel(
             applicationConfig.cyPlusOneEnabled,
-            hasTaxCodeChanged.changed,
+            taxCodeChanged.changed,
             showJrsTile,
-            hasTaxCodeChanged.mismatch)
+            taxCodeChanged.mismatch)
 
-        Logger.debug(s"wdywtdViewModelCYDisabled $model")
+          Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
 
-        auditNumberOfTaxCodesReturned(nino, showJrsTile)
+          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
 
-        Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+        }
+        case response: TaiResponse => {
+          if (response.isInstanceOf[TaiNotFoundResponse])
+            Logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
 
+          val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
+          Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
+
+          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+
+        }
       }
     }
   }
 
-  private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(
-    implicit request: Request[AnyContent]) = {
-
-    val currentTaxYearEmployments: Future[Seq[Employment]] = employmentService.employments(nino, TaxYear())
-    val currentTaxYearTaxCodes: Future[TaiResponse] = taxAccountService.taxCodeIncomes(nino, TaxYear())
-
-    (for {
-      employments <- currentTaxYearEmployments
-      taxCodes    <- currentTaxYearTaxCodes
+  private def handleNotCyPlusOneEnabled(
+    nino: Nino)(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] =
+    for {
+      hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
+      showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
+      _                 <- auditNumberOfTaxCodesReturned(nino, showJrsTile)
     } yield {
-      val noOfTaxCodes: Seq[TaxCodeIncome] = taxCodes match {
+      val model =
+        WhatDoYouWantToDoViewModel(
+          applicationConfig.cyPlusOneEnabled,
+          hasTaxCodeChanged.changed,
+          showJrsTile,
+          hasTaxCodeChanged.mismatch)
+
+      Logger.debug(s"wdywtdViewModelCYDisabled $model")
+
+      Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+    }
+
+  private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(
+    implicit request: Request[AnyContent]): Future[AuditResult] = {
+
+    val noOfTaxCodesF = for {
+      currentTaxYearTaxCodes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+    } yield {
+      currentTaxYearTaxCodes match {
         case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => taxCodeIncomes
         case _                                                                 => Seq.empty[TaxCodeIncome]
       }
-      auditService.sendUserEntryAuditEvent(
-        nino,
-        request.headers.get("Referer").getOrElse("NA"),
-        employments,
-        noOfTaxCodes,
-        isJrsTileShown)
-    }).recover {
-      auditError(nino)
     }
-  }
 
-  private def auditError(nino: Nino)(implicit request: Request[AnyContent]): PartialFunction[Throwable, Unit] = {
-    case e =>
-      Logger.warn(
-        s"<Send audit event failed to get either taxCodeIncomes or employments for nino $nino  with exception: ${e.getClass()}",
-        e)
+    noOfTaxCodesF.flatMap { noOfTaxCodes =>
+      employmentService.employments(nino, TaxYear()).flatMap { employments =>
+        auditService
+          .sendUserEntryAuditEvent(
+            nino,
+            request.headers.get("Referer").getOrElse("NA"),
+            employments,
+            noOfTaxCodes,
+            isJrsTileShown)
+      }
+    }
   }
 
   private[controllers] def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
