@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+
 import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc._
@@ -102,11 +103,50 @@ class WhatDoYouWantToDoController @Inject()(
     }
   }
 
+  private def handleCyPlusOneEnabled(
+    nino: Nino)(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
+    val hasTaxCodeChanged = taxCodeChangeService.hasTaxCodeChanged(nino)
+    val cy1TaxAccountSummary = taxAccountService.taxAccountSummary(nino, TaxYear().next)
+
+    for {
+      taxCodeChanged    <- hasTaxCodeChanged
+      taxAccountSummary <- cy1TaxAccountSummary
+      showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
+      _                 <- auditNumberOfTaxCodesReturned(nino, showJrsTile)
+    } yield {
+      taxAccountSummary match {
+        case TaiSuccessResponseWithPayload(_) => {
+          val model = WhatDoYouWantToDoViewModel(
+            applicationConfig.cyPlusOneEnabled,
+            taxCodeChanged.changed,
+            showJrsTile,
+            taxCodeChanged.mismatch)
+
+          Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
+
+          Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+
+        }
+        case response: TaiResponse => {
+          if (response.isInstanceOf[TaiNotFoundResponse])
+            Logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
+
+          val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
+          Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
+
+          Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+
+        }
+      }
+    }
+  }
+
   private def handleNotCyPlusOneEnabled(
     nino: Nino)(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] =
-    (for {
+    for {
       hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
       showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
+      _                 <- auditNumberOfTaxCodesReturned(nino, showJrsTile)
     } yield {
       val model =
         WhatDoYouWantToDoViewModel(
@@ -117,83 +157,32 @@ class WhatDoYouWantToDoController @Inject()(
 
       Logger.debug(s"wdywtdViewModelCYDisabled $model")
 
-      auditNumberOfTaxCodesReturned(nino, showJrsTile).map { _ =>
-        Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
-      }
-    }).flatMap(identity)
-
-  private def handleCyPlusOneEnabled(
-    nino: Nino)(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
-    val hasTaxCodeChanged = taxCodeChangeService.hasTaxCodeChanged(nino)
-    val cy1TaxAccountSummary = taxAccountService.taxAccountSummary(nino, TaxYear().next)
-
-    (for {
-      taxCodeChanged    <- hasTaxCodeChanged
-      taxAccountSummary <- cy1TaxAccountSummary
-      showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
-
-    } yield {
-      taxAccountSummary match {
-        case TaiSuccessResponseWithPayload(_) =>
-          val model = WhatDoYouWantToDoViewModel(
-            applicationConfig.cyPlusOneEnabled,
-            taxCodeChanged.changed,
-            showJrsTile,
-            taxCodeChanged.mismatch)
-
-          Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
-
-          auditNumberOfTaxCodesReturned(nino, showJrsTile).map { _ =>
-            Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
-          }
-        case response: TaiResponse =>
-          if (response.isInstanceOf[TaiNotFoundResponse]) {
-            Logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
-          }
-
-          val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
-          Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
-
-          auditNumberOfTaxCodesReturned(nino, showJrsTile).map { _ =>
-            Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
-          }
-      }
-    }).flatMap(identity)
-  }
+      Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+    }
 
   private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(
     implicit request: Request[AnyContent]): Future[AuditResult] = {
 
-    val currentTaxYearEmployments: Future[Seq[Employment]] = employmentService.employments(nino, TaxYear())
-    val currentTaxYearTaxCodes: Future[TaiResponse] = taxAccountService.taxCodeIncomes(nino, TaxYear())
-
-    (for {
-      employments <- currentTaxYearEmployments
-      taxCodes    <- currentTaxYearTaxCodes
+    val noOfTaxCodesF = for {
+      currentTaxYearTaxCodes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
     } yield {
-      val noOfTaxCodes: Seq[TaxCodeIncome] = taxCodes match {
+      currentTaxYearTaxCodes match {
         case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => taxCodeIncomes
         case _                                                                 => Seq.empty[TaxCodeIncome]
       }
-      auditService.sendUserEntryAuditEvent(
-        nino,
-        request.headers.get("Referer").getOrElse("NA"),
-        employments,
-        noOfTaxCodes,
-        isJrsTileShown)
-    }).recover {
-        auditError(nino)
-      }
-      .flatMap(identity)
-  }
+    }
 
-  private def auditError(nino: Nino)(
-    implicit request: Request[AnyContent]): PartialFunction[Throwable, Future[AuditResult]] = {
-    case e =>
-      val msg =
-        s"<Send audit event failed to get either taxCodeIncomes or employments for nino $nino  with exception: ${e.getClass}"
-      Logger.warn(msg, e)
-      Future.successful(AuditResult.Failure(msg))
+    noOfTaxCodesF.flatMap { noOfTaxCodes =>
+      employmentService.employments(nino, TaxYear()).flatMap { employments =>
+        auditService
+          .sendUserEntryAuditEvent(
+            nino,
+            request.headers.get("Referer").getOrElse("NA"),
+            employments,
+            noOfTaxCodes,
+            isJrsTileShown)
+      }
+    }
   }
 
   private[controllers] def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
