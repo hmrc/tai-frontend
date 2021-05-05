@@ -262,15 +262,29 @@ class IncomeController @Inject()(
     implicit hc: HeaderCarrier): Future[Result] =
     for {
       currentCache <- journeyCacheService.currentCache
+      result       <- pickRedirectLocation(currentCache, income, confirmationCallback)
     } yield {
-      if (isCachedIncomeTheSame(currentCache, income.newAmount)) {
-        Redirect(routes.IncomeController.sameEstimatedPayInCache())
-      } else if (isIncomeTheSame(income)) {
-        Redirect(routes.IncomeController.sameAnnualEstimatedPay())
-      } else {
-        journeyCacheService.cache(UpdateIncome_NewAmountKey, income.toEmploymentAmount().newAmount.toString)
-        Redirect(confirmationCallback)
-      }
+      result
+    }
+
+  private def pickRedirectLocation(
+    currentCache: Map[String, String],
+    income: EditIncomeForm,
+    confirmationCallback: Call)(implicit hc: HeaderCarrier): Future[Result] =
+    if (isCachedIncomeTheSame(currentCache, income.newAmount)) {
+      Future.successful(Redirect(routes.IncomeController.sameEstimatedPayInCache()))
+    } else if (isIncomeTheSame(income)) {
+      Future.successful(Redirect(routes.IncomeController.sameAnnualEstimatedPay()))
+    } else {
+      cacheAndRedirect(income, confirmationCallback)
+    }
+
+  private def cacheAndRedirect(income: EditIncomeForm, confirmationCallback: Call)(
+    implicit hc: HeaderCarrier): Future[Result] =
+    for {
+      _ <- journeyCacheService.cache(UpdateIncome_NewAmountKey, income.toEmploymentAmount().newAmount.toString)
+    } yield {
+      Redirect(confirmationCallback)
     }
 
   def editPensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
