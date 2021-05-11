@@ -20,7 +20,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -55,12 +54,13 @@ class ServiceController @Inject()(
     }
   }
 
-  def gateKeeper(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    getGateKeeper(request.taiUser.nino)
-  }
+  def mciErrorPage() = authenticate.async { implicit request =>
+    val contactUrl = request2Messages.lang.code match {
+      case "cy" => applicationConfig.contactHelplineWelshUrl
+      case _    => applicationConfig.contactHelplineUrl
+    }
 
-  def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent]): Future[Result] = {
-    Future.successful(Ok(manualCorrespondence()))
-  } recoverWith errorPagesHandler.handleErrorResponse("getServiceUnavailable", nino)
+    Future.successful(Ok(manualCorrespondence(contactUrl)))
+  }
 
 }

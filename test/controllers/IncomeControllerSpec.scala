@@ -20,7 +20,7 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers.any
+import org.mockito.Matchers.{any, eq => meq}
 import org.mockito.Mockito._
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
@@ -169,6 +169,8 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IncomeController.confirmRegularIncome().url
+
+        verify(journeyCacheService).cache(meq(UpdateIncome_NewAmountKey), meq("200"))(any())
       }
     }
 
@@ -193,6 +195,8 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
+
+        verify(journeyCacheService, never).cache(any(), any())(any())
       }
 
       "new amount is the same as the current amount" in {
@@ -212,6 +216,8 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
+
+        verify(journeyCacheService, never).cache(any(), any())(any())
       }
     }
 
