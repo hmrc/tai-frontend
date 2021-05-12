@@ -1,5 +1,5 @@
 Tax Account for Individuals
-=================
+==================
 
 [![Build Status](https://travis-ci.org/hmrc/tai-frontend.svg)](https://travis-ci.org/hmrc/tai-frontend) [ ![Download](https://api.bintray.com/packages/hmrc/releases/tai-frontend/images/download.svg) ](https://bintray.com/hmrc/releases/tai-frontend/_latestVersion)
 
