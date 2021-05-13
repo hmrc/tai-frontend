@@ -19,12 +19,7 @@ package uk.gov.hmrc.tai.model.domain
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.Nino
 
-case class Person(
-  nino: Nino,
-  firstName: String,
-  surname: String,
-  isDeceased: Boolean,
-  manualCorrespondenceInd: Boolean) {
+case class Person(nino: Nino, firstName: String, surname: String, isDeceased: Boolean, hasCorruptData: Boolean) {
   lazy val name = s"$firstName $surname"
 }
 
