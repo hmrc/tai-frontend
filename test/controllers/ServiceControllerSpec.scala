@@ -61,14 +61,14 @@ class ServiceControllerSpec extends BaseSpec {
     }
   }
 
-  "mciErrorPage" should {
+  "gateKeeper" should {
     "return manualCorrespondence page when called" in {
       val fakeRequest = FakeRequest("GET", "").withFormUrlEncodedBody()
       val sut = createSut()
-      val result = sut.mciErrorPage()(fakeRequest)
+      val result = sut.gateKeeper()(fakeRequest)
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("mci.title"))
+      doc.title() must include(Messages("tai.gatekeeper.refuse.title"))
     }
   }
 

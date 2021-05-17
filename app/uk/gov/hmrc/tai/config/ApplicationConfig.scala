@@ -93,7 +93,6 @@ class ApplicationConfig @Inject()(
   lazy val welshRateIncomeTaxWelshUrl: String = "https://www.gov.uk/treth-incwm-cymru"
   lazy val contactHelplineUrl: String =
     "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees"
-
   lazy val contactHelplineWelshUrl: String =
     "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/welsh-language-helplines"
 

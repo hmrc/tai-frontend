@@ -93,8 +93,7 @@ class ValidatePersonSpec extends BaseSpec {
 
       "redirect to a corrupt page if user has corrupt data " in {
         when(personService.personDetails(any())(any()))
-          .thenReturn(
-            Future.successful(Person(nino, "firstName", "Surname", personAlive, manualCorrespondenceInd = true)))
+          .thenReturn(Future.successful(Person(nino, "firstName", "Surname", personAlive, hasCorruptData = true)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 
@@ -102,7 +101,7 @@ class ValidatePersonSpec extends BaseSpec {
         val result = controller.onPageLoad()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.ServiceController.mciErrorPage().toString)
+        redirectLocation(result) mustBe Some(routes.ServiceController.gateKeeper().toString)
       }
     }
   }
