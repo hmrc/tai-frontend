@@ -125,7 +125,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           estimatedPayJourneyCompleted = true,
           rtiAvailable = false)
 
-        val doc = Jsoup.parse(views.html.IncomeSourceSummary(model).toString())
+        val doc = Jsoup.parse(template(model).toString())
         doc must haveSpanWithText(messages("tai.rti.down"))
         doc must haveSpanWithText(messages("tai.rti.down.updateEmployment"))
       }
@@ -143,7 +143,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           estimatedPayJourneyCompleted = true,
           rtiAvailable = false)
 
-        val doc = Jsoup.parse(views.html.IncomeSourceSummary(model).toString())
+        val doc = Jsoup.parse(template(model).toString())
         doc must haveSpanWithText(messages("tai.rti.down"))
         doc must haveSpanWithText(messages("tai.rti.down.updatePension"))
       }
@@ -176,18 +176,18 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
     "use conditional logic to display the company benefits section" which {
       "hides the section when the income type is pension" in {
-        val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(model.copy(isPension = true)).toString)
+        val testDoc = Jsoup.parse(template(model.copy(isPension = true)).toString)
         testDoc must not(haveDivWithId("companyBenefitsSection"))
       }
       "displays the scetion otherwise" in {
-        val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(model.copy(isPension = false)).toString)
+        val testDoc = Jsoup.parse(template(model.copy(isPension = false)).toString)
         testDoc must haveDivWithId("companyBenefitsSection")
       }
     }
 
     "use conditional logic to display a company benefits list" which {
       "displays the list when benefits are present in the view model" in {
-        val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(modelWithCompanyBenefits).toString)
+        val testDoc = Jsoup.parse(template(modelWithCompanyBenefits).toString)
         testDoc must haveElementAtPathWithId("#companyBenefitsSection ul", "companyBenefitList")
       }
       "does not display the list when benefits are absent from the view model" in {
@@ -199,7 +199,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     }
 
     "display the appropriate number of company benefit list entries" in {
-      val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(modelWithCompanyBenefits).toString)
+      val testDoc = Jsoup.parse(template(modelWithCompanyBenefits).toString)
       testDoc must haveElementWithId("companyBenefitList")
       testDoc must haveElementAtPathWithId("#companyBenefitList div", "companyBenefitTerm1")
       testDoc must haveElementAtPathWithId("#companyBenefitList div", "companyBenefitTerm2")
@@ -208,7 +208,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     }
 
     "display the appropriate content with a specific company benefit list entry" in {
-      val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(modelWithCompanyBenefits).toString)
+      val testDoc = Jsoup.parse(template(modelWithCompanyBenefits).toString)
       testDoc must haveElementAtPathWithText(
         "#companyBenefitTerm1",
         s"${messages("tai.income.details.benefit.name.announce")} ben1")
@@ -234,7 +234,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
     "use conditional logic to display a link to add a company car" which {
       "displays the link when the view model flag is set" in {
-        val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(model.copy(displayAddCompanyCarLink = true)).toString)
+        val testDoc = Jsoup.parse(template(model.copy(displayAddCompanyCarLink = true)).toString)
         testDoc must haveLinkWithUrlWithID(
           "addMissingCompanyCarLink",
           controllers.routes.ExternalServiceRedirectController
@@ -243,7 +243,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         )
       }
       "hides the link when the view model flag is not set" in {
-        val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(model.copy(displayAddCompanyCarLink = false)).toString)
+        val testDoc = Jsoup.parse(template(model.copy(displayAddCompanyCarLink = false)).toString)
         testDoc must not(haveElementWithId("addMissingCompanyCarLink"))
       }
     }
@@ -286,9 +286,12 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     true,
     estimatedPayJourneyCompleted = true,
     rtiAvailable = true)
+
   private lazy val pensionDoc = Jsoup.parse(pensionView.toString())
 
-  override def view: Html = views.html.IncomeSourceSummary(model)
+  private val template = inject[IncomeSourceSummaryView]
 
-  def pensionView: Html = views.html.IncomeSourceSummary(pensionModel)
+  override def view: Html = template(model)
+
+  def pensionView: Html = template(pensionModel)
 }

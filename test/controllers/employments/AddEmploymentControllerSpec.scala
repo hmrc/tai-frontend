@@ -29,8 +29,6 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm._
@@ -40,6 +38,9 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
+import views.html.CanWeContactByPhoneView
+import views.html.employments._
+import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -795,10 +796,10 @@ class AddEmploymentControllerSpec
 
   private def createSUT = new SUT
 
-  val auditService = mock[AuditService]
-  val employmentService = mock[EmploymentService]
-  val addEmploymentJourneyCacheService = mock[JourneyCacheService]
-  val trackSuccessJourneyCacheService = mock[JourneyCacheService]
+  val auditService: AuditService = mock[AuditService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val addEmploymentJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   private class SUT
       extends AddEmploymentController(
@@ -810,11 +811,19 @@ class AddEmploymentControllerSpec
         trackSuccessJourneyCacheService,
         mock[AuditConnector],
         mcc,
+        inject[AddEmploymentStartDateFormView],
+        inject[AddEmploymentNameFormView],
+        inject[AddEmploymentFirstPayFormView],
+        inject[AddEmploymentErrorPageView],
+        inject[AddEmploymentPayrollNumberFormView],
+        inject[CanWeContactByPhoneView],
+        inject[ConfirmationView],
+        inject[AddIncomeCheckYourAnswersView],
         MockPartialRetriever,
         MockTemplateRenderer
       ) {
 
-    val employmentStartDateForm = EmploymentAddDateForm("employer")
+    val employmentStartDateForm: EmploymentAddDateForm = EmploymentAddDateForm("employer")
 
   }
 

@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
+import views.html.NoCYIncomeTaxErrorView
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,8 +39,9 @@ class NoCYIncomeTaxErrorController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  noCYIncomeTaxErrorView: NoCYIncomeTaxErrorView,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def noCYIncomeTaxErrorPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -48,8 +50,8 @@ class NoCYIncomeTaxErrorController @Inject()(
       for {
         emp <- previousYearEmployments(request.taiUser.nino)
       } yield {
-        implicit val user = request.taiUser
-        Ok(views.html.noCYIncomeTaxErrorPage(NoCYIncomeTaxErrorViewModel(emp)))
+        implicit val user: AuthedUser = request.taiUser
+        Ok(noCYIncomeTaxErrorView(NoCYIncomeTaxErrorViewModel(emp)))
       }
     }
   }

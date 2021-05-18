@@ -1,0 +1,102 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+@import play.api.Play.current
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.tai.model.{JrsClaims, YearAndMonth}
+@import uk.gov.hmrc.urls.Link
+
+@this(main: main)
+
+@(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@employerMessageKey = @{viewModel.employerMessageKey}
+
+@main(
+    title = messages("check.jrs.claims.title"),
+    gaCustomTitle = None
+){
+
+
+    <div class="grid-row">
+        <div class="grid grid-2-3">
+            <div class="inner-block">
+
+                <p class="flush--bottom">@Link.toInternalPage(
+                    id=Some("backLink"),
+                    value=Some(Messages("check.jrs.back.link")),
+                    url = "#",
+                    cssClasses=Some("link-back js-visible")
+                    ).toHtml</p>
+
+                <h1 class="heading-xlarge">@messages("check.jrs.claims.title")</h1>
+
+
+                <h2 class="heading-section">@messages("check.jrs.from", YearAndMonth.formattedFirstClaimDate(appConfig))</h2>
+
+                @for(employers <- viewModel.employers) {
+                    @if(employers.hasMultipleClaims) {
+                        <p>@messages("check.jrs.employer.made.multiple.claims.for.you", employers.name)</p>
+                        <ul class="list list-bullet">
+                            @for(claims <- employers.claims) {
+                                <li>@claims.formatYearAndMonth</li>
+                            }
+                        </ul>
+
+                    } else {
+                        <p>@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head.formatYearAndMonth)</p>
+
+                    }
+                }
+
+                @if(!viewModel.hasMultipleEmployments) {
+                    @if(viewModel.employers.last.hasMultipleClaims) {
+                        <p>@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
+                    } else {
+                        <p>@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.single.furlough")</p>
+                    }
+                } else {
+                    <p>@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
+                }
+
+                <h2 class="heading-section">@messages(s"check.jrs.${employerMessageKey}.can.claim.heading")</h2>
+                <p>@messages(s"check.jrs.${employerMessageKey}.can.claim")</p>
+
+                <h2 class="heading-section">@messages("check.jrs.information.is.different.heading")</h2>
+                <p>@messages(s"check.jrs.speak.to.${employerMessageKey}")</p>
+                <p>@messages("check.jrs.you.can")
+                    @Link.toExternalPage(url = messages("jrs.report.fraud.link"), id = Some("report-fraud-link"), value = Some(messages("check.jrs.report.fraud"))).toHtml
+                </a>
+                    @messages(s"check.jrs.report.fraud.if.${employerMessageKey}.abusing.scheme")
+                </p>
+
+                <ul class="list list-bullet">
+                    <li>
+                        @messages("check.jrs.claiming.on.your.behalf")
+                    </li>
+                     <li>
+                        @messages("check.jrs.asking.to.work.whilst.on.furlough")
+                    </li>
+                     <li>
+                        @messages("check.jrs.making.backdated.claim")
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+}

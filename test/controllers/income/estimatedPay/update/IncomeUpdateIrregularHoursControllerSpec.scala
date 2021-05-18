@@ -17,8 +17,8 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
-import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -37,12 +37,13 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
+import views.html.incomes.{ConfirmAmountEnteredView, EditIncomeIrregularHoursView, EditSuccessView}
 
 import scala.concurrent.Future
 
 class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCacheConstants {
 
-  val employer = IncomeSource(id = 1, name = "sample employer")
+  val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
   val incomeService: IncomeService = mock[IncomeService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
@@ -58,9 +59,13 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         taxAccountService,
         estimatedPayJourneyCompletionService,
         mcc,
+        inject[EditSuccessView],
+        inject[EditIncomeIrregularHoursView],
+        inject[ConfirmAmountEnteredView],
         journeyCacheService,
         MockPartialRetriever,
-        MockTemplateRenderer
+        MockTemplateRenderer,
+        inject[ErrorPagesHandler]
       ) {
     when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
       .thenReturn(Future.successful(employer.id))
@@ -168,7 +173,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
       status(result) mustBe SEE_OTHER
 
       redirectLocation(result) mustBe Some(
-        routes.IncomeUpdateIrregularHoursController.confirmIncomeIrregularHours(1).url.toString)
+        routes.IncomeUpdateIrregularHoursController.confirmIncomeIrregularHours(1).url)
     }
 
     "respond with BAD_REQUEST" when {
@@ -240,7 +245,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         confirmedNewAmount: Int,
         payToDate: Int) {
 
-        val future =
+        val future: Future[(Seq[String], Seq[Option[String]])] =
           if (failure) {
             Future.failed(new Exception)
           } else {

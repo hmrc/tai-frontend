@@ -32,6 +32,7 @@ import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
+import views.html.IncomeSourceSummaryView
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -46,8 +47,10 @@ class IncomeSourceSummaryController @Inject()(
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  incomeSourceSummary: IncomeSourceSummaryView,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -74,11 +77,11 @@ class IncomeSourceSummaryController @Inject()(
             applicationConfig
           )
 
-          Ok(views.html.IncomeSourceSummary(incomeDetailsViewModel))
+          Ok(incomeSourceSummary(incomeDetailsViewModel))
         case _ => throw new RuntimeException("Error while fetching income summary details")
       }
     }) recover {
-      case NonFatal(e) => internalServerError("IncomeSourceSummaryController exception", Some(e))
+      case NonFatal(e) => errorPagesHandler.internalServerError("IncomeSourceSummaryController exception", Some(e))
     }
   }
 }

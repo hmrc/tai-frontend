@@ -1,0 +1,45 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+@import play.api.Play.current
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.urls.Link
+
+@this(main_without_nav: main_without_nav)
+
+@(appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+
+
+@main_without_nav(
+title=messages("check.jrs.claims.no.claim.title"),
+gaCustomTitle = None
+){
+    <div class="grid-row">
+        <div class="grid grid-2-3">
+            <div class="inner-block">
+                <h1 class="heading-xlarge">@messages("check.jrs.claims.no.claim.title")</h1>
+                <p>@messages("check.jrs.claims.no.claim.check.later")</p>
+
+                <p><a id="account-home-page" href="@appConfig.taiHomePageUrl">
+                        @messages("check.jrs.claims.no.claim.link")
+                    </a>
+            </div>
+        </div>
+    </div>
+}
+

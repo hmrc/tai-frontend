@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthenticatedRequest}
+import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -27,6 +27,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{Employment, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
+import views.html.paye.{HistoricPayAsYouEarnView, RtiDisabledHistoricPayAsYouEarnView}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,8 +38,11 @@ class PayeControllerHistoric @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  RtiDisabledHistoricPayAsYouEarnView: RtiDisabledHistoricPayAsYouEarnView,
+  historicPayAsYouEarnView: HistoricPayAsYouEarnView,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def lastYearPaye(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -63,19 +67,17 @@ class PayeControllerHistoric @Inject()(
         employments                          <- employmentsFuture
         hasTaxCodeRecordsInYearPerEmployment <- hasTaxCodeRecordsFuture
       } yield {
-        implicit val user = request.taiUser
+        implicit val user: AuthedUser = request.taiUser
         if (isRtiUnavailable(employments)) {
           Ok(
-            views.html.paye.RtiDisabledHistoricPayAsYouEarn(
+            RtiDisabledHistoricPayAsYouEarnView(
               HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-              config
-            ))
+              config))
         } else {
           Ok(
-            views.html.paye.historicPayAsYouEarn(
+            historicPayAsYouEarnView(
               HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-              config
-            ))
+              config))
         }
       }
     }
@@ -87,13 +89,13 @@ class PayeControllerHistoric @Inject()(
   private def hodStatusRedirect(
     implicit request: AuthenticatedRequest[AnyContent]): PartialFunction[Throwable, Future[Result]] = {
 
-    implicit val rl: RecoveryLocation = classOf[WhatDoYouWantToDoController]
+    implicit val rl: errorPagesHandler.RecoveryLocation = classOf[WhatDoYouWantToDoController]
     val nino = request.taiUser.nino.toString()
 
-    npsEmploymentAbsentResult(nino) orElse
-      rtiEmploymentAbsentResult(nino) orElse
-      hodBadRequestResult(nino) orElse
-      hodInternalErrorResult(nino) orElse
-      hodAnyErrorResult(nino)
+    errorPagesHandler.npsEmploymentAbsentResult(nino) orElse
+      errorPagesHandler.rtiEmploymentAbsentResult(nino) orElse
+      errorPagesHandler.hodBadRequestResult(nino) orElse
+      errorPagesHandler.hodInternalErrorResult(nino) orElse
+      errorPagesHandler.hodAnyErrorResult(nino)
   }
 }

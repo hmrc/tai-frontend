@@ -23,7 +23,6 @@ import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
-import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -33,27 +32,34 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
-import views.html.incomes.{bonusPaymentAmount, bonusPayments}
+import views.html.incomes.{BonusPaymentAmountView, BonusPaymentsView}
 
 import scala.concurrent.Future
 
 class IncomeUpdateBonusControllerSpec
     extends BaseSpec with JourneyCacheConstants with ControllerViewTestHelper with FormValuesConstants {
 
-  val employer = IncomeSource(id = 1, name = "sample employer")
+  val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   override implicit val fakeRequest: FakeRequest[AnyContent] = RequestBuilder.buildFakeGetRequestWithAuth()
+
+  private val bonusPaymentsView = inject[BonusPaymentsView]
+
+  private val bonusPaymentAmountView = inject[BonusPaymentAmountView]
 
   class TestIncomeUpdateBonusController
       extends IncomeUpdateBonusController(
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        bonusPaymentsView,
+        bonusPaymentAmountView,
         journeyCacheService,
         MockPartialRetriever,
-        MockTemplateRenderer) {
+        MockTemplateRenderer
+      ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
       .thenReturn(Future.successful(Right(employer.id)))
     when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
@@ -86,7 +92,7 @@ class IncomeUpdateBonusControllerSpec
 
       val expectedForm = BonusPaymentsForm.createForm.fill(YesNoForm(Some(cachedAmount)))
       val expectedView =
-        bonusPayments(expectedForm, employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
+        bonusPaymentsView(expectedForm, employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
 
       result rendersTheSameViewAs expectedView
     }
@@ -160,14 +166,15 @@ class IncomeUpdateBonusControllerSpec
     "redirect user back to how to bonusPayments page" when {
       "user input has error" in {
 
-        implicit val fakeRequest = RequestBuilder.buildFakePostRequestWithAuth()
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
+          RequestBuilder.buildFakePostRequestWithAuth()
 
         val result = HandleBonusPaymentsHarness
           .setup()
           .handleBonusPayments(fakeRequest)
 
         status(result) mustBe BAD_REQUEST
-        result rendersTheSameViewAs bonusPayments(
+        result rendersTheSameViewAs bonusPaymentsView(
           BonusPaymentsForm.createForm.bindFromRequest()(fakeRequest),
           employer)(
           fakeRequest,
@@ -182,7 +189,7 @@ class IncomeUpdateBonusControllerSpec
     "Redirect to /income-summary page" when {
       "IncomeSource.create returns a left" in {
 
-        implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val controller = new TestIncomeUpdateBonusController
 
@@ -217,7 +224,7 @@ class IncomeUpdateBonusControllerSpec
 
     "display bonusPaymentAmount" in {
       val cachedAmount = "313321"
-      implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
+      implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
       val result = BonusOvertimeAmountPageHarness
         .setup()
@@ -226,7 +233,7 @@ class IncomeUpdateBonusControllerSpec
       status(result) mustBe OK
 
       val expectedForm = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(Some(cachedAmount)))
-      result rendersTheSameViewAs bonusPaymentAmount(expectedForm, employer)(
+      result rendersTheSameViewAs bonusPaymentAmountView(expectedForm, employer)(
         fakeRequest,
         messages,
         authedUser,
@@ -238,7 +245,7 @@ class IncomeUpdateBonusControllerSpec
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 
-        implicit val fakeRequest = RequestBuilder.buildFakeGetRequestWithAuth()
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val controller = new TestIncomeUpdateBonusController
 
@@ -289,7 +296,7 @@ class IncomeUpdateBonusControllerSpec
     "redirect the user to bonusPaymentAmount page" when {
       "user input has error" in {
 
-        implicit val fakeRequest =
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
           RequestBuilder.buildFakePostRequestWithAuth("amount" -> "")
 
         val result = HandleBonusOvertimeAmountHarness
@@ -298,7 +305,7 @@ class IncomeUpdateBonusControllerSpec
 
         status(result) mustBe BAD_REQUEST
 
-        result rendersTheSameViewAs bonusPaymentAmount(
+        result rendersTheSameViewAs bonusPaymentAmountView(
           BonusOvertimeAmountForm.createForm().bindFromRequest()(fakeRequest),
           employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
       }
@@ -307,7 +314,7 @@ class IncomeUpdateBonusControllerSpec
     "Redirect to /income-summary page" when {
       "IncomeSource.create returns a left" in {
 
-        implicit val fakeRequest =
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
           RequestBuilder.buildFakePostRequestWithAuth("" -> "")
 
         val controller = new TestIncomeUpdateBonusController

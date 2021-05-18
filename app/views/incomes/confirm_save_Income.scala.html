@@ -27,6 +27,8 @@
 @import uk.gov.hmrc.tai.util.MonetaryUtil
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
+@this(main: main, form: FormWithCSRF)
+
 @(income: uk.gov.hmrc.tai.forms.EditIncomeForm, gaSettings: GoogleAnalyticsSettings)(implicit
         request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 

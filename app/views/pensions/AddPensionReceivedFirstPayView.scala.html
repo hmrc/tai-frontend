@@ -1,0 +1,65 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.forms.submit
+@import includes.{cancelLink, ptaHeader, backLink}
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+@import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderFirstPayForm
+@import includes.forms.inputRadioGroupStyling
+
+@this(main: main, form: FormWithCSRF)
+
+@(firstPayForm: Form[Option[String]], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"Have you received your first pension payment"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(firstPayForm),
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.addPensionProvider.firstPay.title", <span class="carry-over">{pensionProviderName}</span>),
+        preHeadingText = Messages("add.missing.pension"))}
+
+@main(
+    title = Messages("tai.addPensionProvider.firstPay.pagetitle"),
+    authedUser = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = Some(Messages("tai.addPensionProvider.firstPay.customGaTitle"))
+) {
+
+    @form(action = controllers.pensions.routes.AddPensionProviderController.submitFirstPay(), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
+
+        @{inputRadioGroupStyling(
+            field=firstPayForm(AddPensionProviderFirstPayForm.FirstPayChoice),
+            radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
+            legend=Messages("tai.addPensionProvider.firstPay.legend"),
+            legendHint=None,
+            ('_groupDivClass, "form-group" ),
+            ('_groupClass, "inline"),
+            ('_fieldsetAttributes, "id=firstPayChoice" ),
+            ('_legendSpanClass, "visually-hidden"),
+            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Have you received your first pension payment:Yes" data-journey-val="Yes"""") ),
+            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Have you received your first pension payment:No" data-journey-val="No"""") )
+        )}
+
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing pension provider"))
+    }
+
+    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel(), gaEventAction = Some(gaEventActionString))
+}

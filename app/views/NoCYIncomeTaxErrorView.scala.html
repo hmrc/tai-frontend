@@ -1,0 +1,82 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@this(main: main)
+
+@(noCYIncomeTaxErrorViewModel: uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
+)(implicit request: Request[_],
+  messages: Messages,
+  user: controllers.auth.AuthedUser,
+  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.service.TaxPeriodLabelService
+@import uk.gov.hmrc.tai.util.constants.TaiConstants._
+@import includes.ptaHeader
+
+@backLinkToChooseTaxYear = {
+    <p>
+        @Link.toInternalPage(
+            id=Some("returnToChooseTaxYearLink"),
+            url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+            value=Some(messages("tai.returnToChooseTaxYear")),
+            cssClasses=Some("link-back"),
+            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${messages("tai.returnToChooseTaxYear")}"))
+        ).toHtml
+    </p>
+}
+
+@gaEventActionString = @{"Your Pay As You Earn Income Tax"}
+
+@header = @{
+    ptaHeader(
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = messages("tai.noCYIncomeError.heading"),
+        preHeadingText = messages("tai.noCYIncomeError.sub-heading"),
+        customBackLinkContent = Some(backLinkToChooseTaxYear)
+    )
+}
+
+@main(
+    title = messages("tai.noCYIncomeError.title"),
+    articleClasses = None,
+    authedUser = Some(user),
+    pageHeader = Some(header)
+) {
+    <p id="no-income-info">
+        @noCYIncomeTaxErrorViewModel.endDate match {
+            case Some(date) => {
+                @messages("tai.noCYIncomeError.body.with.employment", date)
+            }
+            case _ => {
+                @messages("tai.noCYIncomeError.body.missing.employment")
+            }
+        }
+    </p>
+
+    <p id="missing-info-Iform">
+        @Html(messages(
+            "tai.noCYIncomeError.missingInfo",
+            Link.toInternalPage(
+                url = routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url,
+                value = Some(messages("tai.missingInfo.link.message"))
+            ).toHtml
+        ))
+    </p>
+}

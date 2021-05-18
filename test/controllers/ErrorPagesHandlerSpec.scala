@@ -18,7 +18,6 @@ package controllers
 
 import builders.UserBuilder
 import controllers.auth.AuthenticatedRequest
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -32,10 +31,15 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import utils.BaseSpec
+import views.html.ErrorNoPrimary
 
 import scala.concurrent.Future
 
 class ErrorPagesHandlerSpec extends BaseSpec {
+
+  private lazy val error_no_primary: ErrorNoPrimary = inject[ErrorNoPrimary]
+  private val ninoValue = nino.value
+  private val createSut = inject[ErrorPagesHandler]
 
   "ErrorPagesHandler" must {
     "handle an internal server error" in {
@@ -206,7 +210,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
 
     implicit val request = FakeRequest("GET", "/")
     implicit val user = UserBuilder()
-    implicit val recoveryLocation = classOf[SUT]
+    implicit val recoveryLocation = classOf[ErrorPagesHandler]
 
     "Identify nps tax account failures, and generate an appropriate redirect" when {
 
@@ -221,7 +225,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
         val handler = createSut
         val partialErrorFunction = handler.npsNoEmploymentResult(ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsNoEmploymentsRecorded))
-        result mustBe Some(BadRequest(views.html.error_no_primary()))
+        result mustBe Some(BadRequest(error_no_primary()))
       }
 
       "nps tax account responds with a 'no primary employment' message (data is absent), but employment data is available for previous year" in {
@@ -277,7 +281,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
         val handler = createSut
         val partialErrorFunction = handler.npsTaxAccountCYAbsentResult_withEmployCheck(Nil, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsTaxAccountCYDataAbsentMsg))
-        result mustBe Some(BadRequest(views.html.error_no_primary()))
+        result mustBe Some(BadRequest(error_no_primary()))
       }
 
       "nps tax account responds with a 'no employments recorded for current tax year' message, but employment data is available for previous year" in {
@@ -306,7 +310,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
         val exceptionController = createSut
         val partialErrorFunction = exceptionController.npsNoEmploymentForCYResult_withEmployCheck(Nil, ninoValue)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsNoEmploymentForCurrentTaxYear))
-        result mustBe Some(BadRequest(views.html.error_no_primary()))
+        result mustBe Some(BadRequest(error_no_primary()))
       }
     }
 
@@ -316,7 +320,6 @@ class ErrorPagesHandlerSpec extends BaseSpec {
         val exceptionController = createSut
 
         implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedUser, "name")
-        implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodInternalErrorResult(ninoValue)
         val result = partialErrorFunction(new InternalServerException("Internal server error"))
@@ -326,7 +329,6 @@ class ErrorPagesHandlerSpec extends BaseSpec {
       "there is hod bad request exception" in {
         val exceptionController = createSut
         implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedUser, "name")
-        implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodBadRequestResult(ninoValue)
         val result = partialErrorFunction(new BadRequestException("Bad Request Exception"))
@@ -336,7 +338,6 @@ class ErrorPagesHandlerSpec extends BaseSpec {
       "there is any kind of exception" in {
         val exceptionController = createSut
         implicit val request = AuthenticatedRequest[AnyContent](FakeRequest("GET", "/"), authedUser, "name")
-        implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodAnyErrorResult(ninoValue)
         val result = partialErrorFunction(new ForbiddenException("Exception"))
@@ -344,16 +345,4 @@ class ErrorPagesHandlerSpec extends BaseSpec {
       }
     }
   }
-
-  val ninoValue = nino.value
-
-  val createSut = new SUT
-
-  class SUT extends ErrorPagesHandler {
-    override implicit def templateRenderer = MockTemplateRenderer
-    override implicit def partialRetriever = MockPartialRetriever
-
-    val recoveryLocation: RecoveryLocation = classOf[SUT]
-  }
-
 }

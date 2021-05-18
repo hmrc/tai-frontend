@@ -17,7 +17,7 @@
 package views.html.taxCodeChange
 
 import controllers.routes
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.urls.Link
 
@@ -39,7 +39,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
           Link
             .toInternalPage(
               id = Some("income-tax-estimate-link"),
-              url = routes.EstimatedIncomeTaxController.estimatedIncomeTax().url.toString,
+              url = routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
               value = Some(messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")),
               dataAttributes = Some(Map(
                 "journey-click" -> s"link - click:What happens next:${messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")}"))
@@ -55,7 +55,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
           Link
             .toInternalPage(
               id = Some("update-current-income-or-benefits-link"),
-              url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
+              url = routes.TaxAccountSummaryController.onPageLoad().url,
               value = Some(messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")),
               dataAttributes = Some(Map(
                 "journey-click" -> s"link - click:What happens next:${messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")}"))
@@ -66,6 +66,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
 
   }
 
-  override def view = views.html.taxCodeChange.whatHappensNext()
+  private val whatHappensNext = inject[WhatHappensNextView]
+  override def view: HtmlFormat.Appendable = whatHappensNext()
 
 }

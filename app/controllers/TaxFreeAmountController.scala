@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
+import views.html.TaxFreeAmountView
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -42,8 +43,10 @@ class TaxFreeAmountController @Inject()(
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  taxFreeAmount: TaxFreeAmountView,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def taxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -62,13 +65,13 @@ class TaxFreeAmountController @Inject()(
             TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax),
             applicationConfig
           )
-          implicit val user = request.taiUser
-          Ok(views.html.taxFreeAmount(viewModel, applicationConfig))
+          implicit val user: AuthedUser = request.taiUser
+          Ok(taxFreeAmount(viewModel, applicationConfig))
         case TaiNotFoundResponse(_) => Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
         case _                      => throw new RuntimeException("Failed to fetch total tax details")
       }
     }) recover {
-      case NonFatal(e) => internalServerError(s"Could not get tax free amount", Some(e))
+      case NonFatal(e) => errorPagesHandler.internalServerError(s"Could not get tax free amount", Some(e))
     }
   }
 }

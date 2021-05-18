@@ -1,0 +1,75 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.ptaHeader
+@import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
+@import includes.taxFreeAmountSummaryComparison
+@import uk.gov.hmrc.urls.Link
+
+@this(main: main)
+
+@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"Your tax-free amount"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = None,
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("taxCode.change.yourTaxFreeAmount.title"),
+        preHeadingText = Messages("taxCode.change.journey.preHeading"))
+}
+
+@main(
+    title = Messages("taxCode.change.yourTaxFreeAmount.title"),
+    articleClasses = Some("full-width"),
+    pageHeader = Some(header),
+    authedUser = Some(user),
+    gaCustomTitle = None
+    ) {
+
+
+    <div class="column-two-thirds">
+
+        <div class="grid-row">
+            <p class="lede">@Messages("taxCode.change.yourTaxFreeAmount.desc")</p>
+        </div>
+
+        <div class="grid-row" id="yourTaxFreeAmount">
+
+                <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h2>
+
+                <div class="margin-bottom-large">
+                @taxFreeAmountSummaryComparison(currentTaxFreeAmount, gaEventActionString, taxCodeChange = true)
+                </div>
+
+        </div>
+
+        <div class="grid-row">
+            <div class="form-group">
+            @Link.toInternalPage(
+                id = Some("seeWhatHappensNext"),
+                value = Some(Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")),
+                url = routes.TaxCodeChangeController.whatHappensNext.url,
+                dataAttributes = Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")}")),
+                cssClasses = Some("button")
+            ).toHtml
+            </div>
+        </div>
+
+    </div>
+}

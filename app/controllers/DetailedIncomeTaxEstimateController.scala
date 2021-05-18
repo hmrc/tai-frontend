@@ -17,8 +17,8 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
-import javax.inject.Inject
+import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -29,18 +29,22 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
+import views.html.estimatedIncomeTax.DetailedIncomeTaxEstimateView
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
+@Singleton
 class DetailedIncomeTaxEstimateController @Inject()(
   taxAccountService: TaxAccountService,
   codingComponentService: CodingComponentService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  detailedIncomeTaxEstimate: DetailedIncomeTaxEstimateView,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def taxExplanationPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -65,20 +69,19 @@ class DetailedIncomeTaxEstimateController @Inject()(
             TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
             TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)
             ) =>
-          implicit val user = request.taiUser
+          implicit val user: AuthedUser = request.taiUser
           val model = DetailedIncomeTaxEstimateViewModel(
             totalTax,
             taxCodeIncomes,
             taxAccountSummary,
             codingComponents,
             nonTaxCodeIncome)
-          Ok(views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model))
-        case _ => {
-          internalServerError("Failed to fetch total tax details")
-        }
+          Ok(detailedIncomeTaxEstimate(model))
+        case _ =>
+          errorPagesHandler.internalServerError("Failed to fetch total tax details")
       }
     }).recover {
-      case NonFatal(e) => internalServerError("Failed to fetch total tax details", Some(e))
+      case NonFatal(e) => errorPagesHandler.internalServerError("Failed to fetch total tax details", Some(e))
     }
   }
 }

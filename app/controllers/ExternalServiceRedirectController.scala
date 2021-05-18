@@ -20,8 +20,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.{AuditService, SessionService}
 
 import scala.concurrent.ExecutionContext
@@ -32,8 +30,7 @@ class ExternalServiceRedirectController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] =
@@ -46,7 +43,7 @@ class ExternalServiceRedirectController @Inject()(
         } yield {
           Redirect(redirectUri)
         }) recover {
-          case _ => internalServerError("Unable to audit and redirect")
+          case _ => errorPagesHandler.internalServerError("Unable to audit and redirect")
         }
       }
     }
@@ -60,7 +57,7 @@ class ExternalServiceRedirectController @Inject()(
         } yield {
           Redirect(redirectUri)
         }) recover {
-          case _ => internalServerError("Unable to audit and redirect")
+          case _ => errorPagesHandler.internalServerError("Unable to audit and redirect")
         }
       }
     }

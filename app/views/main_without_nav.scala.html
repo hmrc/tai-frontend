@@ -18,13 +18,23 @@
 @import play.api.Play.current
 @import uk.gov.hmrc.http.SessionKeys
 @import uk.gov.hmrc.play.views.helpers.AttorneyRegime.standAlone
-@import uk.gov.hmrc.play.views.html.layouts
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
 @import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig}
 @import uk.gov.hmrc.play.language.LanguageUtils
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
-
+@import uk.gov.hmrc.webchat.client.WebChatClient
 @import uk.gov.hmrc.play.views.helpers.AttorneyRegime
+@import uk.gov.hmrc.play.views.html.layouts._
+
+@this(
+    webChatClient: WebChatClient,
+    appConfig: ApplicationConfig,
+    langUtils: LanguageUtils,
+    trackingConsentSnippet: TrackingConsentSnippet,
+    article: Article,
+    sidebar: Sidebar,
+    attorney_banner: AttorneyBanner
+)
 
 @(title: String,
   sidebarLinks: Option[Html] = None,
@@ -44,14 +54,6 @@
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
-@appConfig = @{
-    Play.current.injector.instanceOf[ApplicationConfig]
-}
-
-@langUtils = @{
-    Play.current.injector.instanceOf[LanguageUtils]
-}
 
 @serviceSuffix = @{
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
@@ -90,7 +92,7 @@
 @trustedHelperBanner = {
   @{
     authedUser.map(_.trustedHelper.map{ helper =>
-      layouts.attorney_banner(Some(helper.principalName), helper.returnLinkUrl, AttorneyRegime.standAlone)
+      attorney_banner(Some(helper.principalName), helper.returnLinkUrl, AttorneyRegime.standAlone)
     })
   }
 }
@@ -99,9 +101,9 @@
     @pageHeader.getOrElse(Html(""))
 }
 
-@sidebar = @{
+@sidebarSection = @{
     sidebarLinks.map { sidebarLinksValue =>
-        layouts.sidebar(sidebarLinksValue, sidebarClass)
+        sidebar(sidebarLinksValue, sidebarClass)
     }
 }
 
@@ -142,13 +144,15 @@
 @sessionId = @{ request.session.get("sessionId") }
 
 @headInlineScript = {
-    @layouts.trackingConsentSnippet()
+    @trackingConsentSnippet()
 }
 
 @inlineScript = {
     @if(gaCallsAdditionalJs.isDefined && gaCallsAdditionalJs.get.toString.trim != ""){
         <script>@gaCallsAdditionalJs.get</script>
     }
+    @{webChatClient.loadWebChatContainer("HMRC_Anchored_1")}
+    @{webChatClient.loadRequiredElements()}
 
     @script
 }
@@ -163,14 +167,11 @@
 }
 
 @accessibilityFooterUrl = {
-@appConfig.accessibilityStatementUrl(request.uri)
+    @appConfig.accessibilityStatementUrl(request.uri)
 }
 
 @mustacheMap = @{
     Map[String, Any](
-        "nuanceWebChat" -> Map(
-        "isWebchatEnabled" -> appConfig.webChatEnabled,
-        "nuanceId" -> sessionId),
         "pageTitle" -> s"${title} ${serviceSuffix}",
         "linkElems" -> Map(
             "url" -> controllers.routes.AssetsController.versioned("stylesheets/tai.css")
@@ -187,7 +188,7 @@
         "hideAccountMenu" -> true,
         "signOutUrl" -> signOutUrl,
         "mainContentHeader" -> mainContentHeader,
-        "sidebar" -> sidebar,
+        "sidebar" -> sidebarSection,
         "betaBanner" -> false,
         "feedbackIdentifier" -> TaiConstants.SERVICE_IDENTIFIER,
         "googleAnalytics" -> googleAnalytics,
@@ -215,5 +216,5 @@
 }
 
 @{
-    templateRenderer.renderDefaultTemplate(appConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), extraTemplateArguments)
+    templateRenderer.renderDefaultTemplate(appConfig.frontendTemplatePath, article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), extraTemplateArguments)
 }

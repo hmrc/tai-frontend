@@ -16,10 +16,9 @@
 
 package controllers.pensions
 
-import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import javax.inject.{Inject, Named}
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -27,16 +26,18 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
-import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint._
+import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.forms.pensions.{AddPensionProviderFirstPayForm, AddPensionProviderNumberForm, PensionAddDateForm, PensionProviderNameForm}
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.service.{PensionProviderService, _}
+import uk.gov.hmrc.tai.service.{AuditService, PensionProviderService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
-
+import views.html.CanWeContactByPhoneView
+import views.html.pensions._
+import javax.inject.{Inject, Named}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
@@ -49,10 +50,19 @@ class AddPensionProviderController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  can_we_contact_by_phone: CanWeContactByPhoneView,
+  addPensionConfirmationView: AddPensionConfirmationView,
+  addPensionCheckYourAnswersView: AddPensionCheckYourAnswersView,
+  addPensionNumber: AddPensionNumberView,
+  addPensionErrorView: AddPensionErrorView,
+  addPensionReceivedFirstPayView: AddPensionReceivedFirstPayView,
+  addPensionNameView: AddPensionNameView,
+  addPensionStartDateView: AddPensionStartDateView,
   @Named("Add Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with AuditConstants with FormValuesConstants
     with EmptyCacheRedirect {
 
@@ -74,7 +84,7 @@ class AddPensionProviderController @Inject()(
   def addPensionProviderName(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.currentValue(AddPensionProvider_NameKey) map { pensionName =>
       implicit val user: AuthedUser = request.taiUser
-      Ok(views.html.pensions.addPensionName(PensionProviderNameForm.form.fill(pensionName.getOrElse(""))))
+      Ok(addPensionNameView(PensionProviderNameForm.form.fill(pensionName.getOrElse(""))))
     }
   }
 
@@ -83,7 +93,7 @@ class AddPensionProviderController @Inject()(
       implicit val user: AuthedUser = request.taiUser
       PensionProviderNameForm.form.bindFromRequest.fold(
         formWithErrors => {
-          Future.successful(BadRequest(views.html.pensions.addPensionName(formWithErrors)))
+          Future.successful(BadRequest(addPensionNameView(formWithErrors)))
         },
         pensionProviderName => {
           journeyCacheService
@@ -101,9 +111,9 @@ class AddPensionProviderController @Inject()(
         mandatoryVals match {
           case Right(mandatoryValues) =>
             Ok(
-              views.html.pensions.addPensionReceivedFirstPay(
-                AddPensionProviderFirstPayForm.form.fill(optionalVals(0)),
-                mandatoryValues(0)))
+              addPensionReceivedFirstPayView(
+                AddPensionProviderFirstPayForm.form.fill(optionalVals.head),
+                mandatoryValues.head))
           case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
     }
@@ -117,16 +127,15 @@ class AddPensionProviderController @Inject()(
       .fold(
         formWithErrors => {
           journeyCacheService.mandatoryValue(AddPensionProvider_NameKey).map { pensionProviderName =>
-            BadRequest(views.html.pensions.addPensionReceivedFirstPay(formWithErrors, pensionProviderName))
+            BadRequest(addPensionReceivedFirstPayView(formWithErrors, pensionProviderName))
           }
         },
         yesNo => {
           journeyCacheService.cache(AddPensionProvider_FirstPaymentKey, yesNo.getOrElse("")) map { _ =>
             yesNo match {
-              case Some(YesValue) => {
+              case Some(YesValue) =>
                 journeyCacheService.cache("", "")
                 Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
-              }
               case _ => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
             }
           }
@@ -140,7 +149,7 @@ class AddPensionProviderController @Inject()(
         .createAndSendAuditEvent(AddPension_CantAddPensionProvider, Map("nino" -> request.taiUser.nino.toString()))
       implicit val user: AuthedUser = request.taiUser
 
-      Ok(views.html.pensions.addPensionErrorPage(pensionProviderName))
+      Ok(addPensionErrorView(pensionProviderName))
     }
   }
 
@@ -151,21 +160,18 @@ class AddPensionProviderController @Inject()(
         .collectedJourneyValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_StartDateKey)) map tupled {
         (mandSeq, optionalVals) =>
           mandSeq match {
-            case Right(mandatorySequence) => {
-
-              val form = optionalVals(0) match {
+            case Right(mandatorySequence) =>
+              val form = optionalVals.head match {
                 case Some(userDateString) =>
-                  PensionAddDateForm(mandatorySequence(0)).form.fill(new LocalDate(userDateString))
-                case _ => PensionAddDateForm(mandatorySequence(0)).form
+                  PensionAddDateForm(mandatorySequence.head).form.fill(new LocalDate(userDateString))
+                case _ => PensionAddDateForm(mandatorySequence.head).form
               }
-              Ok(views.html.pensions.addPensionStartDate(form, mandatorySequence(0)))
-
-            }
+              Ok(addPensionStartDateView(form, mandatorySequence.head))
             case Left(_) => Redirect(taxAccountSummaryRedirect)
 
           }
       }).recover {
-        case NonFatal(e) => internalServerError(e.getMessage)
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
       }
   }
 
@@ -177,8 +183,8 @@ class AddPensionProviderController @Inject()(
           .bindFromRequest()
           .fold(
             formWithErrors => {
-              Future.successful(BadRequest(
-                views.html.pensions.addPensionStartDate(formWithErrors, currentCache(AddPensionProvider_NameKey))))
+              Future.successful(
+                BadRequest(addPensionStartDateView(formWithErrors, currentCache(AddPensionProvider_NameKey))))
             },
             date => {
               journeyCacheService.cache(AddPensionProvider_StartDateKey, date.toString) map { _ =>
@@ -200,7 +206,7 @@ class AddPensionProviderController @Inject()(
       }
 
       Ok(
-        views.html.pensions.addPensionNumber(
+        addPensionNumber(
           AddPensionProviderNumberForm.form.fill(
             AddPensionProviderNumberForm(cache.get(AddPensionProvider_PayrollNumberChoice), payrollNo)),
           viewModel))
@@ -216,7 +222,7 @@ class AddPensionProviderController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { cache =>
             val viewModel = PensionNumberViewModel(cache)
-            BadRequest(views.html.pensions.addPensionNumber(formWithErrors, viewModel))
+            BadRequest(addPensionNumber(formWithErrors, viewModel))
           }
         },
         form => {
@@ -234,17 +240,17 @@ class AddPensionProviderController @Inject()(
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService
       .optionalValues(AddPensionProvider_TelephoneQuestionKey, AddPensionProvider_TelephoneNumberKey) map { seq =>
-      val telephoneNo = seq(0) match {
+      val telephoneNo = seq.head match {
         case Some(YesValue) => seq(1)
         case _              => None
       }
       val user = Some(request.taiUser)
 
       Ok(
-        views.html.can_we_contact_by_phone(
+        can_we_contact_by_phone(
           user,
           contactPhonePensionProvider,
-          YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
+          YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq.head, telephoneNo))))
     }
   }
 
@@ -258,8 +264,7 @@ class AddPensionProviderController @Inject()(
       .fold(
         formWithErrors => {
           val user = Some(request.taiUser)
-          Future.successful(
-            BadRequest(views.html.can_we_contact_by_phone(user, contactPhonePensionProvider, formWithErrors)))
+          Future.successful(BadRequest(can_we_contact_by_phone(user, contactPhonePensionProvider, formWithErrors)))
         },
         form => {
           val mandatoryData = Map(
@@ -290,7 +295,7 @@ class AddPensionProviderController @Inject()(
         Seq(AddPensionProvider_TelephoneNumberKey)
       ) map tupled { (mandatoryVals, optionalVals) =>
         mandatoryVals match {
-          case Right(mandatoryValues) => {
+          case Right(mandatoryValues) =>
             val model = CheckYourAnswersViewModel(
               mandatoryValues.head,
               mandatoryValues(1),
@@ -298,13 +303,12 @@ class AddPensionProviderController @Inject()(
               mandatoryValues(3),
               optionalVals.head
             )
-            Ok(views.html.pensions.addPensionCheckYourAnswers(model))
-          }
+            Ok(addPensionCheckYourAnswersView(model))
           case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
       }
     } catch {
-      case NonFatal(e) => Future.successful(internalServerError(e.getMessage))
+      case NonFatal(e) => Future.successful(errorPagesHandler.internalServerError(e.getMessage))
     }
   }
 
@@ -337,7 +341,7 @@ class AddPensionProviderController @Inject()(
   def confirmation: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    Future.successful(Ok(views.html.pensions.addPensionConfirmation()))
+    Future.successful(Ok(addPensionConfirmationView()))
   }
 
 }

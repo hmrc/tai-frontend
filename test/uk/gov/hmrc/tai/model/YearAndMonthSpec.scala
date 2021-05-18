@@ -16,14 +16,12 @@
 
 package uk.gov.hmrc.tai.model
 
-import org.joda.time.YearMonth
 import org.mockito.Mockito.when
 import org.scalatest.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsResultException, Json}
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import utils.BaseSpec
 
 class YearAndMonthSpec extends PlaySpec with MockitoSugar {
 

@@ -1,0 +1,93 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.ptaHeader
+@import includes.cancelLink
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.tai.forms.PayPeriodForm
+
+@this(main: main, form: FormWithCSRF)
+
+@(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"How often do you get paid?"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(payPeriodForm),
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = messages("tai.payPeriod.heading"),
+        preHeadingText = messages("tai.payPeriod.preHeading", employerName)
+    )
+}
+
+@howOftenPanel = @{
+    def labelMessage = messages("tai.payPeriod.howOften")
+    val errorSpan = payPeriodForm.errors.map{error =>
+            if(error.key == "otherInDays"){
+                s"""<span class="error-message">${messages(error.message)}</span>"""
+            } else {
+                ""
+            }
+        }.headOption.getOrElse("")
+
+    s"""
+    <div class="data-howOften panel-indent ${if(isNotDaysError) "js-hidden" else ""}" id="howOftenPanel">
+        <div class="${if(errorSpan!="") "form-group-error"}">
+            <label for="otherInDays" class="form-label">${labelMessage}</label>
+            ${errorSpan}
+            <input type="text" class="form-control form-control-1-2 flush--bottom" id="otherInDays" name="otherInDays" />
+
+        </div>
+    </div>"""
+}
+
+
+@main(
+    title = messages("tai.payPeriod.title"),
+    articleClasses = None,
+    authedUser = Some(user),
+    pageHeader = Some(header),
+    employerName = Some(employerName)
+){
+    <div class="section flush--bottom">
+        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
+            @{inputRadioGroupStyling(
+                field=payPeriodForm(PayPeriodForm.PAY_PERIOD_KEY),
+                radioOptions=Seq(
+                    PayPeriodForm.MONTHLY -> messages("tai.payPeriod.monthly"),
+                    PayPeriodForm.WEEKLY -> messages("tai.payPeriod.weekly"),
+                    PayPeriodForm.FORTNIGHTLY -> messages("tai.payPeriod.fortnightly"),
+                    PayPeriodForm.OTHER -> messages("tai.payPeriod.other")
+                ),
+                legend=messages("tai.payPeriod.legend"),
+                legendHint=None,
+                ('_groupDivClass, "form-group" ),
+                ('_radioOption4WrapAttribute, "data-target=howOftenPanel"),
+                ('_legendSpanClass, "visually-hidden"),
+                ('_fieldsetAttributes, "id=payPeriod" ),
+                ('_radioOption4Attributes, Html(s""" ${if(!isNotDaysError) {"checked"} else {""}} """) ),
+                ('_radioOption4AdditionalMarkup, Html(howOftenPanel))
+            )}
+            <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
+        }
+
+        @cancelLink(controllers.routes.IncomeController.cancel(id), gaEventAction = Some(gaEventActionString))
+    </div>
+}

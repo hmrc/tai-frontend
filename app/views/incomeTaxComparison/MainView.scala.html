@@ -1,0 +1,148 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.ptaHeader
+@import uk.gov.hmrc.play.views.formatting.Dates
+@import incomeTaxComparison._
+@import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
+@import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{IncomeTaxComparisonViewModel, EstimatedIncomeTaxComparisonViewModel}
+@import uk.gov.hmrc.tai.model.TaxYear
+
+@import controllers.auth.AuthenticatedRequest
+
+@this(main: main)
+
+@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@gaEventActionString = @{"Income Tax comparison - current and next tax years"}
+@backLinkToChooseTaxYear = {
+    <p class="flush--bottom">
+        @Link.toInternalPage(
+            id=Some("returnToChooseTaxYearLink"),
+            url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+            value=Some(messages("your.paye.income.tax.overview")),
+            cssClasses=Some("link-back"),
+            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${messages("your.paye.income.tax.overview")}"))
+        ).toHtml
+    </p>
+}
+
+@headingText = @{
+    incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel.taxComparison.fold(
+        _ => messages("tai.incomeTaxComparison.heading.more"),
+        _ => messages("tai.incomeTaxComparison.heading.less"),
+             messages("tai.incomeTaxComparison.heading.same")
+    )
+}
+
+@header = @{
+    ptaHeader(
+        displayBackLink = true,
+        backLinkGaEventAction = None,
+        mainHeadingText = headingText,
+        preHeadingText = incomeTaxComparisonViewModel.username,
+        preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"),
+        customBackLinkContent = Some(backLinkToChooseTaxYear))
+}
+
+@main(title = headingText,
+    gaCustomTitle = Some(headingText),
+    pageHeader = Some(header),
+    authedUser = Some(request.taiUser)) {
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            @if(incomeTaxComparisonViewModel.isEstimatedCYPlusOneJourneyCompleted){
+                <div class="tai-progress-panel" id="estimatedPayCompletionBanner">
+                    <h2 class="heading-small flush-bottom flush--top" id="incomeSummary-banner-heading">
+                        @messages("tai.incomeTaxComparison.taxCodes.banner")
+                    </h2>
+                </div>
+            }
+
+            <div class="section" id="incomeTax" aria-labelledby="incomeTaxHeading">
+                @IncomeTax(incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel)
+            </div>
+
+            <div class="section" id="incomeSummary" aria-labelledby="incomeSummaryHeading">
+                @IncomeSummary(incomeTaxComparisonViewModel.incomeSourceComparisonViewModel)
+            </div>
+
+            <div class="section" id="taxCodes" aria-labelledby="taxCodesHeading">
+                @TaxCodes(incomeTaxComparisonViewModel.taxCodeComparisonViewModel, appConfig)
+            </div>
+
+            <div class="section" id="taxFreeAmount" aria-labelledby="taxFreeAmountHeading">
+                @TaxFreeAmount(incomeTaxComparisonViewModel.taxFreeAmountComparisonViewModel)
+            </div>
+
+            <div class="section" id="whatHappensNext" aria-labelledby="whatHappensNextHeading">
+                <h2 class="heading-large" id="whatHappensNextHeading">@messages("tai.incomeTaxComparison.whatHappensNext.subHeading")</h2>
+
+
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text")</p>
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text",s"${Dates.formatDate(TaxYear().next.start)}")</p>
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text")</p>
+
+                <h3 class="heading-medium">@messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading")</h3>
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description",s"${Dates.formatDate(TaxYear().next.start)}")</p>
+
+
+                <ul class="list list-bullet margin-bottom-large">
+                    <li>
+                        @includes.link(
+                            id = Some("companyBenefitsLink"),
+                            url = appConfig.companyBenefitsLinkUrl,
+                            copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText"),
+                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText")),
+                            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText")}"))
+                        )
+                    </li>
+
+                    <li>
+                        @includes.link(
+                            id = Some("allowancesTaxReliefsLink"),
+                            url = appConfig.taxFreeAllowanceLinkUrl,
+                            copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText"),
+                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText")),
+                            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText")}"))
+                        )
+                    </li>
+
+                    <li>
+                        @includes.link(
+                            id = Some("otherIncomeLink"),
+                            url = appConfig.otherIncomeLinkUrl,
+                            copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText"),
+                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText")),
+                            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText")}"))
+                        )
+                    </li>
+                </ul>
+            </div>
+
+            <p>
+                @Link.toInternalPage(
+                id=Some("returnToPAYEIncomeOverviewLink"),
+                url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+                value=Some(messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link")),
+                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${messages("your.paye.income.tax.overview")}"))
+                ).toHtml
+            </p>
+
+        </div>
+    </div>
+}

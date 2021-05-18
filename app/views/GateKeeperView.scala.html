@@ -1,0 +1,59 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+
+@this(main: main)
+
+@(appConfig: ApplicationConfig)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.play.views.formatting.Dates
+
+@main(
+    title = Messages("tai.gatekeeper.heading", s"${Dates.formatDate(TaxYear().start)}", s"${Dates.formatDate(TaxYear().end)}"),
+    articleClasses = Some("full-width"),
+    authedUser = Some(user),
+    gaCustomTitle = None
+){
+    <header class="page-header">
+        <h1 id="gatekeeper-title" class="flush--bottom">@Messages("tai.gatekeeper.heading")</h1>
+    </header>
+
+    <h2 class="heading--underlined">@Messages("tai.taxYear",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
+    <div class="grid-row">
+        <div class="grid grid-2-3">
+            <div class="inner-block">
+                <div class="flush--bottom hard--bottom">
+                    <p>@Messages("tai.gateKeeper.description.p1", s"${Dates.formatDate(TaxYear().start)}")</p>
+                    <p>@Messages("tai.gateKeeper.description.p2")</p>
+                    <ul class="bullets">
+                        <li>@Messages("tai.gateKeeper.description.p2.1", s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</li>
+                    </ul>
+                    <p>@Messages("tai.gatekeeper.contact")</p>
+                    <ul class="bullets">
+                        <li>@Messages("tai.gatekeeper.telephone")</li>
+                        <li>@Messages("tai.gatekeeper.textphone")</li>
+                        <li>@Messages("tai.gatekeeper.outsideUk")</li>
+                    </ul>
+                </div>
+                @Link.toInternalPage(id=Some("backLink"), url=appConfig.pertaxServiceUrl.toString,value=Some(Messages("tai.backToHome-link.upper")), dataAttributes = Some(Map("journey-click"->"check-income-tax:Service Link:personal-tax-account-footer-link"))).toHtml
+            </div>
+        </div>
+    </div>
+}
+

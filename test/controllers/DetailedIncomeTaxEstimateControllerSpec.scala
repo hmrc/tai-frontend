@@ -27,14 +27,15 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, PersonService, TaxAccountService}
 import utils.BaseSpec
+import views.html.estimatedIncomeTax.DetailedIncomeTaxEstimateView
 
 import scala.concurrent.Future
 
 class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
 
   val personService: PersonService = mock[PersonService]
-  val codingComponentService = mock[CodingComponentService]
-  val taxAccountService = mock[TaxAccountService]
+  val codingComponentService: CodingComponentService = mock[CodingComponentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
 
   def sut =
     new DetailedIncomeTaxEstimateController(
@@ -43,8 +44,10 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
       FakeAuthAction,
       FakeValidatePerson,
       mcc,
+      inject[DetailedIncomeTaxEstimateView],
       partialRetriever,
-      templateRenderer
+      templateRenderer,
+      inject[ErrorPagesHandler]
     )
 
   when(taxAccountService.totalTax(any(), any())(any()))

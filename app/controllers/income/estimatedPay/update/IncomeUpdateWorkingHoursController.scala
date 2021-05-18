@@ -18,29 +18,31 @@ package controllers.income.estimatedPay.update
 
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
-import javax.inject.{Inject, Named}
+import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, JourneyCacheConstants}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
+import views.html.incomes.WorkingHoursView
 
+import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
 class IncomeUpdateWorkingHoursController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  workingHoursView: WorkingHoursView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants {
 
   def workingHoursPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)
@@ -50,18 +52,17 @@ class IncomeUpdateWorkingHoursController @Inject()(
       incomeSourceEither match {
         case Right(incomeSource) =>
           Ok(
-            views.html.incomes
-              .workingHours(
-                HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
-                incomeSource.id,
-                incomeSource.name))
+            workingHoursView(
+              HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
+              incomeSource.id,
+              incomeSource.name))
         case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
     }
   }
 
   def handleWorkingHours: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     HoursWorkedForm
       .createForm()
@@ -70,7 +71,7 @@ class IncomeUpdateWorkingHoursController @Inject()(
         formWithErrors => {
           IncomeSource.create(journeyCacheService).map {
             case Right(incomeSource) =>
-              BadRequest(views.html.incomes.workingHours(formWithErrors, incomeSource.id, incomeSource.name))
+              BadRequest(workingHoursView(formWithErrors, incomeSource.id, incomeSource.name))
             case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           }
         },
@@ -81,13 +82,12 @@ class IncomeUpdateWorkingHoursController @Inject()(
           } yield {
 
             id match {
-              case Right(id) => {
+              case Right(id) =>
                 formData.workingHours match {
                   case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage())
                   case Some(IRREGULAR_HOURS) =>
                     Redirect(routes.IncomeUpdateIrregularHoursController.editIncomeIrregularHours(id))
                 }
-              }
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }

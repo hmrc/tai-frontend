@@ -22,6 +22,8 @@ import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => meq}
 import org.mockito.Mockito.when
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
@@ -33,6 +35,7 @@ import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountServ
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import utils.BaseSpec
+import views.html.taxCodeChange.{TaxCodeComparisonView, WhatHappensNextView, YourTaxFreeAmountView}
 
 import scala.concurrent.Future
 
@@ -41,13 +44,13 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
   "whatHappensNext" must {
     "show 'What happens next' page" when {
       "the request has an authorised session" in {
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-        val result = createController.whatHappensNext()(request)
+        val result = createController().whatHappensNext()(request)
 
         status(result) mustBe OK
 
-        result rendersTheSameViewAs views.html.taxCodeChange.whatHappensNext()
+        result rendersTheSameViewAs whatHappensNextView()
       }
     }
   }
@@ -63,23 +66,23 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
             Seq.empty
           )
 
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
         when(describedYourTaxFreeAmountService.taxFreeAmountComparison(Matchers.eq(FakeAuthAction.nino))(any(), any()))
           .thenReturn(Future.successful(expectedViewModel))
 
-        val result = createController.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = createController().yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
-        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
+        result rendersTheSameViewAs yourTaxFreeAmountView(expectedViewModel)
       }
     }
   }
 
   "taxCodeComparison" must {
     "show 'Your tax code comparison' page" in {
-      implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+      implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
       val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
       val scottishRates = Map.empty[String, BigDecimal]
@@ -97,38 +100,44 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         .thenReturn(reasons)
       when(taxCodeChangeReasonsService.isAGenericReason(Matchers.eq(reasons))(any())).thenReturn(false)
 
-      val result = createController.taxCodeComparison()(request)
+      val result = createController().taxCodeComparison()(request)
 
-      val expectedViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates, reasons, false)
+      val expectedViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates, reasons, isAGenericReason = false)
 
       status(result) mustBe OK
-      result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel, appConfig)
+      result rendersTheSameViewAs taxCodeComparisonView(expectedViewModel, appConfig)
     }
   }
 
   val giftAmount = 1000
 
-  val startDate = TaxYear().start
+  val startDate: LocalDate = TaxYear().start
 
-  val taxCodeRecord1 = TaxCodeRecord(
+  val taxCodeRecord1: TaxCodeRecord = TaxCodeRecord(
     "D0",
     startDate,
     startDate.plusDays(1),
     OtherBasisOfOperation,
     "Employer 1",
-    false,
+    pensionIndicator = false,
     Some("1234"),
-    true)
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
+    primary = true)
+  val taxCodeRecord2: TaxCodeRecord = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
 
-  val personService = mock[PersonService]
-  val taxCodeChangeService = mock[TaxCodeChangeService]
-  val taxAccountService = mock[TaxAccountService]
-  val describedYourTaxFreeAmountService = mock[DescribedYourTaxFreeAmountService]
-  val yourTaxFreeAmountService = mock[YourTaxFreeAmountService]
-  val taxCodeChangeReasonsService = mock[TaxCodeChangeReasonsService]
+  val personService: PersonService = mock[PersonService]
+  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService = mock[DescribedYourTaxFreeAmountService]
+  val yourTaxFreeAmountService: YourTaxFreeAmountService = mock[YourTaxFreeAmountService]
+  val taxCodeChangeReasonsService: TaxCodeChangeReasonsService = mock[TaxCodeChangeReasonsService]
 
   private def createController() = new TaxCodeChangeTestController
+
+  private val whatHappensNextView = inject[WhatHappensNextView]
+
+  private val yourTaxFreeAmountView = inject[YourTaxFreeAmountView]
+
+  private val taxCodeComparisonView = inject[TaxCodeComparisonView]
 
   private class TaxCodeChangeTestController
       extends TaxCodeChangeController(
@@ -141,6 +150,9 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         taxCodeChangeReasonsService,
         appConfig,
         mcc,
+        taxCodeComparisonView,
+        yourTaxFreeAmountView,
+        whatHappensNextView,
         partialRetriever,
         templateRenderer
       ) {

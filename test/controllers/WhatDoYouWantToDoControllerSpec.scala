@@ -38,6 +38,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
 import utils.factories.TaxCodeMismatchFactory
+import views.html.WhatDoYouWantToDoTileView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -53,7 +54,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
       "cy plus one data is available and cy plus one is enabled" in {
 
-        val controller = createTestController(isCyPlusOneEnabled = true)
+        val controller = createTestController()
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
@@ -70,7 +71,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       }
 
       "there has not been a tax code change" in {
-        val testController = createTestController(isCyPlusOneEnabled = true)
+        val testController = createTestController()
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
@@ -88,7 +89,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       }
 
       "there has been a tax code change and cyPlusOne is enabled and jrs claim data does not exist" in {
-        val testController = createTestController(isCyPlusOneEnabled = true)
+        val testController = createTestController()
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
@@ -128,7 +129,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       }
 
       "there has been a tax code change and cyPlusOne is enabled and jrs claim data exist" in {
-        val testController = createTestController(isCyPlusOneEnabled = true)
+        val testController = createTestController()
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
@@ -179,7 +180,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       "an internal server error is returned from any HOD call" in {
         val testController = createTestController()
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
-          .thenReturn(Future.failed((new InternalServerException("something bad"))))
+          .thenReturn(Future.failed(new InternalServerException("something bad")))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -234,7 +235,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
         when(employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
-          .thenReturn(Future.failed((new NotFoundException("no data found"))))
+          .thenReturn(Future.failed(new NotFoundException("no data found")))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
@@ -327,7 +328,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       }
 
       "cy plus one data is not available and cy plus one is enabled" in {
-        val testController = createTestController(isCyPlusOneEnabled = true)
+        val testController = createTestController()
 
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           Future.successful(
@@ -428,7 +429,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     "supply an empty list in the event of a downstream failure" in {
       val testController = createTestController()
       when(employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
-        .thenReturn(Future.failed((new NotFoundException("no data found"))))
+        .thenReturn(Future.failed(new NotFoundException("no data found")))
       val employments = Await.result(testController.previousYearEmployments(nino), 5 seconds)
       employments mustBe Nil
     }
@@ -446,8 +447,9 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       "",
       2,
       None,
-      false,
-      false),
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    ),
     Employment(
       "TEST1",
       Live,
@@ -459,13 +461,15 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       "",
       2,
       None,
-      false,
-      false)
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    )
   )
 
   private val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
-  val taxCodeNotChanged = HasTaxCodeChanged(false, Some(TaxCodeMismatchFactory.matchedTaxCode))
-  val taxCodeChanged = HasTaxCodeChanged(true, Some(TaxCodeMismatchFactory.matchedTaxCode))
+  val taxCodeNotChanged: HasTaxCodeChanged =
+    HasTaxCodeChanged(changed = false, Some(TaxCodeMismatchFactory.matchedTaxCode))
+  val taxCodeChanged: HasTaxCodeChanged = HasTaxCodeChanged(changed = true, Some(TaxCodeMismatchFactory.matchedTaxCode))
 
   private def createTestController(isCyPlusOneEnabled: Boolean = true) =
     new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled)
@@ -489,8 +493,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         FakeValidatePerson,
         mockAppConfig,
         mcc,
+        inject[WhatDoYouWantToDoTileView],
         partialRetriever,
-        templateRenderer
+        templateRenderer,
+        inject[ErrorPagesHandler]
       ) {
 
     when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled

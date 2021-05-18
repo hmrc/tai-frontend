@@ -30,6 +30,7 @@ import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import utils.BaseSpec
+import views.html.TaxFreeAmountView
 
 import scala.concurrent.Future
 
@@ -111,7 +112,9 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
         FakeValidatePerson,
         appConfig,
         mcc,
+        inject[TaxFreeAmountView],
         partialRetriever,
-        templateRenderer
+        templateRenderer,
+        inject[ErrorPagesHandler]
       )
 }

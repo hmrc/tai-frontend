@@ -18,9 +18,8 @@ package controllers.income.previousYears
 
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
-import javax.inject.{Inject, Named}
-import play.api.i18n.{Lang, Messages}
+import controllers.auth.{AuthAction, AuthedUser}
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -34,8 +33,10 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
-import views.html.incomes.previousYears.CheckYourAnswers
+import views.html.CanWeContactByPhoneView
+import views.html.incomes.previousYears.{CheckYourAnswersView, UpdateIncomeDetailsConfirmationView, UpdateIncomeDetailsDecisionView, UpdateIncomeDetailsView}
 
+import javax.inject.{Inject, Named}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,63 +45,64 @@ class UpdateIncomeDetailsController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  can_we_contact_by_phone: CanWeContactByPhoneView,
+  CheckYourAnswers: CheckYourAnswersView,
+  UpdateIncomeDetailsDecision: UpdateIncomeDetailsDecisionView,
+  UpdateIncomeDetails: UpdateIncomeDetailsView,
+  UpdateIncomeDetailsConfirmation: UpdateIncomeDetailsConfirmationView,
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {
 
   def telephoneNumberViewModel(taxYear: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel =
     CanWeContactByPhoneViewModel(
       messages("tai.income.previousYears.journey.preHeader"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.income.previousYears.routes.UpdateIncomeDetailsController.details.url,
+      controllers.income.previousYears.routes.UpdateIncomeDetailsController.details().url,
       controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitTelephoneNumber().url,
       controllers.routes.PayeControllerHistoric.payePage(TaxYear(taxYear)).url
     )
 
   def decision(taxYear: TaxYear): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.cache(Map(UpdatePreviousYearsIncome_TaxYearKey -> taxYear.year.toString)) map { _ =>
-      implicit val user = request.taiUser
-      Ok(views.html.incomes.previousYears.UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear))
+      implicit val user: AuthedUser = request.taiUser
+      Ok(UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear))
     }
   }
 
   def submitDecision(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     UpdateIncomeDetailsDecisionForm.form.bindFromRequest.fold(
       formWithErrors => {
-        Future.successful(
-          BadRequest(views.html.incomes.previousYears.UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev)))
-      },
-      decision => {
-        decision match {
-          case Some(NoValue) =>
-            Future.successful(Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.details()))
-          case _ => Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
-        }
+        Future.successful(BadRequest(UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev)))
+      }, {
+        case Some(NoValue) =>
+          Future.successful(Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.details()))
+        case _ => Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
       }
     )
   }
 
   def details(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     journeyCacheService.currentCache map { currentCache =>
       Ok(
-        views.html.incomes.previousYears.UpdateIncomeDetails(
+        UpdateIncomeDetails(
           UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
           UpdateIncomeDetailsForm.form))
     }
   }
 
   def submitDetails(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     UpdateIncomeDetailsForm.form.bindFromRequest.fold(
       formWithErrors => {
         journeyCacheService.currentCache map { currentCache =>
           BadRequest(
-            views.html.incomes.previousYears.UpdateIncomeDetails(
+            UpdateIncomeDetails(
               UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
               formWithErrors))
         }
@@ -114,11 +116,11 @@ class UpdateIncomeDetailsController @Inject()(
   }
 
   def telephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService.currentCache map { currentCache =>
       Ok(
-        views.html.can_we_contact_by_phone(
+        can_we_contact_by_phone(
           Some(user),
           telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
           YesNoTextEntryForm.form()))
@@ -126,7 +128,7 @@ class UpdateIncomeDetailsController @Inject()(
   }
 
   def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     YesNoTextEntryForm
       .form(
@@ -138,7 +140,7 @@ class UpdateIncomeDetailsController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             BadRequest(
-              views.html.can_we_contact_by_phone(
+              can_we_contact_by_phone(
                 Some(user),
                 telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
                 formWithErrors))
@@ -159,7 +161,7 @@ class UpdateIncomeDetailsController @Inject()(
   }
 
   def checkYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService.collectedJourneyValues(
       Seq(
@@ -189,7 +191,7 @@ class UpdateIncomeDetailsController @Inject()(
   }
 
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     for {
@@ -208,9 +210,9 @@ class UpdateIncomeDetailsController @Inject()(
   }
 
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
-    Future.successful(Ok(views.html.incomes.previousYears.UpdateIncomeDetailsConfirmation()))
+    Future.successful(Ok(UpdateIncomeDetailsConfirmation()))
   }
 
 }

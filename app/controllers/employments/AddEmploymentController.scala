@@ -22,7 +22,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import org.joda.time.LocalDate
-import play.api.i18n.{Lang, Messages}
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -38,6 +38,9 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
+import views.html.CanWeContactByPhoneView
+import views.html.employments._
+import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -51,8 +54,16 @@ class AddEmploymentController @Inject()(
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  add_employment_start_date_form: AddEmploymentStartDateFormView,
+  add_employment_name_form: AddEmploymentNameFormView,
+  add_employment_first_pay_form: AddEmploymentFirstPayFormView,
+  add_employment_error_page: AddEmploymentErrorPageView,
+  add_employment_payroll_number_form: AddEmploymentPayrollNumberFormView,
+  can_we_contact_by_phone: CanWeContactByPhoneView,
+  confirmationView: ConfirmationView,
+  addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with AuditConstants with FormValuesConstants
     with EmptyCacheRedirect {
 
@@ -75,7 +86,7 @@ class AddEmploymentController @Inject()(
     journeyCacheService.currentValue(AddEmployment_NameKey) map { providedName =>
       implicit val user: AuthedUser = request.taiUser
 
-      Ok(views.html.employments.add_employment_name_form(EmploymentNameForm.form.fill(providedName.getOrElse(""))))
+      Ok(add_employment_name_form(EmploymentNameForm.form.fill(providedName.getOrElse(""))))
     }
   }
 
@@ -84,7 +95,7 @@ class AddEmploymentController @Inject()(
       formWithErrors => {
         implicit val user: AuthedUser = request.taiUser
 
-        Future.successful(BadRequest(views.html.employments.add_employment_name_form(formWithErrors)))
+        Future.successful(BadRequest(add_employment_name_form(formWithErrors)))
       },
       employmentName => {
         journeyCacheService
@@ -98,16 +109,15 @@ class AddEmploymentController @Inject()(
     journeyCacheService.collectedJourneyValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_StartDateKey)) map tupled {
       (mandSeq, optSeq) =>
         mandSeq match {
-          case Right(mandatorySequence) => {
+          case Right(mandatorySequence) =>
             val form = optSeq.head match {
               case Some(dateString) =>
                 EmploymentAddDateForm(mandatorySequence.head).form.fill(new LocalDate(dateString))
               case _ => EmploymentAddDateForm(mandatorySequence.head).form
             }
-            implicit val user = request.taiUser
+            implicit val user: AuthedUser = request.taiUser
 
-            Ok(views.html.employments.add_employment_start_date_form(form, mandatorySequence.head))
-          }
+            Ok(add_employment_start_date_form(form, mandatorySequence.head))
           case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
     }
@@ -122,9 +132,7 @@ class AddEmploymentController @Inject()(
             formWithErrors => {
               implicit val user: AuthedUser = request.taiUser
 
-              BadRequest(
-                views.html.employments
-                  .add_employment_start_date_form(formWithErrors, currentCache(AddEmployment_NameKey)))
+              BadRequest(add_employment_start_date_form(formWithErrors, currentCache(AddEmployment_NameKey)))
             },
             date => {
               val startDateBoundary = new LocalDate().minusWeeks(6)
@@ -148,9 +156,7 @@ class AddEmploymentController @Inject()(
       .collectedValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_RecewivedFirstPayKey)) map tupled {
       (mandSeq, optSeq) =>
         implicit val user: AuthedUser = request.taiUser
-        Ok(
-          views.html.employments
-            .add_employment_first_pay_form(AddEmploymentFirstPayForm.form.fill(optSeq.head), mandSeq.head))
+        Ok(add_employment_first_pay_form(AddEmploymentFirstPayForm.form.fill(optSeq.head), mandSeq.head))
     }
   }
 
@@ -161,7 +167,7 @@ class AddEmploymentController @Inject()(
         formWithErrors => {
           journeyCacheService.mandatoryValue(AddEmployment_NameKey).map { employmentName =>
             implicit val user: AuthedUser = request.taiUser
-            BadRequest(views.html.employments.add_employment_first_pay_form(formWithErrors, employmentName))
+            BadRequest(add_employment_first_pay_form(formWithErrors, employmentName))
           }
         },
         firstPayYesNo => {
@@ -180,7 +186,7 @@ class AddEmploymentController @Inject()(
     journeyCacheService.mandatoryValue(AddEmployment_NameKey) map { employmentName =>
       implicit val user: AuthedUser = request.taiUser
       auditService.createAndSendAuditEvent(AddEmployment_CantAddEmployer, Map("nino" -> user.nino.toString()))
-      Ok(views.html.employments.add_employment_error_page(employmentName))
+      Ok(add_employment_error_page(employmentName))
     }
   }
 
@@ -196,7 +202,7 @@ class AddEmploymentController @Inject()(
         implicit val user: AuthedUser = request.taiUser
 
         Ok(
-          views.html.employments.add_employment_payroll_number_form(
+          add_employment_payroll_number_form(
             AddEmploymentPayrollNumberForm.form.fill(AddEmploymentPayrollNumberForm(payrollChoice, payroll)),
             viewModel))
       }
@@ -212,7 +218,7 @@ class AddEmploymentController @Inject()(
               val viewModel = PayrollNumberViewModel(cache)
               implicit val user: AuthedUser = request.taiUser
 
-              BadRequest(views.html.employments.add_employment_payroll_number_form(formWithErrors, viewModel))
+              BadRequest(add_employment_payroll_number_form(formWithErrors, viewModel))
             }
           },
           form => {
@@ -238,7 +244,7 @@ class AddEmploymentController @Inject()(
         implicit val user: AuthedUser = request.taiUser
 
         Ok(
-          views.html.can_we_contact_by_phone(
+          can_we_contact_by_phone(
             Some(user),
             telephoneNumberViewModel,
             YesNoTextEntryForm.form().fill(YesNoTextEntryForm(optSeq.head, telNoToDisplay))))
@@ -257,8 +263,7 @@ class AddEmploymentController @Inject()(
         formWithErrors => {
           implicit val user: AuthedUser = request.taiUser
 
-          Future.successful(
-            BadRequest(views.html.can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors)))
+          Future.successful(BadRequest(can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors)))
         },
         form => {
           val mandatoryData = Map(
@@ -301,7 +306,7 @@ class AddEmploymentController @Inject()(
                 controllers.employments.routes.AddEmploymentController.cancel().url
               )
             implicit val user: AuthedUser = request.taiUser
-            Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
+            Ok(addIncomeCheckYourAnswers(model))
           }
           case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
@@ -335,7 +340,7 @@ class AddEmploymentController @Inject()(
 
   def confirmation: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    Future.successful(Ok(views.html.employments.confirmation()))
+    Future.successful(Ok(confirmationView()))
 
   }
 

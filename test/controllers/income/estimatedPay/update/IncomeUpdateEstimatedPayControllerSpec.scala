@@ -17,8 +17,8 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
-import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -28,7 +28,7 @@ import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -37,12 +37,13 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
+import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, IncorrectTaxableIncomeView}
 
 import scala.concurrent.Future
 
 class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheConstants {
 
-  val employer = IncomeSource(id = 1, name = "sample employer")
+  val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
   val incomeService: IncomeService = mock[IncomeService]
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
@@ -56,9 +57,14 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
         appConfig,
         mcc,
         mockTaxAccountService,
+        inject[EstimatedPayLandingPageView],
+        inject[EstimatedPayView],
+        inject[IncorrectTaxableIncomeView],
         journeyCacheService,
         MockPartialRetriever,
-        MockTemplateRenderer) {
+        MockTemplateRenderer,
+        inject[ErrorPagesHandler]
+      ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
       .thenReturn(Future.successful(Right(employer.id)))
     when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))

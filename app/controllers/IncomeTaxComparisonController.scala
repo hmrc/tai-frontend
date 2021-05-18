@@ -16,9 +16,9 @@
 
 package controllers
 
-import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
+import views.html.incomeTaxComparison.MainView
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
@@ -45,8 +46,10 @@ class IncomeTaxComparisonController @Inject()(
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  main: MainView,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -114,12 +117,12 @@ class IncomeTaxComparisonController @Inject()(
             isEstimatedPayJourneyComplete
           )
 
-          Ok(views.html.incomeTaxComparison.Main(model, applicationConfig))
+          Ok(main(model, applicationConfig))
         }
         case _ => throw new RuntimeException("Not able to fetch income tax comparision details")
       }
     }) recover {
-      case NonFatal(e) => internalServerError("IncomeTaxComparisonController exception", Some(e))
+      case NonFatal(e) => errorPagesHandler.internalServerError("IncomeTaxComparisonController exception", Some(e))
     }
   }
 

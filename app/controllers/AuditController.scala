@@ -16,12 +16,10 @@
 
 package controllers
 
-import javax.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.AuditService
 
 import scala.concurrent.ExecutionContext
@@ -30,9 +28,7 @@ class AuditController @Inject()(
   auditService: AuditService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  mcc: MessagesControllerComponents,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def auditLinksToIForm(iformName: String): Action[AnyContent] = (authenticate andThen validatePerson).async {

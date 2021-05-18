@@ -34,25 +34,33 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
 import utils.BaseSpec
-import views.html.incomes.{payslipAmount, taxablePayslipAmount}
+import views.html.incomes.{PayslipAmountView, PayslipDeductionsView, TaxablePayslipAmountView}
 
 import scala.concurrent.Future
 
 class IncomeUpdatePayslipAmountControllerSpec
     extends BaseSpec with EditIncomePayPeriodConstants with ControllerViewTestHelper with JourneyCacheConstants {
 
-  val employer = IncomeSource(id = 1, name = "sample employer")
+  val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+
+  private val payslipAmountView = inject[PayslipAmountView]
+
+  private val taxablePayslipAmountView = inject[TaxablePayslipAmountView]
 
   class TestIncomeUpdatePayslipAmountController
       extends IncomeUpdatePayslipAmountController(
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        payslipAmountView,
+        taxablePayslipAmountView,
+        inject[PayslipDeductionsView],
         journeyCacheService,
         MockPartialRetriever,
-        MockTemplateRenderer) {
+        MockTemplateRenderer
+      ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
       .thenReturn(Future.successful(Right(employer.id)))
     when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
@@ -99,7 +107,7 @@ class IncomeUpdatePayslipAmountControllerSpec
         val cachedAmount = Some("998787")
         val payPeriod = Some(MONTHLY)
 
-        implicit val request = RequestBuilder.buildFakeGetRequestWithAuth()
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val result = PayslipAmountPageHarness
           .setup(payPeriod, cachedAmount)
@@ -112,7 +120,7 @@ class IncomeUpdatePayslipAmountControllerSpec
           .fill(PayslipForm(cachedAmount))
 
         val expectedViewModel = PaySlipAmountViewModel(expectedForm, payPeriod, None, employer)
-        val expectedView = payslipAmount(expectedViewModel)
+        val expectedView = payslipAmountView(expectedViewModel)
 
         result rendersTheSameViewAs expectedView
       }
@@ -120,7 +128,7 @@ class IncomeUpdatePayslipAmountControllerSpec
 
     "Redirect user to /income-summary" when {
       "there is no data in the cache" in {
-        implicit val request = RequestBuilder.buildFakeGetRequestWithAuth()
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val cachedAmount = None
         val payPeriod = None
@@ -220,7 +228,7 @@ class IncomeUpdatePayslipAmountControllerSpec
     "display taxablePayslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
 
-        implicit val request = RequestBuilder.buildFakeGetRequestWithAuth()
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val cachedAmount = Some("9888787")
         val payPeriod = Some(MONTHLY)
@@ -233,14 +241,14 @@ class IncomeUpdatePayslipAmountControllerSpec
 
         val expectedForm = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(cachedAmount))
         val expectedViewModel = TaxablePaySlipAmountViewModel(expectedForm, payPeriod, None, employer)
-        result rendersTheSameViewAs taxablePayslipAmount(expectedViewModel)
+        result rendersTheSameViewAs taxablePayslipAmountView(expectedViewModel)
       }
     }
 
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 
-        implicit val request = RequestBuilder.buildFakeGetRequestWithAuth()
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val cachedAmount = None
         val payPeriod = None
@@ -341,7 +349,7 @@ class IncomeUpdatePayslipAmountControllerSpec
 
         def payslipDeductionsPage(): Future[Result] =
           new TestIncomeUpdatePayslipAmountController()
-            .payslipDeductionsPage()(RequestBuilder.buildFakeGetRequestWithAuth)
+            .payslipDeductionsPage()(RequestBuilder.buildFakeGetRequestWithAuth())
       }
 
       def setup(): PayslipDeductionsPageHarness =

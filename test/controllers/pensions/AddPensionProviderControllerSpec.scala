@@ -17,8 +17,8 @@
 package controllers.pensions
 
 import builders.RequestBuilder
-import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -26,11 +26,9 @@ import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{when, _}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, status, _}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderNumberForm._
@@ -40,6 +38,8 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
+import views.html.CanWeContactByPhoneView
+import views.html.pensions._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -65,7 +65,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.addNameForm.title"))
-        doc.toString must not include ("testPensionName123")
+        doc.toString must not include "testPensionName123"
       }
     }
   }
@@ -325,7 +325,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.startDateForm.pagetitle"))
-        doc.toString must not include ("2037")
+        doc.toString must not include "2037"
       }
 
       "the request has an authorised session and a previously cached date is present" in {
@@ -922,11 +922,11 @@ class AddPensionProviderControllerSpec
 
   private def createSUT = new SUT
 
-  val pensionProviderService = mock[PensionProviderService]
-  val auditService = mock[AuditService]
-  val personService = mock[PersonService]
-  val addPensionProviderJourneyCacheService = mock[JourneyCacheService]
-  val trackSuccessJourneyCacheService = mock[JourneyCacheService]
+  val pensionProviderService: PensionProviderService = mock[PensionProviderService]
+  val auditService: AuditService = mock[AuditService]
+  val personService: PersonService = mock[PersonService]
+  val addPensionProviderJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   private class SUT
       extends AddPensionProviderController(
@@ -936,13 +936,22 @@ class AddPensionProviderControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        inject[CanWeContactByPhoneView],
+        inject[AddPensionConfirmationView],
+        inject[AddPensionCheckYourAnswersView],
+        inject[AddPensionNumberView],
+        inject[AddPensionErrorView],
+        inject[AddPensionReceivedFirstPayView],
+        inject[AddPensionNameView],
+        inject[AddPensionStartDateView],
         addPensionProviderJourneyCacheService,
         trackSuccessJourneyCacheService,
         MockPartialRetriever,
-        MockTemplateRenderer
+        MockTemplateRenderer,
+        inject[ErrorPagesHandler]
       ) {
 
-    val pensionStartDateForm = PensionAddDateForm("pension provider")
+    val pensionStartDateForm: PensionAddDateForm = PensionAddDateForm("pension provider")
   }
 
 }

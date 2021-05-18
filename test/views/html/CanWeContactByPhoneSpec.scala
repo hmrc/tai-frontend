@@ -26,8 +26,8 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
-
-  override def view: Html = views.html.can_we_contact_by_phone(Some(authedUser), viewModel, form)
+  private val template = inject[CanWeContactByPhoneView]
+  override def view: Html = template(Some(authedUser), viewModel, form)
 
   "CanWeContactByPhone page" must {
 
@@ -57,7 +57,8 @@ class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
       "the supplied form has errors" in {
         val formWithErrors: Form[YesNoTextEntryForm] =
           YesNoTextEntryForm.form("answer yes or no", "provide text").withError(YesNoChoice, "answer yes or no")
-        def sut = views.html.can_we_contact_by_phone(Some(authedUser), viewModel, formWithErrors)
+
+        def sut = template(Some(authedUser), viewModel, formWithErrors)
 
         val errorMessage = doc(sut).select(".error-message").text
         errorMessage mustBe "answer yes or no"

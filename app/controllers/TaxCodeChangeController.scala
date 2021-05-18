@@ -16,21 +16,20 @@
 
 package controllers
 
-import javax.inject.Inject
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
+import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{IabdTaxCodeChangeReasons, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
+import views.html.taxCodeChange.{TaxCodeComparisonView, WhatHappensNextView, YourTaxFreeAmountView}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,8 +43,11 @@ class TaxCodeChangeController @Inject()(
   taxCodeChangeReasonsService: TaxCodeChangeReasonsService,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  taxCodeComparisonView: TaxCodeComparisonView,
+  yourTaxFreeAmountView: YourTaxFreeAmountView,
+  whatHappensNextView: WhatHappensNextView,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with YourTaxFreeAmount {
 
   def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -66,8 +68,8 @@ class TaxCodeChangeController @Inject()(
       val viewModel =
         TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
 
-      implicit val user = request.taiUser
-      Ok(views.html.taxCodeChange.taxCodeComparison(viewModel, appConfig))
+      implicit val user: AuthedUser = request.taiUser
+      Ok(taxCodeComparisonView(viewModel, appConfig))
     }
   }
 
@@ -75,15 +77,15 @@ class TaxCodeChangeController @Inject()(
     val nino: Nino = request.taiUser.nino
     val taxFreeAmountViewModel = describedYourTaxFreeAmountService.taxFreeAmountComparison(nino)
 
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     taxFreeAmountViewModel.map(viewModel => {
-      Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
+      Ok(yourTaxFreeAmountView(viewModel))
     })
   }
 
   def whatHappensNext: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
-    Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
+    implicit val user: AuthedUser = request.taiUser
+    Future.successful(Ok(whatHappensNextView()))
   }
 }

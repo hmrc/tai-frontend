@@ -1,0 +1,68 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.{backLink, cancelLink}
+@import includes.forms.submit
+@import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
+@import includes.ptaHeader
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
+
+@this(main: main, form: FormWithCSRF)
+
+@(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"Update or remove pension- Do you currently get income from this pension provider?"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(updateOrRemoveForm),
+        displayBackLink = true,
+        mainHeadingText = Messages("tai.updatePension.decision.heading", <span class="carry-over">{model.pensionName}</span>),
+        preHeadingText = Messages("tai.updatePension.preHeading")
+    )
+}
+
+@main(
+    title = Messages("tai.updatePension.decision.pagetitle"),
+    authedUser = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = Some(Messages("tai.updatePension.decision.customGaTitle"))) {
+
+    @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension, Symbol("data-journey-dynamic-radios") -> "" ) {
+        <div class="form-group">
+
+            @{inputRadioGroupStyling(
+                field=updateOrRemoveForm(UpdateRemovePensionForm.IncorrectPensionDecision),
+                radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
+                legend=Messages("tai.updatePension.decision.legend"),
+                legendHint=None,
+                ('_groupDivClass, "form-group" ),
+                ('_fieldsetAttributes, "id=incorrectPensionDecision" ),
+                ('_groupClass, "inline" ),
+                ('_legendSpanClass, "visually-hidden"),
+                ('_radioOption1Attributes, Html("""data-journey-val="Yes"""") ),
+                ('_radioOption2Attributes, Html("""data-journey-val="No"""") )
+            )}
+
+        </div>
+
+        @submit(buttonMessageKey = Some(messages("tai.submit")), gaEventAction = Some(gaEventActionString), gaEventLabel = Some(""))
+    }
+    @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(model.id), gaEventAction = Some(gaEventActionString))
+}

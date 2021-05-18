@@ -134,7 +134,6 @@ trait FeatureTogglesConfig { self: ApplicationConfig =>
   val companyCarForceRedirectEnabled: Boolean =
     getOptional[Boolean]("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
   val cyPlus1EstimatedPayEnabled: Boolean = getOptional[Boolean]("tai.cyPlusOne.enabled").getOrElse(false)
-  val webChatEnabled: Boolean = getOptional[Boolean]("tai.webChat.enabled").getOrElse(false)
   lazy val accessibilityStatementToggle: Boolean =
     getOptional[Boolean]("accessibility-statement.toggle").getOrElse(false)
   lazy val isTaiCy3Enabled: Boolean = getOptional[Boolean]("tai.cy3.enabled").getOrElse(false)

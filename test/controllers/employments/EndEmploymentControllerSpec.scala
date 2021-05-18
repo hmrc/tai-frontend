@@ -30,7 +30,6 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
@@ -42,6 +41,9 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants, JourneyCacheConstants}
 import utils.BaseSpec
+import views.html.CanWeContactByPhoneView
+import views.html.employments._
+import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -661,7 +663,7 @@ class EndEmploymentControllerSpec
 
       val result = endEmploymentTest.onPageLoad(employmentId)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning.url
+      redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning().url
     }
   }
 
@@ -707,7 +709,9 @@ class EndEmploymentControllerSpec
             .withFormUrlEncodedBody(YesNoChoice -> YesValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
+          .employmentUpdateRemoveDecision()
+          .url
       }
     }
 
@@ -770,10 +774,10 @@ class EndEmploymentControllerSpec
       "",
       8,
       None,
-      false,
-      false)
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false)
 
-  def paymentOnDate(date: LocalDate) =
+  def paymentOnDate(date: LocalDate): Payment =
     Payment(
       date = date,
       amountYearToDate = 2000,
@@ -790,10 +794,10 @@ class EndEmploymentControllerSpec
   private def fakeGetRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
   private def fakePostRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
 
-  val auditService = mock[AuditService]
-  val employmentService = mock[EmploymentService]
-  val endEmploymentJourneyCacheService = mock[JourneyCacheService]
-  val trackSuccessJourneyCacheService = mock[JourneyCacheService]
+  val auditService: AuditService = mock[AuditService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val endEmploymentJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   private class EndEmploymentTest
       extends EndEmploymentController(
@@ -801,27 +805,46 @@ class EndEmploymentControllerSpec
         employmentService,
         FakeAuthAction,
         FakeValidatePerson,
-        endEmploymentJourneyCacheService,
-        trackSuccessJourneyCacheService,
         mock[AuditConnector],
         mcc,
+        inject[UpdateRemoveEmploymentDecisionView],
+        inject[EndEmploymentWithinSixWeeksErrorView],
+        inject[EndEmploymentIrregularPaymentErrorView],
+        inject[EndEmploymentView],
+        inject[CanWeContactByPhoneView],
+        inject[DuplicateSubmissionWarningView],
+        inject[ConfirmationView],
+        inject[AddIncomeCheckYourAnswersView],
+        endEmploymentJourneyCacheService,
+        trackSuccessJourneyCacheService,
         MockTemplateRenderer,
         MockPartialRetriever
       ) {
 
-    val employmentEndDateForm = EmploymentEndDateForm("employer")
-
-    def generateNino: Nino = new Generator().nextNino
+    val employmentEndDateForm: EmploymentEndDateForm = EmploymentEndDateForm("employer")
 
     when(employmentService.employment(any(), any())(any()))
       .thenReturn(
         Future.successful(
-          Some(Employment(employerName, Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false))))
+          Some(
+            Employment(
+              employerName,
+              Live,
+              None,
+              new LocalDate(),
+              None,
+              Nil,
+              "",
+              "",
+              1,
+              None,
+              hasPayrolledBenefit = false,
+              receivingOccupationalPension = false))))
 
     when(endEmploymentJourneyCacheService.currentValueAsDate(any())(any()))
       .thenReturn(Future.successful(Some(new LocalDate("2017-9-9"))))
     when(endEmploymentJourneyCacheService.currentValue(any())(any()))
-      .thenReturn(Future.successful(Some(("Test Value"))))
+      .thenReturn(Future.successful(Some("Test Value")))
 
     when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
   }

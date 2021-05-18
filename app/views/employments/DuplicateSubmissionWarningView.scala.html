@@ -1,0 +1,53 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.tai.forms.YesNoForm
+@import includes.{cancelLink, ptaHeader}
+@import uk.gov.hmrc.play.views.html.helpers.form
+
+@this(main: main, duplicateSubmissionWarning: includes.duplicateSubmissionWarning)
+
+@(duplicateSubmissionWarningForm: Form[YesNoForm], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"Update received"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(duplicateSubmissionWarningForm),
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = messages("tai.employment.warning.heading", employmentName),
+        preHeadingText = messages("tai.employment.warning.preHeading")
+    )
+}
+
+@main(
+    title = messages("tai.employment.warning.customGaTitle"),
+    authedUser = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = Some(messages("tai.employment.warning.customGaTitle"))) {
+
+    @duplicateSubmissionWarning(
+        duplicateSubmissionWarningForm,
+        messages("tai.employment.warning.radio1", employmentName),
+        messages("tai.employment.warning.radio2"),
+        controllers.employments.routes.EndEmploymentController.submitDuplicateSubmissionWarning,
+        gaEventActionString
+)
+
+    @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(empId), gaEventAction = Some(gaEventActionString))
+}

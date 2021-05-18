@@ -1,0 +1,56 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.forms.{submit,input}
+@import includes.{backLink, cancelLink, ptaHeader}
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+
+@this(main: main, form: FormWithCSRF)
+
+@(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"What is the name of the employer you want to add?"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(nameForm),
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.addEmployment.addNameForm.title"),
+        preHeadingText = Messages("add.missing.employment"))}
+
+
+@main(
+  title = Messages("tai.addEmployment.addNameForm.title"),
+  authedUser = Some(user),
+  pageHeader = Some(header),
+  articleClasses = None,
+  gaCustomTitle = None) {
+
+  @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentName()) {
+    @input(
+      field = nameForm("employmentName"),
+      labelHidden = true,
+      labelText = Messages("tai.addEmployment.addNameForm.title"),
+      classes = Seq("form-control form-control--full-width")
+    )
+
+    @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing employment"))
+  }
+
+  @cancelLink(url = controllers.employments.routes.AddEmploymentController.cancel(), gaEventAction = Some(gaEventActionString))
+}

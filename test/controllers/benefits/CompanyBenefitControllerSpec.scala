@@ -18,7 +18,7 @@ package controllers.benefits
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction}
+import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -28,9 +28,9 @@ import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.data.Form
 import play.api.i18n.Messages
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.income.Live
@@ -41,7 +41,7 @@ import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstant
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import utils.BaseSpec
-import views.html.benefits.updateOrRemoveCompanyBenefitDecision
+import views.html.benefits.UpdateOrRemoveCompanyBenefitDecisionView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -130,10 +130,10 @@ class CompanyBenefitControllerSpec
           UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(YesIGetThisBenefit))
         val expectedViewModel = CompanyBenefitDecisionViewModel(benefitType, empName, expectedForm)
 
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
         val result = SUT.decision()(request)
 
-        result rendersTheSameViewAs updateOrRemoveCompanyBenefitDecision(expectedViewModel)
+        result rendersTheSameViewAs updateOrRemoveCompanyBenefitDecisionView(expectedViewModel)
       }
     }
 
@@ -309,7 +309,7 @@ class CompanyBenefitControllerSpec
 
   def createSUT = new SUT
 
-  val employment = Employment(
+  val employment: Employment = Employment(
     "company name",
     Live,
     Some("123"),
@@ -320,12 +320,15 @@ class CompanyBenefitControllerSpec
     "",
     2,
     None,
-    false,
-    false)
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
 
-  val employmentService = mock[EmploymentService]
-  val journeyCacheService = mock[JourneyCacheService]
-  val decisionCacheWrapper = mock[DecisionCacheWrapper]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val decisionCacheWrapper: DecisionCacheWrapper = mock[DecisionCacheWrapper]
+
+  private val updateOrRemoveCompanyBenefitDecisionView = inject[UpdateOrRemoveCompanyBenefitDecisionView]
 
   class SUT
       extends CompanyBenefitController(
@@ -335,8 +338,10 @@ class CompanyBenefitControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        updateOrRemoveCompanyBenefitDecisionView,
         MockTemplateRenderer,
-        MockPartialRetriever
+        MockPartialRetriever,
+        inject[ErrorPagesHandler]
       ) {
     when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
   }

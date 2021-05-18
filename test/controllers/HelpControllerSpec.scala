@@ -23,6 +23,7 @@ import org.jsoup.Jsoup
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
+import views.html.help.GetHelpView
 
 class HelpControllerSpec extends BaseSpec with JsoupMatchers {
 
@@ -41,6 +42,7 @@ class HelpControllerSpec extends BaseSpec with JsoupMatchers {
     FakeValidatePerson,
     appConfig,
     mcc,
+    inject[GetHelpView],
     MockPartialRetriever,
     MockTemplateRenderer
   )

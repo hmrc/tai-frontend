@@ -23,7 +23,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -31,13 +31,14 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import utils.BaseSpec
+import views.html.{TaxCodeDetailsPreviousYearsView, TaxCodeDetailsView}
 
 import scala.concurrent.Future
 
 class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val taxAccountService = mock[TaxAccountService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
 
   def sut = new YourTaxCodeController(
     taxAccountService,
@@ -46,8 +47,11 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
     FakeValidatePerson,
     mcc,
     appConfig,
+    inject[TaxCodeDetailsView],
+    inject[TaxCodeDetailsPreviousYearsView],
     partialRetriever,
-    templateRenderer
+    templateRenderer,
+    inject[ErrorPagesHandler]
   )
 
   override def beforeEach: Unit =
@@ -131,9 +135,9 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
         startDate.plusMonths(1),
         OtherBasisOfOperation,
         "A Employer 1",
-        false,
+        pensionIndicator = false,
         Some("1234"),
-        false)
+        primary = false)
 
       val taxCodeRecords = Seq(previousTaxCodeRecord1)
 

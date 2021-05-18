@@ -16,15 +16,21 @@
 
 package controllers
 
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.scalatest.concurrent.PatienceConfiguration
 import org.scalatest.{Args, Status, Suite, TestSuite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.Person
+import uk.gov.hmrc.webchat.client.WebChatClient
+import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
 
 import scala.concurrent.ExecutionContext
 
@@ -42,7 +48,14 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
     "microservice.services.citizen-auth.port"             -> "9999"
   )
 
-  implicit override lazy val app: Application = new GuiceApplicationBuilder().configure(additionalConfiguration).build()
+  implicit override lazy val app: Application = new GuiceApplicationBuilder()
+    .configure(additionalConfiguration)
+    .overrides(
+      bind[WebChatClient].toInstance(new WebChatClientStub),
+      bind[TemplateRenderer].toInstance(MockTemplateRenderer),
+      bind[FormPartialRetriever].toInstance(MockPartialRetriever)
+    )
+    .build()
 
   org.slf4j.LoggerFactory
     .getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)

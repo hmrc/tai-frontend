@@ -19,11 +19,10 @@ package controllers
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import org.joda.time.LocalDate
 import play.api.data.Form
-import play.api.i18n.Lang
-import play.api.mvc.{request, _}
+import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -38,11 +37,13 @@ import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, SameEstimatedPayViewModel}
+import views.html.incomes._
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
+@Singleton
 class IncomeController @Inject()(
   @Named("Update Income") journeyCacheService: JourneyCacheService,
   taxAccountService: TaxAccountService,
@@ -52,8 +53,15 @@ class IncomeController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  confirmAmountEntered: ConfirmAmountEnteredView,
+  editSuccess: EditSuccessView,
+  editPension: EditPensionView,
+  editPensionSuccess: EditPensionSuccessView,
+  editIncome: EditIncomeView,
+  sameEstimatedPay: SameEstimatedPayView,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -63,7 +71,7 @@ class IncomeController @Inject()(
   }
 
   def regularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     (for {
@@ -74,15 +82,14 @@ class IncomeController @Inject()(
       _ <- journeyCacheService.cache(cacheData)
     } yield {
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
-
       Ok(
-        views.html.incomes.editIncome(
+        editIncome(
           EditIncomeForm.create(employmentAmount),
-          false,
+          hasMultipleIncomes = false,
           employmentAmount.employmentId,
           amountYearToDate.toString))
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
@@ -93,14 +100,14 @@ class IncomeController @Inject()(
     } yield {
       val employerId = cachedData(1).toInt
       val model = SameEstimatedPayViewModel(
-        cachedData(0),
+        cachedData.head,
         employerId,
         cachedData(2).toInt,
-        false,
+        isPension = false,
         routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString)
-      Ok(views.html.incomes.sameEstimatedPay(model))
+      Ok(sameEstimatedPay(model))
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
@@ -115,19 +122,19 @@ class IncomeController @Inject()(
       income     <- incomeService.employmentAmount(nino, id)
     } yield {
       val model = SameEstimatedPayViewModel(
-        cachedData(0),
+        cachedData.head,
         id,
         income.oldAmount,
         income.isOccupationalPension,
         routes.IncomeSourceSummaryController.onPageLoad(id).url)
-      Ok(views.html.incomes.sameEstimatedPay(model))
+      Ok(sameEstimatedPay(model))
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
   def editRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService.collectedValues(
       Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
@@ -141,10 +148,10 @@ class IncomeController @Inject()(
           .bind(employerName, payToDate, date)
           .fold(
             (formWithErrors: Form[EditIncomeForm]) => {
-              Future.successful(BadRequest(views.html.incomes
-                .editIncome(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head)))
+              Future.successful(BadRequest(
+                editIncome(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)))
             },
-            (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome)
+            (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome())
           )
       }
     }
@@ -157,7 +164,7 @@ class IncomeController @Inject()(
     FormHelper.areEqual(Some(income.oldAmount.toString), income.newAmount)
 
   def confirmRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     (for {
@@ -173,14 +180,14 @@ class IncomeController @Inject()(
               val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
               val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
-              Ok(views.html.incomes.confirmAmountEntered(vm))
+              Ok(confirmAmountEntered(vm))
 
             case _ => throw new RuntimeException(s"Not able to found employment with id $id")
           }
         case _ => throw new RuntimeException("Exception while reading employment and tax code details")
       }
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
@@ -195,18 +202,17 @@ class IncomeController @Inject()(
   }
 
   def updateEstimatedIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(
       implicit user: AuthedUser,
       request: Request[AnyContent]): Result = {
       journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newAmount)
       incomeType match {
-        case TaiConstants.IncomeTypePension => Ok(views.html.incomes.editPensionSuccess(employerName, employerId))
-        case _                              => Ok(views.html.incomes.editSuccess(employerName, employerId))
+        case TaiConstants.IncomeTypePension => Ok(editPensionSuccess(employerName, employerId))
+        case _                              => Ok(editSuccess(employerName, employerId))
       }
     }
-
     journeyCacheService
       .mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
       .flatMap(cache => {
@@ -220,23 +226,22 @@ class IncomeController @Inject()(
               FormHelper.stripNumber(newAmount).toInt,
               TaxYear(),
               incomeId.toInt) flatMap {
-              case TaiSuccessResponse => {
+              case TaiSuccessResponse =>
                 estimatedPayJourneyCompletionService.journeyCompleted(incomeId).map { _ =>
                   respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
                 }
-              }
               case failure: TaiFailureResponse =>
                 throw new RuntimeException(s"Failed to update estimated income with exception: ${failure.message}")
             }
         }
       })
       .recover {
-        case NonFatal(e) => internalServerError(e.getMessage, Some(e))
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage, Some(e))
       }
   }
 
   def pensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     (for {
@@ -248,13 +253,13 @@ class IncomeController @Inject()(
     } yield {
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
-        views.html.incomes.editPension(
+        editPension(
           EditIncomeForm.create(employmentAmount),
-          false,
+          hasMultipleIncomes = false,
           employmentAmount.employmentId,
           amountYearToDate.toString()))
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
@@ -288,7 +293,7 @@ class IncomeController @Inject()(
     }
 
   def editPensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService.collectedValues(
       Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
@@ -299,10 +304,10 @@ class IncomeController @Inject()(
           .bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date)
           .fold(
             formWithErrors => {
-              Future.successful(BadRequest(views.html.incomes
-                .editPension(formWithErrors, false, mandatorySeq(1).toInt, mandatorySeq.head)))
+              Future.successful(BadRequest(
+                editPension(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)))
             },
-            (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome)
+            (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome())
           )
       }
     }
@@ -310,7 +315,7 @@ class IncomeController @Inject()(
   }
 
   def confirmPensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     (for {
@@ -327,13 +332,13 @@ class IncomeController @Inject()(
               val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
               val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
-              Ok(views.html.incomes.confirmAmountEntered(vm))
+              Ok(confirmAmountEntered(vm))
             case _ => throw new RuntimeException(s"Not able to found employment with id $id")
           }
         case _ => throw new RuntimeException("Exception while reading employment and tax code details")
       }
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 

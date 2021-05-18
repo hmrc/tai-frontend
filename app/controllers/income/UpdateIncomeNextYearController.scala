@@ -16,10 +16,9 @@
 
 package controllers.income
 
-import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import javax.inject.Inject
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc._
@@ -36,9 +35,11 @@ import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionCYPlus1EmploymentViewModel, DuplicateSubmissionCYPlus1PensionViewModel, DuplicateSubmissionEstimatedPay}
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
-
+import views.html.incomes.nextYear._
+import views.html.incomes.SameEstimatedPayView
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -49,8 +50,16 @@ class UpdateIncomeNextYearController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  updateIncomeCYPlus1Success: UpdateIncomeCYPlus1SuccessView,
+  updateIncomeCYPlus1Confirm: UpdateIncomeCYPlus1ConfirmView,
+  updateIncomeCYPlus1Warning: UpdateIncomeCYPlus1WarningView,
+  updateIncomeCYPlus1Start: UpdateIncomeCYPlus1StartView,
+  updateIncomeCYPlus1Edit: UpdateIncomeCYPlus1EditView,
+  updateIncomeCYPlus1Same: UpdateIncomeCYPlus1SameView,
+  sameEstimatedPay: SameEstimatedPayView,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with FormValuesConstants with I18nSupport {
 
   def onPageLoad(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -73,9 +82,7 @@ class UpdateIncomeNextYearController @Inject()(
           employmentId,
           nino,
           (employmentId: Int, vm: DuplicateSubmissionEstimatedPay) =>
-            Ok(
-              views.html.incomes.nextYear
-                .updateIncomeCYPlus1Warning(DuplicateSubmissionWarningForm.createForm, vm, employmentId))
+            Ok(updateIncomeCYPlus1Warning(DuplicateSubmissionWarningForm.createForm, vm, employmentId))
         )
       }
   }
@@ -97,13 +104,13 @@ class UpdateIncomeNextYearController @Inject()(
         }
       case Left(error) =>
         Logger.warn(s"[UpdateIncomeNextYearController]: $error")
-        Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad))
+        Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad()))
     }
 
   def submitDuplicateWarning(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       preAction {
-        implicit val user = request.taiUser
+        implicit val user: AuthedUser = request.taiUser
         val nino = user.nino
 
         DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
@@ -112,7 +119,7 @@ class UpdateIncomeNextYearController @Inject()(
               employmentId,
               nino,
               (employmentId: Int, vm: DuplicateSubmissionEstimatedPay) =>
-                BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId))
+                BadRequest(updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId))
             )
           },
           success => {
@@ -130,24 +137,24 @@ class UpdateIncomeNextYearController @Inject()(
   def start(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     preAction {
 
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-        Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension))
+        Ok(updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension))
       }
     }
   }
 
   def edit(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     preAction {
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
         {
           Ok(
-            views.html.incomes.nextYear.updateIncomeCYPlus1Edit(
+            updateIncomeCYPlus1Edit(
               model.employmentName,
               employmentId,
               model.isPension,
@@ -160,69 +167,67 @@ class UpdateIncomeNextYearController @Inject()(
 
   def same(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     preAction {
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-        Ok(
-          views.html.incomes.nextYear
-            .updateIncomeCYPlus1Same(model.employmentName, model.employmentId, model.currentValue))
+        Ok(updateIncomeCYPlus1Same(model.employmentName, model.employmentId, model.currentValue))
       }
     }
   }
 
   def success(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     preAction {
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-        Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName, model.isPension))
+        Ok(updateIncomeCYPlus1Success(model.employmentName, model.isPension))
       }
     }
   }
 
   def confirm(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     preAction {
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       updateNextYearsIncomeService.getNewAmount(employmentId).flatMap {
         case Right(newAmount) =>
           updateNextYearsIncomeService
             .get(employmentId, user.nino)
             .map {
-              case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue) => {
+              case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue) =>
                 val vm =
                   ConfirmAmountEnteredViewModel(employmentId, employmentName, currentValue, newAmount, NextYearPay)
-                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm))
-              }
+                Ok(updateIncomeCYPlus1Confirm(vm))
             }
         case Left(error) =>
           Logger.warn("Could not obtain new amount in confirm: " + error)
-          Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad))
+          Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad()))
       }
     }
   }
 
   def handleConfirm(employmentId: Int): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       if (applicationConfig.cyPlusOneEnabled) {
         (updateNextYearsIncomeService.submit(employmentId, user.nino) map {
           case TaiSuccessResponse => Redirect(routes.UpdateIncomeNextYearController.success(employmentId))
           case _                  => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
         }).recover {
-          case NonFatal(e) => internalServerError(e.getMessage)
+          case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
         }
       } else {
-        Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+        Future.successful(
+          NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
       }
 
     }
 
   def update(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     val nino = user.nino
 
@@ -235,7 +240,7 @@ class UpdateIncomeNextYearController @Inject()(
             formWithErrors => {
               Future.successful(
                 BadRequest(
-                  views.html.incomes.nextYear.updateIncomeCYPlus1Edit(
+                  updateIncomeCYPlus1Edit(
                     model.employmentName,
                     employmentId,
                     model.isPension,
@@ -250,15 +255,15 @@ class UpdateIncomeNextYearController @Inject()(
                       Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId)))
                   else {
                     updateNextYearsIncomeService.getNewAmount(employmentId) flatMap {
-                      case Right(newAmount) if (newAmount == newIncome.toInt) =>
+                      case Right(newAmount) if newAmount == newIncome.toInt =>
                         val samePayViewModel = SameEstimatedPayViewModel(
                           model.employmentName,
                           model.employmentId,
                           newAmount,
                           model.isPension,
-                          controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
+                          controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
 
-                        Future.successful(Ok(views.html.incomes.sameEstimatedPay(samePayViewModel)))
+                        Future.successful(Ok(sameEstimatedPay(samePayViewModel)))
                       case _ =>
                         updateNextYearsIncomeService.setNewAmount(newIncome, employmentId, nino) map { _ =>
                           Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
@@ -276,6 +281,7 @@ class UpdateIncomeNextYearController @Inject()(
     if (applicationConfig.cyPlusOneEnabled) {
       action
     } else {
-      Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+      Future.successful(
+        NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
     }
 }

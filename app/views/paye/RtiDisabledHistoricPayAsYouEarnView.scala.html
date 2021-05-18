@@ -1,0 +1,178 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.ptaHeader
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.play.views.helpers.MoneyPounds
+@import uk.gov.hmrc.tai.util.ViewModelHelper._
+@import uk.gov.hmrc.tai.service.TaxPeriodLabelService
+@import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
+
+@import controllers.auth.AuthenticatedRequest
+
+@this(main: main)
+
+@(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
+messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"Your Pay As You Earn Income Tax"}
+
+@backLinkToChooseTaxYear = {
+<p class="flush--bottom">
+    @Link.toInternalPage(
+    id=Some("returnToChooseTaxYearLink"),
+    url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+    value=Some(messages("tai.returnToChooseTaxYear")),
+    cssClasses=Some("link-back"),
+    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${messages("tai.returnToChooseTaxYear")}"))
+    ).toHtml
+</p>
+}
+
+@employmentPairsList = @{viewModel.employments.sliding(2, 2).toList}
+@pensionPairsList = @{viewModel.pensions.sliding(2, 2).toList}
+
+@header = @{
+    ptaHeader(
+        mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(viewModel.taxYear.year)),
+        preHeadingText = messages("tai.paye.lastTaxYear.preHeading"),
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        customBackLinkContent = Some(backLinkToChooseTaxYear))
+}
+
+@main(
+    title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(viewModel.taxYear.year)),
+    articleClasses = Some("full-width"),
+    authedUser = Some(request.taiUser),
+    pageHeader = Some(header),
+    gaCustomTitle = None
+){
+
+<div class="grid-row">
+
+    <div class="grid grid-2-3">
+
+        <div class="inner-block" id="lastTaxYear">
+            @if(!viewModel.hasEmploymentsOrPensions) {
+                <div class="flush--bottom soft--bottom" id="rtiDown">
+                    <p id="rtiDownMessage">@messages("tai.rti_down_message")</p>
+                    <p id="rtiDownContact">@messages("tai.rti_down_message_contact")</p>
+                </div>
+            } else {
+                <div id="lastTaxYearIncome">
+
+                    @if(employmentPairsList.nonEmpty) {
+                        <h2 id="lastYearEmploymentHeading" class="heading-section">
+                            @messages("tai.paye.incomeEmployment.heading")
+                        </h2>
+
+                        @incomeList(employmentPairsList, "employment")
+                    }
+
+                    @if(pensionPairsList.nonEmpty) {
+                        <h2 id="lastYearPensionHeading" class="heading-section">
+                            @messages("tai.paye.incomePension.heading")
+                        </h2>
+
+                        @incomeList(pensionPairsList, "pension")
+                    }
+                </div>
+            }
+
+            <h3 class="heading-section heading-medium">@messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
+            <p>
+                @messages("tai.paye.lastTaxYear.incorrectInformation.text")
+                @Link.toInternalPage(
+                    url=controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(viewModel.taxYear).url,
+                    value=Some(messages("tai.paye.lastTaxYear.incorrectInformation.link")),
+                    id=Some("updateEmployment")
+                ).toHtml
+            </p>
+
+            @if(viewModel.p800ServiceIsAvailable) {
+                <p>
+                    @messages("tai.paye.lastTaxYear.checkIncomeTax.text")
+                    @Link.toInternalPage(
+                        url=appConfig.taxYouPaidStatus.toString,
+                        value=Some(messages("tai.paye.lastTaxYear.checkIncomeTax.link")),
+                        id=Some("p800Link")
+                    ).toHtml
+                    @messages("tai.paye.lastTaxYear.checkIncomeTax.for", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year))
+                </p>
+            }
+        </div>
+
+    </div>
+    @if(appConfig.numberOfPreviousYearsToShow > 1) {
+    <div class="grid grid-1-3">
+        <div class="inner-block">
+            @includes.previousYearsSideNav(viewModel.taxYear, appConfig.numberOfPreviousYearsToShow)
+        </div>
+    </div>
+    }
+</div>
+
+}
+
+@incomeList(incomeSourcePairs: List[Seq[EmploymentViewModel]], incomeType: String) = {
+    @for((pair, pidx) <- incomeSourcePairs zip (Stream from (1,2))) {
+
+        <div class="grid-row">
+
+            @for((employment, idx) <- pair zip (Stream from pidx)) {
+
+                <div id="@incomeType@idx" class="subsection flush--top @if(pair.length==1){column-full}else{column-one-half}">
+                    <h3 class="heading-large flush break-word-only">@employment.name</h3>
+                    <p class="panel panel-border-wide">
+                        @messages("tai.rti.down")
+                    </p>
+
+                    @if(viewModel.showTaxCodeDescriptionLink) {
+                        @Link.toInternalPage(
+                            url=routes.YourTaxCodeController.prevTaxCodes(viewModel.taxYear).toString(),
+                            value=Some(messages("tai.taxCode.description.link")),
+                            cssClasses=Some("taxCodeDescription")
+                        ).toHtml
+                    }
+
+                    <p>
+                        @employment.payrollNumber.map{ payrollNumber =>
+                                @if(employment.isPension) {
+                                    @textForScreenReader(
+                                        s"${messages("tai.pensionNumber")}: ${payrollNumber}",
+                                        messages("tai.pension.income.details.pensionNumber.screenReader", payrollNumber)
+                                    )
+                                } else {
+                                    @textForScreenReader(
+                                        messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber),
+                                        messages("tai.employment.income.details.payrollNumber.screenReader", payrollNumber)
+                                    )
+                                }
+
+                        }
+                    </p>
+                </div>
+            }
+        </div>
+    }
+}
+
+@textForScreenReader(visibleMessage: String, hiddenMessage: String)= {
+    <span aria-hidden="true">@visibleMessage</span>
+    <span class="visuallyhidden">@hiddenMessage</span>
+}

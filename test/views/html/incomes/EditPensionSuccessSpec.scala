@@ -46,5 +46,6 @@ class EditPensionSuccessSpec extends TaiViewSpec {
     }
   }
 
-  override def view: Html = views.html.incomes.editPensionSuccess(employerName, employerId)
+  private def editPensionSuccess = inject[EditPensionSuccessView]
+  override def view: Html = editPensionSuccess(employerName, employerId)
 }

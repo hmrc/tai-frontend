@@ -25,14 +25,16 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
+import views.html.ErrorTemplateNoauth
 
 import scala.concurrent.Future
 
 class UnauthorisedController @Inject()(
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)
+  error_template_noauth: ErrorTemplateNoauth,
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
 
   def upliftUrl: String = applicationConfig.sa16UpliftUrl
@@ -86,7 +88,7 @@ class UnauthorisedController @Inject()(
   }
 
   private def unauthorisedView()(implicit request: Request[_]) =
-    views.html.error_template_noauth(
+    error_template_noauth(
       Messages("tai.unauthorised.heading"),
       Messages("tai.unauthorised.heading"),
       Messages("tai.unauthorised.message"),

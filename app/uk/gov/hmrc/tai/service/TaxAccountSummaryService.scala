@@ -29,7 +29,6 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, NotLive}
 import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxAccountSummaryService @Inject()(
@@ -37,8 +36,8 @@ class TaxAccountSummaryService @Inject()(
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
   mcc: MessagesControllerComponents,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(

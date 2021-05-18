@@ -1,0 +1,131 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.forms.card
+@import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+@import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, WhatDoYouWantToDoViewModel}
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+
+@this(main: main)
+
+@(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
+  model: WhatDoYouWantToDoViewModel,
+    appConfig: ApplicationConfig
+)(implicit request: Request[_],
+  messages: Messages,
+  user: controllers.auth.AuthedUser,
+  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"Your PAYE Income Tax overview"}
+
+@optimizelyAudience = @{
+  if (model.showTaxCodeChangeTile()) {
+    Some("TaxCodeChangeUser")
+  } else {
+    None
+  }
+}
+
+@main(
+    title = messages("your.paye.income.tax.overview"),
+    authedUser = Some(user),
+    gaCustomTitle = None,
+    gaSettings = GoogleAnalyticsSettings(
+                                            customClientIdRequired = true,
+                                            customSessionIdRequired = true,
+                                            customHitStampRequired = true,
+                                            dimensions = Some(model.gaDimensions)
+                                        ),
+    optimizelyAudience = optimizelyAudience
+) {
+
+    <header class="page-header">
+        <h1 class="heading-xlarge" id="whatDoYouWantToDoTitle">@messages("your.paye.income.tax.overview")</h1>
+    </header>
+
+    <div class="grid-row">
+        <div class="grid">
+            <div class="inner-block">
+
+                <div class="flex-container grid-row">
+                @if(model.showTaxCodeChangeTile()){
+                  @card(
+                    url = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
+                    id = "hasTaxCodeChanged",
+                    heading = messages("check.tax.hasChanged.header"),
+                    bodyContent = Some(messages("check.tax.hasChanged.action")),
+                    gaAction = Some(gaEventActionString),
+                    gaLabel = Some(messages("check.tax.hasChanged.action"))
+                      )
+                    }
+                </div>
+
+                <div class="flex-container grid-row">
+                    @card(
+                        url = Some(s"/check-income-tax/historic-paye/${TaxYear().prev.year.toString}"),
+                        id = "earlierTaxYear",
+                        heading = messages("earlier"),
+                        bodyContent = Some(messages("check.tax.previous.years")),
+                        gaAction=Some(gaEventActionString),
+                        gaLabel=Some(messages("earlier"))
+                    )
+
+                    @card(
+                        url = Some("/check-income-tax/income-summary"),
+                        id = "currentTaxYear",
+                        heading = messages("current.tax.year"),
+                        bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange)),
+                        gaAction=Some(gaEventActionString),
+                        gaLabel=Some(messages("current.tax.year"))
+                    )
+
+                    @if(model.isCyPlusOneEnabled) {
+                        @card(
+                            url = Some("/check-income-tax/income-tax-comparison"),
+                            id = "nextTaxYear",
+                            heading = messages("next.year"),
+                            bodyContent = Some(messages("check.estimated.income",TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(yearsFromNow=1))),
+                            gaAction=Some(gaEventActionString),
+                            gaLabel=Some(messages("next.year"))
+                        )
+                    }
+
+                    @card(
+                        url = Some(appConfig.taxReliefExpenseClaimLink),
+                        id = "claimRelief",
+                        heading = messages("claim.tax.relief.wfh"),
+                        bodyContent = None,
+                        gaAction=Some(gaEventActionString),
+                        gaLabel=Some(messages("claim.tax.relief.wfh"))
+                    )
+
+                    @if(model.showJrsTile){
+                    @card(
+                    url = Some("/check-income-tax/jrs-claims"),
+                    id = "jrsClaims",
+                    heading = messages("check.jrs.claims"),
+                    gaAction=Some(gaEventActionString),
+                    gaLabel=Some(messages("check.jrs.claims"))
+                    )
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+}

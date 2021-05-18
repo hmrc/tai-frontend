@@ -16,6 +16,7 @@
 
 package views.html
 
+import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
 
@@ -120,34 +121,34 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
       doc must haveLinkElement(
         "taxCodesLink",
-        controllers.routes.YourTaxCodeController.taxCodes.url,
+        controllers.routes.YourTaxCodeController.taxCodes().url,
         messages("check.your.tax.codes"))
       doc must haveLinkElement(
         "incomeTaxEstimateLink",
-        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
         messages("check.your.income.tax.estimate"))
       doc must haveLinkElement(
         "taxableIncomeLink",
-        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+        controllers.routes.TaxAccountSummaryController.onPageLoad().url,
         messages("return.to.your.income.tax.summary"))
     }
 
     "display navigational link to 'Estimated tax you owe' page if EstimatedTaxYouOweThisYear is present" in {
       val labelVm = TaxSummaryLabel("labelText", Some(HelpLink("testValue", "testHref", "estimatedTaxOwedLink")))
       val vm: Seq[TaxFreeAmountSummaryRowViewModel] =
-        Seq(TaxFreeAmountSummaryRowViewModel(labelVm, "£11,500", ChangeLinkViewModel(false)))
+        Seq(TaxFreeAmountSummaryRowViewModel(labelVm, "£11,500", ChangeLinkViewModel(isDisplayed = false)))
       val svm: TaxFreeAmountSummaryViewModel = TaxFreeAmountSummaryViewModel(
         Seq(
           TaxFreeAmountSummaryCategoryViewModel(
             "header1",
             "header2",
-            true,
-            false,
+            hideHeaders = true,
+            hideCaption = false,
             "Deductions from your Personal Allowance",
             vm)))
       val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", svm)
 
-      val document = doc(views.html.taxFreeAmount(viewModel, appConfig))
+      val document = doc(template(viewModel, appConfig))
 
       document must haveLinkElement("estimatedTaxOwedLink", "testHref", "testValue")
     }
@@ -172,12 +173,15 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
     TaxFreeAmountSummaryRowViewModel(
       "An example addition benefit",
       "£11,500",
-      ChangeLinkViewModel(true, "context1", "/dummy/url1")),
+      ChangeLinkViewModel(isDisplayed = true, "context1", "/dummy/url1")),
     TaxFreeAmountSummaryRowViewModel(
       "Some Other Allowance",
       "£12,322",
-      ChangeLinkViewModel(true, "context2", "/dummy/url2")),
-    TaxFreeAmountSummaryRowViewModel("Blah Blah Random Extra Row Content", "£11,111", ChangeLinkViewModel(false))
+      ChangeLinkViewModel(isDisplayed = true, "context2", "/dummy/url2")),
+    TaxFreeAmountSummaryRowViewModel(
+      "Blah Blah Random Extra Row Content",
+      "£11,111",
+      ChangeLinkViewModel(isDisplayed = false))
   )
   val taxFreeAmountSummaryViewModel: TaxFreeAmountSummaryViewModel =
     TaxFreeAmountSummaryViewModel(
@@ -185,41 +189,48 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
         TaxFreeAmountSummaryCategoryViewModel(
           "header1",
           "header2",
-          false,
-          true,
+          hideHeaders = false,
+          hideCaption = true,
           messages("tai.taxFreeAmount.table.allowances.caption"),
-          Seq(TaxFreeAmountSummaryRowViewModel("Personal Allowance", "£11,500", ChangeLinkViewModel(false)))
+          Seq(
+            TaxFreeAmountSummaryRowViewModel("Personal Allowance", "£11,500", ChangeLinkViewModel(isDisplayed = false)))
         ),
         TaxFreeAmountSummaryCategoryViewModel(
           "header3",
           "header4",
-          true,
-          false,
+          hideHeaders = true,
+          hideCaption = false,
           "Additions to your Personal Allowance",
           rowViewModels),
         TaxFreeAmountSummaryCategoryViewModel(
           "header5",
           "header6",
-          true,
-          false,
+          hideHeaders = true,
+          hideCaption = false,
           "Deductions from your Personal Allowance",
           Seq(
             TaxFreeAmountSummaryRowViewModel(
               "An example single deduction benefit",
               "£12,300",
-              ChangeLinkViewModel(true, "context1", "/dummy/url1")))
+              ChangeLinkViewModel(isDisplayed = true, "context1", "/dummy/url1")))
         ),
         TaxFreeAmountSummaryCategoryViewModel(
           "header7",
           "header8",
-          true,
-          true,
+          hideHeaders = true,
+          hideCaption = true,
           messages("tai.taxFreeAmount.table.totals.caption"),
-          Seq(TaxFreeAmountSummaryRowViewModel("Your total tax-free amount", "£11,500", ChangeLinkViewModel(false)))
+          Seq(
+            TaxFreeAmountSummaryRowViewModel(
+              "Your total tax-free amount",
+              "£11,500",
+              ChangeLinkViewModel(isDisplayed = false)))
         )
       ))
   val viewModel: TaxFreeAmountViewModel =
     TaxFreeAmountViewModel("main heading", "main heading", "£2020", taxFreeAmountSummaryViewModel)
 
-  override def view = views.html.taxFreeAmount(viewModel, appConfig)
+  private val template = inject[TaxFreeAmountView]
+
+  override def view: Html = template(viewModel, appConfig)
 }

@@ -16,7 +16,7 @@
 
 package controllers.income.estimatedPay.update
 
-import controllers.TaiBaseController
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.{Inject, Named}
@@ -33,6 +33,8 @@ import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService, TaxAccountServ
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
+import views.html.incomes.HowToUpdateView
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -44,9 +46,11 @@ class IncomeUpdateHowToUpdateController @Inject()(
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,
   mcc: MessagesControllerComponents,
+  howToUpdateView: HowToUpdateView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   private def incomeTypeIdentifier(isPension: Boolean): String =
@@ -70,7 +74,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
     }
 
   def howToUpdatePage(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     (employmentService.employment(nino, id) flatMap {
@@ -90,7 +94,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
         }
       case None => throw new RuntimeException("Not able to find employment")
     }).recover {
-      case NonFatal(e) => internalServerError(e.getMessage)
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
@@ -100,33 +104,30 @@ class IncomeUpdateHowToUpdateController @Inject()(
     incomeToEdit: EmploymentAmount,
     taxCodeIncomeDetails: TaiResponse)(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] =
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, taxCodeIncomeDetails) match {
-      case (true, false, TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) => {
-
+      case (true, false, TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
         for {
           howToUpdate <- journeyCacheService.currentValue(UpdateIncome_HowToUpdateKey)
         } yield {
           val form = HowToUpdateForm.createForm().fill(HowToUpdateForm(howToUpdate))
 
           if (incomeService.editableIncomes(taxCodeIncomes).size > 1) {
-            Ok(views.html.incomes.howToUpdate(form, id, employmentName))
+            Ok(howToUpdateView(form, id, employmentName))
           } else {
             incomeService.singularIncomeId(taxCodeIncomes) match {
 
-              case Some(incomeId) => Ok(views.html.incomes.howToUpdate(form, incomeId, employmentName))
+              case Some(incomeId) => Ok(howToUpdateView(form, incomeId, employmentName))
 
               case None => throw new RuntimeException("Employment id not present")
             }
           }
 
         }
-
-      }
       case (false, false, _) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
       case _                 => Future.successful(Redirect(controllers.routes.IncomeController.pensionIncome()))
     }
 
   def handleChooseHowToUpdate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     HowToUpdateForm
       .createForm()
@@ -138,7 +139,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
           } yield {
             incomeSourceEither match {
               case Right(incomeSource) =>
-                BadRequest(views.html.incomes.howToUpdate(formWithErrors, incomeSource.id, incomeSource.name))
+                BadRequest(howToUpdateView(formWithErrors, incomeSource.id, incomeSource.name))
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }
@@ -146,12 +147,9 @@ class IncomeUpdateHowToUpdateController @Inject()(
         formData => {
           journeyCacheService.cache(UpdateIncome_HowToUpdateKey, formData.howToUpdate.getOrElse("")).map { _ =>
             formData.howToUpdate match {
-              case Some("incomeCalculator") => {
+              case Some("incomeCalculator") =>
                 Redirect(routes.IncomeUpdateWorkingHoursController.workingHoursPage())
-              }
-              case _ => {
-                Redirect(controllers.routes.IncomeController.viewIncomeForEdit())
-              }
+              case _ => Redirect(controllers.routes.IncomeController.viewIncomeForEdit())
             }
           }
         }

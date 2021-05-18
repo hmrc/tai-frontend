@@ -17,8 +17,8 @@
 package controllers.employments
 
 import builders.RequestBuilder
-import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -28,8 +28,6 @@ import org.mockito.{Matchers, Mockito}
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.income.Live
@@ -38,10 +36,12 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
+import views.html.CanWeContactByPhoneView
+import views.html.employments.ConfirmationView
+import views.html.employments.update.{UpdateEmploymentCheckYourAnswersView, WhatDoYouWantToTellUsView}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
-import scala.util.Random
 
 class UpdateEmploymentControllerSpec
     extends BaseSpec with JourneyCacheConstants with AuditConstants with FormValuesConstants with BeforeAndAfter
@@ -464,15 +464,16 @@ class UpdateEmploymentControllerSpec
     "",
     2,
     None,
-    false,
-    false)
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
 
   private def createSUT = new SUT
 
   val personService: PersonService = mock[PersonService]
-  val journeyCacheService = mock[JourneyCacheService]
-  val successfulJourneyCacheService = mock[JourneyCacheService]
-  val employmentService = mock[EmploymentService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val employmentService: EmploymentService = mock[EmploymentService]
 
   private class SUT
       extends UpdateEmploymentController(
@@ -481,10 +482,15 @@ class UpdateEmploymentControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
+        inject[WhatDoYouWantToTellUsView],
+        inject[CanWeContactByPhoneView],
+        inject[UpdateEmploymentCheckYourAnswersView],
+        inject[ConfirmationView],
         journeyCacheService,
         successfulJourneyCacheService,
         MockPartialRetriever,
-        MockTemplateRenderer
+        MockTemplateRenderer,
+        inject[ErrorPagesHandler]
       )
 
 }

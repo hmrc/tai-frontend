@@ -1,0 +1,73 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.backLink
+@import includes.forms.submit
+@import includes.{cancelLink, ptaHeader}
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.tai.forms.employments.IrregularPayFormData
+@import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
+@import includes.forms.inputRadioGroupStyling
+
+@this(main: main, form: FormWithCSRF)
+
+@(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"Irregular Pay"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(irregularPayForm),
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.irregular.heading", model.employerName),
+        preHeadingText = Messages("tai.irregular.preHeadingText"))}
+
+@main(
+    title = Messages("tai.irregular.preHeadingText"),
+    authedUser = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = None) {
+
+    <p>
+        <span class="lede">@Messages("tai.irregular.para1", model.employerName)</span>
+    </p>
+    <p>@Messages("tai.irregular.para2", model.employerName)</p>
+    <p>@Messages("tai.irregular.para3")</p>
+
+    @form(action= controllers.employments.routes.EndEmploymentController.handleIrregularPaymentError(), args = Symbol("data-journey-dynamic-radios") -> "") {
+
+        @{inputRadioGroupStyling(
+            field=irregularPayForm("irregularPayDecision"),
+            radioOptions=Seq(("contactEmployer" -> Messages("tai.irregular.option1", model.employerName)), ("updateDetails" -> Messages("tai.irregular.option2")) ),
+            legend=Messages("tai.irregular.para4"),
+            legendHint=None,
+            ('_groupDivClass, "form-group" ),
+            ('_fieldsetAttributes, "id=firstPayChoice" ),
+            ('_legendClass, "section flush"),
+            ('_legendSpanClass, "bold-small"),
+            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:IrregularPay:ContactEmployer" data-journey-val="Contact Employer"""") ),
+            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:IrregularPay:UpdateMyDetails" data-journey-val="UpdateMyDetails"""") )
+        )}
+
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(""))
+
+    }
+
+    @cancelLink(url=controllers.routes.IncomeSourceSummaryController.onPageLoad(model.empId), gaEventAction = Some(gaEventActionString))
+
+}

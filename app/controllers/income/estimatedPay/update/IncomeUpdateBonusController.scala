@@ -18,7 +18,7 @@ package controllers.income.estimatedPay.update
 
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -28,6 +28,7 @@ import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, BonusPaymentsForm, YesNoF
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
+import views.html.incomes._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,13 +36,15 @@ class IncomeUpdateBonusController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  bonusPayments: BonusPaymentsView,
+  bonusPaymentAmount: BonusPaymentAmountView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  override implicit val partialRetriever: FormPartialRetriever,
-  override implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val partialRetriever: FormPartialRetriever,
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants
     with UpdatedEstimatedPayJourneyCache {
   def bonusPaymentsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)
@@ -49,14 +52,14 @@ class IncomeUpdateBonusController @Inject()(
     } yield {
       val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
       incomeSourceEither match {
-        case Right(incomeSource) => Ok(views.html.incomes.bonusPayments(form, incomeSource))
+        case Right(incomeSource) => Ok(bonusPayments(form, incomeSource))
         case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
     }
   }
 
   def handleBonusPayments: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     BonusPaymentsForm.createForm
       .bindFromRequest()
@@ -66,7 +69,7 @@ class IncomeUpdateBonusController @Inject()(
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
             incomeSourceEither match {
-              case Right(incomeSource) => BadRequest(views.html.incomes.bonusPayments(formWithErrors, incomeSource))
+              case Right(incomeSource) => BadRequest(bonusPayments(formWithErrors, incomeSource))
               case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }
@@ -88,7 +91,7 @@ class IncomeUpdateBonusController @Inject()(
   }
 
   def bonusOvertimeAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     for {
       incomeSourceEither  <- IncomeSource.create(journeyCacheService)
@@ -96,7 +99,7 @@ class IncomeUpdateBonusController @Inject()(
     } yield {
       val form = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
       incomeSourceEither match {
-        case Right(incomeSource) => Ok(views.html.incomes.bonusPaymentAmount(form, incomeSource))
+        case Right(incomeSource) => Ok(bonusPaymentAmount(form, incomeSource))
         case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
 
@@ -104,7 +107,7 @@ class IncomeUpdateBonusController @Inject()(
   }
 
   def handleBonusOvertimeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     BonusOvertimeAmountForm
       .createForm()
@@ -116,7 +119,7 @@ class IncomeUpdateBonusController @Inject()(
           } yield {
             incomeSourceEither match {
               case Right(incomeSource) =>
-                BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, incomeSource))
+                BadRequest(bonusPaymentAmount(formWithErrors, incomeSource))
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }

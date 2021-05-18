@@ -24,6 +24,7 @@ import org.mockito.Mockito._
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service.AuditService
 import utils.BaseSpec
+import views.html.ErrorNoPrimary
 
 import scala.concurrent.Future
 
@@ -52,16 +53,14 @@ class AuditControllerSpec extends BaseSpec {
 
   private val redirectUri = "redirectUri"
 
-  val auditService = mock[AuditService]
+  val auditService: AuditService = mock[AuditService]
 
   class TestAuditController
       extends AuditController(
         auditService,
         FakeAuthAction,
         FakeValidatePerson,
-        mcc,
-        MockPartialRetriever,
-        MockTemplateRenderer
+        mcc
       ) {
 
     when(auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any()))

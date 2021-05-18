@@ -17,6 +17,7 @@
 package views.html
 
 import org.jsoup.Jsoup
+import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeViewModel}
 
@@ -36,15 +37,15 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
     "display navigational links to other pages in the service" in {
       doc must haveLinkElement(
         "taxFreeAmountLink",
-        controllers.routes.TaxFreeAmountController.taxFreeAmount.url,
+        controllers.routes.TaxFreeAmountController.taxFreeAmount().url,
         messages("check.your.tax.free.amount"))
       doc must haveLinkElement(
         "incomeTaxEstimateLink",
-        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
         messages("check.your.income.tax.estimate"))
       doc must haveLinkElement(
         "taxableIncomeLink",
-        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+        controllers.routes.TaxAccountSummaryController.onPageLoad().url,
         messages("return.to.your.income.tax.summary"))
     }
 
@@ -73,7 +74,7 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
     }
 
     "contain a link to the income details for this employer" in {
-      val view = views.html.taxCodeDetails(viewModel)
+      val view = template(viewModel)
       val doc = Jsoup.parse(view.toString())
 
       doc must haveLinkElement(
@@ -99,5 +100,7 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
     Some(employerId)
   )
 
-  override def view = views.html.taxCodeDetails(viewModel)
+  private val template = inject[TaxCodeDetailsView]
+
+  override def view: Html = template(viewModel)
 }

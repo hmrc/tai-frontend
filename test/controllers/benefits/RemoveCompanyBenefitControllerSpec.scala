@@ -26,6 +26,7 @@ import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
+import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.views.formatting.Dates
@@ -41,7 +42,8 @@ import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstant
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
 import utils.BaseSpec
-import views.html.benefits.{removeBenefitTotalValue, removeCompanyBenefitCheckYourAnswers}
+import views.html.benefits.{RemoveBenefitTotalValueView, RemoveCompanyBenefitCheckYourAnswersView, RemoveCompanyBenefitConfirmationView, RemoveCompanyBenefitStopDateView}
+import views.html.CanWeContactByPhoneView
 
 import scala.concurrent.Future
 
@@ -81,12 +83,12 @@ class RemoveCompanyBenefitControllerSpec
 
       when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
-      implicit val request = (RequestBuilder.buildFakeRequestWithAuth("GET"))
+      implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
       val result = SUT.stopDate()(request)
 
       val expectedView = {
         val form = RemoveCompanyBenefitStopDateForm.form.fill(cache.get(EndCompanyBenefit_BenefitStopDateKey))
-        views.html.benefits.removeCompanyBenefitStopDate(
+        removeCompanyBenefitStopDateView(
           form,
           cache(EndCompanyBenefit_BenefitNameKey),
           cache(EndCompanyBenefit_EmploymentNameKey))
@@ -192,13 +194,13 @@ class RemoveCompanyBenefitControllerSpec
           ))
       )
 
-      implicit val request = fakeRequest
+      implicit val request: FakeRequest[AnyContent] = fakeRequest
 
       val result = SUT.totalValueOfBenefit()(fakeRequest)
 
       val expectedForm = CompanyBenefitTotalValueForm.form.fill(valueOfBenefit.get)
       val expectedViewModel = BenefitViewModel(employmentName, benefitName)
-      result rendersTheSameViewAs removeBenefitTotalValue(expectedViewModel, expectedForm)
+      result rendersTheSameViewAs removeBenefitTotalValueView(expectedViewModel, expectedForm)
     }
   }
 
@@ -376,7 +378,7 @@ class RemoveCompanyBenefitControllerSpec
         doc must haveBackLink
         doc
           .getElementById("cancelLink")
-          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
+          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
       }
     }
   }
@@ -488,7 +490,7 @@ class RemoveCompanyBenefitControllerSpec
         "Yes",
         Some("123456789"))
 
-      result rendersTheSameViewAs removeCompanyBenefitCheckYourAnswers(expectedViewModel)
+      result rendersTheSameViewAs removeCompanyBenefitCheckYourAnswersView(expectedViewModel)
     }
 
     "redirect to the summary page if a value is missing from the cache " in {
@@ -672,7 +674,7 @@ class RemoveCompanyBenefitControllerSpec
     }
   }
 
-  val employment = Employment(
+  val employment: Employment = Employment(
     "company name",
     Live,
     Some("123"),
@@ -683,16 +685,23 @@ class RemoveCompanyBenefitControllerSpec
     "",
     2,
     None,
-    false,
-    false)
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
 
-  val startOfTaxYear = Dates.formatDate(TaxYear().start)
+  val startOfTaxYear: String = Dates.formatDate(TaxYear().start)
 
   def createSUT = new SUT
 
-  val benefitsService = mock[BenefitsService]
-  val removeCompanyBenefitJourneyCacheService = mock[JourneyCacheService]
-  val trackSuccessJourneyCacheService = mock[JourneyCacheService]
+  val benefitsService: BenefitsService = mock[BenefitsService]
+  val removeCompanyBenefitJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+
+  private val removeCompanyBenefitCheckYourAnswersView = inject[RemoveCompanyBenefitCheckYourAnswersView]
+
+  private val removeBenefitTotalValueView = inject[RemoveBenefitTotalValueView]
+
+  private val removeCompanyBenefitStopDateView = inject[RemoveCompanyBenefitStopDateView]
 
   class SUT
       extends RemoveCompanyBenefitController(
@@ -703,6 +712,11 @@ class RemoveCompanyBenefitControllerSpec
         FakeValidatePerson,
         mcc,
         langUtils,
+        removeCompanyBenefitCheckYourAnswersView,
+        removeCompanyBenefitStopDateView,
+        removeBenefitTotalValueView,
+        inject[CanWeContactByPhoneView],
+        inject[RemoveCompanyBenefitConfirmationView],
         templateRenderer,
         partialRetriever
       )

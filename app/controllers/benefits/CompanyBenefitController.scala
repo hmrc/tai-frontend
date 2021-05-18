@@ -17,10 +17,9 @@
 package controllers.benefits
 
 import com.google.inject.name.Named
-import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
-import javax.inject.Inject
+import controllers.auth.{AuthAction, AuthedUser}
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -32,7 +31,9 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
+import views.html.benefits.UpdateOrRemoveCompanyBenefitDecisionView
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
@@ -43,8 +44,10 @@ class CompanyBenefitController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  override implicit val templateRenderer: TemplateRenderer,
-  override implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
+  updateOrRemoveCompanyBenefitDecision: UpdateOrRemoveCompanyBenefitDecisionView,
+  implicit val templateRenderer: TemplateRenderer,
+  implicit val partialRetriever: FormPartialRetriever,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants {
 
   private val logger = Logger(this.getClass)
@@ -62,7 +65,7 @@ class CompanyBenefitController @Inject()(
     }
 
   def decision: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     (for {
       currentCache <- journeyCacheService.currentCache
@@ -75,7 +78,7 @@ class CompanyBenefitController @Inject()(
           val referer = currentCache.get(EndCompanyBenefit_RefererKey) match {
             case Some(value) => value
             case None =>
-              request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+              request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
           }
 
           val form =
@@ -94,34 +97,31 @@ class CompanyBenefitController @Inject()(
           )
 
           journeyCacheService.cache(cache).map { _ =>
-            Ok(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel))
+            Ok(updateOrRemoveCompanyBenefitDecision(viewModel))
           }
 
         case None => throw new RuntimeException("No employment found")
       }
     }).flatMap(identity) recover {
-      case NonFatal(e) => internalServerError("CompanyBenefitController exception", Some(e))
+      case NonFatal(e) => errorPagesHandler.internalServerError("CompanyBenefitController exception", Some(e))
     }
   }
 
-  def submitDecisionRedirect(decision: String, failureRoute: Result) =
+  def submitDecisionRedirect(decision: String, failureRoute: Result): Result =
     decision match {
-      case NoIDontGetThisBenefit => {
+      case NoIDontGetThisBenefit =>
         Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
-      }
-      case YesIGetThisBenefit => {
+      case YesIGetThisBenefit =>
         Redirect(
           controllers.routes.ExternalServiceRedirectController
             .auditAndRedirectService(TaiConstants.CompanyBenefitsIform))
-      }
-      case _ => {
+      case _ =>
         logger.error(s"Bad Option provided in submitDecision form: $decision")
         failureRoute
-      }
     }
 
   def submitDecision: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
 
     UpdateOrRemoveCompanyBenefitDecisionForm.form.bindFromRequest.fold(
       formWithErrors => {
@@ -130,7 +130,7 @@ class CompanyBenefitController @Inject()(
             currentCache(EndCompanyBenefit_BenefitTypeKey),
             currentCache(EndCompanyBenefit_EmploymentNameKey),
             formWithErrors)
-          BadRequest(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel))
+          BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel))
         }
       },
       success => {

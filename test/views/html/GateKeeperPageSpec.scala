@@ -21,7 +21,9 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class GateKeeperPageSpec extends TaiViewSpec {
 
-  override def view = views.html.gateKeeper(appConfig)
+  private val gateKeeper = inject[GateKeeperView]
+
+  override def view = gateKeeper(appConfig)
   val taxYearStart: String = s"6 April " + TaxYear().year
   val taxYearEnd: String = s"5 April " + (TaxYear().year + 1)
 

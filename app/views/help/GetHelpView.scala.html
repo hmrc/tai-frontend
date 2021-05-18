@@ -1,0 +1,66 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.urls.Link
+@import includes.ptaHeader
+
+@this(main: main)
+
+@(appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages,
+user: controllers.auth.AuthedUser,
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"Get help"}
+
+@header = @{
+    ptaHeader(
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.getHelp.h1"),
+        preHeadingText = Messages("tai.iya.tax.you.owe.preHeading")
+    )
+}
+
+@main(
+    title = Messages("tai.getHelp.h1"),
+    articleClasses = Some("full-width"),
+    authedUser = Some(user),
+    gaCustomTitle = None,
+    pageHeader = Some(header)
+){
+
+<p>@Messages("tai.getHelp.p1")</p>
+
+<p>
+@Html(Messages("tai.getHelp.contact", Link.toExternalPage(
+    url = if (messages.lang.language == "cy") {
+        appConfig.contactHelplineWelshUrl
+    } else {
+        appConfig.contactHelplineUrl
+    },
+    value = Some(messages("tai.getHelp.contact.link"))
+).toHtml))
+</p>
+
+<p>
+@Html(Messages("tai.getHelp.form.p1.text.with.also",
+Link.toInternalPage(id=Some("get-help-iform-link"),
+    url=appConfig.hardshipHelpUrl,
+    value=Some(Messages("tai.getHelp.form.link.title"))).toHtml))
+</p>
+
+}

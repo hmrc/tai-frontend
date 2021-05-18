@@ -19,7 +19,8 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "auth-client"                      % s"3.3.0-$playVersion",
     "uk.gov.hmrc"       %% "play-ui"                          % s"9.2.0-$playVersion",
     "org.typelevel"     %% "cats-core"                        % "2.0.0",
-    "com.typesafe.play" %% "play-json-joda"                   % "2.6.10"
+    "com.typesafe.play" %% "play-json-joda"                   % "2.6.10",
+    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.14.0-$playVersion"
   )
 
   trait TestDependencies {
