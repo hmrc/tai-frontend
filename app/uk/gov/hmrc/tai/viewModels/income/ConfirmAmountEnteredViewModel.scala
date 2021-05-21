@@ -44,7 +44,7 @@ object ConfirmAmountEnteredViewModel {
 
     val irregularPayCurrentYear = {
       ConfirmAmountEnteredViewModel(
-        yearRange = TaxYearRangeUtil.currentTaxYearRangeSingleLine,
+        yearRange = TaxYearRangeUtil.currentTaxYearRange,
         employerName = empName,
         mainText = Some(messages("tai.incomes.confirm.save.message")),
         onConfirm = controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController
@@ -60,7 +60,7 @@ object ConfirmAmountEnteredViewModel {
 
     val nextYearEstimatedPay = {
       ConfirmAmountEnteredViewModel(
-        yearRange = TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1),
+        yearRange = TaxYearRangeUtil.futureTaxYearRange(1),
         employerName = empName,
         onConfirm = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url,
         onCancel = controllers.routes.IncomeTaxComparisonController.onPageLoad.url,
@@ -80,7 +80,7 @@ object ConfirmAmountEnteredViewModel {
   def apply(empName: String, currentAmount: Int, estIncome: Int)(
     implicit messages: Messages): ConfirmAmountEnteredViewModel =
     ConfirmAmountEnteredViewModel(
-      yearRange = TaxYearRangeUtil.currentTaxYearRangeSingleLine,
+      yearRange = TaxYearRangeUtil.currentTaxYearRange,
       employerName = empName,
       mainText = Some(messages("tai.incomes.confirm.save.message")),
       onConfirm = controllers.routes.IncomeController.updateEstimatedIncome().url,

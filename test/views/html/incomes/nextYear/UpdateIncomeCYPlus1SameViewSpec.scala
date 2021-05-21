@@ -37,7 +37,7 @@ class UpdateIncomeCYPlus1SameViewSpec extends TaiViewSpec {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
     behave like pageWithCombinedHeader(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.updateIncome.CYPlus1.same.heading", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
+      messages("tai.updateIncome.CYPlus1.same.heading", TaxYearRangeUtil.futureTaxYearRange(1))
     )
 
     "contain the correct content when new estimated pay equals current estimated pay" in {
@@ -45,10 +45,7 @@ class UpdateIncomeCYPlus1SameViewSpec extends TaiViewSpec {
 
       document.getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.confirm.paragraph"))
       document.getElementsByTag("p").text must include(
-        messages(
-          "tai.updateEmployment.incomeSame.description",
-          employerName,
-          TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)))
+        messages("tai.updateEmployment.incomeSame.description", employerName, TaxYearRangeUtil.futureTaxYearRange(1)))
     }
   }
 }

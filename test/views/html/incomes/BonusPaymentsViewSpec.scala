@@ -44,7 +44,7 @@ class BonusPaymentsViewSpec extends TaiViewSpec with FormValuesConstants {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeader(
       messages("tai.bonusPayments.preHeading", employer.name),
-      messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited)
+      messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
     )
     behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
     behave like pageWithContinueButtonForm("/check-income-tax/update-income/bonus-payments")

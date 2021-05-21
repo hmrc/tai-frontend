@@ -99,7 +99,7 @@
                             url = Some("/check-income-tax/income-tax-comparison"),
                             id = "nextTaxYear",
                             heading = messages("next.year"),
-                            bodyContent = Some(messages("check.estimated.income",TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(yearsFromNow=1))),
+                            bodyContent = Some(messages("check.estimated.income",TaxYearRangeUtil.futureTaxYearRange(yearsFromNow=1))),
                             gaAction=Some(gaEventActionString),
                             gaLabel=Some(messages("next.year"))
                         )
