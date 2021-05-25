@@ -109,6 +109,12 @@ class ApplicationConfig @Inject()(
 
   lazy val citizenAuthFrontendSignOutUrl: String = citizenAuthHost + "/ida/signout"
 
+  //  lazy val sessionTimeoutInSeconds: Int = getOptional[Int]("session.timeout").getOrElse(900)
+  //  lazy val sessionCountdownInSeconds: Int = getOptional[Int]("session.countdown").getOrElse(120)
+
+  lazy val sessionTimeoutInSeconds: Int = 121
+  lazy val sessionCountdownInSeconds: Int = 120
+
   //These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
   lazy val citizenAuthHost: String = decorateUrlForLocalDev("citizen-auth.host")
   lazy val taxReliefExpenseClaimHost: String = decorateUrlForLocalDev("p87-frontend.host")

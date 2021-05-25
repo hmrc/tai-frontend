@@ -12,6 +12,9 @@ GET         /signout                                                            
 GET         /tax-estimate-unavailable                                                  controllers.ServiceController.gateKeeper
 GET         /deceased                                                                  controllers.DeceasedController.deceased
 
+GET         /keep-alive                                                                controllers.ServiceController.keepAlive
+GET         /session-expired                                                           controllers.ServiceController.sessionExpiredPage
+
 GET         /start-verify                                                              controllers.AuthProviderController.verifyEntryPoint
 GET         /start-government-gateway                                                  controllers.AuthProviderController.governmentGatewayEntryPoint
 

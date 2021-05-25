@@ -50,7 +50,8 @@
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None,
   script: Option[Html] = None,
-  hidePtaAccountNav: Boolean = false
+  hidePtaAccountNav: Boolean = false,
+  displayTimeoutDialog: Boolean = true
 )(mainContent: Html
 )(implicit request: Request[_],
   messages: Messages,
@@ -167,6 +168,10 @@
     }
     @{webChatClient.loadWebChatContainer("HMRC_Anchored_1")}
     @{webChatClient.loadRequiredElements()}
+
+    @if(displayTimeoutDialog) {
+        @views.html.timeout_dialog(appConfig.sessionTimeoutInSeconds, appConfig.sessionCountdownInSeconds, messages)
+    }
 
     @script
 }
