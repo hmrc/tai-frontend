@@ -1474,4 +1474,3 @@ label.timeout.dialog.signout.button=Allgofnodi nawr
 
 session_expired.title = Er eich diogelwch, gwnaethom eich allgofnodi
 session_expired.guidance = Ni wnaethom gadw''ch atebion.
-

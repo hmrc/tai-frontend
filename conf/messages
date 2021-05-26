@@ -1467,8 +1467,5 @@ label.timeout.dialog.seconds=seconds
 label.timeout.dialog.keepAlive.button=Stay signed in
 label.timeout.dialog.signout.button=Sign out now
 
-signedOut.heading = For your security, we signed you out
-signedOut.guidance = We did not save your answers.
-
 session_expired.title=For your security, we signed you out
 session_expired.guidance=We did not save your answers.

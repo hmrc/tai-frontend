@@ -24,7 +24,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
-import views.html.{ManualCorrespondenceView, TimeoutView}
+import views.html.{ManualCorrespondenceView, TimeoutView, session_expired}
 
 class ServiceControllerSpec extends BaseSpec {
 
@@ -61,6 +61,29 @@ class ServiceControllerSpec extends BaseSpec {
     }
   }
 
+  "keepAlive" should {
+
+    "return 200" in {
+
+      val sut = createSut()
+
+      val result = sut.keepAlive()(FakeRequest("GET", ""))
+
+      status(result) mustBe OK
+    }
+  }
+
+  "sessionExpiredPage" should {
+    "clear the session" in {
+
+      val sut = createSut()
+
+      val result = sut.keepAlive()(FakeRequest("GET", "").withSession("test" -> "session"))
+
+      session(result) mustBe empty
+    }
+  }
+
   "gateKeeper" should {
     "return manualCorrespondence page when called" in {
       val fakeRequest = FakeRequest("GET", "").withFormUrlEncodedBody()
@@ -81,6 +104,7 @@ class ServiceControllerSpec extends BaseSpec {
         appConfig,
         mcc,
         inject[TimeoutView],
+        inject[session_expired],
         inject[ManualCorrespondenceView],
         partialRetriever,
         templateRenderer,
