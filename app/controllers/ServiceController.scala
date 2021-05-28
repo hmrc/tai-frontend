@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-import views.html.{ManualCorrespondenceView, TimeoutView, session_expired}
+import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,7 +35,7 @@ class ServiceController @Inject()(
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   timeout: TimeoutView,
-  sessionExpired: session_expired,
+  sessionExpired: SessionExpiredView,
   manualCorrespondence: ManualCorrespondenceView,
   implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
