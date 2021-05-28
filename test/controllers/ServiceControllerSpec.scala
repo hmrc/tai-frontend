@@ -24,7 +24,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
-import views.html.{ManualCorrespondenceView, TimeoutView, SessionExpiredView}
+import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
 
 class ServiceControllerSpec extends BaseSpec {
 
