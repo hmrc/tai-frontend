@@ -889,7 +889,7 @@ tai.personalAllowance.paReceived = Because your spouse or civil partner has chos
 tai.personalAllowance.paTransferred = Because you have chosen to transfer £{0} to your spouse or civil partner it is reduced to £{1}.
 tai.phoneNumber=Phone number
 
-tai.previous.year.underpayment.p1=You did not pay enough Income Tax for the tax year {0}.
+tai.previous.year.underpayment.p1=You did not pay enough Income Tax for a previous tax year.
 tai.previous.year.underpayment.you.owe=You owe
 tai.previous.year.underpayment.h1=How it will be collected
 tai.previous.year.underpayment.p2=To collect this we have reduced your Personal Allowance by £{0}. This means that you will pay more tax until {1}, so that we can collect the {2} owed.
