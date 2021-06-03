@@ -33,7 +33,7 @@ class EditIncomeViewSpec extends TaiViewSpec {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.incomes.edit.preHeading", employerName),
-      messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+      messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange)
     )
   }
 
