@@ -40,7 +40,7 @@ class UpdateIncomeCYPlus1ConfirmViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.irregular.title"))
     behave like pageWithCombinedHeader(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+      messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRange)
     )
 
     "display the users current estimated income" in {

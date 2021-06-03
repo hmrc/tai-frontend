@@ -55,10 +55,8 @@ case class DuplicateSubmissionCYPlus1EmploymentViewModel(incomeName: String, new
   private val formattedNewAmount: String = MonetaryUtil.withPoundPrefix(newAmount)
 
   override val heading: String = messages("tai.incomes.warning.cyPlus1.heading", incomeName)
-  override val paragraphOne: String = messages(
-    "tai.incomes.warning.cyPlus1.text1",
-    formattedNewAmount,
-    TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
+  override val paragraphOne: String =
+    messages("tai.incomes.warning.cyPlus1.text1", formattedNewAmount, TaxYearRangeUtil.futureTaxYearRange(1))
   override val optionOne: String = messages("tai.incomes.warning.employment.radio1", incomeName)
   override val optionTwo: String = messages("tai.incomes.warning.cyPlus1.radio2")
 }
@@ -69,10 +67,8 @@ case class DuplicateSubmissionCYPlus1PensionViewModel(incomeName: String, newAmo
   private val formattedNewAmount: String = MonetaryUtil.withPoundPrefix(newAmount)
 
   override val heading: String = messages("tai.incomes.warning.cyPlus1.heading", incomeName)
-  override val paragraphOne: String = messages(
-    "tai.incomes.warning.cyPlus1.text1",
-    formattedNewAmount,
-    TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
+  override val paragraphOne: String =
+    messages("tai.incomes.warning.cyPlus1.text1", formattedNewAmount, TaxYearRangeUtil.futureTaxYearRange(1))
   override val optionOne: String = messages("tai.incomes.warning.pension.radio1", incomeName)
   override val optionTwo: String = messages("tai.incomes.warning.cyPlus1.radio2")
 }

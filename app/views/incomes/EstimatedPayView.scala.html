@@ -40,13 +40,13 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
+        mainHeadingText = messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = messages("tai.estimatedPay.preHeading", <span class="carry-over">{viewModel.employer.name}</span>)
     )
 }
 
 @main(
-    title = messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
+    title = messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRange),
     articleClasses = Some("full-width text"),
     authedUser = Some(user),
     pageHeader = Some(header),

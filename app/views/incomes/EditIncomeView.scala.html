@@ -43,7 +43,7 @@
         formForErrorSummary = Some(income),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
- 		mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
+ 		mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = messages("tai.incomes.edit.preHeading", <span class="carry-over">{income("name").value.getOrElse("")}</span>)
        
        
@@ -51,7 +51,7 @@
 }
 
 @main(
-    title = messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
+    title = messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRange),
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = Some(""),
