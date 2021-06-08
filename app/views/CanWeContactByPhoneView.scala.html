@@ -32,13 +32,11 @@
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
         partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Can we contact you by phone?"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(yesNoForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.mainHeading,
         preHeadingText = viewModel.preHeading)}
 
@@ -46,8 +44,7 @@
     title = viewModel.mainHeading,
     authedUser = incomingAuthedUser,
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = None) {
+    articleClasses = None) {
 
     @form(action = Call("POST", viewModel.continueUrl), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
 
@@ -65,9 +62,7 @@
             ('_radioOption1WrapAttribute, "data-target=telephoneNumberEntry-container"),
             ('_groupClass, "inline"),
             ('_fieldsetAttributes, "id=yesNoChoice" ),
-            ('_legendSpanClass, "visually-hidden"),
-            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Can we contact you by phone?:Yes" data-journey-val="Yes"""") ),
-            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Can we contact you by phone?:No" data-journey-val="No"""") )
+            ('_legendSpanClass, "visually-hidden")
         )}
 
         <div id="telephoneNumberEntry-container" class="@if(yesNoForm(YesNoTextEntryForm.YesNoChoice).value.getOrElse("") != YesNoTextEntryForm.YesValue){js-hidden} data-yesNoTextEntry">
@@ -80,10 +75,10 @@
             )
         </div>
 
-        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(viewModel.preHeading))
+        @submit()
     }
 
-    @cancelLink(Call("GET", viewModel.cancelUrl), gaEventAction = Some(gaEventActionString))
+    @cancelLink(Call("GET", viewModel.cancelUrl))
 }
 
 

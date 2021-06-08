@@ -65,11 +65,6 @@ class ApplicationConfig @Inject()(
   lazy val urBannerEnabled: Boolean = getOptional[String]("feature.ur-banner.enabled").getOrElse("true").toBoolean
   lazy val urBannerLink: String = getOptional[String]("ur-banner.url").getOrElse("")
   lazy val checkUpdateProgressLinkUrl = s"$trackFrontendHost/track"
-  lazy val analyticsToken: Option[String] = getOptional[String]("microservice.google-analytics.token")
-  lazy val gaValueOfPayments: String =
-    getOptional[String]("microservice.google-analytics.gaValueOfPayments").getOrElse("")
-  lazy val gaRecStatus: String = getOptional[String]("microservice.google-analytics.gaRecStatus").getOrElse("")
-  lazy val analyticsHost: String = getOptional[String]("microservice.google-analytics.host").getOrElse("auto")
   lazy val pertaxServiceUrl = s"$pertaxFrontendHost/personal-account"
   lazy val pertaxServiceUpliftFailedUrl: String = s"$pertaxFrontendHost/personal-account/identity-check-failed"
   lazy val feedbackSurveyUrl = s"$feedbackHost/feedback/TES"

@@ -33,7 +33,6 @@ user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{Messages("tai.estimatedIncome.title")}
 
 @taxYearRangeString = @{
     messages("tai.taxYear",
@@ -44,7 +43,6 @@ partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.estimatedIncome.title"),
         preHeadingText = taxYearRangeString,
         preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading")
@@ -55,8 +53,7 @@ partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
     title = Messages("tai.estimatedIncome.title"),
     pageHeader = Some(header),
     articleClasses = Some("full-width"),
-    authedUser = Some(user),
-    gaCustomTitle = None
+    authedUser = Some(user)
 ){
     <p  id="no-increase-tax">@Messages("tai.no.increasesTax")</p>
 }

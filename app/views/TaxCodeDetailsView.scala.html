@@ -25,19 +25,16 @@
 
 @(taxCodeViewModel: TaxCodeViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Your tax codes"}
 
 @header = @{
     ptaHeader(
     displayBackLink = true,
-    backLinkGaEventAction = Some(gaEventActionString),
     mainHeadingText = taxCodeViewModel.title,
     preHeadingText = taxCodeViewModel.preHeader)
 }
 
 @main(
     title = taxCodeViewModel.title,
-    gaCustomTitle = Some(taxCodeViewModel.title),
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = Some("full-width")
@@ -84,8 +81,7 @@
                             @Link.toInternalPage(
                                 id = Some("employmentDetails"),
                                 url = routes.IncomeSourceSummaryController.onPageLoad(empId).url,
-                                value = Some(taxCodeViewModel.incomeDetailsMessage),
-                                dataAttributes = Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${taxCodeViewModel.incomeDetailsMessage}"))).toHtml</p>
+                                value = Some(taxCodeViewModel.incomeDetailsMessage))</p>
                     </div>
                 }
 
@@ -103,22 +99,19 @@
                             id=Some("taxFreeAmountLink"),
                             url=routes.TaxFreeAmountController.taxFreeAmount.url,
                             value=Some(Messages("check.your.tax.free.amount")),
-                            cssClasses=Some("link-list__item"),
-                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("check.your.tax.free.amount")}"))).toHtml
+                            cssClasses=Some("link-list__item")).toHtml
 
                         @Link.toInternalPage(
                             id=Some("incomeTaxEstimateLink"),
                             url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
                             value=Some(Messages("check.your.income.tax.estimate")),
-                            cssClasses=Some("link-list__item"),
-                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("check.your.income.tax.estimate")}"))).toHtml
+                            cssClasses=Some("link-list__item")).toHtml
 
                         @Link.toInternalPage(
                             id=Some("taxableIncomeLink"),
                             url=routes.TaxAccountSummaryController.onPageLoad.url,
                             value=Some(Messages("return.to.your.income.tax.summary")),
-                            cssClasses=Some("link-list__item"),
-                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("return.to.your.income.tax.summary")}"))).toHtml
+                            cssClasses=Some("link-list__item")).toHtml
                     </div>
                 </nav>
             </div>

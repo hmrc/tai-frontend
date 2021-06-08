@@ -31,8 +31,6 @@
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Your PAYE Income Tax overview"}
-
 @optimizelyAudience = @{
   if (model.showTaxCodeChangeTile()) {
     Some("TaxCodeChangeUser")
@@ -44,13 +42,6 @@
 @main(
     title = messages("your.paye.income.tax.overview"),
     authedUser = Some(user),
-    gaCustomTitle = None,
-    gaSettings = GoogleAnalyticsSettings(
-                                            customClientIdRequired = true,
-                                            customSessionIdRequired = true,
-                                            customHitStampRequired = true,
-                                            dimensions = Some(model.gaDimensions)
-                                        ),
     optimizelyAudience = optimizelyAudience
 ) {
 
@@ -69,7 +60,6 @@
                     id = "hasTaxCodeChanged",
                     heading = messages("check.tax.hasChanged.header"),
                     bodyContent = Some(messages("check.tax.hasChanged.action")),
-                    gaAction = Some(gaEventActionString),
                     gaLabel = Some(messages("check.tax.hasChanged.action"))
                       )
                     }
@@ -81,7 +71,6 @@
                         id = "earlierTaxYear",
                         heading = messages("earlier"),
                         bodyContent = Some(messages("check.tax.previous.years")),
-                        gaAction=Some(gaEventActionString),
                         gaLabel=Some(messages("earlier"))
                     )
 
@@ -90,7 +79,6 @@
                         id = "currentTaxYear",
                         heading = messages("current.tax.year"),
                         bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange)),
-                        gaAction=Some(gaEventActionString),
                         gaLabel=Some(messages("current.tax.year"))
                     )
 
@@ -100,7 +88,6 @@
                             id = "nextTaxYear",
                             heading = messages("next.year"),
                             bodyContent = Some(messages("check.estimated.income",TaxYearRangeUtil.futureTaxYearRange(yearsFromNow=1))),
-                            gaAction=Some(gaEventActionString),
                             gaLabel=Some(messages("next.year"))
                         )
                     }
@@ -110,7 +97,6 @@
                         id = "claimRelief",
                         heading = messages("claim.tax.relief.wfh"),
                         bodyContent = None,
-                        gaAction=Some(gaEventActionString),
                         gaLabel=Some(messages("claim.tax.relief.wfh"))
                     )
 
@@ -119,7 +105,6 @@
                     url = Some("/check-income-tax/jrs-claims"),
                     id = "jrsClaims",
                     heading = messages("check.jrs.claims"),
-                    gaAction=Some(gaEventActionString),
                     gaLabel=Some(messages("check.jrs.claims"))
                     )
                     }

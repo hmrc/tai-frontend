@@ -191,16 +191,6 @@ class IncomeController @Inject()(
     }
   }
 
-  private def gaSettings(gaKey: String, currentAmount: Int, newAmount: Option[String]): GoogleAnalyticsSettings = {
-    val poundedCurrentAmount = MonetaryUtil.withPoundPrefix(currentAmount)
-    val poundedNewAmount = MonetaryUtil.withPoundPrefix(FormHelper.stripNumber(newAmount).getOrElse("0").toInt)
-
-    val amounts = Map("currentAmount" -> poundedCurrentAmount, "newAmount" -> poundedNewAmount)
-
-    val dimensions: Option[Map[String, String]] = Some(Map(gaKey -> MapForGoogleAnalytics.format(amounts)))
-    GoogleAnalyticsSettings(dimensions = dimensions)
-  }
-
   def updateEstimatedIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 

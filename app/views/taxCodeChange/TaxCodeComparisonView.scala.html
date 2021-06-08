@@ -31,14 +31,12 @@
 
 @(taxCodeChangeViewModel: TaxCodeChangeViewModel, appConfig: ApplicationConfig)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Your tax code change"}
 @gaEventLabelString = @{Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = None,
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(taxCodeChangeViewModel.changeDate))),
         preHeadingText = messages("taxCode.change.journey.preHeading")
     )
@@ -47,9 +45,7 @@
 @main(
     title = Messages("taxCode.change.journey.preHeading"),
     pageHeader = Some(header),
-    authedUser = Some(user),
-    gaCustomTitle = None,
-    gaSettings = GoogleAnalyticsSettings(dimensions = Some(taxCodeChangeViewModel.gaDimensions))
+    authedUser = Some(user)
     ) {
 
     <div class="column-two-thirds">
@@ -64,8 +60,7 @@
             id=Some("check-your-tax-button"),
             url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
             value=Some(messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
-            cssClasses=Some("button"),
-            dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
+            cssClasses=Some("button")).toHtml
         </div>
 
     </div>

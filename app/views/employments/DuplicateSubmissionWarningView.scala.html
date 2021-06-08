@@ -22,13 +22,11 @@
 
 @(duplicateSubmissionWarningForm: Form[YesNoForm], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Update received"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(duplicateSubmissionWarningForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.employment.warning.heading", employmentName),
         preHeadingText = messages("tai.employment.warning.preHeading")
     )
@@ -38,16 +36,14 @@
     title = messages("tai.employment.warning.customGaTitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = Some(messages("tai.employment.warning.customGaTitle"))) {
+    articleClasses = None) {
 
     @duplicateSubmissionWarning(
         duplicateSubmissionWarningForm,
         messages("tai.employment.warning.radio1", employmentName),
         messages("tai.employment.warning.radio2"),
-        controllers.employments.routes.EndEmploymentController.submitDuplicateSubmissionWarning,
-        gaEventActionString
+        controllers.employments.routes.EndEmploymentController.submitDuplicateSubmissionWarning
 )
 
-    @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(empId), gaEventAction = Some(gaEventActionString))
+    @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(empId))
 }

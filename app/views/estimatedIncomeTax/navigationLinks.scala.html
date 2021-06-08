@@ -16,7 +16,7 @@
 
 @import uk.gov.hmrc.urls.Link
 
-@(gaEventActionString:String)(implicit messages: Messages)
+@()(implicit messages: Messages)
 
 <div class="grid grid-1-3">
     <nav class="section">
@@ -27,22 +27,19 @@
                 id=Some("taxCodesSideLink"),
                 url=routes.YourTaxCodeController.taxCodes.url,
                 value=Some(Messages("check.your.tax.codes")),
-                cssClasses=Some("link-list__item"),
-                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("check.your.tax.codes")}"))).toHtml
+                cssClasses=Some("link-list__item"))
 
                 @Link.toInternalPage(
                 id=Some("taxFreeAmountSideLink"),
                 url=routes.TaxFreeAmountController.taxFreeAmount.url,
                 value=Some(Messages("check.your.tax.free.amount")),
-                cssClasses=Some("link-list__item"),
-                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("check.your.tax.free.amount")}"))).toHtml
+                cssClasses=Some("link-list__item"))
 
                 @Link.toInternalPage(
                 id=Some("taxSummarySideLink"),
                 url=routes.TaxAccountSummaryController.onPageLoad.url,
                 value=Some(Messages("return.to.your.income.tax.summary")),
-                cssClasses=Some("link-list__item"),
-                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("return.to.your.income.tax.summary")}"))).toHtml
+                cssClasses=Some("link-list__item"))
             </div>
         </div>
     </nav>

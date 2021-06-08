@@ -24,12 +24,10 @@
 user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Get help"}
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.getHelp.h1"),
         preHeadingText = Messages("tai.iya.tax.you.owe.preHeading")
     )
@@ -39,7 +37,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     title = Messages("tai.getHelp.h1"),
     articleClasses = Some("full-width"),
     authedUser = Some(user),
-    gaCustomTitle = None,
     pageHeader = Some(header)
 ){
 

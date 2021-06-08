@@ -25,13 +25,11 @@
 
 @(firstPayForm: Form[Option[String]], employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Have you received your first pay from?"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(firstPayForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addEmployment.employmentFirstPay.title", employerName),
         preHeadingText = Messages("add.missing.employment"))}
 
@@ -39,8 +37,7 @@
 title = Messages("tai.addEmployment.employmentFirstPay.title", employerName),
 authedUser = Some(user),
 pageHeader = Some(header),
-articleClasses = None,
-gaCustomTitle = Some(Messages("tai.addEmployment.employmentFirstPay.customGaTitle"))
+articleClasses = None
 ) {
 
     @form(action = controllers.employments.routes.AddEmploymentController.submitFirstPay(), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
@@ -53,13 +50,11 @@ gaCustomTitle = Some(Messages("tai.addEmployment.employmentFirstPay.customGaTitl
             ('_groupDivClass, "form-group" ),
             ('_groupClass, "inline"),
             ('_fieldsetAttributes, "id=firstPayChoice" ),
-            ('_legendSpanClass, "visually-hidden"),
-            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Have you received your first pay from?:Yes" data-journey-val="Yes"""") ),
-            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Have you received your first pay from?:No" data-journey-val="No"""") )
+            ('_legendSpanClass, "visually-hidden")
         )}
 
-        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing employment"))
+        @submit()
     }
 
-    @cancelLink(controllers.employments.routes.AddEmploymentController.cancel(), gaEventAction = Some(gaEventActionString))
+    @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 }

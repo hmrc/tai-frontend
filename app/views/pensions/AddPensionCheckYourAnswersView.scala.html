@@ -26,12 +26,9 @@
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.pensions.CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Check your add missing pension answers"}
-
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.checkYourAnswers.title"),
         preHeadingText = viewModel.preHeading) }
 
@@ -39,25 +36,20 @@
     title = Messages("tai.checkYourAnswers.title"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = None) {
+    articleClasses = None) {
 
     @form(action=Call("POST", viewModel.submissionUrl), args=(Symbol("class"), "subsection")) {
 
         @includes.checkYourAnswers(
             title = Some(viewModel.title),
-            gaEventAction = Some(gaEventActionString),
             longQuestions = true,
             confirmationLines = viewModel.journeyConfirmationLines
         )
 
         <p class="subsection">@viewModel.postConfirmationText</p>
 
-        @submit(
-            buttonMessageKey = Some(messages("tai.confirmAndSend")),
-            gaEventAction = Some(gaEventActionString),
-            gaEventLabel = Some("Add this missing pension"))
+        @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
     }
 
-    @cancelLink(Call("GET", viewModel.cancelUrl), gaEventAction = Some(gaEventActionString))
+    @cancelLink(Call("GET", viewModel.cancelUrl))
 }

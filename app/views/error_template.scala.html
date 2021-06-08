@@ -21,8 +21,7 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
 
 @main(
     title=pageTitle,
-    authedUser = Some(user),
-    gaCustomTitle = None
+    authedUser = Some(user)
 ){
     <div class="section">
         <h1 class="h1-heading">@heading</h1>

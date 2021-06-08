@@ -32,7 +32,6 @@
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Taxable income"}
 
 @printLink= {
     <p class="flush--bottom">
@@ -46,7 +45,6 @@
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName),
         preHeadingText = Messages("tai.income.details.incomeReceivedToDate"),
         additionalTopLinkContent = Some(printLink))
@@ -57,7 +55,6 @@
     authedUser = Some(user),
     pageHeader = Some(header),
     employerName = Some(model.employerName),
-    gaCustomTitle = Some(Messages("tai.income.calculation.TaxableIncomeDetails.gaTitle")),
     articleClasses = None
 ){
 

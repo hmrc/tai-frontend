@@ -39,6 +39,4 @@ class navigationLinksSpec extends TaiViewSpec {
       controllers.routes.TaxAccountSummaryController.onPageLoad.url,
       messages("return.to.your.income.tax.summary"))
   }
-
-  override def view: Html = views.html.estimatedIncomeTax.navigationLinks("GA")
 }

@@ -24,13 +24,11 @@
 
 @(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"What is the name of the pension provider you want to add?"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(nameForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addPensionProvider.addNameForm.title"),
         preHeadingText = Messages("add.missing.pension"))}
 
@@ -39,8 +37,7 @@
   title = Messages("tai.addPensionProvider.addNameForm.title"),
   authedUser = Some(user),
   pageHeader = Some(header),
-  articleClasses = None,
-  gaCustomTitle = None) {
+  articleClasses = None) {
 
   @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionProviderName(), args=(Symbol("class"), "subsection")) {
     @input(
@@ -50,8 +47,8 @@
       classes = Seq("form-control--full-width")
     )
 
-    @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing pension provider"))
+    @submit()
   }
 
-  @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel(), gaEventAction = Some(gaEventActionString))
+  @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
 }

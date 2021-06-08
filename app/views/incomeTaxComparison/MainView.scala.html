@@ -27,15 +27,13 @@
 @this(main: main)
 
 @(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-@gaEventActionString = @{"Income Tax comparison - current and next tax years"}
 @backLinkToChooseTaxYear = {
     <p class="flush--bottom">
         @Link.toInternalPage(
             id=Some("returnToChooseTaxYearLink"),
             url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
             value=Some(messages("your.paye.income.tax.overview")),
-            cssClasses=Some("link-back"),
-            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${messages("your.paye.income.tax.overview")}"))
+            cssClasses=Some("link-back")
         ).toHtml
     </p>
 }
@@ -51,7 +49,6 @@
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = None,
         mainHeadingText = headingText,
         preHeadingText = incomeTaxComparisonViewModel.username,
         preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"),
@@ -59,7 +56,6 @@
 }
 
 @main(title = headingText,
-    gaCustomTitle = Some(headingText),
     pageHeader = Some(header),
     authedUser = Some(request.taiUser)) {
 
@@ -107,8 +103,7 @@
                             id = Some("companyBenefitsLink"),
                             url = appConfig.companyBenefitsLinkUrl,
                             copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText"),
-                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText")),
-                            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText")}"))
+                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText"))
                         )
                     </li>
 
@@ -117,8 +112,7 @@
                             id = Some("allowancesTaxReliefsLink"),
                             url = appConfig.taxFreeAllowanceLinkUrl,
                             copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText"),
-                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText")),
-                            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText")}"))
+                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText"))
                         )
                     </li>
 
@@ -127,8 +121,7 @@
                             id = Some("otherIncomeLink"),
                             url = appConfig.otherIncomeLinkUrl,
                             copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText"),
-                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText")),
-                            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText")}"))
+                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText"))
                         )
                     </li>
                 </ul>
@@ -138,8 +131,7 @@
                 @Link.toInternalPage(
                 id=Some("returnToPAYEIncomeOverviewLink"),
                 url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-                value=Some(messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link")),
-                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${messages("your.paye.income.tax.overview")}"))
+                value=Some(messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
                 ).toHtml
             </p>
 

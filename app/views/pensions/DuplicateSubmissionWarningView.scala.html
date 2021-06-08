@@ -21,13 +21,11 @@
 
 @(duplicateSubmissionWarningForm: Form[YesNoForm], pensionName: String, pensionId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Update received"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(duplicateSubmissionWarningForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.pension.warning.heading", pensionName),
         preHeadingText = messages("tai.pension.warning.preHeading")
     )
@@ -37,16 +35,14 @@
     title = messages("tai.pension.warning.customGaTitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = Some(messages("tai.pension.warning.customGaTitle"))) {
+    articleClasses = None) {
 
     @duplicateSubmissionWarning(
         duplicateSubmissionWarningForm,
         messages("tai.pension.warning.radio1", pensionName),
         messages("tai.pension.warning.radio2"),
-        controllers.pensions.routes.UpdatePensionProviderController.submitDuplicateSubmissionWarning,
-        gaEventActionString
+        controllers.pensions.routes.UpdatePensionProviderController.submitDuplicateSubmissionWarning
 )
 
-    @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(pensionId), gaEventAction = Some(gaEventActionString))
+    @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(pensionId))
 }
