@@ -890,7 +890,7 @@ tai.personalAllowance.paReceived=Gan fod eich priod neu’ch partner sifil wedi 
 tai.personalAllowance.paTransferred=Gan eich bod wedi dewis trosglwyddo £{0} i’ch priod neu’ch partner sifil, mae’n cael ei leihau i £{1}.
 tai.phoneNumber=Rhif ffôn
 
-tai.previous.year.underpayment.p1=Nid oeddech wedi talu digon o Dreth Incwm ar gyfer blwyddyn dreth {0}.
+tai.previous.year.underpayment.p1=Ni wnaethoch dalu digon o Dreth Incwm ar gyfer blwyddyn dreth flaenorol.
 tai.previous.year.underpayment.you.owe=Mae arnoch
 tai.previous.year.underpayment.h1=Sut y caiff ei gasglu
 tai.previous.year.underpayment.p2=Er mwyn gwneud hyn, rydym wedi gostwng eich Lwfans Personol gan £{0}. Mae hyn yn golygu y byddwch yn talu mwy o dreth tan {1}, er mwyn i ni gasglu’r {2} sy’n ddyledus.
