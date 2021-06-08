@@ -168,6 +168,8 @@
     @{webChatClient.loadWebChatContainer("HMRC_Anchored_1")}
     @{webChatClient.loadRequiredElements()}
 
+    @views.html.timeout_dialog(appConfig.sessionTimeoutInSeconds, appConfig.sessionCountdownInSeconds, messages)
+
     @script
 }
 

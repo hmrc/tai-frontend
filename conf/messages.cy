@@ -1464,3 +1464,13 @@ check.jrs.making.backdated.claim=gwneud hawliad wedi’i ôl-ddyddio sy’n cynn
 check.jrs.claims.no.claim.title=Nid oes unrhyw hawliadau drwy’r Cynllun Cadw Swyddi yn sgil Coronafeirws ar eich cyfer chi
 check.jrs.claims.no.claim.check.later=Gwiriwch eto yn nes ymlaen oherwydd gall gymryd hyd at 2 fis i ddangos hawliadau.
 check.jrs.claims.no.claim.link=Ewch i hafan y cyfrif
+
+label.timeout.dialog.title=Rydych ar fin cael eich allgofnodi
+label.timeout.dialog.message=Am resymau diogelwch, byddwch yn cael eich allgofnodi ymhen
+label.timeout.dialog.minutes=o funudau
+label.timeout.dialog.seconds=eiliad
+label.timeout.dialog.keepAlive.button=Parhau i fod wedi’ch mewngofnodi
+label.timeout.dialog.signout.button=Allgofnodi nawr
+
+session_expired.title = Er eich diogelwch, gwnaethom eich allgofnodi
+session_expired.guidance = Ni wnaethom gadw''ch atebion.
