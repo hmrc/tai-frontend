@@ -28,7 +28,6 @@
 @import uk.gov.hmrc.play.views.html.layouts._
 
 @this(
-    webChatClient: WebChatClient,
     appConfig: ApplicationConfig,
     langUtils: LanguageUtils,
     trackingConsentSnippet: TrackingConsentSnippet,
@@ -41,13 +40,9 @@
   sidebarLinks: Option[Html] = None,
   sidebarClass: Option[String] = None,
   articleClasses: Option[String] = Some("full-width"),
-  authedUser: Option[controllers.auth.AuthedUser] = None,
-  employerName: Option[String] = None,
   includeGridWrapper: Boolean = false,
-  optimizelyAudience: Option[String] = None,
-  pageHeader: Option[Html] = None,
   script: Option[Html] = None,
-  hidePtaAccountNav: Boolean = false
+  pageHeader: Option[Html] = None
 )(mainContent: Html
 )(implicit request: Request[_],
   messages: Messages,
@@ -58,57 +53,7 @@
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
 }
 
-@isUserResearchBannerHidden = @{request.cookies.exists((x: Cookie) => x.name == "mdtpurr")}
 
-@authProvider = @{
-    authedUser.map {
-        _.providerType
-    }
-}
-
-@isGG = @{
-    authedUser.fold(false) {
-        _.providerType.contains(TaiConstants.AuthProviderGG)
-    }
-}
-
-@isSa = @{
-    authedUser.fold(false) {
-        _.utr.isDefined
-    }
-}
-
-@isVerify = @{
-    authedUser.fold(false) {
-        _.providerType.contains(TaiConstants.AuthProviderVerify)
-    }
-}
-
-@mustacheCheck(str: String) = @{
-    if(str.trim == "") false else str
-}
-
-@signOutUrl = @{
-  if (hidePtaAccountNav) {
-    ""
-  } else {
-    mustacheCheck {
-        routes.ServiceController.serviceSignout().url
-    }
-  }
-}
-
-@trustedHelperBanner = {
-  @{
-    authedUser.map(_.trustedHelper.map{ helper =>
-      attorney_banner(Some(helper.principalName), helper.returnLinkUrl, AttorneyRegime.standAlone)
-    })
-  }
-}
-
-@mainContentHeader = {
-    @pageHeader.getOrElse(Html(""))
-}
 
 @sidebarSection = @{
     sidebarLinks.map { sidebarLinksValue =>
@@ -116,23 +61,7 @@
     }
 }
 
-@helpForm = @{HelpFormHelper.replaceMessage(partialRetriever, appConfig)}
 
-
-@sessionId = @{ request.session.get("sessionId") }
-
-@headInlineScript = {
-    @trackingConsentSnippet()
-}
-
-@inlineScript = {
-    @{webChatClient.loadWebChatContainer("HMRC_Anchored_1")}
-    @{webChatClient.loadRequiredElements()}
-
-    @views.html.timeout_dialog(appConfig.sessionTimeoutInSeconds, appConfig.sessionCountdownInSeconds, messages)
-
-    @script
-}
 
 @isWelshEnabled = @{
     appConfig.welshLanguageEnabled
@@ -149,56 +78,29 @@
 @mustacheMap = @{
     Map[String, Any](
         "pageTitle" -> s"${title} ${serviceSuffix}",
+        "navTitle" -> Messages("tai.service.navTitle"),
         "linkElems" -> Map(
             "url" -> controllers.routes.AssetsController.versioned("stylesheets/tai.css")
         ),
-        "navTitle" -> Messages("tai.service.navTitle"),
-        "hasNavLinks" -> true,
-        "navLinks" -> Map(
-            "url" -> signOutUrl,
-            "text" -> "Sign out"
-        ),
-        "isGovernmentGateway" -> isGG,
-        "isSa" -> isSa,
-        "isVerify" -> isVerify,
-        "hideAccountMenu" -> hidePtaAccountNav,
-        "signOutUrl" -> signOutUrl,
-        "mainContentHeader" -> mainContentHeader,
+        "isGovernmentGateway" -> false,
+        "isVerify" -> false,
+        "isSa" -> false,
+        "hideAccountMenu" -> true,
         "sidebar" -> sidebarSection,
-        "getHelpForm" -> helpForm,
         "betaBanner" -> true,
-        "feedbackIdentifier" -> TaiConstants.SERVICE_IDENTIFIER,
-        "scriptElems" -> Seq(
-            Map("url" -> controllers.routes.AssetsController.versioned("javascripts/tai-app.js"))
-        ),
-        "inlineScript" -> inlineScript,
-        "headInlineScript" -> headInlineScript,
         "showPropositionLinks" -> isWelshEnabled,
         "langSelector" -> isWelshEnabled,
         "enUrl" -> controllers.i18n.routes.TaiLanguageController.english(),
         "cyUrl" -> controllers.i18n.routes.TaiLanguageController.welsh(),
-        "isWelsh" -> isWelshActive,
-        "actingAttorneyBanner" -> trustedHelperBanner
+        "isWelsh" -> isWelshActive
     )
-}
-
-@templateArguments = @{
-    if(!isUserResearchBannerHidden && appConfig.urBannerEnabled) {
-        mustacheMap ++ Map[String, Any](
-            "fullWidthBannerTitle" -> Messages("tai.urbanner.title"),
-            "fullWidthBannerText" -> Messages("tai.urbanner.text"),
-            "fullWidthBannerLink" -> appConfig.urBannerLink,
-            "fullWidthBannerDismissText" -> Messages("tai.urbanner.reject"),
-            "fullWidthBannerGaAction" -> "Help improve the HMRC website"
-        )
-    } else mustacheMap
 }
 
 @extraTemplateArguments = @{
     if(appConfig.accessibilityStatementToggle) {
-       templateArguments ++ Map[String,Any](
+        mustacheMap ++ Map[String,Any](
      "accessibilityFooterUrl" -> accessibilityFooterUrl)
-    } else templateArguments
+    } else mustacheMap
 }
 
 @{
