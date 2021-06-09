@@ -32,8 +32,7 @@ case class ConfirmAmountEnteredViewModel(
   mainText: Option[String] = None,
   onConfirm: String,
   onCancel: String,
-  estimatedIncome: Int,
-  gaSettings: GoogleAnalyticsSettings)
+  estimatedIncome: Int)
 
 object ConfirmAmountEnteredViewModel {
 
@@ -52,9 +51,7 @@ object ConfirmAmountEnteredViewModel {
           .url
           .toString,
         onCancel = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url,
-        estimatedIncome = estIncome,
-        gaSettings = GoogleAnalyticsSettings
-          .createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estIncome)
+        estimatedIncome = estIncome
       )
     }
 
@@ -64,9 +61,7 @@ object ConfirmAmountEnteredViewModel {
         employerName = empName,
         onConfirm = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url,
         onCancel = controllers.routes.IncomeTaxComparisonController.onPageLoad.url,
-        estimatedIncome = estIncome,
-        gaSettings = GoogleAnalyticsSettings
-          .createForAnnualIncome(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome, currentAmount, estIncome)
+        estimatedIncome = estIncome
       )
     }
 
@@ -85,8 +80,6 @@ object ConfirmAmountEnteredViewModel {
       mainText = Some(messages("tai.incomes.confirm.save.message")),
       onConfirm = controllers.routes.IncomeController.updateEstimatedIncome().url,
       onCancel = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
-      estimatedIncome = estIncome,
-      gaSettings = GoogleAnalyticsSettings
-        .createForAnnualIncome(GoogleAnalyticsConstants.taiCYEstimatedIncome, currentAmount, estIncome)
+      estimatedIncome = estIncome
     )
 }

@@ -25,13 +25,10 @@
 
 @(firstPayForm: Form[Option[String]], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Have you received your first pension payment"}
-
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(firstPayForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addPensionProvider.firstPay.title", <span class="carry-over">{pensionProviderName}</span>),
         preHeadingText = Messages("add.missing.pension"))}
 
@@ -39,8 +36,7 @@
     title = Messages("tai.addPensionProvider.firstPay.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = Some(Messages("tai.addPensionProvider.firstPay.customGaTitle"))
+    articleClasses = None
 ) {
 
     @form(action = controllers.pensions.routes.AddPensionProviderController.submitFirstPay(), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
@@ -53,13 +49,11 @@
             ('_groupDivClass, "form-group" ),
             ('_groupClass, "inline"),
             ('_fieldsetAttributes, "id=firstPayChoice" ),
-            ('_legendSpanClass, "visually-hidden"),
-            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Have you received your first pension payment:Yes" data-journey-val="Yes"""") ),
-            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Have you received your first pension payment:No" data-journey-val="No"""") )
+            ('_legendSpanClass, "visually-hidden")
         )}
 
-        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing pension provider"))
+        @submit()
     }
 
-    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel(), gaEventAction = Some(gaEventActionString))
+    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
 }

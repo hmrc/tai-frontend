@@ -25,7 +25,6 @@
 
 @(viewModel: DetailedIncomeTaxEstimateViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{Messages("tai.estimatedIncome.detailedEstimate.title")}
 
 @taxYearRangeString = @{
     viewModel.currentTaxYearRangeHtmlNonBreak
@@ -34,7 +33,6 @@
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.estimatedIncome.detailedEstimate.heading"),
         preHeadingText = taxYearRangeString,
         preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading")
@@ -45,8 +43,7 @@
     title = Messages("tai.estimatedIncome.detailedEstimate.title"),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
-    authedUser = Some(user),
-    gaCustomTitle = None
+    authedUser = Some(user)
 ){
     <div class="grid-row">
         <div class="grid grid-2-3">
@@ -135,8 +132,7 @@
                                         id=Some(link.id),
                                         copy=link.value,
                                         url = link.href,
-                                        linkClasses = Seq("link-list__item"),
-                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}"))
+                                        linkClasses = Seq("link-list__item"))
                                 }
 
                             </td>
@@ -177,7 +173,7 @@
             </div>
         </div>
 
-        @navigationLinks(gaEventActionString)
+        @navigationLinks()
 
     </div>
 }

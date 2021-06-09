@@ -27,13 +27,11 @@
 @(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm], hasMultipleIncomes: Boolean, employmentId: Int, pensionToDate: String = "0")(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Update your annual taxable pay"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(income),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = messages("tai.howToUpdate.preHeading", income("name").value.getOrElse(""))
     )

@@ -36,13 +36,11 @@
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
 
-@gaEventActionString = @{"Update your annual taxable pay"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(income),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
  		mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = messages("tai.incomes.edit.preHeading", <span class="carry-over">{income("name").value.getOrElse("")}</span>)
        
@@ -99,10 +97,9 @@
             </div>
 
             <div class="form-field-group">
-                <p><input type="submit" class="button" value='@messages("tai.continue")'
-                          data-journey-click='button - click:@gaEventActionString:@messages("tai.continue")'/></p>
+                <p><input type="submit" class="button" value='@messages("tai.continue")'/></p>
 
-                @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url), Some(gaEventActionString))
+                @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url))
             </div>
         }
     </div>

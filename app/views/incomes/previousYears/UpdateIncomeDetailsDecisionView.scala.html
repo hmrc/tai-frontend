@@ -27,7 +27,6 @@
 
 @(decisionForm: Form[Option[String]], taxYear: TaxYear)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Update income details decision"}
 
 @header = @{
     ptaHeader(
@@ -41,8 +40,7 @@
     title = messages("tai.income.previousYears.decision.title", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = Some(messages("tai.income.previousYears.decision.customGaTitle"))
+    articleClasses = None
 ){
 
     <p class="lede">@messages("tai.income.previousYears.decision.paragraph.one")</p>
@@ -59,12 +57,10 @@
             ('_groupDivClass, "form-group" ),
             ('_fieldsetAttributes, "id=updateIncomeChoice" ),
             ('_legendClass, "subsection"),
-            ('_legendSpanClass, "heading-medium"),
-            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Update income details decision:contact employer" data-journey-val="contact employer"""") ),
-            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Update income details decision:update details now" data-journey-val="update details now"""") )
+            ('_legendSpanClass, "heading-medium")
         )}
 
-        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(messages("tai.income.previousYears.journey.preHeader")))
+        @submit()
     }
 
     @cancelLink(controllers.routes.PayeControllerHistoric.payePage(taxYear))

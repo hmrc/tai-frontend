@@ -26,13 +26,11 @@
 
 @(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Irregular Pay"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(irregularPayForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.irregular.heading", model.employerName),
         preHeadingText = Messages("tai.irregular.preHeadingText"))}
 
@@ -40,8 +38,7 @@
     title = Messages("tai.irregular.preHeadingText"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = None) {
+    articleClasses = None) {
 
     <p>
         <span class="lede">@Messages("tai.irregular.para1", model.employerName)</span>
@@ -59,15 +56,13 @@
             ('_groupDivClass, "form-group" ),
             ('_fieldsetAttributes, "id=firstPayChoice" ),
             ('_legendClass, "section flush"),
-            ('_legendSpanClass, "bold-small"),
-            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:IrregularPay:ContactEmployer" data-journey-val="Contact Employer"""") ),
-            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:IrregularPay:UpdateMyDetails" data-journey-val="UpdateMyDetails"""") )
+            ('_legendSpanClass, "bold-small")
         )}
 
-        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(""))
+        @submit()
 
     }
 
-    @cancelLink(url=controllers.routes.IncomeSourceSummaryController.onPageLoad(model.empId), gaEventAction = Some(gaEventActionString))
+    @cancelLink(url=controllers.routes.IncomeSourceSummaryController.onPageLoad(model.empId))
 
 }

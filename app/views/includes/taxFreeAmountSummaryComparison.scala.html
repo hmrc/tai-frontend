@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 @import uk.gov.hmrc.tai.model.CodingComponentPairModel
 
-@(taxFreeAmount: YourTaxFreeAmountViewModel, gaEventActionString: String, taxCodeChange: Boolean = false)(implicit m: Messages)
+@(taxFreeAmount: YourTaxFreeAmountViewModel, taxCodeChange: Boolean = false)(implicit m: Messages)
 
 @showPreviousColumn = @{ taxFreeAmount.showPreviousColumn }
 @previousTaxFreeInfo = @{ taxFreeAmount.previousTaxFreeInfo }
@@ -108,8 +108,7 @@
                             id=Some(link.id),
                             copy=link.value,
                             url = link.href,
-                            linkClasses = Seq("link-list__item"),
-                            attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}")
+                            linkClasses = Seq("link-list__item")
                         )
                     }
                 </td>

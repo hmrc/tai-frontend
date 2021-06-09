@@ -33,7 +33,6 @@
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = None,
         mainHeadingText = messages("tai.incomes.confirm.save.heading", viewModel.yearRange),
         preHeadingText = messages("tai.estimatedPay.preHeading", <span class="carry-over">{viewModel.employerName}</span>)
     )
@@ -42,8 +41,7 @@
 @main(
     title = messages("tai.incomes.confirm.save.title", viewModel.yearRange),
     pageHeader = Some(header),
-    articleClasses = Some(""),
-    gaSettings = viewModel.gaSettings
+    articleClasses = Some("")
 ){
 
     <p>

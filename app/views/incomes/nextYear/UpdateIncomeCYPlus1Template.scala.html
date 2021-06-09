@@ -22,12 +22,10 @@
 
 @(employerName: String,
   form: Option[Form[_]],
-  gaEventAction: String,
   heading: String,
   title: String,
   showCancel: Boolean = true,
-  cancelText : Option[String] = None,
-  gaSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings()
+  cancelText : Option[String] = None
 
 )(content: Html
 )(implicit request: Request[_],
@@ -39,7 +37,6 @@
     ptaHeader(
         formForErrorSummary = form,
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventAction),
         mainHeadingText = heading,
         preHeadingText = messages("tai.updateIncome.CYPlus1.preheading", <span class="carry-over">{employerName}</span>)
     )
@@ -50,15 +47,13 @@
     articleClasses = Some(""),
     authedUser = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None,
-    gaSettings = gaSettings
+    employerName = Some(employerName)
 ){
     <div class="section flush--bottom soft--top soft--bottom">
         @content
 
         @if(showCancel){
-          @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url), gaEventAction = Some(gaEventAction), linkText = cancelText)
+          @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url), linkText = cancelText)
         }
     </div>
 }

@@ -27,12 +27,9 @@
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Check your add missing employment answers"}
-
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.checkYourAnswers.heading"),
         preHeadingText = viewModel.preHeading)
 }
@@ -48,7 +45,6 @@
 
         @checkYourAnswers(
             title = None,
-            gaEventAction = Some(gaEventActionString),
             longQuestions = true,
             confirmationLines = viewModel.journeyConfirmationLines
         )
@@ -58,10 +54,8 @@
         }
 
         @submit(
-            buttonMessageKey = Some(messages("tai.confirmAndSend")),
-            gaEventAction = Some(gaEventActionString),
-            gaEventLabel = Some("Add this missing employment"))
+            buttonMessageKey = Some(messages("tai.confirmAndSend")))
     }
 
-    @cancelLink(Call("GET", viewModel.cancelUrl), gaEventAction = Some(gaEventActionString))
+    @cancelLink(Call("GET", viewModel.cancelUrl))
 }

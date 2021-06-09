@@ -32,14 +32,12 @@
 @(viewModel: EstimatedPayViewModel)(implicit request: Request[_],messages: Messages, user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Your estimated pay for the year"}
 @grossAnnualPay = @{MoneyPounds(viewModel.grossAnnualPay.getOrElse(0),0)}
 @netAnnualPay = @{MoneyPounds(viewModel.netAnnualPay.getOrElse(0),0)}
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = messages("tai.estimatedPay.preHeading", <span class="carry-over">{viewModel.employer.name}</span>)
     )

@@ -26,7 +26,6 @@
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
 
-@gaEventActionString = @{"Your estimated pay for next year success"}
 
 @main(
     title = messages("tai.updateIncome.CYPlus1.success.title", TaxYearRangeUtil.futureTaxYearRange(1)),
@@ -57,7 +56,6 @@
         @includes.link(
             copy=messages("tai.returnToIncomeTaxSummary"),
             url = controllers.routes.IncomeTaxComparisonController.onPageLoad.url.toString,
-            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.returnToIncomeTaxSummary")}")),
             isButton=true
         )
         </p>

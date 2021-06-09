@@ -29,7 +29,6 @@
 @(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
 messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Your Pay As You Earn Income Tax"}
 
 @backLinkToChooseTaxYear = {
 <p class="flush--bottom">
@@ -37,8 +36,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
     id=Some("returnToChooseTaxYearLink"),
     url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
     value=Some(messages("tai.returnToChooseTaxYear")),
-    cssClasses=Some("link-back"),
-    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${messages("tai.returnToChooseTaxYear")}"))
+    cssClasses=Some("link-back")
     ).toHtml
 </p>
 }
@@ -51,7 +49,6 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
         mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(viewModel.taxYear.year)),
         preHeadingText = messages("tai.paye.lastTaxYear.preHeading"),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
@@ -59,8 +56,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
     title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(viewModel.taxYear.year)),
     articleClasses = Some("full-width"),
     authedUser = Some(request.taiUser),
-    pageHeader = Some(header),
-    gaCustomTitle = None
+    pageHeader = Some(header)
 ){
 
 <div class="grid-row">

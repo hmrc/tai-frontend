@@ -29,13 +29,11 @@
 
 @(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"What was the total value of the benefit"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(companyBenefitTotalValueForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName),
         preHeadingText = Messages("tai.benefits.ended.journey.preHeader")
     )
@@ -47,8 +45,7 @@
     title = Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = Some(Messages("tai.remove.company.benefit.total.value.customGaTitle"))) {
+    articleClasses = None) {
         <p>@Messages("tai.remove.company.benefit.total.value.dontKnow")</p>
         <ul class="bullets">
             <li id="totalValueAsk">@Messages("tai.remove.company.benefit.total.value.ask")</li>
@@ -72,10 +69,10 @@
             isCurrency = true
         )
 
-        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.remove.company.benefit.total.value.title")))
+        @submit()
         </div>
     }
 
-    @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url), gaEventAction = Some(gaEventActionString))
+    @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
 
 }
