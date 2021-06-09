@@ -45,7 +45,7 @@
                         id = Some(s"${typeLabel}${idx}TaxCodeLink"),
                         url = taxCodeUrl.url,
                         value = Some(Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode)),
-                        cssClasses = Some(""))
+                        cssClasses = Some("")).toHtml
                     }
                 }
                 @if(incomeSource.displayPayrollNumber){

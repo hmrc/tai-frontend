@@ -17,12 +17,10 @@
 package views.html.estimatedIncomeTax
 
 import controllers.routes
-import play.api.i18n.Messages
-import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.urls.Link
+import play.twirl.api.Html
 
-class navigationLinksSpec extends TaiViewSpec {
+class NavigationLinksSpec extends TaiViewSpec {
 
   "display navigational links to other pages in the service" in {
     doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
@@ -39,4 +37,6 @@ class navigationLinksSpec extends TaiViewSpec {
       controllers.routes.TaxAccountSummaryController.onPageLoad.url,
       messages("return.to.your.income.tax.summary"))
   }
+
+  override def view: Html = views.html.estimatedIncomeTax.navigationLinks()
 }
