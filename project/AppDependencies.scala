@@ -10,7 +10,7 @@ private object AppDependencies {
     filters,
     jodaForms,
     "uk.gov.hmrc"       %% "play-conditional-form-mapping"    % s"1.2.0-$playVersion",
-    "uk.gov.hmrc"       %% s"bootstrap-frontend-$playVersion" % "3.4.0",
+    "uk.gov.hmrc"       %% s"bootstrap-frontend-$playVersion" % "5.3.0",
     "uk.gov.hmrc"       %% "domain"                           % s"5.10.0-$playVersion",
     "uk.gov.hmrc"       %% "url-builder"                      % s"3.4.0-$playVersion",
     "uk.gov.hmrc"       %% "play-partials"                    % s"7.1.0-$playVersion",

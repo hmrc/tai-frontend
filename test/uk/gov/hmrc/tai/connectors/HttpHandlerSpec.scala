@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import org.joda.time.LocalDate
-import org.mockito.Matchers._
+import org.mockito.Matchers.{any, _}
 import org.mockito.Mockito._
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
@@ -50,18 +50,19 @@ class HttpHandlerSpec extends BaseSpec with BeforeAndAfterEach {
     "return valid json" when {
       "data is successfully received from the http get call" in {
         val testUrl = "testUrl"
-        when(http.GET[HttpResponse](any())(any(), any(), any()))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(SuccesfulGetResponseWithObject))
         val responseFuture = sut.getFromApi(testUrl)
         val response = Await.result(responseFuture, 5 seconds)
         response mustBe Json.toJson(responseBodyObject)
-        verify(http, times(1)).GET(Matchers.eq(testUrl))(any(), any(), any())
+        verify(http, times(1)).GET(Matchers.eq(testUrl), any(), any())(any(), any(), any())
       }
     }
 
     "result in a BadRequest exception" when {
       "when a BadRequest http response is received from the http get call" in {
-        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(BadRequestHttpResponse))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(BadRequestHttpResponse))
         val responseFuture = sut.getFromApi("")
         val ex = the[BadRequestException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"bad request\""
@@ -70,7 +71,8 @@ class HttpHandlerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "result in a NotFound exception" when {
       "when a NotFound http response is received from the http get call" in {
-        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(NotFoundHttpResponse))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(NotFoundHttpResponse))
         val responseFuture = sut.getFromApi("")
         val ex = the[NotFoundException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"not found\""
@@ -79,7 +81,7 @@ class HttpHandlerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "result in a InternalServerError exception" when {
       "when a InternalServerError http response is received from the http get call" in {
-        when(http.GET[HttpResponse](any())(any(), any(), any()))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(InternalServerErrorHttpResponse))
         val responseFuture = sut.getFromApi("")
         val ex = the[InternalServerException] thrownBy Await.result(responseFuture, 5 seconds)
@@ -89,7 +91,8 @@ class HttpHandlerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "result in a Locked exception" when {
       "when a Locked response is received from the http get call" in {
-        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(LockedHttpResponse))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(LockedHttpResponse))
         val responseFuture = sut.getFromApi("")
         val ex = the[LockedException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"locked\""
@@ -98,7 +101,8 @@ class HttpHandlerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "result in an HttpException" when {
       "when a unknown error http response is received from the http get call" in {
-        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(UnknownErrorHttpResponse))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(UnknownErrorHttpResponse))
         val responseFuture = sut.getFromApi("")
         val ex = the[HttpException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"unknown response\""
@@ -110,18 +114,19 @@ class HttpHandlerSpec extends BaseSpec with BeforeAndAfterEach {
     "return valid json" when {
       "data is successfully received from the http get call" in {
         val testUrl = "testUrl"
-        when(http.GET[HttpResponse](any())(any(), any(), any()))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(SuccesfulGetResponseWithObject))
         val responseFuture = sut.getFromApiV2(testUrl)
         val response = Await.result(responseFuture, 5 seconds)
         response mustBe Json.toJson(responseBodyObject)
-        verify(http, times(1)).GET(Matchers.eq(testUrl))(any(), any(), any())
+        verify(http, times(1)).GET(Matchers.eq(testUrl), any(), any())(any(), any(), any())
       }
     }
 
     "result in a BadRequest exception" when {
       "when a BadRequest http response is received from the http get call" in {
-        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(BadRequestHttpResponse))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(BadRequestHttpResponse))
         val responseFuture = sut.getFromApiV2("")
         val ex = the[BadRequestException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"bad request\""
@@ -130,7 +135,8 @@ class HttpHandlerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "result in a NotFound exception" when {
       "when a NotFound http response is received from the http get call" in {
-        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(NotFoundHttpResponse))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(NotFoundHttpResponse))
         val responseFuture = sut.getFromApiV2("")
         val ex = the[NotFoundException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"not found\""
@@ -139,7 +145,7 @@ class HttpHandlerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "result in a InternalServerError exception" when {
       "when a InternalServerError http response is received from the http get call" in {
-        when(http.GET[HttpResponse](any())(any(), any(), any()))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(InternalServerErrorHttpResponse))
         val responseFuture = sut.getFromApiV2("")
         val ex = the[InternalServerException] thrownBy Await.result(responseFuture, 5 seconds)
@@ -149,7 +155,8 @@ class HttpHandlerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "result in a Locked exception" when {
       "when a Locked response is received from the http get call" in {
-        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(LockedHttpResponse))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(LockedHttpResponse))
         val responseFuture = sut.getFromApiV2("")
         val ex = the[LockedException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"locked\""
@@ -158,7 +165,8 @@ class HttpHandlerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "result in an HttpException" when {
       "when a unknown error http response is received from the http get call" in {
-        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(UnknownErrorHttpResponse))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(UnknownErrorHttpResponse))
         val responseFuture = sut.getFromApiV2("")
         val ex = the[HttpException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"unknown response\""
@@ -170,7 +178,8 @@ class HttpHandlerSpec extends BaseSpec with BeforeAndAfterEach {
         val unauthorisedResponse =
           HttpResponse(UNAUTHORIZED, Some(JsString("unauthorised response")), Map("ETag" -> Seq("34")))
 
-        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(unauthorisedResponse))
+        when(http.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(unauthorisedResponse))
         val responseFuture = sut.getFromApiV2("")
         val ex = the[HttpException] thrownBy Await.result(responseFuture, 5 seconds)
         ex.message mustBe "\"unauthorised response\""

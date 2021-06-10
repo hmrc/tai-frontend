@@ -64,7 +64,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(playSettings ++ scoverageSettings: _*)
   .settings(publishingSettings: _*)
   .settings(defaultSettings(): _*)
-  .settings(scalaVersion := "2.11.12")
+  .settings(scalaVersion := "2.12.13")
   .settings(
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,

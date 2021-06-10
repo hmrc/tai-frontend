@@ -30,23 +30,6 @@ import uk.gov.hmrc.play.partials._
 
 trait HttpClient extends HttpGet with HttpPut with HttpPost with HttpDelete with HttpPatch
 
-class ProxyHttpClient @Inject()(
-  @Named("appName") applicationName: String,
-  config: Configuration,
-  override val auditConnector: Auditing,
-  override val wsClient: WSClient,
-  override protected val actorSystem: ActorSystem)
-    extends HttpClient with WSHttp with HttpAuditing with WSProxy {
-
-  override lazy val configuration = Option(config.underlying)
-
-  override val appName: String = applicationName
-
-  override val hooks: Seq[HttpHook] = Seq(AuditingHook)
-
-  override def wsProxyServer: Option[WSProxyServer] = WSProxyConfiguration("proxy", config)
-}
-
 class TaiHtmlPartialRetriever @Inject()(http: DefaultHttpClient) extends FormPartialRetriever {
   override val httpGet = http
 
