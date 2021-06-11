@@ -25,6 +25,7 @@ import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
+import play.api.data.FormBinding.Implicits.formBinding
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -321,7 +322,7 @@ class UpdateIncomeNextYearControllerSpec
         val testController = createTestIncomeController()
         val newEstPay = ""
 
-        val request: FakeRequest[AnyContentAsFormUrlEncoded] =
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] =
           RequestBuilder.buildFakeRequestWithOnlySession(POST).withFormUrlEncodedBody("income" -> newEstPay)
 
         val result: Future[Result] = testController.update(employmentID)(request)
@@ -335,7 +336,7 @@ class UpdateIncomeNextYearControllerSpec
           currentEstPay,
           AmountComparatorForm
             .createForm()
-            .bindFromRequest()(request))(request, messages, authedUser, templateRenderer, partialRetriever)
+            .bindFromRequest())(request, messages, authedUser, templateRenderer, partialRetriever)
       }
     }
 

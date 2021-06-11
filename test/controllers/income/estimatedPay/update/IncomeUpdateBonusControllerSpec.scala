@@ -23,6 +23,7 @@ import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
+import play.api.data.FormBinding.Implicits.formBinding
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -174,9 +175,7 @@ class IncomeUpdateBonusControllerSpec
           .handleBonusPayments(fakeRequest)
 
         status(result) mustBe BAD_REQUEST
-        result rendersTheSameViewAs bonusPaymentsView(
-          BonusPaymentsForm.createForm.bindFromRequest()(fakeRequest),
-          employer)(
+        result rendersTheSameViewAs bonusPaymentsView(BonusPaymentsForm.createForm.bindFromRequest(), employer)(
           fakeRequest,
           messages,
           authedUser,
@@ -306,7 +305,7 @@ class IncomeUpdateBonusControllerSpec
         status(result) mustBe BAD_REQUEST
 
         result rendersTheSameViewAs bonusPaymentAmountView(
-          BonusOvertimeAmountForm.createForm().bindFromRequest()(fakeRequest),
+          BonusOvertimeAmountForm.createForm().bindFromRequest(),
           employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
       }
     }
