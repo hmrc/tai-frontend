@@ -24,7 +24,8 @@
 
 @this(main: main, form: FormWithCSRF)
 
-@(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
+ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Update or remove pension- Do you currently get income from this pension provider?"}
 

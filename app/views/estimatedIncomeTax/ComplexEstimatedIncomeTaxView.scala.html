@@ -22,11 +22,12 @@
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexTaxView,SimpleTaxView, ZeroTaxView,TaxViewType}
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
+@import scala.concurrent.ExecutionContext
 
 @this(main: main)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ComplexEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
-request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, ec: ExecutionContext)
 
 @gaEventActionString = @{Messages("tai.estimatedIncome.title")}
 

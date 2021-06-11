@@ -22,6 +22,7 @@
 @import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 @import play.api.mvc.Call
 @import includes.forms.inputRadioGroupStyling
+@import scala.concurrent.ExecutionContext
 
 @this(main: main, form: FormWithCSRF)
 
@@ -30,7 +31,8 @@
         yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_],
         messages: Messages,
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-        partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+        partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
+        ec: ExecutionContext)
 
 @gaEventActionString = @{"Can we contact you by phone?"}
 

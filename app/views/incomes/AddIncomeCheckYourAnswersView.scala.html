@@ -22,10 +22,11 @@
 @import includes.forms._
 @import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 @import play.api.mvc.Call
+@import scala.concurrent.ExecutionContext
 
 @this(main: main, form: FormWithCSRF)
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, ec: ExecutionContext)
 
 @gaEventActionString = @{"Check your add missing employment answers"}
 

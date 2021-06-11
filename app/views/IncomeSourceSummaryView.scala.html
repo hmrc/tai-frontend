@@ -23,12 +23,13 @@
 @import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
+@import scala.concurrent.ExecutionContext
 
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 @this(main: main)
 
-@(model: IncomeSourceSummaryViewModel)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(model: IncomeSourceSummaryViewModel)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @gaEventActionString = @{"Your employment details for current tax year"}
 

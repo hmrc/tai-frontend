@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *@
+@import scala.concurrent.ExecutionContext
 
 @this(main: main)
 
 @(employmentId: Int, employerName: String)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.AuthedUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, ec: ExecutionContext)
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.urls.Link

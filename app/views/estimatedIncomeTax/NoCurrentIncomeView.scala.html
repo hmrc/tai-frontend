@@ -24,6 +24,7 @@
 @import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 @import uk.gov.hmrc.play.views.formatting.Dates
 @import uk.gov.hmrc.tai.model.TaxYear
+@import scala.concurrent.ExecutionContext
 
 @this(main: main)
 
@@ -31,7 +32,8 @@
 messages: Messages,
 user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
+ec: ExecutionContext)
 
 @gaEventActionString = @{Messages("tai.estimatedIncome.title")}
 

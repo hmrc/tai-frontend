@@ -26,10 +26,21 @@
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.util.HtmlFormatter
+@import scala.concurrent.ExecutionContext
 
 @this(main: main)
 
-@(taxCodeChangeViewModel: TaxCodeChangeViewModel, appConfig: ApplicationConfig)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(
+    taxCodeChangeViewModel: TaxCodeChangeViewModel,
+    appConfig: ApplicationConfig)
+(
+    implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
+    ec: ExecutionContext
+)
 
 @gaEventActionString = @{"Your tax code change"}
 @gaEventLabelString = @{Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}

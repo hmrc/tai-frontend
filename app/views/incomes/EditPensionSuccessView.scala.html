@@ -19,7 +19,8 @@
 @this(main: main)
 
 @(employerName: String, employerId: Int)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
+ec: scala.concurrent.ExecutionContext)
 
 @main(
     title = messages("tai.incomes.updated.check.title", employerName),

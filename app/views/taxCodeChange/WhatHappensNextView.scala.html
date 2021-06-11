@@ -16,10 +16,16 @@
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.urls.Link
+@import scala.concurrent.ExecutionContext
 
 @this(main: main)
 
-@()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@()(implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
+    ec: ExecutionContext)
 
 @gaEventActionString = @{"What happens next"}
 

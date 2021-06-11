@@ -22,7 +22,8 @@
 
 @this(main: main, form: FormWithCSRF)
 
-@(dateForm: Form[LocalDate], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(dateForm: Form[LocalDate], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
+ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"When did you start receiving this pension?"}
 

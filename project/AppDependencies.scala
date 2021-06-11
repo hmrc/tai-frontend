@@ -13,7 +13,7 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% s"bootstrap-frontend-$playVersion" % "5.3.0",
     "uk.gov.hmrc"       %% "domain"                           % s"5.10.0-$playVersion",
     "uk.gov.hmrc"       %% "url-builder"                      % s"3.4.0-$playVersion",
-    "uk.gov.hmrc"       %% "play-partials"                    % s"7.1.0-$playVersion",
+    "uk.gov.hmrc"       %% "play-partials"                    % s"8.1.0-$playVersion",
     "uk.gov.hmrc"       %% "play-language"                    % s"4.10.0-$playVersion",
     "uk.gov.hmrc"       %% "local-template-renderer"          % s"2.15.0-$playVersion",
     "uk.gov.hmrc"       %% "play-ui"                          % s"9.2.0-$playVersion",

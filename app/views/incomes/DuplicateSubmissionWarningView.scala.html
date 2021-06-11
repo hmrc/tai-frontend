@@ -23,7 +23,7 @@
 
 @this(main: main, form: FormWithCSRF)
 
-@(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Update received"}
 
