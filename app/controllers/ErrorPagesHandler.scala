@@ -35,14 +35,14 @@ import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 
-class ErrorPagesHandler @Inject()(error_template_noauth: ErrorTemplateNoauth, error_no_primary: ErrorNoPrimary)(
+class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, errorNoPrimary: ErrorNoPrimary)(
   implicit val templateRenderer: TemplateRenderer,
   ec: ExecutionContext
 ) {
   type RecoveryLocation = Class[_]
 
   def error4xxPageWithLink(pageTitle: String)(implicit request: Request[_], messages: Messages) =
-    error_template_noauth(
+    errorTemplateNoauth(
       pageTitle,
       messages("tai.errorMessage.heading"),
       messages("tai.errorMessage.frontend400.message1"),
@@ -59,7 +59,7 @@ class ErrorPagesHandler @Inject()(error_template_noauth: ErrorTemplateNoauth, er
     )
 
   def badRequestPageWrongVersion(implicit request: Request[_], messages: Messages) =
-    error_template_noauth(
+    errorTemplateNoauth(
       messages("global.error.badRequest400.title"),
       messages("tai.errorMessage.heading"),
       messages("tai.errorMessage.frontend400.message1.version"),
@@ -67,7 +67,7 @@ class ErrorPagesHandler @Inject()(error_template_noauth: ErrorTemplateNoauth, er
     )
 
   def error4xxFromNps(pageTitle: String)(implicit request: Request[_], messages: Messages) =
-    error_template_noauth(
+    errorTemplateNoauth(
       pageTitle,
       messages("tai.errorMessage.heading.nps"),
       messages("tai.errorMessage.frontend400.message1.nps"),
@@ -75,7 +75,7 @@ class ErrorPagesHandler @Inject()(error_template_noauth: ErrorTemplateNoauth, er
     )
 
   def error5xx(pageBody: String)(implicit request: Request[_], messages: Messages) =
-    error_template_noauth(
+    errorTemplateNoauth(
       messages("global.error.InternalServerError500.title"),
       messages("tai.technical.error.heading"),
       pageBody,
@@ -225,7 +225,7 @@ class ErrorPagesHandler @Inject()(error_template_noauth: ErrorTemplateNoauth, er
         case Nil => {
           Logger.warn(
             s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
-          Some(BadRequest(error_no_primary()))
+          Some(BadRequest(errorNoPrimary()))
         }
         case _ => {
           Logger.info(
@@ -262,7 +262,7 @@ class ErrorPagesHandler @Inject()(error_template_noauth: ErrorTemplateNoauth, er
     rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentsRecorded) => {
       Logger.warn(s"<No data returned from nps employments> - for nino $nino @${rl.getName}")
-      Some(BadRequest(error_no_primary()))
+      Some(BadRequest(errorNoPrimary()))
     }
   }
 
@@ -276,7 +276,7 @@ class ErrorPagesHandler @Inject()(error_template_noauth: ErrorTemplateNoauth, er
         case Nil => {
           Logger.warn(
             s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
-          Some(BadRequest(error_no_primary()))
+          Some(BadRequest(errorNoPrimary()))
         }
         case _ => {
           Logger.info(

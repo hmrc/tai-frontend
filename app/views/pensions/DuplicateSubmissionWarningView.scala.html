@@ -19,7 +19,7 @@
 
 @this(mainTemplate: MainTemplate, duplicateSubmissionWarning: includes.duplicateSubmissionWarning)
 
-@(duplicateSubmissionWarningForm: Form[YesNoForm], pensionName: String, pensionId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
+@(duplicateSubmissionWarningForm: Form[YesNoForm], pensionName: String, pensionId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Update received"}

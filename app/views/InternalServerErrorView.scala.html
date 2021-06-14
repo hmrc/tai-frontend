@@ -21,7 +21,7 @@
 
 @this(mainTemplate: MainTemplate)
 
-@(applicationConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, ec: ExecutionContext)
+@(applicationConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @mainTemplate(
     title = messages("global.error.InternalServerError500.tai.title"),

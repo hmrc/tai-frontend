@@ -181,7 +181,7 @@ class UpdatePensionProviderController @Inject()(
           val user = Some(request.taiUser)
 
           Ok(
-            can_we_contact_by_phone(
+            canWeContactByPhone(
               user,
               telephoneNumberViewModel(mandatoryPensionId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
@@ -204,7 +204,7 @@ class UpdatePensionProviderController @Inject()(
             val user = Some(request.taiUser)
 
             BadRequest(
-              can_we_contact_by_phone(
+              canWeContactByPhone(
                 user,
                 telephoneNumberViewModel(currentCache(UpdatePensionProvider_IdKey).toInt),
                 formWithErrors))

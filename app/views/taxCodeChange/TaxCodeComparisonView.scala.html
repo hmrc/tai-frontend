@@ -14,22 +14,19 @@
  * limitations under the License.
  *@
 
-@import includes.ptaHeader
-@import includes.details_summary
 @import controllers.routes
-@import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
-@import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
-@import uk.gov.hmrc.play.views.formatting.Dates
-@import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
-@import org.joda.time.LocalDate
-@import uk.gov.hmrc.urls.Link
-@import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
-@import uk.gov.hmrc.tai.config.ApplicationConfig
-@import uk.gov.hmrc.tai.util.HtmlFormatter
-@import scala.concurrent.ExecutionContext
+@import includes.ptaHeader
 @import play.api.i18n.Messages
+@import uk.gov.hmrc.play.views.formatting.Dates
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
+@import uk.gov.hmrc.tai.util.HtmlFormatter
+@import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
+@import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
+@import uk.gov.hmrc.urls.Link
+@import views.html.taxCodeChange.FormattedTaxCodeForComparison
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTemplate, formattedTaxCodeForComparison: FormattedTaxCodeForComparison)
 
 @(
     taxCodeChangeViewModel: TaxCodeChangeViewModel,
@@ -39,8 +36,7 @@
     user: controllers.auth.AuthedUser,
     messages: Messages,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-    ec: ExecutionContext
-)
+    ec: ExecutionContext)
 
 @gaEventActionString = @{"Your tax code change"}
 @gaEventLabelString = @{Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}
@@ -50,8 +46,8 @@
         formForErrorSummary = None,
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(taxCodeChangeViewModel.changeDate))),
-        preHeadingText = messages("taxCode.change.journey.preHeading")
+        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(taxCodeChangeViewModel.changeDate))),
+        preHeadingText = Messages("taxCode.change.journey.preHeading")
     )
 }
 
@@ -74,9 +70,9 @@
             @Link.toInternalPage(
             id=Some("check-your-tax-button"),
             url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
-            value=Some(messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
+            value=Some(Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
             cssClasses=Some("button"),
-            dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
+            dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
         </div>
 
     </div>

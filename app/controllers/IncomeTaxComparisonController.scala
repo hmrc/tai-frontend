@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -31,6 +32,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
+import views.html.MainTemplate
 import views.html.incomeTaxComparison.MainView
 
 import scala.concurrent.ExecutionContext
