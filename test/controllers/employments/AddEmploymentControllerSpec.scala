@@ -19,7 +19,7 @@ package controllers.employments
 import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{eq => mockEq, _}
@@ -819,7 +819,7 @@ class AddEmploymentControllerSpec
         inject[CanWeContactByPhoneView],
         inject[ConfirmationView],
         inject[AddIncomeCheckYourAnswersView],
-        MockPartialRetriever,
+        partialRetriever,
         MockTemplateRenderer
       ) {
 

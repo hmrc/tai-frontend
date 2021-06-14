@@ -18,7 +18,7 @@ package utils
 import builders.UserBuilder
 import controllers.auth.AuthedUser
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
@@ -50,7 +50,7 @@ trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar wi
   val nino: Nino = FakeAuthAction.nino
 
   implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-  implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
+  implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
   implicit val authedUser: AuthedUser = UserBuilder()
   implicit val hc: HeaderCarrier = HeaderCarrier()
 

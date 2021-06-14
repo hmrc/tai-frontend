@@ -19,7 +19,7 @@ package controllers.benefits
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => eqTo}
@@ -340,7 +340,7 @@ class CompanyBenefitControllerSpec
         mcc,
         updateOrRemoveCompanyBenefitDecisionView,
         MockTemplateRenderer,
-        MockPartialRetriever,
+        partialRetriever,
         inject[ErrorPagesHandler]
       ) {
     when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))

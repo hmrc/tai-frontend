@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.config
 
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.service.journeyCache._
@@ -26,7 +25,6 @@ import uk.gov.hmrc.tai.service.journeyCache._
 class TaiModule extends Module {
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
-    bind[FormPartialRetriever].to(classOf[TaiHtmlPartialRetriever]),
     bind[TemplateRenderer].to(classOf[LocalTemplateRenderer]),
     // Journey Cache Services
     bind[JourneyCacheService].qualifiedWith("Add Employment").to(classOf[AddEmploymentJourneyCacheService]),

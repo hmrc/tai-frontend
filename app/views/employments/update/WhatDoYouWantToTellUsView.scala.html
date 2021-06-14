@@ -26,9 +26,7 @@
 @(
     viewmodel: EmploymentViewModel,
     updateEmploymentDetailsForm: Form[String],
-)
-(
-    implicit request: Request[_],
+)( implicit request: Request[_],
     user: controllers.auth.AuthedUser,
     messages: Messages,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,

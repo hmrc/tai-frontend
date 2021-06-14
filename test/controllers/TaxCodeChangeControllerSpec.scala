@@ -152,9 +152,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         mcc,
         taxCodeComparisonView,
         yourTaxFreeAmountView,
-        whatHappensNextView,
-        partialRetriever,
-        templateRenderer
+        whatHappensNextView
       ) {
 
     when(taxCodeChangeService.latestTaxCodeChangeDate(meq(nino))(any()))

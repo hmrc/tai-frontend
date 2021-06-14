@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -63,7 +63,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         inject[EditIncomeIrregularHoursView],
         inject[ConfirmAmountEnteredView],
         journeyCacheService,
-        MockPartialRetriever,
+        partialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {

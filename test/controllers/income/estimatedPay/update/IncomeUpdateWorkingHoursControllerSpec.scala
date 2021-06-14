@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
@@ -32,6 +32,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
 import views.html.incomes.WorkingHoursView
+
 import scala.concurrent.Future
 
 class IncomeUpdateWorkingHoursControllerSpec
@@ -48,7 +49,7 @@ class IncomeUpdateWorkingHoursControllerSpec
         mcc,
         inject[WorkingHoursView],
         journeyCacheService,
-        MockPartialRetriever,
+        partialRetriever,
         MockTemplateRenderer
       ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))

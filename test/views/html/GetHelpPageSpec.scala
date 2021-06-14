@@ -42,7 +42,7 @@ class GetHelpPageSpec extends TaiViewSpec {
 
     "show the welsh contact URL" in {
       val messages = messagesApi.preferred(Seq(Lang("cy")))
-      val html = template(appConfig)(request, messages, user, templateRenderer, partialRetriever)
+      val html = template(appConfig)(request, messages, user, templateRenderer, ec)
       val doc = Jsoup.parseBodyFragment(html.toString)
       doc.toString must include(appConfig.contactHelplineWelshUrl)
     }

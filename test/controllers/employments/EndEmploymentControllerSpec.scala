@@ -19,7 +19,7 @@ package controllers.employments
 import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
@@ -818,7 +818,7 @@ class EndEmploymentControllerSpec
         endEmploymentJourneyCacheService,
         trackSuccessJourneyCacheService,
         MockTemplateRenderer,
-        MockPartialRetriever
+        partialRetriever
       ) {
 
     val employmentEndDateForm: EmploymentEndDateForm = EmploymentEndDateForm("employer")

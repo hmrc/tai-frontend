@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -84,7 +84,7 @@ class IncomeUpdateCalculatorControllerSpec
         inject[CheckYourAnswersView],
         inject[ConfirmAmountEnteredView],
         journeyCacheService,
-        MockPartialRetriever,
+        partialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {

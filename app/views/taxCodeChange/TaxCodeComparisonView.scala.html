@@ -16,7 +16,6 @@
 
 @import controllers.routes
 @import includes.ptaHeader
-@import play.api.i18n.Messages
 @import uk.gov.hmrc.play.views.formatting.Dates
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
@@ -26,20 +25,18 @@
 @import uk.gov.hmrc.urls.Link
 @import views.html.taxCodeChange.FormattedTaxCodeForComparison
 
-@this(mainTemplate: MainTemplate, formattedTaxCodeForComparison: FormattedTaxCodeForComparison)
+@this(mainTemplate: MainTemplate)
 
-@(
-    taxCodeChangeViewModel: TaxCodeChangeViewModel,
-    appConfig: ApplicationConfig)
-(
+
+@(taxCodeChangeViewModel: TaxCodeChangeViewModel,appConfig: ApplicationConfig)(
     implicit request: Request[_],
     user: controllers.auth.AuthedUser,
     messages: Messages,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-    ec: ExecutionContext)
+    ec:  scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Your tax code change"}
-@gaEventLabelString = @{Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}
+@gaEventLabelString = @{messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}
 
 @header = @{
     ptaHeader(
@@ -81,7 +78,7 @@
 
 @taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord], identifier: String) = {
     @{taxCodeRecord match {
-        case Some(taxCodeRecord) => formattedTaxCodeForComparison(taxCodeRecord, identifier, taxCodeChangeViewModel.scottishTaxRateBands, appConfig)
+        case Some(taxCodeRecord) => FormattedTaxCodeForComparison(taxCodeRecord, identifier, taxCodeChangeViewModel.scottishTaxRateBands, appConfig)
         case _ => None
     }}
 }

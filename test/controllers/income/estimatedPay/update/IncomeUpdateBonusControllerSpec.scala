@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
@@ -58,7 +58,7 @@ class IncomeUpdateBonusControllerSpec
         bonusPaymentsView,
         bonusPaymentAmountView,
         journeyCacheService,
-        MockPartialRetriever,
+        partialRetriever,
         MockTemplateRenderer
       ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
@@ -93,7 +93,13 @@ class IncomeUpdateBonusControllerSpec
 
       val expectedForm = BonusPaymentsForm.createForm.fill(YesNoForm(Some(cachedAmount)))
       val expectedView =
-        bonusPaymentsView(expectedForm, employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
+        bonusPaymentsView(expectedForm, employer)(
+          fakeRequest,
+          messages,
+          authedUser,
+          templateRenderer,
+          partialRetriever,
+          ec)
 
       result rendersTheSameViewAs expectedView
     }
@@ -180,7 +186,8 @@ class IncomeUpdateBonusControllerSpec
           messages,
           authedUser,
           templateRenderer,
-          partialRetriever
+          partialRetriever,
+          ec
         )
       }
     }
@@ -237,7 +244,8 @@ class IncomeUpdateBonusControllerSpec
         messages,
         authedUser,
         templateRenderer,
-        partialRetriever
+        partialRetriever,
+        ec
       )
     }
 
@@ -306,7 +314,7 @@ class IncomeUpdateBonusControllerSpec
 
         result rendersTheSameViewAs bonusPaymentAmountView(
           BonusOvertimeAmountForm.createForm().bindFromRequest(),
-          employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
+          employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever, ec)
       }
     }
 

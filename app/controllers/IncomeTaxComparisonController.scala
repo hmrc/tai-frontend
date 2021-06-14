@@ -32,7 +32,6 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
-import views.html.MainTemplate
 import views.html.incomeTaxComparison.MainView
 
 import scala.concurrent.ExecutionContext
@@ -48,8 +47,11 @@ class IncomeTaxComparisonController @Inject()(
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  mainTemplate: MainTemplate,
-  errorPagesHandler: ErrorPagesHandler)(implicit val ec: ExecutionContext, templateRenderer: TemplateRenderer)
+  mainView: MainView,
+  errorPagesHandler: ErrorPagesHandler)(
+  implicit val ec: ExecutionContext,
+  templateRenderer: TemplateRenderer,
+  formPartialRetriever: FormPartialRetriever)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -117,7 +119,7 @@ class IncomeTaxComparisonController @Inject()(
             isEstimatedPayJourneyComplete
           )
 
-          Ok(mainTemplate(model, applicationConfig))
+          Ok(mainView(model, applicationConfig))
         }
         case _ => throw new RuntimeException("Not able to fetch income tax comparision details")
       }

@@ -18,7 +18,6 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
@@ -42,8 +41,6 @@ class HelpControllerSpec extends BaseSpec with JsoupMatchers {
     FakeValidatePerson,
     appConfig,
     mcc,
-    inject[GetHelpView],
-    MockPartialRetriever,
-    MockTemplateRenderer
+    inject[GetHelpView]
   )
 }
