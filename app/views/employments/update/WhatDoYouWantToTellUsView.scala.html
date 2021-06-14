@@ -21,11 +21,13 @@
 @import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 @import scala.concurrent.ExecutionContext
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
 @(
     viewmodel: EmploymentViewModel,
-    updateEmploymentDetailsForm: Form[String])
+    updateEmploymentDetailsForm: Form[String],
+    user: controllers.auth.AuthedUser
+)
 (
     implicit request: Request[_],
     user: controllers.auth.AuthedUser,
@@ -47,7 +49,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),

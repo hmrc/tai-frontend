@@ -20,10 +20,10 @@
 @import includes.forms.inputRadioGroupStyling
 @import uk.gov.hmrc.tai.forms.PayPeriodForm
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
 @(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"How often do you get paid?"}
 
@@ -59,7 +59,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 }
 
 
-@main(
+@mainTemplate(
     title = messages("tai.payPeriod.title"),
     articleClasses = None,
     authedUser = Some(user),

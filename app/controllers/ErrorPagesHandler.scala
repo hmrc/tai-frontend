@@ -33,12 +33,11 @@ import uk.gov.hmrc.urls.Link
 import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
-class ErrorPagesHandler @Inject()(
-  error_template_noauth: ErrorTemplateNoauth,
-  error_no_primary: ErrorNoPrimary,
+class ErrorPagesHandler @Inject()(error_template_noauth: ErrorTemplateNoauth, error_no_primary: ErrorNoPrimary)(
   implicit val templateRenderer: TemplateRenderer,
-  implicit val partialRetriever: FormPartialRetriever
+  ec: ExecutionContext
 ) {
   type RecoveryLocation = Class[_]
 

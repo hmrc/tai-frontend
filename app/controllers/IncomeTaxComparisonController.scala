@@ -46,10 +46,8 @@ class IncomeTaxComparisonController @Inject()(
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  main: MainView,
-  implicit val partialRetriever: FormPartialRetriever,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  mainTemplate: MainTemplate,
+  errorPagesHandler: ErrorPagesHandler)(implicit val ec: ExecutionContext, templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -117,7 +115,7 @@ class IncomeTaxComparisonController @Inject()(
             isEstimatedPayJourneyComplete
           )
 
-          Ok(main(model, applicationConfig))
+          Ok(mainTemplate(model, applicationConfig))
         }
         case _ => throw new RuntimeException("Not able to fetch income tax comparision details")
       }

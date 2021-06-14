@@ -17,7 +17,7 @@
 @import uk.gov.hmrc.tai.forms.YesNoForm
 @import includes.{cancelLink, ptaHeader}
 
-@this(main: main, duplicateSubmissionWarning: includes.duplicateSubmissionWarning)
+@this(mainTemplate: MainTemplate, duplicateSubmissionWarning: includes.duplicateSubmissionWarning)
 
 @(duplicateSubmissionWarningForm: Form[YesNoForm], pensionName: String, pensionId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
 ec: scala.concurrent.ExecutionContext)
@@ -34,7 +34,7 @@ ec: scala.concurrent.ExecutionContext)
     )
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.pension.warning.customGaTitle"),
     authedUser = Some(user),
     pageHeader = Some(header),

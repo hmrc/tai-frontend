@@ -28,12 +28,13 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import views.html.ErrorTemplateNoauth
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
 class UnauthorisedController @Inject()(
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
   error_template_noauth: ErrorTemplateNoauth,
-  implicit val partialRetriever: FormPartialRetriever,
+  implicit val ec: ExecutionContext,
   implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
 

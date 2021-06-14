@@ -27,15 +27,14 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.urls.Link
 import views.html.InternalServerErrorView
 import views.html.ErrorTemplateNoauth
+import scala.concurrent.ExecutionContext
 
 class ErrorHandler @Inject()(
   applicationConfig: ApplicationConfig,
   error_template_noauth: ErrorTemplateNoauth,
   val messagesApi: MessagesApi,
   val configuration: Configuration,
-  internalServerError: InternalServerErrorView)(
-  implicit localTemplateRenderer: TemplateRenderer,
-  taiHtmlPartialRetriever: FormPartialRetriever)
+  internalServerError: InternalServerErrorView)(implicit localTemplateRenderer: TemplateRenderer, ec: ExecutionContext)
     extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(

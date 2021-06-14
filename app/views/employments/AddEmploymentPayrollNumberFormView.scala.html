@@ -23,9 +23,9 @@
 @import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 @import includes.forms.inputRadioGroupStyling
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(payrollNumberForm: Form[AddEmploymentPayrollNumberForm], payrollNumberViewModel: PayrollNumberViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(payrollNumberForm: Form[AddEmploymentPayrollNumberForm], payrollNumberViewModel: PayrollNumberViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Do you know your payroll number for this employer?"}
 
@@ -37,7 +37,7 @@
         mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", <span class="carry-over">{payrollNumberViewModel.employmentName}</span>),
         preHeadingText = Messages("add.missing.employment"))}
 
-@main(
+@mainTemplate(
     title = Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),

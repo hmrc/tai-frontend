@@ -16,19 +16,19 @@
 
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(employmentName: String, isPension: Boolean)(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.AuthedUser,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
+    ec: scala.concurrent.ExecutionContext
 )
 
 @gaEventActionString = @{"Your estimated pay for next year success"}
 
-@main(
+@mainTemplate(
     title = messages("tai.updateIncome.CYPlus1.success.title", TaxYearRangeUtil.futureTaxYearRange(1)),
     articleClasses = Some("full-width"),
     authedUser = Some(user),

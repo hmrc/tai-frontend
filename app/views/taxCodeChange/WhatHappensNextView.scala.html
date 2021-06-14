@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.urls.Link
 @import scala.concurrent.ExecutionContext
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @()(implicit request: Request[_],
     user: controllers.auth.AuthedUser,
@@ -38,7 +38,7 @@
     preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
 
-@main(
+@mainTemplate(
     title = Messages("taxCode.change.whatHappensNext.title"),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),

@@ -23,10 +23,10 @@
 @import uk.gov.hmrc.play.views.formatting.Dates
 @import controllers.auth.AuthenticatedRequest
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel
-)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec : scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Your Income Tax"}
 
@@ -49,7 +49,7 @@
         additionalTopLinkContent = Some(printLink)
     )}
 
-@main(
+@mainTemplate(
     title = messages("tai.yourIncome.heading"),
     authedUser = Some(request.taiUser),
     pageHeader = Some(header),

@@ -19,7 +19,7 @@
 @import includes.ptaHeader
 @import scala.concurrent.ExecutionContext
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.AuthedUser,
@@ -36,7 +36,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     )
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.getHelp.h1"),
     articleClasses = Some("full-width"),
     authedUser = Some(user),

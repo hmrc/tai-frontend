@@ -16,13 +16,13 @@
 
 @import uk.gov.hmrc.tai.util.ViewModelHelper.htmlNonBroken
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(employerName: String, employerId: Int)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
 ec: scala.concurrent.ExecutionContext)
 
-@main(
+@mainTemplate(
     title = messages("tai.incomes.updated.check.title", employerName),
     articleClasses = Some("full-width"),
     authedUser = Some(user),

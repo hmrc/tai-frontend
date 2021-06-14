@@ -25,7 +25,7 @@
 
 @import controllers.auth.AuthenticatedRequest
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, ec: ExecutionContext)
 @gaEventActionString = @{"Income Tax comparison - current and next tax years"}
@@ -59,7 +59,7 @@
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
-@main(title = headingText,
+@mainTemplate(title = headingText,
     gaCustomTitle = Some(headingText),
     pageHeader = Some(header),
     authedUser = Some(request.taiUser)) {

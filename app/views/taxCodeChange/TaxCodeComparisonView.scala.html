@@ -27,8 +27,9 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.util.HtmlFormatter
 @import scala.concurrent.ExecutionContext
+@import play.api.i18n.Messages
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(
     taxCodeChangeViewModel: TaxCodeChangeViewModel,
@@ -38,7 +39,6 @@
     user: controllers.auth.AuthedUser,
     messages: Messages,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
     ec: ExecutionContext
 )
 
@@ -55,7 +55,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = Messages("taxCode.change.journey.preHeading"),
     pageHeader = Some(header),
     authedUser = Some(user),

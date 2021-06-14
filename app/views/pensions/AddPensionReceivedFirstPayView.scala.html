@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderFirstPayForm
 @import includes.forms.inputRadioGroupStyling
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
 @(firstPayForm: Form[Option[String]], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever,
 ec: scala.concurrent.ExecutionContext)
@@ -36,7 +36,7 @@ ec: scala.concurrent.ExecutionContext)
         mainHeadingText = Messages("tai.addPensionProvider.firstPay.title", <span class="carry-over">{pensionProviderName}</span>),
         preHeadingText = Messages("add.missing.pension"))}
 
-@main(
+@mainTemplate(
     title = Messages("tai.addPensionProvider.firstPay.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),

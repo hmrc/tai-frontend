@@ -22,7 +22,7 @@
 @import includes.cancelLink
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
 @(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm],
     hasMultipleIncomes: Boolean,
@@ -51,7 +51,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRange),
     authedUser = Some(user),
     pageHeader = Some(header),

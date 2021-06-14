@@ -21,9 +21,9 @@
 @import includes.ptaHeader
 @import scala.concurrent.ExecutionContext
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@(model: WithinSixWeeksViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, ec: ExecutionContext)
+@(model: WithinSixWeeksViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @gaEventActionString = @{"You can not update this employment yet"}
 
@@ -35,7 +35,7 @@
         preHeadingText = Messages("tai.endEmployment.preHeadingText"))
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.endEmploymentWithinSixWeeksError.heading", model.earliestUpdateDateInHtml),
     authedUser = Some(user),
     pageHeader = Some(header),

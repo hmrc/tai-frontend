@@ -57,7 +57,7 @@ class UpdatePensionProviderController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
-  can_we_contact_by_phone: CanWeContactByPhoneView,
+  canWeContactByPhone: CanWeContactByPhoneView,
   doYouGetThisPensionIncome: DoYouGetThisPensionIncomeView,
   whatDoYouWantToTellUsView: WhatDoYouWantToTellUsView,
   updatePensionCheckYourAnswers: UpdatePensionCheckYourAnswersView,
@@ -65,9 +65,7 @@ class UpdatePensionProviderController @Inject()(
   duplicateSubmissionWarningView: DuplicateSubmissionWarningView,
   @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-  implicit val partialRetriever: FormPartialRetriever,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler)(implicit val templateRenderer: TemplateRenderer, ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

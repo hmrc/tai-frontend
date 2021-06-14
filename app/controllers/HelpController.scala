@@ -26,15 +26,14 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import views.html.help.GetHelpView
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
 class HelpController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  getHelp: GetHelpView,
-  implicit val partialRetriever: FormPartialRetriever,
-  implicit val templateRenderer: TemplateRenderer)
+  getHelp: GetHelpView)(implicit val ec: ExecutionContext, templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
 
   def helpPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

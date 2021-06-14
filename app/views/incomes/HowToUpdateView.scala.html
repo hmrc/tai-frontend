@@ -19,10 +19,10 @@
 @import includes.forms.inputRadioGroupStyling
 @import includes.cancelLink
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
 @(howToUpdateForm: Form[uk.gov.hmrc.tai.forms.HowToUpdateForm], id: Int, employerName: String)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Choose how to update your income"}
 
@@ -37,7 +37,7 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
 }
 
 
-@main(
+@mainTemplate(
     title = Messages("tai.howToUpdate.title"),
     articleClasses = Some("full-width text"),
     authedUser = Some(user),
