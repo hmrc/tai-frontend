@@ -24,12 +24,12 @@ class NoMatchPossibleException extends Exception
 case class TaxCodePair(previous: Option[TaxCodeRecord], current: Option[TaxCodeRecord])
 
 case class TaxCodePairs(
-  primaryPairs: Seq[TaxCodePair],
-  secondaryPairs: Seq[TaxCodePair],
-  unMatchedPreviousCodes: Seq[TaxCodePair],
-  unMatchedCurrentCodes: Seq[TaxCodePair]) {
+  primaryPairs: List[TaxCodePair],
+  secondaryPairs: List[TaxCodePair],
+  unMatchedPreviousCodes: List[TaxCodePair],
+  unMatchedCurrentCodes: List[TaxCodePair]) {
 
-  def combinedTaxCodePairs: Seq[TaxCodePair] =
+  def combinedTaxCodePairs: List[TaxCodePair] =
     primaryPairs ++
       secondaryPairs ++
       unMatchedPreviousCodes ++
@@ -49,50 +49,50 @@ object TaxCodePairs {
     )
   }
 
-  private val createAllPairs: (Seq[TaxCodeRecord], Seq[TaxCodeRecord]) => Seq[TaxCodePair] =
-    (previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]) => {
+  private val createAllPairs: (List[TaxCodeRecord], List[TaxCodeRecord]) => List[TaxCodePair] =
+    (previous: List[TaxCodeRecord], current: List[TaxCodeRecord]) => {
 
       def innerCreateAllPairs(
-        previous: Seq[TaxCodeRecord],
-        current: Seq[TaxCodeRecord],
-        acc: Seq[TaxCodePair] = Seq.empty): Seq[TaxCodePair] =
+        previous: List[TaxCodeRecord],
+        current: List[TaxCodeRecord],
+        acc: List[TaxCodePair] = List.empty): List[TaxCodePair] =
         (previous, current) match {
           case (Nil, Nil) => acc
           case (Nil, head :: tail) =>
-            innerCreateAllPairs(Seq.empty, tail, acc ++ Seq(TaxCodePair(None, Some(head))))
+            innerCreateAllPairs(List.empty, tail, acc ++ List(TaxCodePair(None, Some(head))))
           case (head :: tail, Nil) =>
-            innerCreateAllPairs(tail, Seq.empty, acc ++ Seq(TaxCodePair(Some(head), None)))
+            innerCreateAllPairs(tail, List.empty, acc ++ List(TaxCodePair(Some(head), None)))
           case (pHead :: pTail, curr) => {
             curr
               .find(isMatchingPair(_, pHead))
-              .fold(innerCreateAllPairs(pTail, curr, acc ++ Seq(TaxCodePair(Some(pHead), None)))) { matching =>
+              .fold(innerCreateAllPairs(pTail, curr, acc ++ List(TaxCodePair(Some(pHead), None)))) { matching =>
                 {
                   val rest = curr.filter(record => record != matching)
-                  innerCreateAllPairs(pTail, rest, acc ++ Seq(TaxCodePair(Some(pHead), Some(matching))))
+                  innerCreateAllPairs(pTail, rest, acc ++ List(TaxCodePair(Some(pHead), Some(matching))))
                 }
               }
           }
         }
 
-      innerCreateAllPairs(previous, current, Seq.empty)
+      innerCreateAllPairs(previous, current, List.empty)
     }
 
-  private def primaryPairs(pairs: Seq[TaxCodePair]): Seq[TaxCodePair] =
+  private def primaryPairs(pairs: List[TaxCodePair]): List[TaxCodePair] =
     pairs.filter(taxCodeRecordPair => {
       taxCodeRecordPair.previous.isDefined && taxCodeRecordPair.current.isDefined && taxCodeRecordPair.current
         .exists(_.primary)
     })
 
-  private def secondaryPairs(pairs: Seq[TaxCodePair]): Seq[TaxCodePair] =
+  private def secondaryPairs(pairs: List[TaxCodePair]): List[TaxCodePair] =
     pairs.filter(taxCodeRecordPair => {
       taxCodeRecordPair.previous.isDefined && taxCodeRecordPair.current.isDefined && !taxCodeRecordPair.current
         .exists(_.primary)
     })
 
-  private def unMatchedCurrentCodes(pairs: Seq[TaxCodePair]): Seq[TaxCodePair] =
+  private def unMatchedCurrentCodes(pairs: List[TaxCodePair]): List[TaxCodePair] =
     pairs.filter(taxCodeRecordPair => taxCodeRecordPair.previous.isEmpty)
 
-  private def unMatchedPreviousCodes(pairs: Seq[TaxCodePair]): Seq[TaxCodePair] =
+  private def unMatchedPreviousCodes(pairs: List[TaxCodePair]): List[TaxCodePair] =
     pairs.filter(taxCodeRecordPair => taxCodeRecordPair.current.isEmpty)
 
   private def isMatchingPair(record1: TaxCodeRecord, record2: TaxCodeRecord): Boolean = {

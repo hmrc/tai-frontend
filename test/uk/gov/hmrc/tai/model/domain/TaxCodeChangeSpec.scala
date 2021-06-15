@@ -30,42 +30,42 @@ class TaxCodeChangeSpec extends PlaySpec {
     "parsing JSON" should {
       "return a valid TaxCodeChange object when given valid Json" in {
         val expectedModel = TaxCodeChange(
-          Seq(previousTaxCodeRecord1),
-          Seq(currentTaxCodeRecord1)
+          List(previousTaxCodeRecord1),
+          List(currentTaxCodeRecord1)
         )
 
         taxCodeChangeJson.as[TaxCodeChange] mustEqual expectedModel
       }
 
-      "throw a JsError given an empty Seq of TaxCodeRecords" in {
+      "throw a JsError given an empty List of TaxCodeRecords" in {
         an[JsResultException] should be thrownBy emptyTaxCodeRecordsJson.as[TaxCodeChange]
       }
     }
 
     "mostRecentTaxCodeChangeDate" should {
-      "return the latest tax code change date from a sequence of tax code records" in {
+      "return the latest tax code change date from a Listuence of tax code records" in {
         val model =
-          TaxCodeChange(Seq(previousTaxCodeRecord1, fullYearTaxCode), Seq(currentTaxCodeRecord1, fullYearTaxCode))
+          TaxCodeChange(List(previousTaxCodeRecord1, fullYearTaxCode), List(currentTaxCodeRecord1, fullYearTaxCode))
 
         model.mostRecentTaxCodeChangeDate mustEqual startDate.plusMonths(1).plusDays(1)
       }
     }
 
     "mostRecentPreviousTaxCodeChangeDate" should {
-      "return the latest tax code change date from a sequence of tax code records" in {
+      "return the latest tax code change date from a Listuence of tax code records" in {
         val model =
-          TaxCodeChange(Seq(previousTaxCodeRecord1, fullYearTaxCode), Seq(currentTaxCodeRecord1, fullYearTaxCode))
+          TaxCodeChange(List(previousTaxCodeRecord1, fullYearTaxCode), List(currentTaxCodeRecord1, fullYearTaxCode))
 
         model.mostRecentPreviousTaxCodeChangeDate mustEqual startDate
       }
     }
 
     "uniqueTaxCodes" should {
-      "return a seq of unique tax codes found in the previous and current lists" in {
+      "return a List of unique tax codes found in the previous and current lists" in {
         val model =
-          TaxCodeChange(Seq(previousTaxCodeRecord1, fullYearTaxCode), Seq(currentTaxCodeRecord1, fullYearTaxCode))
+          TaxCodeChange(List(previousTaxCodeRecord1, fullYearTaxCode), List(currentTaxCodeRecord1, fullYearTaxCode))
 
-        model.uniqueTaxCodes mustEqual Seq("1185L", "OT")
+        model.uniqueTaxCodes mustEqual List("1185L", "OT")
       }
     }
   }
@@ -116,7 +116,7 @@ class TaxCodeChangeSpec extends PlaySpec {
 
   val emptyTaxCodeRecordsJson = Json.obj(
     "nino"          -> nino.nino,
-    "taxCodeRecord" -> Seq(JsNull)
+    "taxCodeRecord" -> List(JsNull)
   )
 
   private def generateNino: Nino = new Generator(new Random).nextNino

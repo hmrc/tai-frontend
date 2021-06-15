@@ -83,10 +83,10 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
               )
             )
           ),
-          "links" -> JsArray(Seq())
+          "links" -> JsArray(List())
         )
 
-        val expectedResult = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
+        val expectedResult = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
         when(httpHandler.getFromApi(Matchers.eq(taxCodeChangeUrl))(any())).thenReturn(Future.successful(json))
 
         val result = Await.result(sut.taxCodeChange(nino), 5 seconds)
@@ -160,10 +160,10 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
             "primary"          -> true
           )
         ),
-        "links" -> JsArray(Seq())
+        "links" -> JsArray(List())
       )
 
-      val expectedResult = Seq(taxCodeRecord, taxCodeRecord2)
+      val expectedResult = List(taxCodeRecord, taxCodeRecord2)
 
       when(httpHandler.getFromApi(Matchers.eq(latestTaxCodeRecordUrl))(any())).thenReturn(Future.successful(json))
 
@@ -171,20 +171,20 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
       result mustEqual TaiSuccessResponseWithPayload(expectedResult)
     }
 
-    "return a empty sequence when the api returns no records" in {
+    "return a empty Listuence when the api returns no records" in {
       val year = TaxYear().prev.year
 
       val latestTaxCodeRecordUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/$year/tax-code/latest"
 
       val json = Json.obj(
         "data"  -> Json.arr(),
-        "links" -> JsArray(Seq())
+        "links" -> JsArray(List())
       )
 
       when(httpHandler.getFromApi(Matchers.eq(latestTaxCodeRecordUrl))(any())).thenReturn(Future.successful(json))
 
       val result = Await.result(sut.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
-      result mustEqual TaiSuccessResponseWithPayload(Seq.empty)
+      result mustEqual TaiSuccessResponseWithPayload(List.empty)
     }
   }
 

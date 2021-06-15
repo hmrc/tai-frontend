@@ -84,7 +84,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
     "show 'Your tax code comparison' page" in {
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-      val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
+      val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
       val scottishRates = Map.empty[String, BigDecimal]
 
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
