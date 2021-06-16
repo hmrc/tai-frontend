@@ -817,8 +817,7 @@ class EndEmploymentControllerSpec
         inject[AddIncomeCheckYourAnswersView],
         endEmploymentJourneyCacheService,
         trackSuccessJourneyCacheService,
-        MockTemplateRenderer,
-        partialRetriever
+        MockTemplateRenderer
       ) {
 
     val employmentEndDateForm: EmploymentEndDateForm = EmploymentEndDateForm("employer")

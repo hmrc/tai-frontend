@@ -21,7 +21,7 @@ import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear

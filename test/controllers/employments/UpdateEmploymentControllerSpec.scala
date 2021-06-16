@@ -488,7 +488,6 @@ class UpdateEmploymentControllerSpec
         inject[ConfirmationView],
         journeyCacheService,
         successfulJourneyCacheService,
-        partialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       )

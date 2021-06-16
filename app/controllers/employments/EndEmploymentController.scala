@@ -26,7 +26,7 @@ import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
@@ -63,8 +63,7 @@ class EndEmploymentController @Inject()(
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   @Named("End Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-  implicit val templateRenderer: TemplateRenderer,
-  implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with IrregularPayConstants
     with AuditConstants with EmptyCacheRedirect {
 

@@ -49,7 +49,6 @@ class IncomeUpdateWorkingHoursControllerSpec
         mcc,
         inject[WorkingHoursView],
         journeyCacheService,
-        partialRetriever,
         MockTemplateRenderer
       ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))

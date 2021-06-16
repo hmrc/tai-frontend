@@ -20,7 +20,7 @@ import javax.inject.Inject
 import play.api.i18n.Messages
 import play.api.mvc._
 import uk.gov.hmrc.http.SessionKeys
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.ViewModelHelper

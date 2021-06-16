@@ -19,13 +19,14 @@ package uk.gov.hmrc.tai.util
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.config.ApplicationConfig
+
 import scala.concurrent.ExecutionContext
 
 object HelpFormHelper {
 
-  def replaceMessage(partialRetriever: FormPartialRetriever, applicationConfig: ApplicationConfig)(
+  def replaceMessage(partialRetriever: PartialRetriever, applicationConfig: ApplicationConfig)(
     implicit request: Request[_],
     messages: Messages,
     ec: ExecutionContext): Html = {

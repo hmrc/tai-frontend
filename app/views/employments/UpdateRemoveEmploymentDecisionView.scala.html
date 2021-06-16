@@ -23,7 +23,7 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(updateRemoveForm: Form[Option[String]], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, ec: ExecutionContext)
+@(updateRemoveForm: Form[Option[String]], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 @gaEventActionString = @{"Update or remove employer- Do you currently work for this employer?"}
 

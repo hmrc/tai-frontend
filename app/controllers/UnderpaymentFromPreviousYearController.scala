@@ -20,7 +20,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
@@ -36,7 +36,6 @@ class UnderpaymentFromPreviousYearController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   previousYearUnderpayment: PreviousYearUnderpaymentView,
-  implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral {
 

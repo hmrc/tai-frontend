@@ -61,7 +61,6 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
         inject[EstimatedPayView],
         inject[IncorrectTaxableIncomeView],
         journeyCacheService,
-        partialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {

@@ -74,7 +74,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
         mcc,
         inject[HowToUpdateView],
         journeyCacheService,
-        partialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {

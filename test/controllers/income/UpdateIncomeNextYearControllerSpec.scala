@@ -543,7 +543,6 @@ class UpdateIncomeNextYearControllerSpec
         updateIncomeCYPlus1EditView,
         updateIncomeCYPlus1SameView,
         inject[SameEstimatedPayView],
-        partialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       )

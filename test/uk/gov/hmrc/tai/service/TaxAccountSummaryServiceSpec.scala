@@ -206,7 +206,6 @@ class TaxAccountSummaryServiceSpec
         trackingService = trackingService,
         employmentService = employmentService,
         taxAccountService = taxAccountService,
-        partialRetriever = partialRetriever,
         templateRenderer = MockTemplateRenderer,
         mcc = mcc
       ) {

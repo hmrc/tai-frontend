@@ -21,7 +21,7 @@ import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
@@ -45,7 +45,6 @@ class EstimatedIncomeTaxController @Inject()(
   complexEstimatedIncomeTax: ComplexEstimatedIncomeTaxView,
   simpleEstimatedIncomeTax: SimpleEstimatedIncomeTaxView,
   zeroTaxEstimatedIncomeTax: ZeroTaxEstimatedIncomeTaxView,
-  implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   mcc: MessagesControllerComponents,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)

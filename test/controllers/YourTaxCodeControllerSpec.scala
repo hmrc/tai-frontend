@@ -49,7 +49,6 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
     appConfig,
     inject[TaxCodeDetailsView],
     inject[TaxCodeDetailsPreviousYearsView],
-    partialRetriever,
     templateRenderer,
     inject[ErrorPagesHandler]
   )

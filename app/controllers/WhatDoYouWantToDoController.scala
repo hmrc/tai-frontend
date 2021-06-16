@@ -25,7 +25,7 @@ import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, TaiSuccessResponseWithPayload}
@@ -51,7 +51,6 @@ class WhatDoYouWantToDoController @Inject()(
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   whatDoYouWantToDoTileView: WhatDoYouWantToDoTileView,
-  implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {

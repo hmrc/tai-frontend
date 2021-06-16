@@ -63,7 +63,6 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         inject[EditIncomeIrregularHoursView],
         inject[ConfirmAmountEnteredView],
         journeyCacheService,
-        partialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {

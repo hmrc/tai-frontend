@@ -27,7 +27,7 @@
 @this(mainTemplate: MainTemplate)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ZeroTaxEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
-request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, ec: ExecutionContext)
+request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 @gaEventActionString = @{Messages("tai.estimatedIncome.title")}
 

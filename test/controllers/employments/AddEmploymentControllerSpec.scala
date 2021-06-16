@@ -819,7 +819,6 @@ class AddEmploymentControllerSpec
         inject[CanWeContactByPhoneView],
         inject[ConfirmationView],
         inject[AddIncomeCheckYourAnswersView],
-        partialRetriever,
         MockTemplateRenderer
       ) {
 

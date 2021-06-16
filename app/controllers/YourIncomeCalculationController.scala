@@ -20,7 +20,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth._
 import javax.inject.Inject
 import play.api.mvc._
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -43,7 +42,6 @@ class YourIncomeCalculationController @Inject()(
   mcc: MessagesControllerComponents,
   historicIncomeCalculation: HistoricIncomeCalculationView,
   yourIncomeCalculation: YourIncomeCalculationView,
-  implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {

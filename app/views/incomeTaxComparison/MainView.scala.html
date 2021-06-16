@@ -27,7 +27,7 @@
 
 @this(mainTemplate: MainTemplate)
 
-@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, ec: ExecutionContext)
+@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 @gaEventActionString = @{"Income Tax comparison - current and next tax years"}
 @backLinkToChooseTaxYear = {
     <p class="flush--bottom">

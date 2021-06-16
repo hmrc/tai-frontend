@@ -216,7 +216,6 @@ class PayeControllerHistoricSpec
         mcc,
         inject[RtiDisabledHistoricPayAsYouEarnView],
         inject[HistoricPayAsYouEarnView],
-        partialRetriever,
         templateRenderer,
         inject[ErrorPagesHandler]
       ) {

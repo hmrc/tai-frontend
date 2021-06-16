@@ -441,7 +441,6 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
         complexEstimatedIncomeTaxView,
         simpleEstimatedIncomeTaxView,
         zeroTaxEstimatedIncomeTaxView,
-        partialRetriever,
         templateRenderer,
         mcc,
         inject[ErrorPagesHandler]

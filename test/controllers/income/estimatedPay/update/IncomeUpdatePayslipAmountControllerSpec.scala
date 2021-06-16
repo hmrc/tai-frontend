@@ -58,7 +58,6 @@ class IncomeUpdatePayslipAmountControllerSpec
         taxablePayslipAmountView,
         inject[PayslipDeductionsView],
         journeyCacheService,
-        partialRetriever,
         MockTemplateRenderer
       ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))

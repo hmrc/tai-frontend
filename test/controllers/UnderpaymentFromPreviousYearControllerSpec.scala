@@ -51,7 +51,6 @@ class UnderpaymentFromPreviousYearControllerSpec extends BaseSpec {
         FakeValidatePerson,
         mcc,
         inject[PreviousYearUnderpaymentView],
-        partialRetriever,
         templateRenderer
       ) {
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))

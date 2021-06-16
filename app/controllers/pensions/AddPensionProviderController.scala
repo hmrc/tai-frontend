@@ -23,7 +23,7 @@ import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
@@ -60,7 +60,6 @@ class AddPensionProviderController @Inject()(
   addPensionStartDateView: AddPensionStartDateView,
   @Named("Add Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-  implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with AuditConstants with FormValuesConstants

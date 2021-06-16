@@ -26,7 +26,7 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, ec: ExecutionContext)
+@(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 @gaEventActionString = @{"Check your add missing employment answers"}
 

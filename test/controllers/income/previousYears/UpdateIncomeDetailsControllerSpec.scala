@@ -401,7 +401,6 @@ class UpdateIncomeDetailsControllerSpec
         inject[UpdateIncomeDetailsConfirmationView],
         trackingjourneyCacheService,
         journeyCacheService,
-        partialRetriever,
         MockTemplateRenderer
       )
 }

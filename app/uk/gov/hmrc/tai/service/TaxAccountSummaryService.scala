@@ -22,7 +22,7 @@ import play.api.i18n.Messages
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.domain._
@@ -36,7 +36,6 @@ class TaxAccountSummaryService @Inject()(
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
   mcc: MessagesControllerComponents,
-  implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

@@ -23,7 +23,7 @@
 
 @this(mainTemplate: MainTemplate)
 
-@(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, ec: ExecutionContext)
+@(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 @employerMessageKey = @{viewModel.employerMessageKey}
 

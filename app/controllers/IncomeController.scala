@@ -24,7 +24,6 @@ import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.forms.EditIncomeForm
@@ -59,7 +58,6 @@ class IncomeController @Inject()(
   editPensionSuccess: EditPensionSuccessView,
   editIncome: EditIncomeView,
   sameEstimatedPay: SameEstimatedPayView,
-  implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {

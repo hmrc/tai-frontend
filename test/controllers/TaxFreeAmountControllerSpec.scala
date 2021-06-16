@@ -113,7 +113,6 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
         appConfig,
         mcc,
         inject[TaxFreeAmountView],
-        partialRetriever,
         templateRenderer,
         inject[ErrorPagesHandler]
       )

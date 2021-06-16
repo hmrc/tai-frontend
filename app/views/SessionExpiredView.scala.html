@@ -21,7 +21,7 @@
 
 @this(unauthenticated_main: unauthenticated_main)
 
-@(appConfig: ApplicationConfig)(implicit request:Request[_], messages: Messages, formPartialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever, templateRenderer: TemplateRenderer)
+@(appConfig: ApplicationConfig)(implicit request:Request[_], messages: Messages, templateRenderer: TemplateRenderer)
 
 @unauthenticated_main(
 title = messages("session_expired.title")) {

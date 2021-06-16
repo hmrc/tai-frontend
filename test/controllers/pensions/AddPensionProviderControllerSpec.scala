@@ -946,7 +946,6 @@ class AddPensionProviderControllerSpec
         inject[AddPensionStartDateView],
         addPensionProviderJourneyCacheService,
         trackSuccessJourneyCacheService,
-        partialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {

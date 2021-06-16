@@ -58,7 +58,6 @@ class IncomeUpdateBonusControllerSpec
         bonusPaymentsView,
         bonusPaymentAmountView,
         journeyCacheService,
-        partialRetriever,
         MockTemplateRenderer
       ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
@@ -93,13 +92,7 @@ class IncomeUpdateBonusControllerSpec
 
       val expectedForm = BonusPaymentsForm.createForm.fill(YesNoForm(Some(cachedAmount)))
       val expectedView =
-        bonusPaymentsView(expectedForm, employer)(
-          fakeRequest,
-          messages,
-          authedUser,
-          templateRenderer,
-          partialRetriever,
-          ec)
+        bonusPaymentsView(expectedForm, employer)(fakeRequest, messages, authedUser, templateRenderer, ec)
 
       result rendersTheSameViewAs expectedView
     }
@@ -186,7 +179,6 @@ class IncomeUpdateBonusControllerSpec
           messages,
           authedUser,
           templateRenderer,
-          partialRetriever,
           ec
         )
       }
@@ -244,7 +236,6 @@ class IncomeUpdateBonusControllerSpec
         messages,
         authedUser,
         templateRenderer,
-        partialRetriever,
         ec
       )
     }
@@ -314,7 +305,7 @@ class IncomeUpdateBonusControllerSpec
 
         result rendersTheSameViewAs bonusPaymentAmountView(
           BonusOvertimeAmountForm.createForm().bindFromRequest(),
-          employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever, ec)
+          employer)(fakeRequest, messages, authedUser, templateRenderer, ec)
       }
     }
 

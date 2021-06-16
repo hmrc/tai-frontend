@@ -84,7 +84,6 @@ class IncomeUpdateCalculatorControllerSpec
         inject[CheckYourAnswersView],
         inject[ConfirmAmountEnteredView],
         journeyCacheService,
-        partialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {

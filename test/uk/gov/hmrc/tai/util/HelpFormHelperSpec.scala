@@ -20,12 +20,12 @@ import builders.RequestBuilder
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import play.twirl.api.Html
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.play.partials.PartialRetriever
 import utils.BaseSpec
 
 class HelpFormHelperSpec extends BaseSpec {
 
-  val mockPartialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
+  val mockPartialRetriever: PartialRetriever = mock[PartialRetriever]
 
   implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 

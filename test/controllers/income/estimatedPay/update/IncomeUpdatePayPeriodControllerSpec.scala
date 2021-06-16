@@ -49,7 +49,6 @@ class IncomeUpdatePayPeriodControllerSpec
         mcc,
         inject[PayPeriodView],
         journeyCacheService,
-        partialRetriever,
         MockTemplateRenderer
       ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
