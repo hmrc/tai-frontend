@@ -43,13 +43,13 @@
         formForErrorSummary = None,
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(taxCodeChangeViewModel.changeDate))),
-        preHeadingText = Messages("taxCode.change.journey.preHeading")
+        mainHeadingText = messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(taxCodeChangeViewModel.changeDate))),
+        preHeadingText = messages("taxCode.change.journey.preHeading")
     )
 }
 
 @mainTemplate(
-    title = Messages("taxCode.change.journey.preHeading"),
+    title = messages("taxCode.change.journey.preHeading"),
     pageHeader = Some(header),
     authedUser = Some(user),
     gaCustomTitle = None,
@@ -67,9 +67,9 @@
             @Link.toInternalPage(
             id=Some("check-your-tax-button"),
             url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
-            value=Some(Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
+            value=Some(messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
             cssClasses=Some("button"),
-            dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
+            dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
         </div>
 
     </div>
@@ -86,7 +86,7 @@
 @displayTaxCodeReasons(taxCodeReasons: Seq[String]) = {
     @if(taxCodeChangeViewModel.isAGenericReason) {
             <p class="tax-code-reason small">
-            @Messages("taxCode.change.yourTaxCodeChanged.paragraph")
+            @messages("taxCode.change.yourTaxCodeChanged.paragraph")
             </p>
 
     } else {

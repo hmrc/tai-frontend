@@ -20,12 +20,12 @@ import builders.RequestBuilder
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import play.twirl.api.Html
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import utils.BaseSpec
 
 class HelpFormHelperSpec extends BaseSpec {
 
-  val mockPartialRetriever: PartialRetriever = mock[PartialRetriever]
+  val mockFormPartialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
 
   implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
@@ -35,10 +35,10 @@ class HelpFormHelperSpec extends BaseSpec {
 
       "the partial is retrieved with the expected message" in {
 
-        when(mockPartialRetriever.getPartialContent(any(), any(), any())(any(), any())) thenReturn Html(
+        when(mockFormPartialRetriever.getPartialContent(any(), any(), any())(any(), any())) thenReturn Html(
           messages("tai.deskpro.link.text.original"))
 
-        HelpFormHelper.replaceMessage(mockPartialRetriever, appConfig).toString() mustBe
+        HelpFormHelper.replaceMessage(mockFormPartialRetriever, appConfig).toString() mustBe
           messages("tai.deskpro.link.text.replacement")
       }
     }
@@ -49,15 +49,16 @@ class HelpFormHelperSpec extends BaseSpec {
 
         val expectedMessage = "A wild content appears"
 
-        when(mockPartialRetriever.getPartialContent(any(), any(), any())(any(), any())) thenReturn Html(expectedMessage)
+        when(mockFormPartialRetriever.getPartialContent(any(), any(), any())(any(), any())) thenReturn Html(
+          expectedMessage)
 
-        HelpFormHelper.replaceMessage(mockPartialRetriever, appConfig).toString() mustBe expectedMessage
+        HelpFormHelper.replaceMessage(mockFormPartialRetriever, appConfig).toString() mustBe expectedMessage
       }
 
       "an empty partial is retrieved" in {
-        when(mockPartialRetriever.getPartialContent(any(), any(), any())(any(), any())) thenReturn Html("")
+        when(mockFormPartialRetriever.getPartialContent(any(), any(), any())(any(), any())) thenReturn Html("")
 
-        HelpFormHelper.replaceMessage(mockPartialRetriever, appConfig).toString() mustBe empty
+        HelpFormHelper.replaceMessage(mockFormPartialRetriever, appConfig).toString() mustBe empty
       }
     }
   }

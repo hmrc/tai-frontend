@@ -171,7 +171,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
       result mustEqual TaiSuccessResponseWithPayload(expectedResult)
     }
 
-    "return a empty Listuence when the api returns no records" in {
+    "return a empty List when the api returns no records" in {
       val year = TaxYear().prev.year
 
       val latestTaxCodeRecordUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/$year/tax-code/latest"

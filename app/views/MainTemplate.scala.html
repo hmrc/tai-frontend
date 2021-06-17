@@ -33,7 +33,7 @@
         article: Article,
         sidebar: Sidebar,
         attorney_banner: AttorneyBanner,
-        partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
+        formPartialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
 
 @(title: String,
@@ -118,7 +118,7 @@
     }
 }
 
-@helpForm = @{HelpFormHelper.replaceMessage(partialRetriever, appConfig)}
+@helpForm = @{HelpFormHelper.replaceMessage(formPartialRetriever, appConfig)}
 
 
 @googleAnalytics = @{
