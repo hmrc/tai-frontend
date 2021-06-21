@@ -41,7 +41,7 @@ private object AppDependencies {
         "org.pegdown"            %  "pegdown"            % pegdownVersion % scope,
         "org.jsoup"              %  "jsoup"              % jsoupVersion % scope,
         "org.mockito"            %  "mockito-all"        % "1.9.5" % scope,
-        "com.github.tomakehurst" %  "wiremock-jre8"      % "2.26.1" % scope,
+        "com.github.tomakehurst" % "wiremock-jre8"       % "2.27.1" % scope,
         "com.typesafe.play"      %% "play-test"          % PlayVersion.current % scope,
         "org.scalacheck"         %% "scalacheck"         % "1.14.3" % scope
       )
@@ -56,7 +56,9 @@ private object AppDependencies {
         "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusVersion % scope,
         "org.pegdown"            %  "pegdown"            % pegdownVersion % scope,
         "org.jsoup"              %  "jsoup"              % jsoupVersion % scope,
-        "com.typesafe.play"      %% "play-test"          % PlayVersion.current % scope
+        "com.typesafe.play"      %% "play-test"          % PlayVersion.current % scope,
+        "com.github.tomakehurst" % "wiremock-jre8"       % "2.27.1" % scope
+
       )
     }.test
   }
