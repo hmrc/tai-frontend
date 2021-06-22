@@ -24,13 +24,13 @@
 
 @import includes.ptaHeader
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(model: YourIncomeCalculationViewModel)(implicit request: Request[_],
     user: controllers.auth.AuthedUser,
     messages: Messages,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+    ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Taxable income"}
 
@@ -52,7 +52,7 @@
         additionalTopLinkContent = Some(printLink))
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName),
     authedUser = Some(user),
     pageHeader = Some(header),

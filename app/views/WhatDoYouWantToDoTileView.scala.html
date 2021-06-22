@@ -20,7 +20,9 @@
 @import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, WhatDoYouWantToDoViewModel}
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@this(main: main)
+@import scala.concurrent.ExecutionContext
+
+@this(mainTemplate: MainTemplate)
 
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
   model: WhatDoYouWantToDoViewModel,
@@ -29,7 +31,7 @@
   messages: Messages,
   user: controllers.auth.AuthedUser,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+  ec: ExecutionContext)
 
 @gaEventActionString = @{"Your PAYE Income Tax overview"}
 
@@ -41,7 +43,7 @@
   }
 }
 
-@main(
+@mainTemplate(
     title = messages("your.paye.income.tax.overview"),
     authedUser = Some(user),
     gaCustomTitle = None,

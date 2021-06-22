@@ -155,7 +155,7 @@ class AuthActionSpec extends BaseSpec {
         val saUtr = Some("000111222")
         val nino = new Generator().nextNino.nino
         val baseRetrieval =
-          creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L100
+          creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L50
 
         val controller = Harness.successful(baseRetrieval ~ None)
         val result = controller.onPageLoad()(fakeRequest)

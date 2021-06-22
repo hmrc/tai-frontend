@@ -24,7 +24,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.logging.{Authorization, ForwardedFor, RequestId, SessionId}
+import uk.gov.hmrc.http.{Authorization, ForwardedFor, RequestId, SessionId}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}

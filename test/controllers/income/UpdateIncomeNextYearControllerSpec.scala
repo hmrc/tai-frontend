@@ -19,12 +19,13 @@ package controllers.income
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
+import play.api.data.FormBinding.Implicits.formBinding
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -40,8 +41,8 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.DuplicateSubmissionCYPlus1EmploymentViewModel
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 import utils.BaseSpec
-import views.html.incomes.nextYear._
 import views.html.incomes.SameEstimatedPayView
+import views.html.incomes.nextYear._
 
 import scala.concurrent.Future
 
@@ -109,7 +110,7 @@ class UpdateIncomeNextYearControllerSpec
       result rendersTheSameViewAs updateIncomeCYPlus1WarningView(
         DuplicateSubmissionWarningForm.createForm,
         vm,
-        employmentID)(request, authedUser, messages, templateRenderer, partialRetriever)
+        employmentID)(request, authedUser, messages, templateRenderer, ec)
     }
 
     "redirect to the landing page if there is no new amount entered" in {
@@ -189,7 +190,7 @@ class UpdateIncomeNextYearControllerSpec
           messages,
           authedUser,
           templateRenderer,
-          partialRetriever)
+          ec)
       }
     }
 
@@ -321,7 +322,7 @@ class UpdateIncomeNextYearControllerSpec
         val testController = createTestIncomeController()
         val newEstPay = ""
 
-        val request: FakeRequest[AnyContentAsFormUrlEncoded] =
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] =
           RequestBuilder.buildFakeRequestWithOnlySession(POST).withFormUrlEncodedBody("income" -> newEstPay)
 
         val result: Future[Result] = testController.update(employmentID)(request)
@@ -335,7 +336,7 @@ class UpdateIncomeNextYearControllerSpec
           currentEstPay,
           AmountComparatorForm
             .createForm()
-            .bindFromRequest()(request))(request, messages, authedUser, templateRenderer, partialRetriever)
+            .bindFromRequest())(request, messages, authedUser, templateRenderer, ec)
       }
     }
 
@@ -369,7 +370,8 @@ class UpdateIncomeNextYearControllerSpec
             messages,
             authedUser,
             templateRenderer,
-            partialRetriever)
+            ec
+          )
         }
       }
 
@@ -404,7 +406,7 @@ class UpdateIncomeNextYearControllerSpec
             messages,
             authedUser,
             templateRenderer,
-            partialRetriever)
+            ec)
         }
       }
 
@@ -446,7 +448,7 @@ class UpdateIncomeNextYearControllerSpec
             messages,
             authedUser,
             templateRenderer,
-            partialRetriever
+            ec
           )
 
           val result = controller.confirm(employmentID)(request)
@@ -541,7 +543,6 @@ class UpdateIncomeNextYearControllerSpec
         updateIncomeCYPlus1EditView,
         updateIncomeCYPlus1SameView,
         inject[SameEstimatedPayView],
-        MockPartialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       )

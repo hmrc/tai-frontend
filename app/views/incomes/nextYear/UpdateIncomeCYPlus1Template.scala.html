@@ -18,7 +18,7 @@
 @import includes.cancelLink
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(employerName: String,
   form: Option[Form[_]],
@@ -34,7 +34,7 @@
   user: controllers.auth.AuthedUser,
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+  ec: scala.concurrent.ExecutionContext)
 @header = @{
     ptaHeader(
         formForErrorSummary = form,
@@ -45,7 +45,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = title,
     articleClasses = Some(""),
     authedUser = Some(user),

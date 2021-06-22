@@ -211,10 +211,10 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
     buildIncomeTaxComparisonViewModel(currentYearItem, currentYearItem)
 
   def viewWithMore(implicit currMessages: Messages): Html =
-    main(incomeTaxComparisonViewModelMore, appConfig)(authRequest, currMessages, templateRenderer, partialRetriever)
+    main(incomeTaxComparisonViewModelMore, appConfig)(authRequest, currMessages, templateRenderer, ec)
   def viewWithLess(implicit currMessages: Messages): Html =
-    main(incomeTaxComparisonViewModelLess, appConfig)(authRequest, currMessages, templateRenderer, partialRetriever)
+    main(incomeTaxComparisonViewModelLess, appConfig)(authRequest, currMessages, templateRenderer, ec)
   def viewWithSame(implicit currMessages: Messages): Html =
-    main(incomeTaxComparisonViewModelSame, appConfig)(authRequest, currMessages, templateRenderer, partialRetriever)
+    main(incomeTaxComparisonViewModelSame, appConfig)(authRequest, currMessages, templateRenderer, ec)
   override def view: Html = viewWithSame
 }

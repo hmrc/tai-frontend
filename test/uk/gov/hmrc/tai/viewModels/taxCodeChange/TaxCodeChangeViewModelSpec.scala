@@ -53,22 +53,22 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
   val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", pensionIndicator = false, primary = true)
 
   val taxCodeChange = TaxCodeChange(
-    Seq(previousTaxCodeRecord1, primaryFullYearTaxCode),
-    Seq(currentTaxCodeRecord1, primaryFullYearTaxCode)
+    List(previousTaxCodeRecord1, primaryFullYearTaxCode),
+    List(currentTaxCodeRecord1, primaryFullYearTaxCode)
   )
 
   "TaxCodeChangeViewModel apply method" must {
     "translate the taxCodeChange object into a TaxCodePairs" in {
       val model = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
 
-      val primaryPairs = Seq(TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)))
-      val secondaryPairs = Seq(TaxCodePair(Some(previousTaxCodeRecord1), Some(currentTaxCodeRecord1)))
+      val primaryPairs = List(TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)))
+      val secondaryPairs = List(TaxCodePair(Some(previousTaxCodeRecord1), Some(currentTaxCodeRecord1)))
 
       model.pairs mustEqual TaxCodePairs(
         primaryPairs,
         secondaryPairs,
-        Seq.empty,
-        Seq.empty
+        List.empty,
+        List.empty
       )
     }
 
@@ -111,8 +111,8 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
           val currentTCR2Primary = previousTCR2Primary.copy(startDate = changeDate, endDate = endOfTaxYear)
 
           val taxCodeChange = TaxCodeChange(
-            Seq(previousTaxCodeRecord1, previousTCR2Primary),
-            Seq(currentTaxCodeRecord1, currentTCR2Primary)
+            List(previousTaxCodeRecord1, previousTCR2Primary),
+            List(currentTaxCodeRecord1, currentTCR2Primary)
           )
 
           val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
@@ -148,8 +148,8 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
             false)
 
           val taxCodeChange = TaxCodeChange(
-            Seq(previousTaxCodeRecord1, previousTaxCodeRecord2),
-            Seq(currentTaxCodeRecord1)
+            List(previousTaxCodeRecord1, previousTaxCodeRecord2),
+            List(currentTaxCodeRecord1)
           )
 
           val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
@@ -191,8 +191,8 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
             .copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = endOfTaxYear, primary = true)
 
           val taxCodeChange = TaxCodeChange(
-            Seq(previousTaxCodeRecord1, previousTaxCodeRecord2),
-            Seq(currentTaxCodeRecord1, currentTaxCodeRecord2Primary)
+            List(previousTaxCodeRecord1, previousTaxCodeRecord2),
+            List(currentTaxCodeRecord1, currentTaxCodeRecord2Primary)
           )
 
           val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])

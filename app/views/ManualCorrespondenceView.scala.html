@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *@
+@import scala.concurrent.ExecutionContext
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
-@import uk.gov.hmrc.urls.Link
-
-@main(
+@mainTemplate(
 title=Messages("tai.gatekeeper.refuse.title"),
 gaCustomTitle = None
 ){

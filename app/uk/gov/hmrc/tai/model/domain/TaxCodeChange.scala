@@ -20,7 +20,7 @@ import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.DateHelper
 
-case class TaxCodeChange(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]) {
+case class TaxCodeChange(previous: List[TaxCodeRecord], current: List[TaxCodeRecord]) {
 
   require(current.length > 0, "No current records for Tax Code Change. Current date cannot be determined.")
 

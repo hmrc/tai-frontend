@@ -17,9 +17,8 @@
 package controllers
 
 import builders.RequestBuilder
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.test.Helpers._
 import utils.BaseSpec
 import views.html.DeceasedHelplineView
@@ -46,9 +45,7 @@ class DeceasedControllerSpec extends BaseSpec {
   def createSut = new DeceasedController(
     FakeAuthAction,
     mcc,
-    inject[DeceasedHelplineView],
-    MockPartialRetriever,
-    MockTemplateRenderer
+    inject[DeceasedHelplineView]
   )
 
 }

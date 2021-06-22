@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
@@ -46,7 +46,6 @@ class CompanyBenefitController @Inject()(
   mcc: MessagesControllerComponents,
   updateOrRemoveCompanyBenefitDecision: UpdateOrRemoveCompanyBenefitDecisionView,
   implicit val templateRenderer: TemplateRenderer,
-  implicit val partialRetriever: FormPartialRetriever,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants {
 

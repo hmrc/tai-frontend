@@ -77,7 +77,7 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
     }
 
   private def gaDimensions(taxCodeChange: TaxCodeChange, taxCodeChangeDate: LocalDate): Map[String, String] = {
-    def moreThanTwoSecondaryWithoutPayroll(records: Seq[TaxCodeRecord]): Boolean =
+    def moreThanTwoSecondaryWithoutPayroll(records: List[TaxCodeRecord]): Boolean =
       records
         .groupBy(_.employerName)
         .values

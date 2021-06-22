@@ -106,7 +106,6 @@ class ServiceControllerSpec extends BaseSpec {
         inject[TimeoutView],
         inject[SessionExpiredView],
         inject[ManualCorrespondenceView],
-        partialRetriever,
         templateRenderer,
         inject[ErrorPagesHandler]
       )

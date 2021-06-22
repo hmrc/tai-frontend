@@ -23,12 +23,12 @@
 @import uk.gov.hmrc.play.views.formatting.Dates
 @import uk.gov.hmrc.tai.util.DateHelper
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @( payYTD: BigDecimal = 0, payDate: org.joda.time.LocalDate, id: Int)(implicit request: Request[_], messages: Messages,
-user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@main(
+@mainTemplate(
     title = messages("tai.estimatedPay.error.incorrectTaxableIncome.title"),
     articleClasses = Some("full-width text"),
     authedUser = Some(user),

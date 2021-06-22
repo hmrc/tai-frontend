@@ -20,7 +20,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
@@ -51,7 +51,6 @@ class IncomeUpdateIrregularHoursController @Inject()(
   editIncomeIrregularHours: EditIncomeIrregularHoursView,
   confirmAmountEntered: ConfirmAmountEnteredView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants {

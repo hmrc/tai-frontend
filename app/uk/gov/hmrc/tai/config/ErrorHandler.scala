@@ -22,31 +22,30 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.urls.Link
 import views.html.InternalServerErrorView
 import views.html.ErrorTemplateNoauth
+import scala.concurrent.ExecutionContext
 
 class ErrorHandler @Inject()(
   applicationConfig: ApplicationConfig,
-  error_template_noauth: ErrorTemplateNoauth,
+  errorTemplateNoauth: ErrorTemplateNoauth,
   val messagesApi: MessagesApi,
   val configuration: Configuration,
-  internalServerError: InternalServerErrorView)(
-  implicit localTemplateRenderer: TemplateRenderer,
-  taiHtmlPartialRetriever: FormPartialRetriever)
+  internalServerError: InternalServerErrorView)(implicit localTemplateRenderer: TemplateRenderer, ec: ExecutionContext)
     extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(
-    implicit request: Request[_]) = error_template_noauth(pageTitle, heading, message, List.empty)
+    implicit request: Request[_]) = errorTemplateNoauth(pageTitle, heading, message, List.empty)
 
   def badRequestErrorTemplate(
     pageTitle: String,
     heading: String,
     message1: String,
     additionalMessages: List[String] = List.empty)(implicit request: Request[_]): Html =
-    error_template_noauth(pageTitle, heading, message1, additionalMessages)
+    errorTemplateNoauth(pageTitle, heading, message1, additionalMessages)
 
   override def badRequestTemplate(implicit request: Request[_]): Html = badRequestErrorTemplate(
     Messages("global.error.badRequest400.title"),
