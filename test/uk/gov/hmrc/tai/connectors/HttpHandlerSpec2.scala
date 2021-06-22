@@ -16,23 +16,21 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import akka.http.scaladsl.model.StatusCodes.OK
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, anyUrl, get, urlEqualTo}
-
-import scala.concurrent.duration._
-import org.scalatest.{MustMatchers, WordSpec}
+import com.github.tomakehurst.wiremock.client.WireMock._
+import org.joda.time.LocalDate
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.{MustMatchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.http.Status._
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, _}
 import play.api.i18n.Messages
-import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.{Format, Json}
 import play.api.test.Injecting
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException}
+import uk.gov.hmrc.http._
 import utils.WireMockHelper
 
 import scala.concurrent.Await
+import scala.concurrent.duration._
 
 class HttpHandlerSpec2
     extends WordSpec with GuiceOneAppPerSuite with MustMatchers with WireMockHelper with ScalaFutures
@@ -52,6 +50,14 @@ class HttpHandlerSpec2
   implicit val responseObjectFormat = Json.format[ResponseObject]
   implicit val hc = HeaderCarrier()
   private val responseBodyObject = ResponseObject("Name", 24)
+
+  case class DateRequest(date: LocalDate)
+
+  object DateRequest {
+    import play.api.libs.json.JodaWrites._
+    import play.api.libs.json.JodaReads._
+    implicit val formatDateRequest: Format[DateRequest] = Json.format[DateRequest]
+  }
 
   "getFromApiV2" must {
 
@@ -77,6 +83,202 @@ class HttpHandlerSpec2
       val responseFuture = httpHandler.getFromApiV2(testUrl)
       val ex = the[NotFoundException] thrownBy Await.result(responseFuture, 5 seconds)
       ex.message must include("not found")
+
+    }
+
+    "should return a InternalServerError when INTERNAL_SERVER_ERROR response" in {
+
+      server.stubFor(
+        get(anyUrl())
+          .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server error")))
+
+      val responseFuture = httpHandler.getFromApiV2(testUrl)
+      val ex = the[Upstream5xxResponse] thrownBy Await.result(responseFuture, 5 seconds)
+      ex.message must include("internal server error")
+
+    }
+
+    "should return a BadRequestException when BAD_REQUEST response" in {
+
+      server.stubFor(
+        get(anyUrl())
+          .willReturn(aResponse().withStatus(BAD_REQUEST).withBody("bad request")))
+
+      val responseFuture = httpHandler.getFromApiV2(testUrl)
+      val ex = the[BadRequestException] thrownBy Await.result(responseFuture, 5 seconds)
+      ex.message must include("bad request")
+
+    }
+
+    "should return a LockedException when LOCKED response" in {
+
+      server.stubFor(
+        get(anyUrl())
+          .willReturn(aResponse().withStatus(LOCKED).withBody("locked")))
+
+      val responseFuture = httpHandler.getFromApiV2(testUrl)
+      val ex = the[Upstream4xxResponse] thrownBy Await.result(responseFuture, 5 seconds)
+      ex.message must include("locked")
+
+    }
+
+    "should return a UnauthorizedException when UNAUTHORIZED response" in {
+
+      server.stubFor(
+        get(anyUrl())
+          .willReturn(aResponse().withStatus(UNAUTHORIZED).withBody("unauthorized")))
+
+      val responseFuture = httpHandler.getFromApiV2(testUrl)
+      val ex = the[UnauthorizedException] thrownBy Await.result(responseFuture, 5 seconds)
+      ex.message must include("unauthorized")
+
+    }
+
+    "should return a HttpException when unknown response" in {
+
+      server.stubFor(
+        get(anyUrl())
+          .willReturn(aResponse().withStatus(418).withBody("unknown response")))
+
+      val responseFuture = httpHandler.getFromApiV2(testUrl)
+      val ex = the[Upstream4xxResponse] thrownBy Await.result(responseFuture, 5 seconds)
+      ex.message must include("unknown response")
+
+    }
+
+  }
+
+  "putToApi" must {
+
+    "return OK" in {
+
+      server.stubFor(
+        put(anyUrl())
+          .willReturn(aResponse().withStatus(OK)))
+
+      val result = Await.result(httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())), 5.seconds)
+
+      result.status mustBe OK
+
+    }
+
+    "should return a NotFoundException when NOT_FOUND response" in {
+
+      server.stubFor(
+        put(anyUrl())
+          .willReturn(aResponse().withStatus(NOT_FOUND)))
+
+      val result = the[NotFoundException] thrownBy Await
+        .result(httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())), 5.seconds)
+
+      result.responseCode mustBe NOT_FOUND
+
+    }
+
+    "should return a InternalServerException when INTERNAL_SERVER_ERROR response" in {
+
+      server.stubFor(
+        put(anyUrl())
+          .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server exception")))
+
+      val ex = the[Upstream5xxResponse] thrownBy Await
+        .result(httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())), 5.seconds)
+
+      ex.message must include("internal server exception")
+
+    }
+
+    "should return a BadRequestException when BAD_REQUEST response" in {
+
+      server.stubFor(
+        put(anyUrl())
+          .willReturn(aResponse().withStatus(BAD_REQUEST)))
+
+      val result = the[BadRequestException] thrownBy Await
+        .result(httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())), 5.seconds)
+
+      result.responseCode mustBe BAD_REQUEST
+
+    }
+
+    "should return a HttpException when unknown response" in {
+
+      server.stubFor(
+        put(anyUrl())
+          .willReturn(aResponse().withStatus(418).withBody("unknown response")))
+
+      val ex = the[Upstream4xxResponse] thrownBy Await
+        .result(httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())), 5.seconds)
+
+      ex.message must include("unknown response")
+
+    }
+  }
+
+  "postToApi" must {
+    val userInput = "userInput"
+
+    List(
+      CREATED,
+      OK
+    ).foreach { httpStatus =>
+      s"return json which is coming from http post call for $httpStatus response" in {
+
+        server.stubFor(
+          post(anyUrl())
+            .willReturn(aResponse().withStatus(httpStatus).withBody(userInput)))
+
+        val createdResponse = Await.result(httpHandler.postToApi[String](testUrl, userInput), 5 seconds)
+
+        createdResponse.status mustBe httpStatus
+
+      }
+    }
+
+    "return Http exception for NOT_FOUND response" in {
+
+      server.stubFor(
+        post(anyUrl())
+          .willReturn(aResponse().withStatus(NOT_FOUND)))
+
+      val result = the[NotFoundException] thrownBy Await
+        .result(httpHandler.postToApi[String](testUrl, userInput), 5 seconds)
+
+      result.responseCode mustBe NOT_FOUND
+
+    }
+
+  }
+
+  "deleteFromApi" must {
+    val userInput = "userInput"
+
+    List(
+      ACCEPTED,
+      OK,
+      NO_CONTENT
+    ).foreach { httpStatus =>
+      s"return json which is coming from http post call for $httpStatus response" in {
+
+        server.stubFor(
+          delete(anyUrl())
+            .willReturn(aResponse().withStatus(httpStatus)))
+
+        val result = Await.result(httpHandler.deleteFromApi(testUrl), 5 seconds)
+        result.status mustBe httpStatus
+
+      }
+    }
+
+    "return Http exception for GATEWAY_TIMEOUT response" in {
+
+      server.stubFor(
+        delete(anyUrl())
+          .willReturn(aResponse().withStatus(GATEWAY_TIMEOUT).withBody("gateway timeout")))
+
+      val responseFuture = httpHandler.deleteFromApi(testUrl)
+      val ex = the[Upstream5xxResponse] thrownBy Await.result(responseFuture, 5 seconds)
+      ex.message must include("gateway timeout")
 
     }
 
