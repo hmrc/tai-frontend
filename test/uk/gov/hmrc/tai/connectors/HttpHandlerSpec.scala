@@ -22,10 +22,8 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.{MustMatchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, _}
-import play.api.i18n.Messages
 import play.api.libs.json.{Format, Json}
 import play.api.test.Injecting
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http._
 import utils.WireMockHelper
 
@@ -35,12 +33,6 @@ import scala.concurrent.duration._
 class HttpHandlerSpec
     extends WordSpec with GuiceOneAppPerSuite with MustMatchers with WireMockHelper with ScalaFutures
     with IntegrationPatience with Injecting {
-
-  val generatedNino = new Generator().nextNino
-
-  val generatedSaUtr = new Generator().nextAtedUtr
-
-  lazy val messages = inject[Messages]
 
   lazy val httpHandler = inject[HttpHandler]
 
@@ -86,7 +78,7 @@ class HttpHandlerSpec
 
     }
 
-    "should return a InternalServerError when INTERNAL_SERVER_ERROR response" in {
+    "should return a Upstream5xxResponse when INTERNAL_SERVER_ERROR response" in {
 
       server.stubFor(
         get(anyUrl())
@@ -110,7 +102,7 @@ class HttpHandlerSpec
 
     }
 
-    "should return a LockedException when LOCKED response" in {
+    "should return a Upstream4xxResponse when LOCKED response" in {
 
       server.stubFor(
         get(anyUrl())
@@ -134,7 +126,7 @@ class HttpHandlerSpec
 
     }
 
-    "should return a HttpException when unknown response" in {
+    "should return a Upstream4xxResponse when unknown response" in {
 
       server.stubFor(
         get(anyUrl())
@@ -162,7 +154,7 @@ class HttpHandlerSpec
 
     }
 
-    "should return a NotFoundException when NOT_FOUND response" in {
+    "should return a NOT_FOUND response code when NOT_FOUND response" in {
 
       server.stubFor(
         put(anyUrl())
@@ -175,7 +167,7 @@ class HttpHandlerSpec
 
     }
 
-    "should return a InternalServerException when INTERNAL_SERVER_ERROR response" in {
+    "should return a Upstream5xxResponse when INTERNAL_SERVER_ERROR response" in {
 
       server.stubFor(
         put(anyUrl())
@@ -188,7 +180,7 @@ class HttpHandlerSpec
 
     }
 
-    "should return a BadRequestException when BAD_REQUEST response" in {
+    "should return a BAD_REQUEST response code when BAD_REQUEST response" in {
 
       server.stubFor(
         put(anyUrl())
@@ -201,7 +193,7 @@ class HttpHandlerSpec
 
     }
 
-    "should return a HttpException when unknown response" in {
+    "should return a Upstream4xxResponse when unknown response" in {
 
       server.stubFor(
         put(anyUrl())
@@ -222,7 +214,7 @@ class HttpHandlerSpec
       CREATED,
       OK
     ).foreach { httpStatus =>
-      s"return json which is coming from http post call for $httpStatus response" in {
+      s"return $httpStatus response status for $httpStatus response" in {
 
         server.stubFor(
           post(anyUrl())
@@ -240,7 +232,7 @@ class HttpHandlerSpec
       INTERNAL_SERVER_ERROR,
       SERVICE_UNAVAILABLE
     ).foreach { httpStatus =>
-      s"return Http exception for $httpStatus response" in {
+      s"return Upstream5xxResponse for $httpStatus response" in {
 
         server.stubFor(
           post(anyUrl())
@@ -253,7 +245,7 @@ class HttpHandlerSpec
       }
     }
 
-    "return Http exception for BAD_REQUEST response" in {
+    "should return a BAD_REQUEST response code when BAD_REQUEST response" in {
       server.stubFor(
         post(anyUrl())
           .willReturn(aResponse().withStatus(BAD_REQUEST)))
@@ -263,8 +255,7 @@ class HttpHandlerSpec
       result.responseCode mustBe BAD_REQUEST
     }
 
-    "return Http exception for NOT_FOUND response" in {
-
+    "should return a NOT_FOUND response code when NOT_FOUND response" in {
       server.stubFor(
         post(anyUrl())
           .willReturn(aResponse().withStatus(NOT_FOUND)))
@@ -286,12 +277,11 @@ class HttpHandlerSpec
       OK,
       NO_CONTENT
     ).foreach { httpStatus =>
-      s"return json which is coming from http post call for $httpStatus response" in {
+      s"return $httpStatus response status from http delete call for $httpStatus response" in {
 
         server.stubFor(
           delete(anyUrl())
             .willReturn(aResponse().withStatus(httpStatus)))
-
         val result = Await.result(httpHandler.deleteFromApi(testUrl), 5 seconds)
         result.status mustBe httpStatus
 
@@ -303,7 +293,7 @@ class HttpHandlerSpec
       INTERNAL_SERVER_ERROR,
       SERVICE_UNAVAILABLE
     ).foreach { httpStatus =>
-      s"return Http exception for $httpStatus response" in {
+      s"return Upstream5xxResponse for $httpStatus response" in {
 
         server.stubFor(
           delete(anyUrl())
@@ -316,7 +306,7 @@ class HttpHandlerSpec
       }
     }
 
-    "return Http exception for BAD_REQUEST response" in {
+    "return BadRequestException for BAD_REQUEST response" in {
       server.stubFor(
         delete(anyUrl())
           .willReturn(aResponse().withStatus(BAD_REQUEST).withBody("bad request")))
@@ -325,7 +315,7 @@ class HttpHandlerSpec
       ex.message must include("bad request")
     }
 
-    "return Http exception for NOT_FOUND response" in {
+    "return NotFoundException for NOT_FOUND response" in {
       server.stubFor(
         delete(anyUrl())
           .willReturn(aResponse().withStatus(NOT_FOUND).withBody("not found")))
