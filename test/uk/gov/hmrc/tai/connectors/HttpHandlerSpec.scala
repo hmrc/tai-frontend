@@ -72,9 +72,8 @@ class HttpHandlerSpec
         get(anyUrl())
           .willReturn(aResponse().withStatus(NOT_FOUND).withBody("not found")))
 
-      val responseFuture = httpHandler.getFromApiV2(testUrl)
-      val ex = the[NotFoundException] thrownBy Await.result(responseFuture, 5 seconds)
-      ex.message must include("not found")
+      val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
+      responseFuture mustBe a[NotFoundException]
 
     }
 
@@ -84,10 +83,8 @@ class HttpHandlerSpec
         get(anyUrl())
           .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server error")))
 
-      val responseFuture = httpHandler.getFromApiV2(testUrl)
-      val ex = the[Upstream5xxResponse] thrownBy Await.result(responseFuture, 5 seconds)
-      ex.message must include("internal server error")
-
+      val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
+      responseFuture mustBe a[Upstream5xxResponse]
     }
 
     "should return a BadRequestException when BAD_REQUEST response" in {
@@ -96,9 +93,8 @@ class HttpHandlerSpec
         get(anyUrl())
           .willReturn(aResponse().withStatus(BAD_REQUEST).withBody("bad request")))
 
-      val responseFuture = httpHandler.getFromApiV2(testUrl)
-      val ex = the[BadRequestException] thrownBy Await.result(responseFuture, 5 seconds)
-      ex.message must include("bad request")
+      val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
+      responseFuture mustBe a[BadRequestException]
 
     }
 
@@ -108,10 +104,8 @@ class HttpHandlerSpec
         get(anyUrl())
           .willReturn(aResponse().withStatus(LOCKED).withBody("locked")))
 
-      val responseFuture = httpHandler.getFromApiV2(testUrl)
-      val ex = the[Upstream4xxResponse] thrownBy Await.result(responseFuture, 5 seconds)
-      ex.message must include("locked")
-
+      val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
+      responseFuture mustBe a[Upstream4xxResponse]
     }
 
     "should return a UnauthorizedException when UNAUTHORIZED response" in {
@@ -120,9 +114,89 @@ class HttpHandlerSpec
         get(anyUrl())
           .willReturn(aResponse().withStatus(UNAUTHORIZED).withBody("unauthorized")))
 
-      val responseFuture = httpHandler.getFromApiV2(testUrl)
-      val ex = the[UnauthorizedException] thrownBy Await.result(responseFuture, 5 seconds)
-      ex.message must include("unauthorized")
+      val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
+      responseFuture mustBe a[UnauthorizedException]
+    }
+
+    "should return a Upstream4xxResponse when unknown response" in {
+
+      server.stubFor(
+        get(anyUrl())
+          .willReturn(aResponse().withStatus(IM_A_TEAPOT).withBody("unknown response")))
+
+      val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
+      responseFuture mustBe a[Upstream4xxResponse]
+    }
+
+  }
+
+  "getFromApi" must {
+
+    "should return a json when OK" in {
+
+      server.stubFor(
+        get(anyUrl())
+          .willReturn(aResponse().withBody(Json.toJson(responseBodyObject).toString())))
+
+      val responseFuture = httpHandler.getFromApi(testUrl)
+      val response = Await.result(responseFuture, 5 seconds)
+
+      response mustBe Json.toJson(responseBodyObject)
+
+    }
+
+    "should return a NotFoundException when NOT_FOUND response" in {
+
+      server.stubFor(
+        get(anyUrl())
+          .willReturn(aResponse().withStatus(NOT_FOUND).withBody("not found")))
+
+      val responseFuture = httpHandler.getFromApi(testUrl).failed.futureValue
+      responseFuture mustBe a[NotFoundException]
+
+    }
+
+    "should return a Upstream5xxResponse when INTERNAL_SERVER_ERROR response" in {
+
+      server.stubFor(
+        get(anyUrl())
+          .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server error")))
+
+      val responseFuture = httpHandler.getFromApi(testUrl).failed.futureValue
+      responseFuture mustBe a[Upstream5xxResponse]
+
+    }
+
+    "should return a BadRequestException when BAD_REQUEST response" in {
+
+      server.stubFor(
+        get(anyUrl())
+          .willReturn(aResponse().withStatus(BAD_REQUEST).withBody("bad request")))
+
+      val responseFuture = httpHandler.getFromApi(testUrl).failed.futureValue
+      responseFuture mustBe a[BadRequestException]
+
+    }
+
+    "should return a Upstream4xxResponse when LOCKED response" in {
+
+      server.stubFor(
+        get(anyUrl())
+          .willReturn(aResponse().withStatus(LOCKED).withBody("locked")))
+
+      val responseFuture = httpHandler.getFromApi(testUrl).failed.futureValue
+      responseFuture mustBe a[Upstream4xxResponse]
+
+    }
+
+    "should return a Upstream4xxResponse when UNAUTHORIZED response" in {
+
+      server.stubFor(
+        get(anyUrl())
+          .willReturn(aResponse().withStatus(UNAUTHORIZED).withBody("unauthorized")))
+
+      val responseFuture = httpHandler.getFromApi(testUrl).failed.futureValue
+      responseFuture mustBe a[Upstream4xxResponse]
 
     }
 
@@ -132,9 +206,8 @@ class HttpHandlerSpec
         get(anyUrl())
           .willReturn(aResponse().withStatus(IM_A_TEAPOT).withBody("unknown response")))
 
-      val responseFuture = httpHandler.getFromApiV2(testUrl)
-      val ex = the[Upstream4xxResponse] thrownBy Await.result(responseFuture, 5 seconds)
-      ex.message must include("unknown response")
+      val responseFuture = httpHandler.getFromApi(testUrl).failed.futureValue
+      responseFuture mustBe a[Upstream4xxResponse]
 
     }
 
@@ -154,16 +227,14 @@ class HttpHandlerSpec
 
     }
 
-    "should return a NOT_FOUND response code when NOT_FOUND response" in {
+    "should return a NotFoundException when NOT_FOUND response" in {
 
       server.stubFor(
         put(anyUrl())
           .willReturn(aResponse().withStatus(NOT_FOUND)))
 
-      val result = the[NotFoundException] thrownBy Await
-        .result(httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())), 5.seconds)
-
-      result.responseCode mustBe NOT_FOUND
+      val result = httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())).failed.futureValue
+      result mustBe a[NotFoundException]
 
     }
 
@@ -173,23 +244,19 @@ class HttpHandlerSpec
         put(anyUrl())
           .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server exception")))
 
-      val ex = the[Upstream5xxResponse] thrownBy Await
-        .result(httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())), 5.seconds)
-
-      ex.message must include("internal server exception")
+      val result = httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())).failed.futureValue
+      result mustBe a[Upstream5xxResponse]
 
     }
 
-    "should return a BAD_REQUEST response code when BAD_REQUEST response" in {
+    "should return a BadRequestException when BAD_REQUEST response" in {
 
       server.stubFor(
         put(anyUrl())
           .willReturn(aResponse().withStatus(BAD_REQUEST)))
 
-      val result = the[BadRequestException] thrownBy Await
-        .result(httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())), 5.seconds)
-
-      result.responseCode mustBe BAD_REQUEST
+      val result = httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())).failed.futureValue
+      result mustBe a[BadRequestException]
 
     }
 
@@ -199,10 +266,8 @@ class HttpHandlerSpec
         put(anyUrl())
           .willReturn(aResponse().withStatus(IM_A_TEAPOT).withBody("unknown response")))
 
-      val ex = the[Upstream4xxResponse] thrownBy Await
-        .result(httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())), 5.seconds)
-
-      ex.message must include("unknown response")
+      val result = httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())).failed.futureValue
+      result mustBe a[Upstream4xxResponse]
 
     }
   }
@@ -238,9 +303,8 @@ class HttpHandlerSpec
           post(anyUrl())
             .willReturn(aResponse().withStatus(httpStatus).withBody("error response")))
 
-        val responseFuture = httpHandler.postToApi(testUrl, userInput)
-        val ex = the[Upstream5xxResponse] thrownBy Await.result(responseFuture, 5 seconds)
-        ex.message must include("error response")
+        val responseFuture = httpHandler.postToApi(testUrl, userInput).failed.futureValue
+        responseFuture mustBe a[Upstream5xxResponse]
 
       }
     }
@@ -299,9 +363,8 @@ class HttpHandlerSpec
           delete(anyUrl())
             .willReturn(aResponse().withStatus(httpStatus).withBody("error response")))
 
-        val responseFuture = httpHandler.deleteFromApi(testUrl)
-        val ex = the[Upstream5xxResponse] thrownBy Await.result(responseFuture, 5 seconds)
-        ex.message must include("error response")
+        val responseFuture = httpHandler.deleteFromApi(testUrl).failed.futureValue
+        responseFuture mustBe a[Upstream5xxResponse]
 
       }
     }
