@@ -33,7 +33,7 @@ case class TaxCodeViewModelPreviousYears(
 object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescriptor {
 
   def apply(
-    taxCodeRecords: Seq[TaxCodeRecord],
+    taxCodeRecords: List[TaxCodeRecord],
     scottishTaxRateBands: Map[String, BigDecimal],
     year: TaxYear = TaxYear(),
     appConfig: ApplicationConfig)(implicit messages: Messages): TaxCodeViewModelPreviousYears = {
@@ -62,7 +62,7 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
     TaxCodeViewModelPreviousYears(title, mainHeading, ledeMessage, descriptionListViewModels, preHeader)
   }
 
-  private def sortedTaxCodeRecords(records: Seq[TaxCodeRecord]): Seq[TaxCodeRecord] = {
+  private def sortedTaxCodeRecords(records: List[TaxCodeRecord]): List[TaxCodeRecord] = {
     val primarySecondaryPensionSort: TaxCodeRecord => (Boolean, Boolean) = (record: TaxCodeRecord) =>
       (!record.primary, record.pensionIndicator)
     records.sortBy(primarySecondaryPensionSort)

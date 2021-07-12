@@ -19,7 +19,7 @@ package controllers.employments
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{eq => mockEq, _}
@@ -488,7 +488,6 @@ class UpdateEmploymentControllerSpec
         inject[ConfirmationView],
         journeyCacheService,
         successfulJourneyCacheService,
-        MockPartialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       )

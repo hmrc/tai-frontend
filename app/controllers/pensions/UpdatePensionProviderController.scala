@@ -23,7 +23,7 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -57,7 +57,7 @@ class UpdatePensionProviderController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
-  can_we_contact_by_phone: CanWeContactByPhoneView,
+  canWeContactByPhone: CanWeContactByPhoneView,
   doYouGetThisPensionIncome: DoYouGetThisPensionIncomeView,
   whatDoYouWantToTellUsView: WhatDoYouWantToTellUsView,
   updatePensionCheckYourAnswers: UpdatePensionCheckYourAnswersView,
@@ -65,9 +65,7 @@ class UpdatePensionProviderController @Inject()(
   duplicateSubmissionWarningView: DuplicateSubmissionWarningView,
   @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-  implicit val partialRetriever: FormPartialRetriever,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler)(implicit val templateRenderer: TemplateRenderer, ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -183,7 +181,7 @@ class UpdatePensionProviderController @Inject()(
           val user = Some(request.taiUser)
 
           Ok(
-            can_we_contact_by_phone(
+            canWeContactByPhone(
               user,
               telephoneNumberViewModel(mandatoryPensionId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
@@ -206,7 +204,7 @@ class UpdatePensionProviderController @Inject()(
             val user = Some(request.taiUser)
 
             BadRequest(
-              can_we_contact_by_phone(
+              canWeContactByPhone(
                 user,
                 telephoneNumberViewModel(currentCache(UpdatePensionProvider_IdKey).toInt),
                 formWithErrors))

@@ -17,16 +17,17 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.formatting.Dates
 @import incomeTaxComparison._
-@import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
+@import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{IncomeTaxComparisonViewModel, EstimatedIncomeTaxComparisonViewModel}
 @import uk.gov.hmrc.tai.model.TaxYear
+@import scala.concurrent.ExecutionContext
 
 @import controllers.auth.AuthenticatedRequest
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 @gaEventActionString = @{"Income Tax comparison - current and next tax years"}
 @backLinkToChooseTaxYear = {
     <p class="flush--bottom">
@@ -58,7 +59,7 @@
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
-@main(title = headingText,
+@mainTemplate(title = headingText,
     gaCustomTitle = Some(headingText),
     pageHeader = Some(header),
     authedUser = Some(request.taiUser)) {

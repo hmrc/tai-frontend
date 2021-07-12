@@ -1,0 +1,12 @@
+{
+  "data": {
+    "totalEstimatedTax": 10245,
+    "taxFreeAmount": -31946,
+    "totalInYearAdjustmentIntoCY": 0,
+    "totalInYearAdjustment": 0,
+    "totalInYearAdjustmentIntoCYPlusOne": 0,
+    "totalEstimatedIncome": 74045,
+    "taxFreeAllowance": 25000
+  },
+  "links": []
+}

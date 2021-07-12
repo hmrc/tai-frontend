@@ -23,13 +23,13 @@
 
 @import controllers.auth.AuthenticatedRequest
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(viewModel: TaxAccountSummaryViewModel, appConfig: ApplicationConfig
 )(implicit request: AuthenticatedRequest[_],
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+  ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Your PAYE Income Tax summary"}
 
@@ -55,7 +55,7 @@
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
-@main(
+@mainTemplate(
     title = viewModel.title,
     authedUser = Some(request.taiUser),
     pageHeader = Some(header),

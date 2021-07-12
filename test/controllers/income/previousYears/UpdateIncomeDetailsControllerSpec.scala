@@ -19,7 +19,7 @@ package controllers.income.previousYears
 import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito._
@@ -36,6 +36,7 @@ import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstant
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.incomes.previousYears.{CheckYourAnswersView, UpdateIncomeDetailsConfirmationView, UpdateIncomeDetailsDecisionView, UpdateIncomeDetailsView}
+
 import scala.concurrent.Future
 
 class UpdateIncomeDetailsControllerSpec
@@ -400,7 +401,6 @@ class UpdateIncomeDetailsControllerSpec
         inject[UpdateIncomeDetailsConfirmationView],
         trackingjourneyCacheService,
         journeyCacheService,
-        MockPartialRetriever,
         MockTemplateRenderer
       )
 }

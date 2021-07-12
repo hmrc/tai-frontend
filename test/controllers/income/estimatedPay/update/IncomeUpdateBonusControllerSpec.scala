@@ -19,10 +19,11 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
+import play.api.data.FormBinding.Implicits.formBinding
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -57,7 +58,6 @@ class IncomeUpdateBonusControllerSpec
         bonusPaymentsView,
         bonusPaymentAmountView,
         journeyCacheService,
-        MockPartialRetriever,
         MockTemplateRenderer
       ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
@@ -92,7 +92,7 @@ class IncomeUpdateBonusControllerSpec
 
       val expectedForm = BonusPaymentsForm.createForm.fill(YesNoForm(Some(cachedAmount)))
       val expectedView =
-        bonusPaymentsView(expectedForm, employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
+        bonusPaymentsView(expectedForm, employer)(fakeRequest, messages, authedUser, templateRenderer, ec)
 
       result rendersTheSameViewAs expectedView
     }
@@ -174,14 +174,12 @@ class IncomeUpdateBonusControllerSpec
           .handleBonusPayments(fakeRequest)
 
         status(result) mustBe BAD_REQUEST
-        result rendersTheSameViewAs bonusPaymentsView(
-          BonusPaymentsForm.createForm.bindFromRequest()(fakeRequest),
-          employer)(
+        result rendersTheSameViewAs bonusPaymentsView(BonusPaymentsForm.createForm.bindFromRequest(), employer)(
           fakeRequest,
           messages,
           authedUser,
           templateRenderer,
-          partialRetriever
+          ec
         )
       }
     }
@@ -238,7 +236,7 @@ class IncomeUpdateBonusControllerSpec
         messages,
         authedUser,
         templateRenderer,
-        partialRetriever
+        ec
       )
     }
 
@@ -306,8 +304,8 @@ class IncomeUpdateBonusControllerSpec
         status(result) mustBe BAD_REQUEST
 
         result rendersTheSameViewAs bonusPaymentAmountView(
-          BonusOvertimeAmountForm.createForm().bindFromRequest()(fakeRequest),
-          employer)(fakeRequest, messages, authedUser, templateRenderer, partialRetriever)
+          BonusOvertimeAmountForm.createForm().bindFromRequest(),
+          employer)(fakeRequest, messages, authedUser, templateRenderer, ec)
       }
     }
 

@@ -153,7 +153,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     appConfig,
     mcc,
     inject[IncomeSourceSummaryView],
-    partialRetriever,
     templateRenderer,
     inject[ErrorPagesHandler]
   )

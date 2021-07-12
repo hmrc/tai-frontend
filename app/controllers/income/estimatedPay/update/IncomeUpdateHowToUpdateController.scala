@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
 import views.html.incomes.HowToUpdateView
@@ -48,7 +48,6 @@ class IncomeUpdateHowToUpdateController @Inject()(
   mcc: MessagesControllerComponents,
   howToUpdateView: HowToUpdateView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {

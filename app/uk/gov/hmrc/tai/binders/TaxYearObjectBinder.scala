@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.tai.binders
 
-import play.api.Play
 import play.api.mvc.PathBindable
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 
 object TaxYearObjectBinder {
@@ -28,14 +26,13 @@ object TaxYearObjectBinder {
     override def bind(key: String, value: String): Either[String, TaxYear] =
       try {
 
-        lazy val appConfig = Play.current.injector.instanceOf[ApplicationConfig]
-
         val taxYearRequired: TaxYear = TaxYear(value)
 
         val currentYear: Int = TaxYear().year
-
         val latestSupportedTaxYear = TaxYear().next
-        val earliestSupportedTaxYear = TaxYear(currentYear - appConfig.numberOfPreviousYearsToShow)
+
+        val numberOfPreviousYearsToShow = 5
+        val earliestSupportedTaxYear = TaxYear(currentYear - numberOfPreviousYearsToShow)
 
         if (taxYearRequired >= earliestSupportedTaxYear && taxYearRequired <= latestSupportedTaxYear) {
           Right(taxYearRequired)
@@ -43,7 +40,7 @@ object TaxYearObjectBinder {
           Left(s"The supplied value '${taxYearRequired.year}' is not a currently supported tax year")
         }
       } catch {
-        case e: Throwable => Left(s"The supplied value '$value' is not a valid tax year")
+        case _: Throwable => Left(s"The supplied value '$value' is not a valid tax year")
       }
 
     override def unbind(key: String, value: TaxYear): String = value.year.toString

@@ -246,7 +246,6 @@ class TaxAccountSummaryControllerSpec
     appConfig,
     mcc,
     inject[IncomeTaxSummaryView],
-    partialRetriever,
     templateRenderer,
     inject[ErrorPagesHandler]
   )

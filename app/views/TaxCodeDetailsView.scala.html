@@ -21,9 +21,9 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@(taxCodeViewModel: TaxCodeViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(taxCodeViewModel: TaxCodeViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Your tax codes"}
 
@@ -35,7 +35,7 @@
     preHeadingText = taxCodeViewModel.preHeader)
 }
 
-@main(
+@mainTemplate(
     title = taxCodeViewModel.title,
     gaCustomTitle = Some(taxCodeViewModel.title),
     authedUser = Some(user),

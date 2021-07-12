@@ -494,7 +494,6 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         mockAppConfig,
         mcc,
         inject[WhatDoYouWantToDoTileView],
-        partialRetriever,
         templateRenderer,
         inject[ErrorPagesHandler]
       ) {
