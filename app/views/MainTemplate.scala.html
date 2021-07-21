@@ -14,27 +14,26 @@
  * limitations under the License.
  *@
 
-@import play.api.Play
-@import play.api.Play.current
-@import uk.gov.hmrc.http.SessionKeys
-@import uk.gov.hmrc.play.views.helpers.AttorneyRegime.standAlone
-@import uk.gov.hmrc.tai.util.constants.TaiConstants
-@import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig}
 @import uk.gov.hmrc.play.language.LanguageUtils
+@import uk.gov.hmrc.play.views.helpers.AttorneyRegime
+@import uk.gov.hmrc.play.views.html.layouts._
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.tai.util.HelpFormHelper
+@import uk.gov.hmrc.tai.util.constants.TaiConstants
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 @import uk.gov.hmrc.webchat.client.WebChatClient
-@import uk.gov.hmrc.play.views.helpers.AttorneyRegime
-@import uk.gov.hmrc.tai.util.HelpFormHelper
-@import uk.gov.hmrc.play.views.html.layouts._
+
+@import scala.concurrent.ExecutionContext
 
 @this(
-    webChatClient: WebChatClient,
-    appConfig: ApplicationConfig,
-    langUtils: LanguageUtils,
-    trackingConsentSnippet: TrackingConsentSnippet,
-    article: Article,
-    sidebar: Sidebar,
-    attorney_banner: AttorneyBanner
+        webChatClient: WebChatClient,
+        appConfig: ApplicationConfig,
+        langUtils: LanguageUtils,
+        trackingConsentSnippet: TrackingConsentSnippet,
+        article: Article,
+        sidebar: Sidebar,
+        attorney_banner: AttorneyBanner,
+        formPartialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
 
 @(title: String,
@@ -55,7 +54,7 @@
 )(implicit request: Request[_],
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+  ec: ExecutionContext)
 
 @serviceSuffix = @{
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
@@ -119,7 +118,7 @@
     }
 }
 
-@helpForm = @{HelpFormHelper.replaceMessage(partialRetriever, appConfig)}
+@helpForm = @{HelpFormHelper.replaceMessage(formPartialRetriever, appConfig)}
 
 
 @googleAnalytics = @{
@@ -167,6 +166,8 @@
     }
     @{webChatClient.loadWebChatContainer("HMRC_Anchored_1")}
     @{webChatClient.loadRequiredElements()}
+
+    @views.html.timeout_dialog(appConfig.sessionTimeoutInSeconds, appConfig.sessionCountdownInSeconds, messages)
 
     @script
 }

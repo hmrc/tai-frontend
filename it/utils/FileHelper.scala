@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package mocks
+package utils
 
-import play.api.mvc.RequestHeader
-import play.twirl.api.Html
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.http.HttpGet
+import scala.io.Source.fromFile
 
-object MockPartialRetriever extends FormPartialRetriever {
-  override def crypto: (String) => String = ???
+object FileHelper {
 
-  override def httpGet: HttpGet = ???
-
-  override def getPartialContent(url: String, templateParameters: Map[String, String], errorMessage: Html)(
-    implicit request: RequestHeader): Html = Html("")
+  def loadFile(name: String): String = {
+    val source = fromFile(name)
+    try source.mkString finally source.close()
+  }
 }

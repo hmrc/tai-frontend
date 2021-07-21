@@ -205,8 +205,6 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
         appConfig,
         mcc,
         inject[MainView],
-        partialRetriever,
-        templateRenderer,
         inject[ErrorPagesHandler]
       ) {
 

@@ -19,7 +19,6 @@ package controllers.pensions
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
@@ -615,8 +614,6 @@ class UpdatePensionProviderControllerSpec
         inject[DuplicateSubmissionWarningView],
         journeyCacheService,
         successfulJourneyCacheService,
-        MockPartialRetriever,
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       )
 }

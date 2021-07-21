@@ -16,10 +16,11 @@
 
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(incomeName: String, id: Int, totalEstimatedIncome: String, isPension: Boolean, appConfig: ApplicationConfig)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+ec: scala.concurrent.ExecutionContext)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.urls.Link
@@ -38,7 +39,7 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     )
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.incomes.landing.title", incomeName),
     authedUser = Some(user),
     pageHeader = Some(header),

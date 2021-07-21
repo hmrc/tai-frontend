@@ -20,7 +20,7 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -37,7 +37,6 @@ class IncomeUpdateWorkingHoursController @Inject()(
   mcc: MessagesControllerComponents,
   workingHoursView: WorkingHoursView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants {
 

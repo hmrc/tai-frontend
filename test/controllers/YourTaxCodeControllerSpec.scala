@@ -49,7 +49,6 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
     appConfig,
     inject[TaxCodeDetailsView],
     inject[TaxCodeDetailsPreviousYearsView],
-    partialRetriever,
     templateRenderer,
     inject[ErrorPagesHandler]
   )
@@ -139,7 +138,7 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
         Some("1234"),
         primary = false)
 
-      val taxCodeRecords = Seq(previousTaxCodeRecord1)
+      val taxCodeRecords = List(previousTaxCodeRecord1)
 
       when(taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
         .thenReturn(Future.successful(taxCodeRecords))

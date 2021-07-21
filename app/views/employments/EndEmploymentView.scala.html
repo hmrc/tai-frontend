@@ -14,17 +14,17 @@
  * limitations under the License.
  *@
 
+@import includes.forms._
 @import includes.{cancelLink, ptaHeader}
 @import org.joda.time.LocalDate
-@import includes.backLink
-@import includes.forms._
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
-@this(main: main, form: FormWithCSRF)
+@import scala.concurrent.ExecutionContext
 
-@(dateForm: Form[LocalDate], viewmodel: EmploymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+
+@(dateForm: Form[LocalDate], viewmodel: EmploymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 @header = @{
     ptaHeader(
@@ -35,7 +35,7 @@
     )
 }
 
-@main(title = Messages("tai.endEmployment.endDateForm.pagetitle"),
+@mainTemplate(title = Messages("tai.endEmployment.endDateForm.pagetitle"),
       authedUser = Some(user),
       pageHeader = Some(header),
       articleClasses = None,

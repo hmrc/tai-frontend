@@ -112,7 +112,6 @@ class PotentialUnderpaymentControllerSpec
         FakeValidatePerson,
         mcc,
         inject[PotentialUnderpaymentView],
-        partialRetriever,
         templateRenderer,
         inject[ErrorPagesHandler]
       ) {

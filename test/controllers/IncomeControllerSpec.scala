@@ -96,7 +96,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        doc.title() must include(Messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRange))
       }
     }
 
@@ -434,7 +434,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        doc.title() must include(Messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRange))
       }
     }
 
@@ -778,7 +778,6 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         editPensionSuccessView,
         inject[EditIncomeView],
         inject[SameEstimatedPayView],
-        partialRetriever,
         templateRenderer,
         inject[ErrorPagesHandler]
       ) {

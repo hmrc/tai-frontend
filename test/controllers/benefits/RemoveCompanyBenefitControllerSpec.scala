@@ -717,8 +717,7 @@ class RemoveCompanyBenefitControllerSpec
         removeBenefitTotalValueView,
         inject[CanWeContactByPhoneView],
         inject[RemoveCompanyBenefitConfirmationView],
-        templateRenderer,
-        partialRetriever
+        templateRenderer
       )
 
 }

@@ -206,7 +206,6 @@ class TaxCodeDescriptorSpec extends BaseSpec {
       extends TaiLanguageController(
         langUtils,
         stubControllerComponents(),
-        partialRetriever,
         templateRenderer
       )
 }

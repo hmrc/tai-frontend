@@ -96,7 +96,6 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
         FakeValidatePerson,
         mcc,
         inject[NoCYIncomeTaxErrorView],
-        partialRetriever,
         templateRenderer
       ) {
 

@@ -23,7 +23,7 @@ import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import org.joda.time.LocalDate
 import play.api.mvc._
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
@@ -54,7 +54,6 @@ class IncomeUpdateEstimatedPayController @Inject()(
   estimatedPay: EstimatedPayView,
   incorrectTaxableIncome: IncorrectTaxableIncomeView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {

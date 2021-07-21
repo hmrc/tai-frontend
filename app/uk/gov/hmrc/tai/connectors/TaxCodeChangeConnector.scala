@@ -72,7 +72,7 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
   def lastTaxCodeRecords(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApi(lastTaxCodeRecordsUrl(nino.nino, year.year)) map (
       json => {
-        TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxCodeRecord]])
+        TaiSuccessResponseWithPayload((json \ "data").as[List[TaxCodeRecord]])
       }
     ) recover {
       case e: Exception =>

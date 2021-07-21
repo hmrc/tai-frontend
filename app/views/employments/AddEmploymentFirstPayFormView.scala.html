@@ -14,16 +14,14 @@
  * limitations under the License.
  *@
 
-@import includes.forms.submit
-@import includes.{cancelLink, ptaHeader, backLink}
-@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+@import includes.forms.{inputRadioGroupStyling, submit}
+@import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.employments.AddEmploymentFirstPayForm
-@import includes.forms.inputRadioGroupStyling
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(firstPayForm: Form[Option[String]], employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(firstPayForm: Form[Option[String]], employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Have you received your first pay from?"}
 
@@ -35,7 +33,7 @@
         mainHeadingText = Messages("tai.addEmployment.employmentFirstPay.title", employerName),
         preHeadingText = Messages("add.missing.employment"))}
 
-@main(
+@mainTemplate(
 title = Messages("tai.addEmployment.employmentFirstPay.title", employerName),
 authedUser = Some(user),
 pageHeader = Some(header),

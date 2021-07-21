@@ -23,9 +23,9 @@
 @import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsDecisionForm
 @import includes.forms.inputRadioGroupStyling
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(decisionForm: Form[Option[String]], taxYear: TaxYear)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(decisionForm: Form[Option[String]], taxYear: TaxYear)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Update income details decision"}
 
@@ -37,7 +37,7 @@
     preHeadingText = messages("tai.income.previousYears.journey.preHeader"))
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.income.previousYears.decision.title", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)),
     authedUser = Some(user),
     pageHeader = Some(header),

@@ -69,7 +69,7 @@ class TaxAccountSummaryControllerSpec
       val doc = Jsoup.parse(contentAsString(result))
 
       val expectedTitle =
-        s"${messagesApi("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)}"
+        s"${messagesApi("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRange)}"
       doc.title() must include(expectedTitle)
     }
 
@@ -246,7 +246,6 @@ class TaxAccountSummaryControllerSpec
     appConfig,
     mcc,
     inject[IncomeTaxSummaryView],
-    partialRetriever,
     templateRenderer,
     inject[ErrorPagesHandler]
   )

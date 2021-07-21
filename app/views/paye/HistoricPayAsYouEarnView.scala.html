@@ -24,10 +24,10 @@
 
 @import controllers.auth.AuthenticatedRequest
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
-messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Your Pay As You Earn Income Tax"}
 
@@ -55,7 +55,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(viewModel.taxYear.year)),
     articleClasses = Some("full-width"),
     authedUser = Some(request.taiUser),

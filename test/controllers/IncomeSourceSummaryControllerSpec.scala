@@ -60,7 +60,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
-          Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+          Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange))
       }
 
       "asked for pension details" in {
@@ -77,7 +77,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
-          Messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+          Messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange))
       }
     }
 
@@ -153,7 +153,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     appConfig,
     mcc,
     inject[IncomeSourceSummaryView],
-    partialRetriever,
     templateRenderer,
     inject[ErrorPagesHandler]
   )

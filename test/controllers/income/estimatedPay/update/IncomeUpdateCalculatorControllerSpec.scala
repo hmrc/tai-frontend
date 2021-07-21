@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -84,7 +84,6 @@ class IncomeUpdateCalculatorControllerSpec
         inject[CheckYourAnswersView],
         inject[ConfirmAmountEnteredView],
         journeyCacheService,
-        MockPartialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
@@ -288,8 +287,7 @@ class IncomeUpdateCalculatorControllerSpec
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(
-          messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
       }
 
       "journey cache returns employment name, net amount with large decimal value and id" in {
@@ -301,8 +299,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(
-          messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
       }
 
       "redirects to the same amount entered page" ignore {
@@ -315,8 +312,7 @@ class IncomeUpdateCalculatorControllerSpec
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(
-          messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
       }
     }
   }

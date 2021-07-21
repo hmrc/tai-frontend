@@ -21,11 +21,11 @@ import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-import views.html.{ManualCorrespondenceView, TimeoutView}
+import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,8 +35,8 @@ class ServiceController @Inject()(
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   timeout: TimeoutView,
+  sessionExpired: SessionExpiredView,
   manualCorrespondence: ManualCorrespondenceView,
-  implicit val partialRetriever: FormPartialRetriever,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -63,4 +63,11 @@ class ServiceController @Inject()(
     Future.successful(Ok(manualCorrespondence()))
   } recoverWith errorPagesHandler.handleErrorResponse("getServiceUnavailable", nino)
 
+  def keepAlive: Action[AnyContent] = Action {
+    Ok("")
+  }
+
+  def sessionExpiredPage(): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(sessionExpired(applicationConfig)).withNewSession)
+  }
 }

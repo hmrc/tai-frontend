@@ -37,7 +37,7 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeader(
       messages("tai.bonusPaymentsAmount.preHeading", employer.name),
-      messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited)
+      messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
     )
     behave like pageWithTitle(
       messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))

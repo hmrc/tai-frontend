@@ -18,13 +18,11 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service.AuditService
 import utils.BaseSpec
-import views.html.ErrorNoPrimary
 
 import scala.concurrent.Future
 

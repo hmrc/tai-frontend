@@ -25,7 +25,6 @@ class TaiLanguageControllerSpec extends BaseSpec {
   def sut = new TaiLanguageController(
     langUtils,
     stubControllerComponents(),
-    partialRetriever,
     templateRenderer
   )
 

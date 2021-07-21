@@ -18,13 +18,14 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import scala.concurrent.ExecutionContext
 
 @import includes._
 @import includes.forms._
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(viewModel: RemoveCompanyBenefitCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: RemoveCompanyBenefitCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @header = @{
   ptaHeader(
@@ -33,7 +34,7 @@
     preHeadingText = Messages("tai.benefits.ended.journey.preHeader"))
 }
 
-@main(
+@mainTemplate(
   title = Messages("tai.checkYourAnswers.title"),
   authedUser = Some(user),
   pageHeader = Some(header),

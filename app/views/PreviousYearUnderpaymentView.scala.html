@@ -22,9 +22,9 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.views.formatting.Dates
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@(viewModel: PreviousYearUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: PreviousYearUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Underpayment from previous year"}
 
@@ -37,7 +37,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.previous.year.underpayment.title"),
     articleClasses = Some("full-width"),
     authedUser = Some(user),
@@ -49,7 +49,8 @@
 <div class="grid-row">
     <div class="grid grid-2-3">
         <div class="inner-block">
-            <p>@messages("tai.previous.year.underpayment.p1", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(-1))</p>
+
+            <p>@messages("tai.previous.year.underpayment.p1")</p>
 
             <p>@messages("tai.previous.year.underpayment.you.owe")
                 <span class="display-block bold-large">@viewModel.poundedAmountDue</span>
@@ -63,7 +64,7 @@
 
             <h2>@messages("tai.previous.year.underpayment.h2")</h2>
 
-            <p>@messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRangeSingleLine)</p>
+            <p>@messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRange)</p>
             <p>@messages("tai.previous.year.underpayment.p5")</p>
 
             <p>@viewModel.returnLink</p>

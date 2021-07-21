@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -63,7 +63,6 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         inject[EditIncomeIrregularHoursView],
         inject[ConfirmAmountEnteredView],
         journeyCacheService,
-        MockPartialRetriever,
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
@@ -278,8 +277,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(
-        messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
     }
 
     "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {

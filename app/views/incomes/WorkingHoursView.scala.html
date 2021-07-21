@@ -19,9 +19,9 @@
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import includes.forms.inputRadioGroupStyling
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @gaEventActionString = @{"Your working hours"}
 
@@ -36,7 +36,7 @@
 }
 
 
-@main(
+@mainTemplate(
     title = messages("tai.workingHours.title"),
     articleClasses = Some("full-width"),
     authedUser = Some(user),

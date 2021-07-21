@@ -14,23 +14,23 @@
  * limitations under the License.
  *@
 
-@import includes.forms.{submit, input}
-@import includes.{cancelLink, ptaHeader, backLink}
-@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+@import includes.forms.{input, inputRadioGroupStyling, submit}
+@import includes.{cancelLink, ptaHeader}
+@import play.api.mvc.Call
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 @import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
-@import play.api.mvc.Call
-@import includes.forms.inputRadioGroupStyling
 
-@this(main: main, form: FormWithCSRF)
+@import scala.concurrent.ExecutionContext
+
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
 @(      incomingAuthedUser: Option[controllers.auth.AuthedUser],
         viewModel: CanWeContactByPhoneViewModel,
         yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_],
         messages: Messages,
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-        partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+        ec: ExecutionContext)
 
 @gaEventActionString = @{"Can we contact you by phone?"}
 
@@ -42,7 +42,7 @@
         mainHeadingText = viewModel.mainHeading,
         preHeadingText = viewModel.preHeading)}
 
-@main(
+@mainTemplate(
     title = viewModel.mainHeading,
     authedUser = incomingAuthedUser,
     pageHeader = Some(header),
