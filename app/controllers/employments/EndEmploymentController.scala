@@ -89,7 +89,7 @@ class EndEmploymentController @Inject()(
         case Right(mandatoryValues) =>
           Ok(
             update_remove_employment_decision(
-              UpdateRemoveEmploymentForm.form,
+              UpdateRemoveEmploymentForm.form(mandatoryValues(0)),
               mandatoryValues(0),
               mandatoryValues(1).toInt))
         case Left(_) => Redirect(taxAccountSummaryRedirect)
@@ -132,46 +132,49 @@ class EndEmploymentController @Inject()(
       implicit val user: AuthedUser = request.taiUser
       journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) flatMap {
         mandatoryValues =>
-          UpdateRemoveEmploymentForm.form.bindFromRequest.fold(
-            formWithErrors => {
-              Future(
-                BadRequest(
-                  update_remove_employment_decision(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
-            }, {
-              case Some(YesValue) =>
+          UpdateRemoveEmploymentForm
+            .form(mandatoryValues(0))
+            .bindFromRequest
+            .fold(
+              formWithErrors => {
                 Future(
-                  Redirect(controllers.employments.routes.UpdateEmploymentController
-                    .updateEmploymentDetails(mandatoryValues(1).toInt)))
-              case _ =>
-                val nino = user.nino
-                employmentService.employment(nino, mandatoryValues(1).toInt) flatMap {
-                  case Some(employment) =>
-                    val today = new LocalDate()
-                    val latestPaymentDate: Option[LocalDate] = for {
-                      latestAnnualAccount <- employment.latestAnnualAccount
-                      latestPayment       <- latestAnnualAccount.latestPayment
-                    } yield latestPayment.date
+                  BadRequest(
+                    update_remove_employment_decision(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
+              }, {
+                case Some(YesValue) =>
+                  Future(
+                    Redirect(controllers.employments.routes.UpdateEmploymentController
+                      .updateEmploymentDetails(mandatoryValues(1).toInt)))
+                case _ =>
+                  val nino = user.nino
+                  employmentService.employment(nino, mandatoryValues(1).toInt) flatMap {
+                    case Some(employment) =>
+                      val today = new LocalDate()
+                      val latestPaymentDate: Option[LocalDate] = for {
+                        latestAnnualAccount <- employment.latestAnnualAccount
+                        latestPayment       <- latestAnnualAccount.latestPayment
+                      } yield latestPayment.date
 
-                    val hasIrregularPayment = employment.latestAnnualAccount.exists(_.isIrregularPayment)
-                    if (latestPaymentDate.isDefined && latestPaymentDate.get
-                          .isAfter(today.minusWeeks(6).minusDays(1))) {
+                      val hasIrregularPayment = employment.latestAnnualAccount.exists(_.isIrregularPayment)
+                      if (latestPaymentDate.isDefined && latestPaymentDate.get
+                            .isAfter(today.minusWeeks(6).minusDays(1))) {
 
-                      val errorPagecache = Map(EndEmployment_LatestPaymentDateKey -> latestPaymentDate.get.toString)
-                      journeyCacheService.cache(errorPagecache) map { _ =>
-                        auditService
-                          .createAndSendAuditEvent(EndEmployment_WithinSixWeeksError, Map("nino" -> nino.nino))
-                        Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
+                        val errorPagecache = Map(EndEmployment_LatestPaymentDateKey -> latestPaymentDate.get.toString)
+                        journeyCacheService.cache(errorPagecache) map { _ =>
+                          auditService
+                            .createAndSendAuditEvent(EndEmployment_WithinSixWeeksError, Map("nino" -> nino.nino))
+                          Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
+                        }
+                      } else if (hasIrregularPayment) {
+                        auditService.createAndSendAuditEvent(EndEmployment_IrregularPayment, Map("nino" -> nino.nino))
+                        Future(Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError()))
+                      } else {
+                        Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
                       }
-                    } else if (hasIrregularPayment) {
-                      auditService.createAndSendAuditEvent(EndEmployment_IrregularPayment, Map("nino" -> nino.nino))
-                      Future(Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError()))
-                    } else {
-                      Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
-                    }
-                  case _ => throw new RuntimeException("No employment found")
-                }
-            }
-          )
+                    case _ => throw new RuntimeException("No employment found")
+                  }
+              }
+            )
       }
   }
 
