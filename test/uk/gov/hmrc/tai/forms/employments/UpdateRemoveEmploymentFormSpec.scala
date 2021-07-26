@@ -44,11 +44,11 @@ class UpdateRemoveEmploymentFormSpec extends BaseSpec with FormValuesConstants {
       val invalidChoice = Json.obj(choice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
-      invalidatedForm.errors.head.messages mustBe List(Messages("tai.error.chooseOneOption"))
+      invalidatedForm.errors.head.messages mustBe List(Messages("tai.employment.decision.error.empty", "HMRC"))
       invalidatedForm.value mustBe None
     }
   }
 
   val choice: String = UpdateRemoveEmploymentForm.EmploymentDecision
-  private val form = UpdateRemoveEmploymentForm.form
+  private val form = UpdateRemoveEmploymentForm.form("HMRC")
 }
