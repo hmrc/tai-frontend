@@ -108,7 +108,7 @@ class UpdateIncomeDetailsController @Inject()(
       },
       incomeDetails => {
         journeyCacheService
-          .cache(Map(UpdatePreviousYearsIncome_IncomeDetailsKey -> incomeDetails))
+          .cache(Map(UpdatePreviousYearsIncome_IncomeDetailsKey -> incomeDetails.replace("\r", "")))
           .map(_ => Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber()))
       }
     )

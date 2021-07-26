@@ -47,8 +47,8 @@ object UpdateIncomeDetailsForm {
 
   def textExceedsCharacterLimit(exceedErrorMsg: String): Constraint[String] =
     Constraint[String]("characterLimitExceeded") {
-      case textValue if textValue.trim.length <= historicEmploymentDetailsCharLimit => Valid
-      case _                                                                        => Invalid(exceedErrorMsg)
+      case textValue if textValue.trim.replace("\r", "").length <= historicEmploymentDetailsCharLimit => Valid
+      case _                                                                                          => Invalid(exceedErrorMsg)
     }
 
 }
