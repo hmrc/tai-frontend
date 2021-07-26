@@ -23,9 +23,9 @@
 
 @import uk.gov.hmrc.play.views.formatting.Dates
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(stopDateForm: Form[Option[String]],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(stopDateForm: Form[Option[String]],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @startOfCurrentTaxYear = @{Dates.formatDate(TaxYear().start)}
 @endOfCurrentTaxYear = @{Dates.formatDate(TaxYear().end)}
@@ -40,7 +40,7 @@
 }
 
 
-@main(
+@mainTemplate(
 title = Messages("tai.benefits.ended.stopDate.heading", benefitType, empName),
 authedUser = Some(user),
 pageHeader = Some(header),

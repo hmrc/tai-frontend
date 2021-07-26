@@ -27,13 +27,13 @@
 @import uk.gov.hmrc.play.views.html.layouts._
 
 @this(
-    webChatClient: WebChatClient,
-    appConfig: ApplicationConfig,
-    langUtils: LanguageUtils,
-    trackingConsentSnippet: TrackingConsentSnippet,
-    article: Article,
-    sidebar: Sidebar,
-    attorney_banner: AttorneyBanner
+        webChatClient: WebChatClient,
+        appConfig: ApplicationConfig,
+        langUtils: LanguageUtils,
+        trackingConsentSnippet: TrackingConsentSnippet,
+        article: Article,
+        sidebar: Sidebar,
+        attorney_banner: AttorneyBanner
 )
 
 @(title: String,
@@ -49,8 +49,7 @@
 )(mainContent: Html
 )(implicit request: Request[_],
   messages: Messages,
-  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer)
 
 @serviceSuffix = @{
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"

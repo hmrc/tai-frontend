@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
@@ -58,7 +58,6 @@ class IncomeUpdatePayslipAmountControllerSpec
         taxablePayslipAmountView,
         inject[PayslipDeductionsView],
         journeyCacheService,
-        MockPartialRetriever,
         MockTemplateRenderer
       ) {
     when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))

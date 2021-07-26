@@ -39,8 +39,8 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
 
   "taxFreeAmountComparison" must {
     "return a TaxFreeAmountComparison with a previous and current" in {
-      val previousCodingComponents = Seq(codingComponent1)
-      val currentCodingComponents = Seq(codingComponent2)
+      val previousCodingComponents = List(codingComponent1)
+      val currentCodingComponents = List(codingComponent2)
       val taxFreeAmountComparison = TaxFreeAmountComparison(previousCodingComponents, currentCodingComponents)
 
       when(codingComponentService.taxFreeAmountComparison(Matchers.eq(nino))(any()))
@@ -52,7 +52,7 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
         YourTaxFreeAmountComparison(
           Some(TaxFreeInfo("previousTaxDate", 0, 0)),
           TaxFreeInfo("currentTaxDate", 0, 0),
-          AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
+          AllowancesAndDeductionPairs(List.empty, List.empty)
         )
 
       val service = createTestService
@@ -75,7 +75,7 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
       YourTaxFreeAmountComparison(
         previousTaxFreeInfo,
         TaxFreeInfo("currentTaxDate", 0, 0),
-        AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
+        AllowancesAndDeductionPairs(List.empty, List.empty)
       )
     }
   }
@@ -96,7 +96,7 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
     Some("1234"),
     true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
-  val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
+  val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
 
   private val codingComponent1 = CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description")
   private val codingComponent2 = CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description")

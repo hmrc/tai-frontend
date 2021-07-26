@@ -20,7 +20,9 @@
 @import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, WhatDoYouWantToDoViewModel}
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@this(main: main)
+@import scala.concurrent.ExecutionContext
+
+@this(mainTemplate: MainTemplate)
 
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
   model: WhatDoYouWantToDoViewModel,
@@ -29,7 +31,7 @@
   messages: Messages,
   user: controllers.auth.AuthedUser,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+  ec: ExecutionContext)
 
 @optimizelyAudience = @{
   if (model.showTaxCodeChangeTile()) {
@@ -39,7 +41,7 @@
   }
 }
 
-@main(
+@mainTemplate(
     title = messages("your.paye.income.tax.overview"),
     authedUser = Some(user),
     optimizelyAudience = optimizelyAudience
@@ -59,8 +61,7 @@
                     url = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
                     id = "hasTaxCodeChanged",
                     heading = messages("check.tax.hasChanged.header"),
-                    bodyContent = Some(messages("check.tax.hasChanged.action")),
-                    gaLabel = Some(messages("check.tax.hasChanged.action"))
+                    bodyContent = Some(messages("check.tax.hasChanged.action"))
                       )
                     }
                 </div>
@@ -70,16 +71,14 @@
                         url = Some(s"/check-income-tax/historic-paye/${TaxYear().prev.year.toString}"),
                         id = "earlierTaxYear",
                         heading = messages("earlier"),
-                        bodyContent = Some(messages("check.tax.previous.years")),
-                        gaLabel=Some(messages("earlier"))
+                        bodyContent = Some(messages("check.tax.previous.years"))
                     )
 
                     @card(
                         url = Some("/check-income-tax/income-summary"),
                         id = "currentTaxYear",
                         heading = messages("current.tax.year"),
-                        bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange)),
-                        gaLabel=Some(messages("current.tax.year"))
+                        bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
                     )
 
                     @if(model.isCyPlusOneEnabled) {
@@ -87,8 +86,7 @@
                             url = Some("/check-income-tax/income-tax-comparison"),
                             id = "nextTaxYear",
                             heading = messages("next.year"),
-                            bodyContent = Some(messages("check.estimated.income",TaxYearRangeUtil.futureTaxYearRange(yearsFromNow=1))),
-                            gaLabel=Some(messages("next.year"))
+                            bodyContent = Some(messages("check.estimated.income",TaxYearRangeUtil.futureTaxYearRange(yearsFromNow=1)))
                         )
                     }
 
@@ -96,16 +94,14 @@
                         url = Some(appConfig.taxReliefExpenseClaimLink),
                         id = "claimRelief",
                         heading = messages("claim.tax.relief.wfh"),
-                        bodyContent = None,
-                        gaLabel=Some(messages("claim.tax.relief.wfh"))
+                        bodyContent = None
                     )
 
                     @if(model.showJrsTile){
                     @card(
                     url = Some("/check-income-tax/jrs-claims"),
                     id = "jrsClaims",
-                    heading = messages("check.jrs.claims"),
-                    gaLabel=Some(messages("check.jrs.claims"))
+                    heading = messages("check.jrs.claims")
                     )
                     }
 

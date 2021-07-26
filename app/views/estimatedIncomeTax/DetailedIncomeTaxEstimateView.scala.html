@@ -20,10 +20,11 @@
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.formatting.Money._
+@import scala.concurrent.ExecutionContext
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@(viewModel: DetailedIncomeTaxEstimateViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: DetailedIncomeTaxEstimateViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 
 @taxYearRangeString = @{
@@ -39,7 +40,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.estimatedIncome.detailedEstimate.title"),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),

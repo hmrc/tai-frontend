@@ -19,9 +19,9 @@
 @import includes.taxFreeAmountSummaryComparison
 @import uk.gov.hmrc.urls.Link
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -32,7 +32,7 @@
         preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
 
-@main(
+@mainTemplate(
     title = Messages("taxCode.change.yourTaxFreeAmount.title"),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),

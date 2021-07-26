@@ -14,20 +14,20 @@
  * limitations under the License.
  *@
 
-@this(main: main)
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.service.TaxPeriodLabelService
+@import uk.gov.hmrc.tai.util.constants.TaiConstants._
+@import includes.ptaHeader
+
+@this(mainTemplate: MainTemplate)
 
 @(noCYIncomeTaxErrorViewModel: uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
 )(implicit request: Request[_],
   messages: Messages,
   user: controllers.auth.AuthedUser,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
-@import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.urls.Link
-@import uk.gov.hmrc.tai.service.TaxPeriodLabelService
-@import uk.gov.hmrc.tai.util.constants.TaiConstants._
-@import includes.ptaHeader
+  ec: scala.concurrent.ExecutionContext)
 
 @backLinkToChooseTaxYear = {
     <p>
@@ -50,7 +50,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.noCYIncomeError.title"),
     articleClasses = None,
     authedUser = Some(user),

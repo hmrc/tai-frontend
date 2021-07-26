@@ -20,9 +20,9 @@
 @import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsForm
 @import includes.forms.{submit, textArea}
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(viewModel: UpdateHistoricIncomeDetailsViewModel, updateIncomeDetailsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: UpdateHistoricIncomeDetailsViewModel, updateIncomeDetailsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -34,7 +34,7 @@
  )
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.income.previousYears.details.title", viewModel.formattedTaxYear),
     authedUser = Some(user),
     pageHeader = Some(header),

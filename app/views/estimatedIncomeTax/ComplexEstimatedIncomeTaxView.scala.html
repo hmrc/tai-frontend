@@ -22,11 +22,12 @@
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexTaxView,SimpleTaxView, ZeroTaxView,TaxViewType}
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
+@import scala.concurrent.ExecutionContext
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ComplexEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
-request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 
 @taxYearRangeString = @{
@@ -44,7 +45,7 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
 )
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.estimatedIncome.title"),
     pageHeader = Some(header),
     articleClasses = Some("full-width"),

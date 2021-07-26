@@ -19,15 +19,6 @@
 @import uk.gov.hmrc.tai.util.HtmlFormatter
 @import uk.gov.hmrc.play.views.formatting.Dates
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-
-@this(main: main)
-
-@(model: SameEstimatedPayViewModel)(implicit
-request: Request[_],
-messages: Messages,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.urls.Link
@@ -38,6 +29,15 @@ partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 @import uk.gov.hmrc.tai.util.FormHelper
 @import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 
+
+@this(mainTemplate: MainTemplate)
+
+@(model: SameEstimatedPayViewModel)(implicit
+request: Request[_],
+messages: Messages,
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+ec: scala.concurrent.ExecutionContext)
+
 @header = @{
     ptaHeader(
         displayBackLink = true,
@@ -46,7 +46,7 @@ partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
     )
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRange),
     pageHeader = Some(header),
     articleClasses = Some("")

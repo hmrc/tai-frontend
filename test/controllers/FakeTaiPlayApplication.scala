@@ -16,7 +16,7 @@
 
 package controllers
 
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.scalatest.concurrent.PatienceConfiguration
 import org.scalatest.{Args, Status, Suite, TestSuite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -26,7 +26,6 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.webchat.client.WebChatClient
@@ -52,8 +51,7 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
     .configure(additionalConfiguration)
     .overrides(
       bind[WebChatClient].toInstance(new WebChatClientStub),
-      bind[TemplateRenderer].toInstance(MockTemplateRenderer),
-      bind[FormPartialRetriever].toInstance(MockPartialRetriever)
+      bind[TemplateRenderer].toInstance(MockTemplateRenderer)
     )
     .build()
 

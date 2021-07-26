@@ -14,16 +14,24 @@
  * limitations under the License.
  *@
 
-@import includes.ptaHeader
-@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-@import uk.gov.hmrc.tai.viewModels.pensions.update._
-@import includes._
 @import includes.forms._
+@import includes.{ptaHeader, _}
 @import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.tai.viewModels.pensions.update._
 
-@this(main: main, form: FormWithCSRF)
+@import scala.concurrent.ExecutionContext
 
-@(viewModel: UpdatePensionCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+
+@(
+    viewModel: UpdatePensionCheckYourAnswersViewModel
+)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext
+)
 
 @header = @{
     ptaHeader(
@@ -33,7 +41,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.checkYourAnswers.title"),
     authedUser = Some(user),
     pageHeader = Some(header),

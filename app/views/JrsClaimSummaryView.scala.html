@@ -19,14 +19,15 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.{JrsClaims, YearAndMonth}
 @import uk.gov.hmrc.urls.Link
+@import scala.concurrent.ExecutionContext
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 @employerMessageKey = @{viewModel.employerMessageKey}
 
-@main(
+@mainTemplate(
     title = messages("check.jrs.claims.title")
 ){
 

@@ -24,7 +24,7 @@ import javax.inject.Inject
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.language.LanguageUtils
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
@@ -57,8 +57,7 @@ class RemoveCompanyBenefitController @Inject()(
   removeBenefitTotalValue: RemoveBenefitTotalValueView,
   can_we_contact_by_phone: CanWeContactByPhoneView,
   removeCompanyBenefitConfirmation: RemoveCompanyBenefitConfirmationView,
-  implicit val templateRenderer: TemplateRenderer,
-  implicit val partialRetriever: FormPartialRetriever)(implicit ec: ExecutionContext)
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants
     with RemoveCompanyBenefitStopDateConstants {
 

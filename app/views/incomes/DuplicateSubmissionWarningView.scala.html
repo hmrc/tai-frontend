@@ -21,9 +21,9 @@
 @import includes.forms.submit
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.DuplicateSubmissionEstimatedPay
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -35,7 +35,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.incomes.warning.customGaTitle"),
     authedUser = Some(user),
     pageHeader = Some(header),

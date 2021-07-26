@@ -49,7 +49,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     pensionIndicator = false,
     payrollNumber = Some("Payroll Number"))
   val taxCodeChange: TaxCodeChange =
-    TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
+    TaxCodeChange(List(taxCodeRecord1, taxCodeRecord3), List(taxCodeRecord2, taxCodeRecord3))
   val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
 
   private val taxCodeComparison = inject[TaxCodeComparisonView]

@@ -20,9 +20,9 @@
 @import includes._
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@(viewModel: CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
@@ -32,7 +32,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.checkYourAnswers.title"),
     authedUser = Some(user),
     pageHeader = Some(header),

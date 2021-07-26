@@ -31,7 +31,6 @@ class HasFormPartialService @Inject()(httpClient: DefaultHttpClient, application
     extends EnhancedPartialRetriever {
 
   override val http: HttpGet = httpClient
-  override def crypto: String => String = cookie => cookie
 
   def getIncomeTaxPartial(implicit request: RequestHeader): Future[HtmlPartial] =
     loadPartial(applicationConfig.incomeTaxFormPartialLinkUrl)

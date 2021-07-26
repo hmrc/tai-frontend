@@ -135,7 +135,8 @@ trait FeatureTogglesConfig { self: ApplicationConfig =>
   lazy val accessibilityStatementToggle: Boolean =
     getOptional[Boolean]("accessibility-statement.toggle").getOrElse(false)
   lazy val isTaiCy3Enabled: Boolean = getOptional[Boolean]("tai.cy3.enabled").getOrElse(false)
-  lazy val numberOfPreviousYearsToShow: Int = getOptional[Int]("tai.numberOfPreviousYearsToShow").getOrElse(5)
+
+  val numberOfPreviousYearsToShow: Int = 5 // Always 5 in all configs
 }
 
 trait AuthConfigProperties { self: ApplicationConfig =>

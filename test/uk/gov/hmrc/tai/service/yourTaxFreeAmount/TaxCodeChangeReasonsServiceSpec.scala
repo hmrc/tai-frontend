@@ -37,8 +37,8 @@ class TaxCodeChangeReasonsServiceSpec extends BaseSpec {
 
   "reasons" must {
     "combine the tax code change reasons" in {
-      val iabdReasons = Seq("iabd changed")
-      val employmentReasons = Seq("employment changed")
+      val iabdReasons = List("iabd changed")
+      val employmentReasons = List("employment changed")
 
       when(iabdTaxCodeChangeReasons.reasons(any())(any())).thenReturn(iabdReasons)
       when(employmentTaxCodeChangeReasons.reasons(any())(any())).thenReturn(employmentReasons)
@@ -48,36 +48,36 @@ class TaxCodeChangeReasonsServiceSpec extends BaseSpec {
     }
 
     "show only unique tax code change reasons" in {
-      val someReason = Seq("reason 1", "reason 1")
+      val someReason = List("reason 1", "reason 1")
 
       when(iabdTaxCodeChangeReasons.reasons(any())(any())).thenReturn(someReason)
       when(employmentTaxCodeChangeReasons.reasons(any())(any())).thenReturn(someReason)
 
-      service.combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons, iabdPairs, taxCodeChange) mustBe Seq("reason 1")
+      service.combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons, iabdPairs, taxCodeChange) mustBe List("reason 1")
     }
   }
 
   "isAGenericReason" must {
     "be false" when {
       "there are less than or equal to 6 reasons" in {
-        val reasons = Seq("reason 1", "reason 2", "reason 3", "reason 4", "reason 5", "reason 6")
+        val reasons = List("reason 1", "reason 2", "reason 3", "reason 4", "reason 5", "reason 6")
         service.isAGenericReason(reasons) mustBe false
       }
     }
 
     "be true" when {
       "there are zero reasons" in {
-        service.isAGenericReason(Seq.empty) mustBe true
+        service.isAGenericReason(List.empty) mustBe true
       }
 
       "there are more than 6 reasons" in {
-        val reasons = Seq("reason 1", "reason 2", "reason 3", "reason 4", "reason 5", "reason 6", "reason 7")
+        val reasons = List("reason 1", "reason 2", "reason 3", "reason 4", "reason 5", "reason 6", "reason 7")
         service.isAGenericReason(reasons) mustBe true
       }
 
       "there is a generic reason in the reasons" in {
         val genericReason = messagesApi("taxCode.change.yourTaxCodeChanged.paragraph")
-        val reasons = Seq("reason 1", genericReason)
+        val reasons = List("reason 1", genericReason)
         service.isAGenericReason(reasons) mustBe true
       }
     }

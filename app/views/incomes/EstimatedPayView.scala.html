@@ -27,10 +27,11 @@
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.util.MonetaryUtil
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(viewModel: EstimatedPayViewModel)(implicit request: Request[_],messages: Messages, user: controllers.auth.AuthedUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+ec: scala.concurrent.ExecutionContext)
 
 @grossAnnualPay = @{MoneyPounds(viewModel.grossAnnualPay.getOrElse(0),0)}
 @netAnnualPay = @{MoneyPounds(viewModel.netAnnualPay.getOrElse(0),0)}
@@ -43,7 +44,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     )
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRange),
     articleClasses = Some("full-width text"),
     authedUser = Some(user),

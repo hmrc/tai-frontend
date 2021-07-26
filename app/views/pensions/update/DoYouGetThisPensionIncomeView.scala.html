@@ -22,9 +22,10 @@
 @import includes.forms.inputRadioGroupStyling
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -36,7 +37,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.updatePension.decision.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),

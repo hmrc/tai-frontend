@@ -14,11 +14,13 @@
  * limitations under the License.
  *@
 
-@this(main: main)
+@import scala.concurrent.ExecutionContext
+
+@this(mainTemplate: MainTemplate)
 
 @(employmentId: Int, employerName: String)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.AuthedUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.urls.Link
@@ -33,7 +35,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     )
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.unableToCalculate.title"),
     articleClasses = Some("full-width"),
     authedUser = Some(user),

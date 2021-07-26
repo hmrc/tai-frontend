@@ -21,10 +21,10 @@
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import includes.forms.inputRadioGroupStyling
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
 @(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], employer: IncomeSource)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -36,7 +36,7 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     )
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.payslipDeductions.heading"),
     articleClasses = Some("full-width text"),
     authedUser = Some(user),

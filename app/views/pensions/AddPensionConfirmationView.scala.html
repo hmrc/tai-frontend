@@ -19,11 +19,11 @@
 
 @import views.html.includes.confirmationSuccessBanner
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@main(
+@mainTemplate(
     title = Messages("tai.pensionConfirmation.heading"),
     authedUser = Some(user),
     articleClasses = None) {

@@ -35,7 +35,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
     "return the tax code change given a valid nino" in {
       val testService = createTestService
 
-      val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
+      val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
 
       when(taxCodeChangeConnector.taxCodeChange(any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeChange)))

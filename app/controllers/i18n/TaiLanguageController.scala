@@ -20,13 +20,12 @@ import javax.inject.Inject
 import play.api.i18n.{Lang, MessagesApi}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
-import uk.gov.hmrc.play.partials.FormPartialRetriever
+
 import uk.gov.hmrc.renderer.TemplateRenderer
 
 class TaiLanguageController @Inject()(
   languageUtils: LanguageUtils,
   cc: ControllerComponents,
-  val partialRetriever: FormPartialRetriever,
   val templateRenderer: TemplateRenderer)(implicit messagesApi: MessagesApi)
     extends LanguageController(languageUtils, cc) {
 

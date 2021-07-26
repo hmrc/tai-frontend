@@ -21,9 +21,9 @@
 @import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 @import uk.gov.hmrc.tai.forms.pensions.WhatDoYouWantToTellUsForm
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(name: String, id:Int, whatDoYouWantToTellUsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(name: String, id:Int, whatDoYouWantToTellUsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -35,7 +35,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.updatePension.whatDoYouWantToTellUs.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),

@@ -14,20 +14,17 @@
  * limitations under the License.
  *@
 
-@import includes.backLink
-@import includes.forms.{submit, input}
+@import includes.forms.{input, inputRadioGroupStyling, submit}
 @import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderNumberForm
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionNumberViewModel
-@import includes.forms.inputRadioGroupStyling
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
 @(payrollNumberForm: Form[AddPensionProviderNumberForm], pensionNumberViewModel: PensionNumberViewModel)(implicit request: Request[_],
         messages: Messages, user: controllers.auth.AuthedUser,
-        templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+        templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -37,7 +34,7 @@
         mainHeadingText = Messages("tai.addPensionProvider.pensionNumber.title", <span class="carry-over">{pensionNumberViewModel.pensionProviderName}</span>),
         preHeadingText = Messages("add.missing.pension"))}
 
-@main(
+@mainTemplate(
     title = Messages("tai.addPensionProvider.pensionNumber.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),

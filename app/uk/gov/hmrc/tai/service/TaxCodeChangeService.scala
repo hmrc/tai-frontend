@@ -59,17 +59,17 @@ class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnec
   }
 
   def lastTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(
-    implicit hc: HeaderCarrier): Future[Seq[TaxCodeRecord]] =
+    implicit hc: HeaderCarrier): Future[List[TaxCodeRecord]] =
     taxCodeChangeConnector.lastTaxCodeRecords(nino, year) map {
-      case TaiSuccessResponseWithPayload(taxCodeRecords: Seq[TaxCodeRecord]) => taxCodeRecords
+      case TaiSuccessResponseWithPayload(taxCodeRecords: List[TaxCodeRecord]) => taxCodeRecords
       case TaiTaxAccountFailureResponse(_) =>
         throw new RuntimeException(s"Could not fetch last tax code records for year $year")
     }
 
   def hasTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Boolean] =
     taxCodeChangeConnector.lastTaxCodeRecords(nino, year) map {
-      case TaiSuccessResponseWithPayload(taxCodeRecords: Seq[TaxCodeRecord]) if taxCodeRecords.nonEmpty => true
-      case _                                                                                            => false
+      case TaiSuccessResponseWithPayload(taxCodeRecords: List[TaxCodeRecord]) if taxCodeRecords.nonEmpty => true
+      case _                                                                                             => false
     }
 
   def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] =

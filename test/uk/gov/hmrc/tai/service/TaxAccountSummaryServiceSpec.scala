@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Matchers, Mockito}
@@ -206,7 +206,6 @@ class TaxAccountSummaryServiceSpec
         trackingService = trackingService,
         employmentService = employmentService,
         taxAccountService = taxAccountService,
-        partialRetriever = MockPartialRetriever,
         templateRenderer = MockTemplateRenderer,
         mcc = mcc
       ) {

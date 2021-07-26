@@ -20,13 +20,13 @@
 @import includes.forms.{inputRadioGroupStyling, submit}
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.forms.YesNoForm
-
+@import scala.concurrent.ExecutionContext
 @import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
 @(yesNoForm: Form[YesNoForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 
 @header = @{
@@ -38,7 +38,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     )
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     articleClasses = Some(""),
     authedUser = Some(user),

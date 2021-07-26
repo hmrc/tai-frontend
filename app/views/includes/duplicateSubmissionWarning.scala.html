@@ -22,7 +22,9 @@
 
 @this(form: FormWithCSRF)
 
-@(duplicateSubmissionWarningForm: Form[YesNoForm], yesChoiceText: String, noChoiceText: String, actionRoute: Call)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@(duplicateSubmissionWarningForm: Form[YesNoForm], yesChoiceText: String, noChoiceText: String, actionRoute: Call)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+
 
     @form(action = actionRoute, Symbol("data-journey-dynamic-radios") -> "" ) {
         <div class="form-group">

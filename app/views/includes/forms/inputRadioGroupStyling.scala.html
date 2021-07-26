@@ -37,7 +37,7 @@
             @if(legendHint.isDefined) {<span id="radioGroupLegendHint">@legendHint.get</span>}
         </legend>
 
-        @elements.errors.map{error => <span class="error-message">@Messages(error)</span>}
+        @elements.errors.map{error => <span class="error-message">@Messages(error.toString)</span>}
 
         @for(((value, label), optionIdx) <- radioOptions zip (Stream from 1)) {
 

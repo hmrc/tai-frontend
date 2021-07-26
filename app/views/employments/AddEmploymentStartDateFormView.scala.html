@@ -18,11 +18,10 @@
 @import includes.{cancelLink, ptaHeader}
 @import org.joda.time.LocalDate
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(dateForm: Form[LocalDate], employmentName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(dateForm: Form[LocalDate], employmentName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -34,7 +33,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.addEmployment.startDateForm.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),

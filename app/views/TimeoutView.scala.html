@@ -17,13 +17,14 @@
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 @import play.api.Play.current
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @import uk.gov.hmrc.urls.Link
 
-@main(
+
+@mainTemplate(
     title = messages("tai.timeout.title")
 ){
     <header class="page-header">

@@ -14,14 +14,16 @@
  * limitations under the License.
  *@
 
-@this(main: main)
-
-@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
 @import uk.gov.hmrc.urls.Link
+@import scala.concurrent.ExecutionContext
 
-@main(
-    title=Messages("tai.noPrimary.heading")){
+@this(mainTemplate: MainTemplate)
+
+@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
+
+@mainTemplate(
+    title=Messages("tai.noPrimary.heading")
+){
     <div class="section">
         <h1 class="h1-heading">@Messages("tai.noPrimary.heading")</h1>
         <div class="grid grid-2-3">

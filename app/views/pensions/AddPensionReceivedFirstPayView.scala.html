@@ -14,16 +14,15 @@
  * limitations under the License.
  *@
 
-@import includes.forms.submit
-@import includes.{cancelLink, ptaHeader, backLink}
+@import includes.forms.{inputRadioGroupStyling, submit}
+@import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderFirstPayForm
-@import includes.forms.inputRadioGroupStyling
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(firstPayForm: Form[Option[String]], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(firstPayForm: Form[Option[String]], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
@@ -32,7 +31,7 @@
         mainHeadingText = Messages("tai.addPensionProvider.firstPay.title", <span class="carry-over">{pensionProviderName}</span>),
         preHeadingText = Messages("add.missing.pension"))}
 
-@main(
+@mainTemplate(
     title = Messages("tai.addPensionProvider.firstPay.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),

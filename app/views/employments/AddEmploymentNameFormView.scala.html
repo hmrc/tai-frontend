@@ -14,14 +14,13 @@
  * limitations under the License.
  *@
 
-@import includes.forms.{submit,input}
-@import includes.{backLink, cancelLink, ptaHeader}
+@import includes.forms.{input, submit}
+@import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
@@ -31,7 +30,7 @@
         preHeadingText = Messages("add.missing.employment"))}
 
 
-@main(
+@mainTemplate(
   title = Messages("tai.addEmployment.addNameForm.title"),
   authedUser = Some(user),
   pageHeader = Some(header),

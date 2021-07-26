@@ -24,14 +24,16 @@
 @import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 @import uk.gov.hmrc.play.views.formatting.Dates
 @import uk.gov.hmrc.tai.model.TaxYear
+@import scala.concurrent.ExecutionContext
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @()(implicit request: Request[_],
 messages: Messages,
 user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+ec: ExecutionContext)
 
 
 @taxYearRangeString = @{
@@ -49,7 +51,7 @@ partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
     )
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.estimatedIncome.title"),
     pageHeader = Some(header),
     articleClasses = Some("full-width"),

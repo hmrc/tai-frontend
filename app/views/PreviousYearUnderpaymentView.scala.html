@@ -22,9 +22,9 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.views.formatting.Dates
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@(viewModel: PreviousYearUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: PreviousYearUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -35,7 +35,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = Messages("tai.previous.year.underpayment.title"),
     articleClasses = Some("full-width"),
     authedUser = Some(user),

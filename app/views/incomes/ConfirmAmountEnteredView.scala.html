@@ -22,13 +22,13 @@
 
 @import uk.gov.hmrc.tai.util.MonetaryUtil
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
 @(viewModel: ConfirmAmountEnteredViewModel
 )(implicit request: Request[_],
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+  ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
@@ -38,7 +38,7 @@
     )
 }
 
-@main(
+@mainTemplate(
     title = messages("tai.incomes.confirm.save.title", viewModel.yearRange),
     pageHeader = Some(header),
     articleClasses = Some("")

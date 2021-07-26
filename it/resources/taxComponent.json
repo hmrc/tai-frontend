@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "componentType": "PersonalAllowanceElderlyPAE",
+      "amount": 10660,
+      "description": "personal allowance",
+      "iabdCategory": "Allowance",
+      "inputAmount": 10660
+    },
+    {
+      "componentType": "StatePension",
+      "amount": 9614,
+      "description": "state pension/state benefits",
+      "iabdCategory": "NonTaxCodeIncome",
+      "inputAmount": 9614.28
+    }
+  ],
+  "links": []
+}

@@ -22,9 +22,9 @@
 @import includes.taxFreeAmountSummary
 
 
-@this(main: main)
+@this(mainTemplate: MainTemplate)
 
-@(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -34,7 +34,7 @@
         preHeadingText = Messages("tai.taxCode.preHeader"))
 }
 
-@main(
+@mainTemplate(
     title = viewModel.title,
     authedUser = Some(user),
     pageHeader = Some(header),

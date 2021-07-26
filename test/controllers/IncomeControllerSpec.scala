@@ -778,7 +778,6 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         editPensionSuccessView,
         inject[EditIncomeView],
         inject[SameEstimatedPayView],
-        partialRetriever,
         templateRenderer,
         inject[ErrorPagesHandler]
       ) {

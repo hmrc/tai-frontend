@@ -22,9 +22,9 @@
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 @import includes.forms.inputRadioGroupStyling
 
-@this(main: main, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -34,7 +34,7 @@
         mainHeadingText = Messages("tai.irregular.heading", model.employerName),
         preHeadingText = Messages("tai.irregular.preHeadingText"))}
 
-@main(
+@mainTemplate(
     title = Messages("tai.irregular.preHeadingText"),
     authedUser = Some(user),
     pageHeader = Some(header),
