@@ -213,6 +213,7 @@ tai.canWeContactByPhone.explanation.pt2=Os dewiswch ‘Na’, byddwn yn cysylltu
 tai.canWeContactByPhone.explanation=Byddwn ond yn cysylltu â chi os bydd angen rhagor o wybodaeth arnom am eich diweddariad. Dyma’r ffordd gyflymaf i ddatrys unrhyw broblemau.
 tai.canWeContactByPhone.legend=A allwn gysylltu â chi dros y ffôn?
 tai.canWeContactByPhone.telephone.empty=Ni ellir gadael y blwch rhif ffôn yn wag.
+tai.canWeContactByPhone.telephone.enter.number=Nodwch rif ffôn
 tai.canWeContactByPhone.telephone.invalid=Nodwch rif ffôn, megis 01642 123 456, 07777 777 777 neu +33 123 45 67 88
 tai.canWeContactByPhone.telephoneNumber.hint=Gall hwn fod yn ffôn symudol neu linell dir.
 tai.canWeContactByPhone.title=A allwn roi galwad ffôn i chi os oes angen rhagor o wybodaeth arnom?

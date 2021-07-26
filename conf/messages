@@ -213,6 +213,7 @@ tai.canWeContactByPhone.explanation.pt2=If you select ‘No’ we will contact y
 tai.canWeContactByPhone.explanation=We will only contact you if we need more information about your update. It is the quickest way to resolve any problems.
 tai.canWeContactByPhone.legend=Can we contact you by phone?
 tai.canWeContactByPhone.telephone.empty=Telephone number field can not be left blank.
+tai.canWeContactByPhone.telephone.enter.number=Enter a telephone number
 tai.canWeContactByPhone.telephone.invalid=Enter a telephone number, like 01642 123 456, 07777 777 777 or +33 123 45 67 88
 tai.canWeContactByPhone.telephoneNumber.hint=This can be a mobile or landline.
 tai.canWeContactByPhone.title=Can we call you if we need more information?
