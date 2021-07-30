@@ -921,6 +921,7 @@ tai.rti_down_message=There is a temporary problem with one of our systems. It me
 tai.rti_down_message_contact=You do not need to contact us about this.
 tai.selectIncome.link.text=Continue
 tai.service.error.message=Sorry, there is a problem that means you cannot use this service. You have done nothing wrong and you do not need to contact us unless you want to discuss your Income Tax.
+tai.error.message=Error:
 tai.service.navTitle=Check your Income Tax
 tai.split.allowance.income.greater.message.p1=If your highest source of income is less than your tax-free amount, any tax-free amount left over can reduce tax on your other income.
 tai.split.allowance.income.greater.message.p2=We estimate your highest source of income to be more than your tax-free amount. Splitting it across your other incomes does not reduce your overall tax.

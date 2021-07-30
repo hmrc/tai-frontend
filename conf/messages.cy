@@ -922,6 +922,7 @@ tai.rti_down_message=Mae problem dros dro gydag un o’n systemau. Mae’n golyg
 tai.rti_down_message_contact=Does dim rhaid i chi gysylltu â ni am hyn.
 tai.selectIncome.link.text=Yn eich blaen
 tai.service.error.message=Mae’n ddrwg gennym, mae yna broblem sy’n golygu na allwch ddefnyddio’r gwasanaeth hwn. Nid ydych wedi gwneud unrhyw beth o’i le a does dim rhaid i chi gysylltu â ni oni bai’ch bod am drafod eich Treth Incwm.
+tai.error.message=Gwall:
 tai.service.navTitle=Gwirio’ch Treth Incwm
 tai.split.allowance.income.greater.message.p1=Os yw’ch ffynhonnell uchaf o incwm yn llai na’ch swm rhydd o dreth, gall unrhyw swm rhydd o dreth sy’n weddill leihau’r dreth ar eich incwm arall.
 tai.split.allowance.income.greater.message.p2=Rydym yn amcangyfrif eich ffynhonnell uchaf o incwm i fod yn fwy na’ch swm rhydd o dreth. Nid yw ei rannu ar draws eich incymau eraill yn lleihau’ch treth gyffredinol.
