@@ -973,6 +973,7 @@ tai.taxCode.prev.M=Lwfans Priodasol: cawsoch drosglwyddiad o 10% o Lwfans Person
 tai.taxCode.prev.N=Lwfans Priodasol: gwnaethoch drosglwyddo 10% o’ch Lwfans Personol i’ch partner.
 tai.taxCode.prev.NT=Nid oeddech yn talu unrhyw dreth ar yr incwm hwn.
 tai.taxCode.prev.S=Trethwyd eich cyflogaeth neu’ch pensiwn gan ddefnyddio’r cyfraddau yn yr Alban. {0}
+tai.taxCode.prev.C=Trethir eich cyflogaeth neu’ch pensiwn gan ddefnyddio’r cyfraddau yng Nghymru. {0}
 tai.taxCode.prev.T=Mae’ch cod treth yn cynnwys addasiadau penodol oherwydd eich amgylchiadau personol.
 tai.taxCode.prev.X=Roedd eich treth yn seiliedig ar eich cyflog ymhob cyfnod cyflog, dim y flwyddyn gyfan. Cafodd ei ddefnyddio i’ch rhwystro rhag talu gormod o dreth ar un tro. Mae’n bosibl bod hyn wedi ei ddangos ar eich slip cyflog neu ddatganiad pensiwn fel W1/M1, neu wythnos1/mis1.
 tai.taxCode.prev.amount=Eich swm rhydd o dreth ar gyfer y gyflogaeth hon neu’r pensiwn hwn oedd £{0}.

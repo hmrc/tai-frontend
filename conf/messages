@@ -972,6 +972,7 @@ tai.taxCode.prev.M=Marriage Allowance: you received a transfer of 10% of your pa
 tai.taxCode.prev.N=Marriage Allowance: you transferred 10% of your Personal Allowance to your partner.
 tai.taxCode.prev.NT=You were not paying any tax on this income.
 tai.taxCode.prev.S=Your employment or pension was taxed using the rates in Scotland. {0}
+tai.taxCode.prev.C=Your employment or pension is taxed using the rates in Wales. {0}
 tai.taxCode.prev.T=Your tax code included specific adjustments because of your personal circumstances.
 tai.taxCode.prev.X=Your tax was based on your pay in each pay period, not the whole year. It was used to stop you paying too much tax in one go. This could have been shown on your payslip or pension statement as W1/M1, or week1/month 1.
 tai.taxCode.prev.amount=Your tax-free amount for this employment or pension was £{0}.
