@@ -58,22 +58,26 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
     "have an error message with the form inputs" when {
       "no payroll number choice is selected" in {
         val noPayrollNumberChooseError = messages("tai.addEmployment.employmentPayrollNumber.error.selectOption")
+        val expectedErrorMessage = messages("tai.error.message") + " " + messages(
+          "tai.addEmployment.employmentPayrollNumber.error.selectOption")
         val formWithErrors: Form[AddEmploymentPayrollNumberForm] = AddEmploymentPayrollNumberForm.form
           .withError(AddEmploymentPayrollNumberForm.PayrollNumberChoice, noPayrollNumberChooseError)
         def view: Html = add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
 
         val errorMessage = doc(view).select(".error-message").text
-        errorMessage mustBe noPayrollNumberChooseError
+        errorMessage mustBe expectedErrorMessage
       }
 
       "no payroll number is provided" in {
         val noPayrollNumberChooseError = messages("tai.addEmployment.employmentPayrollNumber.error.blank")
+        val expectedErrorMessage = messages("tai.error.message") + " " + messages(
+          "tai.addEmployment.employmentPayrollNumber.error.blank")
         val formWithErrors: Form[AddEmploymentPayrollNumberForm] = AddEmploymentPayrollNumberForm.form
           .withError(AddEmploymentPayrollNumberForm.PayrollNumberEntry, noPayrollNumberChooseError)
         def view: Html = add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
 
         val errorMessage = doc(view).select(".error-message").text
-        errorMessage mustBe noPayrollNumberChooseError
+        errorMessage mustBe expectedErrorMessage
       }
     }
   }

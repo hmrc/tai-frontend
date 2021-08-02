@@ -64,7 +64,9 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
   "display error message" when {
     "form has error" in {
       val errorView: HtmlFormat.Appendable = UpdateIncomeDetailsDecision(formWithErrors, taxYear)
-      doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
+      doc(errorView) must haveClassWithText(
+        messages("tai.error.message") + " " + messages("tai.error.chooseOneOption"),
+        "error-message")
     }
   }
 
