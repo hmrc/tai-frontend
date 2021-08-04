@@ -24,11 +24,13 @@
 
 @(payrollNumberForm: Form[AddEmploymentPayrollNumberForm], payrollNumberViewModel: PayrollNumberViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"Do you know your payroll number for this employer?"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(payrollNumberForm),
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", <span class="carry-over">{payrollNumberViewModel.employmentName}</span>),
         preHeadingText = Messages("add.missing.employment"))}
 
@@ -36,7 +38,8 @@
     title = Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None
+    articleClasses = None,
+    gaCustomTitle = Some(Messages("tai.addEmployment.employmentPayrollNumber.customGaTitle"))
 ) {
 
     <p>@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
@@ -58,7 +61,9 @@
             ('_radioOption1WrapAttribute, "data-target=payrollNumberEntry-container"),
             ('_groupClass, "inline"),
             ('_fieldsetAttributes, "id=payrollNumberChoice" ),
-            ('_legendSpanClass, "visually-hidden")
+            ('_legendSpanClass, "visually-hidden"),
+            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Do you know your payroll number for this employer?:Yes" data-journey-val="Yes"""") ),
+            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know your payroll number for this employer?:No" data-journey-val="No"""") )
         )}
 
         <div id="payrollNumberEntry-container" class="@if(payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice).value.getOrElse("") != AddEmploymentPayrollNumberForm.YesValue){js-hidden} data-payrollNumberEntry">
@@ -70,8 +75,8 @@
             )
         </div>
 
-        @submit()
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing employment"))
     }
 
-    @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
+    @cancelLink(controllers.employments.routes.AddEmploymentController.cancel(), gaEventAction = Some(gaEventActionString))
 }

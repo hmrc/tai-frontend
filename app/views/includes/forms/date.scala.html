@@ -25,9 +25,16 @@
         hintId: String = "",
         jsHidden: Boolean = false,
         legendHidden: Boolean = false,
-        legendBold: Boolean = false
+        legendBold: Boolean = false,
+        gaEventAction: Option[String] = None
 )(implicit m: Messages)
 
+@stagePromptAttributeMap = @{
+    gaEventAction match {
+        case Some(actionString) => Map[Symbol, Any](Symbol("data-journey")->s"error - field:${actionString}:${form.errors.map(_.message).head}")
+        case _ => Map.empty[Symbol, Any]
+    }
+}
 <div class="form-group @if(form.hasErrors){form-group-error}">
     <fieldset id="@{fieldPrefix}_fieldset">
         <legend>
@@ -37,7 +44,7 @@
                 <span class="form-hint" @if(hintId.nonEmpty) {id="@hintId-hint"}>@Messages("tai.label.date.example")</span>
             }
             @if(form.hasErrors) {
-                <span class="error-message">@form.errors.map(_.message)</span>
+                <span class="error-message" @toHtmlArgs(stagePromptAttributeMap)>@form.errors.map(_.message)</span>
             }
         </legend>
         <div class="form-date">

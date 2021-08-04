@@ -16,7 +16,7 @@
 
 @import uk.gov.hmrc.urls.Link
 
-@(items: Seq[uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryCategoryViewModel], taxCodeChange: Boolean = false)(implicit m: Messages)
+@(items: Seq[uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryCategoryViewModel], gaEventActionString: String, taxCodeChange: Boolean = false)(implicit m: Messages)
 
 @oneOrMoreLinksPresent = @{
     items.flatMap(item => item.rows.map(row => row.link.isDisplayed).filter(_ == true)).nonEmpty
@@ -46,7 +46,8 @@
                                         id=Some(link.id),
                                         copy=link.value,
                                         url = link.href,
-                                        linkClasses = Seq("link-list__item")
+                                        linkClasses = Seq("link-list__item"),
+                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}")
                                     )
                                 }
                             </dt>
@@ -62,7 +63,8 @@
                                         id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
                                         url = row.link.href,
                                         copy=Messages("tai.updateOrRemove"),
-                                        altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value)
+                                        altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value),
+                                        attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
                                     )
                                 </dd>
                                 } else @{if(oneOrMoreLinksPresent) {
@@ -86,7 +88,8 @@
                                     id=Some(link.id),
                                     copy=link.value,
                                     url = link.href,
-                                    linkClasses = Seq("link-list__item")
+                                    linkClasses = Seq("link-list__item"),
+                                    attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}")
                                 )
                             }
                         </dt>
@@ -105,7 +108,8 @@
                             id = Some(s"summaryTable${itemIdx.toString}Row1ChangeLink"),
                             url = item.rows(0).link.href,
                             copy=Messages("tai.updateOrRemove"),
-                            altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows(0).link.value)
+                            altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows(0).link.value),
+                            attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${item.rows(0).link.value}")
                             )
                         </dd>
                         } else @{if(oneOrMoreLinksPresent) {

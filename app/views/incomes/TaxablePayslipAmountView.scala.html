@@ -27,11 +27,13 @@
 @(viewModel: TaxablePaySlipAmountViewModel)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"Taxable pay from your payslip"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(viewModel.form),
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages(viewModel.title),
         preHeadingText = Messages("tai.howToUpdate.preHeading", viewModel.employer.name)
     )

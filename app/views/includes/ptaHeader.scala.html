@@ -19,6 +19,7 @@
 
 @(formForErrorSummary: Option[Form[_]] = None,
   displayBackLink: Boolean = false,
+  backLinkGaEventAction: Option[String] = None,
   mainHeadingText: String,
   preHeadingText: String,
   headerWidthClasses: Option[String] = Some("column-two-thirds"),
@@ -35,7 +36,7 @@
 
     <div class="grid-row">
         <div class="column-two-thirds">
-            @customBackLinkContent.map(identity).getOrElse(backLink())
+            @customBackLinkContent.map(identity).getOrElse(backLink(gaEventAction = backLinkGaEventAction))
         </div>
 
         @if(additionalTopLinkContent.isDefined){

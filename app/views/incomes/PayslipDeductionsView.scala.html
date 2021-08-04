@@ -26,11 +26,13 @@
 @(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], employer: IncomeSource)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"Payslip deductions"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(payslipDeductionsForm),
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.payslipDeductions.heading"),
         preHeadingText = messages("tai.payslipDeductions.preHeading", employer.name)
     )

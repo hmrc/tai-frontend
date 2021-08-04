@@ -23,11 +23,13 @@
 
 @(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"Your working hours"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(workingHoursForm),
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.workingHours.heading"),
         preHeadingText = messages("tai.workingHours.preHeading", employerName)
     )
@@ -51,11 +53,14 @@
                     ('_groupDivClass, "form-group" ),
                     ('_legend, messages("tai.workingHours.legend") ),
                     ('_legendSpanClass, "visually-hidden"),
+                    ('_radioOption1Attributes, Html(s"""data-journey-click="radio - select:${gaEventActionString}:regular"""") ),
+                    ('_radioOption2Attributes, Html(s"""data-journey-click="radio - select:${gaEventActionString}:irregular"""") ),
                     ('_fieldsetAttributes, "id=workingHours")
                 )}
-            <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
+            <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'
+                      data-journey-click='button - click:@gaEventActionString:@messages("tai.continue")'/></p>
         }
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url), Some(gaEventActionString))
     </div>
 }

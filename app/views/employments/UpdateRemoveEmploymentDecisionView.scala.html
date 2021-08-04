@@ -25,11 +25,13 @@
 
 @(updateRemoveForm: Form[Option[String]], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
+@gaEventActionString = @{"Update or remove employer- Do you currently work for this employer?"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(updateRemoveForm),
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.employment.decision.heading", <span class="carry-over">{employmentName}</span>),
         preHeadingText = messages("tai.employment.decision.preHeading")
     )
@@ -39,7 +41,8 @@
     title = messages("tai.employment.decision.customGaTitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None) {
+    articleClasses = None,
+    gaCustomTitle = Some(messages("tai.employment.decision.customGaTitle"))) {
 
     @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove, Symbol("data-journey-dynamic-radios") -> "" ) {
         <div class="form-group">
@@ -58,8 +61,8 @@
 
         </div>
 
-        @submit(buttonMessageKey = Some(messages("tai.submit")))
+        @submit(buttonMessageKey = Some(messages("tai.submit")), gaEventAction = Some(gaEventActionString), gaEventLabel = Some(""))
     }
 
-    @cancelLink(controllers.employments.routes.EndEmploymentController.cancel(empId))
+    @cancelLink(controllers.employments.routes.EndEmploymentController.cancel(empId), gaEventAction = Some(gaEventActionString))
 }

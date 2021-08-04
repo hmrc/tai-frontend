@@ -43,6 +43,9 @@
   authedUser: Option[controllers.auth.AuthedUser] = None,
   employerName: Option[String] = None,
   includeGridWrapper: Boolean = false,
+  gaCallsAdditionalJs: Option[Html] = None,
+  gaSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(),
+  gaCustomTitle: Option[String] = None,
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None,
   script: Option[Html] = None,
@@ -118,6 +121,39 @@
 @helpForm = @{HelpFormHelper.replaceMessage(formPartialRetriever, appConfig)}
 
 
+@googleAnalytics = @{
+
+    def confidenceLevel: String = {
+        authedUser.fold("false")(_.confidenceLevel.toString)
+    }
+
+    Map[String, Any](
+        "trackingId" -> appConfig.analyticsToken,
+        "cookieDomain" -> appConfig.analyticsHost,
+        "confidenceLevel" -> confidenceLevel,
+        "authProvider" -> authProvider
+
+
+    ) ++ gaSettings.dimensions.getOrElse(Map.empty)
+}
+
+@gaCustomEvent = @{
+
+    def createGoogleAnalyticJavaScript(dimensionFlag:Boolean, gaJavaScript:String) = {
+        if(dimensionFlag) gaJavaScript else ""
+    }
+
+    val customTitle = gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}");""").getOrElse("")
+    val clientId = createGoogleAnalyticJavaScript(gaSettings.customClientIdRequired, s"""ga(function (tracker) { if (tracker) { ga('set', 'dimension66', tracker.get('clientId')); } });""")
+    val sessionId = createGoogleAnalyticJavaScript(gaSettings.customSessionIdRequired, s"""ga('set', 'dimension67', new Date().getTime() + '.' + Math.random().toString(36).substring(5));""")
+    val hitTimeStamp = createGoogleAnalyticJavaScript(gaSettings.customHitStampRequired, s"""ga('set', 'dimension68', new Date().toUTCString());""")
+
+    val combinedCustomDimensions = s"$customTitle $clientId $sessionId $hitTimeStamp"
+
+    if(combinedCustomDimensions.nonEmpty) combinedCustomDimensions else false
+
+}
+
 @sessionId = @{ request.session.get("sessionId") }
 
 @headInlineScript = {
@@ -125,6 +161,9 @@
 }
 
 @inlineScript = {
+    @if(gaCallsAdditionalJs.isDefined && gaCallsAdditionalJs.get.toString.trim != ""){
+        <script>@gaCallsAdditionalJs.get</script>
+    }
     @{webChatClient.loadWebChatContainer("HMRC_Anchored_1")}
     @{webChatClient.loadRequiredElements()}
 
@@ -167,6 +206,8 @@
         "getHelpForm" -> helpForm,
         "betaBanner" -> true,
         "feedbackIdentifier" -> TaiConstants.SERVICE_IDENTIFIER,
+        "googleAnalytics" -> googleAnalytics,
+        "gaCustomEvent" -> gaCustomEvent,
         "scriptElems" -> Seq(
             Map("url" -> controllers.routes.AssetsController.versioned("javascripts/tai-app.js"))
         ),

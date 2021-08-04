@@ -26,16 +26,19 @@
 
 @(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"Your tax free amount"}
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.header,
         preHeadingText = Messages("tai.taxCode.preHeader"))
 }
 
 @mainTemplate(
     title = viewModel.title,
+    gaCustomTitle = None,
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = Some("full-width")){
@@ -65,7 +68,7 @@
                 <div id="taxFreeAmountDetail" class="section">
                     <h2 class="flush--bottom">@Messages("tai.taxFreeAmount.detailsection.heading")</h2>
 
-                    @taxFreeAmountSummary(viewModel.taxFreeAmountSummary.summaryItems)
+                    @taxFreeAmountSummary(viewModel.taxFreeAmountSummary.summaryItems, gaEventActionString)
 
                 </div>
 
@@ -77,7 +80,8 @@
                     id=Some("addMissingAddition"),
                     url=appConfig.taxFreeAllowanceLinkUrl,
                     value=Some(Messages("tai.taxFreeAmount.missing.section.addition")),
-                    cssClasses=Some("")).toHtml
+                    cssClasses=Some(""),
+                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.missing.section.addition")}"))).toHtml
                 </p>
 
                 <p class="icon icon-plus display-block">
@@ -85,7 +89,8 @@
                     id=Some("addMissingDeduction"),
                     url=appConfig.companyBenefitsLinkUrl,
                     value=Some(Messages("add.missing.company.benefit")),
-                    cssClasses=Some("")).toHtml
+                    cssClasses=Some(""),
+                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("add.missing.company.benefit")}"))).toHtml
                 </p>
 
                 <p class="icon icon-plus display-block">
@@ -93,7 +98,8 @@
                     id=Some("addMissingIncome"),
                     url=appConfig.otherIncomeLinkUrl,
                     value=Some(Messages("tai.taxFreeAmount.missing.section.income")),
-                    cssClasses=Some("")).toHtml
+                    cssClasses=Some(""),
+                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.missing.section.income")}"))).toHtml
                 </p>
                 </div>
 
@@ -110,19 +116,22 @@
                             id=Some("taxCodesLink"),
                             url=routes.YourTaxCodeController.taxCodes.url,
                             value=Some(Messages("check.your.tax.codes")),
-                            cssClasses=Some("link-list__item")).toHtml
+                            cssClasses=Some("link-list__item"),
+                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("check.your.tax.free.amount")}"))).toHtml
 
                         @Link.toInternalPage(
                             id=Some("incomeTaxEstimateLink"),
                             url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
                             value=Some(Messages("check.your.income.tax.estimate")),
-                            cssClasses=Some("link-list__item")).toHtml
+                            cssClasses=Some("link-list__item"),
+                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("check.your.income.tax.estimate")}"))).toHtml
 
                         @Link.toInternalPage(
                             id=Some("taxableIncomeLink"),
                             url=routes.TaxAccountSummaryController.onPageLoad.url,
                             value=Some(Messages("return.to.your.income.tax.summary")),
-                            cssClasses=Some("link-list__item")).toHtml
+                            cssClasses=Some("link-list__item"),
+                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("return.to.your.income.tax.summary")}"))).toHtml
                     </div>
                 </nav>
             </div>

@@ -30,10 +30,26 @@
 
 @(viewModel:uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@gaCallsAdditionalJs = {
+    @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount <= 0){
+        ga('send', 'pageview', '/check-income-tax/underpayment-estimate-current');
+    }
+
+    @if(viewModel.iyaCYAmount == 0 && viewModel.iyaCYPlusOneAmount > 0){
+        ga('send', 'pageview', '/check-income-tax/underpayment-estimate-next');
+    }
+
+    @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount > 0){
+        ga('send', 'pageview', '/check-income-tax/underpayment-estimate-both');
+    }
+}
+
+@gaEventActionString = @{"Potential underpayment"}
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.pageTitle,
         preHeadingText = Messages("tai.iya.tax.you.owe.preHeading")
     )
@@ -43,7 +59,10 @@
     title = viewModel.pageTitle,
     articleClasses = Some("full-width"),
     authedUser = Some(user),
-    pageHeader = Some(header)
+    pageHeader = Some(header),
+    gaCallsAdditionalJs = Some(gaCallsAdditionalJs),
+    gaSettings = GoogleAnalyticsSettings(dimensions = viewModel.gaDimensions),
+    gaCustomTitle = None
 ){
     <div class="grid-row">
         <div class="grid grid-2-3">
