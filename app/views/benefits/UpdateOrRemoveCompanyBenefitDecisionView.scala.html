@@ -25,6 +25,7 @@
 
 @(viewModel: CompanyBenefitDecisionViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"Update Or Remove Company Benefit Decision"}
 
 @header = @{
 ptaHeader(
@@ -39,7 +40,8 @@ preHeadingText = Messages("tai.benefits.updateOrRemove.journey.preHeader"))
 title = Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName,viewModel.employerName),
 authedUser = Some(user),
 pageHeader = Some(header),
-articleClasses = None){
+articleClasses = None,
+gaCustomTitle = Some(Messages("tai.benefits.updateOrRemove.decision.customGaTitle"))){
 
     @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
         @{inputRadioGroupStyling(
@@ -49,12 +51,14 @@ articleClasses = None){
             UpdateOrRemoveCompanyBenefitDecisionForm.NoIDontGetThisBenefit -> Messages("tai.benefits.updateOrRemove.decision.radio.no")),
             Messages("tai.benefits.updateOrRemove.decision.heading", viewModel.benefitName,viewModel.employerName),
             None,
+            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Yes, I currently get this benefit"""")),
+            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:No, I do not get this benefit any more"""")),
             ('_fieldsetAttributes, "id=decisionChoice" ),
             ('_legendClass, "visuallyhidden"))
         }
 
 
-        @submit()
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.benefits.updateOrRemove.journey.preHeader")))
 
     }
 

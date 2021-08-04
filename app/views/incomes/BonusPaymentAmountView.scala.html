@@ -27,11 +27,13 @@
 @(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages,
         user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
+@gaEventActionString = @{"Bonus or overtime payments"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(bonusOvertimeAmountForm),
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
         preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading", employer.name)
     )
@@ -42,7 +44,8 @@
     articleClasses = None,
     authedUser = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employer.name)
+    employerName = Some(employer.name),
+    gaCustomTitle = None
     ){
 
     <p>@messages("tai.bonusPaymentsAmount.hint")</p>
@@ -58,7 +61,7 @@
             )
 
 
-            @submit()
+            @submit(gaEventAction = Some(gaEventActionString))
             @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(employer.id).url))
         }
     </div>

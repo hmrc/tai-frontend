@@ -21,9 +21,9 @@
 
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
-
 @mainTemplate(
-    title = messages("tai.deceased.title")
+    title = messages("tai.deceased.title"),
+    gaCustomTitle = None
 ){
 
     <header class="page-header">

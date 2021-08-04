@@ -22,10 +22,12 @@
 
 @(pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"We can’t add this pension provider yet"}
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addPensionProvider.errorPage.title"),
         preHeadingText = Messages("add.missing.pension"))}
 
@@ -34,7 +36,8 @@
   title = Messages("tai.addPensionProvider.errorPage.title"),
   authedUser = Some(user),
   pageHeader = Some(header),
-  articleClasses = None) {
+  articleClasses = None,
+  gaCustomTitle = None) {
 
     <div class="subsection flush--top">
         <p>@Messages("tai.addPensionProvider.errorPage.para1", pensionProviderName)</p>

@@ -28,11 +28,13 @@
 @(yesNoForm: Form[YesNoForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
+@gaEventActionString = @{"Payslip deductions"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(yesNoForm),
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
         preHeadingText = messages("tai.bonusPayments.preHeading", employer.name)
     )
@@ -43,7 +45,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
     articleClasses = Some(""),
     authedUser = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employer.name)
+    employerName = Some(employer.name),
+    gaCustomTitle = None
     ) {
     @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
 
@@ -58,7 +61,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
             ('_legendSpanClass, "visually-hidden")
         )}
 
-        @submit()
+        @submit(gaEventAction = Some(gaEventActionString))
         @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(employer.id).url))
     }
 }

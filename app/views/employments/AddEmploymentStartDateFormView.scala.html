@@ -23,11 +23,13 @@
 
 @(dateForm: Form[LocalDate], employmentName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"When did you start working for this employer?"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(dateForm),
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addEmployment.startDateForm.title", <span class="carry-over">{employmentName}</span>),
         preHeadingText = Messages("add.missing.employment")
     )
@@ -37,7 +39,8 @@
     title = Messages("tai.addEmployment.startDateForm.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None)  {
+    articleClasses = None,
+    gaCustomTitle = Some(Messages("tai.addEmployment.startDateForm.customGaTitle")))  {
 
     @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentStartDate(), args=(Symbol("class"), "subsection")) {
         @date(
@@ -47,9 +50,9 @@
             legendBold = true
         )
 
-        @submit()
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing employment"))
     }
 
-    @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
+    @cancelLink(controllers.employments.routes.AddEmploymentController.cancel(), gaEventAction = Some(gaEventActionString))
 
 }

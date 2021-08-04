@@ -20,7 +20,8 @@
 
 @(incomeSources: Seq[IncomeSourceViewModel],
   typeLabel: String,
-  accessibleAmountPrefix: String)(implicit messages: Messages)
+  accessibleAmountPrefix: String,
+  gaEventActionString: String)(implicit messages: Messages)
 
 @pairsList = @{incomeSources.sliding(2, 2).toList}
 
@@ -45,7 +46,8 @@
                         id = Some(s"${typeLabel}${idx}TaxCodeLink"),
                         url = taxCodeUrl.url,
                         value = Some(Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode)),
-                        cssClasses = Some("")).toHtml
+                        cssClasses = Some(""),
+                        dataAttributes = Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${typeLabel}${idx}TaxCodeLink"))).toHtml
                     }
                 }
                 @if(incomeSource.displayPayrollNumber){

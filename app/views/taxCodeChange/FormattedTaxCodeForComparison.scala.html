@@ -51,6 +51,8 @@
         <div class="tax-code-change__explanation">
             @includes.details_summary(
                 taxCodeDescription.heading,
+                gaAction = Some(s"$identifier tax code"),
+                gaLabel = Some(taxCodeDescription.heading),
                 visuallyHiddenTitle = Some(Messages(
                     "taxCode.change.yourTaxCodeChanged.understand",
                     TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)

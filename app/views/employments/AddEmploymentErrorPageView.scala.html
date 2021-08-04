@@ -21,10 +21,12 @@
 
 @(employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"We can’t add this employer yet"}
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addEmployment.employmentErrorPage.title"),
         preHeadingText = Messages("add.missing.employment"))}
 
@@ -33,7 +35,8 @@
   title = Messages("tai.addEmployment.employmentErrorPage.title"),
   authedUser = Some(user),
   pageHeader = Some(header),
-  articleClasses = None) {
+  articleClasses = None,
+  gaCustomTitle = None) {
 
     <div class="subsection">
         <p>@Messages("tai.addEmployment.employmentErrorPage.para1", employerName)</p>
