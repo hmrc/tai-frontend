@@ -61,18 +61,21 @@
     @form(action = controllers.income.routes.UpdateIncomeNextYearController.update(employmentId)){
     <div class="form-field-group @if(incomeForm.hasErrors) {form-group-error}">
     @incomeForm.errors(incomeForm("income").name).map{ error =>
-    <span class="error-notification error-message">@messages(error.message)</span>
+        <span class="error-notification error-message" id="some">@messages(error.message)</span>
     }
         @compareValueInput(
             previousLabel = messages("tai.incomes.amount.current"),
             newLabel = messages("tai.incomes.amount.new"),
             previousFieldName = "oldAmount",
             previousFieldValue= currentValue.toString,
-            newField = incomeForm("income")
+            newField = incomeForm("income"),
+            attrDescribedBy = "some",
+            fieldErrorsEnabled = fieldErrorsEnabled
         )
-        <p><input type="submit" class="button" id="CYPlus1EditButton" value='@messages("tai.continue")'
-                  data-journey-click='button - click:@gaEventActionString:@messages("tai.continue")'/></p>
     </div>
+
+    <button class="button" id="CYPlus1EditButton" data-journey-click='button - click:@gaEventActionString:@messages("tai.continue")'>@messages("tai.continue")</button>
+
     }
 }
 

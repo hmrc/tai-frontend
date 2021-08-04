@@ -19,7 +19,9 @@
     newLabel: String,
     newField: Field,
     previousFieldName: String,
-    previousFieldValue: String
+    previousFieldValue: String,
+    attrDescribedBy: String = "",
+    fieldErrorsEnabled: Boolean = false
 )(implicit m: Messages)
 
 @import includes.forms.input
@@ -33,6 +35,6 @@
         <p>@withPoundPrefix(MoneyPounds(previousFieldValue.toInt ,0))</p>
     </div>
     <div class="column-half">
-        @input(newField, isCurrency = true,bold = true,  fieldErrorsEnabled = false, labelText= newLabel)
+        @input(newField, isCurrency = true,bold = true,  fieldErrorsEnabled = fieldErrorsEnabled, labelText= newLabel, attrDescribedBy = attrDescribedBy)
     </div>
 </div>

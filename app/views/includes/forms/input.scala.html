@@ -74,7 +74,7 @@
     <input name="@field.name"
        class=@getInputClasses(fieldErrorsEnabled && field.hasErrors, attrType == "number")
        value="@field.value" id="@field.id"
-       @if(attrDescribedBy) { aria-describedby="@attrDescribedBy-hint" }
+       @if(attrDescribedBy) { aria-describedby="@attrDescribedBy" }
        @if(attrType.nonEmpty) {
             type="@attrType"
             @if(attrType == "number"){
