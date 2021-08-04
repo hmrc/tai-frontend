@@ -39,8 +39,9 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
       messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRange(1)))
 
-    behave like pageWithContinueInputForm(
-      controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url)
+    behave like pageWithButtonForm(
+      controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url,
+      messages("tai.continue"))
 
     "display the users current estimated income" in {
       doc(view) must haveClassWithText(messages("tai.irregular.currentAmount"), "form-label")
