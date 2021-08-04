@@ -35,6 +35,6 @@
         <p>@withPoundPrefix(MoneyPounds(previousFieldValue.toInt ,0))</p>
     </div>
     <div class="column-half">
-        @input(newField, isCurrency = true,bold = true,  fieldErrorsEnabled = fieldErrorsEnabled, labelText= newLabel, attrDescribedBy = attrDescribedBy)
+        @input(newField, isCurrency = true,bold = true,  fieldErrorsEnabled = fieldErrorsEnabled, labelText= newLabel, attrDescribedBy = attrDescribedBy, notCompareInput = false)
     </div>
 </div>

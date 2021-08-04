@@ -33,10 +33,12 @@
         attrPattern: String = "",
         attrDescribedBy: String = "",
         data: String = "",
-        isCurrency: Boolean = false
+        isCurrency: Boolean = false,
+        notCompareInput: Boolean = true
+
 )(implicit messages: Messages)
 
-<div class="form-group @if(fieldErrorsEnabled && field.hasErrors) {form-group-error}  @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {data-reveal="@data"}>
+<div class="form-group @if(fieldErrorsEnabled && field.hasErrors && notCompareInput) {form-group-error}  @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {data-reveal="@data"}>
     <label for="@field.id" @if(labelClass != ""){class="@labelClass"}>
         @if(labelText.nonEmpty) {
             <span class="@if(labelHidden){visually-hidden}else{form-label @if(bold){form-label-bold}}">
@@ -48,7 +50,7 @@
         }
         @if(hintText.nonEmpty) { <span class="@hintClass" id="@{ field.id }-hint">@hintText</span> }
 
-        @if(fieldErrorsEnabled && field.hasErrors) {
+        @if(fieldErrorsEnabled && field.hasErrors && notCompareInput) {
             <span class="error-message">
                 @field.errors.map(_.message)
             </span>
