@@ -28,12 +28,10 @@
     ec: scala.concurrent.ExecutionContext
 )
 
-@gaEventActionString = @{"Your estimated pay for next year edit"}
 
 @updateIncomeCYPlus1Template(
     employerName = employmentName,
     form = Some(incomeForm),
-    gaEventAction = gaEventActionString,
     title = messages("tai.updateIncome.CYPlus1.edit.title"),
     heading = messages("tai.updateIncome.CYPlus1.edit.heading", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1)),
     cancelText = Some("Cancel")
@@ -70,8 +68,7 @@
             previousFieldValue= currentValue.toString,
             newField = incomeForm("income")
         )
-        <p><input type="submit" class="button" id="CYPlus1EditButton" value='@messages("tai.continue")'
-                  data-journey-click='button - click:@gaEventActionString:@messages("tai.continue")'/></p>
+        <p><input type="submit" class="button" id="CYPlus1EditButton" value='@messages("tai.continue")'/></p>
     </div>
     }
 }

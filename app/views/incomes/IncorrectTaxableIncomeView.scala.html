@@ -31,8 +31,7 @@ user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.Templa
 @mainTemplate(
     title = messages("tai.estimatedPay.error.incorrectTaxableIncome.title"),
     articleClasses = Some("full-width text"),
-    authedUser = Some(user),
-    gaCustomTitle = None
+    authedUser = Some(user)
 ){
     <header class="page-header">
         <h1 class="heading-xlarge " id="currentYearTitle">@messages("tai.estimatedPay.error.incorrectTaxableIncome.heading")</h1>

@@ -28,13 +28,11 @@
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 ec: scala.concurrent.ExecutionContext)
 
-@gaEventActionString = @{"Update your annual taxable pay"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(income),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = messages("tai.howToUpdate.preHeading", income("name").value.getOrElse(""))
     )

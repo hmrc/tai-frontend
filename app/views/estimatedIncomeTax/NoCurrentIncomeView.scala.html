@@ -35,7 +35,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 
 ec: ExecutionContext)
 
-@gaEventActionString = @{Messages("tai.estimatedIncome.title")}
 
 @taxYearRangeString = @{
     messages("tai.taxYear",
@@ -46,7 +45,6 @@ ec: ExecutionContext)
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.estimatedIncome.title"),
         preHeadingText = taxYearRangeString,
         preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading")
@@ -57,8 +55,7 @@ ec: ExecutionContext)
     title = Messages("tai.estimatedIncome.title"),
     pageHeader = Some(header),
     articleClasses = Some("full-width"),
-    authedUser = Some(user),
-    gaCustomTitle = None
+    authedUser = Some(user)
 ){
     <p  id="no-increase-tax">@Messages("tai.no.increasesTax")</p>
 }

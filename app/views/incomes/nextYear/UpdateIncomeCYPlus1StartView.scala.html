@@ -24,12 +24,10 @@
     ec: scala.concurrent.ExecutionContext
 )
 
-@gaEventActionString = @{"Your estimated pay for next year start"}
 
 @updateIncomeCYPlus1Template(
     employerName = employmentName,
     form = None,
-    gaEventAction = gaEventActionString,
     title = messages("tai.updateIncome.CYPlus1.start.title"),
     heading = messages("tai.updateIncome.CYPlus1.start.heading", <span class="carry-over">{employmentName}</span>),
     cancelText = Some("Cancel")
@@ -46,7 +44,6 @@
         @includes.link(
             copy=messages("tai.income.details.updateTaxableIncome.update"),
             url = controllers.income.routes.UpdateIncomeNextYearController.edit(employmentId).url,
-            attributes = Seq(("data-journey-click", s"button - click:${gaEventActionString}:${messages("tai.income.details.updateTaxableIncome.update")}")),
             id = Some("CYPlus1StartButton"),
             isButton=true
         )
