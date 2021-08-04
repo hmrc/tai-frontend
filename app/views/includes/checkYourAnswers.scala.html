@@ -16,6 +16,7 @@
 
 @(title: Option[String],
         confirmationLines : Seq[uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine],
+        gaEventAction: Option[String] = None,
         longQuestions: Boolean = false)(implicit m: Messages)
 
 @if(title.isDefined) { <h2 class="heading-medium section flush soft--top">@title.get.replace("&nbsp;", "\u00A0")</h2> }
@@ -34,7 +35,8 @@
                     id = Some("confirmation-line-" + idx.toString + "-change-link"),
                     url = line.changeUrl + "?edit=true",
                     copy=Messages("tai.checkYourAnswers.change.label"),
-                    altCopy=Some(Messages("tai.checkYourAnswers.change.label") + " " + line.question.toLowerCase)
+                    altCopy=Some(Messages("tai.checkYourAnswers.change.label") + " " + line.question.toLowerCase),
+                    attributes = if(gaEventAction.isDefined) {Seq("data-journey-click" -> s"link - click:${gaEventAction.get}:Change ${line.question.toLowerCase}")} else {Seq.empty}
                 )
             </div>
         </li>

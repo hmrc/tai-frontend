@@ -14,14 +14,22 @@
  * limitations under the License.
  *@
 
-@()(implicit m: Messages)
+@(gaEventAction: Option[String] = None)(implicit m: Messages)
 
 @import uk.gov.hmrc.urls.Link
+
+@stagePromptAttributes = @{
+    gaEventAction match {
+        case Some(actionString) => Some(Map("journey-click" -> s"link - click:${actionString}:${Messages("tai.back-link.upper")}"))
+        case _=> None
+    }
+}
 
 
 <p class="flush--bottom">@Link.toInternalPage(
     id=Some("backLink"),
     value=Some(Messages("tai.back-link.upper")),
     url = "#",
-    cssClasses=Some("link-back js-visible")
+    cssClasses=Some("link-back js-visible"),
+    dataAttributes = stagePromptAttributes
 ).toHtml</p>

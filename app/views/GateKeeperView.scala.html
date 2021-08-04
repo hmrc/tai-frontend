@@ -28,7 +28,8 @@
 @mainTemplate(
     title = Messages("tai.gatekeeper.heading", s"${Dates.formatDate(TaxYear().start)}", s"${Dates.formatDate(TaxYear().end)}"),
     articleClasses = Some("full-width"),
-    authedUser = Some(user)
+    authedUser = Some(user),
+    gaCustomTitle = None
 ){
     <header class="page-header">
         <h1 id="gatekeeper-title" class="flush--bottom">@Messages("tai.gatekeeper.heading")</h1>
@@ -51,7 +52,7 @@
                         <li>@Messages("tai.gatekeeper.outsideUk")</li>
                     </ul>
                 </div>
-                @Link.toInternalPage(id=Some("backLink"), url=appConfig.pertaxServiceUrl.toString,value=Some(Messages("tai.backToHome-link.upper"))).toHtml
+                @Link.toInternalPage(id=Some("backLink"), url=appConfig.pertaxServiceUrl.toString,value=Some(Messages("tai.backToHome-link.upper")), dataAttributes = Some(Map("journey-click"->"check-income-tax:Service Link:personal-tax-account-footer-link"))).toHtml
             </div>
         </div>
     </div>

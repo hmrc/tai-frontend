@@ -18,6 +18,7 @@
   cardClass: String = "card",
   id: String,
   gaAction: Option[String] = None,
+  gaLabel: Option[String] = None,
   heading: String,
   headingTag: String = "h2",
   bodyContent: Option[String] = None,
@@ -25,7 +26,7 @@
   cardActionText: Option[String] = None
 )
 
-<div class="@cardClass" id="@id">
+<div class="@cardClass" @if(url || cardActionUrl){data-journey-click="link - click:@gaAction:@gaLabel"} id="@id">
 
   <div class="card-body @if(url){active}">
 

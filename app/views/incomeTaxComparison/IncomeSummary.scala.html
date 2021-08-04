@@ -32,7 +32,9 @@
         case _ =>
     }
 }
-
+@gaEventActionString = @{
+    "Income Tax comparison - current tax year and next tax year"
+}
 @if(incomeSourceViewModel.employmentIncomeSourceDetail.size > 0 || incomeSourceViewModel.pensionIncomeSourceDetail.size > 0) {
 
     <h2 id="incomeSummaryHeading" class="heading-large">@{

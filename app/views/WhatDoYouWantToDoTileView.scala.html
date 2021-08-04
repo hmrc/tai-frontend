@@ -33,6 +33,8 @@
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   ec: ExecutionContext)
 
+@gaEventActionString = @{"Your PAYE Income Tax overview"}
+
 @optimizelyAudience = @{
   if (model.showTaxCodeChangeTile()) {
     Some("TaxCodeChangeUser")
@@ -44,6 +46,13 @@
 @mainTemplate(
     title = messages("your.paye.income.tax.overview"),
     authedUser = Some(user),
+    gaCustomTitle = None,
+    gaSettings = GoogleAnalyticsSettings(
+                                            customClientIdRequired = true,
+                                            customSessionIdRequired = true,
+                                            customHitStampRequired = true,
+                                            dimensions = Some(model.gaDimensions)
+                                        ),
     optimizelyAudience = optimizelyAudience
 ) {
 
@@ -61,7 +70,9 @@
                     url = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
                     id = "hasTaxCodeChanged",
                     heading = messages("check.tax.hasChanged.header"),
-                    bodyContent = Some(messages("check.tax.hasChanged.action"))
+                    bodyContent = Some(messages("check.tax.hasChanged.action")),
+                    gaAction = Some(gaEventActionString),
+                    gaLabel = Some(messages("check.tax.hasChanged.action"))
                       )
                     }
                 </div>
@@ -71,14 +82,18 @@
                         url = Some(s"/check-income-tax/historic-paye/${TaxYear().prev.year.toString}"),
                         id = "earlierTaxYear",
                         heading = messages("earlier"),
-                        bodyContent = Some(messages("check.tax.previous.years"))
+                        bodyContent = Some(messages("check.tax.previous.years")),
+                        gaAction=Some(gaEventActionString),
+                        gaLabel=Some(messages("earlier"))
                     )
 
                     @card(
                         url = Some("/check-income-tax/income-summary"),
                         id = "currentTaxYear",
                         heading = messages("current.tax.year"),
-                        bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
+                        bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange)),
+                        gaAction=Some(gaEventActionString),
+                        gaLabel=Some(messages("current.tax.year"))
                     )
 
                     @if(model.isCyPlusOneEnabled) {
@@ -86,7 +101,9 @@
                             url = Some("/check-income-tax/income-tax-comparison"),
                             id = "nextTaxYear",
                             heading = messages("next.year"),
-                            bodyContent = Some(messages("check.estimated.income",TaxYearRangeUtil.futureTaxYearRange(yearsFromNow=1)))
+                            bodyContent = Some(messages("check.estimated.income",TaxYearRangeUtil.futureTaxYearRange(yearsFromNow=1))),
+                            gaAction=Some(gaEventActionString),
+                            gaLabel=Some(messages("next.year"))
                         )
                     }
 
@@ -94,14 +111,18 @@
                         url = Some(appConfig.taxReliefExpenseClaimLink),
                         id = "claimRelief",
                         heading = messages("claim.tax.relief.wfh"),
-                        bodyContent = None
+                        bodyContent = None,
+                        gaAction=Some(gaEventActionString),
+                        gaLabel=Some(messages("claim.tax.relief.wfh"))
                     )
 
                     @if(model.showJrsTile){
                     @card(
                     url = Some("/check-income-tax/jrs-claims"),
                     id = "jrsClaims",
-                    heading = messages("check.jrs.claims")
+                    heading = messages("check.jrs.claims"),
+                    gaAction=Some(gaEventActionString),
+                    gaLabel=Some(messages("check.jrs.claims"))
                     )
                     }
 

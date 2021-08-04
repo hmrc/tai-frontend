@@ -29,10 +29,8 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-
-@(income: uk.gov.hmrc.tai.forms.EditIncomeForm)(implicit
+@(income: uk.gov.hmrc.tai.forms.EditIncomeForm, gaSettings: GoogleAnalyticsSettings)(implicit
         request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
-
 
 @header = @{
     ptaHeader(
@@ -47,7 +45,9 @@
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
     authedUser = Some(user),
-    employerName = Some(income.name)
+    employerName = Some(income.name),
+    gaCustomTitle = None,
+    gaSettings = gaSettings
 ){
     <div class="grid-row">
         <div class="grid grid-2-3">

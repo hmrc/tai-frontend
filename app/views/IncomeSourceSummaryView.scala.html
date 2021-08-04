@@ -30,6 +30,8 @@
 
 @(model: IncomeSourceSummaryViewModel)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
+@gaEventActionString = @{"Your employment details for current tax year"}
+
 @mainHeading = @{
     if(model.isPension){
         messages("tai.pension.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
@@ -59,7 +61,8 @@
         id=Some("taxableIncomeLink"),
         url=routes.TaxAccountSummaryController.onPageLoad.url,
         value=Some(Messages("return.to.your.income.tax.summary")),
-        cssClasses=Some("link-back")).toHtml
+        cssClasses=Some("link-back"),
+        dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("return.to.your.income.tax.summary")}"))).toHtml
     </p>
     }
 
@@ -67,6 +70,7 @@
     ptaHeader(
         formForErrorSummary = None,
         displayBackLink = true,
+        backLinkGaEventAction = None,
         mainHeadingText = mainHeading,
         customBackLinkContent = Some(backLinkToTaxAccountSummary),
         preHeadingText = model.displayName)
@@ -76,7 +80,8 @@
     title = title,
     authedUser = Some(request.taiUser),
     pageHeader = Some(header),
-    articleClasses = None
+    articleClasses = None,
+    gaCustomTitle = Some(title)
 ) {
 
     @if(model.rtiAvailable) {
@@ -153,7 +158,8 @@
                 @Link.toInternalPage(
                     id=Some("understandTaxCode"),
                     url=routes.YourTaxCodeController.taxCode(model.empId).url,
-                    value=Some(messages("tai.income.details.taxCode.linkText"))).toHtml
+                    value=Some(messages("tai.income.details.taxCode.linkText")),
+                    dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.income.details.taxCode.linkText")}"))).toHtml
             </p>
         </div>
 
@@ -193,7 +199,8 @@
                         id = Some("changeCompanyBenefitLink" + idx.toString),
                         url = benefit.changeUrl,
                         copy=Messages("tai.updateOrRemove"),
-                        altCopy=Some(Messages("tai.updateOrRemove") + " " + benefit.name.toLowerCase)
+                        altCopy=Some(Messages("tai.updateOrRemove") + " " + benefit.name.toLowerCase),
+                        attributes = Seq("data-journey-click" -> ("link - click:" + gaEventActionString + ":" + Messages("tai.updateOrRemove") + " " + benefit.name.toLowerCase))
                     )
                 </div>
             </li>
@@ -209,7 +216,8 @@
                 id=Some("addMissingCompanyBenefitLink"),
                 url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url,
                 value=Some(Messages("add.missing.company.benefit")),
-                cssClasses=Some("")).toHtml
+                cssClasses=Some(""),
+                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("add.missing.company.benefit")}"))).toHtml
         </p>
 
         @if(model.displayAddCompanyCarLink) {
@@ -218,7 +226,8 @@
                 id=Some("addMissingCompanyCarLink"),
                 url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyCarsIform).url,
                 value=Some(Messages("tai.income.details.addMissingCompanyCar")),
-                cssClasses=Some("")).toHtml
+                cssClasses=Some(""),
+                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.income.details.addMissingCompanyCar")}"))).toHtml
         </p>
         }
 

@@ -24,10 +24,13 @@
 @(firstPayForm: Form[Option[String]], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 ec: scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"Have you received your first pension payment"}
+
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(firstPayForm),
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addPensionProvider.firstPay.title", <span class="carry-over">{pensionProviderName}</span>),
         preHeadingText = Messages("add.missing.pension"))}
 
@@ -35,7 +38,8 @@ ec: scala.concurrent.ExecutionContext)
     title = Messages("tai.addPensionProvider.firstPay.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None
+    articleClasses = None,
+    gaCustomTitle = Some(Messages("tai.addPensionProvider.firstPay.customGaTitle"))
 ) {
 
     @form(action = controllers.pensions.routes.AddPensionProviderController.submitFirstPay(), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
@@ -48,11 +52,13 @@ ec: scala.concurrent.ExecutionContext)
             ('_groupDivClass, "form-group" ),
             ('_groupClass, "inline"),
             ('_fieldsetAttributes, "id=firstPayChoice" ),
-            ('_legendSpanClass, "visually-hidden")
+            ('_legendSpanClass, "visually-hidden"),
+            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Have you received your first pension payment:Yes" data-journey-val="Yes"""") ),
+            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Have you received your first pension payment:No" data-journey-val="No"""") )
         )}
 
-        @submit()
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing pension provider"))
     }
 
-    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
+    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel(), gaEventAction = Some(gaEventActionString))
 }

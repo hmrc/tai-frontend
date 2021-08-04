@@ -28,6 +28,8 @@
 @(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel
 )(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec : scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"Your Income Tax"}
+
 @printLink= {
     <p class="flush--bottom">
         @Link.toInternalPage(
@@ -43,6 +45,7 @@
         mainHeadingText = messages("tai.income.calculation.TaxableIncomeDetails", <span class="carry-over">{historicIncomeCalculationViewModel.employerName.getOrElse("")}</span>),
         preHeadingText = messages("tai.yourIncome.preHeading"),
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         additionalTopLinkContent = Some(printLink)
     )}
 
@@ -50,7 +53,8 @@
     title = messages("tai.yourIncome.heading"),
     authedUser = Some(request.taiUser),
     pageHeader = Some(header),
-    employerName = historicIncomeCalculationViewModel.employerName
+    employerName = historicIncomeCalculationViewModel.employerName,
+    gaCustomTitle = Some(messages("tai.yourIncome.heading"))
 ){
 
     <div class="grid-row">
