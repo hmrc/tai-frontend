@@ -69,8 +69,8 @@
             previousFieldName = "oldAmount",
             previousFieldValue= currentValue.toString,
             newField = incomeForm("income"),
-            attrDescribedBy = "some",
-            fieldErrorsEnabled = fieldErrorsEnabled
+            attrDescribedBy = if(incomeForm.errors(incomeForm("income").name).nonEmpty){"some"}else{""},
+            fieldErrorsEnabled = incomeForm.errors(incomeForm("income").name).nonEmpty
         )
     </div>
 
