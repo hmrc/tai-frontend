@@ -27,7 +27,8 @@ ec: scala.concurrent.ExecutionContext)
 @mainTemplate(
 title = Messages("tai.updatePension.confirmation.heading"),
 authedUser = Some(user),
-articleClasses = None) {
+articleClasses = None,
+gaCustomTitle = None) {
 
     @confirmationSuccessBanner()
 

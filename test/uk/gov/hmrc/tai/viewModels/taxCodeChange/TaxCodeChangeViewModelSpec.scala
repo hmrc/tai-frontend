@@ -77,6 +77,132 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
 
       model.changeDate mustEqual currentTaxCodeRecord1.startDate
     }
+
+    "ga custom dimension for 'Multiple Secondary Employments without payroll number'" should {
+      val gaCustomDimensionYes = Map("taxCodeChangeEdgeCase" -> "Yes")
+      val gaCustomDimensionNo = Map("taxCodeChangeEdgeCase"  -> "No")
+
+      "be No" when {
+        "when it does not occur in current or previous" in {
+          val startDate = TaxYear().start
+          val endDate = startDate.plusMonths(1)
+          val changeDate = startDate.plusMonths(1).plusDays(1)
+
+          val previousTaxCodeRecord1 = TaxCodeRecord(
+            "1185L",
+            startDate,
+            endDate,
+            OtherBasisOfOperation,
+            "A Employer 1",
+            false,
+            Some("1234"),
+            false)
+          val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = changeDate, endDate = endOfTaxYear)
+
+          val previousTCR2Primary = TaxCodeRecord(
+            "1185L",
+            startDate,
+            endOfTaxYear,
+            Week1Month1BasisOfOperation,
+            "B Employer 1",
+            false,
+            Some("12345"),
+            true)
+          val currentTCR2Primary = previousTCR2Primary.copy(startDate = changeDate, endDate = endOfTaxYear)
+
+          val taxCodeChange = TaxCodeChange(
+            List(previousTaxCodeRecord1, previousTCR2Primary),
+            List(currentTaxCodeRecord1, currentTCR2Primary)
+          )
+
+          val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+          model.gaDimensions mustEqual gaCustomDimensionNo + ("taxCodeChangeDate" -> currentTaxCodeRecord1.startDate
+            .toString(TaiConstants.EYU_DATE_FORMAT))
+
+        }
+      }
+
+      "be Yes" when {
+        "there are multiple for current" in {
+
+          val startDate = TaxYear().start
+          val endDate = startDate.plusMonths(1)
+          val changeDate = startDate.plusMonths(1).plusDays(1)
+
+          val employerName = "A Employer 1"
+
+          val previousTaxCodeRecord1 =
+            TaxCodeRecord("1185L", startDate, endDate, OtherBasisOfOperation, employerName, false, None, false)
+          val currentTaxCodeRecord1 =
+            previousTaxCodeRecord1.copy(startDate = changeDate, endDate = endOfTaxYear, payrollNumber = Some("1234"))
+
+          val previousTaxCodeRecord2 = TaxCodeRecord(
+            "BR",
+            startDate,
+            startDate.plusMonths(1),
+            OtherBasisOfOperation,
+            employerName,
+            false,
+            None,
+            false)
+
+          val taxCodeChange = TaxCodeChange(
+            List(previousTaxCodeRecord1, previousTaxCodeRecord2),
+            List(currentTaxCodeRecord1)
+          )
+
+          val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+          model.gaDimensions mustEqual gaCustomDimensionYes + ("taxCodeChangeDate" -> currentTaxCodeRecord1.startDate
+            .toString(TaiConstants.EYU_DATE_FORMAT))
+
+        }
+
+        "there are multiple for previous" in {
+          val startDate = TaxYear().start
+          val endDate = startDate.plusMonths(1)
+          val changeDate = startDate.plusMonths(1).plusDays(1)
+
+          val employerName = "A Employer 1"
+
+          val previousTaxCodeRecord1 = TaxCodeRecord(
+            "1185L",
+            startDate,
+            startDate.plusMonths(1),
+            OtherBasisOfOperation,
+            employerName,
+            false,
+            None,
+            false)
+          val currentTaxCodeRecord1 =
+            previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = endOfTaxYear)
+
+          val previousTaxCodeRecord2 = TaxCodeRecord(
+            "BR",
+            startDate,
+            startDate.plusMonths(1),
+            OtherBasisOfOperation,
+            employerName,
+            false,
+            None,
+            false)
+          val currentTaxCodeRecord2Primary = previousTaxCodeRecord2
+            .copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = endOfTaxYear, primary = true)
+
+          val taxCodeChange = TaxCodeChange(
+            List(previousTaxCodeRecord1, previousTaxCodeRecord2),
+            List(currentTaxCodeRecord1, currentTaxCodeRecord2Primary)
+          )
+
+          val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+          model.gaDimensions mustEqual gaCustomDimensionYes + ("taxCodeChangeDate" -> currentTaxCodeRecord1.startDate
+            .toString(TaiConstants.EYU_DATE_FORMAT))
+        }
+
+      }
+    }
   }
 
   "TaxCodeChangeViewModel getTaxCodeExplanations" must {

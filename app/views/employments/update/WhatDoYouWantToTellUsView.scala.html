@@ -34,11 +34,13 @@
     ec: ExecutionContext
 )
 
+@gaEventActionString = @{Messages("tai.updateEmployment.whatDoYouWantToTellUs.title")}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(updateEmploymentDetailsForm),
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", <span class="carry-over">{viewmodel.employerName}</span>),
         preHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")
     )
@@ -48,7 +50,8 @@
     title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None) {
+    articleClasses = None,
+    gaCustomTitle = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.customGaTitle"))) {
 
     @form(action = controllers.employments.routes.UpdateEmploymentController.submitUpdateEmploymentDetails(viewmodel.empId), args=(Symbol("class"), "subsection")) {
 
@@ -59,8 +62,8 @@
             maxlength = UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit.toString
         )
 
-        @submit()
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")))
     }
 
-@cancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(viewmodel.empId))
+@cancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(viewmodel.empId), gaEventAction = Some(gaEventActionString))
 }

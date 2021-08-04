@@ -25,10 +25,12 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 @import includes.ptaHeader
 @import uk.gov.hmrc.urls.Link
 
+@gaEventActionString = @{"We are unable to calculate your pay"}
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.unableToCalculate.title"),
         preHeadingText = messages("tai.unableToCalculate.preHeading", employerName),
         headerWidthClasses = Some("column-full")
@@ -40,7 +42,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
     articleClasses = Some("full-width"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName)
+    employerName = Some(employerName),
+    gaCustomTitle = None
 ){
 <div>
     <h2 class="heading-medium flush--top">@messages("tai.unableToCalculate.nextSteps")</h2>

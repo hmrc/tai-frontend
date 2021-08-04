@@ -22,10 +22,13 @@
 
 @(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"What is the name of the employer you want to add?"}
+
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(nameForm),
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addEmployment.addNameForm.title"),
         preHeadingText = Messages("add.missing.employment"))}
 
@@ -34,7 +37,8 @@
   title = Messages("tai.addEmployment.addNameForm.title"),
   authedUser = Some(user),
   pageHeader = Some(header),
-  articleClasses = None) {
+  articleClasses = None,
+  gaCustomTitle = None) {
 
   @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentName()) {
     @input(
@@ -44,8 +48,8 @@
       classes = Seq("form-control form-control--full-width")
     )
 
-    @submit()
+    @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing employment"))
   }
 
-  @cancelLink(url = controllers.employments.routes.AddEmploymentController.cancel())
+  @cancelLink(url = controllers.employments.routes.AddEmploymentController.cancel(), gaEventAction = Some(gaEventActionString))
 }

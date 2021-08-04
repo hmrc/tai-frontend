@@ -30,7 +30,8 @@ case class TaxCodeChangeViewModel(
   changeDate: LocalDate,
   scottishTaxRateBands: Map[String, BigDecimal],
   taxCodeChangeReasons: Seq[String],
-  isAGenericReason: Boolean)
+  isAGenericReason: Boolean,
+  gaDimensions: Map[String, String])
 
 object TaxCodeChangeViewModel extends TaxCodeDescriptor {
 
@@ -48,7 +49,8 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
       changeDate,
       scottishTaxRateBands,
       taxCodeChangeReasons,
-      isAGenericReason
+      isAGenericReason,
+      gaDimensions(taxCodeChange, changeDate)
     )
   }
 
@@ -73,4 +75,22 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
       case Week1Month1BasisOfOperation => taxCode + TaiConstants.EmergencyTaxCodeSuffix
       case _                           => taxCode
     }
+
+  private def gaDimensions(taxCodeChange: TaxCodeChange, taxCodeChangeDate: LocalDate): Map[String, String] = {
+    def moreThanTwoSecondaryWithoutPayroll(records: List[TaxCodeRecord]): Boolean =
+      records
+        .groupBy(_.employerName)
+        .values
+        .exists(taxCodeRecords => taxCodeRecords.count(record => !record.primary && record.payrollNumber.isEmpty) >= 2)
+
+    val taxCodeChangeDateGaDimension =
+      Map[String, String]("taxCodeChangeDate" -> taxCodeChangeDate.toString(TaiConstants.EYU_DATE_FORMAT))
+
+    if (moreThanTwoSecondaryWithoutPayroll(taxCodeChange.current) || moreThanTwoSecondaryWithoutPayroll(
+          taxCodeChange.previous)) {
+      taxCodeChangeDateGaDimension + (taxCodeChangeEdgeCase -> yes)
+    } else {
+      taxCodeChangeDateGaDimension + (taxCodeChangeEdgeCase -> no)
+    }
+  }
 }

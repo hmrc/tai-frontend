@@ -14,9 +14,16 @@
  * limitations under the License.
  *@
 
-@(url: Call, linkText: Option[String] = None)(implicit messages: Messages)
+@(url: Call, gaEventAction: Option[String] = None, linkText: Option[String] = None)(implicit messages: Messages)
 
 @import uk.gov.hmrc.urls.Link
+
+@stagePromptAttributes = @{
+    gaEventAction match {
+        case Some(actionString) => Some(Map("journey-click" -> s"link - click:${actionString}:${messages("tai.cancel")}"))
+        case _=> None
+    }
+}
 
 @cancelText = @{if(linkText.isDefined) linkText else Some(messages("tai.cancel"))}
 
@@ -24,6 +31,7 @@
     @{Link.toInternalPage(
         id=Some("cancelLink"),
         url=url.toString,
-        value=cancelText
+        value=cancelText,
+        dataAttributes = stagePromptAttributes
         ).toHtml}
 </div>

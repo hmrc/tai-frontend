@@ -19,12 +19,10 @@
 
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
-
     @mainTemplate(
-        title=Messages("tai.gatekeeper.refuse.title")
+        title=Messages("tai.gatekeeper.refuse.title"),
+        gaCustomTitle = None
     ){
-
-
 
   <div class="grid-row">
     <div class="column-two-thirds">

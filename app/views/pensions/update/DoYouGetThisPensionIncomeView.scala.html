@@ -27,6 +27,7 @@
 @(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 ec: scala.concurrent.ExecutionContext)
 
+@gaEventActionString = @{"Update or remove pension- Do you currently get income from this pension provider?"}
 
 @header = @{
     ptaHeader(
@@ -41,7 +42,8 @@ ec: scala.concurrent.ExecutionContext)
     title = Messages("tai.updatePension.decision.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None) {
+    articleClasses = None,
+    gaCustomTitle = Some(Messages("tai.updatePension.decision.customGaTitle"))) {
 
     @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension, Symbol("data-journey-dynamic-radios") -> "" ) {
         <div class="form-group">
@@ -61,7 +63,7 @@ ec: scala.concurrent.ExecutionContext)
 
         </div>
 
-        @submit(buttonMessageKey = Some(messages("tai.submit")))
+        @submit(buttonMessageKey = Some(messages("tai.submit")), gaEventAction = Some(gaEventActionString), gaEventLabel = Some(""))
     }
-    @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(model.id))
+    @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(model.id), gaEventAction = Some(gaEventActionString))
 }
