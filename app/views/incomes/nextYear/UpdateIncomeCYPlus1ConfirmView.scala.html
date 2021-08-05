@@ -30,16 +30,13 @@
   ec: scala.concurrent.ExecutionContext
 )
 
-@gaEventActionString = @{"Your estimated pay for next year confirm"}
 
 @updateIncomeCYPlus1Template(
     employerName = viewModel.employerName,
     form = None,
-    gaEventAction = gaEventActionString,
     title = messages("tai.irregular.title"),
     heading = messages("tai.incomes.confirm.save.heading", viewModel.yearRange),
-    showCancel = false,
-    gaSettings = viewModel.gaSettings
+    showCancel = false
 ){
 
     <div class="section flush--bottom soft--ends">
@@ -64,13 +61,13 @@
     </div>
 
     <div class="margin-bottom-large">
-        <a id="confirmAndSend" class="button section" role="button" href="@viewModel.onConfirm" data-journey-click='button - click:@gaEventActionString:@messages("tai.confirmAndSend")'>
+        <a id="confirmAndSend" class="button section" role="button" href="@viewModel.onConfirm">
             @messages("tai.confirmAndSend")
         </a>
     </div>
 
     <div>
-        <a href="@viewModel.onCancel" data-journey-click='link - click:@gaEventActionString:@messages("tai.cancel.noSave")'>
+        <a href="@viewModel.onCancel">
             @messages("tai.cancel.noSave")
         </a>
     </div>

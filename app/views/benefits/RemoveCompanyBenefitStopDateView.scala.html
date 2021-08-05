@@ -27,7 +27,6 @@
 
 @(stopDateForm: Form[Option[String]],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@gaEventActionString = @{"Remove Company Benefits Stop Date"}
 @startOfCurrentTaxYear = @{Dates.formatDate(TaxYear().start)}
 @endOfCurrentTaxYear = @{Dates.formatDate(TaxYear().end)}
 @classArguments = @{if(stopDateForm(RemoveCompanyBenefitStopDateForm.StopDateChoice).value.getOrElse("") != RemoveCompanyBenefitStopDateForm.BeforeTaxYearEnd) "js-hidden data-stopDate inline form-field-group panel-indent" else "data-stopDate inline form-field-group panel-indent"}
@@ -45,8 +44,7 @@
 title = Messages("tai.benefits.ended.stopDate.heading", benefitType, empName),
 authedUser = Some(user),
 pageHeader = Some(header),
-articleClasses = None,
-gaCustomTitle = Some(Messages("tai.benefits.ended.stopDate.customGaTitle"))){
+articleClasses = None){
 
     @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
 
@@ -61,13 +59,12 @@ gaCustomTitle = Some(Messages("tai.benefits.ended.stopDate.customGaTitle"))){
             ('_radioOption1WrapAttribute, "data-target=stopDate-container"),
             ('_fieldsetAttributes, "id=stopDateChoice" ),
             ('_legendSpanClass, "visually-hidden"),
-            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Before current tax year" data-journey-val="beforeTaxYearEnd" """)),
             ('_radioOption1AdditionalMarkup, Html(s"""<div id="stopDate-container" class="$classArguments"><p>${Messages("tai.benefits.ended.stopDate.panel", startOfCurrentTaxYear.replaceAll(" ", "&nbsp;"), endOfCurrentTaxYear)}</p></div>""")),
-            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:On or after current tax year" data-journey-val="onOrAfterTaxYearEnd" data-dynamic-fields-hide="true" data-dynamic-fields="stopDate""""))
+            ('_radioOption2Attributes, Html("""data-dynamic-fields-hide="true" data-dynamic-fields="stopDate""""))
         )}
 
 
-        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.benefits.ended.journey.preHeader")))
+        @submit()
 
     }
 

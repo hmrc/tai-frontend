@@ -24,8 +24,7 @@
 @(applicationConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @mainTemplate(
-    title = messages("global.error.InternalServerError500.tai.title"),
-    gaCustomTitle = None
+    title = messages("global.error.InternalServerError500.tai.title")
 ){
 
     <div class="grid-row pertax-error">

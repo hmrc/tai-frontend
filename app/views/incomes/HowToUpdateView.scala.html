@@ -24,13 +24,11 @@
 @(howToUpdateForm: Form[uk.gov.hmrc.tai.forms.HowToUpdateForm], id: Int, employerName: String)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@gaEventActionString = @{"Choose how to update your income"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(howToUpdateForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.howToUpdate.heading", <span class="carry-over">{employerName}</span>),
         preHeadingText = Messages("tai.howToUpdate.preHeading", <span class="carry-over">{employerName}</span>)
     )
@@ -53,14 +51,11 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
                     legendHint=None,
                     ('_groupDivClass, "form-group" ),
                     ('_legendSpanClass, "visually-hidden"),
-                    ('_radioOption1Attributes, Html(s"""data-journey-click="radio - select:${gaEventActionString}:${Messages("tai.howToUpdate.incomeCalculator")}"""") ),
-                    ('_radioOption2Attributes, Html(s"""data-journey-click="radio - select:${gaEventActionString}:${Messages("tai.howToUpdate.enterAnnual")}"""") ),
                     ('_fieldsetAttributes, "id=howToUpdate" )
                 )}
-            <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'
-                      data-journey-click='button - click:@gaEventActionString:@messages("tai.continue")'/></p>
+            <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url), Some(gaEventActionString))
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
         }
     </div>
 

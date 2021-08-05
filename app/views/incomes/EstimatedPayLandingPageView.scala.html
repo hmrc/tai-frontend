@@ -28,12 +28,10 @@ ec: scala.concurrent.ExecutionContext)
 @import includes.cancelLink
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@gaEventActionString = @{"Update your estimated income"}
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.incomes.landing.Heading", <span class="carry-over">{incomeName}</span>),
         preHeadingText = messages("tai.howToUpdate.preHeading", <span class="carry-over">{incomeName}</span>)
     )
@@ -55,7 +53,6 @@ ec: scala.concurrent.ExecutionContext)
                 @includes.link(
                         url=appConfig.incomeFromEmploymentPensionLinkUrl,
                         copy=messages("tai.incomes.landing.pension.ended.link"),
-                        attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomes.landing.pension.ended.link")}")),
                         id=Some("updatePension")
                     )
             } else {
@@ -63,7 +60,6 @@ ec: scala.concurrent.ExecutionContext)
                 @includes.link(
                     url=controllers.employments.routes.EndEmploymentController.onPageLoad(id).toString,
                     copy=messages("tai.incomes.landing.employment.ended.link"),
-                    attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomes.landing.employment.ended.link")}")),
                     id=Some("updateEmployer")
                 )
             }
@@ -73,10 +69,9 @@ ec: scala.concurrent.ExecutionContext)
         @includes.link(
             copy=messages("tai.income.details.updateTaxableIncome.update"),
             url = controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).toString,
-            attributes = Seq(("data-journey-click", s"button - click:${gaEventActionString}:${messages("tai.income.details.updateTaxableIncome.update")}")),
             isButton=true
         )
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url), Some(gaEventActionString))
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     </div>
 }

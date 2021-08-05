@@ -35,18 +35,15 @@
             id=Some("returnToChooseTaxYearLink"),
             url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
             value=Some(messages("tai.returnToChooseTaxYear")),
-            cssClasses=Some("link-back"),
-            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${messages("tai.returnToChooseTaxYear")}"))
+            cssClasses=Some("link-back")
         ).toHtml
     </p>
 }
 
-@gaEventActionString = @{"Your Pay As You Earn Income Tax"}
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.noCYIncomeError.heading"),
         preHeadingText = messages("tai.noCYIncomeError.sub-heading"),
         customBackLinkContent = Some(backLinkToChooseTaxYear)
