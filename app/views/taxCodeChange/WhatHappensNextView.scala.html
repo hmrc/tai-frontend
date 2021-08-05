@@ -26,13 +26,11 @@
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
     ec: ExecutionContext)
 
-@gaEventActionString = @{"What happens next"}
 
 @header = @{
     ptaHeader(
     formForErrorSummary = None,
     displayBackLink = true,
-    backLinkGaEventAction = Some(gaEventActionString),
     mainHeadingText = Messages("taxCode.change.whatHappensNext.title"),
     preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
@@ -41,8 +39,7 @@
     title = Messages("taxCode.change.whatHappensNext.title"),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
-    authedUser = Some(user),
-    gaCustomTitle = None
+    authedUser = Some(user)
 ){
 
 <div class="grid-row">
@@ -58,8 +55,7 @@
                     Link.toInternalPage(
                     id=Some("income-tax-estimate-link"),
                     url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
-                    value=Some(Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")),
-                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")}"))).toHtml))
+                    value=Some(Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link"))).toHtml))
                 </p>
             </div>
 
@@ -71,8 +67,7 @@
                     Link.toInternalPage(
                     id=Some("update-current-income-or-benefits-link"),
                     url=routes.TaxAccountSummaryController.onPageLoad.url.toString,
-                    value=Some(Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")),
-                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")}"))).toHtml))
+                    value=Some(Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link"))).toHtml))
                 </p>
             </div>
 

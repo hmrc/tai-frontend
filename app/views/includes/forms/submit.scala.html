@@ -16,20 +16,13 @@
 
 @import views.html.helper._
 
-@(buttonMessageKey : Option[String] = None,
-  gaEventAction : Option[String] = None,
-  gaEventLabel : Option[String] = None)(implicit m: Messages)
+@(buttonMessageKey : Option[String] = None)(implicit m: Messages)
 
 
-@stagePromptAttributeMap = @{
-    (gaEventAction, gaEventLabel) match {
-        case (Some(actionString), Some(eventString)) => Map[Symbol, Any](Symbol("data-journey-click")->s"submit:${actionString}:${eventString}", Symbol("data-journey-target")->"")
-        case _ => Map.empty[Symbol, Any]
-    }
-}
+
 
 <div class="subsection">
-    <button type="submit" name="submit" formnovalidate class="button" @toHtmlArgs(stagePromptAttributeMap)>
+    <button type="submit" name="submit" formnovalidate class="button">
         @Messages(buttonMessageKey.getOrElse("tai.submit"))
     </button>
 </div>
