@@ -26,12 +26,10 @@
 
 @(viewModel: PreviousYearUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@gaEventActionString = @{"Underpayment from previous year"}
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.previous.year.underpayment.title"),
         preHeadingText = Messages("tai.iya.tax.you.owe.preHeading")
     )
@@ -41,9 +39,7 @@
     title = Messages("tai.previous.year.underpayment.title"),
     articleClasses = Some("full-width"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    gaCallsAdditionalJs = None,
-    gaCustomTitle = None
+    pageHeader = Some(header)
 ){
 
 <div class="grid-row">

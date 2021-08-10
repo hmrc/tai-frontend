@@ -22,8 +22,8 @@
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @mainTemplate(
-    title=Messages("tai.noPrimary.heading"),
-    gaCustomTitle = None){
+    title=Messages("tai.noPrimary.heading")
+){
     <div class="section">
         <h1 class="h1-heading">@Messages("tai.noPrimary.heading")</h1>
         <div class="grid grid-2-3">

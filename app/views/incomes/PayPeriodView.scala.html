@@ -25,13 +25,10 @@
 @(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@gaEventActionString = @{"How often do you get paid?"}
-
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(payPeriodForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.payPeriod.heading"),
         preHeadingText = messages("tai.payPeriod.preHeading", employerName)
     )
@@ -82,6 +79,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.Ex
             <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
         }
 
-        @cancelLink(controllers.routes.IncomeController.cancel(id), gaEventAction = Some(gaEventActionString))
+        @cancelLink(controllers.routes.IncomeController.cancel(id))
     </div>
 }

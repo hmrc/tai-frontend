@@ -143,7 +143,7 @@ class UpdateEmploymentController @Inject()(
     YesNoTextEntryForm
       .form(
         Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
-        Messages("tai.canWeContactByPhone.telephone.empty"),
+        Messages("tai.canWeContactByPhone.telephone.enter.number"),
         Some(TelephoneNumberConstraint.telephoneNumberSizeConstraint)
       )
       .bindFromRequest()

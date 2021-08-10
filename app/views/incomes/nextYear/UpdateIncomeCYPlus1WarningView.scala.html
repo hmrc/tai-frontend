@@ -25,13 +25,11 @@
 
 @(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@gaEventActionString = @{"Update received"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(duplicateSubmissionWarningForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.heading,
         preHeadingText = messages("tai.incomes.warning.preHeading")
     )
@@ -41,8 +39,7 @@
     title = messages("tai.incomes.warning.customGaTitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = Some(messages("tai.incomes.warning.customGaTitle"))) {
+    articleClasses = None) {
 
     @form(action = controllers.income.routes.UpdateIncomeNextYearController.submitDuplicateWarning(empId), Symbol("data-journey-dynamic-radios") -> "" ) {
     <div class="form-group">
@@ -67,8 +64,8 @@
 
     </div>
 
-@submit(buttonMessageKey = Some(messages("tai.submit")), gaEventAction = Some(gaEventActionString), gaEventLabel = Some(""))
+@submit(buttonMessageKey = Some(messages("tai.submit")))
 
-    @cancelLink(routes.IncomeTaxComparisonController.onPageLoad(), gaEventAction = Some(gaEventActionString))
+    @cancelLink(routes.IncomeTaxComparisonController.onPageLoad())
 }
 }
