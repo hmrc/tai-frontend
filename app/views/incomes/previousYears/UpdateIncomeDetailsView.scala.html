@@ -24,13 +24,11 @@
 
 @(viewModel: UpdateHistoricIncomeDetailsViewModel, updateIncomeDetailsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@gaEventActionString = @{"What do you want to tell us?"}
 
 @header = @{
  ptaHeader(
   formForErrorSummary = Some(updateIncomeDetailsForm),
   displayBackLink = true,
-  backLinkGaEventAction = Some(gaEventActionString),
   mainHeadingText = Messages("tai.income.previousYears.details.heading", viewModel.formattedTaxYear),
   preHeadingText = Messages("tai.income.previousYears.details.preHeading")
  )
@@ -40,8 +38,7 @@
     title = Messages("tai.income.previousYears.details.title", viewModel.formattedTaxYear),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = Some(Messages("tai.income.previousYears.details.customGaTitle"))) {
+    articleClasses = None) {
 
     @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDetails(), args=(Symbol("class"), "subsection")) {
 
@@ -52,11 +49,11 @@
                 maxlength = UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit.toString
             )
 
-            @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title")))
+            @submit()
 
     }
 
-    @cancelLink(controllers.routes.PayeControllerHistoric.payePage(viewModel.givenTaxYear), gaEventAction = Some(gaEventActionString))
+    @cancelLink(controllers.routes.PayeControllerHistoric.payePage(viewModel.givenTaxYear))
 
 }
 

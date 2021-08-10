@@ -25,12 +25,10 @@
 
 @(model: WithinSixWeeksViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
-@gaEventActionString = @{"You can not update this employment yet"}
 
 @header = @{
     ptaHeader(
         displayBackLink = false,
-        backLinkGaEventAction = None,
         mainHeadingText = Messages("tai.endEmploymentWithinSixWeeksError.heading", model.earliestUpdateDateInHtml),
         preHeadingText = Messages("tai.endEmployment.preHeadingText"))
 }
@@ -38,8 +36,7 @@
 @mainTemplate(
     title = Messages("tai.endEmploymentWithinSixWeeksError.heading", model.earliestUpdateDateInHtml),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    gaCustomTitle = None
+    pageHeader = Some(header)
 ) {
 
     <p>@messages("tai.endEmploymentWithinSixWeeksError.employerAndPayDate", model.employerName, model.latestPayDateInHtml)</p>

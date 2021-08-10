@@ -24,13 +24,10 @@
 @(dateForm: Form[LocalDate], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 ec: scala.concurrent.ExecutionContext)
 
-@gaEventActionString = @{"When did you start receiving this pension?"}
-
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(dateForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addPensionProvider.startDateForm.title", <span class="carry-over">{pensionProviderName}</span>),
         preHeadingText = Messages("add.missing.pension")
     )
@@ -40,8 +37,7 @@ ec: scala.concurrent.ExecutionContext)
     title = Messages("tai.addPensionProvider.startDateForm.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = Some(Messages("tai.addPensionProvider.startDateForm.customGaTitle")))  {
+    articleClasses = None)  {
 
     @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionProviderStartDate(), args=(Symbol("class"), "subsection")) {
         @date(
@@ -51,9 +47,9 @@ ec: scala.concurrent.ExecutionContext)
             legendBold = true
         )
 
-        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing pension provider"))
+        @submit()
     }
 
-    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel(), gaEventAction = Some(gaEventActionString))
+    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
 
 }
