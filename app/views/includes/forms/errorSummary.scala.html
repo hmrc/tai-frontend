@@ -30,7 +30,7 @@
     <ul class="error-summary-list">
     @if(form.hasErrors) {
         @form.errors.map { error =>
-            <li role="tooltip" @dataJourney.map(page => Html(s"""data-journey="${page}:error:${error.key}""""))>
+            <li @dataJourney.map(page => Html(s"""data-journey="${page}:error:${error.key}""""))>
                 <a href="#@error.key"
                     id="@{error.key}-error-summary"
                     data-focuses="@error.key">
