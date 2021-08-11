@@ -18,7 +18,9 @@ package uk.gov.hmrc.tai.forms.benefit
 
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
+import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import utils.BaseSpec
 
@@ -47,9 +49,10 @@ class RemoveCompanyBenefitStopDateFormSpec extends BaseSpec with FormValuesConst
     "return an error for invalid choice" in {
       val invalidChoice = Json.obj(choice -> "")
       val invalidatedForm = form.bind(invalidChoice)
+      val taxYearStart = Dates.formatDate(TaxYear().start)
 
       invalidatedForm.errors.head.messages mustBe List(
-        Messages("tai.benefits.ended.stopDate.radio.error", "6 April 2021"))
+        Messages("tai.benefits.ended.stopDate.radio.error", taxYearStart))
       invalidatedForm.value mustBe None
     }
 
