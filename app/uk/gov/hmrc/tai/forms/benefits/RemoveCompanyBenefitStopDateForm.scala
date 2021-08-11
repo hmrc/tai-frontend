@@ -24,6 +24,8 @@ import uk.gov.hmrc.tai.util.constants.RemoveCompanyBenefitStopDateConstants
 object RemoveCompanyBenefitStopDateForm extends RemoveCompanyBenefitStopDateConstants {
 
   def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
-    single(StopDateChoice -> optional(text).verifying(Messages("tai.error.chooseOneOption"), { _.isDefined }))
+    single(StopDateChoice -> optional(text).verifying(Messages("tai.benefits.ended.stopDate.radio.error"), {
+      _.isDefined
+    }))
   )
 }
