@@ -48,7 +48,8 @@ class RemoveCompanyBenefitStopDateFormSpec extends BaseSpec with FormValuesConst
       val invalidChoice = Json.obj(choice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
-      invalidatedForm.errors.head.messages mustBe List(Messages("tai.error.chooseOneOption"))
+      invalidatedForm.errors.head.messages mustBe List(
+        Messages("tai.benefits.ended.stopDate.radio.error", "6 April 2021"))
       invalidatedForm.value mustBe None
     }
 
