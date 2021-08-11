@@ -55,22 +55,26 @@ class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
     "have an error message with the form inputs" when {
       "no payroll number choice is selected" in {
         val noPayrollNumberChooseError = messages("tai.addPensionProvider.pensionNumber.error.selectOption")
+        val expectedErrorMessage = messages("tai.error.message") + " " + messages(
+          "tai.addPensionProvider.pensionNumber.error.selectOption")
         val formWithErrors: Form[AddPensionProviderNumberForm] = AddPensionProviderNumberForm.form
           .withError(AddPensionProviderNumberForm.PayrollNumberChoice, noPayrollNumberChooseError)
         def view: Html = addPensionNumber(formWithErrors, pensionNumberViewModel)
 
         val errorMessage = doc(view).select(".error-message").text
-        errorMessage mustBe noPayrollNumberChooseError
+        errorMessage mustBe expectedErrorMessage
       }
 
       "no payroll number is provided" in {
         val noPayrollNumberChooseError = messages("tai.addPensionProvider.pensionNumber.error.blank")
+        val expectedErrorMessage = messages("tai.error.message") + " " + messages(
+          "tai.addPensionProvider.pensionNumber.error.blank")
         val formWithErrors: Form[AddPensionProviderNumberForm] = AddPensionProviderNumberForm.form
           .withError(AddPensionProviderNumberForm.PayrollNumberEntry, noPayrollNumberChooseError)
         def view: Html = addPensionNumber(formWithErrors, pensionNumberViewModel)
 
         val errorMessage = doc(view).select(".error-message").text
-        errorMessage mustBe noPayrollNumberChooseError
+        errorMessage mustBe expectedErrorMessage
       }
     }
   }

@@ -41,13 +41,14 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec with FormValuesCons
     "display an error notification" when {
       "no user choice is made" in {
         val noPayrollNumberChooseError = messages("tai.error.chooseOneOption")
+        val expectedErrorMessage = messages("tai.error.message") + " " + messages("tai.error.chooseOneOption")
         val formWithErrors: Form[Option[String]] =
           AddEmploymentFirstPayForm.form.withError(AddEmploymentFirstPayForm.FirstPayChoice, noPayrollNumberChooseError)
         val add_employment_first_pay_form = inject[AddEmploymentFirstPayFormView]
         def view: Html = add_employment_first_pay_form(formWithErrors, pensionProviderName)
 
         val errorMessage = doc(view).select(".error-message").text
-        errorMessage mustBe noPayrollNumberChooseError
+        errorMessage mustBe expectedErrorMessage
       }
     }
   }
