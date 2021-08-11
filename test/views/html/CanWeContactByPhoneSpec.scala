@@ -61,7 +61,7 @@ class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
         def sut = template(Some(authedUser), viewModel, formWithErrors)
 
         val errorMessage = doc(sut).select(".error-message").text
-        errorMessage mustBe "answer yes or no"
+        errorMessage mustBe messages("tai.error.message") + " answer yes or no"
       }
     }
   }

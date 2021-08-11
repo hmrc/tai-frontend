@@ -48,13 +48,16 @@
         }
         @if(hintText.nonEmpty) { <span class="@hintClass" id="@{ field.id }-hint">@hintText</span> }
 
-        @if(fieldErrorsEnabled && field.hasErrors) {
-            <span class="error-message">
-                @field.errors.map(_.message)
-            </span>
-        }
+
     </label>
 
+    @if(fieldErrorsEnabled && field.hasErrors) {
+        <p class="error-message" id="error-message-@{field.id}-input">
+            <span class="visuallyhidden">@Messages("tai.error.message") </span>
+            @field.errors.map(_.message)
+        </p>
+    }
+    
     @if(isCurrency){
         @formInputWithCurrency
     } else {
@@ -74,7 +77,7 @@
     <input name="@field.name"
        class=@getInputClasses(fieldErrorsEnabled && field.hasErrors, attrType == "number")
        value="@field.value" id="@field.id"
-       @if(attrDescribedBy) { aria-describedby="@attrDescribedBy-hint" }
+       @if(fieldErrorsEnabled && field.hasErrors || attrDescribedBy) {aria-describedby="@if(attrDescribedBy){@attrDescribedBy}@if(fieldErrorsEnabled && field.hasErrors && attrDescribedBy){ }@if(fieldErrorsEnabled && field.hasErrors){error-message-@{field.id}-input}"}
        @if(attrType.nonEmpty) {
             type="@attrType"
             @if(attrType == "number"){

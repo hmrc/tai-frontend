@@ -34,25 +34,19 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.Ex
     )
 }
 
-@howOftenPanel = @{
-    def labelMessage = messages("tai.payPeriod.howOften")
-    val errorSpan = payPeriodForm.errors.map{error =>
-            if(error.key == "otherInDays"){
-                s"""<span class="error-message">${messages(error.message)}</span>"""
-            } else {
-                ""
+
+@howOftenPanel = {
+    <div class="data-howOften panel-indent @payPeriodForm.errors.map { error => @if(error.key == "otherInDays"){form-group-error}} @if(isNotDaysError){js-hidden}" id="howOftenPanel">
+            <label for="otherInDays" class="form-label">@messages("tai.payPeriod.howOften")</label>
+            @payPeriodForm.errors.map { error =>
+                @if(error.key == "otherInDays"){
+                    <p class="error-message" id="error-message-daysPay-input"><span class="visuallyhidden">@Messages("tai.error.message") </span>@messages(error.message)</p>
+                }
             }
-        }.headOption.getOrElse("")
 
-    s"""
-    <div class="data-howOften panel-indent ${if(isNotDaysError) "js-hidden" else ""}" id="howOftenPanel">
-        <div class="${if(errorSpan!="") "form-group-error"}">
-            <label for="otherInDays" class="form-label">${labelMessage}</label>
-            ${errorSpan}
-            <input type="text" class="form-control form-control-1-2 flush--bottom" id="otherInDays" name="otherInDays" />
+            <input type="text" class="form-control form-control-1-2 flush--bottom" id="otherInDays" name="otherInDays" @payPeriodForm.errors.map { error =>  aria-describedBy="error-message-daysPay-input" }/>
 
-        </div>
-    </div>"""
+    </div>
 }
 
 
@@ -80,7 +74,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.Ex
                 ('_legendSpanClass, "visually-hidden"),
                 ('_fieldsetAttributes, "id=payPeriod" ),
                 ('_radioOption4Attributes, Html(s""" ${if(!isNotDaysError) {"checked"} else {""}} """) ),
-                ('_radioOption4AdditionalMarkup, Html(howOftenPanel))
+                ('_radioOption4AdditionalMarkup, (howOftenPanel))
             )}
             <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
         }

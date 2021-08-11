@@ -30,14 +30,14 @@
 
 <div class="@groupDivClass">
 
-    <fieldset class="@fieldsetClass" @if(elements.args.get('_fieldsetAttributes).isDefined) {@elements.args.get('_fieldsetAttributes)}>
+    <fieldset @if(fieldsetClass != ""){class="@fieldsetClass"} @if(elements.args.get('_fieldsetAttributes).isDefined) {@elements.args.get('_fieldsetAttributes)}  @elements.errors.map{error => aria-describedby="error-message-@{field.id}-input"}>
 
         <legend @if(elements.args.get('_legendClass).isDefined) {class="@elements.args.get('_legendClass)"}>
             <span id="radioGroupLegendMain" @if(elements.args.get('_legendSpanClass).isDefined) {class="@elements.args.get('_legendSpanClass)"}>@legend</span>
             @if(legendHint.isDefined) {<span id="radioGroupLegendHint">@legendHint.get</span>}
         </legend>
 
-        @elements.errors.map{error => <span class="error-message">@Messages(error.toString)</span>}
+        @elements.errors.map{error => <p class="error-message" id="error-message-@{field.id}-input"><span class="visuallyhidden">@Messages("tai.error.message") </span>@Messages(error.toString)</p>}
 
         @for(((value, label), optionIdx) <- radioOptions zip (Stream from 1)) {
 
