@@ -65,7 +65,7 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
     "form has error" in {
       val errorView: HtmlFormat.Appendable = UpdateIncomeDetailsDecision(formWithErrors, taxYear)
       doc(errorView) must haveClassWithText(
-        messages("tai.error.message") + " " + messages("tai.error.chooseOneOption"),
+        messages("tai.error.message") + " " + messages("tai.income.previousYears.decision.error"),
         "error-message")
     }
   }
@@ -73,7 +73,7 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
   "display error message" when {
     "a decision has not been made" in {
       val view: HtmlFormat.Appendable = UpdateIncomeDetailsDecision(formWithErrors, taxYear)
-      doc(view) must haveErrorLinkWithText(messages("tai.error.chooseOneOption"))
+      doc(view) must haveErrorLinkWithText(messages("tai.income.previousYears.decision.error"))
     }
   }
 

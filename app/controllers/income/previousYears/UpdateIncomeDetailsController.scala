@@ -132,7 +132,7 @@ class UpdateIncomeDetailsController @Inject()(
     YesNoTextEntryForm
       .form(
         Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
-        Messages("tai.canWeContactByPhone.telephone.empty"),
+        Messages("tai.canWeContactByPhone.telephone.invalid"),
         Some(telephoneNumberSizeConstraint))
       .bindFromRequest()
       .fold(
