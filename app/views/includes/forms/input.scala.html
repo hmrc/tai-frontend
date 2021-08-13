@@ -50,15 +50,9 @@
         }
         @if(hintText.nonEmpty) { <span class="@hintClass" id="@{ field.id }-hint">@hintText</span> }
 
-        @if(fieldErrorsEnabled && field.hasErrors && notCompareInput) {
-            <span class="error-message">
-                @field.errors.map(_.message)
-            </span>
-        }
-
     </label>
 
-    @if(fieldErrorsEnabled && field.hasErrors) {
+    @if(fieldErrorsEnabled && field.hasErrors && notCompareInput) {
         <p class="error-message" id="error-message-@{field.id}-input">
             <span class="visuallyhidden">@Messages("tai.error.message") </span>
             @field.errors.map(_.message)
