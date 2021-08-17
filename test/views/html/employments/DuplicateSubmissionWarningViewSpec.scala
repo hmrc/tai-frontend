@@ -85,7 +85,9 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
 
       val errorView = template(invalidatedForm, employmentName, empId)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
-      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
+      doc(errorView) must haveClassWithText(
+        messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
+        "error-message")
     }
   }
 

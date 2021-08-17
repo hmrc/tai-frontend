@@ -71,7 +71,9 @@ class BonusPaymentsViewSpec extends TaiViewSpec with FormValuesConstants {
 
       val errorView = bonusPayments(invalidatedForm, employer)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
-      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
+      doc(errorView) must haveClassWithText(
+        messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
+        "error-message")
     }
   }
 }

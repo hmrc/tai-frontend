@@ -87,7 +87,9 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
 
       val errorView: HtmlFormat.Appendable = duplicateSubmissionWarningView(invalidatedForm, pensionName, pensionId)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
-      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
+      doc(errorView) must haveClassWithText(
+        messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
+        "error-message")
     }
   }
 

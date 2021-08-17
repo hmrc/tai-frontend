@@ -71,7 +71,9 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
 
         val errorView: HtmlFormat.Appendable = bonusPaymentAmount(invalidatedForm, employer)
         doc(errorView) must haveErrorLinkWithText(emptySelectionErrorMessage)
-        doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
+        doc(errorView) must haveClassWithText(
+          messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
+          "error-message")
       }
 
       "the user enters an invalid monetary amount" in {
@@ -81,7 +83,9 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
 
         val errorView: HtmlFormat.Appendable = bonusPaymentAmount(invalidatedForm, employer)
         doc(errorView) must haveErrorLinkWithText(invalidAmountErrorMessage)
-        doc(errorView) must haveClassWithText(messages(invalidAmountErrorMessage), "error-message")
+        doc(errorView) must haveClassWithText(
+          messages("tai.error.message") + " " + messages(invalidAmountErrorMessage),
+          "error-message")
       }
     }
   }

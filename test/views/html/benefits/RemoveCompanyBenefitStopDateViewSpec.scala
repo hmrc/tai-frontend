@@ -19,6 +19,7 @@ package views.html.benefits
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
+import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm.StopDateChoice
 import uk.gov.hmrc.tai.model.TaxYear
@@ -54,14 +55,19 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
     }
 
     "display error message" when {
+      val taxYearStart = Dates.formatDate(TaxYear().start)
+
       "form has error" in {
         val errorView = removeCompanyBenefitStopDate(formWithErrors, benefitType, empName)
-        doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
+        doc(errorView) must haveClassWithText(
+          messages("tai.error.message") + " " +
+            messages("tai.benefits.ended.stopDate.radio.error", taxYearStart),
+          "error-message")
       }
 
       "a decision has not been made" in {
         val errorView = removeCompanyBenefitStopDate(formWithErrors, benefitType, empName)
-        doc(errorView) must haveErrorLinkWithText(messages("tai.error.chooseOneOption"))
+        doc(errorView) must haveErrorLinkWithText(messages("tai.benefits.ended.stopDate.radio.error", taxYearStart))
       }
     }
   }
