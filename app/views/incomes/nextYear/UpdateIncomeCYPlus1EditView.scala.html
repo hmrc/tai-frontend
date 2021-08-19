@@ -46,7 +46,6 @@
             <p>@messages("tai.incomes.edit.what.should.you.include.payments")</p>
             <h2 class="heading-small">@messages("tai.incomes.edit.what.should.you.deduct")</h2>
             <p>@messages("tai.incomes.edit.what.should.you.deduct.payments")</p>
-            </ul>
         </div>
     }
 
@@ -59,17 +58,21 @@
     @form(action = controllers.income.routes.UpdateIncomeNextYearController.update(employmentId)){
     <div class="form-field-group @if(incomeForm.hasErrors) {form-group-error}">
     @incomeForm.errors(incomeForm("income").name).map{ error =>
-    <span class="error-notification error-message">@messages(error.message)</span>
+        <span class="error-notification error-message" id="incomeFieldError">@messages(error.message)</span>
     }
         @compareValueInput(
             previousLabel = messages("tai.incomes.amount.current"),
             newLabel = messages("tai.incomes.amount.new"),
             previousFieldName = "oldAmount",
             previousFieldValue= currentValue.toString,
-            newField = incomeForm("income")
+            newField = incomeForm("income"),
+            attrDescribedBy = if(incomeForm.errors(incomeForm("income").name).nonEmpty){"incomeFieldError"}else{""},
+            fieldErrorsEnabled = incomeForm.errors(incomeForm("income").name).nonEmpty
         )
-        <p><input type="submit" class="button" id="CYPlus1EditButton" value='@messages("tai.continue")'/></p>
     </div>
+
+    <button class="button" type="submit" id="CYPlus1EditButton">@messages("tai.continue")</button>
+
     }
 }
 

@@ -216,7 +216,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.irregular.heading"))
-        doc.body().text must include(messages("error.tai.updateDataEmployment.blankValue"))
+        doc.body().text must include(messages("tai.irregular.error.blankValue"))
 
       }
 
