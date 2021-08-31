@@ -215,8 +215,7 @@
                             id=Some("addInvestmentIncome"),
                             url=appConfig.investmentIncomeLinkUrl,
                             value=Some(Messages("tai.incomeTaxSummary.addMissingIncome.section.investmentIncome")),
-                            cssClasses=Some(""),
-                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.incomeTaxSummary.addMissingIncome.section.investmentIncome")}"))).toHtml
+                            cssClasses=Some("")).toHtml
                         </p>
                     </li>
                 </ul>
