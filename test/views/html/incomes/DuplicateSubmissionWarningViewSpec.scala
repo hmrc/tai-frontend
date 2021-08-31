@@ -89,7 +89,9 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
 
       val errorView: Html = duplicateSubmissionWarning(invalidatedForm, employmentViewModel, empId)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
-      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
+      doc(errorView) must haveClassWithText(
+        messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
+        "error-message")
     }
 
     "display the correct content when the income source is a pension" in {

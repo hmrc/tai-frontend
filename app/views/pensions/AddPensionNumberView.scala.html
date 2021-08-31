@@ -26,13 +26,11 @@
         messages: Messages, user: controllers.auth.AuthedUser,
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@gaEventActionString = @{"Do you know your pension number?"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(payrollNumberForm),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addPensionProvider.pensionNumber.title", <span class="carry-over">{pensionNumberViewModel.pensionProviderName}</span>),
         preHeadingText = Messages("add.missing.pension"))}
 
@@ -40,8 +38,7 @@
     title = Messages("tai.addPensionProvider.pensionNumber.pagetitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = Some(Messages("tai.addPensionProvider.pensionNumber.customGaTitle"))
+    articleClasses = None
 ) {
 
     @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionNumber(), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
@@ -55,9 +52,7 @@
             ('_radioOption1WrapAttribute, "data-target=payrollNumberEntry-container"),
             ('_groupClass, "inline"),
             ('_fieldsetAttributes, "id=payrollNumberChoice" ),
-            ('_legendSpanClass, "visually-hidden"),
-            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Do you know your pension number?:Yes" data-journey-val="Yes"""") ),
-            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know your pension number?:No" data-journey-val="No"""") )
+            ('_legendSpanClass, "visually-hidden")
         )}
 
         <div id="payrollNumberEntry-container" class="@if(payrollNumberForm(AddPensionProviderNumberForm.PayrollNumberChoice).value.getOrElse("") != AddPensionProviderNumberForm.YesValue){js-hidden} data-payrollNumberEntry">
@@ -68,8 +63,8 @@
             )
         </div>
 
-        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing pension"))
+        @submit()
     }
 
-    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel(), gaEventAction = Some(gaEventActionString))
+    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
 }

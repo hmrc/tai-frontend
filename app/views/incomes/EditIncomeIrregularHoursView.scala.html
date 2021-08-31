@@ -35,12 +35,9 @@
 
     ec: scala.concurrent.ExecutionContext)
 
-@gaEventActionString = @{"Update your estimated taxable income for current tax year with irregular working hours"}
-
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.heading,
         preHeadingText = viewModel.preHeading,
         formForErrorSummary=Some(incomeUpdateForm)
@@ -75,13 +72,13 @@
             )
         </div>
 
-        <div class=" form-group" data-journey-click='button - click:@gaEventActionString:@messages("tai.continue")'>
+        <div class=" form-group">
             @submit(Some(messages("tai.submit")))
         </div>
 
     }
 
-    <p>@cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employmentId).url), Some(gaEventActionString))</p>
+    <p>@cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employmentId).url))</p>
 
 }
 

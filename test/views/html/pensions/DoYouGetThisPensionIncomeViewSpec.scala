@@ -53,7 +53,9 @@ class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec with FormValuesConst
 
         val errorDoc = doc(viewWithError)
 
-        errorDoc must haveElementAtPathWithText(".error-message", Messages("tai.error.chooseOneOption"))
+        errorDoc must haveElementAtPathWithText(
+          ".error-message",
+          Messages("tai.error.message") + " " + Messages("tai.error.chooseOneOption"))
         errorDoc must haveElementAtPathWithClass("form div", "form-group-error")
       }
     }

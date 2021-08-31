@@ -26,7 +26,9 @@ class UpdateRemoveEmploymentDecisionViewSpec extends TaiViewSpec with FormValues
   val employmentName = "Employment Name"
   val empId = 1
   val updateRemoveEmploymentForm: Form[Option[String]] =
-    UpdateRemoveEmploymentForm.form.bind(Map(UpdateRemoveEmploymentForm.EmploymentDecision -> YesValue))
+    UpdateRemoveEmploymentForm
+      .form("Some employer")
+      .bind(Map(UpdateRemoveEmploymentForm.EmploymentDecision -> YesValue))
 
   private val template = inject[UpdateRemoveEmploymentDecisionView]
 

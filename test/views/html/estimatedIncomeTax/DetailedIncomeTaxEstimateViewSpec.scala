@@ -490,7 +490,6 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
       "tai.estimatedIncome.additionalTax.title")
     doc(additionalDetailView).select("#additionalTaxTable-desc").text() mustBe Messages(
       "tai.estimatedIncome.additionalTax.desc")
-    doc(additionalDetailView).getElementsMatchingOwnText("TaxDescription").hasAttr("data-journey-click") mustBe false
     doc(additionalDetailView) must haveThWithText(messages("tax.adjustments"))
     doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.OutstandingDebt.title"))
     doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.childBenefit.title"))
