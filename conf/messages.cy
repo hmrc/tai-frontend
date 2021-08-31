@@ -618,6 +618,7 @@ tai.incomeTaxComparison.dateWithoutWelshAmendment={0}
 tai.incomeTaxSummary.addMissingIncome.section.employerLink=Ychwanegu cyflogwr sydd ar goll
 tai.incomeTaxSummary.addMissingIncome.section.heading=Rhywbeth ar goll?
 tai.incomeTaxSummary.addMissingIncome.section.otherLink=Ychwanegu incwm o ffynhonnell arall sydd ar goll
+tai.incomeTaxSummary.addMissingIncome.section.investmentIncomeLink=Add investment income
 
 tai.incomeTaxSummary.annualAmounts.section.totalIncomeHeading=Cyfanswm eich incwm amcangyfrifedig
 tai.incomeTaxSummary.annualAmounts.section.totalIncomePara=Cyfanswm eich incwm TWE gros y flwyddyn hon.
