@@ -16,14 +16,10 @@
 
 package controllers
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, ok, urlEqualTo, get}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, ok, urlEqualTo}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.BadRequestException
-import uk.gov.hmrc.tai.model.domain.Person
 import utils.{FileHelper, IntegrationSpec}
 
 class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {

@@ -219,8 +219,17 @@
                                 dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.incomeTaxSummary.addMissingIncome.section.otherLink")}"))).toHtml
                         </p>
                     </li>
+                    <li>
+                        <p class="icon icon-plus">
+                        @Link.toInternalPage(
+                            id=Some("addInvestmentIncome"),
+                            url=appConfig.investmentIncomeLinkUrl,
+                            value=Some(Messages("tai.incomeTaxSummary.addMissingIncome.section.investmentIncome")),
+                            cssClasses=Some(""),
+                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.incomeTaxSummary.addMissingIncome.section.investmentIncome")}"))).toHtml
+                        </p>
+                    </li>
                 </ul>
-
             </div>
         </div>
     </div>

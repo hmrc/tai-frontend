@@ -613,6 +613,7 @@ tai.incomeTaxComparison.dateWithoutWelshAmendment={0}
 tai.incomeTaxSummary.addMissingIncome.section.employerLink=Add a missing employer
 tai.incomeTaxSummary.addMissingIncome.section.heading=Something missing?
 tai.incomeTaxSummary.addMissingIncome.section.otherLink=Add missing income from another source
+tai.incomeTaxSummary.addMissingIncome.section.investmentIncome=Add investment income
 tai.incomeTaxSummary.annualAmounts.section.heading=Annual amounts
 tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading=Your estimated Income Tax
 tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink=How your Income Tax is calculated
