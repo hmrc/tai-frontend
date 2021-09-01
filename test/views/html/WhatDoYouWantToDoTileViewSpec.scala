@@ -16,7 +16,7 @@
 
 package views.html
 
-import mocks.MockTemplateRendererWithUrBanner
+import mocks.{MockTemplateRenderer, MockTemplateRendererWithUrBanner}
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
@@ -34,7 +34,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
   private val whatDoYouWantToDoTileView = inject[WhatDoYouWantToDoTileView]
 
-  override implicit val templateRenderer: TemplateRenderer = MockTemplateRendererWithUrBanner
+  override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
 
   "whatDoYouWantTodo Page" should {
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))
@@ -101,19 +101,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.toString mustNot include("Find out what has changed and what happens next")
         cards.toString must include(Messages("claim.tax.relief.wfh"))
       }
-    }
-
-    "display UR banner" in {
-
-      val document: Html = whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1, appConfig)
-      val urBanner = doc(document).getElementsByAttributeValue("id", "full-width-banner")
-      val urDismissedText = doc(document).getElementsByAttributeValue("id", "fullWidthBannerDismissText")
-      val urBannerHref = doc(document).getElementsByAttributeValue("id", "fullWidthBannerLink")
-      urBanner mustNot be(null)
-      urBanner.text() startsWith Messages("tai.urbanner.title")
-      urDismissedText.text() must include(Messages("tai.urbanner.reject"))
-      urBanner.text() must include(Messages("tai.urbanner.text"))
-      urBannerHref.text() must include(appConfig.urBannerLink)
     }
 
     "JrsClaimTile is enabled" in {
