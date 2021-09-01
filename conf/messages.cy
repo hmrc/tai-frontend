@@ -180,8 +180,8 @@ tai.bandtype.nonZeroBand=Incwm yr ydych yn talu treth arno
 tai.bandtype.zeroBand.incomeDetails=Swm rhydd o dreth ar gyfer cyflogaeth
 tai.bandtype.zeroBand=Incwm nad ydych yn talu treth arno
 
-tai.interest.blank=Ni all y swm fod yn wag
-tai.interest.isCurrency=Rhowch swm dilys
+tai.interest.blank=Nodwch werth y buddiant
+tai.interest.isCurrency=Mae’n rhaid i werth y buddiant fod yn swm o arian, megis 1,000 neu 10,000
 
 tai.benefits.ended.confirmation.back=Yn ôl i’ch tudalen swm rhydd o dreth
 tai.benefits.ended.journey.preHeader=Buddiant cwmni wedi dod i ben
@@ -191,11 +191,13 @@ tai.benefits.ended.stopDate.legend=Pryd wnaethoch beidio â chael buddiant {0}?
 tai.benefits.ended.stopDate.panel=Caiff y buddiant hwn ei ddileu o’ch cofnod ar gyfer blwyddyn dreth {0} i {1}.
 tai.benefits.ended.stopDate.radio.beforeTaxYearEnd=Cyn {0}
 tai.benefits.ended.stopDate.radio.onOrAfterTaxYearEnd=Ar neu ar ôl {0}
+tai.benefits.ended.stopDate.radio.error=Dewiswch a wnaethoch stopio cael y buddiant cyn {0} neu ar ôl hynny
 tai.benefits.ended.tableHeader=Buddiant {0} oddi wrth {1}
 tai.benefits.updateOrRemove.decision.customGaTitle=A ydych yn cael y buddiant cwmni hwn ar hyn o bryd?
 tai.benefits.updateOrRemove.decision.heading=A ydych yn cael buddiant {0} oddi wrth {1} ar hyn o bryd?
 tai.benefits.updateOrRemove.decision.radio.no=Na, dydw i ddim yn cael y buddiant hwn mwyach
 tai.benefits.updateOrRemove.decision.radio.yes=Ydw, rwy’n cael y buddiant hwn ar hyn o bryd
+tai.benefits.updateOrRemove.decision.radio.error=Dewiswch ‘Iawn’ os ydych yn cael y buddiant hwn ar hyn o bryd
 tai.benefits.updateOrRemove.journey.preHeader=Diweddaru neu dileu’r buddiant cwmni
 tai.bonusPayments.error.form.incomes.radioButton.mandatory=Dewiswch ‘Iawn’ os byddwch yn cael unrhyw fonws, comisiwn neu oramser rhwng {0}
 tai.bonusPayments.error.form.likely=Dewiswch Iawn os ydych yn debygol o gael rhagor o daliadau bonws neu oramser eleni

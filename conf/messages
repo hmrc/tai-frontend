@@ -180,8 +180,8 @@ tai.bandtype.nonZeroBand=Income you do pay tax on
 tai.bandtype.zeroBand.incomeDetails=Tax-free amount for employment
 tai.bandtype.zeroBand=Income you do not pay tax on
 
-tai.interest.blank=Amount cannot be blank
-tai.interest.isCurrency=Enter valid amount
+tai.interest.blank=Enter the value of the benefit
+tai.interest.isCurrency=The value of the benefit must be an amount of money, like 1,000 or 10,000
 
 tai.benefits.ended.confirmation.back=Return to your tax free amount page
 tai.benefits.ended.journey.preHeader=Company benefit ended
@@ -191,11 +191,13 @@ tai.benefits.ended.stopDate.legend=When did you stop getting {0} benefit?
 tai.benefits.ended.stopDate.panel=This benefit will be removed from your record for the tax year {0} to {1}.
 tai.benefits.ended.stopDate.radio.beforeTaxYearEnd=Before {0}
 tai.benefits.ended.stopDate.radio.onOrAfterTaxYearEnd=On or after {0}
+tai.benefits.ended.stopDate.radio.error=Select if you stopped getting the benefit before {0} or after
 tai.benefits.ended.tableHeader={0} benefit from {1}
 tai.benefits.updateOrRemove.decision.customGaTitle=Do you currently receive this company benefit?
 tai.benefits.updateOrRemove.decision.heading=Do you currently get {0} benefit from {1}?
 tai.benefits.updateOrRemove.decision.radio.no=No, I do not get this benefit any more
 tai.benefits.updateOrRemove.decision.radio.yes=Yes, I currently get this benefit
+tai.benefits.updateOrRemove.decision.radio.error=Select yes if you currently get this benefit
 tai.benefits.updateOrRemove.journey.preHeader=Update or remove company benefit
 tai.bonusPayments.error.form.incomes.radioButton.mandatory=Select yes if you will get any bonus, commission or overtime between {0}
 tai.bonusPayments.error.form.likely=Select yes if you are likely to receive any more bonus or overtime this year

@@ -49,7 +49,7 @@ class UpdateOrRemoveCompanyBenefitDecisionFormSpec
       val invalidChoice = Json.obj(choice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
-      invalidatedForm.errors.head.messages mustBe List(Messages("tai.error.chooseOneOption"))
+      invalidatedForm.errors.head.messages mustBe List(Messages("tai.benefits.updateOrRemove.decision.radio.error"))
       invalidatedForm.value mustBe None
     }
 

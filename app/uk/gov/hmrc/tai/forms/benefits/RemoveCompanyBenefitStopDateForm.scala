@@ -19,11 +19,19 @@ package uk.gov.hmrc.tai.forms.benefits
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
+import uk.gov.hmrc.play.views.formatting.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.RemoveCompanyBenefitStopDateConstants
 
 object RemoveCompanyBenefitStopDateForm extends RemoveCompanyBenefitStopDateConstants {
 
-  def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
-    single(StopDateChoice -> optional(text).verifying(Messages("tai.error.chooseOneOption"), { _.isDefined }))
-  )
+  def form(implicit messages: Messages): Form[Option[String]] = {
+    val taxYearStart = Dates.formatDate(TaxYear().start)
+    Form[Option[String]](
+      single(
+        StopDateChoice -> optional(text).verifying(Messages("tai.benefits.ended.stopDate.radio.error", taxYearStart), {
+          _.isDefined
+        }))
+    )
+  }
 }
