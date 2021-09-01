@@ -1018,6 +1018,7 @@ tai.taxFreeAmount.detailsection.heading=Sut mae’ch swm rhydd o dreth yn cael e
 tai.taxFreeAmount.heading.pt1=Eich swm rhydd o dreth ar gyfer
 tai.taxFreeAmount.missing.section.addition=Ychwanegu lwfans neu ryddhad treth sydd ar goll
 tai.taxFreeAmount.missing.section.income=Ychwanegu incwm o ffynhonnell arall sydd ar goll
+tai.taxFreeAmount.missing.section.investment=Add a missing income from an investment
 tai.taxFreeAmount.summarysection.bullet1=yn uwch os ydych yn gymwys ar gyfer rhai lwfansau neu ryddhad treth
 tai.taxFreeAmount.summarysection.bullet2=wedi gostwng i gasglu treth sy’n ddyledus ar gyfer buddiannau cwmni neu incwm o ffynonellau eraill
 tai.taxFreeAmount.summarysection.heading=Eich swm blynyddol sy’n rhydd o dreth yw

@@ -70,31 +70,39 @@
                 </div>
 
                 <div id="addSomethingMissingSection" class="section">
-                <h2 id="addSomethingMissingHeading">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
+                    <h2 id="addSomethingMissingHeading">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
 
-                <p class="icon icon-plus display-block">
-                    @Link.toInternalPage(
-                    id=Some("addMissingAddition"),
-                    url=appConfig.taxFreeAllowanceLinkUrl,
-                    value=Some(Messages("tai.taxFreeAmount.missing.section.addition")),
-                    cssClasses=Some("")).toHtml
-                </p>
+                    <p class="icon icon-plus display-block">
+                        @Link.toInternalPage(
+                        id=Some("addMissingAddition"),
+                        url=appConfig.taxFreeAllowanceLinkUrl,
+                        value=Some(Messages("tai.taxFreeAmount.missing.section.addition")),
+                        cssClasses=Some("")).toHtml
+                    </p>
 
-                <p class="icon icon-plus display-block">
-                    @Link.toInternalPage(
-                    id=Some("addMissingDeduction"),
-                    url=appConfig.companyBenefitsLinkUrl,
-                    value=Some(Messages("add.missing.company.benefit")),
-                    cssClasses=Some("")).toHtml
-                </p>
+                    <p class="icon icon-plus display-block">
+                        @Link.toInternalPage(
+                        id=Some("addMissingDeduction"),
+                        url=appConfig.companyBenefitsLinkUrl,
+                        value=Some(Messages("add.missing.company.benefit")),
+                        cssClasses=Some("")).toHtml
+                    </p>
 
-                <p class="icon icon-plus display-block">
+                    <p class="icon icon-plus display-block">
+                        @Link.toInternalPage(
+                        id=Some("addMissingIncome"),
+                        url=appConfig.otherIncomeLinkUrl,
+                        value=Some(Messages("tai.taxFreeAmount.missing.section.income")),
+                        cssClasses=Some("")).toHtml
+                    </p>
+
+                    <p class="icon icon-plus display-block">
                     @Link.toInternalPage(
-                    id=Some("addMissingIncome"),
-                    url=appConfig.otherIncomeLinkUrl,
-                    value=Some(Messages("tai.taxFreeAmount.missing.section.income")),
-                    cssClasses=Some("")).toHtml
-                </p>
+                        id=Some("addMissingInvestment"),
+                        url=appConfig.investmentIncomeLinkUrl,
+                        value=Some(Messages("tai.taxFreeAmount.missing.section.investment")),
+                        cssClasses=Some("")).toHtml
+                    </p>
                 </div>
 
             </div>
