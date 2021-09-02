@@ -104,7 +104,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       "employment doesn't present" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(0, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
           .thenReturn(Future.successful(1))
@@ -121,7 +121,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       "tax code incomes return failure" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(0, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
           .thenReturn(Future.successful(1))
@@ -251,7 +251,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       "valid values are present in cache" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(0, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(cachedData)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -266,7 +266,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       "pay to date cannot be determined, due to no annual account records on the income source" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(0, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(Nil)
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(cachedData)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -283,7 +283,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       "employment doesn't present" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(0, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(cachedData)
@@ -300,7 +300,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       "tax code incomes return failure" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(0, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(cachedData)
 
@@ -442,7 +442,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       "employment doesn't present" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(0, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
           .thenReturn(Future.successful(1))
@@ -459,7 +459,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       "tax code incomes return failure" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(0, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
           .thenReturn(Future.successful(1))
@@ -571,7 +571,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       "valid values are present in cache" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(0, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(cachedData)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -588,7 +588,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       "employment doesn't present" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(0, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -604,7 +604,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       "tax code incomes return failure" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(0, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(cachedData)

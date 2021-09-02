@@ -20,18 +20,13 @@ import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.tai.model.TaxYear
 
 case class AnnualAccount(
-  key: String,
+  sequenceNumber: Int,
   taxYear: TaxYear,
   realTimeStatus: RealTimeStatus,
   payments: Seq[Payment],
   endOfTaxYearUpdates: Seq[EndOfTaxYearUpdate]) {
 
   lazy val totalIncomeYearToDate: BigDecimal = maxPayment(payments.max.amountYearToDate)
-
-  lazy val employerDesignation = {
-    val split = key.split("-")
-    split(0) + "-" + split(1)
-  }
 
   lazy val latestPayment: Option[Payment] = if (payments.isEmpty) None else Some(payments.max)
 
