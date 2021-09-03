@@ -37,25 +37,17 @@ class AnnualAccountSpec extends PlaySpec {
       }
     }
 
-    // TODO Can be removed
-//    "Generate a unique employer designation, consisting of tax district and paye ref extracted from the id string" in {
-//      val designation = SutWithNoPayments.employerDesignation
-//      designation mustBe "taxdistrict-payeref"
-//    }
-
-    "Generate a full key (unique employer designation plus optional employee payroll number)" when {
+    "Check sequenceNumber" when {
       "Employment has an employee payrollNumber present" in {
 
-        val designation = SutWithNoPayments.sequenceNumber
-        designation mustBe 0
+        val sequenceNumber = SutWithNoPayments.sequenceNumber
+        sequenceNumber mustBe 0
       }
-    }
-    "Generate a full key consisting of only tax district and paye ref" when {
 
       "Employment has no employee payrollNumber" in {
 
-        val designation = SutWithNoPayroll.sequenceNumber
-        designation mustBe 1
+        val sequenceNumber = SutWithNoPayroll.sequenceNumber
+        sequenceNumber mustBe 1
       }
     }
   }
