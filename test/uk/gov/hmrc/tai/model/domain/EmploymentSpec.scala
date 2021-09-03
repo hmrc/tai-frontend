@@ -62,7 +62,7 @@ class EmploymentSpec extends PlaySpec {
     }
   }
 
-  val annualAccount1 = AnnualAccount(0, TaxYear(2016), Available, Nil, Nil)
-  val annualAccount2 = AnnualAccount(0, TaxYear(2017), Available, Nil, Nil)
+  val annualAccount1 = AnnualAccount(TaxYear(2016), Available, Nil, Nil)
+  val annualAccount2 = AnnualAccount(TaxYear(2017), Available, Nil, Nil)
 
 }

@@ -20,7 +20,6 @@ import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.tai.model.TaxYear
 
 case class AnnualAccount(
-  sequenceNumber: Int,
   taxYear: TaxYear,
   realTimeStatus: RealTimeStatus,
   payments: Seq[Payment],

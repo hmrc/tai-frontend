@@ -33,7 +33,7 @@ class PaymentsServiceSpec extends PlaySpec {
   val nationalInsuranceAmount = 789
 
   def createEmployment(payments: Seq[Payment]): Employment = {
-    val annualAccounts = Seq(AnnualAccount(1, uk.gov.hmrc.tai.model.TaxYear(), Available, payments, Nil))
+    val annualAccounts = Seq(AnnualAccount(uk.gov.hmrc.tai.model.TaxYear(), Available, payments, Nil))
     Employment(
       "test employment",
       Live,

@@ -36,39 +36,25 @@ class AnnualAccountSpec extends PlaySpec {
         SutWithNoPayments.totalIncomeYearToDate mustBe 0
       }
     }
-
-    "Check sequenceNumber" when {
-      "Employment has an employee payrollNumber present" in {
-
-        val sequenceNumber = SutWithNoPayments.sequenceNumber
-        sequenceNumber mustBe 0
-      }
-
-      "Employment has no employee payrollNumber" in {
-
-        val sequenceNumber = SutWithNoPayroll.sequenceNumber
-        sequenceNumber mustBe 1
-      }
-    }
   }
 
   "latestPayment" must {
     "return the latest payment" when {
       "there are multiple payments" in {
-        val annualAccount = AnnualAccount(0, TaxYear(2017), Available, List(payment1, payment2), Nil)
+        val annualAccount = AnnualAccount(TaxYear(2017), Available, List(payment1, payment2), Nil)
 
         annualAccount.latestPayment mustBe Some(payment2)
       }
       "there is only one payment" in {
 
-        val annualAccount = AnnualAccount(0, TaxYear(2017), Available, List(payment1), Nil)
+        val annualAccount = AnnualAccount(TaxYear(2017), Available, List(payment1), Nil)
 
         annualAccount.latestPayment mustBe Some(payment1)
       }
     }
     "return none" when {
       "there are no payments" in {
-        val annualAccount = AnnualAccount(0, TaxYear(2017), Available, Nil, Nil)
+        val annualAccount = AnnualAccount(TaxYear(2017), Available, Nil, Nil)
 
         annualAccount.latestPayment mustBe None
       }
@@ -79,19 +65,19 @@ class AnnualAccountSpec extends PlaySpec {
     "return true" when {
       "pay frequency is BiAnnually" in {
         val annualAccount =
-          AnnualAccount(1, TaxYear(), Available, Seq(payment1.copy(payFrequency = BiAnnually)), Nil)
+          AnnualAccount(TaxYear(), Available, Seq(payment1.copy(payFrequency = BiAnnually)), Nil)
 
         annualAccount.isIrregularPayment mustBe true
       }
 
       "pay frequency is Annually" in {
-        val annualAccount = AnnualAccount(1, TaxYear(), Available, Seq(payment1.copy(payFrequency = Annually)), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, Seq(payment1.copy(payFrequency = Annually)), Nil)
 
         annualAccount.isIrregularPayment mustBe true
       }
 
       "pay frequency is Irregular" in {
-        val annualAccount = AnnualAccount(1, TaxYear(), Available, Seq(payment1), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, Seq(payment1), Nil)
 
         annualAccount.isIrregularPayment mustBe true
       }
@@ -102,7 +88,7 @@ class AnnualAccountSpec extends PlaySpec {
         val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
         val latestPayment = Payment(new LocalDate().minusWeeks(1), 100, 50, 25, 100, 50, 25, Irregular)
         val annualAccount =
-          AnnualAccount(1, TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
+          AnnualAccount(TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 
         annualAccount.isIrregularPayment mustBe true
       }
@@ -113,7 +99,7 @@ class AnnualAccountSpec extends PlaySpec {
         val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
         val latestPayment = Payment(new LocalDate().minusWeeks(1), 100, 50, 25, 100, 50, 25, BiAnnually)
         val annualAccount =
-          AnnualAccount(1, TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
+          AnnualAccount(TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 
         annualAccount.isIrregularPayment mustBe true
       }
@@ -124,7 +110,7 @@ class AnnualAccountSpec extends PlaySpec {
         val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
         val latestPayment = Payment(new LocalDate().minusWeeks(1), 100, 50, 25, 100, 50, 25, Annually)
         val annualAccount =
-          AnnualAccount(1, TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
+          AnnualAccount(TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 
         annualAccount.isIrregularPayment mustBe true
       }
@@ -132,40 +118,40 @@ class AnnualAccountSpec extends PlaySpec {
 
     "return false" when {
       "pay frequency is Weekly" in {
-        val annualAccount = AnnualAccount(1, TaxYear(), Available, Seq(payment1.copy(payFrequency = Weekly)), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, Seq(payment1.copy(payFrequency = Weekly)), Nil)
 
         annualAccount.isIrregularPayment mustBe false
       }
 
       "pay frequency is FortNightly" in {
         val annualAccount =
-          AnnualAccount(1, TaxYear(), Available, Seq(payment1.copy(payFrequency = FortNightly)), Nil)
+          AnnualAccount(TaxYear(), Available, Seq(payment1.copy(payFrequency = FortNightly)), Nil)
 
         annualAccount.isIrregularPayment mustBe false
       }
 
       "pay frequency is FourWeekly" in {
         val annualAccount =
-          AnnualAccount(1, TaxYear(), Available, Seq(payment1.copy(payFrequency = FourWeekly)), Nil)
+          AnnualAccount(TaxYear(), Available, Seq(payment1.copy(payFrequency = FourWeekly)), Nil)
 
         annualAccount.isIrregularPayment mustBe false
       }
 
       "pay frequency is Monthly" in {
-        val annualAccount = AnnualAccount(1, TaxYear(), Available, Seq(payment1.copy(payFrequency = Monthly)), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, Seq(payment1.copy(payFrequency = Monthly)), Nil)
 
         annualAccount.isIrregularPayment mustBe false
       }
 
       "pay frequency is Quarterly" in {
         val annualAccount =
-          AnnualAccount(1, TaxYear(), Available, Seq(payment1.copy(payFrequency = Quarterly)), Nil)
+          AnnualAccount(TaxYear(), Available, Seq(payment1.copy(payFrequency = Quarterly)), Nil)
 
         annualAccount.isIrregularPayment mustBe false
       }
 
       "pay frequency is One Off" in {
-        val annualAccount = AnnualAccount(1, TaxYear(), Available, Seq(payment2), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, Seq(payment2), Nil)
 
         annualAccount.isIrregularPayment mustBe false
       }
@@ -176,7 +162,7 @@ class AnnualAccountSpec extends PlaySpec {
         val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Irregular)
         val latestPayment = Payment(new LocalDate().minusWeeks(1), 100, 50, 25, 100, 50, 25, Monthly)
         val annualAccount =
-          AnnualAccount(1, TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
+          AnnualAccount(TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 
         annualAccount.isIrregularPayment mustBe false
       }
@@ -187,7 +173,7 @@ class AnnualAccountSpec extends PlaySpec {
         val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, BiAnnually)
         val latestPayment = Payment(new LocalDate().minusWeeks(1), 100, 50, 25, 100, 50, 25, OneOff)
         val annualAccount =
-          AnnualAccount(1, TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
+          AnnualAccount(TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 
         annualAccount.isIrregularPayment mustBe false
       }
@@ -198,13 +184,13 @@ class AnnualAccountSpec extends PlaySpec {
         val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Annually)
         val latestPayment = Payment(new LocalDate().minusWeeks(1), 100, 50, 25, 100, 50, 25, FortNightly)
         val annualAccount =
-          AnnualAccount(1, TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
+          AnnualAccount(TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 
         annualAccount.isIrregularPayment mustBe false
       }
 
       "payments are not available" in {
-        val annualAccount = AnnualAccount(1, TaxYear(), Available, Nil, Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, Nil, Nil)
 
         annualAccount.isIrregularPayment mustBe false
       }
@@ -215,13 +201,12 @@ class AnnualAccountSpec extends PlaySpec {
   val payment2 = Payment(new LocalDate().minusWeeks(1), 200, 100, 50, 100, 50, 25, OneOff)
 
   val SutWithNoPayments =
-    AnnualAccount(0, taxYear = TaxYear("2017"), realTimeStatus = Available, payments = Nil, endOfTaxYearUpdates = Nil)
+    AnnualAccount(taxYear = TaxYear("2017"), realTimeStatus = Available, payments = Nil, endOfTaxYearUpdates = Nil)
 
   val SutWithNoPayroll =
-    AnnualAccount(1, taxYear = TaxYear("2017"), realTimeStatus = Available, payments = Nil, endOfTaxYearUpdates = Nil)
+    AnnualAccount(taxYear = TaxYear("2017"), realTimeStatus = Available, payments = Nil, endOfTaxYearUpdates = Nil)
 
   val SutWithOnePayment = AnnualAccount(
-    2,
     taxYear = TaxYear("2017"),
     realTimeStatus = Available,
     payments = List(
