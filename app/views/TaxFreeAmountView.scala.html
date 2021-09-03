@@ -89,18 +89,18 @@
                     </p>
 
                     <p class="icon icon-plus display-block">
-                        @Link.toInternalPage(
-                        id=Some("addMissingIncome"),
-                        url=appConfig.otherIncomeLinkUrl,
-                        value=Some(Messages("tai.taxFreeAmount.missing.section.income")),
-                        cssClasses=Some("")).toHtml
-                    </p>
-
-                    <p class="icon icon-plus display-block">
                     @Link.toInternalPage(
                         id=Some("addMissingInvestment"),
                         url=appConfig.investmentIncomeLinkUrl,
                         value=Some(Messages("tai.taxFreeAmount.missing.section.investment")),
+                        cssClasses=Some("")).toHtml
+                    </p>
+
+                    <p class="icon icon-plus display-block">
+                        @Link.toInternalPage(
+                        id=Some("addMissingIncome"),
+                        url=appConfig.otherIncomeLinkUrl,
+                        value=Some(Messages("tai.taxFreeAmount.missing.section.income")),
                         cssClasses=Some("")).toHtml
                     </p>
                 </div>
