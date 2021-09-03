@@ -16,23 +16,44 @@
 
 package uk.gov.hmrc.tai.model
 
-import java.time.format.DateTimeParseException
-
 import org.joda.time.YearMonth
 import org.joda.time.format.DateTimeFormat
+import play.api.i18n.Lang
 import play.api.libs.json._
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.YearAndMonth.dateFormatter
+import uk.gov.hmrc.tai.model.YearAndMonth.{MonthNamesInWelsh, dateFormatter}
+
+import java.time.format.DateTimeParseException
 
 final case class YearAndMonth(yearAndMonth: YearMonth) {
 
-  def formatYearAndMonth: String =
-    yearAndMonth.toString(dateFormatter)
+  def formatYearAndMonth(lang: Lang): String =
+    if (lang == Lang("cy")) {
+      val month = MonthNamesInWelsh(yearAndMonth.getMonthOfYear)
+      month + " " + yearAndMonth.getYear
+    } else {
+      yearAndMonth.toString(dateFormatter)
+    }
 }
 
 object YearAndMonth {
 
   val dateFormatter = DateTimeFormat.forPattern("MMMM yyyy")
+
+  val MonthNamesInWelsh = Map(
+    1  -> "Ionawr",
+    2  -> "Chwefror",
+    3  -> "Mawrth",
+    4  -> "Ebrill",
+    5  -> "Mai",
+    6  -> "Mehefin",
+    7  -> "Gorffennaf",
+    8  -> "Awst",
+    9  -> "Medi",
+    10 -> "Hydref",
+    11 -> "Tachwedd",
+    12 -> "Rhagfyr"
+  )
 
   def apply(yearAndMonth: String): YearAndMonth = YearAndMonth(YearMonth.parse(yearAndMonth))
 
@@ -61,6 +82,11 @@ object YearAndMonth {
   private def firstClaimDate(appConfig: ApplicationConfig): YearMonth =
     YearMonth.parse(appConfig.jrsClaimsFromDate)
 
-  def formattedFirstClaimDate(appConfig: ApplicationConfig): String =
-    firstClaimDate(appConfig).toString(dateFormatter)
+  def formattedFirstClaimDate(appConfig: ApplicationConfig, lang: Lang): String =
+    if (lang == Lang("cy")) {
+      val month = MonthNamesInWelsh(firstClaimDate(appConfig).getMonthOfYear)
+      month + " " + firstClaimDate(appConfig).getYear
+    } else {
+      firstClaimDate(appConfig).toString(dateFormatter)
+    }
 }
