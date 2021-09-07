@@ -23,6 +23,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Lang
 import play.api.libs.json.{JsResultException, Json}
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.model.YearAndMonth.firstClaimDate
 
 class YearAndMonthSpec extends PlaySpec with MockitoSugar {
 
@@ -122,17 +123,17 @@ class YearAndMonthSpec extends PlaySpec with MockitoSugar {
 
     }
 
-    "first claim date should be formatted to MMMM YYYY" in {
+    "formattedDate with no date should return first claim date formatted to MMMM YYYY" in {
 
-      YearAndMonth.formattedFirstClaimDate(appConfig, lang) shouldBe "December 2020"
+      YearAndMonth.formattedDate(firstClaimDate(appConfig), lang) shouldBe "December 2020"
 
     }
 
-    "first claim date should be formatted to MMMM YYYY and Welsh if Welsh is the current language" in {
+    "formattedDate with no date should return first claim date formatted to MMMM YYYY and Welsh if Welsh is the current language" in {
 
       val lang = Lang("cy")
 
-      YearAndMonth.formattedFirstClaimDate(appConfig, lang) shouldBe "Rhagfyr 2020"
+      YearAndMonth.formattedDate(firstClaimDate(appConfig), lang) shouldBe "Rhagfyr 2020"
 
     }
   }

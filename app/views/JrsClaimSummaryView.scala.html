@@ -21,6 +21,7 @@
 @import uk.gov.hmrc.urls.Link
 
 @import scala.concurrent.ExecutionContext
+@import uk.gov.hmrc.tai.model.YearAndMonth.firstClaimDate
 
 @this(mainTemplate: MainTemplate, languageUtils: LanguageUtils)
 
@@ -47,7 +48,7 @@
                 <h1 class="heading-xlarge">@messages("check.jrs.claims.title")</h1>
 
 
-                <h2 class="heading-section">@messages("check.jrs.from", YearAndMonth.formattedFirstClaimDate(appConfig, languageUtils.getCurrentLang))</h2>
+                <h2 class="heading-section">@messages("check.jrs.from", YearAndMonth.formattedDate(firstClaimDate(appConfig), languageUtils.getCurrentLang))</h2>
 
                 @for(employers <- viewModel.employers) {
                     @if(employers.hasMultipleClaims) {

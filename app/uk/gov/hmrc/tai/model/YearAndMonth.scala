@@ -21,19 +21,14 @@ import org.joda.time.format.DateTimeFormat
 import play.api.i18n.Lang
 import play.api.libs.json._
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.YearAndMonth.{MonthNamesInWelsh, dateFormatter}
+import uk.gov.hmrc.tai.model.YearAndMonth.{MonthNamesInWelsh, dateFormatter, formattedDate}
 
 import java.time.format.DateTimeParseException
 
 final case class YearAndMonth(yearAndMonth: YearMonth) {
 
   def formatYearAndMonth(lang: Lang): String =
-    if (lang == Lang("cy")) {
-      val month = MonthNamesInWelsh(yearAndMonth.getMonthOfYear)
-      month + " " + yearAndMonth.getYear
-    } else {
-      yearAndMonth.toString(dateFormatter)
-    }
+    formattedDate(yearAndMonth, lang)
 }
 
 object YearAndMonth {
@@ -79,14 +74,14 @@ object YearAndMonth {
     dateTypeList.sortWith((x, y) => x.yearAndMonth.isBefore(y.yearAndMonth))
   }
 
-  private def firstClaimDate(appConfig: ApplicationConfig): YearMonth =
+  def firstClaimDate(appConfig: ApplicationConfig): YearMonth =
     YearMonth.parse(appConfig.jrsClaimsFromDate)
 
-  def formattedFirstClaimDate(appConfig: ApplicationConfig, lang: Lang): String =
+  def formattedDate(yearAndMonth: YearMonth, lang: Lang): String =
     if (lang == Lang("cy")) {
-      val month = MonthNamesInWelsh(firstClaimDate(appConfig).getMonthOfYear)
-      month + " " + firstClaimDate(appConfig).getYear
+      val month = MonthNamesInWelsh(yearAndMonth.getMonthOfYear)
+      month + " " + yearAndMonth.getYear
     } else {
-      firstClaimDate(appConfig).toString(dateFormatter)
+      yearAndMonth.toString(dateFormatter)
     }
 }
