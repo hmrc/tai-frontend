@@ -14,46 +14,37 @@
  * limitations under the License.
  *@
 @import scala.concurrent.ExecutionContext
+@import views.html.includes.ptaHeader
+@import uk.gov.hmrc.tai.config.ApplicationConfig
 
 @this(mainTemplate: MainTemplate)
 
-@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
+@(contactUrl: String)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
+    @header = @{
+        ptaHeader(
+            mainHeadingText = messages("mci.title"),
+            preHeadingText = "",
+            displayBackLink = true
+        )
+    }
 
     @mainTemplate(
-        title=Messages("tai.gatekeeper.refuse.title")
-    ){
+        title = messages("mci.title"),
+        pageHeader = Some(header)) {
+
+        <div class="grid-row">
+            <div class="column-two-thirds">
+                <p>@messages("mci.p1")</p>
+
+                <p>
+                    @messages("mci.p2") <a href=@contactUrl>
+                @messages("mci.link.text")</a>.
+                </p>
+            </div>
+        </div>
+
+    }
 
 
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
-      <header class="page-header">
-        <h1>@Messages("label.there_is_a_problem_accessing_your_account")</h1>
-      </header>
-      <p class="lede">@Html(Messages("label.we_need_to_speak_to_you_before_you_can_access"))</p>
-      <div class="section-border">
-        <h2 class="heading-large">@Messages("label.how_to_fix_this")</h2>
-      </div>
-      <ol class="list">
-        <li>@Messages("label.phone_mci")</li>
-        <li>@Messages("label.say_I_cannot_log_in")</li>
-        <li>@Messages("label.say_yes_when_asked")</li>
-        <li>@Html(Messages("label.you_will_hear_a_recorded_message"))</li>
-        <li>@Messages("label.tell_the_adviser")</li>
-      </ol>
-      <div class="section-border">
-        <h2 class="heading-large">@Messages("label.how_to_contact_us")</h2>
-      </div>
-      <ul class="list list-bullet">
-        <li>@Messages("label.textphone_mci")</li>
-        <li>@Messages("label.phone_mci_outside_uk")</li>
-      </ul>
-      <p>@Messages("label.phone_lines_are_open_8am_to_8pm_monday_to_friday_and_8am_to_4pm_on_saturday")</p>
-      <p>@Messages("label.closed_sundays_and_bank_holidays")</p>
-      <p>@Messages("label.phone_lines_are_less_busy_before_10am_monday-to_friday")</p>
-      <p id="callCharges"><a href="https://www.gov.uk/call-charges" target="_blank">@Messages("label.find_out_about_call_charges") @Messages("label.opens_in_a_new_window")</a></p>
-    </div>
-  </div>
-
-}
