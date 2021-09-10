@@ -44,7 +44,7 @@ class UpdateIncomeDetailsDecisionFormSpec extends BaseSpec with FormValuesConsta
       val invalidChoice = Json.obj(choice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
-      invalidatedForm.errors.head.messages mustBe List(Messages("tai.error.chooseOneOption"))
+      invalidatedForm.errors.head.messages mustBe List(Messages("tai.income.previousYears.decision.error"))
       invalidatedForm.value mustBe None
     }
   }
