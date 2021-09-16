@@ -40,7 +40,7 @@ class IncomeServiceSpec extends BaseSpec with JourneyCacheConstants {
       "valid inputs are passed" in {
         val sut = createSUT
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
@@ -68,7 +68,7 @@ class IncomeServiceSpec extends BaseSpec with JourneyCacheConstants {
       "employment details not found" in {
         val sut = createSUT
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
@@ -81,7 +81,7 @@ class IncomeServiceSpec extends BaseSpec with JourneyCacheConstants {
       "income not found" in {
         val sut = createSUT
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
@@ -108,7 +108,7 @@ class IncomeServiceSpec extends BaseSpec with JourneyCacheConstants {
       "valid inputs are passed" in {
         val sut = createSUT
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
@@ -126,7 +126,7 @@ class IncomeServiceSpec extends BaseSpec with JourneyCacheConstants {
 
       "payments details are not present" in {
         val sut = createSUT
-        val annualAccount = AnnualAccount("", TaxYear(), Available, Seq.empty[Payment], Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, Seq.empty[Payment], Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
