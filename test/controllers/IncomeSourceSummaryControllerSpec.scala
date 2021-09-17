@@ -109,6 +109,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
   val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
   val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
   val annualAccount = AnnualAccount(
+    "KEY",
     uk.gov.hmrc.tai.model.TaxYear(),
     Available,
     Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
