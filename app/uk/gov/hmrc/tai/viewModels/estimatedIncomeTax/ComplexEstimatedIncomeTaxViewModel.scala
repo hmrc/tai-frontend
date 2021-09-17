@@ -53,6 +53,21 @@ object ComplexEstimatedIncomeTaxViewModel extends BandTypesConstants with TaxReg
       taxViewType = ComplexTaxView)
     val taxRegion = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
 
+    println("codingComponents...." + codingComponents)
+    println("taxAccountSummary...." + taxAccountSummary)
+    println("taxCodeIncomes...." + taxCodeIncomes)
+    println("taxBands...." + taxBands)
+    println("paBand...." + paBand)
+    println("mergedTaxBands...." + mergedTaxBands)
+    println("taxAccountSummary.taxFreeAllowance...." + taxAccountSummary.taxFreeAllowance)
+    println("taxAccountSummary.totalEstimatedTax...." + taxAccountSummary.totalEstimatedTax)
+    println("taxRegion...." + taxRegion)
+    println("taxAccountSummary.totalEstimatedTax...." + taxAccountSummary.totalEstimatedTax)
+    println("taxAccountSummary.totalEstimatedIncome...." + taxAccountSummary.totalEstimatedIncome)
+    println("taxAccountSummary.taxFreeAllowance...." + taxAccountSummary.taxFreeAllowance)
+    println("graph...." + graph)
+    println("taxRegion...." + taxRegion)
+
     ComplexEstimatedIncomeTaxViewModel(
       taxAccountSummary.totalEstimatedTax,
       taxAccountSummary.totalEstimatedIncome,

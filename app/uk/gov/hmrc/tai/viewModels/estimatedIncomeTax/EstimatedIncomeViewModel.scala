@@ -79,6 +79,13 @@ object BandedGraph extends BandTypesConstants {
 
     val personalAllowance = personalAllowanceAmount(codingComponents)
 
+    println("taxbands..." + taxBands)
+    println("personalAllowance..." + personalAllowance)
+    println("taxFreeAllowanceBandSum..." + taxFreeAllowanceBandSum)
+    println("totalEstimatedTax..." + totalEstimatedTax)
+    println("totalEstimatedIncome..." + totalEstimatedIncome)
+    println("taxViewType..." + taxViewType)
+
     taxBands match {
       case Nil => BandedGraph(TaxGraph, List.empty[Band], 0, 0, 0, 0, 0, 0, 0, None, None)
       case taxbands =>
@@ -139,6 +146,14 @@ object BandedGraph extends BandTypesConstants {
         }
       }
     }
+
+    println("individualBand list..." + individualBand)
+    println("mergedBand..." + mergedBand)
+    println("swatch..." + swatch)
+
+//    individualBand list...List(Band(TaxFree,25.64,13040,0,pa), Band(TaxFree,0.39,201,0,PSR))
+//    mergedBand...Some(Band(Band,73.95,37598,7519.6,NonZeroBand))
+//    swatch...Some(Swatch(14.79,7519.6))
 
     val mergedIndividualBands = mergeZeroBands(individualBand)
 

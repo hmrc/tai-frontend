@@ -79,6 +79,15 @@ class EstimatedIncomeTaxController @Inject()(
             taxAccountSummary.totalEstimatedTax,
             taxCodeIncomes.nonEmpty
           )
+          println("taxBands..." + taxBands)
+          println("taxViewType..." + taxViewType)
+          println("codingComponents..." + codingComponents)
+          println("nonTaxCodeIncome..." + nonTaxCodeIncome)
+          println("taxAccountSummary..." + taxAccountSummary)
+          println("taxAccountSummary.totalEstimatedIncome..." + taxAccountSummary.totalEstimatedIncome)
+          println("taxAccountSummary.taxFreeAllowance..." + taxAccountSummary.taxFreeAllowance)
+          println("taxAccountSummary.totalEstimatedTax..." + taxAccountSummary.totalEstimatedTax)
+          println("taxCodeIncomes.nonEmpty..." + taxCodeIncomes.nonEmpty)
           taxViewType match {
             case NoIncomeTaxView => Ok(noCurrentIncome())
             case ComplexTaxView =>
