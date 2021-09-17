@@ -1275,7 +1275,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     hasTaxCodeIncome: Boolean = true,
     cessationPay: Option[BigDecimal] = None,
     paymentDetails: Seq[PaymentDetailsViewModel] = paymentDetails) = {
-    val annualAccount = AnnualAccount(uk.gov.hmrc.tai.model.TaxYear(), realTimeStatus, payments, Nil)
+    val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), realTimeStatus, payments, Nil)
 
     val employment = Employment(
       "test employment",
