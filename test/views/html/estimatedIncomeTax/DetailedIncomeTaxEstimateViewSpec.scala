@@ -457,7 +457,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
           Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
           Some(
             HelpLink(
-              Messages("what.does.this.mean"),
+              Messages("what.is.underpayment"),
               controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
               "underPaymentFromPreviousYear"
             ))
@@ -469,7 +469,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
           Messages("tai.taxcode.deduction.type-45"),
           Some(
             HelpLink(
-              Messages("what.does.this.mean"),
+              Messages("what.is.tax.estimation"),
               controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
               "estimatedTaxOwedLink"))
         ),
@@ -497,12 +497,12 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
     doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.excessWidowsAndOrphans.title"))
     doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.pensionPaymentsAdjustment.title"))
     doc(additionalDetailView) must haveTdWithText(
-      s"${messages("tai.taxCalc.UnderpaymentPreviousYear.title")} ${messages("what.does.this.mean")}")
+      s"${messages("tai.taxCalc.UnderpaymentPreviousYear.title")} ${messages("what.is.underpayment")}")
     doc(additionalDetailView)
       .select("#underPaymentFromPreviousYear")
       .attr("href") mustBe controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
     doc(additionalDetailView) must haveTdWithText(
-      s"${messages("tai.taxcode.deduction.type-45")} ${messages("what.does.this.mean")}")
+      s"${messages("tai.taxcode.deduction.type-45")} ${messages("what.is.tax.estimation")}")
     doc(additionalDetailView)
       .select("#estimatedTaxOwedLink")
       .attr("href") mustBe controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString

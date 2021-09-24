@@ -127,7 +127,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
         Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
         Some(
           HelpLink(
-            Messages("what.does.this.mean"),
+            Messages("what.is.underpayment"),
             controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
             "underPaymentFromPreviousYear"
           ))
@@ -139,7 +139,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
         Messages("tai.taxcode.deduction.type-45"),
         Some(
           HelpLink(
-            Messages("what.does.this.mean"),
+            Messages("what.is.tax.estimation"),
             controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
             "estimatedTaxOwedLink"))
       )

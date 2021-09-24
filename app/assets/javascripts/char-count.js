@@ -172,10 +172,7 @@
     // Check for existing info count message
     var countMessage = document.getElementById(elementId + '-info')
     // If there is no existing info count message we add one right after the field
-
-    var checkElement = document.getElementsByClassName('govuk-c-charcount__message')
-
-    if (elementId && !countMessage && checkElement.length == 0) {
+    if (elementId && !countMessage) {
       countElement.insertAdjacentHTML('afterend', '<span id="' + elementId + '-info" class="form-hint govuk-c-charcount__message" aria-live="polite"></span>')
       countElement.setAttribute('aria-describedby', elementId + '-info')
       countMessage = document.getElementById(elementId + '-info')

@@ -135,7 +135,7 @@
 
                 @model.employmentStatus match {
                     case PotentiallyCeased => {
-                        @if(model.isPension) {
+                        @if(model.incomeCalculationEstimateMessage.isDefined) {
                             <h4 class="heading-small">@model.incomeCalculationEstimateMessage</h4>
                         }
                     }
