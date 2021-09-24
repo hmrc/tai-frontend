@@ -81,21 +81,27 @@
           var wrapper = CharCount.prototype.wrapElement(countElement, 'govuk-c-charcount__wrapper')
           var elementId = countElement.getAttribute('id')
           var countHighlightClass = (countElement.type === 'text') ? 'govuk-c-charcount__highlight-input' : 'govuk-c-charcount__highlight'
-          wrapper.insertAdjacentHTML('afterbegin', '<div id="' + elementId + '-hl" class="form-control ' + countHighlightClass + '" aria-hidden="true" role="presentation"></div>')
 
-          var countHighlight = document.getElementById(elementId + '-hl')
-          // countHighlight.style.height = CharCount.prototype.getHeight(countElement) + 'px'
-          // countHighlight.style.height = countElement.getBoundingClientRect().height + 'px'
-          countHighlight.style.height = countElement.offsetHeight + 'px'
-          countHighlight.style.width = countElement.offsetWidth + 'px'
 
-          // We have to disable resize on highlighted components to avoid the async scroll and boundaries
-          countElement.style.resize = 'none'
+          if(document.getElementById(elementId + '-hl') == null) {
+            wrapper.insertAdjacentHTML('afterbegin', '<div id="' + elementId + '-hl" class="form-control ' + countHighlightClass + '" aria-hidden="true" role="presentation"></div>')
 
-          // Fix iOS
-          if (CharCount.prototype.isIOS()) {
-            CharCount.prototype.fixIOSInput(countHighlight)
+            var countHighlight = document.getElementById(elementId + '-hl')
+
+            // countHighlight.style.height = CharCount.prototype.getHeight(countElement) + 'px'
+            // countHighlight.style.height = countElement.getBoundingClientRect().height + 'px'
+            countHighlight.style.height = countElement.offsetHeight + 'px'
+            countHighlight.style.width = countElement.offsetWidth + 'px'
+
+            // We have to disable resize on highlighted components to avoid the async scroll and boundaries
+            countElement.style.resize = 'none'
+
+            // Fix iOS
+            if (CharCount.prototype.isIOS()) {
+              CharCount.prototype.fixIOSInput(countHighlight)
+            }
           }
+
         }
 
         // Set the element limit
@@ -166,7 +172,10 @@
     // Check for existing info count message
     var countMessage = document.getElementById(elementId + '-info')
     // If there is no existing info count message we add one right after the field
-    if (elementId && !countMessage) {
+
+    var checkElement = document.getElementsByClassName('govuk-c-charcount__message')
+
+    if (elementId && !countMessage && checkElement.length == 0) {
       countElement.insertAdjacentHTML('afterend', '<span id="' + elementId + '-info" class="form-hint govuk-c-charcount__message" aria-live="polite"></span>')
       countElement.setAttribute('aria-describedby', elementId + '-info')
       countMessage = document.getElementById(elementId + '-info')
