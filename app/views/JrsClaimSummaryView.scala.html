@@ -14,14 +14,16 @@
  * limitations under the License.
  *@
 
-@import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-@import play.api.Play.current
+@import play.api.i18n.Messages
+@import uk.gov.hmrc.play.language.LanguageUtils
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.{JrsClaims, YearAndMonth}
 @import uk.gov.hmrc.urls.Link
-@import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate)
+@import scala.concurrent.ExecutionContext
+@import uk.gov.hmrc.tai.model.YearAndMonth.firstClaimDate
+
+@this(mainTemplate: MainTemplate, languageUtils: LanguageUtils)
 
 @(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
@@ -46,19 +48,19 @@
                 <h1 class="heading-xlarge">@messages("check.jrs.claims.title")</h1>
 
 
-                <h2 class="heading-section">@messages("check.jrs.from", YearAndMonth.formattedFirstClaimDate(appConfig))</h2>
+                <h2 class="heading-section">@messages("check.jrs.from", YearAndMonth.formattedDate(firstClaimDate(appConfig), languageUtils.getCurrentLang))</h2>
 
                 @for(employers <- viewModel.employers) {
                     @if(employers.hasMultipleClaims) {
                         <p>@messages("check.jrs.employer.made.multiple.claims.for.you", employers.name)</p>
                         <ul class="list list-bullet">
                             @for(claims <- employers.claims) {
-                                <li>@claims.formatYearAndMonth</li>
+                                <li>@claims.formatYearAndMonth(languageUtils.getCurrentLang)</li>
                             }
                         </ul>
 
                     } else {
-                        <p>@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head.formatYearAndMonth)</p>
+                        <p>@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head.formatYearAndMonth(languageUtils.getCurrentLang))</p>
 
                     }
                 }

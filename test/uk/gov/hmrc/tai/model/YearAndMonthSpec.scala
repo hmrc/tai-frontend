@@ -20,12 +20,16 @@ import org.mockito.Mockito.when
 import org.scalatest.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.Lang
 import play.api.libs.json.{JsResultException, Json}
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.model.YearAndMonth.firstClaimDate
 
 class YearAndMonthSpec extends PlaySpec with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
+
+  val lang = Lang("en")
 
   when(appConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
@@ -107,13 +111,29 @@ class YearAndMonthSpec extends PlaySpec with MockitoSugar {
 
     "YearMonth should be formatted to MMMM YYYY" in {
 
-      data.formatYearAndMonth shouldBe "December 2020"
+      data.formatYearAndMonth(lang) shouldBe "December 2020"
 
     }
 
-    "first claim date should be formatted to MMMM YYYY" in {
+    "YearMonth should be formatted to MMMM YYYY and Welsh if Welsh is the current language" in {
 
-      YearAndMonth.formattedFirstClaimDate(appConfig) shouldBe "December 2020"
+      val lang = Lang("cy")
+
+      data.formatYearAndMonth(lang) shouldBe "Rhagfyr 2020"
+
+    }
+
+    "formattedDate with no date should return first claim date formatted to MMMM YYYY" in {
+
+      YearAndMonth.formattedDate(firstClaimDate(appConfig), lang) shouldBe "December 2020"
+
+    }
+
+    "formattedDate with no date should return first claim date formatted to MMMM YYYY and Welsh if Welsh is the current language" in {
+
+      val lang = Lang("cy")
+
+      YearAndMonth.formattedDate(firstClaimDate(appConfig), lang) shouldBe "Rhagfyr 2020"
 
     }
   }
