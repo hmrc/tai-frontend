@@ -205,7 +205,7 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
 
         def incomeMessagesView = template(model)
 
-        doc(incomeMessagesView) must haveHeadingH4WithText(model.incomeCalculationEstimateMessage.get)
+        doc(incomeMessagesView) must haveHeadingH3WithText(model.incomeCalculationEstimateMessage.get)
       }
     }
 
