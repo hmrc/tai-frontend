@@ -617,6 +617,7 @@ tai.incomeTaxComparison.dateWithoutWelshAmendment={0}
 
 tai.incomeTaxSummary.addMissingIncome.section.employerLink=Add a missing employer
 tai.incomeTaxSummary.addMissingIncome.section.heading=Something missing?
+tai.incomeTaxSummary.addMissingIncome.section.investmentIncomeLink=Add missing investment income
 tai.incomeTaxSummary.addMissingIncome.section.otherLink=Add missing income from another source
 tai.incomeTaxSummary.annualAmounts.section.heading=Annual amounts
 tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading=Your estimated Income Tax
@@ -1018,7 +1019,8 @@ tai.taxFree.total=Total
 tai.taxFreeAmount.detailsection.heading=How your tax-free amount is calculated
 tai.taxFreeAmount.heading.pt1=Your tax-free amount for
 tai.taxFreeAmount.missing.section.addition=Add a missing allowance or tax relief
-tai.taxFreeAmount.missing.section.income=Add a missing income from another source
+tai.taxFreeAmount.missing.section.investment=Add missing income from an investment
+tai.taxFreeAmount.missing.section.income=Add missing income from another source
 tai.taxFreeAmount.summarysection.bullet1=increased if you qualify for certain allowances or tax reliefs
 tai.taxFreeAmount.summarysection.bullet2=decreased to collect tax due for company benefits or income from other sources
 tai.taxFreeAmount.summarysection.heading=Your annual tax-free amount is

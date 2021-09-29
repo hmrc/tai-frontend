@@ -202,6 +202,15 @@
                     </li>
                     <li>
                         <p class="icon icon-plus">
+                        @Link.toInternalPage(
+                            id=Some("addInvestmentLink"),
+                            url=appConfig.investmentIncomeLinkUrl,
+                            value=Some(Messages("tai.incomeTaxSummary.addMissingIncome.section.investmentIncomeLink")),
+                            cssClasses=Some("")).toHtml
+                        </p>
+                    </li>
+                    <li>
+                        <p class="icon icon-plus">
                             @Link.toInternalPage(
                                 id=Some("addOtherIncomeSourceLink"),
                                 url=appConfig.otherIncomeLinkUrl,
