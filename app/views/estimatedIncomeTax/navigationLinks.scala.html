@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.urls.Link
+@import includes.link
 
 @()(implicit messages: Messages)
 
@@ -23,11 +24,11 @@
         <h2 class="heading-section">@Messages("tai.taxCode.sideBar.heading")</h2>
         <div class="inner-block">
             <div class="link-list">
-                @Link.toInternalPage(
+                @link(
                 id=Some("taxCodesSideLink"),
                 url=routes.YourTaxCodeController.taxCodes.url,
-                value=Some(Messages("check.your.tax.codes")),
-                cssClasses=Some("link-list__item")).toHtml
+                copy=Messages("check.your.tax.codes"),
+                linkClasses=Seq("link-list__item"))
 
                 @Link.toInternalPage(
                 id=Some("taxFreeAmountSideLink"),
