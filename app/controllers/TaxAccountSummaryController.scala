@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.UnauthorizedException
 
@@ -48,7 +48,7 @@ class TaxAccountSummaryController @Inject()(
   incomeTaxSummary: IncomeTaxSummaryView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with AuditConstants {
+    extends TaiBaseController(mcc) with AuditConstants with Logging {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
@@ -75,7 +75,7 @@ class TaxAccountSummaryController @Inject()(
       }
       .recover {
         case e: UnauthorizedException =>
-          Logger.warn("taxAccountSummary failed with: " + e.getMessage)
+          logger.warn("taxAccountSummary failed with: " + e.getMessage)
           Redirect(controllers.routes.UnauthorisedController.onPageLoad())
         case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage, Some(e))
       }

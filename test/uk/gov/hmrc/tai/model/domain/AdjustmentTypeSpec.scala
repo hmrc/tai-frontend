@@ -38,9 +38,9 @@ class AdjustmentTypeSpec extends PlaySpec {
 
       "create a valid json value" when {
         "given a AdjustmentType object" in {
-          Json.toJson(NationalInsuranceAdjustment) mustBe JsString("NationalInsuranceAdjustment")
-          Json.toJson(TaxAdjustment) mustBe JsString("TaxAdjustment")
-          Json.toJson(IncomeAdjustment) mustBe JsString("IncomeAdjustment")
+          Json.toJson[AdjustmentType](NationalInsuranceAdjustment) mustBe JsString("NationalInsuranceAdjustment")
+          Json.toJson[AdjustmentType](TaxAdjustment) mustBe JsString("TaxAdjustment")
+          Json.toJson[AdjustmentType](IncomeAdjustment) mustBe JsString("IncomeAdjustment")
         }
       }
     }

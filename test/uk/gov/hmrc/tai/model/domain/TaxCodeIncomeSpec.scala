@@ -39,9 +39,9 @@ class TaxCodeIncomeSpec extends PlaySpec {
 
       "create a valid json value" when {
         "given an TaxCodeIncomeSourceStatus" in {
-          Json.toJson(Live) mustBe JsString("Live")
-          Json.toJson(PotentiallyCeased) mustBe JsString("PotentiallyCeased")
-          Json.toJson(Ceased) mustBe JsString("Ceased")
+          Json.toJson[TaxCodeIncomeSourceStatus](Live) mustBe JsString("Live")
+          Json.toJson[TaxCodeIncomeSourceStatus](PotentiallyCeased) mustBe JsString("PotentiallyCeased")
+          Json.toJson[TaxCodeIncomeSourceStatus](Ceased) mustBe JsString("Ceased")
         }
       }
     }

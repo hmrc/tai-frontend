@@ -27,6 +27,8 @@ import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 
 class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
+  private val historicIncomeCalculationView = inject[views.html.print.historicIncomeCalculationView]
+
   val dateFormatPattern = "d MMMM yyyy"
   val printTableDateFormatPattern = "d MMM yyyy"
 
@@ -72,12 +74,12 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     year: TaxYear = TaxYear().prev) = {
     val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel =
       createHistoricIncomeCalculationVM(payments, eyuMessage, realTimeStatus, year)
-    views.html.print.historicIncomeCalculationView(historicIncomeCalculationVM, appConfig)
+    historicIncomeCalculationView(historicIncomeCalculationVM, appConfig)
   }
 
   val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel =
     createHistoricIncomeCalculationVM(Nil, Nil, Unavailable, TaxYear().prev)
-  override def view: Html = views.html.print.historicIncomeCalculationView(historicIncomeCalculationVM, appConfig)
+  override def view: Html = historicIncomeCalculationView(historicIncomeCalculationVM, appConfig)
 
   "The previous year income calculation print page" should {
 

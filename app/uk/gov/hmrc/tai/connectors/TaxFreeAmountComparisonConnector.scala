@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -29,7 +29,8 @@ import scala.util.control.NonFatal
 
 @Singleton
 class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
-  implicit ec: ExecutionContext) {
+  implicit ec: ExecutionContext)
+    extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
@@ -40,7 +41,7 @@ class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler, s
       json => TaiSuccessResponseWithPayload((json \ "data").as[TaxFreeAmountComparison])
     ) recover {
       case NonFatal(e) =>
-        Logger.warn(s"Couldn't retrieve taxFreeAmountComparison for $nino with exception:${e.getMessage}")
+        logger.warn(s"Couldn't retrieve taxFreeAmountComparison for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 }

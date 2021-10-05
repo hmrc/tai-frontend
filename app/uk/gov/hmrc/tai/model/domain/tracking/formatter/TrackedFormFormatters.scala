@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.tai.model.domain.tracking.formatter
 
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json._
 import uk.gov.hmrc.tai.model.domain.tracking._
 import uk.gov.hmrc.tai.util.JsonExtra
 
-trait TrackedFormFormatters {
+trait TrackedFormFormatters extends Logging {
 
   val trackedFormReads: Reads[TrackedForm] = new Reads[TrackedForm] {
     override def reads(json: JsValue): JsResult[TrackedForm] = {
@@ -33,7 +33,7 @@ trait TrackedFormFormatters {
       val submissionReference = (json \ "dfsSubmissionReference").as[String]
       val milestones = (json \ "milestones").as[Map[String, String]]
       if (milestones.isEmpty) {
-        Logger.warn(s"no milestones for the form with reference: $submissionReference")
+        logger.warn(s"no milestones for the form with reference: $submissionReference")
         JsError("milestones list is empty")
       } else {
         milestones.filter(_._2 == "current").headOption match {
@@ -42,7 +42,7 @@ trait TrackedFormFormatters {
           case Some(("Acquired", _))   => JsSuccess(TrackedForm(id, name, TrackedFormAcquired))
           case Some(("Done", _))       => JsSuccess(TrackedForm(id, name, TrackedFormDone))
           case None =>
-            Logger.warn(s"no milestones with 'current' status for the form with reference: $submissionReference")
+            logger.warn(s"no milestones with 'current' status for the form with reference: $submissionReference")
             JsError("there is no milestone with status 'current'")
         }
       }

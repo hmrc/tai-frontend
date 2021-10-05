@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.service.journeyCompletion
 
 import javax.inject.{Inject, Named}
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
@@ -27,19 +27,19 @@ import scala.concurrent.Future
 import scala.util.control.NonFatal
 
 abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCacheService)
-    extends JourneyCacheConstants {
+    extends JourneyCacheConstants with Logging {
 
   protected def cache(key: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
     successfulJourneyCacheService.cache(key, "true") recover {
       case NonFatal(exception) =>
-        Logger.warn(s"Failed to update Journey Completion service for key:$key caused by ${exception.getStackTrace}")
+        logger.warn(s"Failed to update Journey Completion service for key:$key caused by ${exception.getStackTrace}")
         Map.empty[String, String]
     }
 
   protected def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     successfulJourneyCacheService.currentValue(key) map (_.isDefined) recover {
       case NonFatal(exception) =>
-        Logger.warn(
+        logger.warn(
           s"Failed to retrieve Journey Completion service value for key:$key caused by ${exception.getStackTrace}")
         false
     }

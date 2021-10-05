@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UnauthorizedException}
@@ -35,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
   implicit ec: ExecutionContext)
-    extends CodingComponentFormatters {
+    extends CodingComponentFormatters with Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
@@ -72,7 +72,7 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
       ) recover {
       case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
       case NonFatal(e) =>
-        Logger.warn(s"Couldn't retrieve $status $incomeType income sources for $nino with exception:${e.getMessage}", e)
+        logger.warn(s"Couldn't retrieve $status $incomeType income sources for $nino with exception:${e.getMessage}", e)
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
@@ -82,7 +82,7 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
     ) recover {
       case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
       case e: Exception =>
-        Logger.warn(s"Couldn't retrieve tax code for $nino with exception:${e.getMessage}")
+        logger.warn(s"Couldn't retrieve tax code for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
@@ -92,7 +92,7 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
     ) recover {
       case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
       case e: Exception =>
-        Logger.warn(s"Couldn't retrieve non tax code incomes for $nino with exception:${e.getMessage}")
+        logger.warn(s"Couldn't retrieve non tax code incomes for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
@@ -101,11 +101,11 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
       json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads)))
     ) recover {
       case e: NotFoundException =>
-        Logger.warn(s"Coding Components - No tax account information found: ${e.getMessage}")
+        logger.warn(s"Coding Components - No tax account information found: ${e.getMessage}")
         TaiNotFoundResponse(e.getMessage)
       case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
       case e: Exception =>
-        Logger.warn(s"Couldn't retrieve coding components for $nino with exception:${e.getMessage}")
+        logger.warn(s"Couldn't retrieve coding components for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
@@ -114,12 +114,12 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
       json => TaiSuccessResponseWithPayload((json \ "data").as[TaxAccountSummary])
     ) recover {
       case e: NotFoundException =>
-        Logger.warn(s"No tax account information found: ${e.getMessage}")
+        logger.warn(s"No tax account information found: ${e.getMessage}")
         TaiNotFoundResponse(e.getMessage)
       case e: UnauthorizedException =>
         TaiUnauthorisedResponse(e.getMessage)
       case NonFatal(e) =>
-        Logger.warn(s"Couldn't retrieve tax summary for $nino with exception:${e.getMessage}")
+        logger.warn(s"Couldn't retrieve tax summary for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
@@ -128,7 +128,7 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
     httpHandler.putToApi(updateTaxCodeIncome(nino.nino, year, id), UpdateTaxCodeIncomeRequest(newAmount)) map (_ =>
       TaiSuccessResponse) recover {
       case e: Exception =>
-        Logger.warn(s"Error while updating estimated income for $nino with exception:${e.getMessage}")
+        logger.warn(s"Error while updating estimated income for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
@@ -137,11 +137,11 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
       json => TaiSuccessResponseWithPayload((json \ "data").as[TotalTax])
     ) recover {
       case e: NotFoundException =>
-        Logger.warn(s"Total tax - No tax account information found: ${e.getMessage}")
+        logger.warn(s"Total tax - No tax account information found: ${e.getMessage}")
         TaiNotFoundResponse(e.getMessage)
       case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
       case e: Exception =>
-        Logger.warn(s"Couldn't retrieve total tax for $nino with exception:${e.getMessage}")
+        logger.warn(s"Couldn't retrieve total tax for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
