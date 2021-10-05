@@ -47,10 +47,10 @@ class TaxComponentTypeSpec extends BaseSpec {
 
       "create a valid json value" when {
         "given an Income Component Type" in {
-          Json.toJson(EmploymentIncome) mustBe JsString("EmploymentIncome")
-          Json.toJson(PensionIncome) mustBe JsString("PensionIncome")
-          Json.toJson(JobSeekerAllowanceIncome) mustBe JsString("JobSeekerAllowanceIncome")
-          Json.toJson(OtherIncome) mustBe JsString("OtherIncome")
+          Json.toJson[TaxComponentType](EmploymentIncome) mustBe JsString("EmploymentIncome")
+          Json.toJson[TaxComponentType](PensionIncome) mustBe JsString("PensionIncome")
+          Json.toJson[TaxComponentType](JobSeekerAllowanceIncome) mustBe JsString("JobSeekerAllowanceIncome")
+          Json.toJson[TaxComponentType](OtherIncome) mustBe JsString("OtherIncome")
         }
       }
     }

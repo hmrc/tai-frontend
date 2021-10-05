@@ -42,6 +42,7 @@ class YourIncomeCalculationController @Inject()(
   mcc: MessagesControllerComponents,
   historicIncomeCalculation: HistoricIncomeCalculationView,
   yourIncomeCalculation: YourIncomeCalculationView,
+  historicIncomeCalculationView: views.html.print.historicIncomeCalculationView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -108,7 +109,7 @@ class YourIncomeCalculationController @Inject()(
                 errorPagesHandler.internalServerError(
                   "Employment contains stub annual account data found meaning payment information can't be displayed")
               case (true, _) =>
-                Ok(views.html.print.historicIncomeCalculationView(historicIncomeCalculationViewModel, appConfig))
+                Ok(historicIncomeCalculationView(historicIncomeCalculationViewModel, appConfig))
               case (false, _) => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
             }
           }

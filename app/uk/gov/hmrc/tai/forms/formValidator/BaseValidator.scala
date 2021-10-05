@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.forms.formValidator
 
-import play.api.Play.current
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation._

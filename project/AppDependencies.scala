@@ -4,22 +4,22 @@ private object AppDependencies {
   import play.core.PlayVersion
   import play.sbt.PlayImport._
   
-  private val playVersion = "play-27"
+  private val playVersion = "play-28"
 
   val compile = Seq(
     filters,
     jodaForms,
     "uk.gov.hmrc"       %% "play-conditional-form-mapping"    % s"1.9.0-$playVersion",
     "uk.gov.hmrc"       %% s"bootstrap-frontend-$playVersion" % "5.3.0",
-    "uk.gov.hmrc"       %% "domain"                           % s"5.10.0-$playVersion",
+    "uk.gov.hmrc"       %% "domain"                           % s"6.1.0-$playVersion",
     "uk.gov.hmrc"       %% "url-builder"                      % s"3.5.0-$playVersion",
     "uk.gov.hmrc"       %% "play-partials"                    % s"8.1.0-$playVersion",
     "uk.gov.hmrc"       %% "play-language"                    % s"4.13.0-$playVersion",
     "uk.gov.hmrc"       %% "local-template-renderer"          % s"2.15.0-$playVersion",
-    "uk.gov.hmrc"       %% "play-ui"                          % s"9.2.0-$playVersion",
+    "uk.gov.hmrc"       %% "play-ui"                          % s"9.7.0-$playVersion",
     "org.typelevel"     %% "cats-core"                        % "2.0.0",
     "com.typesafe.play" %% "play-json-joda"                   % "2.6.10",
-    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.15.0-$playVersion"
+    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.18.0-$playVersion"
   )
 
   trait TestDependencies {

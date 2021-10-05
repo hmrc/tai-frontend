@@ -15,9 +15,9 @@
  *@
 
 @import uk.gov.hmrc.urls.Link
-@import uk.gov.hmrc.play.views.html.layouts.loginStatus
+@import uk.gov.hmrc.play.views.html.layouts._
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTemplate, loginStatus: LoginStatus)
 
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 

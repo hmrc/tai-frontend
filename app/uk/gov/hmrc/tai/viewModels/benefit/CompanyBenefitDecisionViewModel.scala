@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.viewModels.benefit
 
-import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages
 

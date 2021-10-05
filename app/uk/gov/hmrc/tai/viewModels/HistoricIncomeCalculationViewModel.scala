@@ -22,7 +22,6 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.TaiConstants.EYU_DATE_FORMAT
 import play.api.i18n.Messages
-import play.api.Play.current
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.urls.Link
 

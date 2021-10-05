@@ -312,6 +312,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       mcc,
       inject[HistoricIncomeCalculationView],
       inject[YourIncomeCalculationView],
+      inject[views.html.print.historicIncomeCalculationView],
       templateRenderer,
       inject[ErrorPagesHandler]
     ) {

@@ -40,9 +40,9 @@ class RealTimeStatusSpec extends PlaySpec {
     "create a valid json value" when {
       "given a RealTimeStats object" in {
 
-        Json.toJson(Available) mustBe JsString("Available")
-        Json.toJson(TemporarilyUnavailable) mustBe JsString("TemporarilyUnavailable")
-        Json.toJson(Unavailable) mustBe JsString("Unavailable")
+        Json.toJson[RealTimeStatus](Available) mustBe JsString("Available")
+        Json.toJson[RealTimeStatus](TemporarilyUnavailable) mustBe JsString("TemporarilyUnavailable")
+        Json.toJson[RealTimeStatus](Unavailable) mustBe JsString("Unavailable")
       }
     }
   }

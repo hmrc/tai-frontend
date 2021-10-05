@@ -21,11 +21,12 @@ import org.joda.time.LocalDate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
-import play.api.Logger
+import play.api.Logging
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnector: JourneyCacheConnector) {
+class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnector: JourneyCacheConnector)
+    extends Logging {
 
   def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     currentValueAs[String](key, identity)
@@ -108,7 +109,7 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
       cache.get(key) match {
         case Some(str) if str.trim.nonEmpty => Some(str)
         case _ => {
-          Logger.warn(s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
+          logger.warn(s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
           None
         }
       }

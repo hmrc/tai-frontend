@@ -19,7 +19,7 @@ package controllers.income
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import play.api.Logger
+import play.api.Logging
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
@@ -59,7 +59,7 @@ class UpdateIncomeNextYearController @Inject()(
   sameEstimatedPay: SameEstimatedPayView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with FormValuesConstants with I18nSupport {
+    extends TaiBaseController(mcc) with FormValuesConstants with I18nSupport with Logging {
 
   def onPageLoad(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -102,7 +102,7 @@ class UpdateIncomeNextYearController @Inject()(
           resultFunc(employmentId, vm)
         }
       case Left(error) =>
-        Logger.warn(s"[UpdateIncomeNextYearController]: $error")
+        logger.warn(s"[UpdateIncomeNextYearController]: $error")
         Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad()))
     }
 
@@ -201,7 +201,7 @@ class UpdateIncomeNextYearController @Inject()(
                 Ok(updateIncomeCYPlus1Confirm(vm))
             }
         case Left(error) =>
-          Logger.warn("Could not obtain new amount in confirm: " + error)
+          logger.warn("Could not obtain new amount in confirm: " + error)
           Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad()))
       }
     }
