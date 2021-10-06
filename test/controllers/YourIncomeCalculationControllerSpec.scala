@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
 import utils.BaseSpec
 import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
+import views.html.print.HistoricIncomePrintView
 
 import scala.concurrent.Future
 
@@ -312,7 +313,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       mcc,
       inject[HistoricIncomeCalculationView],
       inject[YourIncomeCalculationView],
-      inject[views.html.print.historicIncomeCalculationView],
+      inject[HistoricIncomePrintView],
       templateRenderer,
       inject[ErrorPagesHandler]
     ) {

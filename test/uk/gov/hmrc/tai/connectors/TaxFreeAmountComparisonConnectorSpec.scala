@@ -44,7 +44,7 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
           "data" -> Json.obj(
             "previous" -> Json.arr(
               Json.obj(
-                "componentType" -> Json.toJsFieldJsValueWrapper[TaxComponentType](CarBenefit),
+                "componentType" -> Json.toJson[TaxComponentType](CarBenefit),
                 "employmentId"  -> 1,
                 "amount"        -> 1,
                 "description"   -> "Car Benefit",
@@ -54,7 +54,7 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
             ),
             "current" -> Json.arr(
               Json.obj(
-                "componentType" -> Json.toJsFieldJsValueWrapper[TaxComponentType](CarBenefit),
+                "componentType" -> Json.toJson[TaxComponentType](CarBenefit),
                 "employmentId"  -> 1,
                 "amount"        -> 1,
                 "description"   -> "Car Benefit",

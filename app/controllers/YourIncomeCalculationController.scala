@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth._
+
 import javax.inject.Inject
 import play.api.mvc._
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -28,6 +29,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
 import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
+import views.html.print.HistoricIncomePrintView
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,7 +44,7 @@ class YourIncomeCalculationController @Inject()(
   mcc: MessagesControllerComponents,
   historicIncomeCalculation: HistoricIncomeCalculationView,
   yourIncomeCalculation: YourIncomeCalculationView,
-  historicIncomeCalculationView: views.html.print.historicIncomeCalculationView,
+  historicIncomePrintView: HistoricIncomePrintView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -109,7 +111,7 @@ class YourIncomeCalculationController @Inject()(
                 errorPagesHandler.internalServerError(
                   "Employment contains stub annual account data found meaning payment information can't be displayed")
               case (true, _) =>
-                Ok(historicIncomeCalculationView(historicIncomeCalculationViewModel, appConfig))
+                Ok(historicIncomePrintView(historicIncomeCalculationViewModel, appConfig))
               case (false, _) => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
             }
           }
