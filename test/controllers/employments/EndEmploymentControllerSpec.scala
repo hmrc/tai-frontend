@@ -115,7 +115,7 @@ class EndEmploymentControllerSpec
         val endEmploymentTest = createEndEmploymentTest
 
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         val employmentId = 1
 
@@ -143,7 +143,7 @@ class EndEmploymentControllerSpec
         val endEmploymentTest = createEndEmploymentTest
 
         val payment = paymentOnDate(LocalDate.now().minusWeeks(6))
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         val employmentId = 1
 
@@ -169,7 +169,7 @@ class EndEmploymentControllerSpec
         val date = LocalDate.now().minusWeeks(6)
 
         val payment = paymentOnDate(date)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
         val dataToCache = Map(
@@ -197,7 +197,7 @@ class EndEmploymentControllerSpec
         val request = fakeGetRequest.withFormUrlEncodedBody(EmploymentDecision -> NoValue)
 
         val payment = paymentOnDate(LocalDate.now().minusWeeks(8)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         val employmentId = 1
 
