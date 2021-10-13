@@ -130,7 +130,7 @@
           // $(countElement).trigger('input')
           // CharCount.prototype.updateMessage.call(countElement)
           CharCount.prototype.updateCountMessage(countElementExtended)
-          countElement.setAttribute('maxlength', '')
+          countElement.removeAttribute('maxlength')
           countElement.setAttribute('data-maxlength', maxLength)
           
           countElement.classList.add('govuk-c-charcount')
