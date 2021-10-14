@@ -16,7 +16,6 @@
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import uk.gov.hmrc.urls.Link
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
@@ -42,12 +41,12 @@
     </div>
 
     <div class="subsection">
-        @Link.toInternalPage(
+        @includes.link(
             id=Some("returnToYourIncomeDetails"),
-            value=Some(Messages("return.to.your.income.tax.summary")),
+            copy=Messages("return.to.your.income.tax.summary"),
             url = routes.TaxAccountSummaryController.onPageLoad.url,
-            cssClasses=Some("button")
-            ).toHtml
+            linkClasses=Seq("button")
+        )
     </div>
 
 }

@@ -17,11 +17,13 @@
 @(
     copy: String,
     altCopy: Option[String] = Some(""),
+    visuallyHiddenText: Option[String] = None,
     url: String,
     isButton: Boolean = false,
     isSecondary: Boolean = false,
     linkClasses: Seq[String] = Seq.empty,
     id: Option[String] = Some(""),
+    externalLink: Boolean = false,
     attributes: Seq[(String, String)] = Seq.empty
 )(implicit m: Messages)
 
@@ -39,6 +41,11 @@
             class="@linkClasses.mkString(" ")"
         }
     }
+
+    @if(externalLink) {
+        target="_blank" rel="noreferrer noopener"
+    }
+
     @if(attributes){
         @for((attr, value) <- attributes){
             @attr="@value"
@@ -48,8 +55,16 @@
 
     @if(altCopy.getOrElse("").nonEmpty){
         <span aria-hidden="true">@copy</span>
-        <span class="visually-hidden">@altCopy</span>
+        <span class="visuallyhidden">@altCopy</span>
     } else {
         @copy
+        @visuallyHiddenText.map { _ =>
+            <span class="visuallyhidden">@visuallyHiddenText</span>
+        }
     }
+
+    @if(externalLink) {
+        @m("label.opens_in_new_tab")
+    }
+
 </a>

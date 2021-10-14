@@ -21,7 +21,6 @@
 
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@import uk.gov.hmrc.urls.Link
 
 
 @mainTemplate(
@@ -32,5 +31,9 @@
     </header>
     <p>@messages("tai.timeout.message")</p>
     <p>@messages("tai.timeout.message.pleaseLogin")</p>
-    @Link.toInternalPage(url=routes.TaxAccountSummaryController.onPageLoad().toString, value=Some(messages("tai.timeout.login_button.text")), cssClasses=Some("button")).toHtml
+    @includes.link(
+        url=routes.TaxAccountSummaryController.onPageLoad().toString,
+        copy=messages("tai.timeout.login_button.text"),
+        linkClasses=Seq("button")
+    )
 }

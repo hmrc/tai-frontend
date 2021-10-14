@@ -21,7 +21,6 @@
 
 @(appConfig: ApplicationConfig)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
-@import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.views.formatting.Dates
 
@@ -51,7 +50,11 @@
                         <li>@Messages("tai.gatekeeper.outsideUk")</li>
                     </ul>
                 </div>
-                @Link.toInternalPage(id=Some("backLink"), url=appConfig.pertaxServiceUrl.toString,value=Some(Messages("tai.backToHome-link.upper"))).toHtml
+                @includes.link(
+                    id=Some("backLink"),
+                    url=appConfig.pertaxServiceUrl.toString,
+                    copy=Messages("tai.backToHome-link.upper")
+                )
             </div>
         </div>
     </div>

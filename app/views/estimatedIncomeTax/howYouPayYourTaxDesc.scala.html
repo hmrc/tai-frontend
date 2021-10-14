@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.urls.Link
 
 @()(implicit messages: Messages)
 
@@ -24,8 +23,8 @@
 </h2>
 <p  id="howYouPayDesc">
     @Html(Messages("tai.estimatedIncome.howYouPay.desc",
-    Link.toInternalPage(
+    includes.link(
     id=Some("taxCodesLink"),
     url=routes.YourTaxCodeController.taxCodes.url,
-    value=Some(Messages("tai.estimatedIncome.taxCodes.link"))).toHtml))
+    copy=Messages("tai.estimatedIncome.taxCodes.link"))))
 </p>

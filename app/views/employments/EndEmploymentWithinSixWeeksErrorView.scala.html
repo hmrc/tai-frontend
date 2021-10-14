@@ -17,7 +17,6 @@
 @import includes.backLink
 @import org.joda.time.LocalDate
 @import uk.gov.hmrc.tai.viewModels.employments.WithinSixWeeksViewModel
-@import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 @import scala.concurrent.ExecutionContext
 
@@ -49,11 +48,11 @@
     <p>@messages("tai.endEmploymentWithinSixWeeksError.wait6Weeks", model.earliestUpdateDateInHtml)
 
     <div class="subsection">
-        @Link.toInternalPage(
-        id=Some("returnToYourSummary"),
-        value=Some(Messages("return.to.your.income.tax.summary")),
-        url = routes.TaxAccountSummaryController.onPageLoad.url,
-        cssClasses=Some("button")
-        ).toHtml
+        @includes.link(
+            id=Some("returnToYourSummary"),
+            copy=Messages("return.to.your.income.tax.summary"),
+            url = routes.TaxAccountSummaryController.onPageLoad.url,
+            linkClasses=Seq("button")
+        )
     </div>
 }

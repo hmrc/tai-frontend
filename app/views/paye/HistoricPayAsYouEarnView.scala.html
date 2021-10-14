@@ -19,9 +19,8 @@
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.service.TaxPeriodLabelService
-@import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
-
+@import includes.link
 @import controllers.auth.AuthenticatedRequest
 
 @this(mainTemplate: MainTemplate)
@@ -32,12 +31,12 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
 @backLinkToChooseTaxYear = {
 <p class="flush--bottom">
-    @Link.toInternalPage(
-    id=Some("returnToChooseTaxYearLink"),
-    url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-    value=Some(messages("tai.returnToChooseTaxYear")),
-    cssClasses=Some("link-back")
-    ).toHtml
+    @link(
+        id=Some("returnToChooseTaxYearLink"),
+        url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+        copy=messages("tai.returnToChooseTaxYear"),
+        linkClasses=Seq("link-back")
+    )
 </p>
 }
 
@@ -93,20 +92,20 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
             <h3 class="heading-section heading-medium">@messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
             <p>
                 @messages("tai.paye.lastTaxYear.incorrectInformation.text")
-                @Link.toInternalPage(
+                @link(
                     url=controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(viewModel.taxYear).url,
-                    value=Some(messages("tai.paye.lastTaxYear.incorrectInformation.link")),
+                    copy=messages("tai.paye.lastTaxYear.incorrectInformation.link"),
                     id=Some("updateEmployment")
-                ).toHtml
+                )
             </p>
             @if(viewModel.p800ServiceIsAvailable) {
                 <p>
                     @messages("tai.paye.lastTaxYear.checkIncomeTax.text")
-                    @Link.toInternalPage(
+                    @link(
                         url=appConfig.taxYouPaidStatus.toString,
-                        value=Some(messages("tai.paye.lastTaxYear.checkIncomeTax.link")),
+                        copy=messages("tai.paye.lastTaxYear.checkIncomeTax.link"),
                         id=Some("p800Link")
-                    ).toHtml
+                    )
                     @messages("tai.paye.lastTaxYear.checkIncomeTax.for", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year))
                 </p>
             }
@@ -137,11 +136,11 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                     </p>
 
                     @if(viewModel.showTaxCodeDescriptionLink) {
-                        @Link.toInternalPage(
+                        @link(
                             url=routes.YourTaxCodeController.prevTaxCodes(viewModel.taxYear).toString(),
-                            value=Some(messages("tai.taxCode.description.link")),
-                            cssClasses=Some("taxCodeDescription")
-                        ).toHtml
+                            copy=messages("tai.taxCode.description.link"),
+                            linkClasses=Seq("taxCodeDescription")
+                        )
                     }
 
                     <p>
@@ -162,7 +161,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                     </p>
 
                     <p class="flush--top">
-                        @includes.link(
+                        @link(
                             id = Some(s"${incomeType}${idx}-checkDetailsLink"),
                             url = routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(viewModel.taxYear, employment.id).toString(),
                             copy=messages("tai.paye.lastTaxYear.table.link"),

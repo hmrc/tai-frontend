@@ -16,10 +16,10 @@
 
 @import uk.gov.hmrc.tai.viewModels.TaxCodeComparisonViewModel
 @import uk.gov.hmrc.tai.config.ApplicationConfig
-@import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.IncomeSourceComparisonViewModel
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.views.formatting.Dates
+@import includes.link
 
 @(incomeSourceViewModel: IncomeSourceComparisonViewModel)(implicit messages: Messages)
 
@@ -94,12 +94,12 @@
                     </td>
                     @if(employmentIncomeSourceDetail.isLive) {
                         <td>
-                        @Link.toInternalPage(
+                        @link(
                             id = Some(s"estimated-income-link-${employmentIncomeSourceDetail.empId}"),
                             url = controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(employmentIncomeSourceDetail.empId).url,
-                            value = Some(messages("tai.incomeTaxComparison.incomeTax.updateEstimated")),
-                            hiddenInfo = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)}")
-                        ).toHtml
+                            copy = messages("tai.incomeTaxComparison.incomeTax.updateEstimated"),
+                            visuallyHiddenText = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)}")
+                        )
                         </td>
                     } else {
                         <td>
@@ -142,12 +142,12 @@
                     </td>
                     @if(pensionIncomeSourceDetail.isLive) {
                         <td>
-                        @Link.toInternalPage(
+                        @includes.link(
                             id = Some(s"estimated-income-link-${pensionIncomeSourceDetail.empId}"),
                             url = controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(pensionIncomeSourceDetail.empId).url,
-                            value = Some(messages("tai.incomeTaxComparison.incomeTax.updateEstimated")),
-                            hiddenInfo = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)}")
-                        ).toHtml
+                            copy = messages("tai.incomeTaxComparison.incomeTax.updateEstimated"),
+                            visuallyHiddenText = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)}")
+                        )
                         </td>
                     } else {
                         <td>

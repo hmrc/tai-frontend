@@ -23,11 +23,10 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
 ec: scala.concurrent.ExecutionContext)
 
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 @import includes.cancelLink
 @import uk.gov.hmrc.tai.config.ApplicationConfig
-
+@import includes.link
 
 @header = @{
     ptaHeader(
@@ -50,14 +49,14 @@ ec: scala.concurrent.ExecutionContext)
         <p>
             @if(isPension) {
                 @messages("tai.incomes.landing.pension.ended", incomeName)
-                @includes.link(
+                @link(
                         url=appConfig.incomeFromEmploymentPensionLinkUrl,
                         copy=messages("tai.incomes.landing.pension.ended.link"),
                         id=Some("updatePension")
                     )
             } else {
                 @messages("tai.incomes.landing.employment.ended", incomeName)
-                @includes.link(
+                @link(
                     url=controllers.employments.routes.EndEmploymentController.onPageLoad(id).toString,
                     copy=messages("tai.incomes.landing.employment.ended.link"),
                     id=Some("updateEmployer")
@@ -66,7 +65,7 @@ ec: scala.concurrent.ExecutionContext)
         </p>
     </div>
     <div>
-        @includes.link(
+        @link(
             copy=messages("tai.income.details.updateTaxableIncome.update"),
             url = controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).toString,
             isButton=true

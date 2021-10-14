@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.urls.Link
 @import scala.concurrent.ExecutionContext
 
 @this(mainTemplate: MainTemplate)
@@ -42,10 +41,10 @@
             <p  id="paraFour">@Html(
                 Messages(
                     "tai.noPrimary.para4",
-                    Link.toExternalPage(
+                    includes.link(
                         url="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees/",
-                        value=Some(Messages("tai.noPrimary.contact"))
-                    ).toHtml
+                        copy=Messages("tai.noPrimary.contact")
+                    )
                 )
             )
             </p>

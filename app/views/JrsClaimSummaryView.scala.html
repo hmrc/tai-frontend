@@ -18,10 +18,10 @@
 @import uk.gov.hmrc.play.language.LanguageUtils
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.{JrsClaims, YearAndMonth}
-@import uk.gov.hmrc.urls.Link
 
 @import scala.concurrent.ExecutionContext
 @import uk.gov.hmrc.tai.model.YearAndMonth.firstClaimDate
+@import includes.link
 
 @this(mainTemplate: MainTemplate, languageUtils: LanguageUtils)
 
@@ -38,12 +38,14 @@
         <div class="grid grid-2-3">
             <div class="inner-block">
 
-                <p class="flush--bottom">@Link.toInternalPage(
-                    id=Some("backLink"),
-                    value=Some(Messages("check.jrs.back.link")),
-                    url = "#",
-                    cssClasses=Some("link-back js-visible")
-                    ).toHtml</p>
+                <p class="flush--bottom">
+                    @link(
+                        id=Some("backLink"),
+                        copy=Messages("check.jrs.back.link"),
+                        url = "#",
+                        linkClasses=Seq("link-back js-visible")
+                    )
+                </p>
 
                 <h1 class="heading-xlarge">@messages("check.jrs.claims.title")</h1>
 
@@ -81,7 +83,7 @@
                 <h2 class="heading-section">@messages("check.jrs.information.is.different.heading")</h2>
                 <p>@messages(s"check.jrs.speak.to.${employerMessageKey}")</p>
                 <p>@messages("check.jrs.you.can")
-                    @Link.toExternalPage(url = messages("jrs.report.fraud.link"), id = Some("report-fraud-link"), value = Some(messages("check.jrs.report.fraud"))).toHtml
+                    @link(url = messages("jrs.report.fraud.link"), id = Some("report-fraud-link"), copy = messages("check.jrs.report.fraud"), externalLink = true)
                 </a>
                     @messages(s"check.jrs.report.fraud.if.${employerMessageKey}.abusing.scheme")
                 </p>

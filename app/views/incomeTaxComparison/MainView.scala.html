@@ -18,11 +18,10 @@
 @import uk.gov.hmrc.play.views.formatting.Dates
 @import incomeTaxComparison._
 @import uk.gov.hmrc.tai.config.ApplicationConfig
-@import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{IncomeTaxComparisonViewModel, EstimatedIncomeTaxComparisonViewModel}
 @import uk.gov.hmrc.tai.model.TaxYear
 @import scala.concurrent.ExecutionContext
-
+@import includes.link
 @import controllers.auth.AuthenticatedRequest
 
 @this(mainTemplate: MainTemplate)
@@ -32,12 +31,12 @@
 
 @backLinkToChooseTaxYear = {
     <p class="flush--bottom">
-        @Link.toInternalPage(
+        @includes.link(
             id=Some("returnToChooseTaxYearLink"),
             url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-            value=Some(messages("your.paye.income.tax.overview")),
-            cssClasses=Some("link-back")
-        ).toHtml
+            copy=messages("your.paye.income.tax.overview"),
+            linkClasses=Seq("link-back")
+        )
     </p>
 }
 
@@ -103,7 +102,7 @@
 
                 <ul class="list list-bullet margin-bottom-large">
                     <li>
-                        @includes.link(
+                        @link(
                             id = Some("companyBenefitsLink"),
                             url = appConfig.companyBenefitsLinkUrl,
                             copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText"),
@@ -112,7 +111,7 @@
                     </li>
 
                     <li>
-                        @includes.link(
+                        @link(
                             id = Some("allowancesTaxReliefsLink"),
                             url = appConfig.taxFreeAllowanceLinkUrl,
                             copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText"),
@@ -121,7 +120,7 @@
                     </li>
 
                     <li>
-                        @includes.link(
+                        @link(
                             id = Some("otherIncomeLink"),
                             url = appConfig.otherIncomeLinkUrl,
                             copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText"),
@@ -132,11 +131,10 @@
             </div>
 
             <p>
-                @Link.toInternalPage(
+                @link(
                 id=Some("returnToPAYEIncomeOverviewLink"),
                 url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-                value=Some(messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
-                ).toHtml
+                copy=messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
             </p>
 
         </div>

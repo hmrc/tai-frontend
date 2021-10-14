@@ -19,7 +19,6 @@
 @import uk.gov.hmrc.tai.model.domain.{Available, TemporarilyUnavailable}
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
-@import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.play.views.formatting.Dates
 @import controllers.auth.AuthenticatedRequest
 
@@ -30,11 +29,11 @@
 
 @printLink= {
     <p class="flush--bottom">
-        @Link.toInternalPage(
+        @includes.link(
             id=Some("printLink"),
             url=routes.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(historicIncomeCalculationViewModel.taxYear,historicIncomeCalculationViewModel.employmentId).toString,
-            value=Some(messages("tai.label.print")),
-            cssClasses=Some("tai-print-link")).toHtml
+            copy=messages("tai.label.print"),
+            linkClasses=Seq("tai-print-link"))
     </p>
 }
 

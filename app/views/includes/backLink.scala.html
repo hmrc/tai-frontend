@@ -16,12 +16,13 @@
 
 @()(implicit m: Messages)
 
-@import uk.gov.hmrc.urls.Link
 
 
-<p class="flush--bottom">@Link.toInternalPage(
-    id=Some("backLink"),
-    value=Some(Messages("tai.back-link.upper")),
-    url = "#",
-    cssClasses=Some("link-back js-visible")
-).toHtml</p>
+<p class="flush--bottom">
+    @includes.link(
+        id=Some("backLink"),
+        copy=Messages("tai.back-link.upper"),
+        url = "#",
+        linkClasses=Seq("link-back js-visible")
+    )
+</p>

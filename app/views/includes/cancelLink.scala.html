@@ -16,14 +16,13 @@
 
 @(url: Call, linkText: Option[String] = None)(implicit messages: Messages)
 
-@import uk.gov.hmrc.urls.Link
 
 @cancelText = @{if(linkText.isDefined) linkText else Some(messages("tai.cancel"))}
 
 <div class="subsection">
-    @{Link.toInternalPage(
+    @{includes.link(
         id=Some("cancelLink"),
         url=url.toString,
-        value=cancelText
-        ).toHtml}
+        copy=cancelText.getOrElse("")
+        )}
 </div>

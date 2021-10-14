@@ -16,7 +16,6 @@
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.ptaHeader
-@import uk.gov.hmrc.urls.Link
 @import includes._
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 
@@ -49,12 +48,12 @@
 
 <p>@messages("tai.checkYourAnswers.confirmText")</p>
 
-@Link.toInternalPage(
+@includes.link(
     id=Some("estimatedPayLink"),
     url=income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage().url,
-    value=Some(messages("tai.WhatDoYouWantToDo.submit")),
-    cssClasses=Some("button")
-).toHtml
+    copy=messages("tai.WhatDoYouWantToDo.submit"),
+    linkClasses=Seq("button")
+)
 
 @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
 

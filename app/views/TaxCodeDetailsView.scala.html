@@ -18,8 +18,8 @@
 @import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
 @import scala.collection.immutable.ListMap
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
+@import includes.link
 
 @this(mainTemplate: MainTemplate)
 
@@ -78,10 +78,10 @@
                 @taxCodeViewModel.employmentId.map { empId =>
                     <div class="section flush--bottom">
                         <p>@Messages("tai.taxCode.wrong")
-                            @Link.toInternalPage(
+                            @link(
                                 id = Some("employmentDetails"),
                                 url = routes.IncomeSourceSummaryController.onPageLoad(empId).url,
-                                value = Some(taxCodeViewModel.incomeDetailsMessage)).toHtml</p>
+                                copy = taxCodeViewModel.incomeDetailsMessage)</p>
                     </div>
                 }
 
@@ -95,23 +95,23 @@
                     <h2 class="heading-section">@messages("tai.taxCode.sideBar.heading")</h2>
 
                     <div class="link-list">
-                        @Link.toInternalPage(
+                        @link(
                             id=Some("taxFreeAmountLink"),
                             url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                            value=Some(Messages("check.your.tax.free.amount")),
-                            cssClasses=Some("link-list__item")).toHtml
+                            copy=Messages("check.your.tax.free.amount"),
+                            linkClasses=Seq("link-list__item"))
 
-                        @Link.toInternalPage(
+                        @link(
                             id=Some("incomeTaxEstimateLink"),
                             url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
-                            value=Some(Messages("check.your.income.tax.estimate")),
-                            cssClasses=Some("link-list__item")).toHtml
+                            copy=Messages("check.your.income.tax.estimate"),
+                            linkClasses=Seq("link-list__item"))
 
-                        @Link.toInternalPage(
+                        @link(
                             id=Some("taxableIncomeLink"),
                             url=routes.TaxAccountSummaryController.onPageLoad.url,
-                            value=Some(Messages("return.to.your.income.tax.summary")),
-                            cssClasses=Some("link-list__item")).toHtml
+                            copy=Messages("return.to.your.income.tax.summary"),
+                            linkClasses=Seq("link-list__item"))
                     </div>
                 </nav>
             </div>

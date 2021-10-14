@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.urls.Link
 @import includes.confirmation_summary
 
 @import views.html.includes.confirmationSuccessBanner
@@ -32,11 +31,11 @@
 
     @confirmation_summary("tai.confirmation.paraTwo")
 
-    @Link.toInternalPage(
+    @includes.link(
         id=Some("returnToSummary"),
-        value=Some(Messages("return.to.your.income.tax.summary")),
+        copy=Messages("return.to.your.income.tax.summary"),
         url = routes.TaxAccountSummaryController.onPageLoad().toString,
-        cssClasses=Some("button")
-    ).toHtml
+        linkClasses=Seq("button")
+    )
 
 }

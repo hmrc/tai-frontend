@@ -69,6 +69,7 @@ label.find_out_about_call_charges=Gwybodaeth am gostau galwadau
 label.how_to_contact_us=Dulliau eraill o gysylltu â ni
 label.how_to_fix_this=Sut i unioni hyn
 label.opens_in_a_new_window=(yn agor ffenestr newydd)
+label.opens_in_new_tab=(yn agor tab newydd)
 label.phone_lines_are_less_busy_before_10am_monday-to_friday=Mae llinellau ffôn yn llai prysur cyn 10:00, ddydd Llun i ddydd Gwener.
 label.phone_lines_are_open_8am_to_8pm_monday_to_friday_and_8am_to_4pm_on_saturday=Yr oriau agor yw 08:00 tan 17:00, ddydd Llun i ddydd Gwener.
 label.phone_mci=Ffôn 0300 200 1900

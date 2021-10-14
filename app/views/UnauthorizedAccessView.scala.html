@@ -14,8 +14,8 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.play.views.html.layouts.loginStatus
+
 
 @this(mainTemplate: MainTemplate)
 
@@ -29,5 +29,5 @@
         <h1>@Messages("tai.gatekeeper.refuse.title")</h1>
     </header>
     <p>@Messages("tai.gatekeeper.refuse.message")</p>
-    <p  id="find-out-more">@Messages("tai.gatekeeper.findout.more") @Link.toExternalPage(url = Messages("tai.link.income_tax.url"), id = Some("income-tax-link"), value = Some(Messages("tai.gov.uk.text"))).toHtml</p>
+    <p  id="find-out-more">@Messages("tai.gatekeeper.findout.more") @includes.link(url = Messages("tai.link.income_tax.url"), id = Some("income-tax-link"), copy = Messages("tai.gov.uk.text"), externalLink = true)</p>
 }

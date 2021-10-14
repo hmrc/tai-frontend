@@ -16,11 +16,10 @@
 
 @import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import includes.taxFreeAmountSummary
-
+@import includes.link
 
 @this(mainTemplate: MainTemplate)
 
@@ -73,35 +72,31 @@
                     <h2 id="addSomethingMissingHeading">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
 
                     <p class="icon icon-plus display-block">
-                        @Link.toInternalPage(
+                        @link(
                         id=Some("addMissingAddition"),
                         url=appConfig.taxFreeAllowanceLinkUrl,
-                        value=Some(Messages("tai.taxFreeAmount.missing.section.addition")),
-                        cssClasses=Some("")).toHtml
+                        copy=Messages("tai.taxFreeAmount.missing.section.addition"))
                     </p>
 
                     <p class="icon icon-plus display-block">
-                        @Link.toInternalPage(
-                        id=Some("addMissingDeduction"),
-                        url=appConfig.companyBenefitsLinkUrl,
-                        value=Some(Messages("add.missing.company.benefit")),
-                        cssClasses=Some("")).toHtml
+                        @link(
+                            id=Some("addMissingDeduction"),
+                            url=appConfig.companyBenefitsLinkUrl,
+                            copy=Messages("add.missing.company.benefit"))
                     </p>
 
                     <p class="icon icon-plus display-block">
-                    @Link.toInternalPage(
-                        id=Some("addMissingInvestment"),
-                        url=appConfig.investmentIncomeLinkUrl,
-                        value=Some(Messages("tai.taxFreeAmount.missing.section.investment")),
-                        cssClasses=Some("")).toHtml
+                        @link(
+                            id=Some("addMissingInvestment"),
+                            url=appConfig.investmentIncomeLinkUrl,
+                            copy=Messages("tai.taxFreeAmount.missing.section.investment"))
                     </p>
 
                     <p class="icon icon-plus display-block">
-                        @Link.toInternalPage(
-                        id=Some("addMissingIncome"),
-                        url=appConfig.otherIncomeLinkUrl,
-                        value=Some(Messages("tai.taxFreeAmount.missing.section.income")),
-                        cssClasses=Some("")).toHtml
+                        @link(
+                            id=Some("addMissingIncome"),
+                            url=appConfig.otherIncomeLinkUrl,
+                            copy=Messages("tai.taxFreeAmount.missing.section.income"))
                     </p>
                 </div>
 
@@ -114,23 +109,22 @@
                     <h2 class="heading-section">@Messages("tai.taxCode.sideBar.heading")</h2>
 
                     <div class="link-list">
-                        @Link.toInternalPage(
+                        @link(
                             id=Some("taxCodesLink"),
                             url=routes.YourTaxCodeController.taxCodes.url,
-                            value=Some(Messages("check.your.tax.codes")),
-                            cssClasses=Some("link-list__item")).toHtml
+                            copy=Messages("check.your.tax.codes"))
 
-                        @Link.toInternalPage(
+                        @link(
                             id=Some("incomeTaxEstimateLink"),
                             url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
-                            value=Some(Messages("check.your.income.tax.estimate")),
-                            cssClasses=Some("link-list__item")).toHtml
+                            copy=Messages("check.your.income.tax.estimate"),
+                            linkClasses=Seq("link-list__item"))
 
-                        @Link.toInternalPage(
+                        @link(
                             id=Some("taxableIncomeLink"),
                             url=routes.TaxAccountSummaryController.onPageLoad.url,
-                            value=Some(Messages("return.to.your.income.tax.summary")),
-                            cssClasses=Some("link-list__item")).toHtml
+                            copy=Messages("return.to.your.income.tax.summary"),
+                            linkClasses=Seq("link-list__item"))
                     </div>
                 </nav>
             </div>
