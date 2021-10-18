@@ -19,7 +19,7 @@ package views.html.taxCodeChange
 import controllers.routes
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.urls.Link
+import views.html.includes.link
 
 class WhatHappensNextViewSpec extends TaiViewSpec {
 
@@ -33,31 +33,27 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
     "display static messages" in {
       doc must haveParagraphWithText(messages("taxCode.change.whatHappensNext.paragragh1"))
 
-      doc(view).select("#check-income-tax-estimate").html() mustBe Html(
+      doc(view).select("#check-income-tax-estimate").html().replaceAll("\\s+", "") mustBe Html(
         messages(
           "taxCode.change.whatHappensNext.paragragh2",
-          Link
-            .toInternalPage(
-              id = Some("income-tax-estimate-link"),
-              url = routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
-              value = Some(messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link"))
-            )
-            .toHtml
-        )).body
+          link(
+            id = Some("income-tax-estimate-link"),
+            url = routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
+            copy = messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")
+          )
+        )).body.replaceAll("\\s+", "")
 
       doc must haveH2HeadingWithText(messages("taxCode.change.whatHappensNext.wrongInformation.text"))
 
-      doc(view).select("#update-current-income-or-benefits").html() mustBe Html(
+      doc(view).select("#update-current-income-or-benefits").html().replaceAll("\\s+", "") mustBe Html(
         messages(
           "taxCode.change.whatHappensNext.paragragh3",
-          Link
-            .toInternalPage(
-              id = Some("update-current-income-or-benefits-link"),
-              url = routes.TaxAccountSummaryController.onPageLoad().url,
-              value = Some(messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link"))
-            )
-            .toHtml
-        )).body
+          link(
+            id = Some("update-current-income-or-benefits-link"),
+            url = routes.TaxAccountSummaryController.onPageLoad().url,
+            copy = messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")
+          )
+        )).body.replaceAll("\\s+", "")
     }
 
   }

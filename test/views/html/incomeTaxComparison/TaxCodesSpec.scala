@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{TaxCodeComparisonViewModel, TaxCodeDetail}
-import uk.gov.hmrc.urls.Link
+import views.html.includes.link
 
 class TaxCodesSpec extends TaiViewSpec {
   "Cy plus one tax codes view" must {
@@ -32,15 +32,14 @@ class TaxCodesSpec extends TaiViewSpec {
     }
 
     "display scottish tax code information" in {
-      doc.select("#scottishTaxCodeInfo").html() mustBe Html(
+      doc.select("#scottishTaxCodeInfo").html().replaceAll("\\s+", "") mustBe Html(
         messages(
           "tai.incomeTaxComparison.taxCodes.scottishInfo",
-          Link
-            .toExternalPage(
-              url = appConfig.scottishRateIncomeTaxUrl,
-              value = Some(messages("tai.taxCode.scottishIncomeText.link")))
-            .toHtml
-        )).body
+          link(
+            url = appConfig.scottishRateIncomeTaxUrl,
+            copy = messages("tai.taxCode.scottishIncomeText.link"),
+            externalLink = true)
+        )).body.replaceAll("\\s+", "")
     }
 
     "display tax code comparision table" in {

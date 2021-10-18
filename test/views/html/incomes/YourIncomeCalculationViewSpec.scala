@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.util.DateHelper
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{LatestPayment, PaymentDetailsViewModel, YourIncomeCalculationViewModel}
-import uk.gov.hmrc.urls.Link
+import views.html.includes.link
 
 class YourIncomeCalculationViewSpec extends TaiViewSpec {
 
@@ -115,33 +115,29 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
 
         def liveView = template(model)
 
-        doc(liveView).select("#pensionUpdateLink").html() mustBe Html(
+        doc(liveView).select("#pensionUpdateLink").html().replaceAll("\\s+", "") mustBe Html(
           messages(
             "tai.income.calculation.update.pension",
-            Link
-              .toInternalPage(
-                url = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
-                  .onPageLoad(model.empId)
-                  .url,
-                value = Some(messages("tai.income.calculation.updateLink.regular"))
-              )
-              .toHtml
-          )).body
+            link(
+              url = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
+                .onPageLoad(model.empId)
+                .url,
+              copy = messages("tai.income.calculation.updateLink.regular")
+            )
+          )).body.replaceAll("\\s+", "")
       }
 
       "employment type is Employment Income" in {
-        doc(view).select("#regularUpdateLink").html() mustBe Html(
+        doc(view).select("#regularUpdateLink").html().replaceAll("\\s+", "") mustBe Html(
           messages(
             "tai.income.calculation.update.regular",
-            Link
-              .toInternalPage(
-                url = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
-                  .onPageLoad(model.empId)
-                  .url,
-                value = Some(messages("tai.income.calculation.updateLink.regular"))
-              )
-              .toHtml
-          )).body
+            link(
+              url = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
+                .onPageLoad(model.empId)
+                .url,
+              copy = messages("tai.income.calculation.updateLink.regular")
+            )
+          )).body.replaceAll("\\s+", "")
       }
     }
 

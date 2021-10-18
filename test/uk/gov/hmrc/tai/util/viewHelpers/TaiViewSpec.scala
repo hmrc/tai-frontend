@@ -101,6 +101,11 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
       doc must haveCancelLinkWithUrl(call.url.toString)
     }
 
+  def haveInternalLink(url: String, linkText: String, id: String): Unit =
+    "have an internal link" in {
+      doc must haveLinkElement(id, url, linkText)
+    }
+
   def pageWithYesNoRadioButton(
     idYes: String,
     idNo: String,
