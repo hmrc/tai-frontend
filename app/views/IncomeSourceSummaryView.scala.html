@@ -170,12 +170,12 @@
     </div>
 
     @if(!model.isPension){
-    <div id="companyBenefitsSection" class="subsection--wide" aria-labelledby="companyBenefitsHeading">
+    <div id="companyBenefitsSection" class="subsection--wide">
 
         <h2 id="companyBenefitsHeading" class="heading-small flush--bottom">@Messages("tai.income.details.companyuBenefitsHeading", model.empOrPensionName)</h2>
 
         @if(model.benefits.size > 0) {
-        <ul id="companyBenefitList" class="tai-description-list tai-description-list--dynamic-columns full-width section flush" aria-labelledby="companyBenefitsHeading">
+        <ul id="companyBenefitList" class="tai-description-list tai-description-list--dynamic-columns full-width section flush">
 
             @for((benefit, idx) <- model.benefits zip (Stream from 1)) {
             <li>
