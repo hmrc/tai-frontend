@@ -42,7 +42,7 @@
 @tableHeader = {
     @if(showPreviousColumn) {
         <thead>
-            <tr role="row">
+            <tr>
                 <th scope="col"></th>
                 <th scope="col" class="numeric tax-free-amount-comparison-table-header-cell">
                     @Messages("tai.taxFreeAmount.table.previous.taxCodes")
@@ -77,7 +77,7 @@
 
 @iabdBreakdownRows(sequence: Seq[CodingComponentPairModel], translations: Map[String, String]) = {
 
-    <tr role="row" class="tax-free-amount-comparison-row-heading">
+    <tr class="tax-free-amount-comparison-row-heading">
         <td colspan="@taxFreeAmount.columns" class="tax-free-amount-comparison-row-heading-cell">
             <h3 class="tax-free-amount-comparison-row-heading">@Messages(translations("title"))</h3>
         </td>
@@ -99,7 +99,7 @@
         </tr>
     } else {
         @for(pair <- sequence) {
-            <tr role="row">
+            <tr>
                 <td class="tax-free-amount-comparison-row-title">
                     @pair.label.value
                     @pair.label.link.map { link =>
@@ -126,7 +126,7 @@
             </tr>
         }
 
-        <tr role="row">
+        <tr>
             <td class="tax-free-amount-comparison-row-title">@Messages(translations("totalTitle"))</td>
 
             @if(showPreviousColumn) {
