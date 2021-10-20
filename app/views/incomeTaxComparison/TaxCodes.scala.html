@@ -35,7 +35,7 @@
 <table class="table--font-reset flush--bottom responsive" id="taxCodeComparisonTable" role="table">
     <caption class="visually-hidden">@messages("tai.incomeTaxComparison.taxCodes.subHeading")</caption>
     <thead id="taxCodeComparisonTableHeader">
-    <tr>
+    <tr role="row">
         <th scope="col">@messages("tai.incomeTaxComparison.taxCodes.table.employer.or.pension")</th>
         <th scope="col" class="numeric taxCodeComparisonTableHeaderCol1">
             @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
@@ -49,7 +49,7 @@
     </thead>
     <tbody class="taxCodeComparisonTableBody">
         @for(taxCodeDetail <- model.employmentTaxCodes) {
-            <tr>
+            <tr role="row">
                 <td role="cell" class="table-title">
                     <span class="table-heading employerName" aria-hidden="true">
                     @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
@@ -60,7 +60,7 @@
             </tr>
         }
         @for(taxCodeDetail <- model.pensionTaxCodes) {
-            <tr>
+            <tr role="row">
                 <td role="cell" class="table-title">
                     <span class="table-heading employerName" aria-hidden="true">
                     @messages("tai.incomeTaxComparison.taxCodes.table.pensionsReaderText")
