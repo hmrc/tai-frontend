@@ -36,10 +36,6 @@ class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
       doc must haveThWithText(messages("tai.item"))
       doc must haveThWithText(messages("tai.amount"))
     }
-
-    "display next band message" in {
-      doc must haveSpanWithText(nextBandMessage)
-    }
   }
 
   private lazy val bands = List(
