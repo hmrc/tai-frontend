@@ -24,14 +24,14 @@
     @header = @{
         ptaHeader(
             mainHeadingText = messages("mci.title"),
-            preHeadingText = "",
-            displayBackLink = true
+            preHeadingText = ""
         )
     }
 
     @mainTemplate(
         title = messages("mci.title"),
-        pageHeader = Some(header)) {
+        pageHeader = Some(header),
+        hidePtaAccountNav = true) {
 
         <div class="grid-row">
             <div class="column-two-thirds">
