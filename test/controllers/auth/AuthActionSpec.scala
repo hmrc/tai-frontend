@@ -19,7 +19,7 @@ package controllers.auth
 import controllers.routes
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import play.api.mvc.Controller
+import play.api.mvc.AbstractController
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.authorise.Predicate
@@ -36,11 +36,12 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 class AuthActionSpec extends BaseSpec {
 
+  val cc = stubControllerComponents()
   lazy val fakeVerifyRequest = FakeRequest("GET", "/").withSession(
     TaiConstants.AuthProvider -> TaiConstants.AuthProviderVerify
   )
 
-  abstract class Harness(authAction: AuthAction) extends Controller {
+  abstract class Harness(authAction: AuthAction) extends AbstractController(cc) {
 
     def onPageLoad() = authAction { request =>
       Ok(request.taiUser.toString)

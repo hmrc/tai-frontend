@@ -15,7 +15,7 @@
  *@
 
 @import uk.gov.hmrc.urls.Link
-@import uk.gov.hmrc.play.views.html.layouts.loginStatus
+@import uk.gov.hmrc.play.views.html.layouts._
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import includes.ptaHeader
@@ -26,7 +26,7 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTemplate, loginStatus: LoginStatus)
 
 @()(implicit request: Request[_],
 messages: Messages,

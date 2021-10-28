@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import javax.inject.Inject
 import org.joda.time.LocalDate
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMi
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnector) {
+class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnector) extends Logging {
 
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] =
     taxCodeChangeConnector.taxCodeChange(nino) map {
@@ -47,7 +47,7 @@ class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnec
     } yield {
       (hasTaxCodeChanged, taxCodeMismatch) match {
         case (_: Boolean, TaiSuccessResponseWithPayload(taxCodeMismatch: TaxCodeMismatch)) => {
-          Logger.debug(s"TCMismatch $taxCodeMismatch")
+          logger.debug(s"TCMismatch $taxCodeMismatch")
           HasTaxCodeChanged(hasTaxCodeChanged, Some(taxCodeMismatch))
         }
         case (_: Boolean, _: TaiTaxAccountFailureResponse) => {

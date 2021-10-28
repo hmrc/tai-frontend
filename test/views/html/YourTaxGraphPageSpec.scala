@@ -41,7 +41,6 @@ class YourTaxGraphPageSpec extends BaseSpec with TaxRegionConstants {
       val doc =
         Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, ComplexTaxView).toString())
       doc.select("#bandType0").text() mustBe Messages("tai.bandtype.zeroBand")
-      doc.select("#nextBand").text() mustBe nextBandMessage
       doc.select("#totalIncome").text() mustBe empty
 
     }
@@ -59,7 +58,6 @@ class YourTaxGraphPageSpec extends BaseSpec with TaxRegionConstants {
         Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, SimpleTaxView).toString())
       doc.select("#bandType0").text() mustBe Messages("tai.bandtype.zeroBand")
       doc.select("#bandType1").text() mustBe Messages("tai.bandtype.nonZeroBand")
-      doc.select("#nextBand").text() mustBe nextBandMessage
       doc.select("#bandType2").size() mustBe 0
       doc.select("#zeroIncomeTotal").text() mustBe "£3,200"
       doc.select("#totalIncome").text() mustBe "£19,200"
@@ -78,7 +76,6 @@ class YourTaxGraphPageSpec extends BaseSpec with TaxRegionConstants {
         Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, SimpleTaxView).toString())
       doc.select("#bandType0").text() mustBe Messages("tai.bandtype.zeroBand")
       doc.select("#bandType1").text() mustBe Messages("tai.bandtype.nonZeroBand")
-      doc.select("#nextBand").text() mustBe nextBandMessage
       doc.select("#bandType2").size() mustBe 0
       doc.select("#zeroIncomeTotal").text() mustBe "£3,000"
       doc.select("#totalIncome").text() mustBe "£48,000"
@@ -98,7 +95,6 @@ class YourTaxGraphPageSpec extends BaseSpec with TaxRegionConstants {
 
       doc.select("#bandType0").text() mustBe Messages("tai.bandtype.zeroBand")
       doc.select("#bandType1").text() mustBe Messages("tai.bandtype.nonZeroBand")
-      doc.select("#nextBand").size() mustBe 0
       doc.select("#bandType3").size() mustBe 0
       doc.select("#zeroIncomeTotal").text() mustBe "£14,000"
       doc.select("#totalIncome").text() mustBe "£29,000"

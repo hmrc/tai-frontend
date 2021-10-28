@@ -35,24 +35,22 @@ package controllers.actions
 import controllers.{FakeAuthAction, routes}
 import org.mockito.Matchers._
 import org.mockito.Mockito.when
-import play.api.mvc.Controller
+import play.api.mvc.AbstractController
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 import utils.BaseSpec
 
 import scala.concurrent.Future
-import scala.util.Random
 
 class ValidatePersonSpec extends BaseSpec {
 
   val personService = mock[PersonService]
   val personDeceased = true
   val personAlive = !personDeceased
+  val cc = stubControllerComponents()
 
-  class Harness(deceased: ValidatePerson) extends Controller {
+  class Harness(deceased: ValidatePerson) extends AbstractController(cc) {
     def onPageLoad() = (FakeAuthAction andThen deceased) { request =>
       Ok
     }

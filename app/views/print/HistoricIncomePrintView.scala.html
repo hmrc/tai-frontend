@@ -17,20 +17,19 @@
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.play.views.formatting.Money._
-@import uk.gov.hmrc.play.views.html.layouts.loginStatus
+@import uk.gov.hmrc.play.views.html.layouts._
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.helpers._
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 
-@import play.api.Play.current
 @import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 @import uk.gov.hmrc.tai.model.domain.{TemporarilyUnavailable, Unavailable, Available}
 @import uk.gov.hmrc.play.views.formatting.Dates
 
 @import controllers.auth.AuthenticatedRequest
-
+@this(loginStatus: LoginStatus)
 @(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel, appConfig: ApplicationConfig
 )(implicit request: AuthenticatedRequest[_], messages: Messages)
 
