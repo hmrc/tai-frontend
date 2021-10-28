@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -28,7 +28,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class CompanyCarConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
-  implicit ec: ExecutionContext) {
+  implicit ec: ExecutionContext)
+    extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
@@ -42,7 +43,7 @@ class CompanyCarConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
       json => Some((json \ "data").as[CompanyCarBenefit])
     ) recover {
       case e: NotFoundException => {
-        Logger.warn(s"Couldn't retrieve company car benefits for nino: $nino employmentId:$empId")
+        logger.warn(s"Couldn't retrieve company car benefits for nino: $nino employmentId:$empId")
         None
       }
     }
@@ -61,7 +62,7 @@ class CompanyCarConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
       json => (json \ "data" \ "companyCarBenefits").as[Seq[CompanyCarBenefit]]
     ) recover {
       case NonFatal(_) => {
-        Logger.warn(s"Couldn't retrieve company car benefits for nino: $nino")
+        logger.warn(s"Couldn't retrieve company car benefits for nino: $nino")
         Seq.empty[CompanyCarBenefit]
       }
     }

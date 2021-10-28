@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -26,8 +26,8 @@ import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PersonConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
-  implicit ec: ExecutionContext) {
+class PersonConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext)
+    extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
@@ -38,7 +38,7 @@ class PersonConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Servic
       json => TaiSuccessResponseWithPayload((json \ "data").as[Person])
     ) recover {
       case e: Exception =>
-        Logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
+        logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
         TaiNotFoundResponse(e.getMessage)
     }
 }

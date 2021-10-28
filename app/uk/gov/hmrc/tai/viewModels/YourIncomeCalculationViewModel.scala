@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.viewModels
 
 import org.joda.time.LocalDate
-import play.api.Play.current
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._

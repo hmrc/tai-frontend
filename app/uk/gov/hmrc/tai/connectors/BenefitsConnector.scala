@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -26,7 +26,8 @@ import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
 import scala.concurrent.{ExecutionContext, Future}
 
 class BenefitsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
-  implicit ec: ExecutionContext) {
+  implicit ec: ExecutionContext)
+    extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
@@ -39,7 +40,7 @@ class BenefitsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Serv
       json => (json \ "data").as[Benefits]
     ) recover {
       case _: RuntimeException => {
-        Logger.warn(s"Couldn't retrieve benefits for nino: $nino")
+        logger.warn(s"Couldn't retrieve benefits for nino: $nino")
         throw new RuntimeException(s"Couldn't retrieve benefits for nino: $nino")
       }
     }

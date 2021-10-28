@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Writes}
 import uk.gov.hmrc.http._
@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFunctions {
+class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFunctions with Logging {
 
   def getFromApiV2(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
     implicit val httpRds = new HttpReads[HttpResponse] {
@@ -48,27 +48,27 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
           Future.successful(httpResponse.json)
 
         case NOT_FOUND =>
-          Logger.warn(s"HttpHandler - No data can be found")
+          logger.warn(s"HttpHandler - No data can be found")
           Future.failed(new NotFoundException(httpResponse.body))
 
         case INTERNAL_SERVER_ERROR =>
-          Logger.warn(s"HttpHandler - Internal Server Error received")
+          logger.warn(s"HttpHandler - Internal Server Error received")
           Future.failed(new InternalServerException(httpResponse.body))
 
         case BAD_REQUEST =>
-          Logger.warn(s"HttpHandler - Bad Request received")
+          logger.warn(s"HttpHandler - Bad Request received")
           Future.failed(new BadRequestException(httpResponse.body))
 
         case LOCKED =>
-          Logger.warn(s"HttpHandler - Locked received")
+          logger.warn(s"HttpHandler - Locked received")
           Future.failed(new LockedException(httpResponse.body))
 
         case UNAUTHORIZED =>
-          Logger.warn(s"HttpHandler - Unauthorized received")
+          logger.warn(s"HttpHandler - Unauthorized received")
           Future.failed(new UnauthorizedException(httpResponse.body))
 
         case _ =>
-          Logger.warn(s"HttpHandler - Server error received")
+          logger.warn(s"HttpHandler - Server error received")
           Future.failed(new HttpException(httpResponse.body, httpResponse.status))
       }
     }
@@ -85,23 +85,23 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
           Future.successful(httpResponse.json)
 
         case NOT_FOUND =>
-          Logger.warn(s"HttpHandler - No data can be found")
+          logger.warn(s"HttpHandler - No data can be found")
           Future.failed(new NotFoundException(httpResponse.body))
 
         case INTERNAL_SERVER_ERROR =>
-          Logger.warn(s"HttpHandler - Internal Server Error received")
+          logger.warn(s"HttpHandler - Internal Server Error received")
           Future.failed(new InternalServerException(httpResponse.body))
 
         case BAD_REQUEST =>
-          Logger.warn(s"HttpHandler - Bad Request received")
+          logger.warn(s"HttpHandler - Bad Request received")
           Future.failed(new BadRequestException(httpResponse.body))
 
         case LOCKED =>
-          Logger.warn(s"HttpHandler - Locked received")
+          logger.warn(s"HttpHandler - Locked received")
           Future.failed(new LockedException(httpResponse.body))
 
         case _ =>
-          Logger.warn(s"HttpHandler - Server error received")
+          logger.warn(s"HttpHandler - Server error received")
           Future.failed(new HttpException(httpResponse.body, httpResponse.status))
       }
     }
@@ -117,19 +117,19 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
           Future.successful(httpResponse)
 
         case NOT_FOUND =>
-          Logger.warn(s"HttpHandler - No data can be found")
+          logger.warn(s"HttpHandler - No data can be found")
           Future.failed(new NotFoundException(httpResponse.body))
 
         case INTERNAL_SERVER_ERROR =>
-          Logger.warn(s"HttpHandler - Internal Server Error received")
+          logger.warn(s"HttpHandler - Internal Server Error received")
           Future.failed(new InternalServerException(httpResponse.body))
 
         case BAD_REQUEST =>
-          Logger.warn(s"HttpHandler - Bad Request received")
+          logger.warn(s"HttpHandler - Bad Request received")
           Future.failed(new BadRequestException(httpResponse.body))
 
         case _ =>
-          Logger.warn(s"HttpHandler - Server error received")
+          logger.warn(s"HttpHandler - Server error received")
           Future.failed(new HttpException(httpResponse.body, httpResponse.status))
       }
     }
@@ -143,7 +143,7 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
           Future.successful(httpResponse)
 
         case _ =>
-          Logger.warn(
+          logger.warn(
             s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}")
           Future.failed(new HttpException(httpResponse.body, httpResponse.status))
       }
@@ -156,7 +156,7 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
           Future.successful(httpResponse)
 
         case _ =>
-          Logger.warn(
+          logger.warn(
             s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}")
           Future.failed(new HttpException(httpResponse.body, httpResponse.status))
       }

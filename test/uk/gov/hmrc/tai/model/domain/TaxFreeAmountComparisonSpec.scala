@@ -33,7 +33,7 @@ class TaxFreeAmountComparisonSpec extends PlaySpec {
         val json = Json.obj(
           "previous" -> Json.arr(
             Json.obj(
-              "componentType" -> CarBenefit,
+              "componentType" -> Json.toJson[TaxComponentType](CarBenefit),
               "employmentId"  -> 1,
               "amount"        -> 1,
               "description"   -> "Car Benefit",
@@ -43,7 +43,7 @@ class TaxFreeAmountComparisonSpec extends PlaySpec {
           ),
           "current" -> Json.arr(
             Json.obj(
-              "componentType" -> Mileage,
+              "componentType" -> Json.toJson[TaxComponentType](Mileage),
               "employmentId"  -> 2,
               "amount"        -> 100,
               "description"   -> "Mileage",
