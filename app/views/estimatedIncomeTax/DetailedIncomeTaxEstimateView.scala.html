@@ -161,11 +161,12 @@
                         </thead>
                         @for(taxPaidElsewhere <- viewModel.reductionTaxTable){
                         <tr>
-                            <td>
-                                @includes.details_summary(taxPaidElsewhere.title, taxPaidElsewhere.amount){
+                            <td class="govuk-table__cell">
+                                @includes.details_summary(taxPaidElsewhere.title){
                                     @Html(taxPaidElsewhere.description)
                                 }
                             </td>
+                            <td class="text--right" style="vertical-align: top; white-space: nowrap;">− @withPoundPrefix(MoneyPounds(taxPaidElsewhere.amount, 2))</td>
                         </tr>
                         }
                     </table>

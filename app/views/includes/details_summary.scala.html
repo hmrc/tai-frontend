@@ -17,7 +17,6 @@
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @(
     title: String,
-        amount: BigDecimal=BigDecimal(0),
     visuallyHiddenTitle: Option[String]=None,
     summaryClass: Option[String]=None,
     panelClass: Option[String]=Some("panel-indent")
@@ -29,7 +28,6 @@
             <span class="visuallyhidden">@visuallyHiddenTitle</span>
         } else {
             @title
-            <p class="text--right">-@withPoundPrefix(MoneyPounds(amount, 2))</p>
         }
     </summary>
     <div @if(panelClass.isDefined){class='@panelClass'}>
