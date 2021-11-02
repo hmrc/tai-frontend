@@ -30,3 +30,8 @@
 .table__cell--fixed-width {
     width: 28%;
 }
+
+.table__cell--top-align-nowrap {
+    vertical-align: top;
+    white-space: nowrap;
+}
