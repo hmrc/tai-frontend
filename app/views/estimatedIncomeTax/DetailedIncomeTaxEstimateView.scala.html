@@ -161,7 +161,7 @@
                         </thead>
                         @for(taxPaidElsewhere <- viewModel.reductionTaxTable){
                         <tr>
-                            <td class="govuk-table__cell">
+                            <td>
                                 @includes.details_summary(taxPaidElsewhere.title){
                                     @Html(taxPaidElsewhere.description)
                                 }
