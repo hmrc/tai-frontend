@@ -81,14 +81,16 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends BaseSpec with TaxRegionConst
         Messages(
           "your.total.income.from.employment.desc",
           pounds(47835),
-          "<a id=\"taxFreeAmountLink\" href=\"/check-income-tax/tax-free-allowance\" target=\"_self\" data-sso=\"false\">tax-free amount</a>",
+          "<a id=\"taxFreeAmountLink\" href=\"/check-income-tax/tax-free-allowance\">tax-free amount</a>",
           pounds(11500)
-        )
+        ).replaceAll("\\s+", "")
       )
 
       val result = SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncome, taxBands)
-
-      result mustBe expectedViewModel
+      val resCopy = result.copy(
+        taxOnIncomeTypeDescription = result.taxOnIncomeTypeDescription.replaceAll("\\s+", "")
+      )
+      resCopy mustBe expectedViewModel
     }
   }
 

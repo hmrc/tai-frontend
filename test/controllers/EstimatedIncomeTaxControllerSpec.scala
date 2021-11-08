@@ -34,9 +34,9 @@ import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
 import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
-import uk.gov.hmrc.urls.Link
 import utils.BaseSpec
 import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIncomeView, SimpleEstimatedIncomeTaxView, ZeroTaxEstimatedIncomeTaxView}
+import views.html.includes.link
 
 import scala.concurrent.Future
 
@@ -122,13 +122,11 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
           messages(
             "your.total.income.from.employment.desc",
             pounds(47835),
-            Link
-              .toInternalPage(
-                id = Some("taxFreeAmountLink"),
-                url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
-                value = Some("tai.estimatedIncome.taxFree.link")
-              )
-              .toHtml,
+            link(
+              id = Some("taxFreeAmountLink"),
+              url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
+              copy = messages("tai.estimatedIncome.taxFree.link")
+            ),
             pounds(11500)
           )
         )
