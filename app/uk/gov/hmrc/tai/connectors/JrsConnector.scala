@@ -20,28 +20,22 @@ import java.util.UUID.randomUUID
 
 import cats.data.OptionT
 import com.google.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.Authorization
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import uk.gov.hmrc.play.config
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import com.kenshoo.play.metrics.Metrics
 import uk.gov.hmrc.tai.metrics.HasMetrics
 import uk.gov.hmrc.tai.model.JrsClaims
-import uk.gov.hmrc.tai.model.enums.APITypes
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class JrsConnector @Inject()(httpClient: HttpClient, val metrics: Metrics, applicationConfig: ApplicationConfig)(
   implicit ec: ExecutionContext)
-    extends HasMetrics {
-
-  val logger = Logger(this.getClass)
+    extends HasMetrics with Logging {
 
   def getJrsClaimsForIndividual(nino: Nino)(hc: HeaderCarrier): OptionT[Future, JrsClaims] = {
 

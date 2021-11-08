@@ -23,7 +23,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.{CarBenefit, TaxFreeAmountComparison}
+import uk.gov.hmrc.tai.model.domain.{CarBenefit, TaxComponentType, TaxFreeAmountComparison}
 import utils.BaseSpec
 
 import scala.concurrent.duration._
@@ -44,7 +44,7 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
           "data" -> Json.obj(
             "previous" -> Json.arr(
               Json.obj(
-                "componentType" -> CarBenefit,
+                "componentType" -> Json.toJson[TaxComponentType](CarBenefit),
                 "employmentId"  -> 1,
                 "amount"        -> 1,
                 "description"   -> "Car Benefit",
@@ -54,7 +54,7 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
             ),
             "current" -> Json.arr(
               Json.obj(
-                "componentType" -> CarBenefit,
+                "componentType" -> Json.toJson[TaxComponentType](CarBenefit),
                 "employmentId"  -> 1,
                 "amount"        -> 1,
                 "description"   -> "Car Benefit",

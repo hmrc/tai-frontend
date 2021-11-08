@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -28,7 +28,8 @@ import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch, TaxCodeReco
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
-  implicit ec: ExecutionContext) {
+  implicit ec: ExecutionContext)
+    extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
@@ -41,7 +42,7 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
       json => TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeChange])
     ) recover {
       case e: Exception =>
-        Logger.warn(s"Couldn't retrieve tax code change for $nino with exception:${e.getMessage}")
+        logger.warn(s"Couldn't retrieve tax code change for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
@@ -52,7 +53,7 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
       json => TaiSuccessResponseWithPayload(json.as[Boolean])
     ) recover {
       case e: Exception =>
-        Logger.warn(s"Couldn't retrieve tax code changed for $nino with exception:${e.getMessage}")
+        logger.warn(s"Couldn't retrieve tax code changed for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
@@ -63,7 +64,7 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
       json => TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeMismatch])
     ) recover {
       case e: Exception =>
-        Logger.warn(s"Couldn't retrieve tax code mismatch for $nino with exception:${e.getMessage}")
+        logger.warn(s"Couldn't retrieve tax code mismatch for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
@@ -76,7 +77,7 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
       }
     ) recover {
       case e: Exception =>
-        Logger.warn(s"Couldn't retrieve tax code records for $nino for year $year with exception:${e.getMessage}")
+        logger.warn(s"Couldn't retrieve tax code records for $nino for year $year with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 

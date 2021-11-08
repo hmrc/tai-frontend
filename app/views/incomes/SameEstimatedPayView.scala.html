@@ -24,12 +24,12 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import org.joda.time.DateTime
-@import uk.gov.hmrc.play.views.html.layouts.loginStatus
+@import uk.gov.hmrc.play.views.html.layouts._
 @import uk.gov.hmrc.tai.util.FormHelper
 @import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTemplate, loginStatus: LoginStatus)
 
 @(model: SameEstimatedPayViewModel)(implicit
 request: Request[_],

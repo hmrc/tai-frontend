@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.service
 
 import javax.inject.{Inject, Named}
-import play.api.Logger
 import uk.gov.hmrc.tai.connectors.TrackingConnector
 import uk.gov.hmrc.tai.model.domain.tracking.{TrackedForm, TrackedFormDone}
 
@@ -27,8 +26,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
-
-import scala.util.control.NonFatal
 
 sealed trait TimeToProcess
 

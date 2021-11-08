@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
+@import views.html.estimatedIncomeTax.navigationLinks
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.formatting.Money._
@@ -151,9 +152,9 @@
                         <thead>
                         <tr>
                             @if(viewModel.reductionTaxTable.size>1) {
-                            <th colspan="2">@Messages("tax.adjustments")</th>
+                                <th colspan="2">@Messages("tax.adjustments")</th>
                             } else {
-                            <th colspan="2">@Messages("tax.adjustment")</th>
+                                <th colspan="2">@Messages("tax.adjustment")</th>
                             }
                         </tr>
                         </thead>
@@ -161,10 +162,10 @@
                         <tr>
                             <td>
                                 @includes.details_summary(taxPaidElsewhere.title){
-                                <p>@Html(taxPaidElsewhere.description)</p>
+                                    @Html(taxPaidElsewhere.description)
                                 }
                             </td>
-                            <td class="text--right">-@withPoundPrefix(MoneyPounds(taxPaidElsewhere.amount, 2))</td>
+                            <td class="text--right table__cell--top-align-nowrap">− @withPoundPrefix(MoneyPounds(taxPaidElsewhere.amount, 2))</td>
                         </tr>
                         }
                     </table>

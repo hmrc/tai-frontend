@@ -20,7 +20,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -53,7 +53,7 @@ class WhatDoYouWantToDoController @Inject()(
   whatDoYouWantToDoTileView: WhatDoYouWantToDoTileView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) {
+    extends TaiBaseController(mcc) with Logging {
 
   private implicit val recoveryLocation: errorPagesHandler.RecoveryLocation = classOf[WhatDoYouWantToDoController]
 
@@ -121,17 +121,17 @@ class WhatDoYouWantToDoController @Inject()(
             showJrsTile,
             taxCodeChanged.mismatch)
 
-          Logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
+          logger.debug(s"wdywtdViewModelCYEnabledAndGood $model")
 
           Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
 
         }
         case response: TaiResponse => {
           if (response.isInstanceOf[TaiNotFoundResponse])
-            Logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
+            logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
 
           val model = WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
-          Logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
+          logger.debug(s"wdywtdViewModelCYEnabledButBad $model")
 
           Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
 
@@ -154,7 +154,7 @@ class WhatDoYouWantToDoController @Inject()(
           showJrsTile,
           hasTaxCodeChanged.mismatch)
 
-      Logger.debug(s"wdywtdViewModelCYDisabled $model")
+      logger.debug(s"wdywtdViewModelCYDisabled $model")
 
       Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
     }

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
@@ -25,7 +25,8 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 import scala.concurrent.{ExecutionContext, Future}
 
 class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
-  implicit ec: ExecutionContext) {
+  implicit ec: ExecutionContext)
+    extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
@@ -51,7 +52,7 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
     httpHandler.getFromApi(url).map(value => Right(convert(value.as[String]))) recover {
       case e: NotFoundException => {
         val errorMessage = s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'"
-        Logger.warn(errorMessage)
+        logger.warn(errorMessage)
         Left(errorMessage)
       }
     }

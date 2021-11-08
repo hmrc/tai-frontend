@@ -43,15 +43,15 @@ class PaymentFrequencySpec extends PlaySpec {
 
     "create a valid json" when {
       "user received a valid payment frequency" in {
-        Json.toJson(Weekly) mustBe JsString("Weekly")
-        Json.toJson(FortNightly) mustBe JsString("FortNightly")
-        Json.toJson(FourWeekly) mustBe JsString("FourWeekly")
-        Json.toJson(Monthly) mustBe JsString("Monthly")
-        Json.toJson(Quarterly) mustBe JsString("Quarterly")
-        Json.toJson(BiAnnually) mustBe JsString("BiAnnually")
-        Json.toJson(Annually) mustBe JsString("Annually")
-        Json.toJson(OneOff) mustBe JsString("OneOff")
-        Json.toJson(Irregular) mustBe JsString("Irregular")
+        Json.toJson[PaymentFrequency](Weekly) mustBe JsString("Weekly")
+        Json.toJson[PaymentFrequency](FortNightly) mustBe JsString("FortNightly")
+        Json.toJson[PaymentFrequency](FourWeekly) mustBe JsString("FourWeekly")
+        Json.toJson[PaymentFrequency](Monthly) mustBe JsString("Monthly")
+        Json.toJson[PaymentFrequency](Quarterly) mustBe JsString("Quarterly")
+        Json.toJson[PaymentFrequency](BiAnnually) mustBe JsString("BiAnnually")
+        Json.toJson[PaymentFrequency](Annually) mustBe JsString("Annually")
+        Json.toJson[PaymentFrequency](OneOff) mustBe JsString("OneOff")
+        Json.toJson[PaymentFrequency](Irregular) mustBe JsString("Irregular")
       }
     }
   }

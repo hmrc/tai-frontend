@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai
 
 import javax.inject.{Inject, Named, Singleton}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.Result
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 
@@ -28,10 +28,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 @Singleton
 class DecisionCacheWrapper @Inject()(@Named("End Company Benefit") journeyCacheService: JourneyCacheService)
-    extends JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants with Results {
+    extends JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants with Results with Logging {
 
   private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
-  private val logger = Logger(this.getClass)
 
   def getDecision()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefit_BenefitTypeKey)
