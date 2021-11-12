@@ -64,6 +64,7 @@ estimate.uk.bandtype.SR=Starting rate for savings
 estimate.uk.bandtype.pa=Tax-free amount
 gift.aid.savings=Gift Aid savings
 gift.aid.tax.relief=You made Gift Aid donations of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}.
+
 label.closed_sundays_and_bank_holidays=Closed Sundays and bank holidays.
 label.find_out_about_call_charges=Find out about call charges
 label.how_to_contact_us=Other ways to contact us
@@ -403,7 +404,6 @@ tai.gatekeeper.findout.more=Find out more about Income Tax on
 tai.gatekeeper.heading=Your PAYE Income Tax estimate
 tai.gatekeeper.outsideUk=from outside the UK: +44 135 535 9022
 tai.gatekeeper.refuse.message=We are still developing our PAYE online service. Unfortunately it cannot be used by everybody yet and we cannot show your Income Tax estimate. You do not need to contact us about this.
-tai.gatekeeper.refuse.title=Service Unavailable
 tai.gatekeeper.telephone=telephone: 0300 200 3300
 tai.gatekeeper.textphone=textphone: 0300 200 3319
 
@@ -1481,3 +1481,8 @@ label.timeout.dialog.signout.button=Sign out now
 
 session_expired.title=For your security, we signed you out
 session_expired.guidance=We did not save your answers.
+
+mci.title=We cannot access your details
+mci.p1=This is because of an MCI issue. It means that we need to check some details with you before you can sign in again.
+mci.p2=You can call us to
+mci.link.text=resolve the MCI issue with an advisor

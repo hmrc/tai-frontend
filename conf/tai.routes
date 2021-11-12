@@ -9,7 +9,7 @@ GET         /historic-paye/:taxYear                                             
 
 GET         /timeout                                                                   controllers.ServiceController.timeoutPage
 GET         /signout                                                                   controllers.ServiceController.serviceSignout
-GET         /tax-estimate-unavailable                                                  controllers.ServiceController.gateKeeper
+GET         /tax-estimate-unavailable                                                  controllers.ServiceController.mciErrorPage
 GET         /deceased                                                                  controllers.DeceasedController.deceased
 
 GET         /keep-alive                                                                controllers.ServiceController.keepAlive

@@ -64,6 +64,7 @@ estimate.uk.bandtype.SR=Cyfradd gychwynnol ar gyfer cynilion
 estimate.uk.bandtype.pa=Lwfans rhydd o dreth
 gift.aid.savings=Cynilion Rhodd Cymorth
 gift.aid.tax.relief=Gwnaethoch gyfraniadau Rhodd Cymorth o £{0} yn ystod y flwyddyn dreth hon sy’n rhoi rhyddhad treth i chi ac yn arbed £{1} o Dreth Incwm
+
 label.closed_sundays_and_bank_holidays=Ar gau ddydd Sul a gwyliau’r banc.
 label.find_out_about_call_charges=Gwybodaeth am gostau galwadau
 label.how_to_contact_us=Dulliau eraill o gysylltu â ni
@@ -403,7 +404,6 @@ tai.gatekeeper.findout.more=Rhagor o wybodaeth am Dreth Incwm ar
 tai.gatekeeper.heading=Amcangyfrif o’ch Treth Incwm TWE
 tai.gatekeeper.outsideUk=o du allan i’r DU: +44 300 200 1900
 tai.gatekeeper.refuse.message=Rydym yn dal i ddatblygu ein gwasanaeth TWE ar-lein. Yn anffodus, ni ellir ei ddefnyddio gan bawb eto ac ni allwn ddangos eich Treth Incwm amcangyfrifedig. Does dim rhaid i chi gysylltu â ni am hyn.
-tai.gatekeeper.refuse.title=Nid yw’r gwasanaeth ar gael
 tai.gatekeeper.telephone=ffôn: 0300 200 1900
 tai.gatekeeper.textphone=Ffôn testun: 0300 200 3319
 
@@ -1486,3 +1486,8 @@ label.timeout.dialog.signout.button=Allgofnodi nawr
 
 session_expired.title = Er eich diogelwch, gwnaethom eich allgofnodi
 session_expired.guidance = Ni wnaethom gadw''ch atebion.
+
+mci.title=Ni allwn gael at eich manylion
+mci.p1=Mae hyn oherwydd problem MCI. Mae’n golygu bod angen i ni wirio rhai manylion gyda chi, cyn i chi allu mewngofnodi eto.
+mci.p2=Gallwch ein ffonio
+mci.link.text=er mwyn datrys y broblem MCI gydag ymgynghorydd
