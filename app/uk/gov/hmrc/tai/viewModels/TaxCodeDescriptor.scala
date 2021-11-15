@@ -20,7 +20,7 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.{BasisOfOperation, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-import uk.gov.hmrc.urls.Link
+import views.html.includes.link
 
 import scala.collection.immutable.ListMap
 
@@ -63,11 +63,9 @@ trait TaxCodeDescriptor {
         ListMap(
           code -> messages(
             s"tai.taxCode$previousOrCurrent.$code",
-            Link
-              .toExternalPage(
-                url = applicationConfig.scottishRateIncomeTaxUrl,
-                value = Some(messages("tai.taxCode.scottishIncomeText.link")))
-              .toHtml
+            link(
+              url = applicationConfig.scottishRateIncomeTaxUrl,
+              copy = messages("tai.taxCode.scottishIncomeText.link"))
           ))
       case _ => ListMap[String, String]()
     }
@@ -84,14 +82,12 @@ trait TaxCodeDescriptor {
           ListMap(
             code -> messages(
               s"tai.taxCode$previousOrCurrent.$code",
-              Link
-                .toExternalPage(
-                  url = if (messages.lang.language == "cy") { applicationConfig.welshRateIncomeTaxWelshUrl } else {
-                    applicationConfig.welshRateIncomeTaxUrl
-                  },
-                  value = Some(messages("tai.taxCode.welshIncomeText.link"))
-                )
-                .toHtml
+              link(
+                url = if (messages.lang.language == "cy") { applicationConfig.welshRateIncomeTaxWelshUrl } else {
+                  applicationConfig.welshRateIncomeTaxUrl
+                },
+                copy = messages("tai.taxCode.welshIncomeText.link")
+              )
             ))
         case _ => ListMap[String, String]()
       }

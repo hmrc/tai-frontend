@@ -22,8 +22,8 @@ import play.api.test.Helpers.stubControllerComponents
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.PersonService
-import uk.gov.hmrc.urls.Link
 import utils.BaseSpec
+import views.html.includes.link
 
 import scala.collection.immutable.ListMap
 
@@ -83,11 +83,7 @@ class TaxCodeDescriptorSpec extends BaseSpec {
           ListMap(
             "S" -> Messages(
               s"tai.taxCode.S",
-              Link
-                .toExternalPage(
-                  url = appConfig.scottishRateIncomeTaxUrl,
-                  value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
-                .toHtml
+              link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
             ))
       }
     }
@@ -101,11 +97,8 @@ class TaxCodeDescriptorSpec extends BaseSpec {
           ListMap(
             "C" -> Messages(
               s"tai.taxCode.C",
-              Link
-                .toExternalPage(
-                  url = appConfig.welshRateIncomeTaxUrl,
-                  value = Some(Messages("tai.taxCode.welshIncomeText.link")))
-                .toHtml))
+              link(url = appConfig.welshRateIncomeTaxUrl, copy = Messages("tai.taxCode.welshIncomeText.link"))
+            ))
       }
 
       "tax code is prefixed with a C with a link to the welsh tax explanation page  when user is viewing page in Welsh" in {
@@ -116,12 +109,10 @@ class TaxCodeDescriptorSpec extends BaseSpec {
           ListMap(
             "C" -> messagesApi.preferred(Seq(Lang("cy")))(
               s"tai.taxCode.C",
-              Link
-                .toExternalPage(
-                  url = appConfig.welshRateIncomeTaxWelshUrl,
-                  value = Some(messagesApi.preferred(Seq(Lang("cy")))("tai.taxCode.welshIncomeText.link"))
-                )
-                .toHtml
+              link(
+                url = appConfig.welshRateIncomeTaxWelshUrl,
+                copy = messagesApi.preferred(Seq(Lang("cy")))("tai.taxCode.welshIncomeText.link")
+              )
             )
           )
       }

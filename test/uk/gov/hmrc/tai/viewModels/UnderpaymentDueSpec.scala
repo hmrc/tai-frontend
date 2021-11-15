@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.viewModels
 import controllers.routes
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{GiftAidAdjustment, UnderPaymentFromPreviousYear}
-import uk.gov.hmrc.urls.Link
 import utils.BaseSpec
 
 class UnderpaymentDueSpec extends BaseSpec {

@@ -19,8 +19,8 @@ package uk.gov.hmrc.tai.viewModels
 import controllers.routes
 import uk.gov.hmrc.tai.model.domain.{GiftAidAdjustment, UnderPaymentFromPreviousYear}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.urls.Link
 import utils.BaseSpec
+import views.html.includes.link
 
 class PreviousYearUnderpaymentViewModelSpec extends BaseSpec {
 
@@ -36,11 +36,9 @@ class PreviousYearUnderpaymentViewModelSpec extends BaseSpec {
       result.allowanceReducedBy mustEqual 500.00
       result.poundedAmountDue mustEqual "£123.00"
 
-      result.returnLink mustBe Link
-        .toInternalPage(
-          routes.TaxAccountSummaryController.onPageLoad.url,
-          Some(messagesApi("return.to.your.income.tax.summary")))
-        .toHtml
+      result.returnLink mustBe link(
+        url = routes.TaxAccountSummaryController.onPageLoad.url,
+        copy = messagesApi("return.to.your.income.tax.summary"))
     }
   }
 }

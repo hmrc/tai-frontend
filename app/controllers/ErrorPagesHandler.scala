@@ -23,13 +23,12 @@ import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
-import uk.gov.hmrc.urls.Link
+import views.html.includes.link
 import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
 
 import scala.concurrent.Future
@@ -49,12 +48,11 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
       List(
         messages(
           "tai.errorMessage.frontend400.message2",
-          Link
-            .toInternalPage(
-              url = "#report-name",
-              cssClasses = Some("report-error__toggle"),
-              value = Some(messages("tai.errorMessage.reportAProblem")))
-            .toHtml
+          link(
+            url = "#report-name",
+            copy = messages("tai.errorMessage.reportAProblem"),
+            linkClasses = Seq("report-error__toggle")
+          )
         ))
     )
 
