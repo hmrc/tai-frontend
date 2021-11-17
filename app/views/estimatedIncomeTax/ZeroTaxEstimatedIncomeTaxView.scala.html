@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.play.views.html.layouts._
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
@@ -78,9 +77,9 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
                 <div id="estimatedIncomeText" class="soft--top flush--bottom">
                     <p id="estimatedIncomeLowDesc">
                         @Html(Messages("tai.estimatedIncomeLow.desc",
-                        Link.toInternalPage(id=Some("taxFreeAmountLink"),
+                        includes.link(id=Some("taxFreeAmountLink"),
                                             url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                                            value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
+                                            copy=Messages("tai.estimatedIncome.taxFree.link")),
                         withPoundPrefix(MoneyPounds(viewModel.taxFreeEstimate, 0))))
                     </p>
                     <div id="balanceEarningsDesc">

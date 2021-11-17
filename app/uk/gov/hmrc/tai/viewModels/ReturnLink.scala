@@ -19,14 +19,14 @@ package uk.gov.hmrc.tai.viewModels
 import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.urls.Link
+import views.html.includes.link
 
 trait ReturnLink {
 
   def createReturnLink(referer: String, resourceName: String)(implicit messages: Messages): Html = {
 
     def createLink(message: String, defaultReferer: String)(implicit messages: Messages): Html =
-      Link.toInternalPage(url = defaultReferer, value = Some(message)).toHtml
+      link(url = defaultReferer, copy = message)
 
     resourceName match {
       case "tax-free-allowance"           => createLink(messages("tai.iya.tax.free.amount.return.link"), referer)

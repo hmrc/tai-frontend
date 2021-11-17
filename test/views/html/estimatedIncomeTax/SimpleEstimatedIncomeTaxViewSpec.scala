@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{BandedGraph, SimpleEstimatedIncomeTaxViewModel}
-import uk.gov.hmrc.urls.Link
+import views.html.includes.link
 
 class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
 
@@ -62,16 +62,14 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       doc(view) must haveParagraphWithText(
         Html(messages("tai.estimatedIncome.howYouPay.desc", messages("tai.estimatedIncome.taxCodes.link"))).body)
 
-      doc(view).select("#howYouPayDesc").html() mustBe Html(
+      doc(view).select("#howYouPayDesc").html().replaceAll("\\s+", "") mustBe Html(
         messages(
           "tai.estimatedIncome.howYouPay.desc",
-          Link
-            .toInternalPage(
-              id = Some("taxCodesLink"),
-              url = routes.YourTaxCodeController.taxCodes().url.toString,
-              value = Some(Messages("tai.estimatedIncome.taxCodes.link")))
-            .toHtml
-        )).body
+          link(
+            id = Some("taxCodesLink"),
+            url = routes.YourTaxCodeController.taxCodes().url.toString,
+            copy = Messages("tai.estimatedIncome.taxCodes.link"))
+        )).body.replaceAll("\\s+", "")
     }
     "heading and text for non savings income section displays" should {
       "be 'Tax on your employment income' when income is only from employment" in {

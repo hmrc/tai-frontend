@@ -99,7 +99,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       "displays a link & inner link element, where present in the view model" in {
         doc must haveElementWithId("summaryTable2Row1ChangeLinkCell")
         doc must haveLinkWithUrlWithID("summaryTable2Row1ChangeLink", "/dummy/url1")
-        doc must haveElementAtPathWithClass("a[id=summaryTable2Row1ChangeLink] > span", "visually-hidden")
+        doc must haveElementAtPathWithClass("a[id=summaryTable2Row1ChangeLink] > span", "visuallyhidden")
         doc must haveElementAtPathWithText(
           "a[id=summaryTable2Row1ChangeLink] > span",
           messages("tai.updateOrRemove") + " context1")

@@ -15,7 +15,6 @@
  *@
 
 @import uk.gov.hmrc.tai.util.DateHelper
-@import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.model.domain.income._
@@ -35,10 +34,10 @@
 
 @printLink= {
     <p class="flush--bottom">
-    @Link.toInternalPage(
-        url=routes.YourIncomeCalculationController.printYourIncomeCalculationPage(model.empId).toString,
-        value=Some(Messages("tai.label.print")),
-        cssClasses=Some("tai-print-link")).toHtml
+        @includes.link(
+            url=routes.YourIncomeCalculationController.printYourIncomeCalculationPage(model.empId).toString,
+            copy=Messages("tai.label.print"),
+            linkClasses=Seq("tai-print-link"))
     </p>
 }
 
@@ -169,12 +168,12 @@
                         @if(model.isPension){
                             <p id="pensionUpdateLink">@Html(Messages(
                                 "tai.income.calculation.update.pension",
-                                Link.toInternalPage(url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
+                                includes.link(url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).toString, copy=Messages("tai.income.calculation.updateLink.regular"))
                                 ))</p>
                         } else {
                             <p id="regularUpdateLink">@Html(Messages(
                                 "tai.income.calculation.update.regular",
-                                Link.toInternalPage(url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
+                                includes.link(url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).toString, copy=Messages("tai.income.calculation.updateLink.regular"))
                                 ))
                             </p>
                         }

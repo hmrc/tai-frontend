@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.urls.Link
 @import includes.link
 
 @()(implicit messages: Messages)
@@ -30,17 +29,17 @@
                 copy=Messages("check.your.tax.codes"),
                 linkClasses=Seq("link-list__item"))
 
-                @Link.toInternalPage(
+                @link(
                 id=Some("taxFreeAmountSideLink"),
                 url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                value=Some(Messages("check.your.tax.free.amount")),
-                cssClasses=Some("link-list__item")).toHtml
+                copy=Messages("check.your.tax.free.amount"),
+                linkClasses=Seq("link-list__item"))
 
-                @Link.toInternalPage(
+                @link(
                 id=Some("taxSummarySideLink"),
                 url=routes.TaxAccountSummaryController.onPageLoad.url,
-                value=Some(Messages("return.to.your.income.tax.summary")),
-                cssClasses=Some("link-list__item")).toHtml
+                copy=Messages("return.to.your.income.tax.summary"),
+                linkClasses=Seq("link-list__item"))
             </div>
         </div>
     </nav>

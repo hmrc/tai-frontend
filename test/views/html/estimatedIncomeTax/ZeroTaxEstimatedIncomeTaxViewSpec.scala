@@ -23,7 +23,7 @@ import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, ZeroTaxEstimatedIncomeTaxViewModel}
-import uk.gov.hmrc.urls.Link
+import views.html.includes.link
 
 class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
   "Zero Tax Estimated Income Tax Page" must {
@@ -57,16 +57,14 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       doc(view) must haveParagraphWithText(
         Html(messages("tai.estimatedIncome.howYouPay.desc", messages("tai.estimatedIncome.taxCodes.link"))).body)
 
-      doc(view).select("#howYouPayDesc").html() mustBe Html(
+      doc(view).select("#howYouPayDesc").html().replaceAll("\\s+", "") mustBe Html(
         messages(
           "tai.estimatedIncome.howYouPay.desc",
-          Link
-            .toInternalPage(
-              id = Some("taxCodesLink"),
-              url = routes.YourTaxCodeController.taxCodes.url.toString,
-              value = Some(Messages("tai.estimatedIncome.taxCodes.link")))
-            .toHtml
-        )).body
+          link(
+            id = Some("taxCodesLink"),
+            url = routes.YourTaxCodeController.taxCodes.url.toString,
+            copy = Messages("tai.estimatedIncome.taxCodes.link"))
+        )).body.replaceAll("\\s+", "")
     }
 
     "have low estimated total income messages" when {
@@ -74,18 +72,16 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
         doc(view) must haveParagraphWithText(
           Html(messages("tai.estimatedIncomeLow.desc", messages("tai.estimatedIncome.taxFree.link"), "£11,500")).body)
 
-        doc(view).select("#estimatedIncomeLowDesc").html() mustBe Html(
+        doc(view).select("#estimatedIncomeLowDesc").html().replaceAll("\\s+", "") mustBe Html(
           Messages(
             "tai.estimatedIncomeLow.desc",
-            Link
-              .toInternalPage(
-                id = Some("taxFreeAmountLink"),
-                url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
-                value = Some("tai.estimatedIncome.taxFree.link")
-              )
-              .toHtml,
+            link(
+              id = Some("taxFreeAmountLink"),
+              url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
+              copy = messages("tai.estimatedIncome.taxFree.link")
+            ),
             "£11,500"
-          )).body
+          )).body.replaceAll("\\s+", "")
 
         doc(view).select("#balanceEarningsDesc").html() mustBe Html(
           Messages("tai.estimatedIncomeEarning.desc", "£2,500")).body

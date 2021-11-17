@@ -22,7 +22,6 @@
 @import uk.gov.hmrc.tai.util.HtmlFormatter
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
-@import uk.gov.hmrc.urls.Link
 @import views.html.taxCodeChange.FormattedTaxCodeForComparison
 
 @this(mainTemplate: MainTemplate)
@@ -59,11 +58,11 @@
             @taxCodePairs(taxCodeChangeViewModel.pairs)
         </div>
         <div class="grid-row">
-            @Link.toInternalPage(
+            @includes.link(
             id=Some("check-your-tax-button"),
             url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
-            value=Some(messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
-            cssClasses=Some("button")).toHtml
+            copy=messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton"),
+            linkClasses=Seq("button"))
         </div>
 
     </div>

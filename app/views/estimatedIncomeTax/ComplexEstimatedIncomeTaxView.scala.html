@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.urls.Link
+
 @import uk.gov.hmrc.play.views.html.layouts._
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
@@ -80,12 +80,12 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
                 </div>
                 
                 <div class="margin-top">
-                    @Link.toInternalPage(
-                    id=Some("detailEstimateView"),
-                    value=Some(Messages("tai.estimatedIncome.detailedEstimate.Link")),
-                    url = routes.DetailedIncomeTaxEstimateController.taxExplanationPage.url,
-                    cssClasses=Some("button")
-                    ).toHtml
+                    @includes.link(
+                        id=Some("detailEstimateView"),
+                        copy=Messages("tai.estimatedIncome.detailedEstimate.Link"),
+                        url = routes.DetailedIncomeTaxEstimateController.taxExplanationPage.url,
+                        linkClasses=Seq("button")
+                    )
                 </div>
 
                 @whyThisIsAnEstimateDesc()

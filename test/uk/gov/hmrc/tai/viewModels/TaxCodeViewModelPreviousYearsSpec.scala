@@ -21,8 +21,8 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.urls.Link
 import utils.BaseSpec
+import views.html.includes.link
 
 import scala.collection.immutable.ListMap
 
@@ -166,11 +166,7 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
         val result = previousYearTestViewModel(List(taxCodeRecordS1150L))
         result.taxCodeDetails.head.descriptionItems.head mustBe ("S", Messages(
           s"tai.taxCode.prev.S",
-          Link
-            .toExternalPage(
-              url = appConfig.scottishRateIncomeTaxUrl,
-              value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
-            .toHtml
+          link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
         ))
       }
     }
@@ -239,11 +235,7 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "S" -> Messages(
             s"tai.taxCode.prev.S",
-            Link
-              .toExternalPage(
-                url = appConfig.scottishRateIncomeTaxUrl,
-                value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
-              .toHtml
+            link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
           "0T" -> Messages("tai.taxCode.prev.0T")
         )
@@ -253,11 +245,7 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "S" -> Messages(
             s"tai.taxCode.prev.S",
-            Link
-              .toExternalPage(
-                url = appConfig.scottishRateIncomeTaxUrl,
-                value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
-              .toHtml
+            link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
           "1150" -> Messages(s"tai.taxCode.prev.amount", 11500),
           "M"    -> Messages("tai.taxCode.prev.M")
@@ -268,11 +256,7 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "S" -> Messages(
             s"tai.taxCode.prev.S",
-            Link
-              .toExternalPage(
-                url = appConfig.scottishRateIncomeTaxUrl,
-                value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
-              .toHtml
+            link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
           "1150" -> Messages(s"tai.taxCode.prev.amount", 11500),
           "T"    -> Messages("tai.taxCode.prev.T")
@@ -284,11 +268,7 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "S" -> Messages(
             s"tai.taxCode.prev.S",
-            Link
-              .toExternalPage(
-                url = appConfig.scottishRateIncomeTaxUrl,
-                value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
-              .toHtml
+            link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
           "1150" -> Messages(s"tai.taxCode.prev.amount", 11500),
           "T"    -> Messages("tai.taxCode.prev.T"),

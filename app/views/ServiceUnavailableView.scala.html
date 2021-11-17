@@ -14,8 +14,9 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.urls.Link
+
 @import uk.gov.hmrc.play.views.html.layouts._
+
 
 @this(mainTemplate: MainTemplate, loginStatus: LoginStatus)
 
@@ -29,5 +30,5 @@
 </header>
 
 <p>@Messages("tai.service.error.message")</p>
-<p>@Link.toExternalPage(url = Messages("tai.hmrc.enquiry.url"), id=Some("no-update-incomes-link"), value = Some(Messages("tai.hmrc.enquiry.text"))).toHtml</p>
+<p>@includes.link(url = Messages("tai.hmrc.enquiry.url"), id=Some("no-update-incomes-link"), copy = Messages("tai.hmrc.enquiry.text"), externalLink = true)</p>
 }

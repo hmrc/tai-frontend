@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.urls.Link
 @import includes.confirmation_summary
 @import uk.gov.hmrc.tai.model.TaxYear
 @import scala.concurrent.ExecutionContext
@@ -34,11 +33,11 @@ articleClasses = None) {
 
 @confirmation_summary()
 
-@Link.toInternalPage(
-id=Some("returnToSummary"),
-value=Some(Messages("return.to.your.income.tax.summary")),
-url = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
-cssClasses=Some("button")
-).toHtml
+@includes.link(
+  id=Some("returnToSummary"),
+  copy=Messages("return.to.your.income.tax.summary"),
+  url = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
+  linkClasses=Seq("button")
+)
 
 }

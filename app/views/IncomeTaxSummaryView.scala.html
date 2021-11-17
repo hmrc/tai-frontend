@@ -16,10 +16,10 @@
 
 @import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.IFormInProgressBannerViewModel
+@import includes.link
 
 @import controllers.auth.AuthenticatedRequest
 
@@ -34,12 +34,12 @@
 
 @backLinkToChooseTaxYear = {
     <p class="flush--bottom">
-        @Link.toInternalPage(
+        @link(
             id=Some("returnToChooseTaxYearLink"),
             url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-            value=Some(Messages("tai.returnToChooseTaxYear")),
-            cssClasses=Some("link-back")
-        ).toHtml
+            copy=Messages("tai.returnToChooseTaxYear"),
+            linkClasses=Seq("link-back")
+        )
     </p>
 }
 
@@ -67,15 +67,15 @@
             @if(viewModel.displayIyaBanner){
             <p id="inYearAdjustmentBanner" class="panel-indent panel-indent--info flush--top">
                 <span class="display-block">@Messages("tai.notifications.iya.banner.text")</span>
-                @Link.toInternalPage(
+                @link(
                     url=routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url,
-                    value=Some(Messages("tai.notifications.iya.linkText"))
-                ).toHtml
+                    copy=Messages("tai.notifications.iya.linkText")
+                )
             </p>
             }
 
             @if(viewModel.employments.nonEmpty){
-            <div id="incomeFromEmploymentSection" class="section flush--bottom" aria-labelledby="incomeFromEmploymentHeading">
+            <div id="incomeFromEmploymentSection" class="section flush--bottom">
 
                 <h2 id="incomeFromEmploymentHeading" class="heading-section">@Messages("tai.incomeTaxSummary.employment.section.heading")</h2>
 
@@ -85,7 +85,7 @@
             }
 
             @if(viewModel.pensions.nonEmpty){
-            <div id="incomeFromPensionSection" class="section flush--bottom" aria-labelledby="incomeFromPensionHeading">
+            <div id="incomeFromPensionSection" class="section flush--bottom">
 
                 <h2 id="incomeFromPensionHeading" class="heading-section">@Messages("tai.incomeTaxSummary.pension.section.heading")</h2>
 
@@ -95,7 +95,7 @@
             }
 
             @if(viewModel.otherIncomeSources.nonEmpty){
-            <div id="otherIncomeSources" class="section flush--bottom" aria-labelledby="otherIncomeSourcesHeading">
+            <div id="otherIncomeSources" class="section flush--bottom">
 
                 <h2 id="otherIncomeSourcesHeading" class="heading-section">@Messages("tai.incomeTaxSummary.otherIncomeSources.heading")</h2>
 
@@ -105,7 +105,7 @@
             }
 
             @if(viewModel.ceasedEmployments.nonEmpty){
-            <div id="endedIncomeSection" class="section" aria-labelledby="endedIncomeHeading">
+            <div id="endedIncomeSection" class="section">
 
                 <h2 id="endedIncomeHeading" class="heading-section">@Messages("tai.incomeTaxSummary.ceased.section.heading", viewModel.lastTaxYearEnd)</h2>
 
@@ -125,7 +125,7 @@
     <div class="grid grid-1-3">
         <div class="inner-block">
 
-            <div id="annualAmountsSummarySection" class="section section__box--shaded flush--bottom" aria-labelledby="annualAmountsSummaryHeading">
+            <div id="annualAmountsSummarySection" class="section section__box--shaded flush--bottom">
 
                 <h2 id="annualAmountsSummaryHeading" class="heading-section">@Messages("tai.incomeTaxSummary.annualAmounts.section.heading")</h2>
 
@@ -139,11 +139,11 @@
                 </p>
 
                 <p class="flush--top">
-                    @Link.toInternalPage(
-                    id=Some("totalEstimatedIncomeLink"),
-                    url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
-                    value=Some(Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")),
-                    cssClasses=Some("")).toHtml
+                    @link(
+                        id=Some("totalEstimatedIncomeLink"),
+                        url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+                        copy=Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")
+                    )
                 </p>
 
                 </div>
@@ -156,11 +156,11 @@
                     <span class="display-block heading-36 faded-text-dark section--narrow flush">@viewModel.taxFreeAmount</span>
                 </p>
                 <p class="flush--top">
-                    @Link.toInternalPage(
+                    @link(
                         id=Some("taxFreeAmountLink"),
                         url=routes.TaxFreeAmountController.taxFreeAmount.toString,
-                        value=Some(Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")),
-                        cssClasses=Some("")).toHtml
+                        copy=Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")
+                    )
                 </p>
                 <h3>@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading")</h3>
                 <p class="flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")</p>
@@ -169,53 +169,53 @@
                     <span class="display-block heading-36 faded-text-dark section--narrow flush">@viewModel.estimatedIncomeTaxAmount</span>
                 </p>
                 <p class="flush--top">
-                    @Link.toInternalPage(
+                    @link(
                         id=Some("estimatedIncomeTaxLink"),
                         url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.toString,
-                        value=Some(Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")),
-                        cssClasses=Some("")).toHtml
+                        copy=Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")
+                    )
                 </p>
             </div>
 
-            <div id="addMissingIncomeSourceSection" class="section section__box--shaded" aria-labelledby="addMissingIncomeSourceHeading">
+            <div id="addMissingIncomeSourceSection" class="section section__box--shaded">
 
                 <h2 id="addMissingIncomeSourceHeading" class="heading-section">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
 
                 <ul>
                     <li>
                         <p class="icon icon-plus">
-                            @Link.toInternalPage(
+                            @link(
                                 id=Some("addEmploymentLink"),
                                 url=controllers.employments.routes.AddEmploymentController.addEmploymentName.toString,
-                                value=Some(Messages("tai.incomeTaxSummary.addMissingIncome.section.employerLink")),
-                                cssClasses=Some("")).toHtml
+                                copy=Messages("tai.incomeTaxSummary.addMissingIncome.section.employerLink")
+                            )
                         </p>
                     </li>
                     <li>
                         <p class="icon icon-plus">
-                            @Link.toInternalPage(
+                            @link(
                                 id=Some("addPensionLink"),
                                 url=controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.toString,
-                                value=Some(Messages("add.missing.pension")),
-                                cssClasses=Some("")).toHtml
+                                copy=Messages("add.missing.pension")
+                            )
                         </p>
                     </li>
                     <li>
                         <p class="icon icon-plus">
-                        @Link.toInternalPage(
+                        @link(
                             id=Some("addInvestmentLink"),
                             url=appConfig.investmentIncomeLinkUrl,
-                            value=Some(Messages("tai.incomeTaxSummary.addMissingIncome.section.investmentIncomeLink")),
-                            cssClasses=Some("")).toHtml
+                            copy=Messages("tai.incomeTaxSummary.addMissingIncome.section.investmentIncomeLink")
+                            )
                         </p>
                     </li>
                     <li>
                         <p class="icon icon-plus">
-                            @Link.toInternalPage(
+                            @link(
                                 id=Some("addOtherIncomeSourceLink"),
                                 url=appConfig.otherIncomeLinkUrl,
-                                value=Some(Messages("tai.incomeTaxSummary.addMissingIncome.section.otherLink")),
-                                cssClasses=Some("")).toHtml
+                                copy=Messages("tai.incomeTaxSummary.addMissingIncome.section.otherLink")
+                            )
                         </p>
                     </li>
                 </ul>

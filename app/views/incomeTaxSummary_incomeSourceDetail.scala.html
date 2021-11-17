@@ -16,7 +16,7 @@
 
 @import uk.gov.hmrc.tai.viewModels.IncomeSourceViewModel
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.urls.Link
+@import includes.link
 
 @(incomeSources: Seq[IncomeSourceViewModel],
   typeLabel: String,
@@ -41,11 +41,10 @@
             <p class="flush--top">
                 @if(incomeSource.displayTaxCode) {
                     @incomeSource.taxCodeUrl.map { taxCodeUrl =>
-                    @Link.toInternalPage(
+                    @link(
                         id = Some(s"${typeLabel}${idx}TaxCodeLink"),
                         url = taxCodeUrl.url,
-                        value = Some(Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode)),
-                        cssClasses = Some("")).toHtml
+                        copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode))
                     }
                 }
                 @if(incomeSource.displayPayrollNumber){
@@ -58,7 +57,7 @@
 
             @if(incomeSource.displayDetailsLink){
             <p class="flush--top">
-                @includes.link(
+                @link(
                     id=Some(s"${typeLabel}${idx}DetailsLink"),
                     url=incomeSource.detailsLinkUrl,
                     copy=incomeSource.detailsLinkLabel,

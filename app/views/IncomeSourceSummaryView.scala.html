@@ -22,8 +22,7 @@
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
 @import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
-@import uk.gov.hmrc.urls.Link
-
+@import includes.link
 @import scala.concurrent.ExecutionContext
 
 @this(mainTemplate: MainTemplate)
@@ -55,11 +54,11 @@
 }
 @backLinkToTaxAccountSummary= {
     <p class="flush--bottom">
-    @Link.toInternalPage(
+    @link(
         id=Some("taxableIncomeLink"),
         url=routes.TaxAccountSummaryController.onPageLoad.url,
-        value=Some(Messages("return.to.your.income.tax.summary")),
-        cssClasses=Some("link-back")).toHtml
+        copy=Messages("return.to.your.income.tax.summary"),
+        linkClasses=Seq("link-back"))
     </p>
     }
 
@@ -82,17 +81,17 @@
     @if(model.rtiAvailable) {
         @if(model.isPension) {
             <p>
-            @Link.toInternalPage(
+            @link(
                 id = Some("updatePension"),
                 url = controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url,
-                value = Some(messages("tai.pension.income.details.updateLinkText", model.empOrPensionName))).toHtml
+                copy = messages("tai.pension.income.details.updateLinkText", model.empOrPensionName))
             </p>
         } else {
             <p>
-            @Link.toInternalPage(
+            @link(
                 id = Some("updateEmployer"),
                 url = controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url,
-                value = Some(messages("tai.employment.income.details.updateLinkText", model.empOrPensionName))).toHtml
+                copy = messages("tai.employment.income.details.updateLinkText", model.empOrPensionName))
             </p>
         }
     } else {
@@ -116,10 +115,10 @@
                 <span class="bold-xlarge faded-text-dark" aria-hidden="true">@pounds(model.estimatedTaxableIncome)</span>
                 <span class="visuallyhidden">@Html(messages("tai.income.details.yourEstimatedTaxableIncome.with.amount", pounds(model.estimatedTaxableIncome)))</span>
                 <p>
-                    @Link.toInternalPage(
+                    @link(
                         id=Some("updateIncome"),
                         url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
-                        value=Some(messages("tai.income.details.updateTaxableIncome.full"))).toHtml
+                        copy=messages("tai.income.details.updateTaxableIncome.full"))
                 </p>
         </div>
 
@@ -132,10 +131,10 @@
                         <span class="visuallyhidden">@Html(messages("tai.income.details.incomeReceivedToDate.screenReader", pounds(model.incomeReceivedToDate)))</span>
 
                          <p>
-                        @Link.toInternalPage(
-                        id=Some("viewIncomeReceivedToDate"),
-                        url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
-                        value=Some(messages("tai.income.details.checkPaymentsReceived.with.employer", model.empOrPensionName))).toHtml
+                         @link(
+                            id=Some("viewIncomeReceivedToDate"),
+                            url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
+                            copy=messages("tai.income.details.checkPaymentsReceived.with.employer", model.empOrPensionName))
                         </p>
                 } else {
                     <span>@messages("tai.rti.down")</span>
@@ -150,10 +149,10 @@
             <span class="bold-xlarge faded-text-dark" aria-hidden="true">@model.taxCode</span>
             <span class="visuallyhidden">@messages("tai.income.details.yourTaxCode", model.taxCode)</span>
             <p>
-                @Link.toInternalPage(
+                @link(
                     id=Some("understandTaxCode"),
                     url=routes.YourTaxCodeController.taxCode(model.empId).url,
-                    value=Some(messages("tai.income.details.taxCode.linkText"))).toHtml
+                    copy=messages("tai.income.details.taxCode.linkText"))
             </p>
         </div>
 
@@ -171,12 +170,12 @@
     </div>
 
     @if(!model.isPension){
-    <div id="companyBenefitsSection" class="subsection--wide" aria-labelledby="companyBenefitsHeading">
+    <div id="companyBenefitsSection" class="subsection--wide">
 
         <h2 id="companyBenefitsHeading" class="heading-small flush--bottom">@Messages("tai.income.details.companyuBenefitsHeading", model.empOrPensionName)</h2>
 
         @if(model.benefits.size > 0) {
-        <ul id="companyBenefitList" class="tai-description-list tai-description-list--dynamic-columns full-width section flush" aria-labelledby="companyBenefitsHeading">
+        <ul id="companyBenefitList" class="tai-description-list tai-description-list--dynamic-columns full-width section flush">
 
             @for((benefit, idx) <- model.benefits zip (Stream from 1)) {
             <li>
@@ -189,7 +188,7 @@
                     <span class="visuallyhidden">@Html(messages("tai.income.details.benefit.amount.announce", withPoundPrefixAndSign(MoneyPounds(benefit.amount, 0))))</span>
                 </div>
                 <div class="tai-description-details--retain-column" id="companyBenefitChangeLinkDescription@idx">
-                    @includes.link(
+                    @link(
                         id = Some("changeCompanyBenefitLink" + idx.toString),
                         url = benefit.changeUrl,
                         copy=Messages("tai.updateOrRemove"),
@@ -205,20 +204,18 @@
         }
 
         <p class="icon icon-plus display-block">
-            @Link.toInternalPage(
+            @link(
                 id=Some("addMissingCompanyBenefitLink"),
                 url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url,
-                value=Some(Messages("add.missing.company.benefit")),
-                cssClasses=Some("")).toHtml
+                copy=Messages("add.missing.company.benefit"))
         </p>
 
         @if(model.displayAddCompanyCarLink) {
         <p class="icon icon-plus">
-            @Link.toInternalPage(
+            @link(
                 id=Some("addMissingCompanyCarLink"),
                 url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyCarsIform).url,
-                value=Some(Messages("tai.income.details.addMissingCompanyCar")),
-                cssClasses=Some("")).toHtml
+                copy=Messages("tai.income.details.addMissingCompanyCar"))
         </p>
         }
 

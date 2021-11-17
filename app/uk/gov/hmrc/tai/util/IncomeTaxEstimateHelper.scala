@@ -21,7 +21,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.formatting.Money.pounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.urls.Link
+import views.html.includes.link
 
 trait IncomeTaxEstimateHelper {
 
@@ -56,12 +56,10 @@ trait IncomeTaxEstimateHelper {
     Messages(
       s"your.total.income.from.$incomeType.desc",
       pounds(taxAccountSummary.totalEstimatedIncome),
-      Link
-        .toInternalPage(
-          id = Some("taxFreeAmountLink"),
-          url = routes.TaxFreeAmountController.taxFreeAmount.url,
-          value = Some(Messages("tai.estimatedIncome.taxFree.link")))
-        .toHtml,
+      link(
+        id = Some("taxFreeAmountLink"),
+        url = routes.TaxFreeAmountController.taxFreeAmount.url,
+        copy = Messages("tai.estimatedIncome.taxFree.link")),
       pounds(taxAccountSummary.taxFreeAllowance)
     )
 

@@ -54,8 +54,7 @@ class ErrorHandlerSpec extends BaseSpec {
     doc.getElementsByTag("p").get(1).toString must include(
       messages(
         "tai.errorMessage.frontend400.message2",
-        "<a href=\"#report-name\" target=\"_self\" data-sso=\"false\" class=\"report-error__toggle\">" + messages(
-          "tai.errorMessage.reportAProblem") + "</a>"
+        "<a href=\"#report-name\" class=\"report-error__toggle\"> " + messages("tai.errorMessage.reportAProblem") + " </a> "
       ))
   }
 
@@ -67,8 +66,8 @@ class ErrorHandlerSpec extends BaseSpec {
     doc.getElementsByTag("p").get(2).toString must include(
       messages(
         "tai.errorMessage.pageNotFound.contactHelpline.text",
-        "<a href=\"https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees\" target=\"_self\" data-sso=\"false\">" + messages(
-          "tai.errorMessage.pageNotFound.contactHelpline.link") + "</a>"
+        "<a href=\"https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees\"> " + messages(
+          "tai.errorMessage.pageNotFound.contactHelpline.link") + " </a>"
       ))
   }
 

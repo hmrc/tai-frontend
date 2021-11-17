@@ -20,8 +20,8 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
-import uk.gov.hmrc.urls.Link
 import utils.BaseSpec
+import views.html.includes.link
 
 import scala.collection.immutable.ListMap
 
@@ -91,11 +91,7 @@ class TaxCodeViewModelSpec extends BaseSpec {
         val result = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems.head mustBe ("S", Messages(
           s"tai.taxCode.S",
-          Link
-            .toExternalPage(
-              url = appConfig.scottishRateIncomeTaxUrl,
-              value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
-            .toHtml
+          link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
         ))
       }
     }
@@ -211,11 +207,7 @@ class TaxCodeViewModelSpec extends BaseSpec {
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "S" -> Messages(
             s"tai.taxCode.S",
-            Link
-              .toExternalPage(
-                url = appConfig.scottishRateIncomeTaxUrl,
-                value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
-              .toHtml
+            link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
           "K"   -> Messages("tai.taxCode.K"),
           "100" -> Messages(s"tai.taxCode.untaxedAmount", 1000)
@@ -229,11 +221,7 @@ class TaxCodeViewModelSpec extends BaseSpec {
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "S" -> Messages(
             s"tai.taxCode.S",
-            Link
-              .toExternalPage(
-                url = appConfig.scottishRateIncomeTaxUrl,
-                value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
-              .toHtml
+            link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
           "0T" -> Messages("tai.taxCode.0T")
         )
@@ -246,11 +234,7 @@ class TaxCodeViewModelSpec extends BaseSpec {
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "S" -> Messages(
             s"tai.taxCode.S",
-            Link
-              .toExternalPage(
-                url = appConfig.scottishRateIncomeTaxUrl,
-                value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
-              .toHtml
+            link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
           "1150" -> Messages(s"tai.taxCode.amount", 11500),
           "M"    -> Messages("tai.taxCode.M")
@@ -264,11 +248,7 @@ class TaxCodeViewModelSpec extends BaseSpec {
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "S" -> Messages(
             s"tai.taxCode.S",
-            Link
-              .toExternalPage(
-                url = appConfig.scottishRateIncomeTaxUrl,
-                value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
-              .toHtml
+            link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
           "1150" -> Messages(s"tai.taxCode.amount", 11500),
           "T"    -> Messages("tai.taxCode.T")
@@ -289,11 +269,7 @@ class TaxCodeViewModelSpec extends BaseSpec {
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "S" -> Messages(
             s"tai.taxCode.S",
-            Link
-              .toExternalPage(
-                url = appConfig.scottishRateIncomeTaxUrl,
-                value = Some(Messages("tai.taxCode.scottishIncomeText.link")))
-              .toHtml
+            link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
           "1150" -> Messages(s"tai.taxCode.amount", 11500),
           "T"    -> Messages("tai.taxCode.T"),

@@ -29,8 +29,8 @@ import uk.gov.hmrc.tai.model.domain.{ChildBenefit => _, DoubleTaxationRelief => 
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.{HelpLink, TaxSummaryLabel}
-import uk.gov.hmrc.urls.Link
 import utils.BaseSpec
+import views.html.includes.link
 
 class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesConstants with ScalaCheckPropertyChecks {
 
@@ -341,13 +341,11 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
           )
 
           val tabIndexLink = {
-            val link: Link = Link
-              .toInternalPage(
-                url = routes.YourTaxCodeController.taxCodes().toString,
-                value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
-              )
-            val tabLink = link.copy(dataAttributes = Some(Map("tabindex" -> "-1")))
-            tabLink.toHtml.body.replaceAll("data-", "")
+            val links = link(
+              url = routes.YourTaxCodeController.taxCodes.url,
+              copy = Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"),
+              tabindexMinusOne = true
+            )
           }
 
           val result: Seq[ReductionTaxRow] =

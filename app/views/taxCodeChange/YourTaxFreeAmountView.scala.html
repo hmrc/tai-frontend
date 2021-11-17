@@ -17,7 +17,6 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 @import includes.taxFreeAmountSummaryComparison
-@import uk.gov.hmrc.urls.Link
 
 @this(mainTemplate: MainTemplate)
 
@@ -58,12 +57,12 @@
 
         <div class="grid-row">
             <div class="form-group">
-            @Link.toInternalPage(
+            @includes.link(
                 id = Some("seeWhatHappensNext"),
-                value = Some(Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")),
+                copy = Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link"),
                 url = routes.TaxCodeChangeController.whatHappensNext.url,
-                cssClasses = Some("button")
-            ).toHtml
+                linkClasses = Seq("button")
+            )
             </div>
         </div>
 

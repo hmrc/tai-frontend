@@ -15,7 +15,6 @@
  *@
 
 @import includes.ptaHeader
-@import uk.gov.hmrc.urls.Link
 @import scala.concurrent.ExecutionContext
 
 @this(mainTemplate: MainTemplate)
@@ -52,10 +51,10 @@
 
                 <p id="check-income-tax-estimate" >
                     @Html(Messages("taxCode.change.whatHappensNext.paragragh2",
-                    Link.toInternalPage(
+                    includes.link(
                     id=Some("income-tax-estimate-link"),
                     url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
-                    value=Some(Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link"))).toHtml))
+                    copy=Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link"))))
                 </p>
             </div>
 
@@ -64,10 +63,10 @@
 
                 <p id="update-current-income-or-benefits">
                     @Html(Messages("taxCode.change.whatHappensNext.paragragh3",
-                    Link.toInternalPage(
+                    includes.link(
                     id=Some("update-current-income-or-benefits-link"),
                     url=routes.TaxAccountSummaryController.onPageLoad.url.toString,
-                    value=Some(Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link"))).toHtml))
+                    copy=Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link"))))
                 </p>
             </div>
 

@@ -17,7 +17,6 @@
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.renderer.TemplateRenderer
-@import uk.gov.hmrc.urls.Link
 
 @this(unauthenticated_main: unauthenticated_main)
 
@@ -33,7 +32,11 @@ title = messages("session_expired.title")) {
 
             <p>@messages("session_expired.guidance")</p>
 
-            @Link.toInternalPage(url=routes.TaxAccountSummaryController.onPageLoad().toString, value=Some(messages("tai.unauthorised.button-text")), cssClasses=Some("button margin-bottom-large")).toHtml
+            @includes.link(
+                url=routes.TaxAccountSummaryController.onPageLoad().toString,
+                copy=messages("tai.unauthorised.button-text"),
+                linkClasses=Seq("button margin-bottom-large")
+            )
         </div>
     </div>
 }

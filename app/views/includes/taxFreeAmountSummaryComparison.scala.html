@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 @import uk.gov.hmrc.tai.model.CodingComponentPairModel
 
@@ -44,7 +43,7 @@
     @if(showPreviousColumn) {
         <thead>
             <tr role="row">
-                <th scope="col"></th>
+                <th scope="col">@Messages("tai.incomeTaxComparison.taxFreeAmount.how.we.calculate")</th>
                 <th scope="col" class="numeric tax-free-amount-comparison-table-header-cell">
                     @Messages("tai.taxFreeAmount.table.previous.taxCodes")
                 </th>

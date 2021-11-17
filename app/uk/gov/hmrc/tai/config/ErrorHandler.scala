@@ -24,10 +24,10 @@ import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.urls.Link
 import views.html.InternalServerErrorView
 import views.html.ErrorTemplateNoauth
 import scala.concurrent.ExecutionContext
+import views.html.includes.link
 
 class ErrorHandler @Inject()(
   applicationConfig: ApplicationConfig,
@@ -54,12 +54,10 @@ class ErrorHandler @Inject()(
     List(
       Messages(
         "tai.errorMessage.frontend400.message2",
-        Link
-          .toInternalPage(
-            url = "#report-name",
-            cssClasses = Some("report-error__toggle"),
-            value = Some(Messages("tai.errorMessage.reportAProblem")))
-          .toHtml
+        link(
+          url = "#report-name",
+          copy = Messages("tai.errorMessage.reportAProblem"),
+          linkClasses = Seq("report-error__toggle"))
       ))
   )
 
@@ -78,12 +76,10 @@ class ErrorHandler @Inject()(
         Messages("tai.errorMessage.pageNotFound.ifYouPasted"),
         Messages(
           "tai.errorMessage.pageNotFound.contactHelpline.text",
-          Link
-            .toInternalPage(
-              url = contactUrl,
-              value = Some(Messages("tai.errorMessage.pageNotFound.contactHelpline.link"))
-            )
-            .toHtml
+          link(
+            url = contactUrl,
+            copy = Messages("tai.errorMessage.pageNotFound.contactHelpline.link")
+          )
         )
       )
     )

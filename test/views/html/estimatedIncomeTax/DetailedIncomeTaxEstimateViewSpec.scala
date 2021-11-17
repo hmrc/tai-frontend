@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow}
 import uk.gov.hmrc.tai.viewModels.{HelpLink, TaxSummaryLabel}
-import uk.gov.hmrc.urls.Link
+import views.html.includes.link
 
 class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConstants {
 
@@ -509,13 +509,10 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
   }
 
   "have reduction tax table" in {
-    val taxCodeLink = Link
-      .toInternalPage(
-        url = routes.YourTaxCodeController.taxCodes().toString,
-        value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
-      )
-      .toHtml
-      .body
+    val taxCodeLink = link(
+      url = routes.YourTaxCodeController.taxCodes().toString,
+      copy = Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText")
+    ).body
 
     val reductionTaxRows = Seq(
       ReductionTaxRow(

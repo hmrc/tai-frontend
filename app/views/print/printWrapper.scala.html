@@ -20,7 +20,6 @@
 
 @import uk.gov.hmrc.play.views.html.layouts
 @import play.api.Play
-@import uk.gov.hmrc.urls.Link
 
 @fullTitle = @{
     s"${title} - ${Messages("tai.service.navTitle")} - GOV.UK"
@@ -49,11 +48,11 @@
                 <div class="nav-container print-grid-row" id="main-nav">
                     <div class="print-grid-row">
                         <div class="column-half back-link">
-                            @Link.toInternalPage(
+                            @includes.link(
                                 id=Some("backLink"),
-                                value=Some(Messages("tai.back-link.upper")),
+                                copy=Messages("tai.back-link.upper"),
                                 url = "#",
-                                cssClasses=Some("displayIfJsEnabled link-back")).toHtml
+                                linkClasses=Seq("displayIfJsEnabled link-back"))
                         </div>
                         <div class="column-half print-button">
                             <a href="javascript:window.print();">@Messages("tai.label.print")</a>

@@ -20,7 +20,7 @@ import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.urls.Link
+import views.html.includes.link
 
 class howYouPayYourTaxDescSpec extends TaiViewSpec {
 
@@ -31,16 +31,14 @@ class howYouPayYourTaxDescSpec extends TaiViewSpec {
     doc(view) must haveParagraphWithText(
       Html(messages("tai.estimatedIncome.howYouPay.desc", messages("tai.estimatedIncome.taxCodes.link"))).body)
 
-    doc(view).select("#howYouPayDesc").html() mustBe Html(
+    doc(view).select("#howYouPayDesc").html().replaceAll("\\s+", "") mustBe Html(
       messages(
         "tai.estimatedIncome.howYouPay.desc",
-        Link
-          .toInternalPage(
-            id = Some("taxCodesLink"),
-            url = routes.YourTaxCodeController.taxCodes.url.toString,
-            value = Some(Messages("tai.estimatedIncome.taxCodes.link")))
-          .toHtml
-      )).body
+        link(
+          id = Some("taxCodesLink"),
+          url = routes.YourTaxCodeController.taxCodes.url.toString,
+          copy = Messages("tai.estimatedIncome.taxCodes.link"))
+      )).body.replaceAll("\\s+", "")
   }
 
   override def view: Html = views.html.estimatedIncomeTax.howYouPayYourTaxDesc()

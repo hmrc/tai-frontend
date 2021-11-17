@@ -15,7 +15,6 @@
  *@
 
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 @import uk.gov.hmrc.tai.util.constants.TaiConstants._
 @import includes.ptaHeader
@@ -31,12 +30,12 @@
 
 @backLinkToChooseTaxYear = {
     <p>
-        @Link.toInternalPage(
+        @includes.link(
             id=Some("returnToChooseTaxYearLink"),
             url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-            value=Some(messages("tai.returnToChooseTaxYear")),
-            cssClasses=Some("link-back")
-        ).toHtml
+            copy=messages("tai.returnToChooseTaxYear"),
+            linkClasses=Seq("link-back")
+        )
     </p>
 }
 
@@ -70,10 +69,10 @@
     <p id="missing-info-Iform">
         @Html(messages(
             "tai.noCYIncomeError.missingInfo",
-            Link.toInternalPage(
+            includes.link(
                 url = routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url,
-                value = Some(messages("tai.missingInfo.link.message"))
-            ).toHtml
+                copy = messages("tai.missingInfo.link.message")
+            )
         ))
     </p>
 }

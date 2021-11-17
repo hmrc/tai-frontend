@@ -17,8 +17,8 @@
 package uk.gov.hmrc.tai.viewModels
 
 import controllers.routes
-import uk.gov.hmrc.urls.Link
 import utils.BaseSpec
+import views.html.includes.link
 
 class ReturnLinkSpec extends BaseSpec {
 
@@ -33,7 +33,7 @@ class ReturnLinkSpec extends BaseSpec {
 
         val result = returnLink.createReturnLink(referalPath, resourceName = "tax-free-allowance")
 
-        result mustBe Link.toInternalPage(referalPath, Some(messagesApi("tai.iya.tax.free.amount.return.link"))).toHtml
+        result mustBe link(url = referalPath, copy = messagesApi("tai.iya.tax.free.amount.return.link"))
       }
 
       "refer is detailed-income-tax-estimate" in {
@@ -41,7 +41,7 @@ class ReturnLinkSpec extends BaseSpec {
 
         val result = returnLink.createReturnLink(referalPath, resourceName = "detailed-income-tax-estimate")
 
-        result mustBe Link.toInternalPage(referalPath, Some(messagesApi("tai.iya.detailed.paye.return.link"))).toHtml
+        result mustBe link(url = referalPath, copy = messagesApi("tai.iya.detailed.paye.return.link"))
       }
 
       "refer is your-tax-free-amount" in {
@@ -49,7 +49,7 @@ class ReturnLinkSpec extends BaseSpec {
 
         val result = returnLink.createReturnLink(referalPath, resourceName = "your-tax-free-amount")
 
-        result mustBe Link.toInternalPage(referalPath, Some(messagesApi("tai.iya.tax.code.change.return.link"))).toHtml
+        result mustBe link(url = referalPath, copy = messagesApi("tai.iya.tax.code.change.return.link"))
       }
 
       "refer is anything else" in {
@@ -57,11 +57,9 @@ class ReturnLinkSpec extends BaseSpec {
 
         val result = returnLink.createReturnLink(referalPath, resourceName = "anything else")
 
-        result mustBe Link
-          .toInternalPage(
-            routes.TaxAccountSummaryController.onPageLoad.url,
-            Some(messagesApi("return.to.your.income.tax.summary")))
-          .toHtml
+        result mustBe link(
+          url = routes.TaxAccountSummaryController.onPageLoad.url,
+          copy = messagesApi("return.to.your.income.tax.summary"))
       }
     }
   }

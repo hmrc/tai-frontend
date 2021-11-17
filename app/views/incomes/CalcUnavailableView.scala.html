@@ -23,7 +23,6 @@ user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 @import includes.ptaHeader
-@import uk.gov.hmrc.urls.Link
 
 
 @header = @{
@@ -46,7 +45,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
     <h2 class="heading-medium flush--top">@messages("tai.unableToCalculate.nextSteps")</h2>
     <p>@messages("tai.unableToCalculate.cantCalc")</p>
     <h3 class="heading-small">@messages("tai.unableToCalculate.enterOwnFigures")</h3>
-    <p>@Html(messages("tai.unableToCalculate.enterOwnFigures.text", Link.toInternalPage(url=routes.IncomeController.viewIncomeForEdit.toString,value=Some(messages("tai.unableToCalculate.enterOwnFigures.link"))).toHtml))</p>
+    <p>@Html(messages("tai.unableToCalculate.enterOwnFigures.text", includes.link(url=routes.IncomeController.viewIncomeForEdit.toString,copy=messages("tai.unableToCalculate.enterOwnFigures.link"))))</p>
     <h3 class="heading-small">@messages("tai.unableToCalculate.contactHmrc")</h3>
     <p>@messages("tai.unableToCalculate.noNeedToContact")</p>
     <ul class="list list-bullet">

@@ -15,7 +15,6 @@
  *@
 
 @import uk.gov.hmrc.tai.config.ApplicationConfig
-@import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 @import scala.concurrent.ExecutionContext
 
@@ -44,21 +43,22 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 <p>@Messages("tai.getHelp.p1")</p>
 
 <p>
-@Html(Messages("tai.getHelp.contact", Link.toExternalPage(
+@Html(Messages("tai.getHelp.contact", includes.link(
     url = if (messages.lang.language == "cy") {
         appConfig.contactHelplineWelshUrl
     } else {
         appConfig.contactHelplineUrl
     },
-    value = Some(messages("tai.getHelp.contact.link"))
-).toHtml))
+    copy = messages("tai.getHelp.contact.link"),
+    externalLink = true
+)))
 </p>
 
 <p>
 @Html(Messages("tai.getHelp.form.p1.text.with.also",
-Link.toInternalPage(id=Some("get-help-iform-link"),
+    includes.link(id=Some("get-help-iform-link"),
     url=appConfig.hardshipHelpUrl,
-    value=Some(Messages("tai.getHelp.form.link.title"))).toHtml))
+    copy=Messages("tai.getHelp.form.link.title"))))
 </p>
 
 }
