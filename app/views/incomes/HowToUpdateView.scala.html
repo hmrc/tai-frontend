@@ -29,8 +29,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     ptaHeader(
         formForErrorSummary = Some(howToUpdateForm),
         displayBackLink = true,
-        mainHeadingText = Messages("tai.howToUpdate.heading", <span class="carry-over">{employerName}</span>),
-        preHeadingText = Messages("tai.howToUpdate.preHeading", <span class="carry-over">{employerName}</span>)
+        mainHeadingText = Messages("tai.howToUpdate.heading", employerName),
+        preHeadingText = Messages("tai.howToUpdate.preHeading", employerName)
     )
 }
 

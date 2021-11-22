@@ -29,7 +29,7 @@
     ptaHeader(
         formForErrorSummary = Some(payrollNumberForm),
         displayBackLink = true,
-        mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", <span class="carry-over">{payrollNumberViewModel.employmentName}</span>),
+        mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName),
         preHeadingText = Messages("add.missing.employment"))}
 
 @mainTemplate(

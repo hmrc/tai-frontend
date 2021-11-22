@@ -49,7 +49,7 @@
     pageHeader = Some(header),
     articleClasses = Some("")
 ){
-    <h2 class="heading-medium">@messages("tai.irregular.introduction", viewModel.employerName)</h2>
+    <h2 class="heading-medium">@Html(messages("tai.irregular.introduction", <span class="carry-over">{viewModel.employerName}</span>))</h2>
     <p>@messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRange)</p>
 
     @includes.editIncomeWhatShouldYouInclude()

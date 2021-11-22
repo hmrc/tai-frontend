@@ -32,7 +32,7 @@ ec: scala.concurrent.ExecutionContext)
     ptaHeader(
         formForErrorSummary = Some(updateOrRemoveForm),
         displayBackLink = true,
-        mainHeadingText = Messages("tai.updatePension.decision.heading", <span class="carry-over">{model.pensionName}</span>),
+        mainHeadingText = Messages("tai.updatePension.decision.heading", model.pensionName),
         preHeadingText = Messages("tai.updatePension.preHeading")
     )
 }
