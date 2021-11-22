@@ -26,7 +26,7 @@
     ptaHeader(
         formForErrorSummary = Some(duplicateSubmissionWarningForm),
         displayBackLink = true,
-        mainHeadingText = messages("tai.employment.warning.heading", employmentName),
+        mainHeadingText = messages("tai.employment.warning.heading", <span class="carry-over">{employmentName}</span>),
         preHeadingText = messages("tai.employment.warning.preHeading")
     )
 }
@@ -39,7 +39,7 @@
 
     @duplicateSubmissionWarning(
         duplicateSubmissionWarningForm,
-        messages("tai.employment.warning.radio1", employmentName),
+        messages("tai.employment.warning.radio1", <span class="carry-over">{employmentName}</span>),
         messages("tai.employment.warning.radio2"),
         controllers.employments.routes.EndEmploymentController.submitDuplicateSubmissionWarning
 )

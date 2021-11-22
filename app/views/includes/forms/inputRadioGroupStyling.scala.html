@@ -52,7 +52,7 @@
                             @field.value.filter( _ == value).map{_ => checked="checked"}/>
 
                     <label for="@inputId" @elements.args.get('_labelClass).map{labelClass => class="@labelClass@field.value.filter( _ == value).map{_ => selected}"}>
-                        @label
+                        @Html(label)
                     </label>
                 </div>
 
