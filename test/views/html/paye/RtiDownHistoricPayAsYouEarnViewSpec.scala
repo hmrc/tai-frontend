@@ -48,18 +48,17 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeader(
       messages("tai.paye.lastTaxYear.preHeading"),
-      messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(cyMinusOneTaxYear.year)))
+      messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year)))
 
     behave like pageWithTitle(
-      messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(cyMinusOneTaxYear.year)))
+      messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year)))
 
     "contain correct header" in {
       val taxYear = cyMinusOneTaxYear
       val newDoc = doc(view)
 
       newDoc.body.text must include(messages("tai.paye.lastTaxYear.preHeading"))
-      newDoc.body.text must include(
-        messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(taxYear.year)))
+      newDoc.body.text must include(messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
     }
 
     "display a link to view the tax code at the end of the year" when {
