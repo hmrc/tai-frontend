@@ -16,23 +16,24 @@
 
 package controllers
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, ok, urlEqualTo, get}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, ok, urlEqualTo}
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.BadRequestException
-import uk.gov.hmrc.tai.model.domain.Person
-import utils.{FileHelper, IntegrationSpec}
+import uk.gov.hmrc.renderer.TemplateRenderer
+import utils.{FileHelper, IntegrationSpec, MockTemplateRenderer}
 
 class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
 
+  val mockTemplateRenderer = MockTemplateRenderer
   override def fakeApplication() = GuiceApplicationBuilder().configure(
+    "auditing.enabled" -> "false",
     "microservice.services.auth.port" -> server.port(),
     "microservice.services.tai.port" -> server.port(),
     "microservice.services.digital-engagement-platform-partials.port" -> server.port()
-  ).build()
+  ).overrides(bind[TemplateRenderer].toInstance(mockTemplateRenderer))
+    .build()
 
   "/check-income-tax/income-summary" must {
 
@@ -47,6 +48,11 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
     val personUrl = s"/tai/$generatedNino/person"
 
     "return an OK response" in {
+
+      server.stubFor(
+        get(urlEqualTo("/template/mustache"))
+          .willReturn(aResponse().withStatus(200).withBody(""))
+      )
 
       server.stubFor(
         get(urlEqualTo(partialsUrl))
@@ -83,6 +89,11 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
       SERVICE_UNAVAILABLE
     ).foreach { httpStatus =>
       s"return an RuntimeException when $httpStatus is thrown" in {
+
+        server.stubFor(
+          get(urlEqualTo("/template/mustache"))
+            .willReturn(aResponse().withStatus(200).withBody(""))
+        )
 
         server.stubFor(
           get(urlEqualTo(partialsUrl))
