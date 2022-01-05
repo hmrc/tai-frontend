@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -209,7 +209,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
   "The fine grained partial functions provided by ErrorPageHandler" should {
 
     implicit val request = FakeRequest("GET", "/")
-    implicit val user = UserBuilder()
+    //implicit val user = UserBuilder()
     implicit val recoveryLocation = classOf[ErrorPagesHandler]
 
     "Identify nps tax account failures, and generate an appropriate redirect" when {
