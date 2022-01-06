@@ -34,12 +34,18 @@
         attrDescribedBy: String = "",
         data: String = "",
         isCurrency: Boolean = false,
-        notCompareInput: Boolean = true
+        notCompareInput: Boolean = true,
+        preHeadingText: Option[String] = None
 
 )(implicit messages: Messages)
 
 <div class="form-group @if(fieldErrorsEnabled && field.hasErrors && notCompareInput) {form-group-error}  @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {data-reveal="@data"}>
-    <label for="@field.id" @if(labelClass != ""){class="@labelClass"}>
+
+    @if(preHeadingText.isDefined){
+        <h1>
+    }
+
+    <label for="@field.id" @if(labelClass != ""){class="@labelClass"} @if(preHeadingText.isDefined){id="headingInLabel"}>
         @if(labelText.nonEmpty) {
             <span class="@if(labelHidden){visually-hidden}else{form-label @if(bold){form-label-bold}}">
             @labelText
@@ -47,10 +53,16 @@
                 <span class="visually-hidden">@messages("tai.inPounds")</span>
             }
             </span>
+
+            @if(preHeadingText.isDefined){<span class="heading-secondary break-word"><span class="visuallyhidden">@Messages("tai.ptaHeader.accessible.preHeading")</span>@preHeadingText.getOrElse("")</span>}
         }
         @if(hintText.nonEmpty) { <span class="@hintClass" id="@{ field.id }-hint">@hintText</span> }
 
     </label>
+
+    @if(preHeadingText.isDefined){
+        </h1>
+    }
 
     @if(fieldErrorsEnabled && field.hasErrors && notCompareInput) {
         <p class="error-message" id="error-message-@{field.id}-input">

@@ -202,3 +202,26 @@ hr {
 .banner-links {
     color: #005ea5;
 }
+
+#headingInLabel {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+
+    .form-label{
+        font-family: "nta",Arial,sans-serif;
+        font-weight: 700;
+        text-transform: none;
+        margin-top: 0.125em;
+        font-size: 48px;
+        line-height: 1.04167;
+    }
+
+    .heading-secondary {
+        display: table-header-group;
+        @media (min-width: 641px) {
+            font-size: 27px;
+            line-height: 1.11111;
+        }
+    }
+}
