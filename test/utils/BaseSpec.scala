@@ -43,7 +43,7 @@ trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar wi
 
   implicit lazy val messagesApi: MessagesApi = inject[MessagesApi]
   implicit lazy val provider: MessagesProvider = inject[MessagesProvider]
-  implicit lazy val lang: Lang = Lang("en")
+  implicit lazy val lang: Lang = Lang("cy")
   implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
   val nino: Nino = FakeAuthAction.nino
