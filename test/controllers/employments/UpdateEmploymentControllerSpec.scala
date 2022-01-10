@@ -254,7 +254,7 @@ class UpdateEmploymentControllerSpec
         val sut = createSUT
         val expectedCache =
           Map(UpdateEmployment_TelephoneQuestionKey -> YesValue, UpdateEmployment_TelephoneNumberKey -> "12345678")
-        when(journeyCacheService.cache(mockEq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(expectedCache))
 
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
@@ -272,7 +272,7 @@ class UpdateEmploymentControllerSpec
 
         val expectedCacheWithErasingNumber =
           Map(UpdateEmployment_TelephoneQuestionKey -> NoValue, UpdateEmployment_TelephoneNumberKey -> "")
-        when(journeyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any()))
+        when(journeyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
 
         val result = sut.submitTelephoneNumber()(
