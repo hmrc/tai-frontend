@@ -22,7 +22,7 @@
 @(appConfig: ApplicationConfig)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 @import uk.gov.hmrc.tai.model.TaxYear
-@import uk.gov.hmrc.play.views.formatting.Dates
+@import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 
 @mainTemplate(
     title = Messages("tai.gatekeeper.heading", s"${Dates.formatDate(TaxYear().start)}", s"${Dates.formatDate(TaxYear().end)}"),

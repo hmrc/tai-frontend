@@ -31,7 +31,7 @@ object RequestBuilder {
 
     FakeRequest(method = method, path = "")
       .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
-      .withCookies(new Cookie("PLAY_LANG", "cy"))
+    // .withCookies(new Cookie("PLAY_LANG", "cy"))
   }
 
   def buildFakeRequestWithAuth(method: String, headers: Map[String, String]) =
@@ -51,7 +51,7 @@ object RequestBuilder {
       )
       .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
       .withHeaders(headers.toArray: _*)
-      .withCookies(new Cookie("PLAY_LANG", "cy"))
+  // .withCookies(new Cookie("PLAY_LANG", "cy"))
 
   def buildFakeRequestWithAuth(method: String) =
     FakeRequest(method = method, path = "")
@@ -69,7 +69,7 @@ object RequestBuilder {
         "hasMultipleIncomes"    -> "true"
       )
       .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
-      .withCookies(new Cookie("PLAY_LANG", "cy"))
+  // .withCookies(new Cookie("PLAY_LANG", "cy"))
 
   def buildFakeRequestWithAuth(method: String, action: String) =
     FakeRequest(method = method, path = "")
@@ -88,13 +88,13 @@ object RequestBuilder {
         "hasMultipleIncomes"    -> "true"
       )
       .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
-      .withCookies(new Cookie("PLAY_LANG", "cy"))
+  // .withCookies(new Cookie("PLAY_LANG", "cy"))
 
   def buildFakeInvalidRequestWithAuth(method: String) =
     FakeRequest(method = method, path = "")
       .withFormUrlEncodedBody("name" -> "test1", "description" -> "description", "employmentId" -> "14")
       .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
-      .withCookies(new Cookie("PLAY_LANG", "cy"))
+  // .withCookies(new Cookie("PLAY_LANG", "cy"))
 
   def buildFakeRequestWithoutAuth(method: String) =
     FakeRequest(method = method, path = "")
@@ -112,13 +112,15 @@ object RequestBuilder {
         "hasMultipleIncomes"    -> "true"
       )
       .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
-      .withCookies(new Cookie("PLAY_LANG", "cy"))
+  // .withCookies(new Cookie("PLAY_LANG", "cy"))
 
   def buildFakePostRequestWithAuth(formArgs: (String, String)*) =
     buildFakeRequestWithAuth("POST")
       .withFormUrlEncodedBody(formArgs: _*)
-      .withCookies(new Cookie("PLAY_LANG", "cy"))
+  // .withCookies(new Cookie("PLAY_LANG", "cy"))
 
-  def buildFakeGetRequestWithAuth() = buildFakeRequestWithAuth("GET").withCookies(new Cookie("PLAY_LANG", "cy"))
+  def buildFakeGetRequestWithAuth() =
+    buildFakeRequestWithAuth("GET")
+  // .withCookies(new Cookie("PLAY_LANG", "cy"))
 
 }
