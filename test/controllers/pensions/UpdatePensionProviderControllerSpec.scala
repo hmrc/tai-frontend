@@ -266,7 +266,7 @@ class UpdatePensionProviderControllerSpec
         val expectedCache = Map(
           UpdatePensionProvider_TelephoneQuestionKey -> YesValue,
           UpdatePensionProvider_TelephoneNumberKey   -> "12345678")
-        when(journeyCacheService.cache(mockEq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(expectedCache))
 
         val result = createController.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
@@ -282,7 +282,7 @@ class UpdatePensionProviderControllerSpec
 
       val expectedCacheWithErasingNumber =
         Map(UpdatePensionProvider_TelephoneQuestionKey -> NoValue, UpdatePensionProvider_TelephoneNumberKey -> "")
-      when(journeyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any()))
+      when(journeyCacheService.cache(any())(any()))
         .thenReturn(Future.successful(expectedCacheWithErasingNumber))
 
       val result = createController.submitTelephoneNumber()(

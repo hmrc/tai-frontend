@@ -194,7 +194,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
       "has the other income sources with links" when {
         "other income sources with untaxed interest are available and bank accounts are not available" in {
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(
-            name = "Profit",
+            name = Messages("tai.typeDecodes.Profit"),
             amount = "£100",
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
@@ -207,7 +207,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
 
         "other income sources with untaxed interest are available and bank accounts are also available" in {
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(
-            name = "Profit",
+            name = Messages("tai.typeDecodes.Profit"),
             amount = "£100",
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
@@ -235,7 +235,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
         "other income sources without untaxed interest are available" in {
           val nonTaxCodeIncomeWithOutUntaxedInterest = nonTaxCodeIncome.copy(untaxedInterest = None)
           val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(
-            name = "Profit",
+            name = Messages("tai.typeDecodes.Profit"),
             amount = "£100",
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
@@ -253,7 +253,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
 
         "multiple other income with untaxed interest are present" in {
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(
-            name = "Tips",
+            name = Messages("tai.typeDecodes.Tips"),
             amount = "£100",
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url

@@ -610,7 +610,7 @@ class AddEmploymentControllerSpec
 
         val expectedCache =
           Map(AddEmployment_TelephoneQuestionKey -> YesValue, AddEmployment_TelephoneNumberKey -> "12345678")
-        when(addEmploymentJourneyCacheService.cache(mockEq(expectedCache))(any()))
+        when(addEmploymentJourneyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(expectedCache))
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
@@ -627,7 +627,7 @@ class AddEmploymentControllerSpec
 
         val expectedCacheWithErasingNumber =
           Map(AddEmployment_TelephoneQuestionKey -> NoValue, AddEmployment_TelephoneNumberKey -> "")
-        when(addEmploymentJourneyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any()))
+        when(addEmploymentJourneyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
