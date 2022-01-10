@@ -30,7 +30,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.Ex
         formForErrorSummary = Some(payPeriodForm),
         displayBackLink = true,
         mainHeadingText = messages("tai.payPeriod.heading"),
-        preHeadingText = messages("tai.payPeriod.preHeading", employerName)
+        preHeadingText = messages("tai.payPeriod.preHeading", employerName),
+        carryOverPreheading = true
     )
 }
 

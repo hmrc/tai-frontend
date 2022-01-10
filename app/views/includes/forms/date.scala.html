@@ -31,7 +31,7 @@
 <div class="form-group @if(form.hasErrors){form-group-error}">
     <fieldset id="@{fieldPrefix}_fieldset">
         <legend>
-            <span class="form-label @if(legendBold){form-label-bold}@if(legendHidden){ visually-hidden}">@labelText</span>
+            <span class="form-label @if(legendBold){form-label-bold}@if(legendHidden){ visually-hidden}">@Html(labelText)</span>
             @if(hintText.nonEmpty) {<span class="form-hint">@Messages(hintText)</span>}
             @if(example) {
                 <span class="form-hint" @if(hintId.nonEmpty) {id="@hintId-hint"}>@Messages("tai.label.date.example")</span>

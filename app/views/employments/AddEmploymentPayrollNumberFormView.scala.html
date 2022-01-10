@@ -30,7 +30,9 @@
         formForErrorSummary = Some(payrollNumberForm),
         displayBackLink = true,
         mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName),
-        preHeadingText = Messages("add.missing.employment"))}
+        preHeadingText = Messages("add.missing.employment"),
+        carryOverHeading = true
+)}
 
 @mainTemplate(
     title = Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"),

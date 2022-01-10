@@ -23,7 +23,9 @@
   headerWidthClasses: Option[String] = Some("column-two-thirds"),
   preHeadingAccessibleAnnouncement: String = "",
   customBackLinkContent: Option[Html] = None,
-  additionalTopLinkContent: Option[Html] = None
+  additionalTopLinkContent: Option[Html] = None,
+  carryOverHeading: Boolean = false,
+  carryOverPreheading: Boolean = false
 )(implicit m: Messages)
 
 @preHeadingHidden = @{
@@ -53,8 +55,8 @@
     }
 
     <header class="page-heading soft--top">
-      <h1 class="heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
-      <p class="heading-secondary break-word"><span class="visuallyhidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
+      <h1 class="heading-xlarge heading-mobile-responsive @if(carryOverHeading){carry-over}">@Html(mainHeadingText)</h1>
+      <p class="heading-secondary @if(carryOverPreheading){carry-over}"><span class="visuallyhidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
     </header>
 
  </div>

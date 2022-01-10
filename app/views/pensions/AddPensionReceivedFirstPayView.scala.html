@@ -29,7 +29,8 @@ ec: scala.concurrent.ExecutionContext)
         formForErrorSummary = Some(firstPayForm),
         displayBackLink = true,
         mainHeadingText = Messages("tai.addPensionProvider.firstPay.title", pensionProviderName),
-        preHeadingText = Messages("add.missing.pension"))}
+        preHeadingText = Messages("add.missing.pension"),
+        carryOverHeading = true)}
 
 @mainTemplate(
     title = Messages("tai.addPensionProvider.firstPay.pagetitle"),

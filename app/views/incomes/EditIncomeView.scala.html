@@ -40,7 +40,8 @@
         formForErrorSummary = Some(income),
         displayBackLink = true,
  		mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange),
-        preHeadingText = messages("tai.incomes.edit.preHeading", income("name").value.getOrElse(""))
+        preHeadingText = messages("tai.incomes.edit.preHeading", income("name").value.getOrElse("")),
+        carryOverPreheading = true
        
        
     )

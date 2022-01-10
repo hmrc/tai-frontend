@@ -29,7 +29,8 @@
         formForErrorSummary = Some(dateForm),
         displayBackLink = true,
         mainHeadingText = Messages("tai.addEmployment.startDateForm.title", employmentName),
-        preHeadingText = Messages("add.missing.employment")
+        preHeadingText = Messages("add.missing.employment"),
+        carryOverHeading = true
     )
 }
 
@@ -43,7 +44,7 @@
         @date(
             form = dateForm,
             fieldPrefix = "tellUsStartDateForm",
-            labelText = Messages("tai.addEmployment.startDateForm.label", employmentName),
+            labelText = Messages("tai.addEmployment.startDateForm.label", <span class="carry-over">{employmentName}</span>),
             legendBold = true
         )
 

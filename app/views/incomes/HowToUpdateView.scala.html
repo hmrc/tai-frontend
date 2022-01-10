@@ -30,7 +30,9 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
         formForErrorSummary = Some(howToUpdateForm),
         displayBackLink = true,
         mainHeadingText = Messages("tai.howToUpdate.heading", employerName),
-        preHeadingText = Messages("tai.howToUpdate.preHeading", employerName)
+        preHeadingText = Messages("tai.howToUpdate.preHeading", employerName),
+        carryOverPreheading = true,
+        carryOverHeading = true
     )
 }
 

@@ -42,7 +42,8 @@
         mainHeadingText = messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse("")),
         preHeadingText = messages("tai.yourIncome.preHeading"),
         displayBackLink = true,
-        additionalTopLinkContent = Some(printLink)
+        additionalTopLinkContent = Some(printLink),
+        carryOverHeading = true
     )}
 
 @mainTemplate(

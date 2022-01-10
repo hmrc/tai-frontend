@@ -32,7 +32,9 @@
         formForErrorSummary = Some(irregularPayForm),
         displayBackLink = true,
         mainHeadingText = Messages("tai.irregular.heading", model.employerName),
-        preHeadingText = Messages("tai.irregular.preHeadingText"))}
+        preHeadingText = Messages("tai.irregular.preHeadingText"),
+        carryOverPreheading = true
+)}
 
 @mainTemplate(
     title = Messages("tai.irregular.preHeadingText"),

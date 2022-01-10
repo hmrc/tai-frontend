@@ -39,7 +39,8 @@ ec: scala.concurrent.ExecutionContext)
     ptaHeader(
         displayBackLink = true,
         mainHeadingText = messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRange),
-        preHeadingText = messages("tai.estimatedPay.preHeading", viewModel.employer.name)
+        preHeadingText = messages("tai.estimatedPay.preHeading", viewModel.employer.name),
+        carryOverPreheading = true
     )
 }
 

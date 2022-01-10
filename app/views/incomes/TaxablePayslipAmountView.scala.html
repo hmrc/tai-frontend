@@ -32,7 +32,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
         formForErrorSummary = Some(viewModel.form),
         displayBackLink = true,
         mainHeadingText = Messages(viewModel.title),
-        preHeadingText = Messages("tai.howToUpdate.preHeading", viewModel.employer.name)
+        preHeadingText = Messages("tai.howToUpdate.preHeading", viewModel.employer.name),
+        carryOverPreheading = true
     )
 }
 

@@ -34,7 +34,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
         formForErrorSummary = Some(yesNoForm),
         displayBackLink = true,
         mainHeadingText = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
-        preHeadingText = messages("tai.bonusPayments.preHeading", employer.name)
+        preHeadingText = messages("tai.bonusPayments.preHeading", employer.name),
+        carryOverPreheading = true
     )
 }
 

@@ -32,7 +32,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
         formForErrorSummary = Some(payslipDeductionsForm),
         displayBackLink = true,
         mainHeadingText = messages("tai.payslipDeductions.heading"),
-        preHeadingText = messages("tai.payslipDeductions.preHeading", employer.name)
+        preHeadingText = messages("tai.payslipDeductions.preHeading", employer.name),
+        carryOverPreheading = true
     )
 }
 
