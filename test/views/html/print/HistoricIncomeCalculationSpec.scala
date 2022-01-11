@@ -22,6 +22,7 @@ import org.jsoup.nodes.Document
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{RealTimeStatus, _}
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 
@@ -30,7 +31,6 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
   private val historicIncomePrintView = inject[HistoricIncomePrintView]
 
   val dateFormatPattern = "d MMMM yyyy"
-  val printTableDateFormatPattern = "d MMM yyyy"
 
   val samplePaymentWithoutNic: Payment = Payment(
     date = new LocalDate(2016, 4, 7),
@@ -184,7 +184,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
         val view: Html = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(
-          samplePaymentWithoutNic.date.toString(printTableDateFormatPattern))
+          TaxYearRangeUtil.formatDateAbbrMonth(samplePaymentWithoutNic.date))
         doc.getElementById("taxable-income-table").text must include(f"${samplePaymentWithoutNic.amount}%,.2f")
         doc.getElementById("taxable-income-table").text must include(f"${samplePaymentWithoutNic.taxAmount}%,.2f")
       }
@@ -193,7 +193,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
         val view: Html = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(
-          samplePaymentWithNic.date.toString(printTableDateFormatPattern))
+          TaxYearRangeUtil.formatDateAbbrMonth(samplePaymentWithNic.date))
         doc.getElementById("taxable-income-table").text must include(f"${samplePaymentWithNic.amount}%,.2f")
         doc.getElementById("taxable-income-table").text must include(f"${samplePaymentWithNic.taxAmount}%,.2f")
         doc.getElementById("taxable-income-table").text must include(
