@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.tai.util
 
-import org.joda.time.{LocalDate, LocalTime}
-import play.api.i18n.{Messages, MessagesApi}
+import org.joda.time.LocalDate
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import com.ibm.icu.text.SimpleDateFormat
 import com.ibm.icu.util.{TimeZone, ULocale}

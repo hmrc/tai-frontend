@@ -19,6 +19,7 @@ package views.html.incomeTaxComparison
 import play.api.i18n.{Lang, Messages}
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
@@ -75,7 +76,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
       doc(viewWithMore(welshMessage)).text() must include(
         welshMessage(
           "tai.incomeTaxComparison.dateWithoutWelshAmendment",
-          langUtils.Dates.formatDate(TaxYear().next.start)(welshMessage)))
+          Dates.formatDate(TaxYear().next.start)(welshMessage)))
     }
 
     "show the correct table heading in welsh when user pays less tax next year" in {
@@ -83,7 +84,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
       doc(viewWithLess(welshMessage)).text() must include(
         welshMessage(
           "tai.incomeTaxComparison.welshAmendmentToDate",
-          langUtils.Dates.formatDate(TaxYear().next.start)((welshMessage))))
+          Dates.formatDate(TaxYear().next.start)(welshMessage)))
     }
 
     "show the correct table heading in welsh when user pays same tax next year" in {
@@ -91,7 +92,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
       doc(viewWithSame(welshMessage)).text() must include(
         welshMessage(
           "tai.incomeTaxComparison.welshAmendmentToDate",
-          langUtils.Dates.formatDate(TaxYear().next.start)(welshMessage)))
+          Dates.formatDate(TaxYear().next.start)(welshMessage)))
     }
 
     behave like pageWithCombinedHeader(
@@ -191,7 +192,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
   }
 
   private lazy val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
-  private lazy val startOfNextTaxYear = langUtils.Dates.formatDate(TaxYear().next.start)
+  private lazy val startOfNextTaxYear = Dates.formatDate(TaxYear().next.start)
   private lazy val nextYearItemMore = EstimatedIncomeTaxComparisonItem(TaxYear().next, 101)
   private lazy val nextYearItemLess = EstimatedIncomeTaxComparisonItem(TaxYear().next, 99)
 

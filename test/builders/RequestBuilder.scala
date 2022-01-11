@@ -16,8 +16,6 @@
 
 package builders
 
-import play.api.mvc.Cookie
-
 import java.util.UUID
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.SessionKeys
