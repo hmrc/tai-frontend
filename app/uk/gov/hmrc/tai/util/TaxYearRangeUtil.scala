@@ -18,14 +18,11 @@ package uk.gov.hmrc.tai.util
 
 import org.joda.time.{LocalDate, LocalTime}
 import play.api.i18n.{Messages, MessagesApi}
-import uk.gov.hmrc.play.language.LanguageUtils
-import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import com.ibm.icu.text.SimpleDateFormat
 import com.ibm.icu.util.{TimeZone, ULocale}
 
 import java.util.Date
-import javax.inject.Inject
 object TaxYearRangeUtil {
 
   private val messageRangeKeyBetween = "tai.taxYear.between"
@@ -66,10 +63,6 @@ object TaxYearRangeUtil {
 
   private def jodaDate2javaDate(date: LocalDate): Date = date.toDate
 
-  private def dateRangeSingleLine(messageKey: String, from: LocalDate, to: LocalDate)(
-    implicit messages: Messages): String =
-    HtmlFormatter.htmlNonBroken(dateRange(messageKey, from, to))
-
   private def dateRange(messageKey: String, from: LocalDate, to: LocalDate)(implicit messages: Messages): String =
     if (from isAfter to) {
       throw new IllegalArgumentException(s"From date:$from cannot be after To date:$to")
@@ -82,8 +75,8 @@ object TaxYearRangeUtil {
     }
 
   def formatDate(date: LocalDate)(implicit messages: Messages): String =
-    HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(jodaDate2javaDate(date)))
+    createDateFormatForPattern("d MMMM y").format(jodaDate2javaDate(date))
 
   def formatDateAbbrMonth(date: LocalDate)(implicit messages: Messages): String =
-    HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMM y").format(jodaDate2javaDate(date)))
+    createDateFormatForPattern("d MMM y").format(jodaDate2javaDate(date))
 }

@@ -18,6 +18,7 @@ package utils
 import builders.UserBuilder
 import controllers.auth.AuthedUser
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
+import mocks.MockTemplateRenderer
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
