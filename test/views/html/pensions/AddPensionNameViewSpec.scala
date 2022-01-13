@@ -26,10 +26,19 @@ class AddPensionNameViewSpec extends TaiViewSpec {
   private val addPensionName = inject[AddPensionNameView]
 
   "Add Pension Provider name form page" should {
-    behave like pageWithTitle(messages("tai.addPensionProvider.addNameForm.title"))
-    behave like pageWithCombinedHeader(
-      messages("add.missing.pension"),
-      messages("tai.addPensionProvider.addNameForm.title"))
+
+    "display label with heading" in {
+      doc must haveElementAtPathWithText(
+        "#headingInLabel .form-label",
+        messages("tai.addPensionProvider.addNameForm.title"))
+    }
+
+    "display label with preheading" in {
+      doc must haveElementAtPathWithText(
+        "#headingInLabel .heading-secondary",
+        messages("tai.ptaHeader.accessible.preHeading") + messages("add.missing.pension"))
+    }
+
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/name")
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())

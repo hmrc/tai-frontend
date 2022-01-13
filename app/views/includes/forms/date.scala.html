@@ -47,11 +47,11 @@
             </div>
             <div class="form-group form-group-month">
                 <label class="form-label" for="@{fieldPrefix}_month">@Messages("tai.label.month")</label>
-                <input type="text" class="form-control@if(form.hasErrors){-error}" id="@{fieldPrefix}_month)" name="@form(s"${fieldPrefix}_month").name" inputmode="numeric" pattern="[0-9]*" aria-describedby="@if(form(s"${fieldPrefix}_month").errors.nonEmpty){date-hint error-message} else {date-hint}" value="@form(s"${fieldPrefix}_month").value" />
+                <input type="text" class="form-control@if(form.hasErrors){-error}" id="@{fieldPrefix}_month" name="@form(s"${fieldPrefix}_month").name" inputmode="numeric" pattern="[0-9]*" aria-describedby="@if(form(s"${fieldPrefix}_month").errors.nonEmpty){date-hint error-message} else {date-hint}" value="@form(s"${fieldPrefix}_month").value" />
             </div>
             <div class="form-group form-group-year">
                 <label class="form-label" for="@{fieldPrefix}_year">@Messages("tai.label.year")</label>
-                <input type="text" class="form-control@if(form.hasErrors){-error}" id="@{fieldPrefix}_year)" name="@form(s"${fieldPrefix}_year").name" inputmode="numeric" pattern="[0-9]*" aria-describedby="@if(form(s"${fieldPrefix}year").errors.nonEmpty){date-hint error-message} else {date-hint}" value="@form(s"${fieldPrefix}_year").value" />
+                <input type="text" class="form-control@if(form.hasErrors){-error}" id="@{fieldPrefix}_year" name="@form(s"${fieldPrefix}_year").name" inputmode="numeric" pattern="[0-9]*" aria-describedby="@if(form(s"${fieldPrefix}year").errors.nonEmpty){date-hint error-message} else {date-hint}" value="@form(s"${fieldPrefix}_year").value" />
             </div>
 
         </div>
