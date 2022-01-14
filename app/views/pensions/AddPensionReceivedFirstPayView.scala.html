@@ -38,7 +38,7 @@ ec: scala.concurrent.ExecutionContext)
     articleClasses = None
 ) {
 
-    @form(action = controllers.pensions.routes.AddPensionProviderController.submitFirstPay(), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
+    @form(action = controllers.pensions.routes.AddPensionProviderController.submitFirstPay(), Symbol("data-dynamic-form") -> "true") {
 
         @{inputRadioGroupStyling(
             field=firstPayForm(AddPensionProviderFirstPayForm.FirstPayChoice),

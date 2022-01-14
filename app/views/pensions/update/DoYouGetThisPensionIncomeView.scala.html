@@ -43,7 +43,7 @@ ec: scala.concurrent.ExecutionContext)
     pageHeader = Some(header),
     articleClasses = None) {
 
-    @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension, Symbol("data-journey-dynamic-radios") -> "" ) {
+    @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension) {
         <div class="form-group">
 
             @{inputRadioGroupStyling(
