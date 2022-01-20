@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.income.previousYears
 
-import play.api.i18n.Messages
+import play.api.i18n.{Lang, Messages}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
@@ -43,8 +43,21 @@ class UpdateIncomeDetailsCheckYourAnswersViewModelSpec extends BaseSpec {
       }
     }
     "return a view model with correct table header based on tax year" in {
+      implicit lazy val lang: Lang = Lang("en")
+      implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
+
       val model = UpdateIncomeDetailsCheckYourAnswersViewModel(TaxYear(2016), "something", "Yes", Some("1234567890"))
       val dateRange = HtmlFormatter.htmlNonBroken("6 April 2016") + " to " + HtmlFormatter.htmlNonBroken("5 April 2017")
+      model.tableHeader mustBe Messages("tai.income.previousYears.decision.header", dateRange)
+    }
+
+    "return a view model with correct table header based on tax year in welsh" in {
+      implicit lazy val lang: Lang = Lang("cy")
+      implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
+
+      val model = UpdateIncomeDetailsCheckYourAnswersViewModel(TaxYear(2016), "something", "Yes", Some("1234567890"))
+      val dateRange = HtmlFormatter.htmlNonBroken("6 Ebrill 2016") + " i " + HtmlFormatter.htmlNonBroken(
+        "5 Ebrill 2017")
       model.tableHeader mustBe Messages("tai.income.previousYears.decision.header", dateRange)
     }
   }

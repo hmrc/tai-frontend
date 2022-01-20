@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels.income
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.views.formatting.Dates
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 
 case class EndIncomeCheckYourAnswersViewModel(
   preHeading: String,

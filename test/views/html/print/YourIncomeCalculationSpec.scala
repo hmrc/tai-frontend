@@ -21,7 +21,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.util.DateHelper
+import uk.gov.hmrc.tai.util.{DateHelper, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{LatestPayment, PaymentDetailsViewModel, YourIncomeCalculationViewModel}
 
@@ -123,7 +123,7 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
         messages("£ " + f"${model.latestPayment.get.nationalInsuranceAmountYearToDate}%,.2f"))
 
       model.payments.foreach { payment =>
-        doc(view) must haveTdWithText(payment.date.toString("d MMM yyyy"))
+        doc(view) must haveTdWithText(TaxYearRangeUtil.formatDateAbbrMonth(payment.date))
         doc(view) must haveTdWithText("£ " + f"${payment.taxableIncome}%,.2f")
         doc(view) must haveTdWithText("£ " + f"${payment.taxAmount}%,.2f")
         doc(view) must haveTdWithText("£ " + f"${payment.nationalInsuranceAmount}%,.2f")
