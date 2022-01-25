@@ -17,31 +17,28 @@
 @import includes.forms.{input, submit}
 @import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import includes.forms.errorSummary
+@import includes.backLink
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
 @(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(nameForm),
-        displayBackLink = true,
-        mainHeadingText = Messages("tai.addEmployment.addNameForm.title"),
-        preHeadingText = Messages("add.missing.employment"))}
-
 
 @mainTemplate(
   title = Messages("tai.addEmployment.addNameForm.title"),
   authedUser = Some(user),
-  pageHeader = Some(header),
   articleClasses = None) {
+
+  @backLink()
+  @errorSummary(Messages("tai.income.error.form.summary"), nameForm, Seq("flush--bottom"))
 
   @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentName()) {
     @input(
       field = nameForm("employmentName"),
-      labelHidden = true,
       labelText = Messages("tai.addEmployment.addNameForm.title"),
-      classes = Seq("form-control form-control--full-width")
+      classes = Seq("form-control form-control--full-width"),
+      preHeadingText = Some(Messages("add.missing.employment"))
     )
 
     @submit()

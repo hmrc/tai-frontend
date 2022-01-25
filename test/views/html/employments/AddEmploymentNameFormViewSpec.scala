@@ -27,10 +27,17 @@ class AddEmploymentNameFormViewSpec extends TaiViewSpec {
   private val add_employment_name_form = inject[AddEmploymentNameFormView]
 
   "Add employment name form page" should {
-    behave like pageWithTitle(messages("tai.addEmployment.addNameForm.title"))
-    behave like pageWithCombinedHeader(
-      messages("add.missing.employment"),
-      messages("tai.addEmployment.addNameForm.title"))
+
+    "display label with heading" in {
+      doc must haveElementAtPathWithText("#headingInLabel .form-label", messages("tai.addEmployment.addNameForm.title"))
+    }
+
+    "display label with preheading" in {
+      doc must haveElementAtPathWithText(
+        "#headingInLabel .heading-secondary",
+        messages("tai.ptaHeader.accessible.preHeading") + messages("add.missing.employment"))
+    }
+
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-name")
     behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())

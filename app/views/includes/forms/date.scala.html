@@ -21,8 +21,6 @@
         fieldPrefix: String = "",
         labelText: String = "",
         hintText: String = "",
-        example: Boolean = true,
-        hintId: String = "",
         jsHidden: Boolean = false,
         legendHidden: Boolean = false,
         legendBold: Boolean = false
@@ -32,53 +30,30 @@
     <fieldset id="@{fieldPrefix}_fieldset">
         <legend>
             <span class="form-label @if(legendBold){form-label-bold}@if(legendHidden){ visually-hidden}">@labelText</span>
-            @if(hintText.nonEmpty) {<span class="form-hint">@Messages(hintText)</span>}
-            @if(example) {
-                <span class="form-hint" @if(hintId.nonEmpty) {id="@hintId-hint"}>@Messages("tai.label.date.example")</span>
-            }
-            @if(form.hasErrors) {
-                <span class="error-message">@form.errors.map(_.message)</span>
-            }
         </legend>
+
+        <span class="form-hint" id="date-hint">@Messages("tai.label.date.example")</span>
+
+        @if(form.hasErrors) {
+            <span class="error-message" id="error-message">@form.errors.map(_.message)</span>
+        }
+
         <div class="form-date">
-            @input(
-                labelText = Messages("tai.label.day"),
-                field = form(s"${fieldPrefix}_day"),
-                bold = false,
-                classes = Seq("input--no-spinner"),
-                parentDateAttr = "day",
-                attrType = "number",
-                attrMin = "1",
-                attrMax = "31",
-                attrPattern = "[0-9]{2}",
-                attrDescribedBy = s"$hintId",
-                fieldErrorsEnabled = false
-            )
 
-            @input(
-                labelText = Messages("tai.label.month"),
-                field = form(s"${fieldPrefix}_month"),
-                bold = false,
-                classes = Seq("input--no-spinner"),
-                parentDateAttr = "month",
-                attrType = "number",
-                attrMin = "1",
-                attrMax = "12",
-                attrPattern = "[0-9]{2}",
-                fieldErrorsEnabled = false
-            )
 
-            @input(
-                labelText = Messages("tai.label.year"),
-                field = form(s"${fieldPrefix}_year"),
-                bold = false,
-                classes = Seq("input--no-spinner"),
-                parentDateAttr = "year",
-                attrType = "number",
-                attrMin = "1900",
-                attrPattern = "[1-9][0-9]{3}",
-                fieldErrorsEnabled = false
-            )
+            <div class="form-group form-group-day">
+                <label class="form-label" for="@{fieldPrefix}_day">@Messages("tai.label.day")</label>
+                <input type="text" class="form-control@if(form.hasErrors){-error}" id="@{fieldPrefix}_day" name="@form(s"${fieldPrefix}_day").name" inputmode="numeric" pattern="[0-9]*" aria-describedby="@if(form(s"${fieldPrefix}_day").errors.nonEmpty){date-hint error-message} else {date-hint}" value="@form(s"${fieldPrefix}_day").value" />
+            </div>
+            <div class="form-group form-group-month">
+                <label class="form-label" for="@{fieldPrefix}_month">@Messages("tai.label.month")</label>
+                <input type="text" class="form-control@if(form.hasErrors){-error}" id="@{fieldPrefix}_month" name="@form(s"${fieldPrefix}_month").name" inputmode="numeric" pattern="[0-9]*" aria-describedby="@if(form(s"${fieldPrefix}_month").errors.nonEmpty){date-hint error-message} else {date-hint}" value="@form(s"${fieldPrefix}_month").value" />
+            </div>
+            <div class="form-group form-group-year">
+                <label class="form-label" for="@{fieldPrefix}_year">@Messages("tai.label.year")</label>
+                <input type="text" class="form-control@if(form.hasErrors){-error}" id="@{fieldPrefix}_year" name="@form(s"${fieldPrefix}_year").name" inputmode="numeric" pattern="[0-9]*" aria-describedby="@if(form(s"${fieldPrefix}year").errors.nonEmpty){date-hint error-message} else {date-hint}" value="@form(s"${fieldPrefix}_year").value" />
+            </div>
+
         </div>
 
     </fieldset>
