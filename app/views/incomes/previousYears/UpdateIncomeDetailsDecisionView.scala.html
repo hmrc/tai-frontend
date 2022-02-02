@@ -46,7 +46,7 @@
     <p>@messages("tai.income.previousYears.decision.paragraph.two")</p>
     <p>@messages("tai.income.previousYears.decision.paragraph.three")</p>
 
-    @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
+    @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
 
         @{inputRadioGroupStyling(
             field=decisionForm(UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice),

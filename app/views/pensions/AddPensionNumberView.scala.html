@@ -41,7 +41,7 @@
     articleClasses = None
 ) {
 
-    @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionNumber(), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
+    @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionNumber(), Symbol("data-dynamic-form") -> "true") {
 
         @{inputRadioGroupStyling(
             field=payrollNumberForm(AddPensionProviderNumberForm.PayrollNumberChoice),

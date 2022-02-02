@@ -40,7 +40,7 @@ authedUser = Some(user),
 pageHeader = Some(header),
 articleClasses = None){
 
-    @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
+    @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
         @{inputRadioGroupStyling(
             viewModel.decisionForm(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice),
             Seq(
