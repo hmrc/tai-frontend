@@ -43,7 +43,7 @@ articleClasses = None
         @{inputRadioGroupStyling(
             field=firstPayForm(AddEmploymentFirstPayForm.FirstPayChoice),
             radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
-            legend=Messages("tai.addEmployment.employmentFirstPay.legend"),
+            legend=Messages("tai.addEmployment.employmentFirstPay.legend", employerName),
             legendHint=None,
             ('_groupDivClass, "form-group" ),
             ('_groupClass, "inline"),

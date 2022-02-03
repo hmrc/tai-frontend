@@ -47,7 +47,7 @@
             @{inputRadioGroupStyling(
                 field=updateRemoveForm(UpdateRemoveEmploymentForm.EmploymentDecision),
                 radioOptions=Seq(("Yes" -> messages("tai.employment.decision.radio1")), ("No" -> messages("tai.employment.decision.radio2")) ),
-                legend=messages("tai.employment.decision.legend"),
+                legend=messages("tai.employment.decision.legend", employmentName),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
                 ('_fieldsetAttributes, "id=employmentDecision" ),
