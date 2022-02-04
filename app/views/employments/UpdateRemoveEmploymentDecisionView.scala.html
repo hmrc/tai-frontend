@@ -16,9 +16,9 @@
 
 @import uk.gov.hmrc.tai.forms.employments.UpdateRemoveEmploymentForm
 @import includes.forms.submit
-@import includes.{cancelLink, ptaHeader}
+@import includes.{cancelLink, ptaHeaderNoH1}
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import includes.forms.inputRadioGroupStyling
+@import includes.forms.inputRadioGroupStylingWithH1Legend
 @import scala.concurrent.ExecutionContext
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
@@ -27,7 +27,7 @@
 
 
 @header = @{
-    ptaHeader(
+    ptaHeaderNoH1(
         formForErrorSummary = Some(updateRemoveForm),
         displayBackLink = true,
         mainHeadingText = messages("tai.employment.decision.heading", employmentName),
@@ -44,11 +44,12 @@
     @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove) {
         <div class="form-group">
 
-            @{inputRadioGroupStyling(
+            @{inputRadioGroupStylingWithH1Legend(
                 field=updateRemoveForm(UpdateRemoveEmploymentForm.EmploymentDecision),
                 radioOptions=Seq(("Yes" -> messages("tai.employment.decision.radio1")), ("No" -> messages("tai.employment.decision.radio2")) ),
                 legend=messages("tai.employment.decision.legend"),
                 legendHint=None,
+                mainHeadingText = messages("tai.employment.decision.heading", employmentName),
                 ('_groupDivClass, "form-group" ),
                 ('_fieldsetAttributes, "id=employmentDecision" ),
                 ('_legendSpanClass, "visually-hidden"),
