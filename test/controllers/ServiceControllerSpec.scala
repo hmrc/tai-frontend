@@ -89,7 +89,7 @@ class ServiceControllerSpec extends BaseSpec {
       val fakeRequest = FakeRequest("GET", "").withFormUrlEncodedBody()
       val sut = createSut()
       val result = sut.mciErrorPage()(fakeRequest)
-      status(result) mustBe OK
+      status(result) mustBe LOCKED
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(Messages("mci.title"))
     }
@@ -106,8 +106,7 @@ class ServiceControllerSpec extends BaseSpec {
         inject[TimeoutView],
         inject[SessionExpiredView],
         inject[ManualCorrespondenceView],
-        templateRenderer,
-        inject[ErrorPagesHandler]
+        templateRenderer
       )
 
 }
