@@ -19,6 +19,7 @@ radioOptions: Seq[(String, String)],
 legend: String,
 legendHint: Option[String],
 mainHeadingText: String,
+preHeadingText: String,
 args: (Symbol, Any)*)(implicit messages: Messages)
 
 @import play.api.i18n._
@@ -29,14 +30,19 @@ args: (Symbol, Any)*)(implicit messages: Messages)
 @fieldsetClass = {@elements.args.get('_groupClass)}
 @labelAfter = @{ elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean] }
 
+
+@preHeadingHidden = @{Messages("tai.ptaHeader.accessible.preHeading") }
+
+
 <div class="@groupDivClass">
 
     <fieldset @if(fieldsetClass != ""){class="@fieldsetClass"} @if(elements.args.get('_fieldsetAttributes).isDefined) {@elements.args.get('_fieldsetAttributes)}  @elements.errors.map{error => aria-describedby="error-message-@{field.id}-input"}>
 
     <legend @if(elements.args.get('_legendClass).isDefined) {class="@elements.args.get('_legendClass)"}>
-    <header class="page-heading soft--top">
+    <div class="page-heading soft--top">
     <h1 class="heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
-    </header>
+    <p class="heading-secondary break-word"><span class="visuallyhidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
+    </div>
         @if(legendHint.isDefined) {<span id="radioGroupLegendHint">@legendHint.get</span>}
     </legend>
 
