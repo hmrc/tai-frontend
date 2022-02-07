@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@import uk.gov.hmrc.play.views.formatting.Dates
+@import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
@@ -45,7 +45,7 @@ authedUser = Some(user),
 pageHeader = Some(header),
 articleClasses = None){
 
-    @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
+    @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
 
         @{inputRadioGroupStyling(
             stopDateForm(RemoveCompanyBenefitStopDateForm.StopDateChoice),

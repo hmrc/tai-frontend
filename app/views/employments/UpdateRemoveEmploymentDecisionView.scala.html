@@ -41,7 +41,7 @@
     pageHeader = Some(header),
     articleClasses = None) {
 
-    @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove, Symbol("data-journey-dynamic-radios") -> "" ) {
+    @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove) {
         <div class="form-group">
 
             @{inputRadioGroupStyling(

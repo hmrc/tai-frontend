@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import uk.gov.hmrc.play.views.formatting.Dates
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._

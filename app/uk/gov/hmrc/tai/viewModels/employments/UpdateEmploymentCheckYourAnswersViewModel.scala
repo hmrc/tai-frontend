@@ -27,27 +27,27 @@ case class UpdateEmploymentCheckYourAnswersViewModel(
   phoneNumber: Option[String]) {
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
     val currentlyWorkHereLine = CheckYourAnswersConfirmationLine(
-      Messages("tai.updateEmployment.cya.currentlyWorkHere"),
-      Messages("tai.label.yes"),
+      messages("tai.updateEmployment.cya.currentlyWorkHere"),
+      messages("tai.label.yes"),
       controllers.employments.routes.EndEmploymentController.onPageLoad(id).url
     )
     val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
-      Messages("tai.checkYourAnswers.whatYouToldUs"),
+      messages("tai.checkYourAnswers.whatYouToldUs"),
       whatYouToldUs,
       controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(id).url
     )
     val contactByPhoneLine = CheckYourAnswersConfirmationLine(
-      Messages("tai.checkYourAnswers.contactByPhone"),
+      messages("tai.checkYourAnswers.contactByPhone"),
       contactByPhone,
       controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url
     )
     val phoneNumberLine = CheckYourAnswersConfirmationLine(
-      Messages("tai.phoneNumber"),
+      messages("tai.phoneNumber"),
       phoneNumber.getOrElse(""),
       controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url
     )
 
-    if (contactByPhone == Messages("tai.label.yes")) {
+    if (contactByPhone == messages("tai.label.yes")) {
       Seq(currentlyWorkHereLine, whatYouToldUsLine, contactByPhoneLine, phoneNumberLine)
     } else {
       Seq(currentlyWorkHereLine, whatYouToldUsLine, contactByPhoneLine)

@@ -17,7 +17,6 @@
 package builders
 
 import java.util.UUID
-
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.SessionKeys
 
@@ -28,7 +27,8 @@ object RequestBuilder {
   def buildFakeRequestWithOnlySession(method: String) = {
     require(HTTP_VERBS contains method)
 
-    FakeRequest(method = method, path = "").withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
+    FakeRequest(method = method, path = "")
+      .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
   }
 
   def buildFakeRequestWithAuth(method: String, headers: Map[String, String]) =
@@ -107,8 +107,10 @@ object RequestBuilder {
       .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
 
   def buildFakePostRequestWithAuth(formArgs: (String, String)*) =
-    buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(formArgs: _*)
+    buildFakeRequestWithAuth("POST")
+      .withFormUrlEncodedBody(formArgs: _*)
 
-  def buildFakeGetRequestWithAuth() = buildFakeRequestWithAuth("GET")
+  def buildFakeGetRequestWithAuth() =
+    buildFakeRequestWithAuth("GET")
 
 }

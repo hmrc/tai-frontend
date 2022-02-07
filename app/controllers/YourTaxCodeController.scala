@@ -18,8 +18,8 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -44,7 +44,7 @@ class YourTaxCodeController @Inject()(
   taxCodeDetailsPreviousYears: TaxCodeDetailsPreviousYearsView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) {
+    extends TaiBaseController(mcc) with Logging {
 
   private[controllers] def renderTaxCodes(employmentId: Option[Int]): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
@@ -84,6 +84,12 @@ class YourTaxCodeController @Inject()(
         taxCodeRecords       <- taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(nino, year)
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeRecords.map(_.taxCode))
       } yield {
+        taxCodeRecords.foreach { record =>
+          if (record.startDate.isAfter(record.endDate)) {
+            logger.error(
+              s"Bug in taxCodeRecords: start date ${record.startDate} is after end date ${record.endDate} for nino ${nino.nino}")
+          }
+        }
         val taxCodeViewModel =
           TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year, applicationConfig)
         implicit val user: AuthedUser = request.taiUser

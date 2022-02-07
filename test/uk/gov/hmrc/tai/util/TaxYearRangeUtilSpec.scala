@@ -17,7 +17,8 @@
 package uk.gov.hmrc.tai.util
 
 import org.joda.time.LocalDate
-import uk.gov.hmrc.play.views.formatting.Dates
+import play.api.i18n.{Lang, Messages}
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.model.TaxYear
 import utils.BaseSpec
 
@@ -51,12 +52,29 @@ class TaxYearRangeUtilSpec extends BaseSpec {
     }
 
     "given two dates return a formatted string" in {
+
+      implicit lazy val lang: Lang = Lang("en")
+      implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
+
       val now = new LocalDate()
       val endOfTaxYear = TaxYear().end
-      val expectedNow = HtmlFormatter.htmlNonBroken(Dates.formatDate(now))
-      val expectedEnd = HtmlFormatter.htmlNonBroken(Dates.formatDate(endOfTaxYear))
+      val expectedNow = HtmlFormatter.htmlNonBroken(langUtils.Dates.formatDate(now))
+      val expectedEnd = HtmlFormatter.htmlNonBroken(langUtils.Dates.formatDate(endOfTaxYear))
 
       TaxYearRangeUtil.dynamicDateRange(now, endOfTaxYear) mustBe s"$expectedNow to $expectedEnd"
+    }
+
+    "given two dates return a formatted string in welsh" in {
+
+      implicit lazy val lang: Lang = Lang("cy")
+      implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
+
+      val now = new LocalDate()
+      val endOfTaxYear = TaxYear().end
+      val expectedNow = HtmlFormatter.htmlNonBroken(langUtils.Dates.formatDate(now))
+      val expectedEnd = HtmlFormatter.htmlNonBroken(langUtils.Dates.formatDate(endOfTaxYear))
+
+      TaxYearRangeUtil.dynamicDateRange(now, endOfTaxYear) mustBe s"$expectedNow i $expectedEnd"
     }
 
     "throw an exception if 'from' date is after the 'to' date" in {

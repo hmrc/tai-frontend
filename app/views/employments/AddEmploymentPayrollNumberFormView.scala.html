@@ -47,7 +47,7 @@
         <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet4")</li>
     </ul>
 
-    @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
+    @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
 
         @{inputRadioGroupStyling(
             field=payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice),

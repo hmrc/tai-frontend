@@ -748,7 +748,7 @@ class AddPensionProviderControllerSpec
 
         val expectedCache =
           Map(AddPensionProvider_TelephoneQuestionKey -> YesValue, AddPensionProvider_TelephoneNumberKey -> "12345678")
-        when(addPensionProviderJourneyCacheService.cache(mockEq(expectedCache))(any()))
+        when(addPensionProviderJourneyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(expectedCache))
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
@@ -766,7 +766,7 @@ class AddPensionProviderControllerSpec
 
         val expectedCacheWithErasingNumber =
           Map(AddPensionProvider_TelephoneQuestionKey -> NoValue, AddPensionProvider_TelephoneNumberKey -> "")
-        when(addPensionProviderJourneyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any()))
+        when(addPensionProviderJourneyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
