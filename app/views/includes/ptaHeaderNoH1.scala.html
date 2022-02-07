@@ -34,7 +34,7 @@ if(preHeadingAccessibleAnnouncement=="") Messages("tai.ptaHeader.accessible.preH
 
 <div class="grid-row">
     <div class="column-two-thirds">
-        @customBackLinkContent.map(identity).getOrElse(backLink())
+        @customBackLinkContent.getOrElse(backLink())
     </div>
 
     @if(additionalTopLinkContent.isDefined){

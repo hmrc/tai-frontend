@@ -20,7 +20,6 @@ legend: String,
 legendHint: Option[String],
 mainHeadingText: String,
 preHeadingText: String,
-preHeadingAccessibleAnnouncement: String,
 args: (Symbol, Any)*)(implicit messages: Messages)
 
 @import play.api.i18n._
@@ -33,7 +32,7 @@ args: (Symbol, Any)*)(implicit messages: Messages)
 
 
 @preHeadingHidden = @{
-    if(preHeadingAccessibleAnnouncement=="") Messages("tai.ptaHeader.accessible.preHeading") else preHeadingAccessibleAnnouncement
+    Messages("tai.ptaHeader.accessible.preHeading")
 }
 
 
