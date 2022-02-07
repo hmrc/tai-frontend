@@ -42,10 +42,10 @@ args: (Symbol, Any)*)(implicit messages: Messages)
     <fieldset @if(fieldsetClass != ""){class="@fieldsetClass"} @if(elements.args.get('_fieldsetAttributes).isDefined) {@elements.args.get('_fieldsetAttributes)}  @elements.errors.map{error => aria-describedby="error-message-@{field.id}-input"}>
 
     <legend @if(elements.args.get('_legendClass).isDefined) {class="@elements.args.get('_legendClass)"}>
-    <header class="page-heading soft--top">
+    <div class="page-heading soft--top">
     <h1 class="heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
     <p class="heading-secondary break-word"><span class="visuallyhidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
-    </header>
+    </div>
         @if(legendHint.isDefined) {<span id="radioGroupLegendHint">@legendHint.get</span>}
     </legend>
 

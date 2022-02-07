@@ -52,6 +52,9 @@ if(preHeadingAccessibleAnnouncement=="") Messages("tai.ptaHeader.accessible.preH
     @errorSummary(Messages("tai.income.error.form.summary"), formForErrorSummary.get, Seq("flush--bottom"))
     }
 
+    <header aria-hidden="true" class="page-heading soft--top visuallyhidden">
+        <p class="heading-secondary break-word"><span class="visuallyhidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
+      </header>
 
 </div>
 </div>
