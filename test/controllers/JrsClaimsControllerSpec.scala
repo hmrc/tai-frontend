@@ -16,21 +16,25 @@
 
 package controllers
 
-import builders.RequestBuilder
-import cats.data.OptionT
+import builders.{RequestBuilder, UserBuilder}
+import cats.data.{EitherT, OptionT}
 import cats.implicits.catsStdInstancesForFuture
 import controllers.actions.FakeValidatePerson
+import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import org.scalatest.concurrent.ScalaFutures.whenReady
 import play.api.i18n.Messages
-import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
+import uk.gov.hmrc.http.{HttpException, UpstreamErrorResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import uk.gov.hmrc.tai.service.JrsService
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
 import views.html.{InternalServerErrorView, JrsClaimSummaryView, NoJrsClaimView}
 
@@ -82,6 +86,29 @@ class JrsClaimsControllerSpec extends BaseSpec {
       }
     }
 
+    "RuntimeException" when {
+
+      "Failed response is received from service" in {
+
+        implicit val authedTrustedUser: AuthedUser =
+          UserBuilder("utr", TaiConstants.AuthProviderVerify, "principalName")
+
+        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedTrustedUser, "name")
+
+        when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
+
+        when(jrsService.getJrsClaims(any())(any()))
+          .thenReturn(OptionT[Future, JrsClaims](Future.failed(new RuntimeException("Error"))))
+        when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
+
+        val result = jrsClaimsController.onPageLoad()(request)
+
+        whenReady(result.failed) { e =>
+          e mustBe a[RuntimeException]
+        }
+      }
+    }
+
     "not found view" when {
 
       "no jrs data is received from service" in {
@@ -114,5 +141,5 @@ class JrsClaimsControllerSpec extends BaseSpec {
     }
 
   }
-
+//  implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedUser, "name")
 }

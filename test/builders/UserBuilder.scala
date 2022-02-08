@@ -18,6 +18,7 @@ package builders
 
 import controllers.auth.AuthedUser
 import uk.gov.hmrc.auth.core.ConfidenceLevel
+import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
@@ -26,4 +27,12 @@ object UserBuilder {
 
   def apply(utr: String = "utr", providerType: String = TaiConstants.AuthProviderGG) =
     AuthedUser(nino.toString(), Some(utr), Some(providerType), ConfidenceLevel.L200, None)
+
+  def apply(utr: String, providerType: String, principalName: String) =
+    AuthedUser(
+      nino.toString(),
+      Some(utr),
+      Some(providerType),
+      ConfidenceLevel.L200,
+      Some(TrustedHelper(principalName, "attorneyName", "returnLinkUrl", nino.toString())))
 }

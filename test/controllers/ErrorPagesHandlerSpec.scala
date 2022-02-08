@@ -209,7 +209,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
   "The fine grained partial functions provided by ErrorPageHandler" should {
 
     implicit val request = FakeRequest("GET", "/")
-    implicit val user = UserBuilder()
+    //implicit val user = UserBuilder()
     implicit val recoveryLocation = classOf[ErrorPagesHandler]
 
     "Identify nps tax account failures, and generate an appropriate redirect" when {
