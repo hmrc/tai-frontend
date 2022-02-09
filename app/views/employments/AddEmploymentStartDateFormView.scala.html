@@ -40,11 +40,13 @@
     articleClasses = None)  {
 
     @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentStartDate(), args=(Symbol("class"), "subsection")) {
-        @date(
+        @dateWithH1Legend(
             form = dateForm,
             fieldPrefix = "tellUsStartDateForm",
             labelText = Messages("tai.addEmployment.startDateForm.label", employmentName),
-            legendBold = true
+            legendBold = true,
+            mainHeadingText = messages("tai.addEmployment.startDateForm.title", employmentName),
+            preHeadingText = messages("add.missing.employment")
         )
 
         @submit()
