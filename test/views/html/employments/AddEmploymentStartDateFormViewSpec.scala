@@ -58,7 +58,7 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
     "have a label in the form" in {
       val legendItem1 = doc(view).select("legend .form-label").text
 
-      legendItem1 mustBe Messages("tai.addEmployment.startDateForm.label", employmentName)
+      legendItem1 contains Messages("tai.addEmployment.startDateForm.label", employmentName)
     }
 
     "have a form hint" in {
