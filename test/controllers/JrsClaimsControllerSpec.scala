@@ -141,5 +141,4 @@ class JrsClaimsControllerSpec extends BaseSpec {
     }
 
   }
-//  implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedUser, "name")
 }
