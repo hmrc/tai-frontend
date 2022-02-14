@@ -41,9 +41,6 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
 
   "Add employment start date form" should {
     behave like pageWithTitle(messages("tai.addEmployment.startDateForm.pagetitle"))
-    behave like pageWithCombinedHeader(
-      messages("add.missing.employment"),
-      messages("tai.addEmployment.startDateForm.title", employmentName))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-start-date")
     behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
@@ -61,7 +58,7 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
     "have a label in the form" in {
       val legendItem1 = doc(view).select("legend .form-label").text
 
-      legendItem1 mustBe Messages("tai.addEmployment.startDateForm.label", employmentName)
+      legendItem1 contains Messages("tai.addEmployment.startDateForm.label", employmentName)
     }
 
     "have a form hint" in {

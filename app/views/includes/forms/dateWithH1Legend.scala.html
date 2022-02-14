@@ -1,0 +1,72 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.helper._
+
+@(
+        form: Form[_],
+        fieldPrefix: String = "",
+        labelText: String = "",
+        hintText: String = "",
+        jsHidden: Boolean = false,
+        legendHidden: Boolean = false,
+        legendBold: Boolean = false,
+        mainHeadingText: String,
+        preHeadingText: String,
+)(implicit m: Messages)
+
+
+@preHeadingHidden = @{
+    Messages("tai.ptaHeader.accessible.preHeading")
+}
+
+<div class="form-group @if(form.hasErrors){form-group-error}">
+    <fieldset id="@{fieldPrefix}_fieldset">
+        <legend>
+            <div class="page-heading soft--top">
+                <h1 class="heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
+                <p class="heading-secondary break-word"><span class="visuallyhidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
+                </div>
+        </legend>
+        <span  aria-describedby="@{fieldPrefix}_day @{fieldPrefix}_month @{fieldPrefix}_year" class="span-form-hint" >
+        <span class="form-label @if(legendBold){form-label-bold}@if(legendHidden){ visually-hidden}">@labelText</span>
+        <span  class="form-hint" id="date-hint">@Messages("tai.label.date.example")</span>
+    </span>
+
+        @if(form.hasErrors) {
+            <span class="error-message" id="error-message">@form.errors.map(_.message)</span>
+        }
+
+        <div class="form-date">
+
+
+            <div class="form-group form-group-day">
+                <label class="form-label" for="@{fieldPrefix}_day">@Messages("tai.label.day")</label>
+                <input type="text" class="form-control@if(form.hasErrors){-error}" id="@{fieldPrefix}_day" name="@form(s"${fieldPrefix}_day").name" inputmode="numeric" pattern="[0-9]*" aria-describedby="@if(form(s"${fieldPrefix}_day").errors.nonEmpty){date-hint error-message} else {date-hint}" value="@form(s"${fieldPrefix}_day").value" />
+            </div>
+            <div class="form-group form-group-month">
+                <label class="form-label" for="@{fieldPrefix}_month">@Messages("tai.label.month")</label>
+                <input type="text" class="form-control@if(form.hasErrors){-error}" id="@{fieldPrefix}_month" name="@form(s"${fieldPrefix}_month").name" inputmode="numeric" pattern="[0-9]*" aria-describedby="@if(form(s"${fieldPrefix}_month").errors.nonEmpty){date-hint error-message} else {date-hint}" value="@form(s"${fieldPrefix}_month").value" />
+            </div>
+            <div class="form-group form-group-year">
+                <label class="form-label" for="@{fieldPrefix}_year">@Messages("tai.label.year")</label>
+                <input type="text" class="form-control@if(form.hasErrors){-error}" id="@{fieldPrefix}_year" name="@form(s"${fieldPrefix}_year").name" inputmode="numeric" pattern="[0-9]*" aria-describedby="@if(form(s"${fieldPrefix}year").errors.nonEmpty){date-hint error-message} else {date-hint}" value="@form(s"${fieldPrefix}_year").value" />
+            </div>
+
+        </div>
+
+    </fieldset>
+</div>
