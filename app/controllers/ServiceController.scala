@@ -37,8 +37,7 @@ class ServiceController @Inject()(
   timeout: TimeoutView,
   sessionExpired: SessionExpiredView,
   manualCorrespondence: ManualCorrespondenceView,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def timeoutPage(): Action[AnyContent] = Action.async { implicit request =>
@@ -61,7 +60,7 @@ class ServiceController @Inject()(
       case _    => applicationConfig.contactHelplineUrl
     }
 
-    Future.successful(Ok(manualCorrespondence(contactUrl)))
+    Future.successful(Locked(manualCorrespondence(contactUrl)))
   }
 
   def keepAlive: Action[AnyContent] = Action {
