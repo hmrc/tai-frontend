@@ -174,6 +174,28 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       }
     }
 
+    "handle exception" when {
+      "an invalid UpdateIncome_DateKey is present " in {
+        val testController = createTestIncomeController()
+        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future
+          .successful(Seq(payToDate, employerId.toString, employerName), Seq(Some("May 2020"))))
+
+        when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
+        val formData = Json.toJson(editIncomeForm)
+
+        val result =
+          testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.IncomeController.confirmRegularIncome().url
+
+        verify(journeyCacheService).cache(meq(UpdateIncome_NewAmountKey), meq("200"))(any())
+      }
+    }
+
     "redirect to the same estimated pay page" when {
       "new input is the same as the cached input" in {
         val testController = createTestIncomeController()

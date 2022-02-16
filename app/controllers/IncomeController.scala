@@ -19,8 +19,10 @@ package controllers
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+
 import javax.inject.{Inject, Singleton}
 import org.joda.time.LocalDate
+import play.api.Logging
 import play.api.data.Form
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -40,7 +42,9 @@ import views.html.incomes._
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
+
 
 @Singleton
 class IncomeController @Inject()(
@@ -60,7 +64,7 @@ class IncomeController @Inject()(
   sameEstimatedPay: SameEstimatedPayView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>
@@ -138,7 +142,14 @@ class IncomeController @Inject()(
       Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
       Seq(UpdateIncome_DateKey)) flatMap tupled { (mandatorySeq, optionalSeq) =>
       {
-        val date = optionalSeq.head.map(date => LocalDate.parse(date))
+
+        val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
+          case Success(optDate) => optDate
+          case Failure(exception) =>
+            logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
+            None
+        }
+
         val employerName = mandatorySeq(2)
         val payToDate = BigDecimal(mandatorySeq.head)
 
