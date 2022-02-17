@@ -71,6 +71,8 @@ class PayeControllerHistoricSpec
       val result = testController.payePage(TaxYear().prev)(request)
 
       status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      doc must haveParagraphWithText("£0.00")
     }
 
     "display the last year paye page successfully when RTI is down" in {
