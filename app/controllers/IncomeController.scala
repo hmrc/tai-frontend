@@ -44,8 +44,6 @@ import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
-
-
 @Singleton
 class IncomeController @Inject()(
   @Named("Update Income") journeyCacheService: JourneyCacheService,
@@ -143,7 +141,7 @@ class IncomeController @Inject()(
       Seq(UpdateIncome_DateKey)) flatMap tupled { (mandatorySeq, optionalSeq) =>
       {
 
-        val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
+        val date = Try(optionalSeq.head.map(date => LocalDate.parse("May 2020"))) match {
           case Success(optDate) => optDate
           case Failure(exception) =>
             logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
@@ -298,7 +296,13 @@ class IncomeController @Inject()(
       Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
       Seq(UpdateIncome_DateKey)) flatMap tupled { (mandatorySeq, optionalSeq) =>
       {
-        val date = optionalSeq.head.map(date => LocalDate.parse(date))
+        val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
+          case Success(optDate) => optDate
+          case Failure(exception) =>
+            logger.warn(s"Unable to parse updateIncomeDateKey $exception")
+            None
+        }
+
         EditIncomeForm
           .bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date)
           .fold(
