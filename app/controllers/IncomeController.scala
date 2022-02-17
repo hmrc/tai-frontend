@@ -141,7 +141,7 @@ class IncomeController @Inject()(
       Seq(UpdateIncome_DateKey)) flatMap tupled { (mandatorySeq, optionalSeq) =>
       {
 
-        val date = Try(optionalSeq.head.map(date => LocalDate.parse("May 2020"))) match {
+        val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
           case Success(optDate) => optDate
           case Failure(exception) =>
             logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
