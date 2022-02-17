@@ -31,7 +31,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, TemporarilyUnavailable}
+import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, Monthly, Payment, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
@@ -106,6 +106,23 @@ class PayeControllerHistoricSpec
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
       }
+    }
+
+    "return ok and use last FPS(Full payment submission) for total taxable income when there are multiple same date submissions" in {
+
+      val testController = createTestController()
+
+      implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+      when(employmentService.employments(any(), any())(any()))
+        .thenReturn(Future.successful(sampleEmploymentWithSameDatFpsSubmissions))
+
+      val result = testController.payePage(TaxYear().prev)(request)
+
+      status(result) mustBe OK
+
+      val doc = Jsoup.parse(contentAsString(result))
+      doc must haveParagraphWithText("£555,555.00")
+
     }
 
     "display an error page" when {
@@ -312,6 +329,42 @@ class PayeControllerHistoricSpec
       new LocalDate(2017, 7, 9),
       None,
       Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      2,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    )
+  )
+
+  val payment1 = Payment(LocalDate.parse("2019-04-05"), 333333, 111, 111, 111, 111, 111, Monthly)
+  val payment2 = Payment(LocalDate.parse("2019-04-05"), 444444, 111, 111, 111, 111, 111, Monthly)
+  val payment3 = Payment(LocalDate.parse("2019-04-05"), 555555, 111, 111, 111, 111, 111, Monthly)
+  val payments = Seq(payment1, payment2, payment3)
+
+  val sampleEmploymentWithSameDatFpsSubmissions = Seq(
+    Employment(
+      "employer1",
+      Live,
+      None,
+      new LocalDate(2018, 6, 9),
+      None,
+      Seq(AnnualAccount(TaxYear().prev, Available, payments, Nil)),
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    ),
+    Employment(
+      "employer2",
+      Live,
+      None,
+      new LocalDate(2017, 7, 9),
+      None,
+      Seq(AnnualAccount(TaxYear().prev, Available, payments, Nil)),
       "taxNumber",
       "payeNumber",
       2,
