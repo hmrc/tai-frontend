@@ -46,7 +46,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 @header = @{
     ptaHeader(
         mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
-        preHeadingText = messages("tai.paye.lastTaxYear.preHeading"),
+        preHeadingText = request.fullName,
         displayBackLink = true,
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }

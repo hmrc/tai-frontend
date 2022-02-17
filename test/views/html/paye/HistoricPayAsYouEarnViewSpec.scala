@@ -47,7 +47,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
   "historicPayAsYouEarn view" should {
 
     behave like pageWithCombinedHeader(
-      messages("tai.paye.lastTaxYear.preHeading"),
+      authRequest.fullName,
       messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year)))
 
     behave like pageWithTitle(
@@ -57,7 +57,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       val taxYear = cyMinusOneTaxYear
       val newDoc = doc(view)
 
-      newDoc.body.text must include(messages("tai.paye.lastTaxYear.preHeading"))
+      newDoc.body.text must include(authRequest.fullName)
       newDoc.body.text must include(messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
     }
 

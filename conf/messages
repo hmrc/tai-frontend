@@ -844,7 +844,6 @@ tai.paye.incomePension.heading=Your income from private pensions
 tai.paye.lastTaxYear.otherDetailsWrongIform.link=tell us what to change
 tai.paye.lastTaxYear.otherDetailsWrongIform.nextLine=If you cannot contact them or they cannot help then you can {0}
 tai.paye.lastTaxYear.otherDetailsWrongIform=If there is an income from an employer or pension provider missing or wrong please contact them first. Ask them to send the right details to HMRC.
-tai.paye.lastTaxYear.preHeading=Previous tax years
 tai.paye.lastTaxYear.table.headingOne=Income source
 tai.paye.lastTaxYear.table.headingTwo=Income
 tai.paye.lastTaxYear.table.link=Check the income details sent to us
