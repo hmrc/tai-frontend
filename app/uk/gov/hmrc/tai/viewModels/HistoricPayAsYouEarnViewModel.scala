@@ -54,10 +54,11 @@ object HistoricPayAsYouEarnViewModel {
     } yield
       EmploymentViewModel(
         employment.name,
-        account.totalIncomeYearToDate,
+        if (account.payments.isEmpty) 0 else account.payments.last.amountYearToDate,
         employment.sequenceNumber,
         employment.receivingOccupationalPension,
-        employment.payrollNumber)
+        employment.payrollNumber
+      )
 
   case class EmploymentViewModel(
     name: String,
