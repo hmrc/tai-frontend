@@ -1,5 +1,5 @@
 @*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  *@
 
-@import includes.ptaHeader
+@import includes.ptaHeaderNoH1
 @import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import includes.forms.inputRadioGroupStyling
+@import includes.forms.inputRadioGroupStylingWithH1Legend
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
@@ -25,7 +25,7 @@
 
 
 @header = @{
-    ptaHeader(
+    ptaHeaderNoH1(
         formForErrorSummary = Some(workingHoursForm),
         displayBackLink = true,
         mainHeadingText = messages("tai.workingHours.heading"),
@@ -41,21 +41,27 @@
     pageHeader = Some(header),
     employerName = Some(employerName)
 ){
-    <div class="section flush--bottom soft--top">
-        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.handleWorkingHours){
-                @{inputRadioGroupStyling(
-                    field=workingHoursForm("workingHours"),
-                    radioOptions=Seq(("regularHours" -> messages("tai.workingHours.regularHours")), ("irregularHours" -> messages("tai.workingHours.irregularHours"))),
-                    legend=messages("tai.workingHours.legend"),
-                    legendHint=None,
-                    ('_groupDivClass, "form-group" ),
-                    ('_legend, messages("tai.workingHours.legend") ),
-                    ('_legendSpanClass, "visually-hidden"),
-                    ('_fieldsetAttributes, "id=workingHours")
-                )}
-            <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
-        }
+    <div class="grid-row">
+       <div class="column-two-thirds">
+        <div class="section flush--bottom soft--top">
+            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.handleWorkingHours){
+                @{inputRadioGroupStylingWithH1Legend(
+                        field=workingHoursForm("workingHours"),
+                        radioOptions=Seq(("regularHours" -> messages("tai.workingHours.regularHours")), ("irregularHours" -> messages("tai.workingHours.irregularHours"))),
+                        legend=messages("tai.workingHours.legend"),
+                        legendHint=None,
+                        mainHeadingText = messages("tai.workingHours.heading"),
+                        preHeadingText = messages("tai.workingHours.preHeading", employerName),
+                        ('_groupDivClass, "form-group" ),
+                        ('_legend, messages("tai.workingHours.legend") ),
+                        ('_legendSpanClass, "visually-hidden"),
+                        ('_fieldsetAttributes, "id=workingHours")
+                    )}
+                <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
+                }
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+                @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+            </div>
+        </div>
     </div>
 }

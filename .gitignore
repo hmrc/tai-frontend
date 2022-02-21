@@ -106,3 +106,5 @@ GitHub.sublime-settings
 
 ensime\.sbt
 package-lock.json
+
+*.sc
