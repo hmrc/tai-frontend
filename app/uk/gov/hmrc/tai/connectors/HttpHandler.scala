@@ -74,39 +74,6 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
     }
   }
 
-  @deprecated("Use getFromApiV2 as it handles UnauthorizedExceptions back from tai", "0.575.0")
-  def getFromApi(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
-    val futureResponse = http.GET[HttpResponse](url)
-
-    futureResponse.flatMap { httpResponse =>
-      httpResponse.status match {
-
-        case OK =>
-          Future.successful(httpResponse.json)
-
-        case NOT_FOUND =>
-          logger.warn(s"HttpHandler - No data can be found")
-          Future.failed(new NotFoundException(httpResponse.body))
-
-        case INTERNAL_SERVER_ERROR =>
-          logger.warn(s"HttpHandler - Internal Server Error received")
-          Future.failed(new InternalServerException(httpResponse.body))
-
-        case BAD_REQUEST =>
-          logger.warn(s"HttpHandler - Bad Request received")
-          Future.failed(new BadRequestException(httpResponse.body))
-
-        case LOCKED =>
-          logger.warn(s"HttpHandler - Locked received")
-          Future.failed(new LockedException(httpResponse.body))
-
-        case _ =>
-          logger.warn(s"HttpHandler - Server error received")
-          Future.failed(new HttpException(httpResponse.body, httpResponse.status))
-      }
-    }
-  }
-
   def putToApi[I](
     url: String,
     data: I)(implicit hc: HeaderCarrier, rds: HttpReads[I], writes: Writes[I]): Future[HttpResponse] =

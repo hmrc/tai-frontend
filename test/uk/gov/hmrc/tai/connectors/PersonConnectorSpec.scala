@@ -34,7 +34,7 @@ class PersonConnectorSpec extends BaseSpec {
 
     "return a Person model instance, wrapped in a TaiSuccessResponse" when {
       "the http call returns successfully" in {
-        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+        when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
           .thenReturn(Future.successful(apiResponse(person)))
         val result = Await.result(sut.person(nino), 5 seconds)
         result mustBe TaiSuccessResponseWithPayload(person)
@@ -43,7 +43,7 @@ class PersonConnectorSpec extends BaseSpec {
 
     "return a TaiNotFoundResponse" when {
       "the http call returns a not found exception" in {
-        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+        when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
           .thenReturn(Future.failed(new NotFoundException("downstream not found")))
         val result = Await.result(sut.person(nino), 5 seconds)
         result mustBe TaiNotFoundResponse("downstream not found")
@@ -51,7 +51,7 @@ class PersonConnectorSpec extends BaseSpec {
 
       "the http call returns invalid json" in {
         val invalidJson = Json.obj("data" -> Json.obj("notEven" -> "close"))
-        when(httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+        when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
           .thenReturn(Future.successful(invalidJson))
         val result = Await.result(sut.person(nino), 5 seconds)
         result match {

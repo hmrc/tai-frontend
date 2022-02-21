@@ -44,7 +44,7 @@ class TrackingConnectorSpec extends BaseSpec with BeforeAndAfterEach with ScalaF
   "getUserTracking" should {
     "fetch the user tracking details" when {
       "provided with id and idType" in {
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(trackedFormSeqJson)))
+        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(Json.parse(trackedFormSeqJson)))
 
         val result = sut.getUserTracking(nino.nino)
         result.futureValue mustBe trackedFormSeq
@@ -53,14 +53,14 @@ class TrackingConnectorSpec extends BaseSpec with BeforeAndAfterEach with ScalaF
 
     "return an empty response" when {
       "json is not valid" in {
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse("""{}""")))
+        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(Json.parse("""{}""")))
 
         val result = sut.getUserTracking(nino.nino)
         result.futureValue mustBe Seq.empty[TrackedForm]
       }
 
-      "getFromApi throws" in {
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new LockedException("locked")))
+      "getFromApiV2 throws" in {
+        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.failed(new LockedException("locked")))
 
         val result = sut.getUserTracking(nino.nino)
         result.futureValue mustBe Seq.empty[TrackedForm]

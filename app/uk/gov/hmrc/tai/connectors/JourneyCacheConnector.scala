@@ -33,14 +33,14 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
   def cacheUrl(journeyName: String) = s"$serviceUrl/tai/journey-cache/$journeyName"
 
   def currentCache(journeyName: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    httpHandler.getFromApi(cacheUrl(journeyName)).map(_.as[Map[String, String]]) recover {
+    httpHandler.getFromApiV2(cacheUrl(journeyName)).map(_.as[Map[String, String]]) recover {
       case e: NotFoundException => Map.empty[String, String]
     }
 
   def currentValueAs[T](journeyName: String, key: String, convert: String => T)(
     implicit hc: HeaderCarrier): Future[Option[T]] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
-    httpHandler.getFromApi(url).map(value => Some(convert(value.as[String]))) recover {
+    httpHandler.getFromApiV2(url).map(value => Some(convert(value.as[String]))) recover {
       case e: NotFoundException => None
     }
   }
@@ -49,7 +49,7 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
     implicit hc: HeaderCarrier): Future[Either[String, T]] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
 
-    httpHandler.getFromApi(url).map(value => Right(convert(value.as[String]))) recover {
+    httpHandler.getFromApiV2(url).map(value => Right(convert(value.as[String]))) recover {
       case e: NotFoundException => {
         val errorMessage = s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'"
         logger.warn(errorMessage)
@@ -62,7 +62,7 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
   def mandatoryValueAs[T](journeyName: String, key: String, convert: String => T)(
     implicit hc: HeaderCarrier): Future[T] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
-    httpHandler.getFromApi(url).map(value => convert(value.as[String])) recover {
+    httpHandler.getFromApiV2(url).map(value => convert(value.as[String])) recover {
       case e: NotFoundException =>
         throw new RuntimeException(
           s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")

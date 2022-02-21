@@ -37,7 +37,7 @@ class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler, s
   def taxFreeAmountComparisonUrl(nino: String) = s"$serviceUrl/tai/$nino/tax-account/tax-free-amount-comparison"
 
   def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.getFromApi(taxFreeAmountComparisonUrl(nino.nino)) map (
+    httpHandler.getFromApiV2(taxFreeAmountComparisonUrl(nino.nino)) map (
       json => TaiSuccessResponseWithPayload((json \ "data").as[TaxFreeAmountComparison])
     ) recover {
       case NonFatal(e) =>

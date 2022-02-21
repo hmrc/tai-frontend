@@ -38,7 +38,7 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
   def taxCodeChangeUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change"
 
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.getFromApi(taxCodeChangeUrl(nino.nino)) map (
+    httpHandler.getFromApiV2(taxCodeChangeUrl(nino.nino)) map (
       json => TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeChange])
     ) recover {
       case e: Exception =>
@@ -49,7 +49,7 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
   def hasTaxCodeChangedUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change/exists"
 
   def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.getFromApi(hasTaxCodeChangedUrl(nino.nino)) map (
+    httpHandler.getFromApiV2(hasTaxCodeChangedUrl(nino.nino)) map (
       json => TaiSuccessResponseWithPayload(json.as[Boolean])
     ) recover {
       case e: Exception =>
@@ -60,7 +60,7 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
   def taxCodeMismatchUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-mismatch"
 
   def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.getFromApi(taxCodeMismatchUrl(nino.nino)) map (
+    httpHandler.getFromApiV2(taxCodeMismatchUrl(nino.nino)) map (
       json => TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeMismatch])
     ) recover {
       case e: Exception =>
@@ -71,7 +71,7 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
   def lastTaxCodeRecordsUrl(nino: String, year: Int): String = baseTaxAccountUrl(nino) + s"$year/tax-code/latest"
 
   def lastTaxCodeRecords(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.getFromApi(lastTaxCodeRecordsUrl(nino.nino, year.year)) map (
+    httpHandler.getFromApiV2(lastTaxCodeRecordsUrl(nino.nino, year.year)) map (
       json => {
         TaiSuccessResponseWithPayload((json \ "data").as[List[TaxCodeRecord]])
       }

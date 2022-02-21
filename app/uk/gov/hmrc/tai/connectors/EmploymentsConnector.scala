@@ -33,7 +33,7 @@ class EmploymentsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: S
   def employmentUrl(nino: Nino, id: String) = s"$serviceUrl/tai/$nino/employments/$id"
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApi(employmentServiceUrl(nino, year)) map { json =>
+    httpHandler.getFromApiV2(employmentServiceUrl(nino, year)) map { json =>
       if ((json \ "data" \ "employments").validate[Seq[Employment]].isSuccess) {
         (json \ "data" \ "employments").as[Seq[Employment]]
       } else {
@@ -42,7 +42,7 @@ class EmploymentsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: S
     }
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApi(ceasedEmploymentServiceUrl(nino, year)).map { json =>
+    httpHandler.getFromApiV2(ceasedEmploymentServiceUrl(nino, year)).map { json =>
       (json \ "data").validate[Seq[Employment]].recoverTotal(_ => throw new RuntimeException("Invalid employment json"))
     }
 

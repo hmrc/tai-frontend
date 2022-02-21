@@ -36,7 +36,7 @@ class BenefitsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Serv
     s"$serviceUrl/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
 
   def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] =
-    httpHandler.getFromApi(benefitsUrl(nino.nino, taxYear)) map (
+    httpHandler.getFromApiV2(benefitsUrl(nino.nino, taxYear)) map (
       json => (json \ "data").as[Benefits]
     ) recover {
       case _: RuntimeException => {

@@ -37,7 +37,7 @@ class TrackingConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Serv
   def trackingUrl(id: String) = s"$serviceUrl/tracking-data/user/$IdType/$id"
 
   def getUserTracking(nino: String)(implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] =
-    (httpHandler.getFromApi(trackingUrl(nino)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))).recover {
+    (httpHandler.getFromApiV2(trackingUrl(nino)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))).recover {
       case NonFatal(x) => {
         logger.warn(s"Tracking service returned error, therefore returning an empty response. Error: ${x.getMessage}")
         Seq.empty[TrackedForm]

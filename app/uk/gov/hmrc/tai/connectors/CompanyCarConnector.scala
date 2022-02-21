@@ -39,7 +39,7 @@ class CompanyCarConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
 
   def companyCarBenefitForEmployment(nino: Nino, empId: Int)(
     implicit hc: HeaderCarrier): Future[Option[CompanyCarBenefit]] =
-    httpHandler.getFromApi(companyCarEmploymentUrl(nino, empId)) map (
+    httpHandler.getFromApiV2(companyCarEmploymentUrl(nino, empId)) map (
       json => Some((json \ "data").as[CompanyCarBenefit])
     ) recover {
       case e: NotFoundException => {
@@ -58,7 +58,7 @@ class CompanyCarConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
   }
 
   def companyCarsForCurrentYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] =
-    httpHandler.getFromApi(companyCarUrl(nino)) map (
+    httpHandler.getFromApiV2(companyCarUrl(nino)) map (
       json => (json \ "data" \ "companyCarBenefits").as[Seq[CompanyCarBenefit]]
     ) recover {
       case NonFatal(_) => {

@@ -67,7 +67,7 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
 
         val taxFreeAmountUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-free-amount-comparison"
 
-        when(httpHandler.getFromApi(Matchers.eq(taxFreeAmountUrl))(any())).thenReturn(Future.successful(json))
+        when(httpHandler.getFromApiV2(Matchers.eq(taxFreeAmountUrl))(any())).thenReturn(Future.successful(json))
 
         val codingComponents = Seq(CodingComponent(CarBenefit, Some(1), 1, "Car Benefit", Some(1)))
 
@@ -82,7 +82,8 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
     "return a TaiTaxAccountFailureResponse" when {
       "the api responds with invalid json" in {
         val exceptionMessage = "bad request"
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new BadRequestException(exceptionMessage)))
+        when(httpHandler.getFromApiV2(any())(any()))
+          .thenReturn(Future.failed(new BadRequestException(exceptionMessage)))
 
         val expected = TaiTaxAccountFailureResponse(exceptionMessage)
 
