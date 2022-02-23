@@ -108,8 +108,8 @@ class UpdatePensionProviderController @Inject()(
   }
 
   def handleDoYouGetThisPension: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    journeyCacheService.mandatoryValues(UpdatePensionProvider_IdKey, UpdatePensionProvider_NameKey) flatMap {
-      mandatoryVals =>
+    journeyCacheService.mandatoryJourneyValues(UpdatePensionProvider_IdKey, UpdatePensionProvider_NameKey) flatMap {
+      case Right(mandatoryVals) =>
         UpdateRemovePensionForm.form
           .bindFromRequest()
           .fold(
@@ -128,6 +128,7 @@ class UpdatePensionProviderController @Inject()(
               case _ => Future.successful(Redirect(applicationConfig.incomeFromEmploymentPensionLinkUrl))
             }
           )
+      case Left(message) => Future.successful(errorPagesHandler.internalServerError(message))
     }
   }
 

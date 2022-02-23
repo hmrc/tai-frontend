@@ -96,20 +96,19 @@ class IncomeUpdateCalculatorController @Inject()(
     implicit request =>
       implicit val user = request.taiUser
 
-      journeyCacheService.mandatoryValues(
+      journeyCacheService.mandatoryJourneyValues(
         UpdateIncome_NameKey,
         UpdateIncome_IdKey,
         UpdateIncome_ConfirmedNewAmountKey,
-        UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
-        val incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil = mandatoryValues.toList
-
-        val vm = if (incomeType == TaiConstants.IncomeTypePension) {
-          DuplicateSubmissionPensionViewModel(incomeName, previouslyUpdatedAmount.toInt)
-        } else {
-          DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
-        }
-
-        Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt))
+        UpdateIncome_IncomeTypeKey) map {
+        case Right(incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil) =>
+          val vm = if (incomeType == TaiConstants.IncomeTypePension) {
+            DuplicateSubmissionPensionViewModel(incomeName, previouslyUpdatedAmount.toInt)
+          } else {
+            DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
+          }
+          Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt))
+        case Left(message) => errorPagesHandler.internalServerError(message)
       }
   }
 
