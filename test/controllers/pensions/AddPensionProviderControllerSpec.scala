@@ -271,8 +271,9 @@ class AddPensionProviderControllerSpec
       "there is a form validation error" in {
         val sut = createSUT
         val pensionProviderName = "TEST-Pension-Provider"
-        when(addPensionProviderJourneyCacheService.mandatoryValue(Matchers.eq(AddPensionProvider_NameKey))(any()))
-          .thenReturn(Future.successful(pensionProviderName))
+        when(
+          addPensionProviderJourneyCacheService.mandatoryJourneyValue(Matchers.eq(AddPensionProvider_NameKey))(any()))
+          .thenReturn(Future.successful(Right(pensionProviderName)))
 
         val result = sut.submitFirstPay()(
           RequestBuilder
@@ -288,8 +289,9 @@ class AddPensionProviderControllerSpec
       "no is selected" in {
         val sut = createSUT
         val pensionProviderName = "TEST-Pension-Provider"
-        when(addPensionProviderJourneyCacheService.mandatoryValue(Matchers.eq(AddPensionProvider_NameKey))(any()))
-          .thenReturn(Future.successful(pensionProviderName))
+        when(
+          addPensionProviderJourneyCacheService.mandatoryJourneyValue(Matchers.eq(AddPensionProvider_NameKey))(any()))
+          .thenReturn(Future.successful(Right(pensionProviderName)))
 
         Await.result(
           sut.cantAddPension()(

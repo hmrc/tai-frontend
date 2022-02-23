@@ -16,13 +16,14 @@
 
 package controllers.income.estimatedPay.update
 
+import cats.data.EitherT
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import controllers.{ErrorPagesHandler, TaiBaseController}
+import cats.implicits._
 import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
@@ -191,10 +192,10 @@ class IncomeUpdateCalculatorController @Inject()(
     val nino = user.nino
 
     (for {
-      employmentName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-      id             <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-      income         <- incomeService.employmentAmount(nino, id)
-      netAmount      <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
+      employmentName <- EitherT(journeyCacheService.mandatoryJourneyValue(UpdateIncome_NameKey))
+      id             <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
+      income         <- EitherT.right[String](incomeService.employmentAmount(nino, id))
+      netAmount      <- EitherT.right[String](journeyCacheService.currentValue(UpdateIncome_NewAmountKey))
     } yield {
       val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
       val employmentAmount = income.copy(newAmount = convertedNetAmount)
@@ -206,9 +207,11 @@ class IncomeUpdateCalculatorController @Inject()(
         val vm = ConfirmAmountEnteredViewModel(employmentName, employmentAmount.oldAmount, employmentAmount.newAmount)
         Ok(confirmAmountEntered(vm))
       }
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-    }
+    }).fold(errorPagesHandler.internalServerError(_, None), identity _)
+      .recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      }
+
   }
 
   private def incomeTypeIdentifier(isPension: Boolean): String =

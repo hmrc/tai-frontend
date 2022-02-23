@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import utils.BaseSpec
-
+import cats.syntax.either._
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
@@ -62,45 +62,53 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
     "return the value where found" in {
       val sut = createSut
       when(
-        journeyCacheConnector.mandatoryValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(
-          any())).thenReturn(Future.successful("found"))
+        journeyCacheConnector
+          .mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(any()))
+        .thenReturn(Future.successful(Right("found")))
       when(
-        journeyCacheConnector.mandatoryValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(any()))
-        .thenReturn(Future.successful(1))
+        journeyCacheConnector.mandatoryJourneyValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(
+          any()))
+        .thenReturn(Future.successful(Right(1)))
       when(
-        journeyCacheConnector.mandatoryValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(
-          any())).thenReturn(Future.successful(true))
+        journeyCacheConnector
+          .mandatoryJourneyValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(any()))
+        .thenReturn(Future.successful(Right(true)))
       when(
-        journeyCacheConnector.mandatoryValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(
-          any())).thenReturn(Future.successful(LocalDate.parse("2017-10-10")))
-      Await.result(sut.mandatoryValue("stringKey"), 5 seconds) mustBe "found"
-      Await.result(sut.mandatoryValueAsInt("intKey"), 5 seconds) mustBe 1
-      Await.result(sut.mandatoryValueAsBoolean("boolKey"), 5 seconds) mustBe true
-      Await.result(sut.mandatoryValueAsDate("dateKey"), 5 seconds) mustBe LocalDate.parse("2017-10-10")
-      Await.result(sut.mandatoryValueAs[Int]("intKey", s => s.toInt), 5 seconds) mustBe 1
+        journeyCacheConnector
+          .mandatoryJourneyValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(any()))
+        .thenReturn(Future.successful(Right(LocalDate.parse("2017-10-10"))))
+      Await.result(sut.mandatoryJourneyValue("stringKey"), 5 seconds) mustBe "found".asRight
+      Await.result(sut.mandatoryJourneyValueAsInt("intKey"), 5 seconds) mustBe 1.asRight
+      Await.result(sut.mandatoryValueAsBoolean("boolKey"), 5 seconds) mustBe true.asRight
+      Await.result(sut.mandatoryValueAsDate("dateKey"), 5 seconds) mustBe LocalDate.parse("2017-10-10").asRight
+      Await.result(sut.mandatoryJourneyValueAs[Int]("intKey", s => s.toInt), 5 seconds) mustBe 1.asRight
     }
 
     "throw a runtime where not found" in {
       val sut = createSut
       val failed = Future.failed(new RuntimeException("not found"))
       when(
-        journeyCacheConnector.mandatoryValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(
-          any())).thenReturn(failed)
+        journeyCacheConnector
+          .mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(any()))
+        .thenReturn((failed))
       when(
-        journeyCacheConnector.mandatoryValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(any()))
-        .thenReturn(failed)
+        journeyCacheConnector.mandatoryJourneyValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(
+          any()))
+        .thenReturn((failed))
       when(
-        journeyCacheConnector.mandatoryValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(
-          any())).thenReturn(failed)
+        journeyCacheConnector
+          .mandatoryJourneyValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(any()))
+        .thenReturn((failed))
       when(
-        journeyCacheConnector.mandatoryValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(
-          any())).thenReturn(failed)
-      val thrown1 = the[RuntimeException] thrownBy Await.result(sut.mandatoryValue("stringKey"), 5 seconds)
-      val thrown2 = the[RuntimeException] thrownBy Await.result(sut.mandatoryValueAsInt("intKey"), 5 seconds)
+        journeyCacheConnector
+          .mandatoryJourneyValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(any()))
+        .thenReturn((failed))
+      val thrown1 = the[RuntimeException] thrownBy Await.result(sut.mandatoryJourneyValue("stringKey"), 5 seconds)
+      val thrown2 = the[RuntimeException] thrownBy Await.result(sut.mandatoryJourneyValueAsInt("intKey"), 5 seconds)
       val thrown3 = the[RuntimeException] thrownBy Await.result(sut.mandatoryValueAsBoolean("boolKey"), 5 seconds)
       val thrown4 = the[RuntimeException] thrownBy Await.result(sut.mandatoryValueAsDate("dateKey"), 5 seconds)
       val thrown5 = the[RuntimeException] thrownBy Await
-        .result(sut.mandatoryValueAs[Int]("intKey", s => s.toInt), 5 seconds)
+        .result(sut.mandatoryJourneyValueAs[Int]("intKey", s => s.toInt), 5 seconds)
       thrown1.getMessage mustBe "not found"
       thrown2.getMessage mustBe "not found"
       thrown3.getMessage mustBe "not found"

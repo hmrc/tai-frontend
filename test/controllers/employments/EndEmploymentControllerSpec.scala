@@ -552,7 +552,8 @@ class EndEmploymentControllerSpec
 
         val empId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryValueAsInt(any())(any())).thenReturn(Future.successful(empId))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(any())(any()))
+          .thenReturn(Future.successful(Right(empId)))
 
         val result = endEmploymentTest.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> ""))
@@ -567,7 +568,8 @@ class EndEmploymentControllerSpec
 
         val empId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryValueAsInt(any())(any())).thenReturn(Future.successful(empId))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(any())(any()))
+          .thenReturn(Future.successful(Right(empId)))
 
         val tooFewCharsResult = endEmploymentTest.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))

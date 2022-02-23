@@ -164,9 +164,12 @@ class AddEmploymentController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          journeyCacheService.mandatoryValue(AddEmployment_NameKey).map { employmentName =>
-            implicit val user: AuthedUser = request.taiUser
-            BadRequest(add_employment_first_pay_form(formWithErrors, employmentName))
+          journeyCacheService.mandatoryJourneyValue(AddEmployment_NameKey).map {
+            case Right(employmentName) =>
+              implicit val user: AuthedUser = request.taiUser
+              BadRequest(add_employment_first_pay_form(formWithErrors, employmentName))
+            case Left(err) =>
+              InternalServerError(err)
           }
         },
         firstPayYesNo => {
@@ -182,10 +185,13 @@ class AddEmploymentController @Inject()(
   }
 
   def sixWeeksError(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    journeyCacheService.mandatoryValue(AddEmployment_NameKey) map { employmentName =>
-      implicit val user: AuthedUser = request.taiUser
-      auditService.createAndSendAuditEvent(AddEmployment_CantAddEmployer, Map("nino" -> user.nino.toString()))
-      Ok(add_employment_error_page(employmentName))
+    journeyCacheService.mandatoryJourneyValue(AddEmployment_NameKey) map {
+      case Right(employmentName) =>
+        implicit val user: AuthedUser = request.taiUser
+        auditService.createAndSendAuditEvent(AddEmployment_CantAddEmployer, Map("nino" -> user.nino.toString()))
+        Ok(add_employment_error_page(employmentName))
+      case Left(err) =>
+        InternalServerError(err)
     }
   }
 

@@ -348,8 +348,8 @@ class AddEmploymentControllerSpec
       "no is selected" in {
         val sut = createSUT
         val employmentName = "TEST-Employer"
-        when(addEmploymentJourneyCacheService.mandatoryValue(Matchers.eq(AddEmployment_NameKey))(any()))
-          .thenReturn(Future.successful(employmentName))
+        when(addEmploymentJourneyCacheService.mandatoryJourneyValue(Matchers.eq(AddEmployment_NameKey))(any()))
+          .thenReturn(Future.successful(Right(employmentName)))
 
         Await.result(
           sut.sixWeeksError()(
@@ -370,8 +370,8 @@ class AddEmploymentControllerSpec
         val sut = createSUT
         val employmentName = "TEST-Employer"
 
-        when(addEmploymentJourneyCacheService.mandatoryValue(Matchers.eq(AddEmployment_NameKey))(any()))
-          .thenReturn(Future.successful(employmentName))
+        when(addEmploymentJourneyCacheService.mandatoryJourneyValue(Matchers.eq(AddEmployment_NameKey))(any()))
+          .thenReturn(Future.successful(Right(employmentName)))
 
         val result = sut.submitFirstPay()(
           RequestBuilder

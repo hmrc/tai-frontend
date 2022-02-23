@@ -16,6 +16,8 @@
 
 package controllers.pensions
 
+import cats.data.EitherT
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
@@ -23,7 +25,6 @@ import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
@@ -37,6 +38,7 @@ import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
 import views.html.CanWeContactByPhoneView
 import views.html.pensions._
+
 import javax.inject.{Inject, Named}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -125,8 +127,11 @@ class AddPensionProviderController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          journeyCacheService.mandatoryValue(AddPensionProvider_NameKey).map { pensionProviderName =>
-            BadRequest(addPensionReceivedFirstPayView(formWithErrors, pensionProviderName))
+          journeyCacheService.mandatoryJourneyValue(AddPensionProvider_NameKey).map {
+            case Right(pensionProviderName) =>
+              BadRequest(addPensionReceivedFirstPayView(formWithErrors, pensionProviderName))
+            case Left(err) =>
+              InternalServerError(err)
           }
         },
         yesNo => {
@@ -143,12 +148,15 @@ class AddPensionProviderController @Inject()(
   }
 
   def cantAddPension(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    journeyCacheService.mandatoryValue(AddPensionProvider_NameKey) map { pensionProviderName =>
-      auditService
-        .createAndSendAuditEvent(AddPension_CantAddPensionProvider, Map("nino" -> request.taiUser.nino.toString()))
-      implicit val user: AuthedUser = request.taiUser
+    journeyCacheService.mandatoryJourneyValue(AddPensionProvider_NameKey) map {
+      case Right(pensionProviderName) =>
+        auditService
+          .createAndSendAuditEvent(AddPension_CantAddPensionProvider, Map("nino" -> request.taiUser.nino.toString()))
+        implicit val user: AuthedUser = request.taiUser
 
-      Ok(addPensionErrorView(pensionProviderName))
+        Ok(addPensionErrorView(pensionProviderName))
+      case Left(err) =>
+        InternalServerError(err)
     }
   }
 
