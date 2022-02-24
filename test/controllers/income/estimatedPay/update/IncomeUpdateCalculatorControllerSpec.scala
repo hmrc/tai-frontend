@@ -155,9 +155,9 @@ class IncomeUpdateCalculatorControllerSpec
   "duplicateSubmissionWarning" must {
     object DuplicateSubmissionWarningHarness {
       sealed class DuplicateSubmissionWarningHarness() {
-        when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(
-            Future.successful(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment)))
+            Future.successful(Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))))
 
         def duplicateSubmissionWarning(): Future[Result] =
           new TestIncomeUpdateCalculatorController()
@@ -182,9 +182,9 @@ class IncomeUpdateCalculatorControllerSpec
   "submitDuplicateSubmissionWarning" must {
     object SubmitDuplicateSubmissionWarningHarness {
       sealed class SubmitDuplicateSubmissionWarningHarness() {
-        when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(
-            Future.successful(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment)))
+            Future.successful(Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))))
 
         def submitDuplicateSubmissionWarning(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateCalculatorController()

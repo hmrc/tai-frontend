@@ -23,7 +23,7 @@ object FutureOps {
   implicit class FutureEitherStringOps[A](f: Future[Either[String, A]]) {
 
     def getOrFail(implicit ec: ExecutionContext): Future[A] = f.flatMap {
-      case Right(a) => Future.successful(a)
+      case Right(a)  => Future.successful(a)
       case Left(err) => Future.failed(new RuntimeException(err))
     }
   }

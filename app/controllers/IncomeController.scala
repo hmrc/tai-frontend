@@ -100,7 +100,11 @@ class IncomeController @Inject()(
   def sameEstimatedPayInCache(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     (for {
       cachedData <- journeyCacheService
-                     .mandatoryJourneyValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey).getOrFail
+                     .mandatoryJourneyValues(
+                       UpdateIncome_NameKey,
+                       UpdateIncome_IdKey,
+                       UpdateIncome_ConfirmedNewAmountKey)
+                     .getOrFail
     } yield {
       val employerId = cachedData(1).toInt
       val model = SameEstimatedPayViewModel(
@@ -214,7 +218,13 @@ class IncomeController @Inject()(
       }
     }
     journeyCacheService
-      .mandatoryJourneyValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey).getOrFail.flatMap(cache => {
+      .mandatoryJourneyValues(
+        UpdateIncome_NameKey,
+        UpdateIncome_NewAmountKey,
+        UpdateIncome_IdKey,
+        UpdateIncome_IncomeTypeKey)
+      .getOrFail
+      .flatMap(cache => {
 
         val incomeName :: newAmount :: incomeId :: incomeType :: Nil = cache.toList
 

@@ -64,10 +64,15 @@ class IncomeUpdateEstimatedPayController @Inject()(
     for {
       taxAccountSummary <- taxAccountService.taxAccountSummary(user.nino, TaxYear())
       mandatoryJourneyValues <- journeyCacheService
-                          .mandatoryJourneyValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
+                                 .mandatoryJourneyValues(
+                                   UpdateIncome_NameKey,
+                                   UpdateIncome_IdKey,
+                                   UpdateIncome_IncomeTypeKey)
     } yield {
       (taxAccountSummary, mandatoryJourneyValues) match {
-        case (TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary), Right(mandatoryJourneyValues: Seq[String])) =>
+        case (
+            TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
+            Right(mandatoryJourneyValues: Seq[String])) =>
           val totalEstimatedIncome = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
           val incomeName :: incomeId :: incomeType :: Nil = mandatoryJourneyValues.toList
           Ok(
@@ -79,7 +84,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
               appConfig
             ))
         case (response: TaiFailureResponse, _) => errorPagesHandler.internalServerError(response.message)
-        case (_, Left(message)) => errorPagesHandler.internalServerError(message)
+        case (_, Left(message))                => errorPagesHandler.internalServerError(message)
       }
     }
   }

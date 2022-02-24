@@ -165,10 +165,9 @@ class AddEmploymentController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          journeyCacheService.mandatoryJourneyValue(AddEmployment_NameKey).getOrFail.map {
-            employmentName =>
-              implicit val user: AuthedUser = request.taiUser
-              BadRequest(add_employment_first_pay_form(formWithErrors, employmentName))
+          journeyCacheService.mandatoryJourneyValue(AddEmployment_NameKey).getOrFail.map { employmentName =>
+            implicit val user: AuthedUser = request.taiUser
+            BadRequest(add_employment_first_pay_form(formWithErrors, employmentName))
           }
         },
         firstPayYesNo => {

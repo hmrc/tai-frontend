@@ -159,7 +159,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
 
       journeyCacheService
         .mandatoryJourneyValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey)
-        .flatMap{
+        .flatMap {
           case Right(incomeName :: newPay :: incomeId :: Nil) =>
             taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId) flatMap {
               case TaiSuccessResponse =>

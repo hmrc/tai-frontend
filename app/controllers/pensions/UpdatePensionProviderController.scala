@@ -48,6 +48,7 @@ import javax.inject.{Inject, Named}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
+import uk.gov.hmrc.tai.util.FutureOps._
 
 class UpdatePensionProviderController @Inject()(
   taxAccountService: TaxAccountService,
@@ -155,10 +156,11 @@ class UpdatePensionProviderController @Inject()(
     implicit request =>
       WhatDoYouWantToTellUsForm.form.bindFromRequest.fold(
         formWithErrors => {
-          journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map {
-            mandatoryValues =>
-              implicit val user: AuthedUser = request.taiUser
-              BadRequest(whatDoYouWantToTellUsView(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
+          journeyCacheService
+            .mandatoryJourneyValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)
+            .getOrFail map { mandatoryValues =>
+            implicit val user: AuthedUser = request.taiUser
+            BadRequest(whatDoYouWantToTellUsView(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
           }
         },
         pensionDetails => {
@@ -343,25 +345,26 @@ class UpdatePensionProviderController @Inject()(
   def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) flatMap {
-        mandatoryValues =>
-          DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
-            formWithErrors => {
-              Future.successful(
-                BadRequest(
-                  duplicateSubmissionWarningView(formWithErrors, mandatoryValues.head, mandatoryValues(1).toInt)))
-            },
-            success => {
-              success.yesNoChoice match {
-                case Some(YesValue) =>
-                  Future.successful(
-                    Redirect(controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension()))
-                case Some(NoValue) =>
-                  Future.successful(
-                    Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(mandatoryValues(1).toInt)))
-              }
+      journeyCacheService
+        .mandatoryJourneyValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)
+        .getOrFail flatMap { mandatoryValues =>
+        DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
+          formWithErrors => {
+            Future.successful(
+              BadRequest(
+                duplicateSubmissionWarningView(formWithErrors, mandatoryValues.head, mandatoryValues(1).toInt)))
+          },
+          success => {
+            success.yesNoChoice match {
+              case Some(YesValue) =>
+                Future.successful(
+                  Redirect(controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension()))
+              case Some(NoValue) =>
+                Future.successful(
+                  Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(mandatoryValues(1).toInt)))
             }
-          )
+          }
+        )
       }
   }
 }

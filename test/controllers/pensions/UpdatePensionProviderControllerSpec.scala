@@ -88,8 +88,8 @@ class UpdatePensionProviderControllerSpec
     "return bad request" when {
       "no options are selected" in {
 
-        when(journeyCacheService.mandatoryValues(any())(any()))
-          .thenReturn(Future.successful(Seq(pensionId, pensionName)))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any()))
+          .thenReturn(Future.successful(Right(Seq(pensionId, pensionName))))
 
         val result = createController.handleDoYouGetThisPension()(
           fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecision -> ""))
@@ -101,8 +101,8 @@ class UpdatePensionProviderControllerSpec
     "redirect to tes-1 iform" when {
       "option NO is selected" in {
 
-        when(journeyCacheService.mandatoryValues(any())(any()))
-          .thenReturn(Future.successful(Seq(pensionId, pensionName)))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any()))
+          .thenReturn(Future.successful(Right(Seq(pensionId, pensionName))))
 
         val result = createController.handleDoYouGetThisPension()(
           fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecision -> NoValue))
@@ -115,8 +115,8 @@ class UpdatePensionProviderControllerSpec
     "redirect to whatDoYouWantToTellUs" when {
       "option YES is selected" in {
 
-        when(journeyCacheService.mandatoryValues(any())(any()))
-          .thenReturn(Future.successful(Seq(pensionId, pensionName)))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any()))
+          .thenReturn(Future.successful(Right(Seq(pensionId, pensionName))))
 
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
@@ -203,8 +203,8 @@ class UpdatePensionProviderControllerSpec
 
         val pensionDetailsFormData = ("pensionDetails", "")
 
-        when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String]())(any()))
-          .thenReturn(Future.successful(Seq(pensionName, pensionId)))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String]())(any()))
+          .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
 
         val result = createController.submitWhatDoYouWantToTellUs(
           fakePostRequest
@@ -535,8 +535,8 @@ class UpdatePensionProviderControllerSpec
   "submitDuplicateSubmissionWarning" must {
 
     def journeyCacheCall =
-      when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-        .thenReturn(Future.successful(Seq(pensionName, pensionId)))
+      when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
 
     "redirect to the update remove employment decision page" when {
       "I want to update my employment is selected" in {
@@ -571,8 +571,8 @@ class UpdatePensionProviderControllerSpec
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
 
-        when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-          .thenReturn(Future.successful(Seq(pensionName, pensionId)))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
 
         val result =
           createController.submitDuplicateSubmissionWarning(fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> ""))

@@ -145,8 +145,8 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
 
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-          .thenReturn(Future.successful(Seq("name", "123")))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Right(Seq("name", "123"))))
 
         when(journeyCacheService.cache(eqTo(UpdateIncome_IrregularAnnualPayKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
@@ -316,10 +316,10 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
   "submitIncomeIrregularHours" must {
     object SubmitIncomeIrregularHoursHarness {
 
-      sealed class SubmitIncomeIrregularHoursHarness(mandatoryValuesFuture: Future[Seq[String]]) {
+      sealed class SubmitIncomeIrregularHoursHarness(mandatoryValuesFuture: Future[Either[String, Seq[String]]]) {
 
         when(
-          journeyCacheService.mandatoryValues(any())(any())
+          journeyCacheService.mandatoryJourneyValues(any())(any())
         ).thenReturn(mandatoryValuesFuture)
         when(
           taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())
@@ -339,7 +339,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
             .submitIncomeIrregularHours(employmentId)(request)
       }
 
-      def setup(mandatoryValuesFuture: Future[Seq[String]]): SubmitIncomeIrregularHoursHarness =
+      def setup(mandatoryValuesFuture: Future[Either[String, Seq[String]]]): SubmitIncomeIrregularHoursHarness =
         new SubmitIncomeIrregularHoursHarness(mandatoryValuesFuture)
     }
     "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
@@ -354,7 +354,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
     "sends Ok on successful submit" in {
 
       val result = SubmitIncomeIrregularHoursHarness
-        .setup(Future.successful(Seq(employer.name, "123", employer.id.toString)))
+        .setup(Future.successful(Right(Seq(employer.name, "123", employer.id.toString))))
         .submitIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe OK

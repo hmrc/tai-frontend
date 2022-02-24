@@ -41,8 +41,8 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec with JourneyCacheC
         "/fake/backlink/url")
       val res = sut.journeyConfirmationLines
 
-      when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-        .thenReturn(Future.successful(Seq(employerName, empId.toString)))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Right(Seq(employerName, empId.toString))))
 
       res.size mustBe 2
       res(0) mustBe CheckYourAnswersConfirmationLine(
@@ -66,8 +66,8 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec with JourneyCacheC
         "/fake/backlink/url")
       val res = sut.journeyConfirmationLines
 
-      when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-        .thenReturn(Future.successful(Seq(employerName, empId.toString)))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Right(Seq(employerName, empId.toString))))
 
       res.size mustBe 3
       res(0) mustBe CheckYourAnswersConfirmationLine(

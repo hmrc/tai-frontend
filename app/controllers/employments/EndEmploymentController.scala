@@ -133,8 +133,10 @@ class EndEmploymentController @Inject()(
   def handleEmploymentUpdateRemove: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey).getOrFail.flatMap {
-        mandatoryJourneyValues =>
+      journeyCacheService
+        .mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey)
+        .getOrFail
+        .flatMap { mandatoryJourneyValues =>
           UpdateRemoveEmploymentForm
             .form(mandatoryJourneyValues(0))
             .bindFromRequest
@@ -142,12 +144,14 @@ class EndEmploymentController @Inject()(
               formWithErrors => {
                 Future(
                   BadRequest(
-                    update_remove_employment_decision(formWithErrors, mandatoryJourneyValues(0), mandatoryJourneyValues(1).toInt)))
+                    update_remove_employment_decision(
+                      formWithErrors,
+                      mandatoryJourneyValues(0),
+                      mandatoryJourneyValues(1).toInt)))
               }, {
                 case Some(YesValue) =>
-                  Future(
-                    Redirect(controllers.employments.routes.UpdateEmploymentController
-                      .updateEmploymentDetails(mandatoryJourneyValues(1).toInt)))
+                  Future(Redirect(controllers.employments.routes.UpdateEmploymentController
+                    .updateEmploymentDetails(mandatoryJourneyValues(1).toInt)))
                 case _ =>
                   val nino = user.nino
                   employmentService.employment(nino, mandatoryJourneyValues(1).toInt) flatMap {
@@ -178,51 +182,55 @@ class EndEmploymentController @Inject()(
                   }
               }
             )
-      }
+        }
   }
 
   def endEmploymentError: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService
-      .mandatoryJourneyValues(EndEmployment_LatestPaymentDateKey, EndEmployment_NameKey, EndEmployment_EmploymentIdKey).getOrFail.map {
-      data =>
+      .mandatoryJourneyValues(EndEmployment_LatestPaymentDateKey, EndEmployment_NameKey, EndEmployment_EmploymentIdKey)
+      .getOrFail
+      .map { data =>
         val date = new LocalDate(data.head)
         Ok(
           endEmploymentWithinSixWeeksError(
             WithinSixWeeksViewModel(date.plusWeeks(6).plusDays(1), data(1), date, data(2).toInt)))
-    }
+      }
   }
 
   def irregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    EitherT(journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey)).map { mandatoryJourneyValues =>
-      Ok(
-        endEmploymentIrregularPaymentError(
-          IrregularPayForm.createForm,
-          EmploymentViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1).toInt)))
-    }.getOrElse(throw new RuntimeException("Could not retrieve mandatory journey values"))
+    EitherT(journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey))
+      .map { mandatoryJourneyValues =>
+        Ok(
+          endEmploymentIrregularPaymentError(
+            IrregularPayForm.createForm,
+            EmploymentViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1).toInt)))
+      }
+      .getOrElse(throw new RuntimeException("Could not retrieve mandatory journey values"))
   }
 
   def handleIrregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey).getOrFail.map { mandatoryJourneyValues =>
-        IrregularPayForm.createForm.bindFromRequest.fold(
-          formWithErrors => {
-            BadRequest(
-              endEmploymentIrregularPaymentError(
-                formWithErrors,
-                EmploymentViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1).toInt)))
-          },
-          formData => {
-            formData.irregularPayDecision match {
-              case Some(ContactEmployer) =>
-                Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-              case _ =>
-                Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
+      journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey).getOrFail.map {
+        mandatoryJourneyValues =>
+          IrregularPayForm.createForm.bindFromRequest.fold(
+            formWithErrors => {
+              BadRequest(
+                endEmploymentIrregularPaymentError(
+                  formWithErrors,
+                  EmploymentViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1).toInt)))
+            },
+            formData => {
+              formData.irregularPayDecision match {
+                case Some(ContactEmployer) =>
+                  Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+                case _ =>
+                  Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
+              }
             }
-          }
-        )
+          )
       }
   }
 
@@ -314,7 +322,7 @@ class EndEmploymentController @Inject()(
         formWithErrors => {
           journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey) map {
             case Right(employmentId) =>
-            BadRequest(can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
+              BadRequest(can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
           }
         },
         form => {
@@ -395,8 +403,10 @@ class EndEmploymentController @Inject()(
   def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey).getOrFail.flatMap {
-        mandatoryValues =>
+      journeyCacheService
+        .mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey)
+        .getOrFail
+        .flatMap { mandatoryValues =>
           val empId = mandatoryValues(1).toInt
 
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
@@ -413,7 +423,7 @@ class EndEmploymentController @Inject()(
               }
             }
           )
-      }
+        }
   }
 
   def showConfirmationPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

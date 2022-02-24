@@ -81,10 +81,13 @@ class RemoveCompanyBenefitController @Inject()(
 
     RemoveCompanyBenefitStopDateForm.form.bindFromRequest.fold(
       formWithErrors => {
-        journeyCacheService.mandatoryJourneyValues(EndCompanyBenefit_BenefitNameKey, EndCompanyBenefit_EmploymentNameKey).getOrFail.map {
-          mandatoryJourneyValues =>
-            BadRequest(removeCompanyBenefitStopDate(formWithErrors, mandatoryJourneyValues.head, mandatoryJourneyValues(1)))
-        }
+        journeyCacheService
+          .mandatoryJourneyValues(EndCompanyBenefit_BenefitNameKey, EndCompanyBenefit_EmploymentNameKey)
+          .getOrFail
+          .map { mandatoryJourneyValues =>
+            BadRequest(
+              removeCompanyBenefitStopDate(formWithErrors, mandatoryJourneyValues.head, mandatoryJourneyValues(1)))
+          }
       }, {
         case Some(BeforeTaxYearEnd) =>
           journeyCacheService.cache(EndCompanyBenefit_BenefitStopDateKey, BeforeTaxYearEnd) map { _ =>
@@ -108,7 +111,8 @@ class RemoveCompanyBenefitController @Inject()(
         {
           val form = CompanyBenefitTotalValueForm.form.fill(optionalValues.head.getOrElse(""))
 
-          Future.successful(Ok(removeBenefitTotalValue(BenefitViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1)), form)))
+          Future.successful(
+            Ok(removeBenefitTotalValue(BenefitViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1)), form)))
         }
       }
   }
@@ -118,12 +122,15 @@ class RemoveCompanyBenefitController @Inject()(
     CompanyBenefitTotalValueForm.form.bindFromRequest.fold(
       formWithErrors => {
         journeyCacheService
-          .mandatoryJourneyValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey).getOrFail.flatMap {
-          mandatoryJourneyValues =>
+          .mandatoryJourneyValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey)
+          .getOrFail
+          .flatMap { mandatoryJourneyValues =>
             Future.successful(
               BadRequest(
-                removeBenefitTotalValue(BenefitViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1)), formWithErrors)))
-        }
+                removeBenefitTotalValue(
+                  BenefitViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1)),
+                  formWithErrors)))
+          }
       },
       totalValue => {
         val rounded = BigDecimal(FormHelper.stripNumber(totalValue)).setScale(0, RoundingMode.UP)
@@ -256,7 +263,7 @@ class RemoveCompanyBenefitController @Inject()(
   def cancel: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     for {
       mandatoryJourneyValues <- journeyCacheService.mandatoryJourneyValues(EndCompanyBenefit_RefererKey).getOrFail
-      _               <- journeyCacheService.flush
+      _                      <- journeyCacheService.flush
     } yield Redirect(mandatoryJourneyValues.head)
   }
 

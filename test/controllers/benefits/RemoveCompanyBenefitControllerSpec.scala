@@ -143,14 +143,14 @@ class RemoveCompanyBenefitControllerSpec
       "the form submission is having blank value" in {
         val SUT = createSUT
 
-        when(removeCompanyBenefitJourneyCacheService.mandatoryValues(any())(any()))
-          .thenReturn(Future.successful(Seq("EmployerA", "Expenses", "Url")))
+        when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any()))
+          .thenReturn(Future.successful(Right(Seq("EmployerA", "Expenses", "Url"))))
         val result = SUT.submitStopDate(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> ""))
 
         status(result) mustBe BAD_REQUEST
 
-        verify(removeCompanyBenefitJourneyCacheService, times(1)).mandatoryValues(Matchers.anyVararg())(any())
+        verify(removeCompanyBenefitJourneyCacheService, times(1)).mandatoryJourneyValues(Matchers.anyVararg())(any())
       }
     }
   }
@@ -269,8 +269,8 @@ class RemoveCompanyBenefitControllerSpec
 
         val removeCompanyBenefitFormData = ("totalValue", "")
 
-        when(removeCompanyBenefitJourneyCacheService.mandatoryValues(any())(any()))
-          .thenReturn(Future.successful(Seq(employmentName, benefitName, referer)))
+        when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any()))
+          .thenReturn(Future.successful(Right(Seq(employmentName, benefitName, referer))))
         when(removeCompanyBenefitJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitBenefitValue()(
@@ -291,8 +291,8 @@ class RemoveCompanyBenefitControllerSpec
 
         val removeCompanyBenefitFormData = ("totalValue", "1234Â£$%@")
 
-        when(removeCompanyBenefitJourneyCacheService.mandatoryValues(any())(any()))
-          .thenReturn(Future.successful(Seq(employmentName, benefitName, referer)))
+        when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any()))
+          .thenReturn(Future.successful(Right(Seq(employmentName, benefitName, referer))))
         when(removeCompanyBenefitJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitBenefitValue()(
@@ -648,8 +648,8 @@ class RemoveCompanyBenefitControllerSpec
     "flush the cache and redirect to start of journey" in {
       val SUT = createSUT
 
-      when(removeCompanyBenefitJourneyCacheService.mandatoryValues(any())(any()))
-        .thenReturn(Future.successful(Seq("Url")))
+      when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any()))
+        .thenReturn(Future.successful(Right(Seq("Url"))))
       when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
       val result = SUT.cancel(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -657,7 +657,7 @@ class RemoveCompanyBenefitControllerSpec
 
       redirectLocation(result).get mustBe "Url"
       verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
-      verify(removeCompanyBenefitJourneyCacheService, times(1)).mandatoryValues(any())(any())
+      verify(removeCompanyBenefitJourneyCacheService, times(1)).mandatoryJourneyValues(any())(any())
     }
   }
 

@@ -66,30 +66,31 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
       mappedOptional(cache, keys)
     }
 
-  @deprecated("Use collectedJourneyValues", "0.576.0")
-  def collectedValues(mandatoryValues: Seq[String], optionalValues: Seq[String])(
-    implicit hc: HeaderCarrier): Future[(Seq[String], Seq[Option[String]])] =
+//  @deprecated("Use collectedJourneyValues", "0.576.0")
+//  def collectedValues(mandatoryJourneyValues: Seq[String], optionalValues: Seq[String])(
+//    implicit hc: HeaderCarrier): Future[(Seq[String], Seq[Option[String]])] =
+//    for {
+//      cache <- currentCache
+//    } yield {
+//      val mandatoryResult = mappedMandatoryDeprecated(cache, mandatoryJourneyValues)
+//      val optionalResult = mappedOptional(cache, optionalValues)
+//      (mandatoryResult, optionalResult)
+//    }
+
+  def collectedJourneyValues(mandatoryJourneyValues: Seq[String], optionalValues: Seq[String])(
+    implicit hc: HeaderCarrier): Future[Either[String, (Seq[String], Seq[Option[String]])]] =
     for {
       cache <- currentCache
     } yield {
-      val mandatoryResult = mappedMandatoryDeprecated(cache, mandatoryValues)
-      val optionalResult = mappedOptional(cache, optionalValues)
-      (mandatoryResult, optionalResult)
+      mappedMandatory(cache, mandatoryJourneyValues).map { mandatoryResult =>
+        val optionalResult = mappedOptional(cache, optionalValues)
+        (mandatoryResult, optionalResult)
+      }
     }
 
-  def collectedJourneyValues(mandatoryValues: Seq[String], optionalValues: Seq[String])(
-    implicit hc: HeaderCarrier): Future[(Either[String, Seq[String]], Seq[Option[String]])] =
-    for {
-      cache <- currentCache
-    } yield {
-      val mandatoryResult = mappedMandatory(cache, mandatoryValues)
-      val optionalResult = mappedOptional(cache, optionalValues)
-      (mandatoryResult, optionalResult)
-    }
+  private def mappedMandatory(cache: Map[String, String], mandatoryJourneyValues: Seq[String]): Either[String, Seq[String]] = {
 
-  private def mappedMandatory(cache: Map[String, String], mandatoryValues: Seq[String]): Either[String, Seq[String]] = {
-
-    val allPresentValues = mandatoryValues flatMap { key =>
+    val allPresentValues = mandatoryJourneyValues flatMap { key =>
       cache.get(key) match {
         case Some(str) if str.trim.nonEmpty => Some(str)
         case _ => {
@@ -99,13 +100,13 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
       }
     }
 
-    if (allPresentValues.size == mandatoryValues.size) Right(allPresentValues)
+    if (allPresentValues.size == mandatoryJourneyValues.size) Right(allPresentValues)
     else Left("Mandatory values missing from cache")
   }
 
   @deprecated("Use mappedMandatory", "0.576.0")
-  private def mappedMandatoryDeprecated(cache: Map[String, String], mandatoryValues: Seq[String]): Seq[String] =
-    mandatoryValues map { key =>
+  private def mappedMandatoryDeprecated(cache: Map[String, String], mandatoryJourneyValues: Seq[String]): Seq[String] =
+    mandatoryJourneyValues map { key =>
       cache.get(key) match {
         case Some(str) if !str.trim.isEmpty => str
         case _ =>
