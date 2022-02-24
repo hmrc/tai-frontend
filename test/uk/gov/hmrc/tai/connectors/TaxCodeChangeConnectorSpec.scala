@@ -87,7 +87,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         )
 
         val expectedResult = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
-        when(httpHandler.getFromApi(Matchers.eq(taxCodeChangeUrl))(any())).thenReturn(Future.successful(json))
+        when(httpHandler.getFromApiV2(Matchers.eq(taxCodeChangeUrl))(any())).thenReturn(Future.successful(json))
 
         val result = Await.result(sut.taxCodeChange(nino), 5 seconds)
         result mustEqual TaiSuccessResponseWithPayload(expectedResult)
@@ -101,7 +101,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
 
         val expectedMessage = s"GET of '$taxCodeChangeUrl' returned 500. Response body: ''"
 
-        when(httpHandler.getFromApi(Matchers.eq(taxCodeChangeUrl))(any()))
+        when(httpHandler.getFromApiV2(Matchers.eq(taxCodeChangeUrl))(any()))
           .thenReturn(Future.failed(new RuntimeException(expectedMessage)))
 
         val result = Await.result(sut.taxCodeChange(nino), 5.seconds)
@@ -165,7 +165,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
 
       val expectedResult = List(taxCodeRecord, taxCodeRecord2)
 
-      when(httpHandler.getFromApi(Matchers.eq(latestTaxCodeRecordUrl))(any())).thenReturn(Future.successful(json))
+      when(httpHandler.getFromApiV2(Matchers.eq(latestTaxCodeRecordUrl))(any())).thenReturn(Future.successful(json))
 
       val result = Await.result(sut.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
       result mustEqual TaiSuccessResponseWithPayload(expectedResult)
@@ -181,7 +181,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         "links" -> JsArray(List())
       )
 
-      when(httpHandler.getFromApi(Matchers.eq(latestTaxCodeRecordUrl))(any())).thenReturn(Future.successful(json))
+      when(httpHandler.getFromApiV2(Matchers.eq(latestTaxCodeRecordUrl))(any())).thenReturn(Future.successful(json))
 
       val result = Await.result(sut.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
       result mustEqual TaiSuccessResponseWithPayload(List.empty)
@@ -204,7 +204,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
 
         val json = Future.successful(Json.toJson(true))
 
-        when(httpHandler.getFromApi(Matchers.eq(hasTaxCodeChangedUrl))(any())).thenReturn(json)
+        when(httpHandler.getFromApiV2(Matchers.eq(hasTaxCodeChangedUrl))(any())).thenReturn(json)
 
         val result = Await.result(sut.hasTaxCodeChanged(nino), 5 seconds)
         result mustEqual TaiSuccessResponseWithPayload(true)
@@ -228,7 +228,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         val json = Future.successful(TaxCodeMismatchFactory.matchedTaxCodeJson)
 
         val url = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-mismatch"
-        when(httpHandler.getFromApi(Matchers.eq(url))(any())).thenReturn(json)
+        when(httpHandler.getFromApiV2(Matchers.eq(url))(any())).thenReturn(json)
 
         val result = Await.result(sut.taxCodeMismatch(nino), 5 seconds)
         result mustEqual TaiSuccessResponseWithPayload(expectedResult)
@@ -242,7 +242,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         val json = Future.successful(TaxCodeMismatchFactory.mismatchedTaxCodeJson)
 
         val url = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-mismatch"
-        when(httpHandler.getFromApi(Matchers.eq(url))(any())).thenReturn(json)
+        when(httpHandler.getFromApiV2(Matchers.eq(url))(any())).thenReturn(json)
 
         val result = Await.result(sut.taxCodeMismatch(nino), 5 seconds)
         result mustEqual TaiSuccessResponseWithPayload(expectedResult)
