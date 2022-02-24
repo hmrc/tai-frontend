@@ -43,6 +43,7 @@ import views.html.CanWeContactByPhoneView
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal.RoundingMode
+import uk.gov.hmrc.tai.util.FutureOps._
 
 class RemoveCompanyBenefitController @Inject()(
   @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
@@ -80,9 +81,9 @@ class RemoveCompanyBenefitController @Inject()(
 
     RemoveCompanyBenefitStopDateForm.form.bindFromRequest.fold(
       formWithErrors => {
-        journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey, EndCompanyBenefit_EmploymentNameKey) map {
-          mandatoryValues =>
-            BadRequest(removeCompanyBenefitStopDate(formWithErrors, mandatoryValues.head, mandatoryValues(1)))
+        journeyCacheService.mandatoryJourneyValues(EndCompanyBenefit_BenefitNameKey, EndCompanyBenefit_EmploymentNameKey).getOrFail.map {
+          mandatoryJourneyValues =>
+            BadRequest(removeCompanyBenefitStopDate(formWithErrors, mandatoryJourneyValues.head, mandatoryJourneyValues(1)))
         }
       }, {
         case Some(BeforeTaxYearEnd) =>
@@ -103,11 +104,11 @@ class RemoveCompanyBenefitController @Inject()(
     val optionalKeys = Seq(EndCompanyBenefit_BenefitValueKey)
 
     journeyCacheService.collectedValues(mandatoryKeys, optionalKeys) flatMap
-      tupled { (mandatoryValues, optionalValues) =>
+      tupled { (mandatoryJourneyValues, optionalValues) =>
         {
           val form = CompanyBenefitTotalValueForm.form.fill(optionalValues.head.getOrElse(""))
 
-          Future.successful(Ok(removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), form)))
+          Future.successful(Ok(removeBenefitTotalValue(BenefitViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1)), form)))
         }
       }
   }
@@ -117,11 +118,11 @@ class RemoveCompanyBenefitController @Inject()(
     CompanyBenefitTotalValueForm.form.bindFromRequest.fold(
       formWithErrors => {
         journeyCacheService
-          .mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap {
-          mandatoryValues =>
+          .mandatoryJourneyValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey).getOrFail.flatMap {
+          mandatoryJourneyValues =>
             Future.successful(
               BadRequest(
-                removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), formWithErrors)))
+                removeBenefitTotalValue(BenefitViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1)), formWithErrors)))
         }
       },
       totalValue => {
@@ -200,11 +201,11 @@ class RemoveCompanyBenefitController @Inject()(
 
         mandatorySeq match {
           case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-          case Right(mandatoryValues) =>
+          case Right(mandatoryJourneyValues) =>
             val stopDate = {
               val startOfTaxYear = langUtils.Dates.formatDate(TaxYear().start)
 
-              mandatoryValues(2) match {
+              mandatoryJourneyValues(2) match {
                 case OnOrAfterTaxYearEnd => Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
                 case BeforeTaxYearEnd    => Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
               }
@@ -213,11 +214,11 @@ class RemoveCompanyBenefitController @Inject()(
             Ok(
               removeCompanyBenefitCheckYourAnswers(
                 RemoveCompanyBenefitCheckYourAnswersViewModel(
-                  mandatoryValues(0),
-                  mandatoryValues(1),
+                  mandatoryJourneyValues(0),
+                  mandatoryJourneyValues(1),
                   stopDate,
                   optionalSeq(0),
-                  mandatoryValues(3),
+                  mandatoryJourneyValues(3),
                   optionalSeq(1))))
         }
       }
@@ -254,9 +255,9 @@ class RemoveCompanyBenefitController @Inject()(
 
   def cancel: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     for {
-      mandatoryValues <- journeyCacheService.mandatoryValues(EndCompanyBenefit_RefererKey)
+      mandatoryJourneyValues <- journeyCacheService.mandatoryJourneyValues(EndCompanyBenefit_RefererKey).getOrFail
       _               <- journeyCacheService.flush
-    } yield Redirect(mandatoryValues.head)
+    } yield Redirect(mandatoryJourneyValues.head)
   }
 
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

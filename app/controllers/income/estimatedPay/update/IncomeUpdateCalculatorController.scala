@@ -37,26 +37,27 @@ import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
-
+import uk.gov.hmrc.tai.util.FutureOps._
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
+
 class IncomeUpdateCalculatorController @Inject()(
-  incomeService: IncomeService,
-  employmentService: EmploymentService,
-  taxAccountService: TaxAccountService,
-  estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
-  authenticate: AuthAction,
-  validatePerson: ValidatePerson,
-  mcc: MessagesControllerComponents,
-  duplicateSubmissionWarning: DuplicateSubmissionWarningView,
-  checkYourAnswers: CheckYourAnswersView,
-  confirmAmountEntered: ConfirmAmountEnteredView,
-  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants
+                                                  incomeService: IncomeService,
+                                                  employmentService: EmploymentService,
+                                                  taxAccountService: TaxAccountService,
+                                                  estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
+                                                  authenticate: AuthAction,
+                                                  validatePerson: ValidatePerson,
+                                                  mcc: MessagesControllerComponents,
+                                                  duplicateSubmissionWarning: DuplicateSubmissionWarningView,
+                                                  checkYourAnswers: CheckYourAnswersView,
+                                                  confirmAmountEntered: ConfirmAmountEnteredView,
+                                                  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
+                                                  implicit val templateRenderer: TemplateRenderer,
+                                                  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants
     with UpdatedEstimatedPayJourneyCache with FormValuesConstants {
 
   def onPageLoad(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -66,7 +67,7 @@ class IncomeUpdateCalculatorController @Inject()(
 
     (for {
       estimatedPayCompletion <- estimatedPayCompletionFuture
-      _                      <- cacheEmploymentDetailsFuture
+      _ <- cacheEmploymentDetailsFuture
     } yield {
 
       if (estimatedPayCompletion) {
@@ -86,8 +87,8 @@ class IncomeUpdateCalculatorController @Inject()(
         val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
         journeyCache(
           cacheMap = Map(
-            UpdateIncome_NameKey       -> employment.name,
-            UpdateIncome_IdKey         -> id.toString,
+            UpdateIncome_NameKey -> employment.name,
+            UpdateIncome_IdKey -> id.toString,
             UpdateIncome_IncomeTypeKey -> incomeType))
       case _ => throw new RuntimeException("Not able to find employment")
     }
@@ -116,12 +117,12 @@ class IncomeUpdateCalculatorController @Inject()(
     implicit request =>
       implicit val user = request.taiUser
 
-      journeyCacheService.mandatoryValues(
+      journeyCacheService.mandatoryJourneyValues(
         UpdateIncome_NameKey,
         UpdateIncome_IdKey,
         UpdateIncome_ConfirmedNewAmountKey,
-        UpdateIncome_IncomeTypeKey) flatMap { mandatoryValues =>
-        val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryValues.toList
+        UpdateIncome_IncomeTypeKey).getOrFail.flatMap { mandatoryJourneyValues =>
+        val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryJourneyValues.toList
 
         DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
           formWithErrors => {
@@ -158,31 +159,30 @@ class IncomeUpdateCalculatorController @Inject()(
         UpdateIncome_IdKey
       ),
       Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey, UpdateIncome_OtherInDaysKey)
-    ) map tupled { (mandatorySeq, optionalSeq) =>
-      {
+    ) map tupled { (mandatorySeq, optionalSeq) => {
 
-        val employer = IncomeSource(id = mandatorySeq(5).toInt, name = mandatorySeq(0))
-        val payPeriodFrequency = mandatorySeq(1)
-        val totalSalaryAmount = mandatorySeq(2)
-        val hasPayslipDeductions = mandatorySeq(3)
-        val hasBonusPayments = mandatorySeq(4)
+      val employer = IncomeSource(id = mandatorySeq(5).toInt, name = mandatorySeq(0))
+      val payPeriodFrequency = mandatorySeq(1)
+      val totalSalaryAmount = mandatorySeq(2)
+      val hasPayslipDeductions = mandatorySeq(3)
+      val hasBonusPayments = mandatorySeq(4)
 
-        val taxablePay = optionalSeq(0)
-        val bonusPaymentAmount = optionalSeq(1)
-        val payPeriodInDays = optionalSeq(2)
+      val taxablePay = optionalSeq(0)
+      val bonusPaymentAmount = optionalSeq(1)
+      val payPeriodInDays = optionalSeq(2)
 
-        val viewModel = CheckYourAnswersViewModel(
-          payPeriodFrequency,
-          payPeriodInDays,
-          totalSalaryAmount,
-          hasPayslipDeductions,
-          taxablePay,
-          hasBonusPayments,
-          bonusPaymentAmount,
-          employer)
+      val viewModel = CheckYourAnswersViewModel(
+        payPeriodFrequency,
+        payPeriodInDays,
+        totalSalaryAmount,
+        hasPayslipDeductions,
+        taxablePay,
+        hasBonusPayments,
+        bonusPaymentAmount,
+        employer)
 
-        Ok(checkYourAnswers(viewModel))
-      }
+      Ok(checkYourAnswers(viewModel))
+    }
     }
   }
 
@@ -192,9 +192,9 @@ class IncomeUpdateCalculatorController @Inject()(
 
     (for {
       employmentName <- EitherT(journeyCacheService.mandatoryJourneyValue(UpdateIncome_NameKey))
-      id             <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
-      income         <- EitherT.right[String](incomeService.employmentAmount(nino, id))
-      netAmount      <- EitherT.right[String](journeyCacheService.currentValue(UpdateIncome_NewAmountKey))
+      id <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
+      income <- EitherT.right[String](incomeService.employmentAmount(nino, id))
+      netAmount <- EitherT.right[String](journeyCacheService.currentValue(UpdateIncome_NewAmountKey))
     } yield {
       val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
       val employmentAmount = income.copy(newAmount = convertedNetAmount)

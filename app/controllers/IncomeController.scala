@@ -21,6 +21,7 @@ import cats.implicits._
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+import uk.gov.hmrc.tai.util.FutureOps._
 
 import javax.inject.{Inject, Singleton}
 import org.joda.time.LocalDate
@@ -99,7 +100,7 @@ class IncomeController @Inject()(
   def sameEstimatedPayInCache(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     (for {
       cachedData <- journeyCacheService
-                     .mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey)
+                     .mandatoryJourneyValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey).getOrFail
     } yield {
       val employerId = cachedData(1).toInt
       val model = SameEstimatedPayViewModel(
@@ -115,14 +116,15 @@ class IncomeController @Inject()(
   }
 
   def sameAnnualEstimatedPay(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    val cachedDataFuture = journeyCacheService.mandatoryValues(UpdateIncome_NameKey)
-    val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
+    val cachedDataFuture = journeyCacheService.mandatoryJourneyValues(UpdateIncome_NameKey).getOrFail
+
+    val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey).getOrFail
     val nino = request.taiUser.nino
 
     (for {
-      cachedData <- EitherT.right[String](cachedDataFuture)
-      id         <- EitherT(idFuture)
-      income     <- EitherT.right[String](incomeService.employmentAmount(nino, id))
+      cachedData <- cachedDataFuture
+      id         <- idFuture
+      income     <- incomeService.employmentAmount(nino, id)
     } yield {
       val model = SameEstimatedPayViewModel(
         cachedData.head,
@@ -131,10 +133,7 @@ class IncomeController @Inject()(
         income.isOccupationalPension,
         routes.IncomeSourceSummaryController.onPageLoad(id).url)
       Ok(sameEstimatedPay(model))
-    }).fold(errorPagesHandler.internalServerError(_, None), identity _)
-      .recover {
-        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-      }
+    })
   }
 
   def editRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -179,7 +178,7 @@ class IncomeController @Inject()(
     val nino = user.nino
 
     (for {
-      cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey)
+      cachedData <- journeyCacheService.mandatoryJourneyValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey).getOrFail
       id = cachedData.head.toInt
       taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
       employmentDetails    <- employmentService.employment(nino, id)
@@ -215,8 +214,7 @@ class IncomeController @Inject()(
       }
     }
     journeyCacheService
-      .mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
-      .flatMap(cache => {
+      .mandatoryJourneyValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey).getOrFail.flatMap(cache => {
 
         val incomeName :: newAmount :: incomeId :: incomeType :: Nil = cache.toList
 
@@ -327,7 +325,7 @@ class IncomeController @Inject()(
     val nino = user.nino
 
     (for {
-      cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey)
+      cachedData <- journeyCacheService.mandatoryJourneyValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey).getOrFail
       id = cachedData.head.toInt
       taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
       employmentDetails    <- employmentService.employment(nino, id)

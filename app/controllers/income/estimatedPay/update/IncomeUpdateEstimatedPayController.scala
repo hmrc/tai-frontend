@@ -63,13 +63,13 @@ class IncomeUpdateEstimatedPayController @Inject()(
 
     for {
       taxAccountSummary <- taxAccountService.taxAccountSummary(user.nino, TaxYear())
-      mandatoryValues <- journeyCacheService
+      mandatoryJourneyValues <- journeyCacheService
                           .mandatoryJourneyValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
     } yield {
-      (taxAccountSummary, mandatoryValues) match {
-        case (TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary), Right(mandatoryValues: Seq[String])) =>
+      (taxAccountSummary, mandatoryJourneyValues) match {
+        case (TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary), Right(mandatoryJourneyValues: Seq[String])) =>
           val totalEstimatedIncome = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
-          val incomeName :: incomeId :: incomeType :: Nil = mandatoryValues.toList
+          val incomeName :: incomeId :: incomeType :: Nil = mandatoryJourneyValues.toList
           Ok(
             estimatedPayLandingPage(
               incomeName,

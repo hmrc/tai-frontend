@@ -44,6 +44,7 @@ import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.tai.util.FutureOps._
 
 class AddEmploymentController @Inject()(
   auditService: AuditService,
@@ -164,12 +165,10 @@ class AddEmploymentController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          journeyCacheService.mandatoryJourneyValue(AddEmployment_NameKey).map {
-            case Right(employmentName) =>
+          journeyCacheService.mandatoryJourneyValue(AddEmployment_NameKey).getOrFail.map {
+            employmentName =>
               implicit val user: AuthedUser = request.taiUser
               BadRequest(add_employment_first_pay_form(formWithErrors, employmentName))
-            case Left(err) =>
-              InternalServerError(err)
           }
         },
         firstPayYesNo => {
@@ -297,14 +296,14 @@ class AddEmploymentController @Inject()(
         Seq(AddEmployment_TelephoneNumberKey)
       ) map tupled { (mandatoryVals, optionalVals) =>
         mandatoryVals match {
-          case Right(mandatoryValues) => {
+          case Right(mandatoryJourneyValues) => {
             val model =
               IncomeCheckYourAnswersViewModel(
                 Messages("add.missing.employment"),
-                mandatoryValues.head,
-                mandatoryValues(1),
-                mandatoryValues(2),
-                mandatoryValues(3),
+                mandatoryJourneyValues.head,
+                mandatoryJourneyValues(1),
+                mandatoryJourneyValues(2),
+                mandatoryJourneyValues(3),
                 optionalVals.head,
                 controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
                 controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,

@@ -16,6 +16,9 @@
 
 package controllers.employments
 
+import cats.data.EitherT
+import cats.implicits._
+import uk.gov.hmrc.tai.util.FutureOps._
 import com.google.inject.name.Named
 import controllers._
 import controllers.actions.ValidatePerson
@@ -130,24 +133,24 @@ class EndEmploymentController @Inject()(
   def handleEmploymentUpdateRemove: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) flatMap {
-        mandatoryValues =>
+      journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey).getOrFail.flatMap {
+        mandatoryJourneyValues =>
           UpdateRemoveEmploymentForm
-            .form(mandatoryValues(0))
+            .form(mandatoryJourneyValues(0))
             .bindFromRequest
             .fold(
               formWithErrors => {
                 Future(
                   BadRequest(
-                    update_remove_employment_decision(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
+                    update_remove_employment_decision(formWithErrors, mandatoryJourneyValues(0), mandatoryJourneyValues(1).toInt)))
               }, {
                 case Some(YesValue) =>
                   Future(
                     Redirect(controllers.employments.routes.UpdateEmploymentController
-                      .updateEmploymentDetails(mandatoryValues(1).toInt)))
+                      .updateEmploymentDetails(mandatoryJourneyValues(1).toInt)))
                 case _ =>
                   val nino = user.nino
-                  employmentService.employment(nino, mandatoryValues(1).toInt) flatMap {
+                  employmentService.employment(nino, mandatoryJourneyValues(1).toInt) flatMap {
                     case Some(employment) =>
                       val today = new LocalDate()
                       val latestPaymentDate: Option[LocalDate] = for {
@@ -159,8 +162,8 @@ class EndEmploymentController @Inject()(
                       if (latestPaymentDate.isDefined && latestPaymentDate.get
                             .isAfter(today.minusWeeks(6).minusDays(1))) {
 
-                        val errorPagecache = Map(EndEmployment_LatestPaymentDateKey -> latestPaymentDate.get.toString)
-                        journeyCacheService.cache(errorPagecache) map { _ =>
+                        val errorPageCache = Map(EndEmployment_LatestPaymentDateKey -> latestPaymentDate.get.toString)
+                        journeyCacheService.cache(errorPageCache) map { _ =>
                           auditService
                             .createAndSendAuditEvent(EndEmployment_WithinSixWeeksError, Map("nino" -> nino.nino))
                           Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
@@ -181,7 +184,7 @@ class EndEmploymentController @Inject()(
   def endEmploymentError: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService
-      .mandatoryValues(EndEmployment_LatestPaymentDateKey, EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map {
+      .mandatoryJourneyValues(EndEmployment_LatestPaymentDateKey, EndEmployment_NameKey, EndEmployment_EmploymentIdKey).getOrFail.map {
       data =>
         val date = new LocalDate(data.head)
         Ok(
@@ -192,24 +195,24 @@ class EndEmploymentController @Inject()(
 
   def irregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
+    EitherT(journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey)).map { mandatoryJourneyValues =>
       Ok(
         endEmploymentIrregularPaymentError(
           IrregularPayForm.createForm,
-          EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt)))
-    }
+          EmploymentViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1).toInt)))
+    }.getOrElse(throw new RuntimeException("Could not retrieve mandatory journey values"))
   }
 
   def handleIrregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
+      journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey).getOrFail.map { mandatoryJourneyValues =>
         IrregularPayForm.createForm.bindFromRequest.fold(
           formWithErrors => {
             BadRequest(
               endEmploymentIrregularPaymentError(
                 formWithErrors,
-                EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt)))
+                EmploymentViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1).toInt)))
           },
           formData => {
             formData.irregularPayDecision match {
@@ -309,7 +312,8 @@ class EndEmploymentController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey) map { employmentId =>
+          journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey) map {
+            case Right(employmentId) =>
             BadRequest(can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
           }
         },
@@ -391,7 +395,7 @@ class EndEmploymentController @Inject()(
   def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) flatMap {
+      journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey).getOrFail.flatMap {
         mandatoryValues =>
           val empId = mandatoryValues(1).toInt
 

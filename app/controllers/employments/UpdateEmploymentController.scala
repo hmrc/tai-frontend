@@ -189,14 +189,14 @@ class UpdateEmploymentController @Inject()(
         {
 
           mandatorySeq match {
-            case Right(mandatoryValues) =>
+            case Right(mandatoryJourneyValues) =>
               Ok(
                 updateEmploymentCheckYourAnswers(
                   UpdateEmploymentCheckYourAnswersViewModel(
-                    mandatoryValues.head.toInt,
-                    mandatoryValues(1),
-                    mandatoryValues(2),
-                    mandatoryValues(3),
+                    mandatoryJourneyValues.head.toInt,
+                    mandatoryJourneyValues(1),
+                    mandatoryJourneyValues(2),
+                    mandatoryJourneyValues(3),
                     optionalSeq.head)))
             case Left(_) => Redirect(taxAccountSummaryRedirect)
           }
