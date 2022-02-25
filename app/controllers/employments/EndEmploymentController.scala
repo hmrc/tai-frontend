@@ -237,29 +237,24 @@ class EndEmploymentController @Inject()(
   def endEmploymentPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    val nino = user.nino
     journeyCacheService.collectedJourneyValues(
       Seq(EndEmployment_NameKey, EndEmployment_EmploymentIdKey),
-      Seq(EndEmployment_EndDateKey)) map tupled { (mandatorySeq, optionalSeq) =>
-      {
-        mandatorySeq match {
-          case Right(mandatorySequence) => {
-            optionalSeq match {
-              case Seq(Some(date)) =>
-                Ok(
-                  endEmploymentView(
-                    EmploymentEndDateForm(mandatorySequence(0)).form.fill(new LocalDate(date)),
-                    EmploymentViewModel(mandatorySequence(0), mandatorySequence(1).toInt)))
-              case _ =>
-                Ok(
-                  endEmploymentView(
-                    EmploymentEndDateForm(mandatorySequence(0)).form,
-                    EmploymentViewModel(mandatorySequence(0), mandatorySequence(1).toInt)))
-            }
-          }
-          case Left(_) => Redirect(taxAccountSummaryRedirect)
+      Seq(EndEmployment_EndDateKey)).map {
+      case Right((mandatorySequence, optionalSeq)) =>
+        optionalSeq match {
+          case Seq(Some(date)) =>
+            Ok(
+              endEmploymentView(
+                EmploymentEndDateForm(mandatorySequence.head).form.fill(new LocalDate(date)),
+                EmploymentViewModel(mandatorySequence.head, mandatorySequence(1).toInt)))
+          case _ =>
+            Ok(
+              endEmploymentView(
+                EmploymentEndDateForm(mandatorySequence.head).form,
+                EmploymentViewModel(mandatorySequence.head, mandatorySequence(1).toInt)))
         }
-      }
+      case Left(_) =>
+        Redirect(taxAccountSummaryRedirect)
     }
   }
 
@@ -347,24 +342,20 @@ class EndEmploymentController @Inject()(
 
       journeyCacheService.collectedJourneyValues(
         Seq(EndEmployment_EmploymentIdKey, EndEmployment_EndDateKey, EndEmployment_TelephoneQuestionKey),
-        Seq(EndEmployment_TelephoneNumberKey)) map tupled { (mandatorySeq, optionalSeq) =>
-        mandatorySeq match {
-          case Right(mandatoryValues) => {
-
-            val model = IncomeCheckYourAnswersViewModel(
-              mandatoryValues(0).toInt,
-              Messages("tai.endEmployment.preHeadingText"),
-              mandatoryValues(1),
-              mandatoryValues(2),
-              optionalSeq(0),
-              controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
-              controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
-              controllers.employments.routes.EndEmploymentController.cancel(mandatoryValues.head.toInt).url
-            )
-            Ok(addIncomeCheckYourAnswers(model))
-          }
-          case Left(_) => Redirect(taxAccountSummaryRedirect)
-        }
+        Seq(EndEmployment_TelephoneNumberKey)).map {
+        case Right((mandatoryValues, optionalSeq)) =>
+          val model = IncomeCheckYourAnswersViewModel(
+            employmentId = mandatoryValues.head.toInt,
+            preHeading = Messages("tai.endEmployment.preHeadingText"),
+            incomeSourceEnd = mandatoryValues(1),
+            contactableByPhone = mandatoryValues(2),
+            phoneNumber = optionalSeq.head,
+            backLinkUrl = controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
+            submissionUrl = controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
+            cancelUrl = controllers.employments.routes.EndEmploymentController.cancel(mandatoryValues.head.toInt).url
+          )
+          Ok(addIncomeCheckYourAnswers(model))
+        case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
   }
 
@@ -373,14 +364,14 @@ class EndEmploymentController @Inject()(
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
       for {
-        (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedValues(
+        (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedJourneyValues(
                                                   Seq(
                                                     EndEmployment_EmploymentIdKey,
                                                     EndEmployment_EndDateKey,
                                                     EndEmployment_TelephoneQuestionKey),
-                                                  Seq(EndEmployment_TelephoneNumberKey))
-        model = EndEmployment(LocalDate.parse(mandatoryCacheSeq(1)), mandatoryCacheSeq(2), optionalCacheSeq(0))
-        _ <- employmentService.endEmployment(nino, mandatoryCacheSeq(0).toInt, model)
+                                                  Seq(EndEmployment_TelephoneNumberKey)).getOrFail
+        model = EndEmployment(LocalDate.parse(mandatoryCacheSeq(1)), mandatoryCacheSeq(2), optionalCacheSeq.head)
+        _ <- employmentService.endEmployment(nino, mandatoryCacheSeq.head.toInt, model)
         _ <- successfulJourneyCacheService.cache(
               Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-${mandatoryCacheSeq.head}" -> "true"))
         _ <- journeyCacheService.flush

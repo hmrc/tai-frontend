@@ -97,14 +97,12 @@ class UpdatePensionProviderController @Inject()(
 
     journeyCacheService.collectedJourneyValues(
       Seq(UpdatePensionProvider_IdKey, UpdatePensionProvider_NameKey),
-      Seq(UpdatePensionProvider_ReceivePensionQuestionKey)) map tupled { (mandatoryVal, optionalValues) =>
-      mandatoryVal match {
-        case Right(mandatoryValues) =>
-          val model = PensionProviderViewModel(mandatoryValues.head.toInt, mandatoryValues(1))
-          val form = UpdateRemovePensionForm.form.fill(optionalValues.head)
-          Ok(doYouGetThisPensionIncome(model, form))
-        case Left(_) => Redirect(taxAccountSummaryRedirect)
-      }
+      Seq(UpdatePensionProvider_ReceivePensionQuestionKey)) map {
+      case Right((mandatoryValues, optionalValues)) =>
+        val model = PensionProviderViewModel(mandatoryValues.head.toInt, mandatoryValues(1))
+        val form = UpdateRemovePensionForm.form.fill(optionalValues.head)
+        Ok(doYouGetThisPensionIncome(model, form))
+      case Left(_) => Redirect(taxAccountSummaryRedirect)
     }
   }
 
@@ -134,21 +132,17 @@ class UpdatePensionProviderController @Inject()(
   }
 
   def whatDoYouWantToTellUs: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    for {
-      (mandatoryVal, optionalValues) <- journeyCacheService.collectedJourneyValues(
-                                         Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey),
-                                         Seq(UpdatePensionProvider_DetailsKey))
-    } yield {
-      mandatoryVal match {
-        case Right(mandatoryValues) =>
-          implicit val user: AuthedUser = request.taiUser
-          Ok(
-            whatDoYouWantToTellUsView(
-              mandatoryValues.head,
-              mandatoryValues(1).toInt,
-              WhatDoYouWantToTellUsForm.form.fill(optionalValues.head.getOrElse(""))))
-        case Left(_) => Redirect(taxAccountSummaryRedirect)
-      }
+    journeyCacheService.collectedJourneyValues(
+      Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey),
+      Seq(UpdatePensionProvider_DetailsKey)).map {
+      case Right((mandatoryValues, optionalValues)) =>
+        implicit val user: AuthedUser = request.taiUser
+        Ok(
+          whatDoYouWantToTellUsView(
+            mandatoryValues.head,
+            mandatoryValues(1).toInt,
+            WhatDoYouWantToTellUsForm.form.fill(optionalValues.head.getOrElse(""))))
+      case Left(_) => Redirect(taxAccountSummaryRedirect)
     }
   }
 
@@ -239,27 +233,20 @@ class UpdatePensionProviderController @Inject()(
         UpdatePensionProvider_TelephoneQuestionKey
       ),
       Seq(UpdatePensionProvider_TelephoneNumberKey)
-    ) map tupled { (mandatorySeq, optionalSeq) =>
-      {
+    ).map {
+      case Right((mandatoryValues, optionalSeq)) =>
+        implicit val user: AuthedUser = request.taiUser
+        Ok(
+          updatePensionCheckYourAnswers(
+            UpdatePensionCheckYourAnswersViewModel(
+              mandatoryValues.head.toInt,
+              mandatoryValues(1),
+              mandatoryValues(2),
+              mandatoryValues(3),
+              mandatoryValues(4),
+              optionalSeq.head)))
 
-        mandatorySeq match {
-
-          case Right(mandatoryValues) =>
-            implicit val user: AuthedUser = request.taiUser
-
-            Ok(
-              updatePensionCheckYourAnswers(
-                UpdatePensionCheckYourAnswersViewModel(
-                  mandatoryValues.head.toInt,
-                  mandatoryValues(1),
-                  mandatoryValues(2),
-                  mandatoryValues(3),
-                  mandatoryValues(4),
-                  optionalSeq.head)))
-
-          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-        }
-      }
+      case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
@@ -267,13 +254,13 @@ class UpdatePensionProviderController @Inject()(
     val nino = request.taiUser.nino
 
     for {
-      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedValues(
+      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedJourneyValues(
                                                 Seq(
                                                   UpdatePensionProvider_IdKey,
                                                   UpdatePensionProvider_DetailsKey,
                                                   UpdatePensionProvider_TelephoneQuestionKey),
                                                 Seq(UpdatePensionProvider_TelephoneNumberKey)
-                                              )
+                                              ).getOrFail
       model = IncorrectPensionProvider(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
       _ <- pensionProviderService.incorrectPensionProvider(nino, mandatoryCacheSeq.head.toInt, model)
       _ <- successfulJourneyCacheService

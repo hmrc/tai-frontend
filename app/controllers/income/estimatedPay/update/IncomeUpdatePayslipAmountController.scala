@@ -52,32 +52,27 @@ class IncomeUpdatePayslipAmountController @Inject()(
     val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
     val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TotalSalaryKey)
 
-    journeyCacheService.collectedJourneyValues(mandatoryKeys, optionalKeys) map
-      tupled { (mandatorySeqEither, optionalSeq) =>
-        {
-          mandatorySeqEither match {
-            case Right(mandatorySeq) =>
-              val viewModel = {
-                val employer = IncomeSource(mandatorySeq.head.toInt, mandatorySeq(1))
+    journeyCacheService.collectedJourneyValues(mandatoryKeys, optionalKeys).map {
+      case Right((mandatorySeq, optionalSeq)) =>
+        val viewModel = {
+          val employer = IncomeSource(mandatorySeq.head.toInt, mandatorySeq(1))
 
-                val payPeriod = optionalSeq.head
-                val payPeriodInDays = optionalSeq(1)
-                val totalSalary = optionalSeq(2)
+          val payPeriod = optionalSeq.head
+          val payPeriodInDays = optionalSeq(1)
+          val totalSalary = optionalSeq(2)
 
-                val errorMessage = "tai.payslip.error.form.totalPay.input.mandatory"
+          val errorMessage = "tai.payslip.error.form.totalPay.input.mandatory"
 
-                val paySlipForm = PayslipForm.createForm(errorMessage).fill(PayslipForm(totalSalary))
+          val paySlipForm = PayslipForm.createForm(errorMessage).fill(PayslipForm(totalSalary))
 
-                PaySlipAmountViewModel(paySlipForm, payPeriod, payPeriodInDays, employer)
-              }
-
-              Ok(payslipAmount(viewModel))
-
-            case Left(_) =>
-              Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-          }
+          PaySlipAmountViewModel(paySlipForm, payPeriod, payPeriodInDays, employer)
         }
-      }
+
+        Ok(payslipAmount(viewModel))
+
+      case Left(_) =>
+        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    }
   }
 
   def handlePayslipAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -119,27 +114,21 @@ class IncomeUpdatePayslipAmountController @Inject()(
     val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
     val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TaxablePayKey)
 
-    journeyCacheService.collectedJourneyValues(mandatoryKeys, optionalKeys) map
-      tupled { (mandatorySeqEither, optionalSeq) =>
-        {
-          mandatorySeqEither match {
-            case Right(mandotorySeq) =>
-              val viewModel = {
-                val incomeSource = IncomeSource(id = mandotorySeq.head.toInt, name = mandotorySeq(1))
-                val payPeriod = optionalSeq.head
-                val payPeriodInDays = optionalSeq(1)
-                val taxablePayKey = optionalSeq(2)
+    journeyCacheService.collectedJourneyValues(mandatoryKeys, optionalKeys) map {
+      case Right((mandotorySeq, optionalSeq)) =>
+        val viewModel = {
+          val incomeSource = IncomeSource(id = mandotorySeq.head.toInt, name = mandotorySeq(1))
+          val payPeriod = optionalSeq.head
+          val payPeriodInDays = optionalSeq(1)
+          val taxablePayKey = optionalSeq(2)
 
-                val form = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(taxablePayKey))
-                TaxablePaySlipAmountViewModel(form, payPeriod, payPeriodInDays, incomeSource)
-              }
-              Ok(taxablePayslipAmount(viewModel))
-
-            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-
-          }
+          val form = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(taxablePayKey))
+          TaxablePaySlipAmountViewModel(form, payPeriod, payPeriodInDays, incomeSource)
         }
-      }
+        Ok(taxablePayslipAmount(viewModel))
+
+      case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    }
   }
 
   def handleTaxablePayslipAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

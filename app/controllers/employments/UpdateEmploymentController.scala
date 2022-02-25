@@ -22,7 +22,6 @@ import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
@@ -30,6 +29,7 @@ import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.util.FutureOps.FutureEitherStringOps
 import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
@@ -38,6 +38,7 @@ import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploy
 import views.html.CanWeContactByPhoneView
 import views.html.employments.ConfirmationView
 import views.html.employments.update.{UpdateEmploymentCheckYourAnswersView, WhatDoYouWantToTellUsView}
+
 import javax.inject.{Inject, Named}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -185,35 +186,30 @@ class UpdateEmploymentController @Inject()(
           UpdateEmployment_EmploymentDetailsKey,
           UpdateEmployment_TelephoneQuestionKey),
         Seq(UpdateEmployment_TelephoneNumberKey)
-      ) map tupled { (mandatorySeq, optionalSeq) =>
-        {
-
-          mandatorySeq match {
-            case Right(mandatoryJourneyValues) =>
-              Ok(
-                updateEmploymentCheckYourAnswers(
-                  UpdateEmploymentCheckYourAnswersViewModel(
-                    mandatoryJourneyValues.head.toInt,
-                    mandatoryJourneyValues(1),
-                    mandatoryJourneyValues(2),
-                    mandatoryJourneyValues(3),
-                    optionalSeq.head)))
-            case Left(_) => Redirect(taxAccountSummaryRedirect)
-          }
-        }
+      ).map {
+        case Right((mandatoryJourneyValues, optionalSeq)) =>
+          Ok(
+            updateEmploymentCheckYourAnswers(
+              UpdateEmploymentCheckYourAnswersViewModel(
+                mandatoryJourneyValues.head.toInt,
+                mandatoryJourneyValues(1),
+                mandatoryJourneyValues(2),
+                mandatoryJourneyValues(3),
+                optionalSeq.head)))
+        case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
   }
 
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     for {
-      (Right(mandatoryCacheSeq), optionalCacheSeq) <- journeyCacheService.collectedJourneyValues(
+      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedJourneyValues(
                                                        Seq(
                                                          UpdateEmployment_EmploymentIdKey,
                                                          UpdateEmployment_EmploymentDetailsKey,
                                                          UpdateEmployment_TelephoneQuestionKey),
                                                        Seq(UpdateEmployment_TelephoneNumberKey)
-                                                     )
+                                                     ).getOrFail
       model = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
       _ <- employmentService.incorrectEmployment(user.nino, mandatoryCacheSeq.head.toInt, model)
       _ <- successfulJourneyCacheService
