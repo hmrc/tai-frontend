@@ -57,7 +57,7 @@ class UpdatePensionProviderControllerSpec
       when(
         journeyCacheService.collectedJourneyValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(
           any()))
-        .thenReturn(Future.successful(Right(Seq(pensionId, pensionName)), Seq(Some(PensionQuestionKey))))
+        .thenReturn(Future.successful(Right(Seq(pensionId, pensionName), Seq(Some(PensionQuestionKey)))))
 
       val result = createController.doYouGetThisPension()(fakeGetRequest)
 
@@ -73,7 +73,7 @@ class UpdatePensionProviderControllerSpec
       when(
         journeyCacheService.collectedJourneyValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(
           any()))
-        .thenReturn(Future.successful(Left("Data missing from cache"), Seq(Some(PensionQuestionKey))))
+        .thenReturn(Future.successful(Left("Data missing from cache")))
 
       val result = createController.doYouGetThisPension()(fakeGetRequest)
 
@@ -140,7 +140,7 @@ class UpdatePensionProviderControllerSpec
           journeyCacheService.collectedJourneyValues(
             Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
             Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any()))
-          .thenReturn(Future.successful(Right(Seq(pensionName, pensionId)), Seq(None)))
+          .thenReturn(Future.successful(Right(Seq(pensionName, pensionId), Seq(None))))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
@@ -156,7 +156,7 @@ class UpdatePensionProviderControllerSpec
           journeyCacheService.collectedJourneyValues(
             Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
             Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any()))
-          .thenReturn(Future.successful(Right(cache), optionalCache))
+          .thenReturn(Future.successful(Right(cache, optionalCache)))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
@@ -171,7 +171,7 @@ class UpdatePensionProviderControllerSpec
           journeyCacheService.collectedJourneyValues(
             Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
             Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any()))
-          .thenReturn(Future.successful(Left("Data missing from cache"), Seq(None)))
+          .thenReturn(Future.successful(Left("Data missing from cache")))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
@@ -337,8 +337,9 @@ class UpdatePensionProviderControllerSpec
 
         when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            Right(Seq[String](pensionId, pensionName, "Yes", "some random info", "Yes")),
-            Seq[Option[String]](Some("123456789"))
+            Right(
+              Seq[String](pensionId, pensionName, "Yes", "some random info", "Yes"),
+              Seq[Option[String]](Some("123456789")))
           )
         )
 
@@ -356,11 +357,7 @@ class UpdatePensionProviderControllerSpec
         journeyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
-        Future.successful(
-          (
-            Left("An error has occurred"),
-            Seq[Option[String]](Some("123456789"))
-          ))
+        Future.successful(Left("An error has occurred"))
       )
 
       val result = createController.checkYourAnswers()(fakeGetRequest)
@@ -377,9 +374,9 @@ class UpdatePensionProviderControllerSpec
 
         val incorrectPensionProvider = IncorrectPensionProvider("some random info", "Yes", Some("123456789"))
         val empId = 1
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
+            Right(
               Seq[String](empId.toString, "some random info", "Yes"),
               Seq[Option[String]](Some("123456789"))
             ))
@@ -407,9 +404,9 @@ class UpdatePensionProviderControllerSpec
 
         val incorrectPensionProvider = IncorrectPensionProvider("some random info", "No", None)
         val empId = 1
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
+            Right(
               Seq[String](empId.toString, "some random info", "No"),
               Seq[Option[String]](None)
             ))

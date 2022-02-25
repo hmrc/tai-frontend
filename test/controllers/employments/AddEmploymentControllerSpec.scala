@@ -119,7 +119,7 @@ class AddEmploymentControllerSpec
         val sut = createSUT
         val employmentName = "TEST"
         when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq(employmentName)), Seq(None)))
+          .thenReturn(Future.successful(Right(Seq(employmentName), Seq(None))))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -133,7 +133,7 @@ class AddEmploymentControllerSpec
         val sut = createSUT
         val employmentName = "TEST"
         when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq(employmentName)), Seq(Some("2017-12-12"))))
+          .thenReturn(Future.successful(Right(Seq(employmentName), Seq(Some("2017-12-12")))))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -147,7 +147,7 @@ class AddEmploymentControllerSpec
 
         val sut = createSUT
         when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Mandatory value missing from cache"), Seq(Some("2017-12-12"))))
+          .thenReturn(Future.successful(Left("Mandatory value missing from cache")))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -272,10 +272,10 @@ class AddEmploymentControllerSpec
         val sut = createSUT
         val employmentName = "TEST"
         when(
-          addEmploymentJourneyCacheService.collectedValues(
+          addEmploymentJourneyCacheService.collectedJourneyValues(
             Matchers.eq(Seq(AddEmployment_NameKey)),
             Matchers.eq(Seq(AddEmployment_RecewivedFirstPayKey)))(any()))
-          .thenReturn(Future.successful((Seq(employmentName), Seq(None))))
+          .thenReturn(Future.successful(Right(Seq(employmentName), Seq(None))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -290,10 +290,10 @@ class AddEmploymentControllerSpec
         val sut = createSUT
         val employmentName = "TEST"
         when(
-          addEmploymentJourneyCacheService.collectedValues(
+          addEmploymentJourneyCacheService.collectedJourneyValues(
             Matchers.eq(Seq(AddEmployment_NameKey)),
             Matchers.eq(Seq(AddEmployment_RecewivedFirstPayKey)))(any()))
-          .thenReturn(Future.successful((Seq(employmentName), Seq(Some(YesValue)))))
+          .thenReturn(Future.successful(Right(Seq(employmentName), Seq(Some(YesValue)))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -682,8 +682,8 @@ class AddEmploymentControllerSpec
         val sut = createSUT
         when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
-              Right(Seq[String]("emp-name", "2017-06-15", "emp-ref-1234", "Yes")),
+            Right(
+              (Seq[String]("emp-name", "2017-06-15", "emp-ref-1234", "Yes")),
               Seq[Option[String]](Some("123456789"))
             ))
         )
@@ -703,11 +703,7 @@ class AddEmploymentControllerSpec
         addEmploymentJourneyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
-        Future.successful(
-          (
-            Left("An error has occurred"),
-            Seq[Option[String]](Some("123456789"))
-          ))
+        Future.successful((Left("An error has occurred")))
       )
 
       val result = sut.addEmploymentCheckYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -725,11 +721,12 @@ class AddEmploymentControllerSpec
         val expectedModel =
           AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "Yes", Some("123456789"))
 
-        when(addEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            Seq("empName", "2017-04-04", "I do not know", "Yes"),
-            Seq(Some("123456789"))
-          ))
+            Right(
+              Seq("empName", "2017-04-04", "I do not know", "Yes"),
+              Seq(Some("123456789"))
+            )))
 
         when(employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any()))
           .thenReturn(Future.successful("envelope-123"))
@@ -751,10 +748,8 @@ class AddEmploymentControllerSpec
         val expectedModel = AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "No", None)
         val expectedSuccessfulJourneyCache = Map("addEmployment" -> "true")
 
-        when(addEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
-          Future.successful(
-            (Seq("empName", "2017-04-04", "I do not know", "No"), Seq(None))
-          ))
+        when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any()))
+          .thenReturn(Future.successful(Right(Seq("empName", "2017-04-04", "I do not know", "No"), Seq(None))))
 
         when(employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any()))
           .thenReturn(Future.successful("envelope-123"))

@@ -143,11 +143,12 @@ class IncomeController @Inject()(
   def editRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService.collectedValues(
-      Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
-      Seq(UpdateIncome_DateKey)) flatMap tupled { (mandatorySeq, optionalSeq) =>
-      {
-
+    journeyCacheService
+      .collectedJourneyValues(
+        Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
+        Seq(UpdateIncome_DateKey))
+      .getOrFail flatMap {
+      case (mandatorySeq, optionalSeq) =>
         val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
           case Success(optDate) => optDate
           case Failure(exception) =>
@@ -167,7 +168,6 @@ class IncomeController @Inject()(
             },
             (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome())
           )
-      }
     }
   }
 
@@ -305,10 +305,12 @@ class IncomeController @Inject()(
   def editPensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService.collectedValues(
-      Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
-      Seq(UpdateIncome_DateKey)) flatMap tupled { (mandatorySeq, optionalSeq) =>
-      {
+    journeyCacheService
+      .collectedJourneyValues(
+        Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
+        Seq(UpdateIncome_DateKey))
+      .getOrFail flatMap {
+      case (mandatorySeq, optionalSeq) =>
         val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
           case Success(optDate) => optDate
           case Failure(exception) =>
@@ -325,7 +327,6 @@ class IncomeController @Inject()(
             },
             (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome())
           )
-      }
     }
 
   }

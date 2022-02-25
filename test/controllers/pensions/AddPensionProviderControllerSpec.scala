@@ -156,7 +156,7 @@ class AddPensionProviderControllerSpec
         when(
           addPensionProviderJourneyCacheService.collectedJourneyValues(
             Matchers.eq(mandatorySeq),
-            Matchers.eq(optionalSeq))(any())).thenReturn(Future.successful(Right(Seq(pensionProviderName)), Seq(None)))
+            Matchers.eq(optionalSeq))(any())).thenReturn(Future.successful(Right(Seq(pensionProviderName), Seq(None))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -175,7 +175,7 @@ class AddPensionProviderControllerSpec
         when(
           addPensionProviderJourneyCacheService
             .collectedJourneyValues(Matchers.eq(mandatorySeq), Matchers.eq(optionalSeq))(any()))
-          .thenReturn(Future.successful(Right(Seq(pensionProviderName)), Seq(Some(NoValue))))
+          .thenReturn(Future.successful(Right(Seq(pensionProviderName), Seq(Some(NoValue)))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -195,7 +195,7 @@ class AddPensionProviderControllerSpec
         when(
           addPensionProviderJourneyCacheService
             .collectedJourneyValues(Matchers.eq(mandatorySeq), Matchers.eq(optionalSeq))(any()))
-          .thenReturn(Future.successful(Right(Seq(pensionProviderName)), Seq(Some(YesValue))))
+          .thenReturn(Future.successful(Right(Seq(pensionProviderName), Seq(Some(YesValue)))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -215,7 +215,7 @@ class AddPensionProviderControllerSpec
         when(
           addPensionProviderJourneyCacheService
             .collectedJourneyValues(Matchers.eq(mandatorySeq), Matchers.eq(optionalSeq))(any()))
-          .thenReturn(Future.successful(Left("Data missing from the cache"), Seq(Some(YesValue))))
+          .thenReturn(Future.successful(Left("Data missing from the cache")))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -320,7 +320,7 @@ class AddPensionProviderControllerSpec
         when(
           addPensionProviderJourneyCacheService
             .collectedJourneyValues(Matchers.eq(mandatorySequence), Matchers.eq(optionalSequence))(any()))
-          .thenReturn(Future.successful(Right(Seq(pensionProviderName)), Seq(None)))
+          .thenReturn(Future.successful(Right(Seq(pensionProviderName), Seq(None))))
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -340,7 +340,7 @@ class AddPensionProviderControllerSpec
         when(
           addPensionProviderJourneyCacheService
             .collectedJourneyValues(Matchers.eq(mandatorySequence), Matchers.eq(optionalSequence))(any()))
-          .thenReturn(Future.successful(Right(Seq(pensionProviderName)), Seq(Some("2037-01-18"))))
+          .thenReturn(Future.successful(Right(Seq(pensionProviderName), Seq(Some("2037-01-18")))))
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -359,7 +359,7 @@ class AddPensionProviderControllerSpec
         when(
           addPensionProviderJourneyCacheService
             .collectedJourneyValues(Matchers.eq(mandatorySequence), Matchers.eq(optionalSequence))(any()))
-          .thenReturn(Future.successful(Left("Data missing from the cache"), Seq(Some("2037-01-18"))))
+          .thenReturn(Future.successful(Left("Data missing from the cache")))
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
@@ -823,10 +823,9 @@ class AddPensionProviderControllerSpec
         val sut = createSUT
         when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
-              Right(Seq[String]("a pension provider", "2017-06-15", "pension-ref-1234", "Yes")),
-              Seq[Option[String]](Some("123456789"))
-            ))
+            (Right(
+              Seq[String]("a pension provider", "2017-06-15", "pension-ref-1234", "Yes"),
+              Seq[Option[String]](Some("123456789")))))
         )
 
         val result = sut.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -844,11 +843,7 @@ class AddPensionProviderControllerSpec
         addPensionProviderJourneyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
-        Future.successful(
-          (
-            Left("An error has occurred"),
-            Seq[Option[String]](Some("123456789"))
-          ))
+        Future.successful(Left("An error has occurred"))
       )
 
       val result = sut.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -862,8 +857,8 @@ class AddPensionProviderControllerSpec
         val mockedJCExceptionMsg =
           "The mandatory value under key <some key> was not found in the journey cache for add-pension-provider   BBBB"
         val sut = createSUT
-        when(addPensionProviderJourneyCacheService.collectedValues(any(), any())(any())).thenThrow(
-          new RuntimeException(mockedJCExceptionMsg)
+        when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+          Future.failed(new RuntimeException(mockedJCExceptionMsg))
         )
 
         val result = sut.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -885,11 +880,12 @@ class AddPensionProviderControllerSpec
 
       when(pensionProviderService.addPensionProvider(any(), Matchers.eq(expectedModel))(any()))
         .thenReturn(Future.successful("envelope-123"))
-      when(addPensionProviderJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
+      when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
         Future.successful(
-          Seq[String]("a pension provider", "2017-06-09", "pension-ref-1234", "Yes"),
-          Seq[Option[String]](Some("123456789"))
-        ))
+          Right(
+            Seq[String]("a pension provider", "2017-06-09", "pension-ref-1234", "Yes"),
+            Seq[Option[String]](Some("123456789"))
+          )))
       when(trackSuccessJourneyCacheService.cache(any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, String]))
       when(addPensionProviderJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))

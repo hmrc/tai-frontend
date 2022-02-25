@@ -161,26 +161,28 @@ class UpdateIncomeDetailsController @Inject()(
   def checkYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService.collectedJourneyValues(
-      Seq(
-        UpdatePreviousYearsIncome_TaxYearKey,
-        UpdatePreviousYearsIncome_IncomeDetailsKey,
-        UpdatePreviousYearsIncome_TelephoneQuestionKey),
-      Seq(
-        UpdatePreviousYearsIncome_TelephoneNumberKey
+    journeyCacheService
+      .collectedJourneyValues(
+        Seq(
+          UpdatePreviousYearsIncome_TaxYearKey,
+          UpdatePreviousYearsIncome_IncomeDetailsKey,
+          UpdatePreviousYearsIncome_TelephoneQuestionKey),
+        Seq(
+          UpdatePreviousYearsIncome_TelephoneNumberKey
+        )
       )
-    ).map {
-      case Right((mandatoryValues, optionalSeq)) =>
-        Ok(
-          CheckYourAnswers(
-            UpdateIncomeDetailsCheckYourAnswersViewModel(
-              TaxYear(mandatoryValues.head.toInt),
-              mandatoryValues(1),
-              mandatoryValues(2),
-              optionalSeq.head)))
+      .map {
+        case Right((mandatoryValues, optionalSeq)) =>
+          Ok(
+            CheckYourAnswers(
+              UpdateIncomeDetailsCheckYourAnswersViewModel(
+                TaxYear(mandatoryValues.head.toInt),
+                mandatoryValues(1),
+                mandatoryValues(2),
+                optionalSeq.head)))
 
-      case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-    }
+        case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      }
   }
 
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -188,13 +190,15 @@ class UpdateIncomeDetailsController @Inject()(
     val nino = user.nino
 
     for {
-      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedJourneyValues(
-                                                Seq(
-                                                  UpdatePreviousYearsIncome_TaxYearKey,
-                                                  UpdatePreviousYearsIncome_IncomeDetailsKey,
-                                                  UpdatePreviousYearsIncome_TelephoneQuestionKey),
-                                                Seq(UpdatePreviousYearsIncome_TelephoneNumberKey)
-                                              ).getOrFail
+      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService
+                                                .collectedJourneyValues(
+                                                  Seq(
+                                                    UpdatePreviousYearsIncome_TaxYearKey,
+                                                    UpdatePreviousYearsIncome_IncomeDetailsKey,
+                                                    UpdatePreviousYearsIncome_TelephoneQuestionKey),
+                                                  Seq(UpdatePreviousYearsIncome_TelephoneNumberKey)
+                                                )
+                                                .getOrFail
       model = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
       _ <- previousYearsIncomeService.incorrectIncome(nino, mandatoryCacheSeq.head.toInt, model)
       _ <- trackingJourneyCacheService.cache(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey, true.toString)

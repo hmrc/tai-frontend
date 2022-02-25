@@ -152,19 +152,20 @@ class IncomeUpdateCalculatorController @Inject()(
   def checkYourAnswersPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    journeyCacheService.collectedValues(
-      Seq(
-        UpdateIncome_NameKey,
-        UpdateIncome_PayPeriodKey,
-        UpdateIncome_TotalSalaryKey,
-        UpdateIncome_PayslipDeductionsKey,
-        UpdateIncome_BonusPaymentsKey,
-        UpdateIncome_IdKey
-      ),
-      Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey, UpdateIncome_OtherInDaysKey)
-    ) map tupled { (mandatorySeq, optionalSeq) =>
-      {
-
+    journeyCacheService
+      .collectedJourneyValues(
+        Seq(
+          UpdateIncome_NameKey,
+          UpdateIncome_PayPeriodKey,
+          UpdateIncome_TotalSalaryKey,
+          UpdateIncome_PayslipDeductionsKey,
+          UpdateIncome_BonusPaymentsKey,
+          UpdateIncome_IdKey
+        ),
+        Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey, UpdateIncome_OtherInDaysKey)
+      )
+      .getOrFail map {
+      case (mandatorySeq, optionalSeq) =>
         val employer = IncomeSource(id = mandatorySeq(5).toInt, name = mandatorySeq(0))
         val payPeriodFrequency = mandatorySeq(1)
         val totalSalaryAmount = mandatorySeq(2)
@@ -186,7 +187,6 @@ class IncomeUpdateCalculatorController @Inject()(
           employer)
 
         Ok(checkYourAnswers(viewModel))
-      }
     }
   }
 

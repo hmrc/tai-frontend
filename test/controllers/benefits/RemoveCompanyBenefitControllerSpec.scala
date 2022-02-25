@@ -165,12 +165,12 @@ class RemoveCompanyBenefitControllerSpec
       "the request has an authorised session with employment name and benefit name" in {
         val SUT = createSUT
 
-        when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
+            (Right(
               Seq(employmentName, benefitName, referer),
               Seq[Option[String]](None)
-            ))
+            )))
         )
 
         val result = SUT.totalValueOfBenefit()(fakeRequest)
@@ -186,12 +186,12 @@ class RemoveCompanyBenefitControllerSpec
 
       val valueOfBenefit = Some("9876543")
 
-      when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
+      when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
         Future.successful(
-          (
+          (Right(
             Seq(employmentName, benefitName, referer),
             Seq[Option[String]](valueOfBenefit)
-          ))
+          )))
       )
 
       implicit val request: FakeRequest[AnyContent] = fakeRequest
@@ -470,8 +470,8 @@ class RemoveCompanyBenefitControllerSpec
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
         Future.successful(
-          (
-            Right(Seq[String]("AwesomeType", "TestCompany", BeforeTaxYearEnd, "Yes", "Url")),
+          Right(
+            (Seq[String]("AwesomeType", "TestCompany", BeforeTaxYearEnd, "Yes", "Url")),
             Seq[Option[String]](Some("10000"), Some("123456789"))
           ))
       )
@@ -500,13 +500,8 @@ class RemoveCompanyBenefitControllerSpec
       when(
         removeCompanyBenefitJourneyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
-          any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
-        Future.successful(
-          (
-            Left("An error has occurred"),
-            Seq[Option[String]](Some("123456789"))
-          ))
-      )
+          any(classOf[scala.collection.immutable.List[String]]))(any()))
+        .thenReturn(Future.successful(Left("An error has occurred")))
 
       val result = sut.checkYourAnswers()(fakeRequest)
       status(result) mustBe SEE_OTHER
@@ -525,9 +520,9 @@ class RemoveCompanyBenefitControllerSpec
         val endedCompanyBenefit =
           EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
 
-        when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
+            Right(
               Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "Yes"),
               Seq[Option[String]](Some("1000000"), Some("0123456789"))
             ))
@@ -556,9 +551,9 @@ class RemoveCompanyBenefitControllerSpec
         val endedCompanyBenefit =
           EndedCompanyBenefit("Accommodation", "Before 6th April", None, "No", None)
 
-        when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
+            Right(
               Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "No"),
               Seq[Option[String]](None, None)
             ))
@@ -586,9 +581,9 @@ class RemoveCompanyBenefitControllerSpec
         val employmentId: String = "1234"
         val endedCompanyBenefit = EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "No", None)
 
-        when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
+            Right(
               Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "No"),
               Seq[Option[String]](Some("1000000"), None)
             ))
@@ -617,9 +612,9 @@ class RemoveCompanyBenefitControllerSpec
         val endedCompanyBenefit =
           EndedCompanyBenefit("Accommodation", "Before 6th April", None, "Yes", Some("0123456789"))
 
-        when(removeCompanyBenefitJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
+            Right(
               Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "Yes"),
               Seq[Option[String]](None, Some("0123456789"))
             ))

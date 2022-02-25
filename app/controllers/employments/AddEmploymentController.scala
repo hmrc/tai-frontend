@@ -150,11 +150,13 @@ class AddEmploymentController @Inject()(
   }
 
   def receivedFirstPay(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    journeyCacheService.collectedJourneyValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_RecewivedFirstPayKey))
+    journeyCacheService
+      .collectedJourneyValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_RecewivedFirstPayKey))
       .getOrFail
-      .map { case (mandSeq, optSeq) =>
-        implicit val user: AuthedUser = request.taiUser
-        Ok(add_employment_first_pay_form(AddEmploymentFirstPayForm.form.fill(optSeq.head), mandSeq.head))
+      .map {
+        case (mandSeq, optSeq) =>
+          implicit val user: AuthedUser = request.taiUser
+          Ok(add_employment_first_pay_form(AddEmploymentFirstPayForm.form.fill(optSeq.head), mandSeq.head))
       }
   }
 
@@ -284,45 +286,49 @@ class AddEmploymentController @Inject()(
 
   def addEmploymentCheckYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      journeyCacheService.collectedJourneyValues(
-        Seq(
-          AddEmployment_NameKey,
-          AddEmployment_StartDateKey,
-          AddEmployment_PayrollNumberKey,
-          AddEmployment_TelephoneQuestionKey),
-        Seq(AddEmployment_TelephoneNumberKey)
-      ).map {
-        case Right((mandatoryJourneyValues, optionalVals)) =>
-          val model =
-            IncomeCheckYourAnswersViewModel(
-              Messages("add.missing.employment"),
-              mandatoryJourneyValues.head,
-              mandatoryJourneyValues(1),
-              mandatoryJourneyValues(2),
-              mandatoryJourneyValues(3),
-              optionalVals.head,
-              controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
-              controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,
-              controllers.employments.routes.AddEmploymentController.cancel().url
-            )
-          implicit val user: AuthedUser = request.taiUser
-          Ok(addIncomeCheckYourAnswers(model))
-        case Left(_) =>
-          Redirect(taxAccountSummaryRedirect)
-      }
+      journeyCacheService
+        .collectedJourneyValues(
+          Seq(
+            AddEmployment_NameKey,
+            AddEmployment_StartDateKey,
+            AddEmployment_PayrollNumberKey,
+            AddEmployment_TelephoneQuestionKey),
+          Seq(AddEmployment_TelephoneNumberKey)
+        )
+        .map {
+          case Right((mandatoryJourneyValues, optionalVals)) =>
+            val model =
+              IncomeCheckYourAnswersViewModel(
+                Messages("add.missing.employment"),
+                mandatoryJourneyValues.head,
+                mandatoryJourneyValues(1),
+                mandatoryJourneyValues(2),
+                mandatoryJourneyValues(3),
+                optionalVals.head,
+                controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
+                controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,
+                controllers.employments.routes.AddEmploymentController.cancel().url
+              )
+            implicit val user: AuthedUser = request.taiUser
+            Ok(addIncomeCheckYourAnswers(model))
+          case Left(_) =>
+            Redirect(taxAccountSummaryRedirect)
+        }
   }
 
   def submitYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     for {
-      (mandatoryVals, optionalVals) <- journeyCacheService.collectedJourneyValues(
-                                        Seq(
-                                          AddEmployment_NameKey,
-                                          AddEmployment_StartDateKey,
-                                          AddEmployment_PayrollNumberKey,
-                                          AddEmployment_TelephoneQuestionKey),
-                                        Seq(AddEmployment_TelephoneNumberKey)
-                                      ).getOrFail
+      (mandatoryVals, optionalVals) <- journeyCacheService
+                                        .collectedJourneyValues(
+                                          Seq(
+                                            AddEmployment_NameKey,
+                                            AddEmployment_StartDateKey,
+                                            AddEmployment_PayrollNumberKey,
+                                            AddEmployment_TelephoneQuestionKey),
+                                          Seq(AddEmployment_TelephoneNumberKey)
+                                        )
+                                        .getOrFail
       model = AddEmployment(
         mandatoryVals.head,
         LocalDate.parse(mandatoryVals(1)),

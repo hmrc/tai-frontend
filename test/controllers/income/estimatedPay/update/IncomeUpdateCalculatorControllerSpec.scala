@@ -156,8 +156,8 @@ class IncomeUpdateCalculatorControllerSpec
     object DuplicateSubmissionWarningHarness {
       sealed class DuplicateSubmissionWarningHarness() {
         when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
-          .thenReturn(
-            Future.successful(Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))))
+          .thenReturn(Future.successful(
+            Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))))
 
         def duplicateSubmissionWarning(): Future[Result] =
           new TestIncomeUpdateCalculatorController()
@@ -183,8 +183,8 @@ class IncomeUpdateCalculatorControllerSpec
     object SubmitDuplicateSubmissionWarningHarness {
       sealed class SubmitDuplicateSubmissionWarningHarness() {
         when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
-          .thenReturn(
-            Future.successful(Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))))
+          .thenReturn(Future.successful(
+            Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))))
 
         def submitDuplicateSubmissionWarning(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateCalculatorController()
@@ -233,12 +233,11 @@ class IncomeUpdateCalculatorControllerSpec
         val payPeriodInDays = "3"
         val employerId = "1"
 
-        when(journeyCacheService.collectedValues(any(), any())(any()))
-          .thenReturn(
-            Future.successful(
-              (
-                Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
-                Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays)))))
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+          .thenReturn(Future.successful(Right(
+            Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
+            Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
+          )))
 
         def checkYourAnswersPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateCalculatorController()

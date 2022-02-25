@@ -137,31 +137,32 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
   }
 
-  "mandatoryJourneyValues method (collection retrieval)" must {
-
-    "return a sequence of all retrieved values" in {
-      val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
-        .thenReturn(Future.successful(testCache))
-      Await.result(sut.mandatoryJourneyValues("key1", "key2"), 5 seconds) mustBe Seq("val1", "val2")
-    }
-
-    "throw a runtime exception if one or more of the requested values is not found" in {
-      val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
-        .thenReturn(Future.successful(testCache))
-      val thrown = the[RuntimeException] thrownBy Await.result(sut.mandatoryJourneyValues("key1", "doesntexist"), 5 seconds)
-      thrown.getMessage mustBe "The mandatory value under key 'doesntexist' was not found in the journey cache for 'fakeJourneyName'"
-    }
-
-    "throw a runtime exception if one or more of the requested values is the empty string" in {
-      val sut = createSut
-      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
-        .thenReturn(Future.successful(testCache))
-      val thrown = the[RuntimeException] thrownBy Await.result(sut.mandatoryJourneyValues("key1", "key3"), 5 seconds)
-      thrown.getMessage mustBe "The mandatory value under key 'key3' was not found in the journey cache for 'fakeJourneyName'"
-    }
-  }
+//  "mandatoryJourneyValues method (collection retrieval)" must {
+//
+//    "return a sequence of all retrieved values" in {
+//      val sut = createSut
+//      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+//        .thenReturn(Future.successful(testCache))
+//      Await.result(sut.mandatoryJourneyValues("key1", "key2"), 5 seconds) mustBe Seq("val1", "val2")
+//    }
+//
+//    "throw a runtime exception if one or more of the requested values is not found" in {
+//      val sut = createSut
+//      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+//        .thenReturn(Future.successful(testCache))
+//      val thrown = the[RuntimeException] thrownBy Await
+//        .result(sut.mandatoryJourneyValues("key1", "doesntexist"), 5 seconds)
+//      thrown.getMessage mustBe "The mandatory value under key 'doesntexist' was not found in the journey cache for 'fakeJourneyName'"
+//    }
+//
+//    "throw a runtime exception if one or more of the requested values is the empty string" in {
+//      val sut = createSut
+//      when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
+//        .thenReturn(Future.successful(testCache))
+//      val thrown = the[RuntimeException] thrownBy Await.result(sut.mandatoryJourneyValues("key1", "key3"), 5 seconds)
+//      thrown.getMessage mustBe "The mandatory value under key 'key3' was not found in the journey cache for 'fakeJourneyName'"
+//    }
+//  }
 
   "Mandatory Journey value" must {
 
@@ -224,24 +225,24 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
   }
 
-  "collectedValues method" must {
+  "collectedJourneyValues method" must {
     "return a sequence of all retrieved mandatory values" in {
       val sut = createSut
       when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
         .thenReturn(Future.successful(testCache))
-      Await.result(sut.collectedValues(Seq("key1", "key2"), Seq("key4", "key9")), 5 seconds) mustBe Tuple2(
+      Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key9")), 5 seconds) mustBe Right(
         Seq("val1", "val2"),
         Seq(Some("val3"), None))
     }
 
-    "throw a runtime exception if one or more of the mandatory values is not found" in {
+    "return left if one or more of the mandatory values is not found" in {
       val sut = createSut
       when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
         .thenReturn(Future.successful(testCache))
 
-      val thrown = the[RuntimeException] thrownBy Await
-        .result(sut.collectedValues(Seq("key1", "key9"), Seq("key4", "key9")), 5 seconds)
-      thrown.getMessage mustBe "The mandatory value under key 'key9' was not found in the journey cache for 'fakeJourneyName'"
+      val message = Await
+        .result(sut.collectedJourneyValues(Seq("key1", "key9"), Seq("key4", "key9")), 5 seconds)
+      message mustBe Left("Mandatory values missing from cache")
     }
 
     "throw a runtime exception if one or more of the mandatory values is an empty string" in {
@@ -249,9 +250,9 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
         .thenReturn(Future.successful(testCache))
 
-      val thrown = the[RuntimeException] thrownBy Await
-        .result(sut.collectedValues(Seq("key1", "key3"), Seq("key4", "key9")), 5 seconds)
-      thrown.getMessage mustBe "The mandatory value under key 'key3' was not found in the journey cache for 'fakeJourneyName'"
+      val message = Await
+        .result(sut.collectedJourneyValues(Seq("key1", "key3"), Seq("key4", "key9")), 5 seconds)
+      message mustBe Left("Mandatory values missing from cache")
     }
 
     "return a none when an empty string is found within one of the optional values" in {
@@ -259,7 +260,7 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
         .thenReturn(Future.successful(testCache))
 
-      Await.result(sut.collectedValues(Seq("key1", "key2"), Seq("key4", "key3")), 5 seconds) mustBe Tuple2(
+      Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key3")), 5 seconds) mustBe Right(
         Seq("val1", "val2"),
         Seq(Some("val3"), None))
     }
@@ -272,7 +273,7 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
         .thenReturn(Future.successful(testCache))
       Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key9")), 5 seconds) mustBe
-        Tuple2(Right(Seq("val1", "val2")), Seq(Some("val3"), None))
+        Right(Seq("val1", "val2"), Seq(Some("val3"), None))
     }
 
     "return an error message if one or more of the mandatory values are not found" in {
@@ -281,7 +282,7 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         .thenReturn(Future.successful(testCache))
 
       Await.result(sut.collectedJourneyValues(Seq("key1", "key9"), Seq("key4", "key9")), 5 seconds) mustBe
-        Tuple2(Left("Mandatory values missing from cache"), Seq(Some("val3"), None))
+        Left("Mandatory values missing from cache")
     }
 
     "return an error message if one or more of the mandatory values is an empty string" in {
@@ -290,7 +291,7 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         .thenReturn(Future.successful(testCache))
 
       Await.result(sut.collectedJourneyValues(Seq("key1", "key3"), Seq("key4", "key9")), 5 seconds) mustBe
-        Tuple2(Left("Mandatory values missing from cache"), Seq(Some("val3"), None))
+        Left("Mandatory values missing from cache")
     }
 
     "return a none when an empty string is found within one of the optional values" in {
@@ -299,7 +300,7 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         .thenReturn(Future.successful(testCache))
 
       Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key3")), 5 seconds) mustBe
-        Tuple2(Right(Seq("val1", "val2")), Seq(Some("val3"), None))
+        Right(Seq("val1", "val2"), Seq(Some("val3"), None))
     }
 
   }

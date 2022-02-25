@@ -271,11 +271,7 @@ class UpdateIncomeDetailsControllerSpec
     "display check your answers containing populated values from the journey cache" in {
       val SUT = createSUT
       when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
-        Future.successful(
-          (
-            Right(Seq[String]("2016", "whatYouToldUs", "Yes")),
-            Seq[Option[String]](Some("123456789"))
-          ))
+        Future.successful((Right(Seq[String]("2016", "whatYouToldUs", "Yes"), Seq[Option[String]](Some("123456789")))))
       )
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -292,11 +288,7 @@ class UpdateIncomeDetailsControllerSpec
         journeyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
-        Future.successful(
-          (
-            Left("An error has occurred"),
-            Seq[Option[String]](Some("123456789"))
-          ))
+        Future.successful(Left("An error has occurred"))
       )
 
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -313,9 +305,9 @@ class UpdateIncomeDetailsControllerSpec
 
         val sut = createSUT
         val incorrectIncome = IncorrectIncome("whatYouToldUs", "Yes", Some("123456789"))
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
+            Right(
               Seq[String]("1", "whatYouToldUs", "Yes"),
               Seq[Option[String]](Some("123456789"))
             ))
@@ -341,9 +333,9 @@ class UpdateIncomeDetailsControllerSpec
 
         val sut = createSUT
         val incorrectEmployment = IncorrectIncome("whatYouToldUs", "No", None)
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
+            Right(
               Seq[String]("1", "whatYouToldUs", "No"),
               Seq[Option[String]](None)
             ))

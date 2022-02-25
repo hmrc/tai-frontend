@@ -104,9 +104,10 @@ class RemoveCompanyBenefitController @Inject()(
     val mandatoryKeys = Seq(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey)
     val optionalKeys = Seq(EndCompanyBenefit_BenefitValueKey)
 
-    journeyCacheService.collectedJourneyValues(mandatoryKeys, optionalKeys).getOrFail.map { case (mandatoryJourneyValues, optionalValues) =>
-      val form = CompanyBenefitTotalValueForm.form.fill(optionalValues.head.getOrElse(""))
-      Ok(removeBenefitTotalValue(BenefitViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1)), form))
+    journeyCacheService.collectedJourneyValues(mandatoryKeys, optionalKeys).getOrFail.map {
+      case (mandatoryJourneyValues, optionalValues) =>
+        val form = CompanyBenefitTotalValueForm.form.fill(optionalValues.head.getOrElse(""))
+        Ok(removeBenefitTotalValue(BenefitViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1)), form))
     }
   }
 
@@ -184,59 +185,63 @@ class RemoveCompanyBenefitController @Inject()(
   def checkYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService.collectedJourneyValues(
-      Seq(
-        EndCompanyBenefit_EmploymentNameKey,
-        EndCompanyBenefit_BenefitNameKey,
-        EndCompanyBenefit_BenefitStopDateKey,
-        EndCompanyBenefit_TelephoneQuestionKey,
-        EndCompanyBenefit_RefererKey
-      ),
-      Seq(
-        EndCompanyBenefit_BenefitValueKey,
-        EndCompanyBenefit_TelephoneNumberKey
+    journeyCacheService
+      .collectedJourneyValues(
+        Seq(
+          EndCompanyBenefit_EmploymentNameKey,
+          EndCompanyBenefit_BenefitNameKey,
+          EndCompanyBenefit_BenefitStopDateKey,
+          EndCompanyBenefit_TelephoneQuestionKey,
+          EndCompanyBenefit_RefererKey
+        ),
+        Seq(
+          EndCompanyBenefit_BenefitValueKey,
+          EndCompanyBenefit_TelephoneNumberKey
+        )
       )
-    ).map {
-      case Left(_) =>
-        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-      case Right((mandatoryJourneyValues, optionalSeq)) =>
-        val stopDate = {
-          val startOfTaxYear = langUtils.Dates.formatDate(TaxYear().start)
+      .map {
+        case Left(_) =>
+          Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+        case Right((mandatoryJourneyValues, optionalSeq)) =>
+          val stopDate = {
+            val startOfTaxYear = langUtils.Dates.formatDate(TaxYear().start)
 
-          mandatoryJourneyValues(2) match {
-            case OnOrAfterTaxYearEnd => Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
-            case BeforeTaxYearEnd => Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
+            mandatoryJourneyValues(2) match {
+              case OnOrAfterTaxYearEnd => Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
+              case BeforeTaxYearEnd    => Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
+            }
           }
-        }
 
-        Ok(
-          removeCompanyBenefitCheckYourAnswers(
-            RemoveCompanyBenefitCheckYourAnswersViewModel(
-              mandatoryJourneyValues.head,
-              mandatoryJourneyValues(1),
-              stopDate,
-              optionalSeq.head,
-              mandatoryJourneyValues(3),
-              optionalSeq(1))))
-    }
+          Ok(
+            removeCompanyBenefitCheckYourAnswers(
+              RemoveCompanyBenefitCheckYourAnswersViewModel(
+                mandatoryJourneyValues.head,
+                mandatoryJourneyValues(1),
+                stopDate,
+                optionalSeq.head,
+                mandatoryJourneyValues(3),
+                optionalSeq(1))))
+      }
   }
 
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     for {
-      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedJourneyValues(
-        Seq(
-          EndCompanyBenefit_EmploymentIdKey,
-          EndCompanyBenefit_EmploymentNameKey,
-          EndCompanyBenefit_BenefitTypeKey,
-          EndCompanyBenefit_BenefitStopDateKey,
-          EndCompanyBenefit_TelephoneQuestionKey
-        ),
-        Seq(
-          EndCompanyBenefit_BenefitValueKey,
-          EndCompanyBenefit_TelephoneNumberKey)
-      ).getOrFail
+      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService
+                                                .collectedJourneyValues(
+                                                  Seq(
+                                                    EndCompanyBenefit_EmploymentIdKey,
+                                                    EndCompanyBenefit_EmploymentNameKey,
+                                                    EndCompanyBenefit_BenefitTypeKey,
+                                                    EndCompanyBenefit_BenefitStopDateKey,
+                                                    EndCompanyBenefit_TelephoneQuestionKey
+                                                  ),
+                                                  Seq(
+                                                    EndCompanyBenefit_BenefitValueKey,
+                                                    EndCompanyBenefit_TelephoneNumberKey)
+                                                )
+                                                .getOrFail
       model = EndedCompanyBenefit(
         mandatoryCacheSeq(2),
         mandatoryCacheSeq(3),
@@ -252,7 +257,7 @@ class RemoveCompanyBenefitController @Inject()(
   def cancel: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     for {
       mandatoryJourneyValues <- journeyCacheService.mandatoryJourneyValues(EndCompanyBenefit_RefererKey).getOrFail
-      _ <- journeyCacheService.flush
+      _                      <- journeyCacheService.flush
     } yield Redirect(mandatoryJourneyValues.head)
   }
 

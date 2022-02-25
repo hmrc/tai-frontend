@@ -179,37 +179,41 @@ class UpdateEmploymentController @Inject()(
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 
-      journeyCacheService.collectedJourneyValues(
-        Seq(
-          UpdateEmployment_EmploymentIdKey,
-          UpdateEmployment_NameKey,
-          UpdateEmployment_EmploymentDetailsKey,
-          UpdateEmployment_TelephoneQuestionKey),
-        Seq(UpdateEmployment_TelephoneNumberKey)
-      ).map {
-        case Right((mandatoryJourneyValues, optionalSeq)) =>
-          Ok(
-            updateEmploymentCheckYourAnswers(
-              UpdateEmploymentCheckYourAnswersViewModel(
-                mandatoryJourneyValues.head.toInt,
-                mandatoryJourneyValues(1),
-                mandatoryJourneyValues(2),
-                mandatoryJourneyValues(3),
-                optionalSeq.head)))
-        case Left(_) => Redirect(taxAccountSummaryRedirect)
-      }
+      journeyCacheService
+        .collectedJourneyValues(
+          Seq(
+            UpdateEmployment_EmploymentIdKey,
+            UpdateEmployment_NameKey,
+            UpdateEmployment_EmploymentDetailsKey,
+            UpdateEmployment_TelephoneQuestionKey),
+          Seq(UpdateEmployment_TelephoneNumberKey)
+        )
+        .map {
+          case Right((mandatoryJourneyValues, optionalSeq)) =>
+            Ok(
+              updateEmploymentCheckYourAnswers(
+                UpdateEmploymentCheckYourAnswersViewModel(
+                  mandatoryJourneyValues.head.toInt,
+                  mandatoryJourneyValues(1),
+                  mandatoryJourneyValues(2),
+                  mandatoryJourneyValues(3),
+                  optionalSeq.head)))
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
+        }
   }
 
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     for {
-      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedJourneyValues(
-                                                       Seq(
-                                                         UpdateEmployment_EmploymentIdKey,
-                                                         UpdateEmployment_EmploymentDetailsKey,
-                                                         UpdateEmployment_TelephoneQuestionKey),
-                                                       Seq(UpdateEmployment_TelephoneNumberKey)
-                                                     ).getOrFail
+      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService
+                                                .collectedJourneyValues(
+                                                  Seq(
+                                                    UpdateEmployment_EmploymentIdKey,
+                                                    UpdateEmployment_EmploymentDetailsKey,
+                                                    UpdateEmployment_TelephoneQuestionKey),
+                                                  Seq(UpdateEmployment_TelephoneNumberKey)
+                                                )
+                                                .getOrFail
       model = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
       _ <- employmentService.incorrectEmployment(user.nino, mandatoryCacheSeq.head.toInt, model)
       _ <- successfulJourneyCacheService
