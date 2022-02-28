@@ -161,16 +161,17 @@ class IncomeUpdateIrregularHoursController @Inject()(
 
       journeyCacheService
         .mandatoryJourneyValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey)
-        .flatMap {
-          case Right(incomeName :: newPay :: incomeId :: Nil) =>
-            taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId) flatMap {
-              case TaiSuccessResponse =>
-                updateJourneyCompletion(incomeId) flatMap { _ =>
-                  cacheAndRespond(incomeName, incomeId, newPay)
-                }
-              case _ => Future.failed(new RuntimeException(s"Not able to update estimated pay for $employmentId"))
-            }
-          case _ => Future.failed(new RuntimeException(s"Not able to update estimated pay for $employmentId"))
+        .getOrFail
+        .flatMap { cache =>
+          val incomeName :: newPay :: incomeId :: Nil = cache.toList
+          taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId) flatMap {
+            case TaiSuccessResponse =>
+              updateJourneyCompletion(incomeId) flatMap { _ =>
+                cacheAndRespond(incomeName, incomeId, newPay)
+              }
+            case _ =>
+              Future.failed(new RuntimeException(s"Not able to update estimated pay for $employmentId"))
+          }
         }
         .recover {
           case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)

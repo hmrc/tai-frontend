@@ -101,7 +101,8 @@ class IncomeUpdateCalculatorController @Inject()(
         UpdateIncome_IdKey,
         UpdateIncome_ConfirmedNewAmountKey,
         UpdateIncome_IncomeTypeKey) map {
-        case Right(incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil) =>
+        case Right(mandatoryValues) =>
+          val incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil = mandatoryValues.toList
           val vm = if (incomeType == TaiConstants.IncomeTypePension) {
             DuplicateSubmissionPensionViewModel(incomeName, previouslyUpdatedAmount.toInt)
           } else {

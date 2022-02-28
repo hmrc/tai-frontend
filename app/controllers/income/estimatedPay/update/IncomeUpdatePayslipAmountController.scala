@@ -32,7 +32,6 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{GrossPayPeriodTitle, PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
 import views.html.incomes.{PayslipAmountView, PayslipDeductionsView, TaxablePayslipAmountView}
 
-import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdatePayslipAmountController @Inject()(
