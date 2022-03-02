@@ -77,7 +77,7 @@ class IncomeSourceSummaryController @Inject()(
           )
 
           Ok(incomeSourceSummary(incomeDetailsViewModel))
-        case _ => throw new RuntimeException("Error while fetching income summary details")
+        case _ => errorPagesHandler.internalServerError("Error while fetching income summary details")
       }
     }) recover {
       case NonFatal(e) => errorPagesHandler.internalServerError("IncomeSourceSummaryController exception", Some(e))
