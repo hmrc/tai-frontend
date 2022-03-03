@@ -16,6 +16,8 @@
 
 package controllers.pensions
 
+import cats.data.EitherT
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
@@ -23,7 +25,6 @@ import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
@@ -31,12 +32,14 @@ import uk.gov.hmrc.tai.forms.pensions.{AddPensionProviderFirstPayForm, AddPensio
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, PensionProviderService}
+import uk.gov.hmrc.tai.util.FutureOps.FutureEitherStringOps
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
 import views.html.CanWeContactByPhoneView
 import views.html.pensions._
+
 import javax.inject.{Inject, Named}
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
@@ -105,16 +108,13 @@ class AddPensionProviderController @Inject()(
   def receivedFirstPay(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService
-      .collectedJourneyValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_FirstPaymentKey)) map tupled {
-      (mandatoryVals, optionalVals) =>
-        mandatoryVals match {
-          case Right(mandatoryValues) =>
-            Ok(
-              addPensionReceivedFirstPayView(
-                AddPensionProviderFirstPayForm.form.fill(optionalVals.head),
-                mandatoryValues.head))
-          case Left(_) => Redirect(taxAccountSummaryRedirect)
-        }
+      .collectedJourneyValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_FirstPaymentKey)) map {
+      case Right((mandatoryValues, optionalVals)) =>
+        Ok(
+          addPensionReceivedFirstPayView(
+            AddPensionProviderFirstPayForm.form.fill(optionalVals.head),
+            mandatoryValues.head))
+      case Left(_) => Redirect(taxAccountSummaryRedirect)
     }
   }
 
@@ -125,8 +125,11 @@ class AddPensionProviderController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          journeyCacheService.mandatoryValue(AddPensionProvider_NameKey).map { pensionProviderName =>
-            BadRequest(addPensionReceivedFirstPayView(formWithErrors, pensionProviderName))
+          journeyCacheService.mandatoryJourneyValue(AddPensionProvider_NameKey).map {
+            case Right(pensionProviderName) =>
+              BadRequest(addPensionReceivedFirstPayView(formWithErrors, pensionProviderName))
+            case Left(err) =>
+              InternalServerError(err)
           }
         },
         yesNo => {
@@ -143,35 +146,36 @@ class AddPensionProviderController @Inject()(
   }
 
   def cantAddPension(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    journeyCacheService.mandatoryValue(AddPensionProvider_NameKey) map { pensionProviderName =>
-      auditService
-        .createAndSendAuditEvent(AddPension_CantAddPensionProvider, Map("nino" -> request.taiUser.nino.toString()))
-      implicit val user: AuthedUser = request.taiUser
+    journeyCacheService.mandatoryJourneyValue(AddPensionProvider_NameKey) map {
+      case Right(pensionProviderName) =>
+        auditService
+          .createAndSendAuditEvent(AddPension_CantAddPensionProvider, Map("nino" -> request.taiUser.nino.toString()))
+        implicit val user: AuthedUser = request.taiUser
 
-      Ok(addPensionErrorView(pensionProviderName))
+        Ok(addPensionErrorView(pensionProviderName))
+      case Left(err) =>
+        InternalServerError(err)
     }
   }
 
   def addPensionProviderStartDate(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      (journeyCacheService
-        .collectedJourneyValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_StartDateKey)) map tupled {
-        (mandSeq, optionalVals) =>
-          mandSeq match {
-            case Right(mandatorySequence) =>
-              val form = optionalVals.head match {
-                case Some(userDateString) =>
-                  PensionAddDateForm(mandatorySequence.head).form.fill(new LocalDate(userDateString))
-                case _ => PensionAddDateForm(mandatorySequence.head).form
-              }
-              Ok(addPensionStartDateView(form, mandatorySequence.head))
-            case Left(_) => Redirect(taxAccountSummaryRedirect)
-
-          }
-      }).recover {
-        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-      }
+      journeyCacheService
+        .collectedJourneyValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_StartDateKey))
+        .map {
+          case Right((mandatorySequence, optionalVals)) =>
+            val form = optionalVals.head match {
+              case Some(userDateString) =>
+                PensionAddDateForm(mandatorySequence.head).form.fill(new LocalDate(userDateString))
+              case _ => PensionAddDateForm(mandatorySequence.head).form
+            }
+            Ok(addPensionStartDateView(form, mandatorySequence.head))
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
+        }
+        .recover {
+          case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+        }
   }
 
   def submitPensionProviderStartDate(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -284,45 +288,46 @@ class AddPensionProviderController @Inject()(
   def checkYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    try {
-      journeyCacheService.collectedJourneyValues(
+    journeyCacheService
+      .collectedJourneyValues(
         Seq(
           AddPensionProvider_NameKey,
           AddPensionProvider_StartDateKey,
           AddPensionProvider_PayrollNumberKey,
           AddPensionProvider_TelephoneQuestionKey),
         Seq(AddPensionProvider_TelephoneNumberKey)
-      ) map tupled { (mandatoryVals, optionalVals) =>
-        mandatoryVals match {
-          case Right(mandatoryValues) =>
-            val model = CheckYourAnswersViewModel(
-              mandatoryValues.head,
-              mandatoryValues(1),
-              mandatoryValues(2),
-              mandatoryValues(3),
-              optionalVals.head
-            )
-            Ok(addPensionCheckYourAnswersView(model))
-          case Left(_) => Redirect(taxAccountSummaryRedirect)
-        }
+      )
+      .map {
+        case Right((mandatoryValues, optionalVals)) =>
+          val model = CheckYourAnswersViewModel(
+            mandatoryValues.head,
+            mandatoryValues(1),
+            mandatoryValues(2),
+            mandatoryValues(3),
+            optionalVals.head
+          )
+          Ok(addPensionCheckYourAnswersView(model))
+        case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
-    } catch {
-      case NonFatal(e) => Future.successful(errorPagesHandler.internalServerError(e.getMessage))
-    }
+      .recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      }
   }
 
   def submitYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     for {
-      (mandatoryVals, optionalVals) <- journeyCacheService.collectedValues(
-                                        Seq(
-                                          AddPensionProvider_NameKey,
-                                          AddPensionProvider_StartDateKey,
-                                          AddPensionProvider_PayrollNumberKey,
-                                          AddPensionProvider_TelephoneQuestionKey),
-                                        Seq(AddPensionProvider_TelephoneNumberKey)
-                                      )
+      (mandatoryVals, optionalVals) <- journeyCacheService
+                                        .collectedJourneyValues(
+                                          Seq(
+                                            AddPensionProvider_NameKey,
+                                            AddPensionProvider_StartDateKey,
+                                            AddPensionProvider_PayrollNumberKey,
+                                            AddPensionProvider_TelephoneQuestionKey),
+                                          Seq(AddPensionProvider_TelephoneNumberKey)
+                                        )
+                                        .getOrFail
       model = AddPensionProvider(
         mandatoryVals.head,
         LocalDate.parse(mandatoryVals(1)),

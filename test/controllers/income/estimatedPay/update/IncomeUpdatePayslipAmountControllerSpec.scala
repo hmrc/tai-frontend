@@ -71,11 +71,9 @@ class IncomeUpdatePayslipAmountControllerSpec
       sealed class PayslipAmountPageHarness(payPeriod: Option[String], cachedAmount: Option[String]) {
 
         when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
-          .thenReturn(
-            Future.successful(
-              Right(Seq[String](employer.id.toString, employer.name)),
-              Seq[Option[String]](payPeriod, None, cachedAmount))
-          )
+          .thenReturn(Future.successful(
+            Right(Seq[String](employer.id.toString, employer.name), Seq[Option[String]](payPeriod, None, cachedAmount))
+          ))
 
         def payslipAmountPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdatePayslipAmountController()
@@ -137,7 +135,7 @@ class IncomeUpdatePayslipAmountControllerSpec
 
         when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
           .thenReturn(
-            Future.successful(Left("failed"), Seq[Option[String]](payPeriod, None, cachedAmount))
+            Future.successful(Left("failed"))
           )
 
         val result = controller.payslipAmountPage(request)
@@ -210,11 +208,9 @@ class IncomeUpdatePayslipAmountControllerSpec
         val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TaxablePayKey)
 
         when(journeyCacheService.collectedJourneyValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any()))
-          .thenReturn(
-            Future.successful(
-              Right(Seq[String](employer.id.toString, employer.name)),
-              Seq[Option[String]](payPeriod, None, cachedAmount))
-          )
+          .thenReturn(Future.successful(
+            Right(Seq[String](employer.id.toString, employer.name), Seq[Option[String]](payPeriod, None, cachedAmount))
+          ))
 
         def taxablePayslipAmountPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdatePayslipAmountController()
@@ -255,9 +251,7 @@ class IncomeUpdatePayslipAmountControllerSpec
         val controller = new TestIncomeUpdatePayslipAmountController
 
         when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
-          .thenReturn(
-            Future.successful(Left("failed"), Seq[Option[String]](payPeriod, None, cachedAmount))
-          )
+          .thenReturn(Future.successful(Left("failed")))
 
         val result = controller.taxablePayslipAmountPage(request)
 
@@ -283,8 +277,8 @@ class IncomeUpdatePayslipAmountControllerSpec
         when(journeyCacheService.cache(eqTo[Map[String, String]](Map(UpdateIncome_TaxablePayKey -> "3000")))(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(
-          (Seq[String](employer.id.toString, employer.name), Seq[Option[String]](Some(MONTHLY), None))))
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(Future.successful(
+          Right(Seq[String](employer.id.toString, employer.name), Seq[Option[String]](Some(MONTHLY), None))))
 
         def handleTaxablePayslipAmount(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdatePayslipAmountController()

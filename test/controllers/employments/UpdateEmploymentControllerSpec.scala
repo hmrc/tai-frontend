@@ -337,8 +337,8 @@ class UpdateEmploymentControllerSpec
             any(classOf[scala.collection.immutable.List[String]]),
             any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
           Future.successful(
-            (
-              Right(Seq[String]("1", "emp-name", "whatYouToldUs", "Yes")),
+            Right(
+              Seq[String]("1", "emp-name", "whatYouToldUs", "Yes"),
               Seq[Option[String]](Some("123456789"))
             ))
         )
@@ -358,13 +358,8 @@ class UpdateEmploymentControllerSpec
       when(
         journeyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
-          any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
-        Future.successful(
-          (
-            Left("An error has occurred"),
-            Seq[Option[String]](Some("123456789"))
-          ))
-      )
+          any(classOf[scala.collection.immutable.List[String]]))(any()))
+        .thenReturn(Future.successful(Left("An error has occurred")))
 
       val result = sut.updateEmploymentCheckYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
@@ -381,8 +376,8 @@ class UpdateEmploymentControllerSpec
         val empId = 1
         when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
-              Right(Seq[String](empId.toString, "whatYouToldUs", "Yes")),
+            Right(
+              Seq[String](empId.toString, "whatYouToldUs", "Yes"),
               Seq[Option[String]](Some("123456789"))
             ))
         )
@@ -407,8 +402,8 @@ class UpdateEmploymentControllerSpec
         val empId = 1
         when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (
-              Right(Seq[String](empId.toString, "whatYouToldUs", "No")),
+            Right(
+              (Seq[String](empId.toString, "whatYouToldUs", "No")),
               Seq[Option[String]](None)
             ))
         )

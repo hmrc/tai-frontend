@@ -16,13 +16,14 @@
 
 package controllers.income.estimatedPay.update
 
+import cats.data.EitherT
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import controllers.{ErrorPagesHandler, TaiBaseController}
+import cats.implicits._
 import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
@@ -36,7 +37,7 @@ import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
-
+import uk.gov.hmrc.tai.util.FutureOps._
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -95,20 +96,20 @@ class IncomeUpdateCalculatorController @Inject()(
     implicit request =>
       implicit val user = request.taiUser
 
-      journeyCacheService.mandatoryValues(
+      journeyCacheService.mandatoryJourneyValues(
         UpdateIncome_NameKey,
         UpdateIncome_IdKey,
         UpdateIncome_ConfirmedNewAmountKey,
-        UpdateIncome_IncomeTypeKey) map { mandatoryValues =>
-        val incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil = mandatoryValues.toList
-
-        val vm = if (incomeType == TaiConstants.IncomeTypePension) {
-          DuplicateSubmissionPensionViewModel(incomeName, previouslyUpdatedAmount.toInt)
-        } else {
-          DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
-        }
-
-        Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt))
+        UpdateIncome_IncomeTypeKey) map {
+        case Right(mandatoryValues) =>
+          val incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil = mandatoryValues.toList
+          val vm = if (incomeType == TaiConstants.IncomeTypePension) {
+            DuplicateSubmissionPensionViewModel(incomeName, previouslyUpdatedAmount.toInt)
+          } else {
+            DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
+          }
+          Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId.toInt))
+        case Left(message) => errorPagesHandler.internalServerError(message)
       }
   }
 
@@ -116,51 +117,56 @@ class IncomeUpdateCalculatorController @Inject()(
     implicit request =>
       implicit val user = request.taiUser
 
-      journeyCacheService.mandatoryValues(
-        UpdateIncome_NameKey,
-        UpdateIncome_IdKey,
-        UpdateIncome_ConfirmedNewAmountKey,
-        UpdateIncome_IncomeTypeKey) flatMap { mandatoryValues =>
-        val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryValues.toList
+      journeyCacheService
+        .mandatoryJourneyValues(
+          UpdateIncome_NameKey,
+          UpdateIncome_IdKey,
+          UpdateIncome_ConfirmedNewAmountKey,
+          UpdateIncome_IncomeTypeKey)
+        .getOrFail
+        .flatMap { mandatoryJourneyValues =>
+          val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryJourneyValues.toList
 
-        DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
-          formWithErrors => {
-            val vm = if (incomeType == TaiConstants.IncomeTypePension) {
-              DuplicateSubmissionPensionViewModel(incomeName, newAmount.toInt)
-            } else {
-              DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
-            }
+          DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
+            formWithErrors => {
+              val vm = if (incomeType == TaiConstants.IncomeTypePension) {
+                DuplicateSubmissionPensionViewModel(incomeName, newAmount.toInt)
+              } else {
+                DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
+              }
 
-            Future.successful(BadRequest(duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
-          },
-          success => {
-            success.yesNoChoice match {
-              case Some(YesValue) =>
-                Future.successful(Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage()))
-              case Some(NoValue) =>
-                Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(incomeId.toInt)))
+              Future.successful(BadRequest(duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
+            },
+            success => {
+              success.yesNoChoice match {
+                case Some(YesValue) =>
+                  Future.successful(Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage()))
+                case Some(NoValue) =>
+                  Future.successful(
+                    Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(incomeId.toInt)))
+              }
             }
-          }
-        )
-      }
+          )
+        }
   }
 
   def checkYourAnswersPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user = request.taiUser
 
-    journeyCacheService.collectedValues(
-      Seq(
-        UpdateIncome_NameKey,
-        UpdateIncome_PayPeriodKey,
-        UpdateIncome_TotalSalaryKey,
-        UpdateIncome_PayslipDeductionsKey,
-        UpdateIncome_BonusPaymentsKey,
-        UpdateIncome_IdKey
-      ),
-      Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey, UpdateIncome_OtherInDaysKey)
-    ) map tupled { (mandatorySeq, optionalSeq) =>
-      {
-
+    journeyCacheService
+      .collectedJourneyValues(
+        Seq(
+          UpdateIncome_NameKey,
+          UpdateIncome_PayPeriodKey,
+          UpdateIncome_TotalSalaryKey,
+          UpdateIncome_PayslipDeductionsKey,
+          UpdateIncome_BonusPaymentsKey,
+          UpdateIncome_IdKey
+        ),
+        Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey, UpdateIncome_OtherInDaysKey)
+      )
+      .getOrFail map {
+      case (mandatorySeq, optionalSeq) =>
         val employer = IncomeSource(id = mandatorySeq(5).toInt, name = mandatorySeq(0))
         val payPeriodFrequency = mandatorySeq(1)
         val totalSalaryAmount = mandatorySeq(2)
@@ -182,7 +188,6 @@ class IncomeUpdateCalculatorController @Inject()(
           employer)
 
         Ok(checkYourAnswers(viewModel))
-      }
     }
   }
 
@@ -191,10 +196,10 @@ class IncomeUpdateCalculatorController @Inject()(
     val nino = user.nino
 
     (for {
-      employmentName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-      id             <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-      income         <- incomeService.employmentAmount(nino, id)
-      netAmount      <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
+      employmentName <- EitherT(journeyCacheService.mandatoryJourneyValue(UpdateIncome_NameKey))
+      id             <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
+      income         <- EitherT.right[String](incomeService.employmentAmount(nino, id))
+      netAmount      <- EitherT.right[String](journeyCacheService.currentValue(UpdateIncome_NewAmountKey))
     } yield {
       val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
       val employmentAmount = income.copy(newAmount = convertedNetAmount)
@@ -206,9 +211,11 @@ class IncomeUpdateCalculatorController @Inject()(
         val vm = ConfirmAmountEnteredViewModel(employmentName, employmentAmount.oldAmount, employmentAmount.newAmount)
         Ok(confirmAmountEntered(vm))
       }
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-    }
+    }).fold(errorPagesHandler.internalServerError(_, None), identity _)
+      .recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      }
+
   }
 
   private def incomeTypeIdentifier(isPension: Boolean): String =

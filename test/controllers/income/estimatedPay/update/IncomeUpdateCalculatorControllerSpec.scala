@@ -87,10 +87,10 @@ class IncomeUpdateCalculatorControllerSpec
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
-    when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(employer.id))
-    when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(employer.name))
+    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+      .thenReturn(Future.successful(Right(employer.id)))
+    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+      .thenReturn(Future.successful(Right(employer.name)))
   }
 
   "onPageLoad" must {
@@ -155,9 +155,9 @@ class IncomeUpdateCalculatorControllerSpec
   "duplicateSubmissionWarning" must {
     object DuplicateSubmissionWarningHarness {
       sealed class DuplicateSubmissionWarningHarness() {
-        when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-          .thenReturn(
-            Future.successful(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment)))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(
+            Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))))
 
         def duplicateSubmissionWarning(): Future[Result] =
           new TestIncomeUpdateCalculatorController()
@@ -182,9 +182,9 @@ class IncomeUpdateCalculatorControllerSpec
   "submitDuplicateSubmissionWarning" must {
     object SubmitDuplicateSubmissionWarningHarness {
       sealed class SubmitDuplicateSubmissionWarningHarness() {
-        when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-          .thenReturn(
-            Future.successful(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment)))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(
+            Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))))
 
         def submitDuplicateSubmissionWarning(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateCalculatorController()
@@ -233,12 +233,11 @@ class IncomeUpdateCalculatorControllerSpec
         val payPeriodInDays = "3"
         val employerId = "1"
 
-        when(journeyCacheService.collectedValues(any(), any())(any()))
-          .thenReturn(
-            Future.successful(
-              (
-                Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
-                Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays)))))
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+          .thenReturn(Future.successful(Right(
+            Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
+            Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
+          )))
 
         def checkYourAnswersPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateCalculatorController()

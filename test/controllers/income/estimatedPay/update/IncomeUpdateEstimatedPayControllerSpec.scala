@@ -74,8 +74,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
 
     val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
 
-    when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-      .thenReturn(Future.successful(Seq(employer.name, employer.id.toString, TaiConstants.IncomeTypeEmployment)))
+    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+      .thenReturn(Future.successful(Right(Seq(employer.name, employer.id.toString, TaiConstants.IncomeTypeEmployment))))
     when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(
       TaiSuccessResponseWithPayload(taxAccountSummary))
 

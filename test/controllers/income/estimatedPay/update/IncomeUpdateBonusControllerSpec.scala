@@ -126,8 +126,8 @@ class IncomeUpdateBonusControllerSpec
           .thenReturn(Future.successful(Map.empty[String, String]))
         when(journeyCacheService.flush()(any()))
           .thenReturn(Future.successful(TaiSuccessResponse))
-        when(journeyCacheService.mandatoryValues(any())(any()))
-          .thenReturn(Future.successful(Seq(employer.id.toString, employer.name)))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any()))
+          .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
 
         def handleBonusPayments(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateBonusController()
@@ -268,8 +268,8 @@ class IncomeUpdateBonusControllerSpec
         when(journeyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(journeyCacheService.mandatoryValues(any())(any()))
-          .thenReturn(Future.successful(Seq(employer.id.toString, employer.name)))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any()))
+          .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
 
         def handleBonusOvertimeAmount(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateBonusController()

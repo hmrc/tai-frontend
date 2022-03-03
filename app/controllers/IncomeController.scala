@@ -16,9 +16,12 @@
 
 package controllers
 
+import cats.data.EitherT
+import cats.implicits._
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+import uk.gov.hmrc.tai.util.FutureOps._
 
 import javax.inject.{Inject, Singleton}
 import org.joda.time.LocalDate
@@ -75,11 +78,11 @@ class IncomeController @Inject()(
     val nino = user.nino
 
     (for {
-      id               <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-      employmentAmount <- incomeService.employmentAmount(nino, id)
-      latestPayment    <- incomeService.latestPayment(nino, id)
+      id               <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
+      employmentAmount <- EitherT.right[String](incomeService.employmentAmount(nino, id))
+      latestPayment    <- EitherT.right[String](incomeService.latestPayment(nino, id))
       cacheData = incomeService.cachePaymentForRegularIncome(latestPayment)
-      _ <- journeyCacheService.cache(cacheData)
+      _ <- EitherT.right[String](journeyCacheService.cache(cacheData))
     } yield {
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
@@ -88,15 +91,20 @@ class IncomeController @Inject()(
           hasMultipleIncomes = false,
           employmentAmount.employmentId,
           amountYearToDate.toString))
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-    }
+    }).fold(errorPagesHandler.internalServerError(_, None), identity _)
+      .recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      }
   }
 
   def sameEstimatedPayInCache(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     (for {
       cachedData <- journeyCacheService
-                     .mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey)
+                     .mandatoryJourneyValues(
+                       UpdateIncome_NameKey,
+                       UpdateIncome_IdKey,
+                       UpdateIncome_ConfirmedNewAmountKey)
+                     .getOrFail
     } yield {
       val employerId = cachedData(1).toInt
       val model = SameEstimatedPayViewModel(
@@ -112,8 +120,9 @@ class IncomeController @Inject()(
   }
 
   def sameAnnualEstimatedPay(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    val cachedDataFuture = journeyCacheService.mandatoryValues(UpdateIncome_NameKey)
-    val idFuture = journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+    val cachedDataFuture = journeyCacheService.mandatoryJourneyValues(UpdateIncome_NameKey).getOrFail
+
+    val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey).getOrFail
     val nino = request.taiUser.nino
 
     (for {
@@ -128,19 +137,18 @@ class IncomeController @Inject()(
         income.isOccupationalPension,
         routes.IncomeSourceSummaryController.onPageLoad(id).url)
       Ok(sameEstimatedPay(model))
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-    }
+    })
   }
 
   def editRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService.collectedValues(
-      Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
-      Seq(UpdateIncome_DateKey)) flatMap tupled { (mandatorySeq, optionalSeq) =>
-      {
-
+    journeyCacheService
+      .collectedJourneyValues(
+        Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
+        Seq(UpdateIncome_DateKey))
+      .getOrFail flatMap {
+      case (mandatorySeq, optionalSeq) =>
         val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
           case Success(optDate) => optDate
           case Failure(exception) =>
@@ -160,7 +168,6 @@ class IncomeController @Inject()(
             },
             (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome())
           )
-      }
     }
   }
 
@@ -175,7 +182,7 @@ class IncomeController @Inject()(
     val nino = user.nino
 
     (for {
-      cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey)
+      cachedData <- journeyCacheService.mandatoryJourneyValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey).getOrFail
       id = cachedData.head.toInt
       taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
       employmentDetails    <- employmentService.employment(nino, id)
@@ -211,7 +218,12 @@ class IncomeController @Inject()(
       }
     }
     journeyCacheService
-      .mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
+      .mandatoryJourneyValues(
+        UpdateIncome_NameKey,
+        UpdateIncome_NewAmountKey,
+        UpdateIncome_IdKey,
+        UpdateIncome_IncomeTypeKey)
+      .getOrFail
       .flatMap(cache => {
 
         val incomeName :: newAmount :: incomeId :: incomeType :: Nil = cache.toList
@@ -242,11 +254,11 @@ class IncomeController @Inject()(
     val nino = user.nino
 
     (for {
-      id               <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-      employmentAmount <- incomeService.employmentAmount(nino, id)
-      latestPayment    <- incomeService.latestPayment(nino, id)
+      id               <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
+      employmentAmount <- EitherT.right[String](incomeService.employmentAmount(nino, id))
+      latestPayment    <- EitherT.right[String](incomeService.latestPayment(nino, id))
       cacheData = incomeService.cachePaymentForRegularIncome(latestPayment)
-      _ <- journeyCacheService.cache(cacheData)
+      _ <- EitherT.right[String](journeyCacheService.cache(cacheData))
     } yield {
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
@@ -255,9 +267,10 @@ class IncomeController @Inject()(
           hasMultipleIncomes = false,
           employmentAmount.employmentId,
           amountYearToDate.toString()))
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-    }
+    }).fold(errorPagesHandler.internalServerError(_, None), identity _)
+      .recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      }
   }
 
   private def determineEditRedirect(income: EditIncomeForm, confirmationCallback: Call)(
@@ -292,10 +305,12 @@ class IncomeController @Inject()(
   def editPensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService.collectedValues(
-      Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
-      Seq(UpdateIncome_DateKey)) flatMap tupled { (mandatorySeq, optionalSeq) =>
-      {
+    journeyCacheService
+      .collectedJourneyValues(
+        Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
+        Seq(UpdateIncome_DateKey))
+      .getOrFail flatMap {
+      case (mandatorySeq, optionalSeq) =>
         val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
           case Success(optDate) => optDate
           case Failure(exception) =>
@@ -312,7 +327,6 @@ class IncomeController @Inject()(
             },
             (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome())
           )
-      }
     }
 
   }
@@ -322,7 +336,7 @@ class IncomeController @Inject()(
     val nino = user.nino
 
     (for {
-      cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey)
+      cachedData <- journeyCacheService.mandatoryJourneyValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey).getOrFail
       id = cachedData.head.toInt
       taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
       employmentDetails    <- employmentService.employment(nino, id)
@@ -346,16 +360,20 @@ class IncomeController @Inject()(
   }
 
   def viewIncomeForEdit: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    for {
-      id               <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-      employmentAmount <- incomeService.employmentAmount(request.taiUser.nino, id)
+    (for {
+      id               <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
+      employmentAmount <- EitherT.right[String](incomeService.employmentAmount(request.taiUser.nino, id))
     } yield {
       (employmentAmount.isLive, employmentAmount.isOccupationalPension) match {
         case (true, false)  => Redirect(routes.IncomeController.regularIncome())
         case (false, false) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
         case _              => Redirect(routes.IncomeController.pensionIncome())
       }
-    }
+    }).fold(errorPagesHandler.internalServerError(_, None), identity _)
+      .recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      }
+
   }
 
 }
