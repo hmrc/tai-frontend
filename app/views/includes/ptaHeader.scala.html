@@ -45,6 +45,19 @@
 
     </div>
 }
+
+
+<div class="grid-row">
+    <div class="column-full">
+       <div class="print-banner">
+        <div class="hmrc-logo"><img src="/check-income-tax/assets/images/HMRC-logo.png" alt="tai.label.hm_revenue_and_customs"></div>
+        <div class="name"><h4>@Html(preHeadingText)</h4></div>
+    </div>
+
+</div>
+</div>
+
+
 <div class="grid-row">
   <div class="@headerWidthClasses.getOrElse("")">
 
@@ -54,8 +67,9 @@
 
     <header class="page-heading soft--top">
       <h1 class="heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
-      <p class="heading-secondary break-word"><span class="visuallyhidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
+      <p class="heading-secondary break-word hide-for-print"><span class="visuallyhidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
     </header>
+
 
  </div>
 </div>

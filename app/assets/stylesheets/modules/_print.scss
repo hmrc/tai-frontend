@@ -442,4 +442,66 @@ tr.print-pension-contributions-data td {
     font-size: 20px;
     font-weight: bold;
   }
+
+
+
+  body.printable-page div.grid.grid-1-3 .inner-block {
+    display: none;
+    visibility: hidden;
+  }
+
+  body.printable-page .print-banner {
+    display: block;
+    visibility: visible;
+    border-bottom: 3px solid #b1b4b6;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+   }
+
+  body.printable-page .print-banner .title {
+    float: right;
+    text-align: right;
+  }
+
+  body.printable-page .print-banner img {
+    width: 180px;
+    aspect-ratio: auto 180 / 48;
+    height: 48px;
+  }
+
+  body.printable-page .print-banner .hmrc-logo {
+    float:left;
+    margin-top:10px;
+  }
+
+  body.printable-page .print-banner .name{
+    text-align: right;
+    padding-top: 18px;
+  }
+
+
+  body.printable-page h1.heading-xlarge {
+    font-size: 2em;
+  }
+
+  body.printable-page h3.heading-large {
+    font-size: 1.5em;
+  }
+
+
+  body.printable-page a[href],
+  body.printable-page .hide-for-print,
+  body.printable-page .beta-banner,
+  body.printable-page header[role=banner],
+  body.printable-page .report-error,
+  body.printable-page .service-info {
+    display: none;
+    visibility: hidden;
+  }
+
+  body.printable-page.historic-pay-as-you-earn .column-two-thirds,
+  body.printable-page.historic-pay-as-you-earn .grid-2-3 {
+    width: 100%;
+  }
+
 }

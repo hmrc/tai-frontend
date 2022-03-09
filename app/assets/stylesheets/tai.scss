@@ -224,3 +224,34 @@ hr {
         }
     }
 }
+
+div.print-banner,
+#print-link-btn {
+  display: none;
+  visibility: hidden;
+}
+
+div.print-link-container {
+  margin-top:30px;
+}
+
+.gem-c-print-link-button {
+   border: 1px solid #b1b4b6;
+   color: #1d70b8;
+   cursor: pointer;
+   margin: 15px 0;
+   display: inline-block;
+}
+
+
+.gem-c-print-link-button {
+   background: url(../images/icon-print.png) no-repeat 10px 50%;
+   background-size: 16px 18px;
+   padding: 10px 10px 10px 36px;
+   text-decoration: none;
+  }
+
+body.printable-page.js-enabled #print-link-btn {
+    display: inline;
+    visibility: visible;
+}

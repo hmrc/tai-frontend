@@ -46,7 +46,9 @@
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None,
   script: Option[Html] = None,
-  hidePtaAccountNav: Boolean = false
+  hidePtaAccountNav: Boolean = false,
+  pagePrintable: Boolean = false,
+  pagePrintName: Option[String] = None,
 )(mainContent: Html
 )(implicit request: Request[_],
   messages: Messages,
@@ -95,6 +97,13 @@
         routes.ServiceController.serviceSignout().url
     }
   }
+}
+
+
+@addPrintableClass = @{
+    if (pagePrintable) {
+        "printable-page " + pagePrintName.getOrElse("")
+    } else ""
 }
 
 @trustedHelperBanner = {
@@ -148,6 +157,7 @@
 @mustacheMap = @{
     Map[String, Any](
         "pageTitle" -> s"${title} ${serviceSuffix}",
+        "bodyClass" -> addPrintableClass,
         "linkElems" -> Map(
             "url" -> controllers.routes.AssetsController.versioned("stylesheets/tai.css")
         ),
