@@ -46,6 +46,7 @@
                         url = taxCodeUrl.url,
                         copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode))
                     }
+                    <p class="display-tax-code-for-print">@Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode)</p>
                 }
                 @if(incomeSource.displayPayrollNumber){
                 <span id="@{typeLabel}@{idx}PayrollNumber" class="carry-over display-block">@Messages("tai.incomeTaxSummary.payrollNumber.prefix", incomeSource.payrollNumber)</span>

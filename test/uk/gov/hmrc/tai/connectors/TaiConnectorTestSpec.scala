@@ -34,7 +34,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 class TaiConnectorTestSpec
-  extends WordSpec with GuiceOneAppPerSuite with MustMatchers with WireMockHelper with ScalaFutures
+    extends WordSpec with GuiceOneAppPerSuite with MustMatchers with WireMockHelper with ScalaFutures
     with IntegrationPatience with Injecting {
   "TaiConnector" must {
     "return estimated pay" in {

@@ -255,3 +255,8 @@ body.printable-page.js-enabled #print-link-btn {
     display: inline;
     visibility: visible;
 }
+
+body.printable-page .display-tax-code-for-print {
+    display: none;
+    visibility: hidden;
+}
