@@ -489,6 +489,12 @@ tr.print-pension-contributions-data td {
   }
 
 
+body.printable-page .cbanner-govuk-cookie-banner {
+  display: none;
+  visibility: hidden;
+}
+
+
   body.printable-page a[href],
   body.printable-page .hide-for-print,
   body.printable-page .beta-banner,
