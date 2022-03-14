@@ -846,6 +846,7 @@ tai.paye.incomePension.heading=Eich incwm o bensiynau preifat
 tai.paye.lastTaxYear.otherDetailsWrongIform.link=rhowch wybod i ni beth i’w newid
 tai.paye.lastTaxYear.otherDetailsWrongIform.nextLine=Os na allwch gysylltu â nhw neu os na allant helpu, gallwch {0}
 tai.paye.lastTaxYear.otherDetailsWrongIform=Os yw incwm gan gyflogwr neu ddarparwr pensiwn ar goll neu’n anghywir, cysylltwch â nhw yn y lle cyntaf. Gofynnwch iddynt anfon y manylion cywir i CThEM.
+tai.paye.lastTaxYear.preHeading=Blynyddoedd treth blaenorol
 tai.paye.lastTaxYear.table.headingOne=Ffynhonnell incwm
 tai.paye.lastTaxYear.table.headingTwo=Incwm
 tai.paye.lastTaxYear.table.link=Gwiriwch y manylion incwm a anfonwyd atom
