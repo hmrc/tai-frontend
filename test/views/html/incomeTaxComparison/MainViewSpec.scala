@@ -189,6 +189,10 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
 
       doc(viewWithLess) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.taxCodes.banner"))
     }
+
+    "display print button link with javascript print function " in {
+      doc must haveLinkWithUrlWithID("print-link-btn", "javascript:window.print()")
+    }
   }
 
   private lazy val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
