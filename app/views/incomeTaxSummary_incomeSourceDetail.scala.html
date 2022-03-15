@@ -44,7 +44,8 @@
                     @link(
                         id = Some(s"${typeLabel}${idx}TaxCodeLink"),
                         url = taxCodeUrl.url,
-                        copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode))
+                        copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode),
+                        linkClasses = Seq("display-tax-code-for-print"))
                     }
                 }
                 @if(incomeSource.displayPayrollNumber){

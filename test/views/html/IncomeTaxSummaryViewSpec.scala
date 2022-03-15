@@ -42,6 +42,10 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementWithId("isAnyFormInProgressBanner")
     }
 
+    "display print button link with javascript print function " in {
+      doc must haveLinkWithUrlWithID("print-link-btn", "javascript:window.print()")
+    }
+
     "not display iForms status message when no iForms are in progress" in {
       val vm = TaxAccountSummaryViewModel(
         "main heading",

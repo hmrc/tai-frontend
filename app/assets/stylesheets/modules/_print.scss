@@ -489,12 +489,7 @@ tr.print-pension-contributions-data td {
   }
 
 
-body.printable-page .cbanner-govuk-cookie-banner {
-  display: none;
-  visibility: hidden;
-}
-
-
+  body.printable-page .cbanner-govuk-cookie-banner,
   body.printable-page a[href],
   body.printable-page .hide-for-print,
   body.printable-page .beta-banner,
@@ -503,6 +498,17 @@ body.printable-page .cbanner-govuk-cookie-banner {
   body.printable-page .service-info {
     display: none;
     visibility: hidden;
+  }
+
+  body.printable-page .display-tax-code-for-print {
+      display: inline!important;
+      visibility: visible!important;
+      text-decoration: none;
+      color: black;
+  }
+
+  body.printable-page a[href]:after {
+    content: none!important;
   }
 
   body.printable-page.historic-pay-as-you-earn .column-two-thirds,
