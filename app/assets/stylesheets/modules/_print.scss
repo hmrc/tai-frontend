@@ -510,4 +510,9 @@ body.printable-page .cbanner-govuk-cookie-banner {
     width: 100%;
   }
 
+  body.printable-page.future-pay-as-you-earn-summary .table__row--top-border,
+  body.printable-page.future-pay-as-you-earn-summary .table__footer--highlight,
+  body.printable-page.future-pay-as-you-earn-summary .highlight {
+  background-color:#fff
+  }
 }

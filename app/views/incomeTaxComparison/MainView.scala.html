@@ -60,7 +60,10 @@
 
 @mainTemplate(title = headingText,
     pageHeader = Some(header),
-    authedUser = Some(request.taiUser)) {
+    authedUser = Some(request.taiUser),
+    articleClasses = Some("full-width"),
+    pagePrintable = true,
+    pagePrintName = Some("future-pay-as-you-earn-summary")) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
@@ -88,7 +91,7 @@
                 @TaxFreeAmount(incomeTaxComparisonViewModel.taxFreeAmountComparisonViewModel)
             </div>
 
-            <div class="section" id="whatHappensNext">
+            <div class="section hide-for-print" id="whatHappensNext">
                 <h2 class="heading-large" id="whatHappensNextHeading">@messages("tai.incomeTaxComparison.whatHappensNext.subHeading")</h2>
 
 
@@ -136,6 +139,10 @@
                 url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
                 copy=messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
             </p>
+
+            <div class="print-link-container hide-for-print">
+                <a id="print-link-btn" href="javascript:window.print()" class="font-xsmall gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
+            </div>
 
         </div>
     </div>
