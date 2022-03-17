@@ -18,7 +18,8 @@ package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
 import play.api.Logging
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import play.api.http.Status.NO_CONTENT
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 
@@ -34,14 +35,14 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
 
   def currentCache(journeyName: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
     httpHandler.getFromApiV2(cacheUrl(journeyName)).map(_.as[Map[String, String]]) recover {
-      case e: NotFoundException => Map.empty[String, String]
+      case e: HttpException if e.responseCode == NO_CONTENT => Map.empty[String, String]
     }
 
   def currentValueAs[T](journeyName: String, key: String, convert: String => T)(
     implicit hc: HeaderCarrier): Future[Option[T]] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
     httpHandler.getFromApiV2(url).map(value => Some(convert(value.as[String]))) recover {
-      case e: NotFoundException => None
+      case e: HttpException if e.responseCode == NO_CONTENT => None
     }
   }
 
@@ -50,7 +51,7 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
     val url = s"${cacheUrl(journeyName)}/values/$key"
 
     httpHandler.getFromApiV2(url).map(value => Right(convert(value.as[String]))) recover {
-      case e: NotFoundException => {
+      case e: HttpException if e.responseCode == NO_CONTENT => {
         val errorMessage = s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'"
         logger.warn(errorMessage)
         Left(errorMessage)
@@ -63,7 +64,7 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
     implicit hc: HeaderCarrier): Future[T] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
     httpHandler.getFromApiV2(url).map(value => convert(value.as[String])) recover {
-      case e: NotFoundException =>
+      case e: HttpException if e.responseCode == NO_CONTENT =>
         throw new RuntimeException(
           s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
     }

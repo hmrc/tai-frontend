@@ -22,7 +22,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status._
 import play.api.libs.json._
-import uk.gov.hmrc.http.{HttpResponse, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.{HttpException, HttpResponse, InternalServerException, NotFoundException}
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import utils.BaseSpec
 
@@ -42,9 +42,9 @@ class JourneyCacheConnectorSpec extends BaseSpec {
       val result = Await.result(sut.currentCache(journeyName), 5 seconds)
       result mustBe expectedResult
     }
-    "trap a NOT FOUND exception (a valid business scenario), and return an empty map in its place" in {
+    "trap a NO CONTENT exception (a valid business scenario), and return an empty map in its place" in {
       when(httpHandler.getFromApiV2(any())(any()))
-        .thenReturn(Future.failed(new NotFoundException("no cache was found")))
+        .thenReturn(Future.failed(new HttpException("no cache was found", NO_CONTENT)))
 
       val result = Await.result(sut.currentCache(journeyName), 5 seconds)
       result mustBe Map.empty[String, String]
@@ -69,9 +69,9 @@ class JourneyCacheConnectorSpec extends BaseSpec {
         5 seconds) mustBe Some(new LocalDate("2017-03-04"))
     }
 
-    "trap a NOT FOUND exception (a valid business scenario), and return None in its place" in {
+    "trap a NO CONTENT exception (a valid business scenario), and return None in its place" in {
       when(httpHandler.getFromApiV2(any())(any()))
-        .thenReturn(Future.failed(new NotFoundException("key wasn't found in cache")))
+        .thenReturn(Future.failed(new HttpException("key wasn't found in cache", NO_CONTENT)))
 
       val result = Await.result(sut.currentValueAs[String](journeyName, "key1", string => string), 5 seconds)
       result mustBe None
@@ -119,7 +119,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
 
     "return an error message when the requested value is not found" in {
       when(httpHandler.getFromApiV2(any())(any()))
-        .thenReturn(Future.failed(new NotFoundException("key wasn't found in cache")))
+        .thenReturn(Future.failed(new HttpException("key wasn't found in cache", NO_CONTENT)))
 
       val expectedMsg = "The mandatory value under key 'key1' was not found in the journey cache for 'journey1'"
       Await
