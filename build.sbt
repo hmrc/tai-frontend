@@ -108,3 +108,8 @@ lazy val microservice = Project(appName, file("."))
   )
 
 lazy val TemplateTest = config("tt") extend Test
+
+TwirlKeys.templateImports ++= Seq(
+  "uk.gov.hmrc.hmrcfrontend.views.html.components._",
+  "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
+)
