@@ -16,6 +16,7 @@
 
 package controllers
 
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.Logging
@@ -116,15 +117,16 @@ class WhatDoYouWantToDoController @Inject()(
     }
   }
 
-  private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
+  private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser) = {
     val nino = user.nino
 
     taxCodeChangeService.hasTaxCodeChanged(nino) flatMap {
       case Right(taxCodeChanged) =>
         for {
           showJrsTile <- jrsService.checkIfJrsClaimsDataExist(nino)
-          model       <- whatToDoView(nino, taxCodeChanged, showJrsTile)
-          _           <- auditNumberOfTaxCodesReturned(nino, showJrsTile)
+          (model, _) <- (
+                         whatToDoView(nino, taxCodeChanged, showJrsTile),
+                         auditNumberOfTaxCodesReturned(nino, showJrsTile)).tupled
         } yield Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
       case Left(taxCodeError) =>
         Future.successful(
