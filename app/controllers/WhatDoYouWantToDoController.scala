@@ -120,11 +120,17 @@ class WhatDoYouWantToDoController @Inject()(
 
   private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
     val nino = user.nino
+
+    val hasTaxCodeChangedFuture = taxCodeChangeService.hasTaxCodeChanged(nino).value.flatMap {
+      case Left(taxCodeError)                          => Future.failed(taxCodeError)
+      case Right(hasTaxCodeChanged: HasTaxCodeChanged) => Future.successful(hasTaxCodeChanged)
+    }
+
     for {
-      hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
-      showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
-      model             <- whatToDoView(nino, hasTaxCodeChanged, showJrsTile)
-      _                 <- auditNumberOfTaxCodesReturned(nino, showJrsTile)
+      hasTaxCodeChanged                 <- hasTaxCodeChangedFuture
+      showJrsTile: Boolean              <- jrsService.checkIfJrsClaimsDataExist(nino)
+      model: WhatDoYouWantToDoViewModel <- whatToDoView(nino, hasTaxCodeChanged, showJrsTile)
+      _                                 <- auditNumberOfTaxCodesReturned(nino, showJrsTile)
     } yield Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
   }
 
