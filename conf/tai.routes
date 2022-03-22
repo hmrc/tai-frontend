@@ -164,14 +164,14 @@ GET         /update-income/cancel/:id                                           
 GET         /update-income/select-taxable-pay                                          controllers.IncomeController.viewIncomeForEdit
 
 GET         /update-income/edit-taxable-pay                                            controllers.IncomeController.regularIncome
-POST        /update-income/edit-taxable-pay                                            controllers.IncomeController.editRegularIncome
+POST        /update-income/edit-taxable-pay/:empId                                     controllers.IncomeController.editRegularIncome(empId: Int)
 
 ## Pension Income URIs
 GET         /update-income/edit-pension                                                controllers.IncomeController.pensionIncome
 POST        /update-income/edit-pension                                                controllers.IncomeController.editPensionIncome
 
 
-GET         /update-income/income/check-save                                           controllers.IncomeController.confirmRegularIncome
+GET         /update-income/income/:empId/check-save                                    controllers.IncomeController.confirmRegularIncome(empId: Int)
 GET         /update-income/income/same-estimated-pay                                   controllers.IncomeController.sameEstimatedPayInCache
 GET         /update-income/income/same-annual-estimated-pay                            controllers.IncomeController.sameAnnualEstimatedPay
 

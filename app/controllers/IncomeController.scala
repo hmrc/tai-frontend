@@ -140,35 +140,34 @@ class IncomeController @Inject()(
     })
   }
 
-  def editRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
+  def editRegularIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService
-      .collectedJourneyValues(
-        Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
-        Seq(UpdateIncome_DateKey))
-      .getOrFail flatMap {
-      case (mandatorySeq, optionalSeq) =>
-        val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
-          case Success(optDate) => optDate
-          case Failure(exception) =>
-            logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
-            None
-        }
+      journeyCacheService
+        .collectedJourneyValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_NameKey), Seq(UpdateIncome_DateKey))
+        .getOrFail flatMap {
+        case (mandatorySeq, optionalSeq) =>
+          val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
+            case Success(optDate) => optDate
+            case Failure(exception) =>
+              logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
+              None
+          }
 
-        val employerName = mandatorySeq(2)
-        val payToDate = BigDecimal(mandatorySeq.head)
+          val employerName = mandatorySeq(1)
+          val payToDate = BigDecimal(mandatorySeq.head)
 
-        EditIncomeForm
-          .bind(employerName, payToDate, date)
-          .fold(
-            (formWithErrors: Form[EditIncomeForm]) => {
-              Future.successful(BadRequest(
-                editIncome(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)))
-            },
-            (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome())
-          )
-    }
+          EditIncomeForm
+            .bind(employerName, payToDate, date)
+            .fold(
+              (formWithErrors: Form[EditIncomeForm]) =>
+                Future.successful(
+                  BadRequest(editIncome(formWithErrors, hasMultipleIncomes = false, empId, mandatorySeq.head))),
+              (income: EditIncomeForm) =>
+                determineEditRedirect(income, routes.IncomeController.confirmRegularIncome(empId))
+            )
+      }
   }
 
   private def isCachedIncomeTheSame(currentCache: Map[String, String], newAmount: Option[String]): Boolean =
@@ -177,32 +176,33 @@ class IncomeController @Inject()(
   private def isIncomeTheSame(income: EditIncomeForm): Boolean =
     FormHelper.areEqual(Some(income.oldAmount.toString), income.newAmount)
 
-  def confirmRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    val nino = user.nino
+  def confirmRegularIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      val nino = user.nino
 
-    (for {
-      cachedData <- journeyCacheService.mandatoryJourneyValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey).getOrFail
-      id = cachedData.head.toInt
-      taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-      employmentDetails    <- employmentService.employment(nino, id)
-    } yield {
-      (taxCodeIncomeDetails, employmentDetails) match {
-        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-          taxCodeIncomes.find(_.employmentId.contains(cachedData.head.toInt)) match {
-            case Some(taxCodeIncome) =>
-              val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
+      (for {
+        cachedData           <- journeyCacheService.mandatoryJourneyValues(UpdateIncome_NewAmountKey).getOrFail
+        taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+        employmentDetails    <- employmentService.employment(nino, empId)
+      } yield {
+        (taxCodeIncomeDetails, employmentDetails) match {
+          case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+            taxCodeIncomes.find(_.employmentId.contains(empId)) match {
+              case Some(taxCodeIncome) =>
+                val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
-              val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
-              Ok(confirmAmountEntered(vm))
+                val vm =
+                  ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData.head.toInt)
+                Ok(confirmAmountEntered(vm))
 
-            case _ => throw new RuntimeException(s"Not able to found employment with id $id")
-          }
-        case _ => throw new RuntimeException("Exception while reading employment and tax code details")
+              case _ => throw new RuntimeException(s"Not able to found employment with id $empId")
+            }
+          case _ => throw new RuntimeException("Exception while reading employment and tax code details")
+        }
+      }).recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
       }
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-    }
   }
 
   def updateEstimatedIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
