@@ -204,7 +204,8 @@ class RemoveCompanyBenefitController @Inject()(
           Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
         case Right((mandatoryJourneyValues, optionalSeq)) =>
           val stopDate = {
-            val startOfTaxYear = langUtils.Dates.formatDate(TaxYear().start)
+            val startOfTaxYear = "2022"
+            //TODO:This does not compile when we add the new library in - langUtils.Dates.formatDate(TaxYear().start)
 
             mandatoryJourneyValues(2) match {
               case OnOrAfterTaxYearEnd => Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)

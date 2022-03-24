@@ -1,0 +1,159 @@
+
+@*
+* Copyright 2022 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+  *
+* http://www.apache.org/licenses/LICENSE-2.0
+  *
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+  * limitations under the License.
+  *@
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukLayout
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukBackLink
+@import uk.gov.hmrc.govukfrontend.views.html.components.TwoThirdsMainContent
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardHeader
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardFooter
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcHead
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcLanguageSelectHelper
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcScripts
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.backlink.BackLink
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.phasebanner.PhaseBanner
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.pagelayout.PageLayout
+@import uk.gov.hmrc.govukfrontend.views.html.components.FixedWidthPageLayout
+@import uk.gov.hmrc.hmrcfrontend.views.Aliases.Header
+@import uk.gov.hmrc.hmrcfrontend.controllers.routes.LanguageController.switchToLanguage
+@import uk.gov.hmrc.govukfrontend.views.html.components.TwoThirdsOneThirdMainContent
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import help.Link
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.hmrcfrontend.config.AccountMenuConfig
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.RichAccountMenu
+
+
+@this(
+  govukLayout: GovukLayout,
+  hmrcAccountMenu: HmrcAccountMenu,
+  hmrcHeader: HmrcHeader,
+  hmrcStandardHeader: HmrcStandardHeader,
+  hmrcStandardFooter: HmrcStandardFooter,
+  hmrcHead: HmrcHead,
+  hmrcLanguageSelectHelper: HmrcLanguageSelectHelper,
+  hmrcScripts: HmrcScripts,
+  govukBackLink: GovukBackLink,
+  defaultMainContent: TwoThirdsMainContent,
+  fixedWidthPageLayout: FixedWidthPageLayout,
+  twoThirdsMainContent: TwoThirdsMainContent,
+  twoThirdsOneThirdMainContent: TwoThirdsOneThirdMainContent,
+  govukPhaseBanner: GovukPhaseBanner,
+  link: Link,
+  appConfig: ApplicationConfig
+)(implicit accountMenuConfig: AccountMenuConfig)
+
+
+@(
+  title: String,
+  serviceName: Option[String] = None,
+pageTitle: Option[String] = None,
+sideBar: Option[Html] = None,
+isWelshTranslationAvailable: Boolean = false,
+signOutUrl: Option[String] = None,
+serviceUrl: Option[String] = None,
+//userResearchBannerUrl: Option[String] = None,
+accessibilityStatementUrl: Option[String] = None,
+backLinkUrl: Option[String] = None,
+displayHmrcBanner: Boolean = false,
+phaseBanner: Option[PhaseBanner] = None,
+additionalHeadBlock: Option[Html] = None,
+additionalScriptsBlock: Option[Html] = None,
+beforeContentBlock: Option[Html] = None,
+nonce: Option[String] = None,
+mainContentLayout: Option[Html => Html] = Some(defaultMainContent(_)),
+additionalBannersBlock: Option[Html] = None,
+pageLayout: Option[PageLayout => Html] = Some(fixedWidthPageLayout(_)),
+headerContainerClasses: String = Header.defaultObject.containerClasses
+)(content: Html)(implicit request: RequestHeader, messages: Messages)
+
+@headerBlock = {
+
+
+    <meta name="format-detection" content="telephone=no"/>
+      <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tai.css")'/>
+  @* @hmrcStandardHeader(
+    serviceUrl = serviceUrl,
+    signOutUrl = signOutUrl,
+    serviceName = serviceName,
+    userResearchBanner = userResearchBannerUrl.map(url => UserResearchBanner(url = url)),
+    phaseBanner = phaseBanner,
+    displayHmrcBanner = displayHmrcBanner,
+    additionalBannersBlock = additionalBannersBlock,
+    containerClasses = headerContainerClasses
+  )*@
+  @hmrcHeader(Header(
+    homepageUrl = "blah blah",
+    serviceName = pageTitle,
+    serviceUrl = "",
+    language = En,
+    assetsPath = uk.gov.hmrc.hmrcfrontend.controllers.routes.Assets.at("govuk/images").url,
+    displayHmrcBanner = false,
+    inputLanguageToggle = Some(LanguageToggle((En, switchToLanguage(En.code).url), (Cy, switchToLanguage(Cy.code).url)))
+  ))
+}
+
+@beforeContent = {
+
+
+  @hmrcAccountMenu(AccountMenu(
+    language = if(messages.lang.code == "cy") Cy else En,
+    signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+  ).withUrlsFromConfig())
+
+  @if(beforeContentBlock.isDefined) {
+    @beforeContentBlock
+  } else {
+    @if(isWelshTranslationAvailable) {
+      @hmrcLanguageSelectHelper()
+    }
+    @backLinkUrl.map(url =>
+      govukBackLink(BackLink(href = url, content = Text(messages("back.text"))))
+    )
+  }
+}
+
+
+@contentBlock = {
+  @content
+  @govukPhaseBanner(PhaseBanner(
+    tag = Some(Tag(
+      content = Text("beta")
+    )),
+    content = HtmlContent(messages("betaBanner.message",
+      link(link = appConfig.betaFeedbackUrl,
+        messageKey = "betaBanner.linkText",
+        inParagraph = true)))
+  ))
+}
+
+
+@sidebarContent = {
+  @sideBar
+}
+
+@govukLayout(
+  pageTitle = pageTitle,
+  headBlock = Some(hmrcHead(nonce = nonce, headBlock = additionalHeadBlock)),
+  headerBlock = Some(headerBlock),
+  scriptsBlock = Some(hmrcScripts(nonce = nonce, scriptsBlock = additionalScriptsBlock)),
+  beforeContentBlock = Some(beforeContent),
+  footerBlock = Some(hmrcStandardFooter(accessibilityStatementUrl = accessibilityStatementUrl)),
+  mainContentLayout = Some(twoThirdsOneThirdMainContent(sidebarContent)),
+  assetPath = None,
+  cspNonce = nonce,
+  pageLayout = pageLayout
+)(contentBlock)
