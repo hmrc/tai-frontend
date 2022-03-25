@@ -25,6 +25,8 @@ import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 
+import java.time.format.DateTimeFormatter
+
 case class AmountComparatorForm(income: Option[String])
 
 object AmountComparatorForm {
@@ -33,7 +35,7 @@ object AmountComparatorForm {
   def createForm(latestPayDate: Option[String] = None, taxablePayYTD: Option[BigDecimal] = None)(
     implicit messages: Messages): Form[AmountComparatorForm] = {
 
-    val fallbackDate = LocalDate.now().toString(MONTH_AND_YEAR)
+    val fallbackDate = LocalDate.now().format(DateTimeFormatter.ofPattern(MONTH_AND_YEAR))
 
     val latestPaymentDate = latestPayDate.fold(fallbackDate)(identity)
 

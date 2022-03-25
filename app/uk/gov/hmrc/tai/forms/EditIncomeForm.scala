@@ -17,11 +17,13 @@
 package uk.gov.hmrc.tai.forms
 
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
+
 import java.time.LocalDate
-import play.api.data.Form
+import play.api.data.{Form, Forms}
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.data.Forms._
 import play.api.data.JodaForms._
+import play.api.data.format.Formats.localDateFormat
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.libs.json.JodaWrites._
@@ -141,8 +143,8 @@ object EditIncomeForm {
         "oldAmount"             -> number,
         "worksNumber"           -> optional(text),
         "jobTitle"              -> optional(text),
-        "startDate"             -> optional(jodaLocalDate),
-        "endDate"               -> optional(jodaLocalDate),
+        "startDate"             -> optional(Forms.of[java.time.LocalDate]),
+        "endDate"               -> optional(Forms.of[java.time.LocalDate]),
         "isLive"                -> boolean,
         "isOccupationalPension" -> boolean,
         "hasMultipleIncomes"    -> boolean,

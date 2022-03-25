@@ -36,6 +36,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
 import views.html.incomes.{ConfirmAmountEnteredView, EditIncomeIrregularHoursView, EditSuccessView}
 
+import java.time.format.DateTimeFormatter
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -62,7 +63,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
     )
 
     payment.fold(defaultCaching)(payment =>
-      defaultCaching + (UpdateIncome_DateKey -> payment.date.toString(MONTH_AND_YEAR)))
+      defaultCaching + (UpdateIncome_DateKey -> payment.date.format(DateTimeFormatter.ofPattern(MONTH_AND_YEAR))))
   }
 
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
