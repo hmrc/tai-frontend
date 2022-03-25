@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.formatting.Money.pounds
 import uk.gov.hmrc.tai.model.domain._

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service.estimatedIncomeTax
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.I18nSupport
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._

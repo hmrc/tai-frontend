@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.model
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.libs.json._
 
 case class TaxYear(year: Int) extends Ordered[TaxYear] {

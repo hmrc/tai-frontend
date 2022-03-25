@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.TaxYear

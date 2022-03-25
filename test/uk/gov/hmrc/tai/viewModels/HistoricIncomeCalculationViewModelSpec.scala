@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels
 
 import controllers.FakeTaiPlayApplication
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
 import play.twirl.api.Html

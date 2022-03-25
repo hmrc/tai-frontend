@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.forms
 
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.data.Form
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.data.Forms._

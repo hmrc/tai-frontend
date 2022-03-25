@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}

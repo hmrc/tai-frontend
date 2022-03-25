@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.incomeTaxComparison
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live, NotLive, OtherBasisOfOperation, PotentiallyCeased, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}

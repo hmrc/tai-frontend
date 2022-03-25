@@ -24,7 +24,7 @@ import controllers.auth.{AuthAction, AuthedUser}
 import uk.gov.hmrc.tai.util.FutureOps._
 
 import javax.inject.{Inject, Singleton}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.Logging
 import play.api.data.Form
 import play.api.mvc._

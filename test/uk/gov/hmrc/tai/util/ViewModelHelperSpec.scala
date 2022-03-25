@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.util
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.{Lang, Messages}
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds

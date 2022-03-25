@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.service.journeyCache
 
 import javax.inject.Inject
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse

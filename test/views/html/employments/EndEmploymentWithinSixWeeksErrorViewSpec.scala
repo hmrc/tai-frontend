@@ -17,7 +17,7 @@
 package views.html.employments
 
 import controllers.routes
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.WithinSixWeeksViewModel

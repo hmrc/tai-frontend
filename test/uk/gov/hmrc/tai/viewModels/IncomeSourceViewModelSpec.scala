@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.{I18nSupport, Messages}
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, PotentiallyCeased}
 import uk.gov.hmrc.tai.model.domain.{JobSeekerAllowanceIncome, OtherIncome, PensionIncome, TaxedIncome}

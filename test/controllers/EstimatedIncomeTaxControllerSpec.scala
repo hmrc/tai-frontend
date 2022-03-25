@@ -18,7 +18,7 @@ package controllers
 
 import builders.{RequestBuilder, UserBuilder}
 import controllers.actions.FakeValidatePerson
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest

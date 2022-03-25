@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import builders.RequestBuilder
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when

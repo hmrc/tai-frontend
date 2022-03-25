@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.model
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalacheck.Gen
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks

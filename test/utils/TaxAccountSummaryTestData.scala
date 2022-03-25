@@ -17,7 +17,7 @@
 package utils
 
 import controllers.FakeAuthAction
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._

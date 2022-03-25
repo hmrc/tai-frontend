@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
 import controllers.FakeTaiPlayApplication
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
