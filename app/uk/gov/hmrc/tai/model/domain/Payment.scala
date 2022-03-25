@@ -34,6 +34,6 @@ case class Payment(
 )
 
 object Payment {
-  implicit val dateOrdering: Ordering[Payment] = Ordering.by(_.date.toDate())
+  implicit val dateOrdering: Ordering[Payment] = Ordering.by(_.date)
   implicit val paymentFormat: Format[Payment] = Json.format[Payment]
 }

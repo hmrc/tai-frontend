@@ -167,7 +167,7 @@ class AddPensionProviderController @Inject()(
           case Right((mandatorySequence, optionalVals)) =>
             val form = optionalVals.head match {
               case Some(userDateString) =>
-                PensionAddDateForm(mandatorySequence.head).form.fill(new LocalDate(userDateString))
+                PensionAddDateForm(mandatorySequence.head).form.fill(LocalDate.parse(userDateString))
               case _ => PensionAddDateForm(mandatorySequence.head).form
             }
             Ok(addPensionStartDateView(form, mandatorySequence.head))

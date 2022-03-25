@@ -48,7 +48,7 @@ case class DateForm(emptyDateMessage: String) {
               day   <- data.get(DateFormDay).map(Integer.parseInt)
               month <- data.get(DateFormMonth).map(Integer.parseInt)
               year  <- data.get(DateFormYear).map(Integer.parseInt)
-            } yield new LocalDate(year, month, day)
+            } yield LocalDate.of(year, month, day)
           ).getOrElse(None)
 
           inputDate match {
@@ -62,7 +62,7 @@ case class DateForm(emptyDateMessage: String) {
 
       override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
         DateFormDay   -> value.getDayOfMonth.toString,
-        DateFormMonth -> value.getMonthOfYear.toString,
+        DateFormMonth -> value.getMonth.toString,
         DateFormYear  -> value.getYear.toString
       )
     }
@@ -88,11 +88,11 @@ object DateForm {
 
       val formErrors =
         (year, month, day) match {
-          case (Some(y), Some(m), Some(d)) if new LocalDate(y, m, d).isAfter(LocalDate.now()) =>
+          case (Some(y), Some(m), Some(d)) if LocalDate.of(y, m, d).isAfter(LocalDate.now()) =>
             Seq(FormError(key = "dateForm", Messages("tai.date.error.invalid")))
           case (Some(y), Some(m), Some(d)) =>
             startDateInString match {
-              case Some(dateInString) if new LocalDate(y, m, d).isBefore(new LocalDate(dateInString)) =>
+              case Some(dateInString) if LocalDate.of(y, m, d).isBefore(LocalDate.parse(dateInString)) =>
                 Seq(FormError(key = "dateForm", Messages("tai.date.error.invalid")))
               case _ => Nil
             }

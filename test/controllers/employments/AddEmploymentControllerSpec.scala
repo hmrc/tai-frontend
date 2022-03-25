@@ -185,7 +185,7 @@ class AddEmploymentControllerSpec
 
         val formData = Json.obj(
           sut.employmentStartDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
-          sut.employmentStartDateForm.EmploymentFormMonth -> date.getMonthOfYear.toString,
+          sut.employmentStartDateForm.EmploymentFormMonth -> date.getMonth.toString,
           sut.employmentStartDateForm.EmploymentFormYear  -> date.getYear.toString
         )
         when(addEmploymentJourneyCacheService.currentCache(any()))
@@ -247,7 +247,7 @@ class AddEmploymentControllerSpec
 
         val formData = Json.obj(
           sut.employmentStartDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
-          sut.employmentStartDateForm.EmploymentFormMonth -> date.getMonthOfYear.toString,
+          sut.employmentStartDateForm.EmploymentFormMonth -> date.getMonth.toString,
           sut.employmentStartDateForm.EmploymentFormYear  -> date.getYear.toString
         )
         when(addEmploymentJourneyCacheService.currentCache(any()))

@@ -133,7 +133,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
           }
         case _ =>
           Future.successful(
-            Ok(incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), incomeSource.id)))
+            Ok(incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(LocalDate.now), incomeSource.id)))
       }
     }
 

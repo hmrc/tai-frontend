@@ -156,7 +156,7 @@ class EndEmploymentController @Inject()(
                   val nino = user.nino
                   employmentService.employment(nino, mandatoryJourneyValues(1).toInt) flatMap {
                     case Some(employment) =>
-                      val today = new LocalDate()
+                      val today = LocalDate.now
                       val latestPaymentDate: Option[LocalDate] = for {
                         latestAnnualAccount <- employment.latestAnnualAccount
                         latestPayment       <- latestAnnualAccount.latestPayment
@@ -191,7 +191,7 @@ class EndEmploymentController @Inject()(
       .mandatoryJourneyValues(EndEmployment_LatestPaymentDateKey, EndEmployment_NameKey, EndEmployment_EmploymentIdKey)
       .getOrFail
       .map { data =>
-        val date = new LocalDate(data.head)
+        val date = LocalDate.parse(data.head)
         Ok(
           endEmploymentWithinSixWeeksError(
             WithinSixWeeksViewModel(date.plusWeeks(6).plusDays(1), data(1), date, data(2).toInt)))
@@ -245,7 +245,7 @@ class EndEmploymentController @Inject()(
             case Seq(Some(date)) =>
               Ok(
                 endEmploymentView(
-                  EmploymentEndDateForm(mandatorySequence.head).form.fill(new LocalDate(date)),
+                  EmploymentEndDateForm(mandatorySequence.head).form.fill(LocalDate.parse(date)),
                   EmploymentViewModel(mandatorySequence.head, mandatorySequence(1).toInt)))
             case _ =>
               Ok(

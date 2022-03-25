@@ -26,24 +26,24 @@ case class TaxYear(year: Int) extends Ordered[TaxYear] {
   val END_DATE = 5
   val ONE = 1
 
-  def start: LocalDate = new LocalDate(year, TAX_MONTH_APRIL, START_DATE)
-  def end: LocalDate = new LocalDate(year + ONE, TAX_MONTH_APRIL, END_DATE)
+  def start: LocalDate = LocalDate.of(year, TAX_MONTH_APRIL, START_DATE)
+  def end: LocalDate = LocalDate.of(year + ONE, TAX_MONTH_APRIL, END_DATE)
   def next = TaxYear(year + ONE)
   private def next(add: Int) = TaxYear(year + add)
   def prev = TaxYear(year - ONE)
-  def startPrev: LocalDate = new LocalDate(prev.year, TAX_MONTH_APRIL, START_DATE)
-  def endPrev: LocalDate = new LocalDate(prev.year + ONE, TAX_MONTH_APRIL, END_DATE)
+  def startPrev: LocalDate = LocalDate.of(prev.year, TAX_MONTH_APRIL, START_DATE)
+  def endPrev: LocalDate = LocalDate.of(prev.year + ONE, TAX_MONTH_APRIL, END_DATE)
   def compare(that: TaxYear) = this.year compare that.year
-  def twoDigitRange = s"${start.year.get % 100}-${end.year.get % 100}"
-  def fourDigitRange = s"${start.year.get}-${end.year.get}"
+  def twoDigitRange = s"${start.getYear % 100}-${end.getYear % 100}"
+  def fourDigitRange = s"${start.getYear}-${end.getYear}"
   def within(currentDate: LocalDate): Boolean =
     (currentDate.isEqual(start) || currentDate.isAfter(start)) &&
       (currentDate.isBefore(end) || currentDate.isEqual(end))
 }
 
 object TaxYear {
-  def apply(from: LocalDate = new LocalDate): TaxYear = {
-    val naiveYear = TaxYear(from.year.get)
+  def apply(from: LocalDate = LocalDate.now): TaxYear = {
+    val naiveYear = TaxYear(from.getYear)
     if (from isBefore naiveYear.start) {
       naiveYear.prev
     } else { naiveYear }

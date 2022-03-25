@@ -35,7 +35,7 @@ case class EndIncomeCheckYourAnswersViewModel(
     val mandatoryLines = Seq(
       CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q2"),
-        Dates.formatDate(new LocalDate(employmentEndDate)),
+        Dates.formatDate(LocalDate.parse(employmentEndDate)),
         controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
       ),
       CheckYourAnswersConfirmationLine(

@@ -49,7 +49,7 @@ case class DateForm(validations: Seq[((LocalDate) => Boolean, String)], blankDat
               day   <- data.get(DateFormDay).map(Integer.parseInt)
               month <- data.get(DateFormMonth).map(Integer.parseInt)
               year  <- data.get(DateFormYear).map(Integer.parseInt)
-            } yield new LocalDate(year, month, day)
+            } yield LocalDate.of(year, month, day)
           ).getOrElse(None)
 
           inputDate match {
@@ -72,7 +72,7 @@ case class DateForm(validations: Seq[((LocalDate) => Boolean, String)], blankDat
 
       override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
         DateFormDay   -> value.getDayOfMonth.toString,
-        DateFormMonth -> value.getMonthOfYear.toString,
+        DateFormMonth -> value.getMonth.toString,
         DateFormYear  -> value.getYear.toString
       )
     }

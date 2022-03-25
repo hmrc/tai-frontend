@@ -47,7 +47,7 @@ case class EmploymentEndDateForm(employerName: String) {
               day   <- data.get(EmploymentFormDay).map(Integer.parseInt)
               month <- data.get(EmploymentFormMonth).map(Integer.parseInt)
               year  <- data.get(EmploymentFormYear).map(Integer.parseInt)
-            } yield new LocalDate(year, month, day)
+            } yield LocalDate.of(year, month, day)
           ).getOrElse(None)
 
           inputDate match {
@@ -61,7 +61,7 @@ case class EmploymentEndDateForm(employerName: String) {
 
       override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
         EmploymentFormDay   -> value.getDayOfMonth.toString,
-        EmploymentFormMonth -> value.getMonthOfYear.toString,
+        EmploymentFormMonth -> value.getMonth.toString,
         EmploymentFormYear  -> value.getYear.toString
       )
     }

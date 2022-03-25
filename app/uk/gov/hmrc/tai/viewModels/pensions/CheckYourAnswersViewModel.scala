@@ -48,7 +48,7 @@ object CheckYourAnswersViewModel {
           controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q2"),
-          Dates.formatDate(new LocalDate(pensionStartDate)),
+          Dates.formatDate(LocalDate.parse(pensionStartDate)),
           controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate().url
         ),
         CheckYourAnswersConfirmationLine(

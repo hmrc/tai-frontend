@@ -40,7 +40,7 @@ trait DateValidator {
         data => {
           (data._1, data._2, data._3) match {
             case (Some(y), Some(m), Some(d)) =>
-              Try(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)).isSuccess
+              Try(LocalDate.of(y.trim.toInt, m.trim.toInt, d.trim.toInt)).isSuccess
             case (None, None, None) => true
             case _                  => false
           }
@@ -52,7 +52,7 @@ trait DateValidator {
           (data._1, data._2, data._3) match {
             case (Some(y), Some(m), Some(d)) =>
               val now = LocalDate.now()
-              Try(!now.isBefore(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))).getOrElse(true)
+              Try(!now.isBefore(LocalDate.of(y.trim.toInt, m.trim.toInt, d.trim.toInt))).getOrElse(true)
             case _ => true
           }
         }
@@ -62,19 +62,19 @@ trait DateValidator {
         data => {
           (data._1, data._2, data._3) match {
             case (Some(y), Some(m), Some(d)) =>
-              Try(!TaxYear().start.isAfter(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))).getOrElse(true)
+              Try(!TaxYear().start.isAfter(LocalDate.of(y.trim.toInt, m.trim.toInt, d.trim.toInt))).getOrElse(true)
             case _ => true
           }
         }
       )
       .transform(
         {
-          case (Some(y), Some(m), Some(d)) => Try(new LocalDate(y.trim.toInt, m.toInt, d.toInt)).toOption
+          case (Some(y), Some(m), Some(d)) => Try(LocalDate.of(y.trim.toInt, m.toInt, d.toInt)).toOption
           case (a, b, c)                   => None
         },
         (date: Option[LocalDate]) =>
           date match {
-            case Some(d) => (Some(d.getYear.toString), Some(d.getMonthOfYear.toString), Some(d.getDayOfMonth.toString))
+            case Some(d) => (Some(d.getYear.toString), Some(d.getMonth.toString), Some(d.getDayOfMonth.toString))
             case _       => (None, None, None)
         }
       )

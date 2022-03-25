@@ -46,8 +46,8 @@ object TaxYearRangeUtil {
   }
 
   def currentTaxYearRangeYearOnly(implicit messages: Messages): String = {
-    val start = TaxYear().start.toString("yyyy")
-    val end = TaxYear().end.toString("yyyy")
+    val start = TaxYear().start.getYear
+    val end = TaxYear().end.getYear
 
     messages("tai.taxYear", start, end)
   }
@@ -61,22 +61,20 @@ object TaxYearRangeUtil {
     sdf
   }
 
-  private def jodaDate2javaDate(date: LocalDate): Date = date.toDate
-
   private def dateRange(messageKey: String, from: LocalDate, to: LocalDate)(implicit messages: Messages): String =
     if (from isAfter to) {
       throw new IllegalArgumentException(s"From date:$from cannot be after To date:$to")
     } else {
       messages(
         messageKey,
-        HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(jodaDate2javaDate(from))),
-        HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(jodaDate2javaDate(to)))
+        HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(from)),
+        HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(to))
       )
     }
 
   def formatDate(date: LocalDate)(implicit messages: Messages): String =
-    createDateFormatForPattern("d MMMM y").format(jodaDate2javaDate(date))
+    createDateFormatForPattern("d MMMM y").format(date)
 
   def formatDateAbbrMonth(date: LocalDate)(implicit messages: Messages): String =
-    createDateFormatForPattern("d MMM y").format(jodaDate2javaDate(date))
+    createDateFormatForPattern("d MMM y").format(date)
 }
