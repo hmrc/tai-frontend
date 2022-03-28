@@ -25,7 +25,7 @@ import utils.BaseSpec
 
 class YourTaxFreeAmountSpec extends BaseSpec with YourTaxFreeAmount {
 
-  val date = new LocalDate(2018, 6, 5)
+  val date = LocalDate.of(2018, 6, 5)
 
   def createYourTaxFreeAmountComparison(): YourTaxFreeAmountComparison = {
 

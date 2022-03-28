@@ -34,7 +34,7 @@ class EmploymentEndDateFormSpec extends BaseSpec {
     }
 
     "deconstruct a local date correctly" in {
-      val prePopForm = form.fill(new LocalDate(2014, 8, 15))
+      val prePopForm = form.fill(LocalDate.of(2014, 8, 15))
 
       prePopForm.data must contain(employmentEndDateForm.EmploymentFormDay   -> "15")
       prePopForm.data must contain(employmentEndDateForm.EmploymentFormMonth -> "8")

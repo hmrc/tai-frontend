@@ -203,10 +203,10 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
     }
   }
 
-  val firstPayment: Payment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-  val secondPayment: Payment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-  val thirdPayment: Payment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
-  val latestPayment: Payment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
+  val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+  val thirdPayment: Payment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+  val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
   val annualAccount: AnnualAccount = AnnualAccount(
     uk.gov.hmrc.tai.model.TaxYear(),
@@ -233,7 +233,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "employer1",
       Live,
       None,
-      new LocalDate(2016, 6, 9),
+      LocalDate.of(2016, 6, 9),
       None,
       Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
       "taxNumber",
@@ -247,7 +247,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "employer2",
       Live,
       None,
-      new LocalDate(2016, 7, 9),
+      LocalDate.of(2016, 7, 9),
       None,
       Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
       "taxNumber",
@@ -263,7 +263,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "employer1",
       Live,
       None,
-      new LocalDate(2016, 6, 9),
+      LocalDate.of(2016, 6, 9),
       None,
       Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
       "taxNumber",
@@ -277,7 +277,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "employer2",
       Live,
       None,
-      new LocalDate(2016, 7, 9),
+      LocalDate.of(2016, 7, 9),
       None,
       Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
       "taxNumber",

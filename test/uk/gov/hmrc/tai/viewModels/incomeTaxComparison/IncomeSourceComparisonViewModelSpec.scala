@@ -61,8 +61,8 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         )
 
         val employmentCY = Seq(
-          Employment("employment1", Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false),
-          Employment("employment2", Live, None, new LocalDate(), None, Nil, "", "", 2, None, false, false)
+          Employment("employment1", Live, None, LocalDate.now, None, Nil, "", "", 1, None, false, false),
+          Employment("employment2", Live, None, LocalDate.now, None, Nil, "", "", 2, None, false, false)
         )
 
         val incomeSourceComparisonViewModel =
@@ -104,8 +104,8 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
             Live)
 
         val employmentCY = Seq(
-          Employment("employment1", Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false),
-          Employment("employment2", Live, None, new LocalDate(), None, Nil, "", "", 2, None, false, false)
+          Employment("employment1", Live, None, LocalDate.now, None, Nil, "", "", 1, None, false, false),
+          Employment("employment2", Live, None, LocalDate.now, None, Nil, "", "", 2, None, false, false)
         )
 
         val incomeSourceComparisonViewModel =
@@ -141,7 +141,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
           "Pension1",
           Live,
           Some("3ABC"),
-          new LocalDate(2017, 3, 1),
+          LocalDate.of(2017, 3, 1),
           None,
           Nil,
           "DIST3",
@@ -174,7 +174,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
           TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "1150L", "employer3", OtherBasisOfOperation, Live)
 
         val employmentCY =
-          Employment("employment1", Live, None, new LocalDate(), None, Nil, "", "", 3, None, false, false)
+          Employment("employment1", Live, None, LocalDate.now, None, Nil, "", "", 3, None, false, false)
 
         val incomeSourceComparisonViewModel =
           IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
@@ -220,7 +220,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
           "Pension1",
           Live,
           Some("3ABC"),
-          new LocalDate(2017, 3, 1),
+          LocalDate.of(2017, 3, 1),
           None,
           Nil,
           "DIST3",
@@ -269,7 +269,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
             "employment1",
             taxCodeIncomeSourceStatus,
             None,
-            new LocalDate(),
+            LocalDate.now,
             None,
             Nil,
             "",
@@ -306,7 +306,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
             "pension1",
             taxCodeIncomeSourceStatus,
             None,
-            new LocalDate(),
+            LocalDate.now,
             None,
             Nil,
             "",

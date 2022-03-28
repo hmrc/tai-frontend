@@ -77,8 +77,8 @@ class BenefitsConnectorSpec extends BaseSpec {
       100,
       "Make Model",
       hasActiveFuelBenefit = true,
-      dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-      dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
+      dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
+      dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
       dateWithdrawn = None
     ))
 

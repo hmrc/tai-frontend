@@ -56,7 +56,7 @@ class IncomeServiceSpec extends BaseSpec with JourneyCacheConstants {
           1111,
           None,
           None,
-          Some(new LocalDate(2000, 5, 20)),
+          Some(LocalDate.of(2000, 5, 20)),
           None,
           true,
           false)
@@ -360,7 +360,7 @@ class IncomeServiceSpec extends BaseSpec with JourneyCacheConstants {
 
       "payment has value" in {
         val sut = createSUT
-        val payment = paymentOnDate(new LocalDate(2017, 9, 6))
+        val payment = paymentOnDate(LocalDate.of(2017, 9, 6))
         val expectedCached = Map(UpdateIncome_PayToDateKey -> "2000", UpdateIncome_DateKey -> payment.date.toString)
         sut.cachePaymentForRegularIncome(Some(payment)) mustBe expectedCached
       }
@@ -373,7 +373,7 @@ class IncomeServiceSpec extends BaseSpec with JourneyCacheConstants {
   )
 
   def employmentWithAccounts(accounts: List[AnnualAccount]) =
-    Employment("ABCD", Live, Some("ABC123"), new LocalDate(2000, 5, 20), None, accounts, "", "", 8, None, false, false)
+    Employment("ABCD", Live, Some("ABC123"), LocalDate.of(2000, 5, 20), None, accounts, "", "", 8, None, false, false)
 
   def paymentOnDate(date: LocalDate) =
     Payment(

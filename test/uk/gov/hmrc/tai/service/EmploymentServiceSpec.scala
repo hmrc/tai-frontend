@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.joda.time.{DateTime, LocalDate}
+import org.joda.time.DateTime
+import java.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -70,8 +71,8 @@ class EmploymentServiceSpec extends BaseSpec {
           "company name 1",
           Live,
           Some("123"),
-          new LocalDate("2016-05-26"),
-          Some(new LocalDate("2016-05-26")),
+          LocalDate.parse("2016-05-26"),
+          Some(LocalDate.parse("2016-05-26")),
           Nil,
           "",
           "",
@@ -83,8 +84,8 @@ class EmploymentServiceSpec extends BaseSpec {
           "company name 2",
           Live,
           Some("123"),
-          new LocalDate("2016-05-26"),
-          Some(new LocalDate("2016-05-26")),
+          LocalDate.parse("2016-05-26"),
+          Some(LocalDate.parse("2016-05-26")),
           Nil,
           "",
           "",
@@ -142,7 +143,7 @@ class EmploymentServiceSpec extends BaseSpec {
       val sut = createSUT
       when(employmentsConnector.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
 
-      val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15), "YES", Some("EXT-TEST"))
+      val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
 
       val data = Await.result(sut.endEmployment(nino, 1, endEmploymentData), 5.seconds)
 
@@ -156,7 +157,7 @@ class EmploymentServiceSpec extends BaseSpec {
       val model = AddEmployment(
         employerName = "testEmployment",
         payrollNumber = "12345",
-        startDate = new LocalDate(2017, 6, 6),
+        startDate = LocalDate.of(2017, 6, 6),
         telephoneContactAllowed = "Yes",
         telephoneNumber = Some("123456789"))
       when(employmentsConnector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any()))
@@ -172,7 +173,7 @@ class EmploymentServiceSpec extends BaseSpec {
         val model = AddEmployment(
           employerName = "testEmployment",
           payrollNumber = "12345",
-          startDate = new LocalDate(2017, 6, 6),
+          startDate = LocalDate.of(2017, 6, 6),
           telephoneContactAllowed = "Yes",
           telephoneNumber = Some("123456789"))
         when(employmentsConnector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any()))
@@ -217,8 +218,8 @@ class EmploymentServiceSpec extends BaseSpec {
     "company name",
     Live,
     Some("123"),
-    new LocalDate("2016-05-26"),
-    Some(new LocalDate("2016-05-26")),
+    LocalDate.parse("2016-05-26"),
+    Some(LocalDate.parse("2016-05-26")),
     Nil,
     "",
     "",

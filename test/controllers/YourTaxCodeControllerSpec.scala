@@ -33,6 +33,7 @@ import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import utils.BaseSpec
 import views.html.{TaxCodeDetailsPreviousYearsView, TaxCodeDetailsView}
 
+import java.time.format.DateTimeFormatter
 import scala.concurrent.Future
 
 class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
@@ -93,8 +94,10 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
-      val startOfTaxYear: String = TaxYear().start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
-      val endOfTaxYear: String = TaxYear().end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+      val startOfTaxYear: String =
+        TaxYear().start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
+      val endOfTaxYear: String =
+        TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
 
       val result = sut.taxCodes(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -121,8 +124,8 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
   "prevTaxCodes" must {
     "display tax code page" in {
-      val startOfTaxYear: String = TaxYear().prev.start.toString("d MMMM yyyy")
-      val endOfTaxYear: String = TaxYear().prev.end.toString("d MMMM yyyy")
+      val startOfTaxYear: String = TaxYear().prev.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+      val endOfTaxYear: String = TaxYear().prev.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
 
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))

@@ -25,6 +25,8 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 
+import java.time.format.DateTimeFormatter
+
 class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTestData {
 
   "TaxAccountSummaryViewModel apply method" must {
@@ -79,7 +81,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
       }
 
       "has correctly formatted lastTaxYearEnd" in {
-        val expectedLastTaxYearEnd = TaxYear().end.minusYears(1).toString("d MMMM yyyy")
+        val expectedLastTaxYearEnd = TaxYear().end.minusYears(1).format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
         val sut = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, noIncomesSources, Seq())
         sut.lastTaxYearEnd mustBe expectedLastTaxYearEnd
       }

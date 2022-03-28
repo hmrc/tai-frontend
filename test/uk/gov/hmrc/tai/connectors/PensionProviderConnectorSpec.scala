@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.joda.time.{DateTime, LocalDate}
+import org.joda.time.DateTime
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -26,6 +26,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 import utils.BaseSpec
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
@@ -34,7 +35,7 @@ class PensionProviderConnectorSpec extends BaseSpec {
   "PensionProviderConnector addPensionProvider" must {
     "return an envelope id on a successful invocation" in {
       val addPensionProvider =
-        AddPensionProvider("testPension", new LocalDate(2017, 6, 6), "12345", "Yes", Some("123456789"))
+        AddPensionProvider("testPension", LocalDate.of(2017, 6, 6), "12345", "Yes", Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler.postToApi(Matchers.eq(sut.addPensionProviderServiceUrl(nino)), Matchers.eq(addPensionProvider))(

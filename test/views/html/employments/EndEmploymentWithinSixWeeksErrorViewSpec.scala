@@ -61,7 +61,7 @@ class EndEmploymentWithinSixWeeksErrorViewSpec extends TaiViewSpec {
   }
 
   private val employerName = "Employer"
-  private lazy val earliestUpdateDate = new LocalDate(2017, 6, 20)
-  private lazy val latestPayDate = new LocalDate(2016, 5, 10)
+  private lazy val earliestUpdateDate = LocalDate.of(2017, 6, 20)
+  private lazy val latestPayDate = LocalDate.of(2016, 5, 10)
   private lazy val model = WithinSixWeeksViewModel(earliestUpdateDate, employerName, latestPayDate, 2)
 }

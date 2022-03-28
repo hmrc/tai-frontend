@@ -77,8 +77,8 @@ class ComplexEstimatedIncomeTaxViewModelSpec extends BaseSpec with TaxRegionCons
       OtherBasisOfOperation,
       Live,
       None,
-      Some(new LocalDate(2015, 11, 26)),
-      Some(new LocalDate(2015, 11, 26))
+      Some(LocalDate.of(2015, 11, 26)),
+      Some(LocalDate.of(2015, 11, 26))
     )
   )
 

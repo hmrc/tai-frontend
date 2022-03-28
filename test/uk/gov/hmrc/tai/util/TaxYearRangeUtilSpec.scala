@@ -22,6 +22,8 @@ import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.model.TaxYear
 import utils.BaseSpec
 
+import java.time.format.DateTimeFormatter
+
 class TaxYearRangeUtilSpec extends BaseSpec {
 
   "Tax year range util " must {
@@ -29,8 +31,9 @@ class TaxYearRangeUtilSpec extends BaseSpec {
     "return the current tax year as a range delimited with the word 'to' " in {
       val expectedTaxYear = messages(
         "tai.taxYear",
-        HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy")))
+        HtmlFormatter.htmlNonBroken(TaxYear().start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))),
+        HtmlFormatter.htmlNonBroken(TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")))
+      )
 
       TaxYearRangeUtil.currentTaxYearRange mustBe expectedTaxYear
     }
@@ -38,15 +41,18 @@ class TaxYearRangeUtilSpec extends BaseSpec {
     "return the current tax year as a range delimited with the word 'and' " in {
       val expectedTaxYear = messages(
         "tai.taxYear.between",
-        HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy"))
+        HtmlFormatter.htmlNonBroken(TaxYear().start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))),
+        HtmlFormatter.htmlNonBroken(TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")))
       )
 
       TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited mustBe expectedTaxYear
     }
 
     "return the current tax year as a range that only contains the year" in {
-      val expectedTaxYear = messages("tai.taxYear", TaxYear().start.toString("yyyy"), TaxYear().end.toString("yyyy"))
+      val expectedTaxYear = messages(
+        "tai.taxYear",
+        TaxYear().start.format(DateTimeFormatter.ofPattern("yyyy")),
+        TaxYear().end.format(DateTimeFormatter.ofPattern("yyyy")))
 
       TaxYearRangeUtil.currentTaxYearRangeYearOnly mustBe expectedTaxYear
     }
@@ -56,7 +62,7 @@ class TaxYearRangeUtilSpec extends BaseSpec {
       implicit lazy val lang: Lang = Lang("en")
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-      val now = new LocalDate()
+      val now = LocalDate.now
       val endOfTaxYear = TaxYear().end
       val expectedNow = HtmlFormatter.htmlNonBroken(langUtils.Dates.formatDate(now))
       val expectedEnd = HtmlFormatter.htmlNonBroken(langUtils.Dates.formatDate(endOfTaxYear))
@@ -69,7 +75,7 @@ class TaxYearRangeUtilSpec extends BaseSpec {
       implicit lazy val lang: Lang = Lang("cy")
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-      val now = new LocalDate()
+      val now = LocalDate.now
       val endOfTaxYear = TaxYear().end
       val expectedNow = HtmlFormatter.htmlNonBroken(langUtils.Dates.formatDate(now))
       val expectedEnd = HtmlFormatter.htmlNonBroken(langUtils.Dates.formatDate(endOfTaxYear))
@@ -78,7 +84,7 @@ class TaxYearRangeUtilSpec extends BaseSpec {
     }
 
     "throw an exception if 'from' date is after the 'to' date" in {
-      val now = new LocalDate()
+      val now = LocalDate.now
       val yesterday = now.minusDays(1)
 
       val caught = intercept[IllegalArgumentException] {

@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.joda.time.{DateTime, LocalDate}
+import org.joda.time.DateTime
+import java.time.LocalDate
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.mockito.{Matchers, Mockito}
@@ -235,7 +236,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
         when(httpHandler.putToApi(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
 
-        val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15), "YES", Some("EXT-TEST"))
+        val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
 
         val result = Await.result(sut().endEmployment(nino, 1, endEmploymentData), 5.seconds)
 
@@ -248,7 +249,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
         val json = Json.obj("test" -> JsString("123-456-789"))
         when(httpHandler.putToApi(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
-        val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15), "YES", Some("EXT-TEST"))
+        val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut().endEmployment(nino, 1, endEmploymentData), 5.seconds)
 
@@ -262,7 +263,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       val addEmployment = AddEmployment(
         employerName = "testEmployment",
         payrollNumber = "12345",
-        startDate = new LocalDate(2017, 6, 6),
+        startDate = LocalDate.of(2017, 6, 6),
         telephoneContactAllowed = "Yes",
         telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
@@ -296,8 +297,8 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
     "company name",
     Live,
     Some("123"),
-    new LocalDate("2016-05-26"),
-    Some(new LocalDate("2016-05-26")),
+    LocalDate.parse("2016-05-26"),
+    Some(LocalDate.parse("2016-05-26")),
     Nil,
     "123",
     "321",
@@ -313,8 +314,8 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       "company name",
       Ceased,
       Some("123"),
-      new LocalDate("2016-05-26"),
-      Some(new LocalDate("2016-05-26")),
+      LocalDate.parse("2016-05-26"),
+      Some(LocalDate.parse("2016-05-26")),
       Nil,
       "123",
       "321",

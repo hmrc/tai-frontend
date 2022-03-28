@@ -675,8 +675,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
       OtherBasisOfOperation,
       Live,
       None,
-      Some(new LocalDate(2015, 11, 26)),
-      Some(new LocalDate(2015, 11, 26))
+      Some(LocalDate.of(2015, 11, 26)),
+      Some(LocalDate.of(2015, 11, 26))
     )
   )
 
@@ -691,8 +691,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
       OtherBasisOfOperation,
       Live,
       None,
-      Some(new LocalDate(2015, 11, 26)),
-      Some(new LocalDate(2015, 11, 26))
+      Some(LocalDate.of(2015, 11, 26)),
+      Some(LocalDate.of(2015, 11, 26))
     )
   )
 

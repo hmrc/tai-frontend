@@ -83,10 +83,10 @@ class AnnualAccountSpec extends PlaySpec {
       }
 
       "latest payment is Irregular" in {
-        val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-        val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-        val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
-        val latestPayment = Payment(new LocalDate().minusWeeks(1), 100, 50, 25, 100, 50, 25, Irregular)
+        val firstPayment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+        val secondPayment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+        val thirdPayment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+        val latestPayment = Payment(LocalDate.now.minusWeeks(1), 100, 50, 25, 100, 50, 25, Irregular)
         val annualAccount =
           AnnualAccount(TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 
@@ -94,10 +94,10 @@ class AnnualAccountSpec extends PlaySpec {
       }
 
       "latest payment is BiAnnually" in {
-        val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-        val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-        val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
-        val latestPayment = Payment(new LocalDate().minusWeeks(1), 100, 50, 25, 100, 50, 25, BiAnnually)
+        val firstPayment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+        val secondPayment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+        val thirdPayment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+        val latestPayment = Payment(LocalDate.now.minusWeeks(1), 100, 50, 25, 100, 50, 25, BiAnnually)
         val annualAccount =
           AnnualAccount(TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 
@@ -105,10 +105,10 @@ class AnnualAccountSpec extends PlaySpec {
       }
 
       "latest payment is Annually" in {
-        val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-        val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-        val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
-        val latestPayment = Payment(new LocalDate().minusWeeks(1), 100, 50, 25, 100, 50, 25, Annually)
+        val firstPayment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+        val secondPayment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+        val thirdPayment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+        val latestPayment = Payment(LocalDate.now.minusWeeks(1), 100, 50, 25, 100, 50, 25, Annually)
         val annualAccount =
           AnnualAccount(TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 
@@ -157,10 +157,10 @@ class AnnualAccountSpec extends PlaySpec {
       }
 
       "latest payment is not Irregular" in {
-        val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-        val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-        val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Irregular)
-        val latestPayment = Payment(new LocalDate().minusWeeks(1), 100, 50, 25, 100, 50, 25, Monthly)
+        val firstPayment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+        val secondPayment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+        val thirdPayment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Irregular)
+        val latestPayment = Payment(LocalDate.now.minusWeeks(1), 100, 50, 25, 100, 50, 25, Monthly)
         val annualAccount =
           AnnualAccount(TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 
@@ -168,10 +168,10 @@ class AnnualAccountSpec extends PlaySpec {
       }
 
       "latest payment is not BiAnnually" in {
-        val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-        val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-        val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, BiAnnually)
-        val latestPayment = Payment(new LocalDate().minusWeeks(1), 100, 50, 25, 100, 50, 25, OneOff)
+        val firstPayment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+        val secondPayment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+        val thirdPayment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, BiAnnually)
+        val latestPayment = Payment(LocalDate.now.minusWeeks(1), 100, 50, 25, 100, 50, 25, OneOff)
         val annualAccount =
           AnnualAccount(TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 
@@ -179,10 +179,10 @@ class AnnualAccountSpec extends PlaySpec {
       }
 
       "latest payment is not Annually" in {
-        val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-        val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-        val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Annually)
-        val latestPayment = Payment(new LocalDate().minusWeeks(1), 100, 50, 25, 100, 50, 25, FortNightly)
+        val firstPayment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+        val secondPayment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+        val thirdPayment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Annually)
+        val latestPayment = Payment(LocalDate.now.minusWeeks(1), 100, 50, 25, 100, 50, 25, FortNightly)
         val annualAccount =
           AnnualAccount(TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 
@@ -197,8 +197,8 @@ class AnnualAccountSpec extends PlaySpec {
     }
   }
 
-  val payment1 = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Irregular)
-  val payment2 = Payment(new LocalDate().minusWeeks(1), 200, 100, 50, 100, 50, 25, OneOff)
+  val payment1 = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Irregular)
+  val payment2 = Payment(LocalDate.now.minusWeeks(1), 200, 100, 50, 100, 50, 25, OneOff)
 
   val SutWithNoPayments =
     AnnualAccount(taxYear = TaxYear("2017"), realTimeStatus = Available, payments = Nil, endOfTaxYearUpdates = Nil)
@@ -211,7 +211,7 @@ class AnnualAccountSpec extends PlaySpec {
     realTimeStatus = Available,
     payments = List(
       Payment(
-        date = new LocalDate(2017, 5, 26),
+        date = LocalDate.of(2017, 5, 26),
         amountYearToDate = 2000,
         taxAmountYearToDate = 1200,
         nationalInsuranceAmountYearToDate = 1500,
@@ -226,7 +226,7 @@ class AnnualAccountSpec extends PlaySpec {
   val SutWithMultiplePayments = SutWithOnePayment.copy(
     payments = SutWithOnePayment.payments :+
       Payment(
-        date = new LocalDate(2017, 5, 26),
+        date = LocalDate.of(2017, 5, 26),
         amountYearToDate = 2000,
         taxAmountYearToDate = 1200,
         nationalInsuranceAmountYearToDate = 1500,
@@ -236,7 +236,7 @@ class AnnualAccountSpec extends PlaySpec {
         payFrequency = FortNightly
       ) :+
       Payment(
-        date = new LocalDate(2017, 6, 26),
+        date = LocalDate.of(2017, 6, 26),
         amountYearToDate = 2000,
         taxAmountYearToDate = 2500,
         nationalInsuranceAmountYearToDate = 1500,

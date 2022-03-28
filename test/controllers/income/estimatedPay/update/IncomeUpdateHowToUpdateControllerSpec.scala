@@ -49,7 +49,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
       "company",
       Live,
       Some("123"),
-      new LocalDate("2016-05-26"),
+      LocalDate.parse("2016-05-26"),
       None,
       Nil,
       "",

@@ -62,8 +62,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
           OtherBasisOfOperation,
           Live,
           None,
-          Some(new LocalDate(2015, 11, 26)),
-          Some(new LocalDate(2015, 11, 26))
+          Some(LocalDate.of(2015, 11, 26)),
+          Some(LocalDate.of(2015, 11, 26))
         )
 
         val taxAccountSummary = TaxAccountSummary(7834, 2772, 0, 0, 0, 47835, 11500)

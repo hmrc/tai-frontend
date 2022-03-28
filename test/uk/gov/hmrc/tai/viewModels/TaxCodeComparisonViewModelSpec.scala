@@ -29,7 +29,7 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
     "return the same quantity of tax codes within each generated TaxCodeDetail as there are tax years requested" in {
 
       val prevYearMinus2Request =
-        TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(new LocalDate().minusYears(2)), currentTaxCodeIncomes)
+        TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(LocalDate.now.minusYears(2)), currentTaxCodeIncomes)
       val prevYearRequest = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().prev, Nil)
       val currentYearRequest = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), Nil)
       val nextYearRequest = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, Nil)

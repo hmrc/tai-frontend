@@ -142,7 +142,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
       }
 
       def setup(
-        payment: Option[Payment] = Some(Payment(new LocalDate(), 200, 50, 25, 100, 50, 25, Monthly)),
+        payment: Option[Payment] = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly)),
         currentCache: Map[String, String] = Map.empty[String, String]): EstimatedPayPageHarness =
         new EstimatedPayPageHarness(payment, currentCache)
     }
@@ -150,7 +150,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
       "payYearToDate is less than gross annual pay" in {
 
         val result = EstimatedPayPageHarness
-          .setup(Some(Payment(new LocalDate(), 50, 1, 1, 1, 1, 1, Monthly)))
+          .setup(Some(Payment(LocalDate.now, 50, 1, 1, 1, 1, 1, Monthly)))
           .estimatedPayPage(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe OK

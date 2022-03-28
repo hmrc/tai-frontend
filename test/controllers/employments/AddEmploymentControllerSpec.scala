@@ -20,6 +20,7 @@ import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{eq => mockEq, _}
@@ -42,6 +43,7 @@ import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
+import java.time.format.DateTimeFormatter
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
@@ -181,7 +183,7 @@ class AddEmploymentControllerSpec
 
       "form is valid and start date is less than 6 weeks" in {
         val sut = createSUT
-        val date = new LocalDate().minusDays(4)
+        val date = LocalDate.now.minusDays(4)
 
         val formData = Json.obj(
           sut.employmentStartDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
@@ -243,7 +245,7 @@ class AddEmploymentControllerSpec
 
       "form is valid and start date is less than 6 weeks" in {
         val sut = createSUT
-        val date = new LocalDate().minusDays(4)
+        val date = LocalDate.now.minusDays(4)
 
         val formData = Json.obj(
           sut.employmentStartDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
@@ -256,12 +258,11 @@ class AddEmploymentControllerSpec
           sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
-        verify(addEmploymentJourneyCacheService, times(1)).cache(
-          Matchers.eq(
-            Map(
-              AddEmployment_NameKey                 -> "Test",
-              AddEmployment_StartDateKey            -> date.toString("yyyy-MM-dd"),
-              AddEmployment_StartDateWithinSixWeeks -> YesValue)))(any())
+        verify(addEmploymentJourneyCacheService, times(1)).cache(Matchers.eq(Map(
+          AddEmployment_NameKey                 -> "Test",
+          AddEmployment_StartDateKey            -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+          AddEmployment_StartDateWithinSixWeeks -> YesValue
+        )))(any())
       }
     }
   }

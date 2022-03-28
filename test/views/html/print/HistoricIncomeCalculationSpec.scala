@@ -26,6 +26,8 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 
+import java.time.format.DateTimeFormatter
+
 class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
   private val historicIncomePrintView = inject[HistoricIncomePrintView]
@@ -33,7 +35,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
   val dateFormatPattern = "d MMMM yyyy"
 
   val samplePaymentWithoutNic: Payment = Payment(
-    date = new LocalDate(2016, 4, 7),
+    date = LocalDate.of(2016, 4, 7),
     amount = 111,
     amountYearToDate = 150,
     taxAmount = 0,
@@ -43,7 +45,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     payFrequency = Monthly
   )
   val samplePaymentWithNic: Payment = Payment(
-    date = new LocalDate(2017, 4, 7),
+    date = LocalDate.of(2017, 4, 7),
     amount = 222,
     amountYearToDate = 150,
     taxAmount = 0,
@@ -104,7 +106,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages(
             "tai.income.calculation.noRtiDataPreviousYear",
-            TaxYear(TaxYear().prev.year).end.toString(dateFormatPattern)))
+            TaxYear(TaxYear().prev.year).end.format(DateTimeFormatter.ofPattern(dateFormatPattern))))
       }
 
       "there is no RTI data for cy-2" in {
@@ -113,7 +115,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages(
             "tai.income.calculation.noRtiDataPreviousYear",
-            TaxYear(TaxYear().prev.year - 1).end.toString(dateFormatPattern)))
+            TaxYear(TaxYear().prev.year - 1).end.format(DateTimeFormatter.ofPattern(dateFormatPattern))))
       }
 
       "RTI is available but payment data is not available" in {
@@ -122,7 +124,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages(
             "tai.income.calculation.noRtiDataPreviousYear",
-            TaxYear(TaxYear().year - 1).end.toString(dateFormatPattern)))
+            TaxYear(TaxYear().year - 1).end.format(DateTimeFormatter.ofPattern(dateFormatPattern))))
       }
     }
 
@@ -133,8 +135,9 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages(
             "tai.income.calculation.summary.previous",
-            samplePayments.head.date.toString(dateFormatPattern),
-            samplePayments.last.date.toString(dateFormatPattern)))
+            samplePayments.head.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)),
+            samplePayments.last.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+          ))
       }
 
       "payment information, employer name but no EYU messages are available" in {

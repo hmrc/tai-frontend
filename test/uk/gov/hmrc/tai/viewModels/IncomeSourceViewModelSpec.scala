@@ -84,7 +84,7 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
           sut.displayEndDate mustBe false
         }
         "employment model has endDate and employment status is live" in {
-          val employmentWithoutPayrollNo = employment.copy(endDate = Some(new LocalDate(2018, 4, 21)))
+          val employmentWithoutPayrollNo = employment.copy(endDate = Some(LocalDate.of(2018, 4, 21)))
           val sut = IncomeSourceViewModel(taxCodeIncome, employmentWithoutPayrollNo)
           sut.endDate mustBe "21 April 2018"
           sut.displayEndDate mustBe false

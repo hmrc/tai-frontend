@@ -27,6 +27,8 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
 import utils.BaseSpec
 
+import java.time.format.DateTimeFormatter
+
 class TaxFreeAmountViewModelSpec extends BaseSpec {
 
   "apply method" must {
@@ -557,8 +559,9 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
   val expectedHeader, expectedTitle = Messages("tai.taxFreeAmount.heading.pt1") + " " +
     Messages(
       "tai.taxYear",
-      HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
-      HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy")))
+      HtmlFormatter.htmlNonBroken(TaxYear().start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))),
+      HtmlFormatter.htmlNonBroken(TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")))
+    )
 
   val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
   val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))

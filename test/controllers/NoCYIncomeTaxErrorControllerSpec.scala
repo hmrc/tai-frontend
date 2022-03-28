@@ -104,7 +104,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
         "empName",
         Live,
         None,
-        new LocalDate(2017, 6, 9),
+        LocalDate.of(2017, 6, 9),
         None,
         Nil,
         "taxNumber",

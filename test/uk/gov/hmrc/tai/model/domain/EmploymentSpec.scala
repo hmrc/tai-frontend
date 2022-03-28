@@ -30,7 +30,7 @@ class EmploymentSpec extends PlaySpec {
           "",
           Live,
           None,
-          new LocalDate(),
+          LocalDate.now,
           None,
           List(annualAccount1, annualAccount2),
           "",
@@ -45,14 +45,14 @@ class EmploymentSpec extends PlaySpec {
       }
       "there is only one annual account" in {
         val employment =
-          Employment("", Live, None, new LocalDate(), None, List(annualAccount1), "", "", 1, None, false, false)
+          Employment("", Live, None, LocalDate.now, None, List(annualAccount1), "", "", 1, None, false, false)
 
         employment.latestAnnualAccount mustBe Some(annualAccount1)
       }
     }
     "return none" when {
       "there are no annual accounts" in {
-        val employment = Employment("", Live, None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
+        val employment = Employment("", Live, None, LocalDate.now, None, Nil, "", "", 1, None, false, false)
 
         employment.latestAnnualAccount mustBe None
       }

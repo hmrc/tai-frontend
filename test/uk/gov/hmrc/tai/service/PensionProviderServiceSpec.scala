@@ -32,7 +32,7 @@ class PensionProviderServiceSpec extends BaseSpec {
   "add pension provider" must {
     "return an envelope id" in {
       val sut = createSUT
-      val model = AddPensionProvider("name", new LocalDate(2017, 6, 9), "12345", "Yes", Some("123456789"))
+      val model = AddPensionProvider("name", LocalDate.of(2017, 6, 9), "12345", "Yes", Some("123456789"))
       when(pensionProviderConnector.addPensionProvider(Matchers.eq(nino), Matchers.eq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
@@ -44,7 +44,7 @@ class PensionProviderServiceSpec extends BaseSpec {
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
-        val model = AddPensionProvider("name", new LocalDate(2017, 6, 9), "12345", "Yes", Some("123456789"))
+        val model = AddPensionProvider("name", LocalDate.of(2017, 6, 9), "12345", "Yes", Some("123456789"))
         when(pensionProviderConnector.addPensionProvider(Matchers.eq(nino), Matchers.eq(model))(any()))
           .thenReturn(Future.successful(None))
 
