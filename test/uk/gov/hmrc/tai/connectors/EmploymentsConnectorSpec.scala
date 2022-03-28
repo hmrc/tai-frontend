@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.joda.time.DateTime
+import java.time.LocalDateTime
 import java.time.LocalDate
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -475,7 +475,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       |          }]
         }""".stripMargin
 
-  private val year: TaxYear = TaxYear(DateTime.now().getYear)
+  private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 

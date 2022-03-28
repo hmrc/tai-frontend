@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.model
 
-import org.joda.time.YearMonth
+import java.time.YearMonth
 import org.mockito.Mockito.when
 import org.scalatest.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.play.PlaySpec

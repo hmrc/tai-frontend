@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.joda.time.DateTime
+import java.time.LocalDateTime
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -59,7 +59,7 @@ class PreviousYearsIncomeServiceSpec extends BaseSpec {
     }
   }
 
-  private val year: TaxYear = TaxYear(DateTime.now().getYear)
+  private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
 
   val previousYearsIncomeConnector = mock[PreviousYearsIncomeConnector]
 

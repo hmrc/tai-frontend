@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.joda.time.DateTime
+import java.time.LocalDateTime
 import java.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -212,7 +212,7 @@ class EmploymentServiceSpec extends BaseSpec {
     }
   }
 
-  private val year: TaxYear = TaxYear(DateTime.now().getYear)
+  private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
 
   private val employment = Employment(
     "company name",
