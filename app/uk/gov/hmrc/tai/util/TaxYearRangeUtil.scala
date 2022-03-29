@@ -22,8 +22,11 @@ import uk.gov.hmrc.tai.model.TaxYear
 import com.ibm.icu.text.SimpleDateFormat
 import com.ibm.icu.util.{TimeZone, ULocale}
 
+import java.time.format.DateTimeFormatter
 import java.util.Date
 object TaxYearRangeUtil {
+
+  private def toDate(date: LocalDate): java.util.Date = java.sql.Date.valueOf(date)
 
   private val messageRangeKeyBetween = "tai.taxYear.between"
   private val messageRangeKeyFromAndTo = "tai.taxYear"
@@ -67,14 +70,14 @@ object TaxYearRangeUtil {
     } else {
       messages(
         messageKey,
-        HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(from)),
-        HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(to))
+        HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(toDate(from))),
+        HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(toDate(to)))
       )
     }
 
   def formatDate(date: LocalDate)(implicit messages: Messages): String =
-    createDateFormatForPattern("d MMMM y").format(date)
+    createDateFormatForPattern("d MMMM y").format(toDate(date))
 
   def formatDateAbbrMonth(date: LocalDate)(implicit messages: Messages): String =
-    createDateFormatForPattern("d MMM y").format(date)
+    createDateFormatForPattern("d MMM y").format(toDate(date))
 }

@@ -109,6 +109,7 @@ class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {
       val expectedEnd = htmlNonBroken(langUtils.Dates.formatDate(endOfTaxYear))
 
       dynamicDateRangeHtmlNonBreak(now, endOfTaxYear) mustBe s"$expectedNow to $expectedEnd"
+
     }
 
     "given two dates return a formatted string in welsh" in {

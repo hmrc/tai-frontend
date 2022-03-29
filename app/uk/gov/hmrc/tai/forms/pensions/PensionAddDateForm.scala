@@ -67,7 +67,7 @@ case class PensionAddDateForm(employerName: String) {
 
       override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
         PensionFormDay   -> value.getDayOfMonth.toString,
-        PensionFormMonth -> value.getMonth.toString,
+        PensionFormMonth -> value.getMonthValue.toString,
         PensionFormYear  -> value.getYear.toString
       )
     }
