@@ -21,14 +21,10 @@ import cats.implicits._
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import uk.gov.hmrc.tai.util.FutureOps._
-
-import javax.inject.{Inject, Singleton}
 import org.joda.time.LocalDate
 import play.api.Logging
 import play.api.data.Form
 import play.api.mvc._
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses._
@@ -38,17 +34,17 @@ import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
+import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
-import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, SameEstimatedPayViewModel}
 import views.html.incomes._
-import uk.gov.hmrc.tai.model.domain.Employment
 
-import scala.Function.tupled
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
+import scala.util.{Failure, Success, Try}
 @Singleton
 class IncomeController @Inject()(
   @Named("Update Income") journeyCacheService: JourneyCacheService,
@@ -114,7 +110,7 @@ class IncomeController @Inject()(
         employerId,
         cachedData(2).toInt,
         isPension = false,
-        routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString)
+        routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
       Ok(sameEstimatedPay(model))
     }).recover {
       case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
@@ -182,12 +178,8 @@ class IncomeController @Inject()(
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
-
       (for {
-        cachedData <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_NewAmountKey).getOrFail.recoverWith {
-                       case _ =>
-                         recoverFromCleanCache(nino, empId)
-                     }
+        cachedData           <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_NewAmountKey).getOrFail
         taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
         employmentDetails    <- employmentService.employment(nino, empId)
       } yield {
@@ -205,40 +197,18 @@ class IncomeController @Inject()(
             }
           case _ => throw new RuntimeException("Exception while reading employment and tax code details")
         }
-      }).recover {
-        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      }).recoverWith {
+        case NonFatal(e) =>
+          journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_ConfirmedNewAmountKey).flatMap {
+            case Right(_) =>
+              journeyCacheService.flush().map { _ =>
+                Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+              }
+            case _ => Future.successful(errorPagesHandler.internalServerError(e.getMessage))
+          }
+
       }
   }
-
-  private def recoverFromCleanCache(nino: Nino, empId: Int)(implicit hc: HeaderCarrier) =
-    for {
-      amount     <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_ConfirmedNewAmountKey).getOrFail
-      employment <- employmentService.employment(nino, empId)
-      _          <- cacheEmploymentDetails(empId, amount, employment)
-    } yield amount
-
-  private def cacheEmploymentDetails(id: Int, amount: Int, employment: Option[Employment])(
-    implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    employment match {
-      case Some(employment) =>
-        val incomeType = if (employment.receivingOccupationalPension) {
-          TaiConstants.IncomeTypePension
-        } else {
-          TaiConstants.IncomeTypeEmployment
-        }
-        journeyCacheService.flush().flatMap { _ =>
-          journeyCacheService.cache(
-            Map(
-              UpdateIncome_NameKey       -> employment.name,
-              UpdateIncome_IdKey         -> id.toString,
-              UpdateIncome_IncomeTypeKey -> incomeType,
-              UpdateIncome_NewAmountKey  -> amount.toString
-            )
-          )
-        }
-      case _ => throw new RuntimeException("Not able to find employment")
-    }
-
   def updateEstimatedIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 

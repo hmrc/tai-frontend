@@ -381,35 +381,22 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       }
     }
 
-    "cache must be populated" when {
-      "user navigates backwards" in {
-        val testController = createTestIncomeController()
-        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
-        val incomeType = TaiConstants.IncomeTypeEmployment
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_NewAmountKey))(any()))
-          .thenReturn(Future.failed(new RuntimeException))
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
-          .thenReturn(cachePayToDate)
-        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
-        when(
-          journeyCacheService.cache(meq(Map(
-            UpdateIncome_NameKey       -> employment.name,
-            UpdateIncome_IdKey         -> employerId.toString,
-            UpdateIncome_IncomeTypeKey -> incomeType,
-            UpdateIncome_NewAmountKey  -> payToDate
-          )))(any())).thenReturn(Future.successful(Map.empty[String, String]))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+    "user navigates backwards" in {
+      val testController = createTestIncomeController()
+      val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+      val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+      when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_NewAmountKey))(any()))
+        .thenReturn(Future.failed(new RuntimeException))
+      when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
+        .thenReturn(cachePayToDate)
+      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
-        val result =
-          testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result =
+        testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe OK
-      }
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
+
     }
   }
 
