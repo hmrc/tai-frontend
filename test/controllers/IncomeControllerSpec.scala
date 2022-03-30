@@ -342,6 +342,8 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
+          .thenReturn(Future.successful(Left("Error")))
 
         val result =
           testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -359,6 +361,8 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
+          .thenReturn(Future.successful(Left("Error")))
 
         val result =
           testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
