@@ -20,7 +20,7 @@ import java.time.LocalDate
 import play.api.libs.json.{Format, Json}
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
-import uk.gov.hmrc.tai.util.DateHelper.dateTimeOrdering
+//import uk.gov.hmrc.tai.util.DateHelper.dateTimeOrdering
 
 case class Payment(
   date: LocalDate,
@@ -35,6 +35,13 @@ case class Payment(
 )
 
 object Payment {
+
+  def toDate(date: LocalDate): java.util.Date = java.sql.Date.valueOf(date)
+
+//  private implicit val ord: Ordering[LocalDate] = (x: LocalDate, y: LocalDate) => x.compareTo(y)
+
+  private implicit val asdf: Ordering[LocalDate] = (x: LocalDate, y: LocalDate) => x.compareTo(y)
+
   implicit val dateOrdering: Ordering[Payment] = Ordering.by(_.date)
   implicit val paymentFormat: Format[Payment] = Json.format[Payment]
 }
