@@ -844,7 +844,7 @@ class EndEmploymentControllerSpec
               receivingOccupationalPension = false))))
 
     when(endEmploymentJourneyCacheService.currentValueAsDate(any())(any()))
-      .thenReturn(Future.successful(Some(LocalDate.parse("2017-9-9"))))
+      .thenReturn(Future.successful(Some(LocalDate.parse("2017-09-09"))))
     when(endEmploymentJourneyCacheService.currentValue(any())(any()))
       .thenReturn(Future.successful(Some("Test Value")))
 

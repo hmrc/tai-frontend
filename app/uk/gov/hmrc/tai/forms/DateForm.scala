@@ -72,7 +72,7 @@ case class DateForm(validations: Seq[((LocalDate) => Boolean, String)], blankDat
 
       override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
         DateFormDay   -> value.getDayOfMonth.toString,
-        DateFormMonth -> value.getMonth.toString,
+        DateFormMonth -> value.getMonthValue.toString,
         DateFormYear  -> value.getYear.toString
       )
     }

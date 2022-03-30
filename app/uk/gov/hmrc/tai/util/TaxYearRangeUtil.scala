@@ -49,8 +49,8 @@ object TaxYearRangeUtil {
   }
 
   def currentTaxYearRangeYearOnly(implicit messages: Messages): String = {
-    val start = TaxYear().start.getYear
-    val end = TaxYear().end.getYear
+    val start = TaxYear().start.format(DateTimeFormatter.ofPattern("yyyy"))
+    val end = TaxYear().end.format(DateTimeFormatter.ofPattern("yyyy"))
 
     messages("tai.taxYear", start, end)
   }
