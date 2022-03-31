@@ -55,11 +55,11 @@ class YearAndMonthSpec extends PlaySpec with MockitoSugar {
         "yearAndMonth" -> "invalid-date"
       )
 
-      val ex = intercept[IllegalArgumentException] {
+      val ex = intercept[JsResultException] {
         invalidJson.as[YearAndMonth]
       }
 
-      ex.getMessage shouldBe "Invalid format: \"invalid-date\""
+      ex.getMessage shouldBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(Invalid date parsed),WrappedArray())))))"
 
     }
 
