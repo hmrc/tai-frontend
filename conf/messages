@@ -1486,3 +1486,8 @@ mci.title=We cannot access your details
 mci.p1=This is because of an MCI issue. It means that we need to check some details with you before you can sign in again.
 mci.p2=You can call us to
 mci.link.text=resolve the MCI issue with an advisor
+
+# Beta Banner Text
+#=============================================================
+betaBanner.message=This is a new service ‐ your {0} will help us to improve it.
+betaBanner.linkText=feedback
