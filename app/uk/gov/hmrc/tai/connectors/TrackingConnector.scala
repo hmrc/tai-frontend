@@ -22,6 +22,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.domain.tracking.TrackedForm
 import uk.gov.hmrc.tai.model.domain.tracking.formatter.TrackedFormFormatters
+import uk.gov.hmrc.tai.config.ApplicationConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -32,15 +33,23 @@ class TrackingConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Serv
 
   lazy val serviceUrl: String = servicesConfig.baseUrl("tracking")
 
+  val applicationConfig: ApplicationConfig
+
   private val IdType = "nino"
 
   def trackingUrl(id: String) = s"$serviceUrl/tracking-data/user/$IdType/$id"
 
-  def getUserTracking(nino: String)(implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] =
-    (httpHandler.getFromApiV2(trackingUrl(nino)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))).recover {
-      case NonFatal(x) => {
-        logger.warn(s"Tracking service returned error, therefore returning an empty response. Error: ${x.getMessage}")
-        Seq.empty[TrackedForm]
+  def getUserTracking(nino: String)(implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] = {
+    if (applicationConfig.trackingEnabled) {
+      (httpHandler.getFromApiV2(trackingUrl(nino)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))).recover {
+        case NonFatal(x) => {
+          logger.warn(s"Tracking service returned error, therefore returning an empty response. Error: ${x.getMessage}")
+          Seq.empty[TrackedForm]
+        }
       }
     }
+    else {
+      Future.successful(Seq.empty[TrackedForm])
+    }
+  }
 }
