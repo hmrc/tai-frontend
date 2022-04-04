@@ -203,7 +203,9 @@ class IncomeController @Inject()(
     }).recoverWith {
       case NonFatal(e) =>
         import cats.implicits._
-        val futureEmpId = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_ConfirmedNewAmountKey) *>
+        val futureEmpId = journeyCacheService
+          .mandatoryJourneyValueAsInt(UpdateIncome_ConfirmedNewAmountKey)
+          .getOrFail *>
           journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
 
         futureEmpId.map {

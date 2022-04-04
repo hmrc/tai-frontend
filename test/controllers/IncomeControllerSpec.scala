@@ -62,6 +62,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
   val payToDate = "100"
   val employerId = 1
   val employerName = "Employer Name"
+  val cachePayToDate = Future.successful(Right(100))
 
   val cachedData = Future.successful(Right(Seq(employerId.toString, payToDate)))
 
@@ -311,13 +312,18 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(cachedData)
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(cachePayToDate)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
+          .thenReturn(Future.successful(Left("Error")))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
+          .thenReturn(Future.successful(Left("Error")))
 
-        val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result =
+          testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -327,13 +333,18 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(cachedData)
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(cachePayToDate)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
+          .thenReturn(Future.successful(Left("Error")))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
+          .thenReturn(Future.successful(Left("Error")))
 
-        val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result =
+          testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -352,6 +363,22 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
+//    "user navigates backwards" in {
+//      val testController = createTestIncomeController()
+//      val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+//      val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+//      when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_NewAmountKey))(any()))
+//        .thenReturn(Future.failed(new RuntimeException))
+//      when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
+//        .thenReturn(cachePayToDate)
+//      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+//
+//      val result =
+//        testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+//
+//      status(result) mustBe SEE_OTHER
+//      redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
+//    }
   }
 
   "updateEstimatedIncome" must {
