@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import akka.actor.ActorSystem
 import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
@@ -92,7 +93,7 @@ class TrackingConnectorSpec extends BaseSpec with BeforeAndAfterEach with ScalaF
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut: TrackingConnector = new TrackingConnector(httpHandler, servicesConfig) {
+  def sut: TrackingConnector = new TrackingConnector(httpHandler, servicesConfig, appConfig, inject[ActorSystem]) {
     override lazy val serviceUrl: String = "mockUrl"
   }
 }

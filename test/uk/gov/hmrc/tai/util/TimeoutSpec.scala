@@ -16,16 +16,18 @@
 
 package uk.gov.hmrc.tai.util
 
-import scala.concurrent.Future
-import scala.concurrent.duration._
 import akka.actor.ActorSystem
-import org.scalatest.concurrent.IntegrationPatience
-import org.scalatest.concurrent.ScalaFutures.{convertScalaFuture, whenReady}
+import org.scalatest.concurrent.ScalaFutures
 import utils.{BaseSpec, WireMockHelper}
 
-class TimeoutSpec extends BaseSpec with Timeout with WireMockHelper with IntegrationPatience {
+import scala.concurrent.Future
+import scala.concurrent.duration._
 
-  private val system: ActorSystem = ActorSystem()
+class TimeoutSpec extends BaseSpec with ScalaFutures with Timeout with WireMockHelper {
+
+  val system = inject[ActorSystem]
+
+  implicit val config: PatienceConfig = PatienceConfig(5.seconds)
 
   "Timeout" must {
     "not time out within timeout window" in {

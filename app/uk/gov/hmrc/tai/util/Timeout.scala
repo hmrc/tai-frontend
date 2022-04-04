@@ -24,7 +24,7 @@ import play.api.Logging
 case object FutureEarlyTimeout extends RuntimeException
 
 trait Timeout extends Logging {
-  private val system: ActorSystem = ActorSystem()
+  def system: ActorSystem
 
   def withTimeout[A](timeoutDuration: FiniteDuration)(block: => Future[A])(implicit ec: ExecutionContext): Future[A] = {
     val delayedFuture =

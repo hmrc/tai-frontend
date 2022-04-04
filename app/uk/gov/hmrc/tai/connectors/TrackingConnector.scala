@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.scalatest.time.Seconds
+import akka.actor.ActorSystem
 
 import javax.inject.Inject
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.domain.tracking.TrackedForm
 import uk.gov.hmrc.tai.model.domain.tracking.formatter.TrackedFormFormatters
@@ -35,7 +34,8 @@ import scala.util.control.NonFatal
 class TrackingConnector @Inject()(
   httpHandler: HttpHandler,
   servicesConfig: ServicesConfig,
-  applicationConfig: ApplicationConfig)(implicit ec: ExecutionContext)
+  applicationConfig: ApplicationConfig,
+  override val system: ActorSystem)(implicit ec: ExecutionContext)
     extends TrackedFormFormatters with Timeout with Logging {
 
   lazy val serviceUrl: String = servicesConfig.baseUrl("tracking")
@@ -46,7 +46,7 @@ class TrackingConnector @Inject()(
 
   def getUserTracking(nino: String)(implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] =
     if (applicationConfig.trackingEnabled) {
-      withTimeout(5 seconds) {
+      withTimeout(5.seconds) {
         (httpHandler.getFromApiV2(trackingUrl(nino)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))).recover {
           case NonFatal(x) => {
             logger.warn(
