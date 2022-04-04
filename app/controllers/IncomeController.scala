@@ -200,8 +200,17 @@ class IncomeController @Inject()(
           }
         case _ => throw new RuntimeException("Exception while reading employment and tax code details")
       }
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+    }).recoverWith {
+      case NonFatal(e) =>
+        import cats.implicits._
+        val futureEmpId = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_ConfirmedNewAmountKey) *>
+          journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
+
+        futureEmpId.map {
+          case Right(empId) =>
+            Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+          case _ => errorPagesHandler.internalServerError(e.getMessage)
+        }
     }
   }
 
@@ -212,6 +221,7 @@ class IncomeController @Inject()(
       implicit user: AuthedUser,
       request: Request[AnyContent]): Result = {
       journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newAmount)
+      journeyCacheService.cache(UpdateIncome_IdKey, employerId.toString)
       incomeType match {
         case TaiConstants.IncomeTypePension => Ok(editPensionSuccess(employerName, employerId))
         case _                              => Ok(editSuccess(employerName, employerId))
