@@ -202,17 +202,17 @@ class IncomeController @Inject()(
       }
     }).recoverWith {
       case NonFatal(e) =>
-        import cats.implicits._
-        val futureEmpId = journeyCacheService
-          .mandatoryJourneyValueAsInt(UpdateIncome_ConfirmedNewAmountKey)
-          .getOrFail *>
-          journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
+        //When a user navigates backwards the cache preserves both UpdateIncome_ConfirmedNewAmountKey,UpdateIncome_IdKey
+        //If that's the case, then redirect to the first page
+        val futureEmpId = for {
+          _     <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_ConfirmedNewAmountKey))
+          empId <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
+        } yield empId
 
-        futureEmpId.map {
-          case Right(empId) =>
-            Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
-          case _ => errorPagesHandler.internalServerError(e.getMessage)
-        }
+        futureEmpId.fold(
+          _ => errorPagesHandler.internalServerError(e.getMessage),
+          empId => Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+        )
     }
   }
 
