@@ -20,7 +20,7 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.MockTemplateRenderer
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
@@ -49,7 +49,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
       "company",
       Live,
       Some("123"),
-      new LocalDate("2016-05-26"),
+      LocalDate.parse("2016-05-26"),
       None,
       Nil,
       "",

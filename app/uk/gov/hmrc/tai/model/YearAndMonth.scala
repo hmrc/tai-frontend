@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.tai.model
 
-import org.joda.time.YearMonth
-import org.joda.time.format.DateTimeFormat
+import java.time.format.DateTimeFormatter
+import java.time.YearMonth
 import play.api.i18n.Lang
 import play.api.libs.json._
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -33,7 +33,7 @@ final case class YearAndMonth(yearAndMonth: YearMonth) {
 
 object YearAndMonth {
 
-  val dateFormatter = DateTimeFormat.forPattern("MMMM yyyy")
+  val dateFormatter = DateTimeFormatter.ofPattern("MMMM yyyy")
 
   val MonthNamesInWelsh = Map(
     1  -> "Ionawr",
@@ -79,9 +79,9 @@ object YearAndMonth {
 
   def formattedDate(yearAndMonth: YearMonth, lang: Lang): String =
     if (lang == Lang("cy")) {
-      val month = MonthNamesInWelsh(yearAndMonth.getMonthOfYear)
+      val month = MonthNamesInWelsh(yearAndMonth.getMonthValue)
       month + " " + yearAndMonth.getYear
     } else {
-      yearAndMonth.toString(dateFormatter)
+      yearAndMonth.format(dateFormatter)
     }
 }

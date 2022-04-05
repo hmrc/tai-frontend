@@ -17,7 +17,7 @@
 package views.html.employments
 
 import controllers.routes
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.WithinSixWeeksViewModel
@@ -61,7 +61,7 @@ class EndEmploymentWithinSixWeeksErrorViewSpec extends TaiViewSpec {
   }
 
   private val employerName = "Employer"
-  private lazy val earliestUpdateDate = new LocalDate(2017, 6, 20)
-  private lazy val latestPayDate = new LocalDate(2016, 5, 10)
+  private lazy val earliestUpdateDate = LocalDate.of(2017, 6, 20)
+  private lazy val latestPayDate = LocalDate.of(2016, 5, 10)
   private lazy val model = WithinSixWeeksViewModel(earliestUpdateDate, employerName, latestPayDate, 2)
 }

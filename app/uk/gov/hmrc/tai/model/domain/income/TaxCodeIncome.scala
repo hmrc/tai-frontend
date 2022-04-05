@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.model.domain.income
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.libs.json._
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._

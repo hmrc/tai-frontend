@@ -21,7 +21,7 @@ import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.mvc._
 
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
@@ -133,7 +133,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
           }
         case _ =>
           Future.successful(
-            Ok(incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), incomeSource.id)))
+            Ok(incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(LocalDate.now), incomeSource.id)))
       }
     }
 

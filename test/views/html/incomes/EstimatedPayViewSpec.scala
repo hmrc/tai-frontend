@@ -16,7 +16,7 @@
 
 package views.html.incomes
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear

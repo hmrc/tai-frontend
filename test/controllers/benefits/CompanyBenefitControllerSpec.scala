@@ -20,7 +20,7 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import mocks.MockTemplateRenderer
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
@@ -313,8 +313,8 @@ class CompanyBenefitControllerSpec
     "company name",
     Live,
     Some("123"),
-    new LocalDate("2016-05-26"),
-    Some(new LocalDate("2016-05-26")),
+    LocalDate.parse("2016-05-26"),
+    Some(LocalDate.parse("2016-05-26")),
     Nil,
     "",
     "",

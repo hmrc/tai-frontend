@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -66,7 +66,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
       when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(JsString("2017-03-04")))
       Await.result(
         sut.currentValueAs[LocalDate](journeyName, "dateValKey", string => LocalDate.parse(string)),
-        5 seconds) mustBe Some(new LocalDate("2017-03-04"))
+        5 seconds) mustBe Some(LocalDate.parse("2017-03-04"))
     }
 
     "trap a NO CONTENT exception (a valid business scenario), and return None in its place" in {

@@ -20,7 +20,7 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.MockTemplateRenderer
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.Mockito._
@@ -452,8 +452,8 @@ class UpdateEmploymentControllerSpec
     "company name",
     Live,
     Some("123"),
-    new LocalDate("2016-05-26"),
-    Some(new LocalDate("2016-05-26")),
+    LocalDate.parse("2016-05-26"),
+    Some(LocalDate.parse("2016-05-26")),
     Nil,
     "",
     "",

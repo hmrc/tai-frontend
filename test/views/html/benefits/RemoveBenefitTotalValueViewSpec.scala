@@ -23,6 +23,8 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.benefit.BenefitViewModel
 
+import java.time.format.DateTimeFormatter
+
 class RemoveBenefitTotalValueViewSpec extends TaiViewSpec {
 
   "removeBenefitTotalValue" must {
@@ -57,9 +59,9 @@ class RemoveBenefitTotalValueViewSpec extends TaiViewSpec {
       doc must haveParagraphWithText(
         Messages(
           "tai.remove.company.benefit.total.value.whatHappens.desc",
-          TaxYear().start.toString("yyyy"),
-          TaxYear().end.toString("yyyy"),
-          TaxYear().end.toString("d MMMM yyyy")
+          TaxYear().start.format(DateTimeFormatter.ofPattern("yyyy")),
+          TaxYear().end.format(DateTimeFormatter.ofPattern("yyyy")),
+          TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
         ))
     }
     "contain an input field with pound symbol appended" in {

@@ -16,7 +16,7 @@
 
 package views.html.incomes
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -25,6 +25,8 @@ import uk.gov.hmrc.tai.util.DateHelper
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{LatestPayment, PaymentDetailsViewModel, YourIncomeCalculationViewModel}
 import views.html.includes.link
+
+import java.time.format.DateTimeFormatter
 
 class YourIncomeCalculationViewSpec extends TaiViewSpec {
 
@@ -45,8 +47,9 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
         doc(potentiallyCeasedView) must haveH2HeadingWithText(
           messages(
             "tai.income.calculation.heading",
-            s"${TaxYear().start.toString(dateFormatPattern)}",
-            s"${TaxYear().end.toString(dateFormatPattern)}")
+            s"${TaxYear().start.format(DateTimeFormatter.ofPattern(dateFormatPattern))}",
+            s"${TaxYear().end.format(DateTimeFormatter.ofPattern(dateFormatPattern))}"
+          )
         )
       }
 
@@ -56,7 +59,9 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
         def potentiallyCeasedView = template(model)
 
         doc(potentiallyCeasedView) must haveH2HeadingWithText(
-          messages("tai.income.calculation.heading.withRti", model.latestPayment.get.date.toString(dateFormatPattern))
+          messages(
+            "tai.income.calculation.heading.withRti",
+            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
         )
         doc(potentiallyCeasedView) must haveParagraphWithText(
           messages("tai.income.calculation.potentially.ceased.lede"))
@@ -72,8 +77,9 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
         doc(ceasedView) must haveH2HeadingWithText(
           messages(
             "tai.income.calculation.heading",
-            s"${TaxYear().start.toString(dateFormatPattern)}",
-            s"${TaxYear().end.toString(dateFormatPattern)}")
+            s"${TaxYear().start.format(DateTimeFormatter.ofPattern(dateFormatPattern))}",
+            s"${TaxYear().end.format(DateTimeFormatter.ofPattern(dateFormatPattern))}"
+          )
         )
       }
 
@@ -83,7 +89,9 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
         def ceasedView = template(model)
 
         doc(ceasedView) must haveH2HeadingWithText(
-          messages("tai.income.calculation.ceased.heading", model.latestPayment.get.date.toString(dateFormatPattern))
+          messages(
+            "tai.income.calculation.ceased.heading",
+            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
         )
         doc(ceasedView) must haveParagraphWithText(
           messages("tai.income.calculation.rti.ceased.emp", s"${DateHelper.toDisplayFormat(model.endDate)}"))
@@ -99,14 +107,17 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
         doc(liveView) must haveH2HeadingWithText(
           messages(
             "tai.income.calculation.heading",
-            s"${TaxYear().start.toString(dateFormatPattern)}",
-            s"${TaxYear().end.toString(dateFormatPattern)}")
+            s"${TaxYear().start.format(DateTimeFormatter.ofPattern(dateFormatPattern))}",
+            s"${TaxYear().end.format(DateTimeFormatter.ofPattern(dateFormatPattern))}"
+          )
         )
       }
 
       "payments are present" in {
         doc(view) must haveH2HeadingWithText(
-          messages("tai.income.calculation.heading.withRti", model.latestPayment.get.date.toString(dateFormatPattern))
+          messages(
+            "tai.income.calculation.heading.withRti",
+            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
         )
       }
 
@@ -153,7 +164,7 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
       doc(view) must haveTdWithText(messages(f"${model.latestPayment.get.nationalInsuranceAmountYearToDate}%,.2f"))
 
       model.payments.foreach { payment =>
-        doc(view) must haveTdWithText(payment.date.toString(dateFormatPattern))
+        doc(view) must haveTdWithText(payment.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
         doc(view) must haveTdWithText(f"${payment.taxableIncome}%,.2f")
         doc(view) must haveTdWithText(f"${payment.taxAmount}%,.2f")
         doc(view) must haveTdWithText(f"${payment.nationalInsuranceAmount}%,.2f")
@@ -219,10 +230,10 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
   }
 
   lazy val defaultPayments = Seq(
-    PaymentDetailsViewModel(new LocalDate().minusWeeks(1), 100, 50, 25),
-    PaymentDetailsViewModel(new LocalDate().minusWeeks(2), 100, 50, 25),
-    PaymentDetailsViewModel(new LocalDate().minusWeeks(3), 100, 50, 25),
-    PaymentDetailsViewModel(new LocalDate().minusWeeks(4), 100, 50, 25)
+    PaymentDetailsViewModel(LocalDate.now.minusWeeks(1), 100, 50, 25),
+    PaymentDetailsViewModel(LocalDate.now.minusWeeks(2), 100, 50, 25),
+    PaymentDetailsViewModel(LocalDate.now.minusWeeks(3), 100, 50, 25),
+    PaymentDetailsViewModel(LocalDate.now.minusWeeks(4), 100, 50, 25)
   )
   lazy val dateFormatPattern = "d MMMM yyyy"
   lazy val model = incomeCalculationViewModel()
@@ -241,7 +252,7 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
     hasPayrolledBenefit: Boolean = false) = {
 
     val latestPayment =
-      if (payments.isEmpty) None else Some(LatestPayment(new LocalDate().minusWeeks(4), 400, 50, 25, Weekly))
+      if (payments.isEmpty) None else Some(LatestPayment(LocalDate.now.minusWeeks(4), 400, 50, 25, Weekly))
     YourIncomeCalculationViewModel(
       2,
       "test employment",

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.pensions
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
@@ -48,7 +48,7 @@ object CheckYourAnswersViewModel {
           controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q2"),
-          Dates.formatDate(new LocalDate(pensionStartDate)),
+          Dates.formatDate(LocalDate.parse(pensionStartDate)),
           controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate().url
         ),
         CheckYourAnswersConfirmationLine(

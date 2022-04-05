@@ -17,7 +17,7 @@
 package views.html.taxCodeChange
 
 import controllers.routes
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.tai.model.TaxYear

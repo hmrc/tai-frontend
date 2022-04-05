@@ -18,7 +18,7 @@ package controllers
 
 import builders.UserBuilder
 import controllers.auth.AuthenticatedRequest
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
@@ -234,8 +234,8 @@ class ErrorPagesHandlerSpec extends BaseSpec {
             "company name",
             Live,
             Some("123"),
-            new LocalDate("2016-05-26"),
-            Some(new LocalDate("2016-05-26")),
+            LocalDate.parse("2016-05-26"),
+            Some(LocalDate.parse("2016-05-26")),
             Nil,
             "",
             "",
@@ -262,8 +262,8 @@ class ErrorPagesHandlerSpec extends BaseSpec {
             "company name",
             Live,
             Some("123"),
-            new LocalDate("2016-05-26"),
-            Some(new LocalDate("2016-05-26")),
+            LocalDate.parse("2016-05-26"),
+            Some(LocalDate.parse("2016-05-26")),
             Nil,
             "",
             "",
@@ -290,8 +290,8 @@ class ErrorPagesHandlerSpec extends BaseSpec {
             "company name",
             Live,
             Some("123"),
-            new LocalDate("2016-05-26"),
-            Some(new LocalDate("2016-05-26")),
+            LocalDate.parse("2016-05-26"),
+            Some(LocalDate.parse("2016-05-26")),
             Nil,
             "",
             "",

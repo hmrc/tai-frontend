@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.model
 import uk.gov.hmrc.tai.model.TaxYear

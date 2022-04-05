@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -24,6 +24,7 @@ import uk.gov.hmrc.tai.model.domain.income._
 import utils.BaseSpec
 import views.html.includes.link
 
+import java.time.format.DateTimeFormatter
 import scala.collection.immutable.ListMap
 
 class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
@@ -278,12 +279,14 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
     }
   }
 
-  val nowDateNonBreak = LocalDate.now.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+  val nowDateNonBreak = LocalDate.now.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
 
   val prevTaxYear = uk.gov.hmrc.tai.model.TaxYear().prev
 
-  val prevTaxYearStartDateNonBreak = prevTaxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
-  val prevTaxYearEndDateNonBreak = prevTaxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+  val prevTaxYearStartDateNonBreak =
+    prevTaxYear.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
+  val prevTaxYearEndDateNonBreak =
+    prevTaxYear.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
 
   private def makeTestTaxCodeRecord(
     taxCode: String,

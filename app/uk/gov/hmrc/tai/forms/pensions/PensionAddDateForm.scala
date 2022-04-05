@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.forms.pensions
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.data.Forms.of
 import play.api.data.format.Formatter
 import play.api.data.{FieldMapping, Form, FormError}
@@ -51,7 +51,7 @@ case class PensionAddDateForm(employerName: String) {
               day   <- data.get(PensionFormDay).map(Integer.parseInt)
               month <- data.get(PensionFormMonth).map(Integer.parseInt)
               year  <- data.get(PensionFormYear).map(Integer.parseInt)
-            } yield new LocalDate(year, month, day)
+            } yield LocalDate.of(year, month, day)
           ).getOrElse(None)
 
           inputDate match {
@@ -67,7 +67,7 @@ case class PensionAddDateForm(employerName: String) {
 
       override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
         PensionFormDay   -> value.getDayOfMonth.toString,
-        PensionFormMonth -> value.getMonthOfYear.toString,
+        PensionFormMonth -> value.getMonthValue.toString,
         PensionFormYear  -> value.getYear.toString
       )
     }

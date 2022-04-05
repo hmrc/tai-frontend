@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -77,8 +77,8 @@ class BenefitsConnectorSpec extends BaseSpec {
       100,
       "Make Model",
       hasActiveFuelBenefit = true,
-      dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-      dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
+      dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
+      dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
       dateWithdrawn = None
     ))
 

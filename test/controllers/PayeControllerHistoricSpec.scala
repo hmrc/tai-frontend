@@ -18,7 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
 import org.mockito.Mockito
@@ -252,7 +252,7 @@ class PayeControllerHistoricSpec
       "employer1",
       Live,
       None,
-      new LocalDate(2016, 6, 9),
+      LocalDate.of(2016, 6, 9),
       None,
       Seq(),
       "taxNumber",
@@ -266,7 +266,7 @@ class PayeControllerHistoricSpec
       "employer2",
       Live,
       None,
-      new LocalDate(2016, 7, 9),
+      LocalDate.of(2016, 7, 9),
       None,
       Seq(),
       "taxNumber",
@@ -283,7 +283,7 @@ class PayeControllerHistoricSpec
       "employer1",
       Live,
       None,
-      new LocalDate(2016, 6, 9),
+      LocalDate.of(2016, 6, 9),
       None,
       Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
       "taxNumber",
@@ -297,7 +297,7 @@ class PayeControllerHistoricSpec
       "employer2",
       Live,
       None,
-      new LocalDate(2016, 7, 9),
+      LocalDate.of(2016, 7, 9),
       None,
       Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
       "taxNumber",
@@ -314,7 +314,7 @@ class PayeControllerHistoricSpec
       "employer1",
       Live,
       None,
-      new LocalDate(2018, 6, 9),
+      LocalDate.of(2018, 6, 9),
       None,
       Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
       "taxNumber",
@@ -328,7 +328,7 @@ class PayeControllerHistoricSpec
       "employer2",
       Live,
       None,
-      new LocalDate(2017, 7, 9),
+      LocalDate.of(2017, 7, 9),
       None,
       Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
       "taxNumber",
@@ -350,7 +350,7 @@ class PayeControllerHistoricSpec
       "employer1",
       Live,
       None,
-      new LocalDate(2018, 6, 9),
+      LocalDate.of(2018, 6, 9),
       None,
       Seq(AnnualAccount(TaxYear().prev, Available, payments, Nil)),
       "taxNumber",
@@ -364,7 +364,7 @@ class PayeControllerHistoricSpec
       "employer2",
       Live,
       None,
-      new LocalDate(2017, 7, 9),
+      LocalDate.of(2017, 7, 9),
       None,
       Seq(AnnualAccount(TaxYear().prev, Available, payments, Nil)),
       "taxNumber",

@@ -21,7 +21,7 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -110,7 +110,7 @@ class AddEmploymentController @Inject()(
       case Right((mandatorySequence, optSeq)) =>
         val form = optSeq.head match {
           case Some(dateString) =>
-            EmploymentAddDateForm(mandatorySequence.head).form.fill(new LocalDate(dateString))
+            EmploymentAddDateForm(mandatorySequence.head).form.fill(LocalDate.parse(dateString))
           case _ => EmploymentAddDateForm(mandatorySequence.head).form
         }
         implicit val user: AuthedUser = request.taiUser
@@ -133,7 +133,7 @@ class AddEmploymentController @Inject()(
               BadRequest(add_employment_start_date_form(formWithErrors, currentCache(AddEmployment_NameKey)))
             },
             date => {
-              val startDateBoundary = new LocalDate().minusWeeks(6)
+              val startDateBoundary = LocalDate.now.minusWeeks(6)
               val data = currentCache + (AddEmployment_StartDateKey -> date.toString)
               if (date.isAfter(startDateBoundary)) {
                 val firstPayChoiceCacheData = data + (AddEmployment_StartDateWithinSixWeeks -> YesValue)

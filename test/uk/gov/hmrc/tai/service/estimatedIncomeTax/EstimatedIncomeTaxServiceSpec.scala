@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service.estimatedIncomeTax
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.I18nSupport
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
@@ -675,8 +675,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
       OtherBasisOfOperation,
       Live,
       None,
-      Some(new LocalDate(2015, 11, 26)),
-      Some(new LocalDate(2015, 11, 26))
+      Some(LocalDate.of(2015, 11, 26)),
+      Some(LocalDate.of(2015, 11, 26))
     )
   )
 
@@ -691,8 +691,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
       OtherBasisOfOperation,
       Live,
       None,
-      Some(new LocalDate(2015, 11, 26)),
-      Some(new LocalDate(2015, 11, 26))
+      Some(LocalDate.of(2015, 11, 26)),
+      Some(LocalDate.of(2015, 11, 26))
     )
   )
 

@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.tai.util
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.{Lang, Messages}
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
 import utils.BaseSpec
+
+import java.time.format.DateTimeFormatter
 
 class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {
 
@@ -61,13 +63,17 @@ class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {
 
   "currentTaxYearHeaderHtmlNonBreak" must {
     "return the date in passed format" in {
-      currentTaxYearHeaderHtmlNonBreak mustBe TaxYear().end.toString("d MMMM y").replace(" ", "\u00A0")
+      currentTaxYearHeaderHtmlNonBreak mustBe TaxYear().end
+        .format(DateTimeFormatter.ofPattern("d MMMM y"))
+        .replace(" ", "\u00A0")
     }
   }
 
   "nextTaxYearHeaderHtmlNonBreak" must {
     "return the date in passed format" in {
-      nextTaxYearHeaderHtmlNonBreak mustBe TaxYear().next.start.toString("d MMMM y").replace(" ", "\u00A0")
+      nextTaxYearHeaderHtmlNonBreak mustBe TaxYear().next.start
+        .format(DateTimeFormatter.ofPattern("d MMMM y"))
+        .replace(" ", "\u00A0")
     }
   }
 
@@ -97,12 +103,13 @@ class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {
       implicit lazy val lang: Lang = Lang("en")
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-      val now = new LocalDate()
+      val now = LocalDate.now
       val endOfTaxYear = TaxYear().end
       val expectedNow = htmlNonBroken(langUtils.Dates.formatDate(now))
       val expectedEnd = htmlNonBroken(langUtils.Dates.formatDate(endOfTaxYear))
 
       dynamicDateRangeHtmlNonBreak(now, endOfTaxYear) mustBe s"$expectedNow to $expectedEnd"
+
     }
 
     "given two dates return a formatted string in welsh" in {
@@ -110,7 +117,7 @@ class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {
       implicit lazy val lang: Lang = Lang("cy")
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-      val now = new LocalDate()
+      val now = LocalDate.now
       val endOfTaxYear = TaxYear().end
       val expectedNow = htmlNonBroken(langUtils.Dates.formatDate(now))
       val expectedEnd = htmlNonBroken(langUtils.Dates.formatDate(endOfTaxYear))
@@ -119,7 +126,7 @@ class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {
     }
 
     "throw an exception if 'from' date is after the 'to' date" in {
-      val now = new LocalDate()
+      val now = LocalDate.now
       val yesterday = now.minusDays(1)
 
       val caught = intercept[IllegalArgumentException] {

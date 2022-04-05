@@ -25,6 +25,8 @@ import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm.StopDateC
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
+import java.time.format.DateTimeFormatter
+
 class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
 
   private val removeCompanyBenefitStopDate = inject[RemoveCompanyBenefitStopDateView]
@@ -74,8 +76,8 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
 
   private val idBeforeTaxYearEnd = "stopDateChoice-beforetaxyearend"
   private val idOnOrAfterTaxYearEnd = "stopDateChoice-onoraftertaxyearend"
-  private val startOfCurrentTaxYear = TaxYear().start.toString("d MMMM yyyy")
-  private val endOfCurrentTaxYear = TaxYear().end.toString("d MMMM YYYY")
+  private val startOfCurrentTaxYear = TaxYear().start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+  private val endOfCurrentTaxYear = TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
   private lazy val benefitType = "Expenses"
   private lazy val empName = "EmployerA"
 

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -62,8 +62,8 @@ class CompanyCarConnectorSpec extends BaseSpec {
 
   "withdrawCompanyCar" must {
     "return TaiSuccessResponse" in {
-      val carWithdrawDate = new LocalDate(2017, 4, 24)
-      val fuelWithdrawDate = Some(new LocalDate(2017, 4, 24))
+      val carWithdrawDate = LocalDate.of(2017, 4, 24)
+      val fuelWithdrawDate = Some(LocalDate.of(2017, 4, 24))
       val carSeqNum = 10
       val employmentSeqNum = 11
       val withdrawCarAndFuel = WithdrawCarAndFuel(10, carWithdrawDate, fuelWithdrawDate)
@@ -116,8 +116,8 @@ class CompanyCarConnectorSpec extends BaseSpec {
         10,
         "Make Model",
         hasActiveFuelBenefit = true,
-        dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-        dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
+        dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
+        dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
         dateWithdrawn = None
       )),
     Some(1)

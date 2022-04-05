@@ -18,7 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => meq}
 import org.mockito.Mockito.when
@@ -156,7 +156,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
       ) {
 
     when(taxCodeChangeService.latestTaxCodeChangeDate(meq(nino))(any()))
-      .thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
+      .thenReturn(Future.successful(LocalDate.of(2018, 6, 11)))
   }
 
 }

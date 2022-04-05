@@ -16,14 +16,17 @@
 
 package uk.gov.hmrc.tai.util
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import com.ibm.icu.text.SimpleDateFormat
 import com.ibm.icu.util.{TimeZone, ULocale}
 
+import java.time.format.DateTimeFormatter
 import java.util.Date
 object TaxYearRangeUtil {
+
+  private def toDate(date: LocalDate): java.util.Date = java.sql.Date.valueOf(date)
 
   private val messageRangeKeyBetween = "tai.taxYear.between"
   private val messageRangeKeyFromAndTo = "tai.taxYear"
@@ -46,8 +49,8 @@ object TaxYearRangeUtil {
   }
 
   def currentTaxYearRangeYearOnly(implicit messages: Messages): String = {
-    val start = TaxYear().start.toString("yyyy")
-    val end = TaxYear().end.toString("yyyy")
+    val start = TaxYear().start.format(DateTimeFormatter.ofPattern("yyyy"))
+    val end = TaxYear().end.format(DateTimeFormatter.ofPattern("yyyy"))
 
     messages("tai.taxYear", start, end)
   }
@@ -61,22 +64,20 @@ object TaxYearRangeUtil {
     sdf
   }
 
-  private def jodaDate2javaDate(date: LocalDate): Date = date.toDate
-
   private def dateRange(messageKey: String, from: LocalDate, to: LocalDate)(implicit messages: Messages): String =
     if (from isAfter to) {
       throw new IllegalArgumentException(s"From date:$from cannot be after To date:$to")
     } else {
       messages(
         messageKey,
-        HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(jodaDate2javaDate(from))),
-        HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(jodaDate2javaDate(to)))
+        HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(toDate(from))),
+        HtmlFormatter.htmlNonBroken(createDateFormatForPattern("d MMMM y").format(toDate(to)))
       )
     }
 
   def formatDate(date: LocalDate)(implicit messages: Messages): String =
-    createDateFormatForPattern("d MMMM y").format(jodaDate2javaDate(date))
+    createDateFormatForPattern("d MMMM y").format(toDate(date))
 
   def formatDateAbbrMonth(date: LocalDate)(implicit messages: Messages): String =
-    createDateFormatForPattern("d MMM y").format(jodaDate2javaDate(date))
+    createDateFormatForPattern("d MMM y").format(toDate(date))
 }
