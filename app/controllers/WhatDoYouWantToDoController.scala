@@ -130,7 +130,7 @@ class WhatDoYouWantToDoController @Inject()(
         } yield Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
       case Left(taxCodeError) =>
         Future.successful(
-          BadRequest(errorPagesHandler.error4xxPageWithLink(taxCodeError.errorMessage.getOrElse("Tax Code not Found"))))
+          errorPagesHandler.error4xxPageWithLink(taxCodeError.errorMessage.getOrElse("Tax Code not Found")))
     }
   }
 
