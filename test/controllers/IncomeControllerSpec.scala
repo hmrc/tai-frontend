@@ -316,10 +316,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
-          .thenReturn(Future.successful(Left("Error")))
-        when(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
-          .thenReturn(Future.successful(Left("Error")))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(Future.successful(Left("Error")))
 
         val result =
           testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -337,10 +334,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
-          .thenReturn(Future.successful(Left("Error")))
-        when(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
-          .thenReturn(Future.successful(Left("Error")))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(Future.successful(Left("Error")))
 
         val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -365,10 +359,8 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       val testController = createTestIncomeController()
       when(journeyCacheService.mandatoryJourneyValues(any())(any()))
         .thenReturn(Future.failed(new RuntimeException))
-      when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
-        .thenReturn(Future.successful(Right(100)))
-      when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_IdKey))(any()))
-        .thenReturn(Future.successful(Right(1)))
+      when(journeyCacheService.mandatoryJourneyValues(any())(any()))
+        .thenReturn(Future.successful(Right(Seq("1", "1235"))))
 
       val result =
         testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))

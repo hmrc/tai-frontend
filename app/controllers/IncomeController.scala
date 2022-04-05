@@ -204,15 +204,11 @@ class IncomeController @Inject()(
       case NonFatal(e) =>
         //When a user navigates backwards the cache preserves both UpdateIncome_ConfirmedNewAmountKey,UpdateIncome_IdKey
         //If that's the case, then redirect to the first page
-        val futureEmpId = for {
-          _     <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_ConfirmedNewAmountKey))
-          empId <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
-        } yield empId
-
-        futureEmpId.fold(
-          _ => errorPagesHandler.internalServerError(e.getMessage),
-          empId => Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
-        )
+        EitherT(journeyCacheService.mandatoryJourneyValues(UpdateIncome_IdKey, UpdateIncome_ConfirmedNewAmountKey))
+          .fold(
+            _ => errorPagesHandler.internalServerError(e.getMessage),
+            seq => Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(seq.head.toInt))
+          )
     }
   }
 
@@ -222,8 +218,11 @@ class IncomeController @Inject()(
     def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(
       implicit user: AuthedUser,
       request: Request[AnyContent]): Result = {
-      journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newAmount)
-      journeyCacheService.cache(UpdateIncome_IdKey, employerId.toString)
+      journeyCacheService.cache(
+        Map(
+          UpdateIncome_ConfirmedNewAmountKey -> newAmount,
+          UpdateIncome_IdKey                 -> employerId.toString
+        ))
       incomeType match {
         case TaiConstants.IncomeTypePension => Ok(editPensionSuccess(employerName, employerId))
         case _                              => Ok(editSuccess(employerName, employerId))
