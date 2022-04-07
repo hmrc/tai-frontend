@@ -1491,3 +1491,8 @@ mci.title=Ni allwn gael at eich manylion
 mci.p1=Mae hyn oherwydd problem MCI. Mae’n golygu bod angen i ni wirio rhai manylion gyda chi, cyn i chi allu mewngofnodi eto.
 mci.p2=Gallwch ein ffonio
 mci.link.text=er mwyn datrys y broblem MCI gydag ymgynghorydd
+
+# Beta Banner Text
+#=============================================================
+betaBanner.message=Mae hwn yn wasanaeth newydd ‐ bydd eich {0} yn ein helpu i’w wella.
+betaBanner.linkText=adborth

@@ -20,8 +20,7 @@ private object AppDependencies {
     "org.typelevel"     %% "cats-core"                        % "2.0.0",
     "com.typesafe.play" %% "play-json-joda"                   % "2.6.10",
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.18.0-$playVersion",
-    "uk.gov.hmrc"       %% "play-frontend-hmrc"               % s"3.0.0-play-28"
-
+    "uk.gov.hmrc"       %% "play-frontend-hmrc"               % s"3.9.0-$playVersion"
   )
 
   trait TestDependencies {
@@ -48,3 +47,4 @@ private object AppDependencies {
 
   def apply() = compile ++ Test()
 }
+

@@ -60,8 +60,9 @@ class ApplicationConfig @Inject()(
 
   lazy val reportAProblemPartialUrl =
     s"${servicesConfig.baseUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
-  lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
+  lazy val betaFeedbackUrl = s"$contactProtocol://$contactHost:$contactPort/contact/beta-feedback"
   lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
+
   lazy val urBannerEnabled: Boolean = getOptional[String]("feature.ur-banner.enabled").getOrElse("true").toBoolean
   lazy val urBannerLink: String = getOptional[String]("ur-banner.url").getOrElse("")
   lazy val checkUpdateProgressLinkUrl = s"$trackFrontendHost/track"
@@ -79,7 +80,10 @@ class ApplicationConfig @Inject()(
   lazy val taxYouPaidStatus = s"$taxCalcFrontendHost/tax-you-paid/status"
   lazy val hardshipHelpUrl =
     s"$dfsFrontendHost/digital-forms/form/tell-us-how-you-want-to-pay-estimated-tax/draft/guide"
-  private val contactHost = getOptional[String](s"microservice.services.contact-frontend.host").getOrElse("")
+  private lazy val contactHost = getOptional[String](s"microservice.services.contact-frontend.host").getOrElse("")
+  private lazy val contactPort = getOptional[String](s"microservice.services.contact-frontend.port").getOrElse("")
+  private lazy val contactProtocol =
+    getOptional[String](s"microservice.services.contact-frontend.protocol").getOrElse("")
 
   lazy val assetsPath =
     s"${getOptional[String](s"assets.url").getOrElse("")}${getOptional[String](s"assets.version").getOrElse("")}/"
