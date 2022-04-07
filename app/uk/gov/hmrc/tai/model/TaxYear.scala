@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.model
 
+
 import java.time.{LocalDate, ZoneId}
 import play.api.libs.json._
 
