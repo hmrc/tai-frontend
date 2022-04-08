@@ -20,12 +20,14 @@
         form: Form[_],
         fieldPrefix: String = "",
         labelText: String = "",
+        labelClass: String = "",
+        labelHidden: Boolean = false,
         hintText: String = "",
         jsHidden: Boolean = false,
         legendHidden: Boolean = false,
         legendBold: Boolean = false,
         mainHeadingText: String,
-        preHeadingText: String,
+        preHeadingText: Option[String] = None
 )(implicit m: Messages)
 
 
@@ -35,16 +37,31 @@
 
 <div class="form-group @if(form.hasErrors){form-group-error}">
     <fieldset id="@{fieldPrefix}_fieldset">
-        <legend>
-            <div class="page-heading soft--top">
-                <h1 class="heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
-                <p class="heading-secondary break-word"><span class="visuallyhidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
-                </div>
-        </legend>
+
+
+        
+            <h1>
+          <label @if(labelClass != ""){class="@labelClass"} id="headingInLabel">
+          @if(labelText.nonEmpty) {
+
+              <span class="@if(labelHidden){visually-hidden}else{form-label}">
+                  @mainHeadingText
+              </span>
+             <span class="heading-secondary break-word"><span class="visuallyhidden">@Messages("tai.ptaHeader.accessible.preHeading")</span>@preHeadingText.getOrElse("")</span>
+          }
+          </label>
+        </h1>
+        
+
+
         <span  aria-describedby="@{fieldPrefix}_day @{fieldPrefix}_month @{fieldPrefix}_year" class="span-form-hint" >
-        <span class="form-label @if(legendBold){form-label-bold}@if(legendHidden){ visually-hidden}">@labelText</span>
-        <span  class="form-hint" id="date-hint">@Messages("tai.label.date.example")</span>
-    </span>
+            <span class="form-label @if(legendBold){form-label-bold}@if(legendHidden){ visually-hidden}">@labelText</span>
+            <span  class="form-hint" id="date-hint">@Messages("tai.label.date.example")</span>
+        </span>
+
+
+
+
 
         @if(form.hasErrors) {
             <span class="error-message" id="error-message">@form.errors.map(_.message)</span>

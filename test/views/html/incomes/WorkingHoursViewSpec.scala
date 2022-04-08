@@ -29,9 +29,11 @@ class WorkingHoursViewSpec extends TaiViewSpec {
   "How to update view" should {
     behave like pageWithBackLink
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
-    behave like pageWithCombinedHeader(
-      messages("tai.workingHours.preHeading", employerName),
-      messages("tai.workingHours.heading"))
+
+    "display label with heading" in {
+      doc must haveElementAtPathWithText("#headingInLabel .form-label", messages("tai.workingHours.heading"))
+    }
+
   }
 
   private val template = inject[WorkingHoursView]
