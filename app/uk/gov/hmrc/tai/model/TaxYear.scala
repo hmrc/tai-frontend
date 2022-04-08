@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.tai.model
 
-import java.time.LocalDate
 import play.api.libs.json._
+
+import java.time.{LocalDate, ZoneId}
 
 case class TaxYear(year: Int) extends Ordered[TaxYear] {
   require(year.toString.length == 4, "Invalid year")
@@ -42,7 +43,7 @@ case class TaxYear(year: Int) extends Ordered[TaxYear] {
 }
 
 object TaxYear {
-  def apply(from: LocalDate = LocalDate.now): TaxYear = {
+  def apply(from: LocalDate = LocalDate.now(ZoneId.of("Europe/London"))): TaxYear = {
     val naiveYear = TaxYear(from.getYear)
     if (from isBefore naiveYear.start) {
       naiveYear.prev
