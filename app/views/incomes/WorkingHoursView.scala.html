@@ -17,7 +17,7 @@
 @import includes.ptaHeaderNoH1
 @import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import includes.forms.inputRadioGroupStylingWithH1Legend
+@import includes.forms.inputRadioGroupStylingWithH1Label
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
@@ -45,13 +45,14 @@
        <div class="column-two-thirds">
         <div class="section flush--bottom soft--top">
             @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.handleWorkingHours){
-                @{inputRadioGroupStylingWithH1Legend(
+                @{inputRadioGroupStylingWithH1Label(
                         field=workingHoursForm("workingHours"),
                         radioOptions=Seq(("regularHours" -> messages("tai.workingHours.regularHours")), ("irregularHours" -> messages("tai.workingHours.irregularHours"))),
                         legend=messages("tai.workingHours.legend"),
                         legendHint=None,
                         mainHeadingText = messages("tai.workingHours.heading"),
                         preHeadingText = messages("tai.workingHours.preHeading", employerName),
+                        labelId  = "workingHours-regularhours",
                         ('_groupDivClass, "form-group" ),
                         ('_legend, messages("tai.workingHours.legend") ),
                         ('_legendSpanClass, "visually-hidden"),
