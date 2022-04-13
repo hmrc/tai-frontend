@@ -48,21 +48,11 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
         mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
         preHeadingText = request.fullName,
         displayBackLink = false,
-        customBackLinkContent = Some(backLinkToChooseTaxYear), showGdsVersion = true)
+        customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
-<!--@mainTemplate(-->
-<!--    title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),-->
-<!--    articleClasses = Some("full-width"),-->
-<!--    authedUser = Some(request.taiUser),-->
-<!--    pageHeader = Some(header),-->
-<!--    pagePrintable = true,-->
-<!--    pagePrintName = Some("historic-pay-as-you-earn")-->
-<!--){-->
-
-
 @main(
-    title = viewModel.title,
+    title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
     pageTitle = Some("Check your Income Tax"),
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
     backLinkContent = Messages("tai.returnToChooseTaxYear"),
@@ -146,10 +136,10 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
             @for((employment, idx) <- pair zip (Stream from pidx)) {
 
-                <div id="@incomeType@idx" class="subsection flush--top @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-">
+                <div id="@incomeType@idx" class="subsection flush--top @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-column-one-half}">
                     <h3 class="govuk-heading-l heading-large flush break-word-only">@employment.name</h3>
-                    <p class="govuk-body flush--top">
-                        <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark ">@withPoundPrefix(MoneyPounds(employment.taxablePayYTD))</span>
+                    <p class="flush--top">
+                        <span class="govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark ">@withPoundPrefix(MoneyPounds(employment.taxablePayYTD))</span>
                     </p>
 
                     @if(viewModel.showTaxCodeDescriptionLink) {
@@ -177,7 +167,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                         }
                     </p>
 
-                    <p class="govuk-body flush--top">
+                    <p class="flush--top">
                         @link(
                             id = Some(s"${incomeType}${idx}-checkDetailsLink"),
                             url = routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(viewModel.taxYear, employment.id).toString(),
