@@ -23,7 +23,8 @@
   headerWidthClasses: Option[String] = Some("column-two-thirds"),
   preHeadingAccessibleAnnouncement: String = "",
   customBackLinkContent: Option[Html] = None,
-  additionalTopLinkContent: Option[Html] = None
+  additionalTopLinkContent: Option[Html] = None,
+  showGdsVersion: Boolean = false
 )(implicit m: Messages)
 
 @preHeadingHidden = @{
@@ -47,30 +48,37 @@
 }
 
 
-<div class="grid-row">
-    <div class="column-full">
+<div class="govuk-grid-row grid-row">
+    <div class="govuk-grid-column-full column-full">
        <div class="print-banner">
-        <div class="hmrc-logo"><img src="/check-income-tax/assets/images/HMRC-logo.png" alt='HM Revenue & Customs'></div>
-        <div class="name"><h4>@Html(preHeadingText)</h4></div>
+            <div class="hmrc-logo"><img src="/check-income-tax/assets/images/HMRC-logo.png" alt='HM Revenue & Customs'></div>
+            <div class="name"><h4>@Html(preHeadingText)</h4></div>
+        </div>
     </div>
-
-</div>
 </div>
 
 
-<div class="grid-row">
-  <div class="@headerWidthClasses.getOrElse("")">
-
-    @if(formForErrorSummary.isDefined) {
-      @errorSummary(Messages("tai.income.error.form.summary"), formForErrorSummary.get, Seq("flush--bottom"))
-    }
-
-    <header class="page-heading soft--top">
-      <h1 class="heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
-      <p class="heading-secondary break-word hide-for-print"><span class="visuallyhidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
-    </header>
 
 
- </div>
-</div>
+
+
+  @if(showGdsVersion) {
+            <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)</span>
+            <h1 class="govuk-heading-xl heading-mobile-responsive xbreak-word">@Html(mainHeadingText)</h1>
+    }else {
+
+
+    <div class="grid-row">
+        <div class="@headerWidthClasses.getOrElse("")">
+            @if(formForErrorSummary.isDefined) {
+                @errorSummary(Messages("tai.income.error.form.summary"), formForErrorSummary.get, Seq("flush--bottom"))
+            }
+        <header class="page-heading soft--top">
+            <h1 class="govuk-heading-xl heading-xlarge heading-mobile-responsive xbreak-word">@Html(mainHeadingText)</h1>
+            <p class="heading-secondary break-word hide-for-print"><span class="visuallyhidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
+        </header>
+        </div>
+    </div>
+  }
+
 

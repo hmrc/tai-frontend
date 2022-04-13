@@ -21,6 +21,14 @@ $govuk-secondary-text-colour : #6F777B;
     background-image: url(/check-income-tax/assets/images/icon-plus.svg);
     background-position: 0 3px;
     padding-left: 25px;
+
+}
+
+.icon-plus-no-rpt {
+    background-image: url(/check-income-tax/assets/images/icon-plus.svg);
+    background-position: 0 3px;
+    padding-left: 25px;
+    background-repeat: no-repeat;
 }
 
 .lte-ie8 {
