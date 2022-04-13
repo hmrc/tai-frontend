@@ -139,6 +139,7 @@ trait FeatureTogglesConfig { self: ApplicationConfig =>
   lazy val accessibilityStatementToggle: Boolean =
     getOptional[Boolean]("accessibility-statement.toggle").getOrElse(false)
   lazy val isTaiCy3Enabled: Boolean = getOptional[Boolean]("tai.cy3.enabled").getOrElse(false)
+  val trackingEnabled: Boolean = getOptional[Boolean]("tai.tracking.enabled").getOrElse(false)
 
   val numberOfPreviousYearsToShow: Int = 5 // Always 5 in all configs
 }
