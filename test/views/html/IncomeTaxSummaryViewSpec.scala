@@ -32,8 +32,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       preHeaderText = "Firstname Surname",
       mainHeaderText = "main heading")
 
-
-
     "display iForms status message when an iForm has not been fully processed" in {
       doc must haveElementWithId("isAnyFormInProgressBanner")
     }

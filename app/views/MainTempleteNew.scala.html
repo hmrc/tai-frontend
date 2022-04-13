@@ -124,7 +124,7 @@
   }
 
   @backLinkUrl.map(url =>
-    govukBackLink(BackLink(href = url, content = Text(backLinkContent)))
+    govukBackLink(BackLink(attributes = Map("id" -> "returnToChooseTaxYearLink") ,href = url, content = Text(backLinkContent)))
   )
 }
 }
