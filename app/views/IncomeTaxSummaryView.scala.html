@@ -52,18 +52,6 @@
         customBackLinkContent = Some(backLinkToChooseTaxYear),
         showGdsVersion = true)
 }
-@*
-@mainTemplate(
-    title = viewModel.title,
-    authedUser = Some(request.taiUser),
-    pageHeader = Some(header),
-    articleClasses = Some("full-width"),
-    pagePrintable = true,
-    pagePrintName = Some("historic-pay-as-you-earn")
-    ){
-
-*@
-
 
     @main(
         title = viewModel.title,
@@ -153,7 +141,7 @@
     </div>
 
         <div class="govuk-grid-column-one-third hide-for-print">
-        <div class="inner-block">
+        <div class="inner-block section__box--shaded">
 
             <div id="annualAmountsSummarySection" class="section section__box--shaded flush--bottom">
 
