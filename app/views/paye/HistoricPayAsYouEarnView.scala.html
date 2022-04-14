@@ -48,7 +48,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
         mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
         preHeadingText = request.fullName,
         displayBackLink = false,
-        customBackLinkContent = Some(backLinkToChooseTaxYear))
+        customBackLinkContent = Some(backLinkToChooseTaxYear),
+        showGdsVersion = true)
 }
 
 @main(
@@ -59,7 +60,12 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     pagePrintable = true,
     pagePrintName = Some("historic-pay-as-you-earn")
 ){
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+        </div>
 
+    </div>
 
 <div class="govuk-grid-row">
 
@@ -92,7 +98,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                 </div>
             }
             <div class="hide-for-print">
-            <h3 class="govuk-heading-s heading-section heading-medium">@messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
+            <h3 class="govuk-heading-s heading-section heading-medium">aaa@messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
             <p>
                 @messages("tai.paye.lastTaxYear.incorrectInformation.text")
                 @link(
@@ -138,8 +144,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
                 <div id="@incomeType@idx" class="subsection flush--top @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-column-one-half}">
                     <h3 class="govuk-heading-l heading-large flush break-word-only">@employment.name</h3>
-                    <p class="flush--top">
-                        <span class="govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark ">@withPoundPrefix(MoneyPounds(employment.taxablePayYTD))</span>
+                    <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark ">
+                        <span>bbb@withPoundPrefix(MoneyPounds(employment.taxablePayYTD))</span>
                     </p>
 
                     @if(viewModel.showTaxCodeDescriptionLink) {
