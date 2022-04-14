@@ -35,6 +35,7 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.hmrcfrontend.config.AccountMenuConfig
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.RichAccountMenu
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accountmenu.BusinessTaxAccount
 
 
 @this(
@@ -132,7 +133,13 @@
 
 @contentBlock = {
 @content
-  <p>@hmrcReportTechnicalIssueHelper()</p>
+  <div class="govuk-grid-row govuk-!-margin-top-9">
+    <div class="govuk-grid-column-one-half govuk-!-margin-bottom-5">
+    @hmrcReportTechnicalIssueHelper()
+    </div>
+  </div>
+
+
 @govukPhaseBanner(PhaseBanner(
   tag = Some(Tag(
     content = Text("beta")
