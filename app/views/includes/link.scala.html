@@ -54,11 +54,11 @@
 
     @if(altCopy.getOrElse("").nonEmpty){
         <span aria-hidden="true">@copy</span>
-        <span class="visuallyhidden">@altCopy</span>
+        <span class="govuk-visually-hidden visuallyhidden">@altCopy</span>
     } else {
         @copy
         @visuallyHiddenText.map { _ =>
-            <span class="visuallyhidden">@visuallyHiddenText</span>
+            <span class="govuk-visually-hidden visuallyhidden">@visuallyHiddenText</span>
         }
     }
 

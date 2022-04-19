@@ -26,19 +26,19 @@
 
 @for((pair, pidx) <- pairsList zip (Stream from (1,2))) {
 
-    <div class="grid-row">
+    <div class="govuk-grid-row grid-row">
 
         @for((incomeSource, idx) <- pair zip (Stream from pidx)) {
-        <div id="@typeLabel@idx" class="subsection flush--top @if(pair.length==1){column-full}else{column-one-half}">
+        <div id="@typeLabel@idx" class="subsection flush--top @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-column-one-half}">
 
-            <h3 id="@{typeLabel}@{idx}Heading" class="heading-large flush break-word-only">@incomeSource.name</h3>
+            <h3 id="@{typeLabel}@{idx}Heading" class="govuk-heading-l heading-large flush break-word-only">@incomeSource.name</h3>
 
-            <p class="flush--top">
-                <span class="visuallyhidden">@accessibleAmountPrefix </span>
-                <span class="heading-36 faded-text-dark flush--top">@incomeSource.amount</span>
+            <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark flush--top ">
+                <span class="govuk-visually-hidden ">@accessibleAmountPrefix </span>
+                <span class="faded-text-dark flush--top">@incomeSource.amount</span>
             </p>
 
-            <p class="flush--top">
+            <p class="govuk-body flush--top">
                 @if(incomeSource.displayTaxCode) {
                     @incomeSource.taxCodeUrl.map { taxCodeUrl =>
                     @link(
@@ -49,15 +49,15 @@
                     }
                 }
                 @if(incomeSource.displayPayrollNumber){
-                <span id="@{typeLabel}@{idx}PayrollNumber" class="carry-over display-block">@Messages("tai.incomeTaxSummary.payrollNumber.prefix", incomeSource.payrollNumber)</span>
+                <span id="@{typeLabel}@{idx}PayrollNumber" class="carry-over govuk-!-display-block display-block ">@Messages("tai.incomeTaxSummary.payrollNumber.prefix", incomeSource.payrollNumber)</span>
                 }
                 @if(incomeSource.displayEndDate){
-                <span id="@{typeLabel}@{idx}EndDate" class="display-block">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</span>
+                <span id="@{typeLabel}@{idx}EndDate" class="govuk-!-display-block display-block">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</span>
                 }
             </p>
 
             @if(incomeSource.displayDetailsLink){
-            <p class="flush--top">
+            <p class="govuk-body flush--top">
                 @link(
                     id=Some(s"${typeLabel}${idx}DetailsLink"),
                     url=incomeSource.detailsLinkUrl,

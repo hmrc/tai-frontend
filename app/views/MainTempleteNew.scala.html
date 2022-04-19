@@ -35,6 +35,10 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.hmrcfrontend.config.AccountMenuConfig
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.RichAccountMenu
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accountmenu.BusinessTaxAccount
+@import uk.gov.hmrc.tai.util.constants.TaiConstants
+
+
 
 
 @this(
@@ -64,9 +68,9 @@
 
 @(
         title: String,
+        authedUser: Option[controllers.auth.AuthedUser] = None,
         serviceName: Option[String] = None,
         pageTitle: Option[String] = None,
-        sideBar: Option[Html] = None,
         isWelshTranslationAvailable: Boolean = false,
         signOutUrl: Option[String] = None,
         serviceUrl: Option[String] = None,
@@ -85,6 +89,19 @@
 )(content: Html)(implicit request: Request[_],
         messages: Messages)
 
+
+
+@isGG = @{
+  authedUser.fold(false) {
+    _.providerType.contains(TaiConstants.AuthProviderGG)
+  }
+}
+
+@isSa = @{
+  authedUser.fold(false) {
+    _.utr.isDefined
+  }
+}
 
 @additionalHeadBlock = {
   <meta name="format-detection" content="telephone=no"/>
@@ -111,10 +128,21 @@
 
 
 @beforeContent = {
-@hmrcAccountMenu(AccountMenu(
-  language = if(messages.lang.code == "cy") Cy else En,
-  signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
-).withUrlsFromConfig())
+
+@if(isGG && !isSa) {
+  @hmrcAccountMenu(AccountMenu(
+    businessTaxAccount = Some(BusinessTaxAccount()),
+    language = if(messages.lang.code == "cy") Cy else En,
+    signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+  ).withUrlsFromConfig())
+
+} else {
+  @hmrcAccountMenu(AccountMenu(
+    language = if(messages.lang.code == "cy") Cy else En,
+    signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+  ).withUrlsFromConfig())
+}
+
 
 @if(beforeContentBlock.isDefined) {
   @beforeContentBlock
@@ -124,7 +152,7 @@
   }
 
   @backLinkUrl.map(url =>
-    govukBackLink(BackLink(href = url, content = Text(backLinkContent)))
+    govukBackLink(BackLink(attributes = Map("id" -> "returnToChooseTaxYearLink") ,href = url, content = Text(backLinkContent)))
   )
 }
 }
@@ -132,7 +160,13 @@
 
 @contentBlock = {
 @content
-  <p>@hmrcReportTechnicalIssueHelper()</p>
+  <div class="govuk-grid-row govuk-!-margin-top-9">
+    <div class="govuk-grid-column-one-half govuk-!-margin-bottom-5">
+    @hmrcReportTechnicalIssueHelper()
+    </div>
+  </div>
+
+
 @govukPhaseBanner(PhaseBanner(
   tag = Some(Tag(
     content = Text("beta")
@@ -144,10 +178,6 @@
 ))
 }
 
-
-@sidebarContent = {
-@sideBar
-}
 
 
 @fullPageTitle = @{

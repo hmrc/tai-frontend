@@ -60,6 +60,24 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
     }
   }
 
+  def pageWithCombinedHeaderNewFormat(
+    preHeaderText: String,
+    mainHeaderText: String,
+    preHeaderAnnouncementText: Option[String] = None): Unit = {
+    "have an accessible pre heading" in {
+      if (preHeaderAnnouncementText.isDefined) {
+        doc must havePreHeadingWithTextGds(
+          preHeaderText,
+          expectedPreHeadingAnnouncement = preHeaderAnnouncementText.get)
+      } else {
+        doc must havePreHeadingWithTextGds(preHeaderText)
+      }
+    }
+    "have an h1 header consisting of the main heading text" in {
+      doc must haveHeadingWithText(mainHeaderText)
+    }
+  }
+
   def pageWithH2Header(headerText: String): Unit =
     "have a static h2 header" in {
       doc must haveH2HeadingWithText(headerText)

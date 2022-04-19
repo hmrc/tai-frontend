@@ -23,7 +23,7 @@
 
 @import controllers.auth.AuthenticatedRequest
 
-@this(mainTemplate: MainTemplate)
+@this(main: MainTempleteNew)
 
 @(viewModel: TaxAccountSummaryViewModel, appConfig: ApplicationConfig
 )(implicit request: AuthenticatedRequest[_],
@@ -45,26 +45,39 @@
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = viewModel.header,
         preHeadingText = request.fullName,
         preHeadingAccessibleAnnouncement = "This section is the income tax summary for",
-        customBackLinkContent = Some(backLinkToChooseTaxYear))
+        customBackLinkContent = Some(backLinkToChooseTaxYear),
+        showGdsVersion = true)
 }
 
-@mainTemplate(
-    title = viewModel.title,
-    authedUser = Some(request.taiUser),
-    pageHeader = Some(header),
-    articleClasses = Some("full-width"),
-    pagePrintable = true,
-    pagePrintName = Some("historic-pay-as-you-earn")
+    @main(
+        title = viewModel.title,
+        authedUser = Some(request.taiUser),
+        pageTitle = Some(Messages("tai.service.navTitle")),
+        backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+        backLinkContent = Messages("tai.returnToChooseTaxYear"),
+        pagePrintable = true,
+        pagePrintName = Some("historic-pay-as-you-earn")
     ){
 
-@includes.iFormInProgressBanner(IFormInProgressBannerViewModel(viewModel.isAnyFormInProgress), appConfig)
 
-<div class="grid-row">
-    <div class="grid grid-2-3">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+            @includes.iFormInProgressBanner(IFormInProgressBannerViewModel(viewModel.isAnyFormInProgress), appConfig)
+        </div>
+
+    </div>
+
+
+
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
         <div class="inner-block">
             @if(viewModel.displayIyaBanner){
             <p id="inYearAdjustmentBanner" class="panel-indent panel-indent--info flush--top">
@@ -79,7 +92,7 @@
             @if(viewModel.employments.nonEmpty){
             <div id="incomeFromEmploymentSection" class="section flush--bottom">
 
-                <h2 id="incomeFromEmploymentHeading" class="heading-section">@Messages("tai.incomeTaxSummary.employment.section.heading")</h2>
+                <h2 id="incomeFromEmploymentHeading" class="govuk-heading-m under-line">@Messages("tai.incomeTaxSummary.employment.section.heading")</h2>
 
                 @incomeTaxSummary_incomeSourceDetail(viewModel.employments, "employment", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
 
@@ -87,9 +100,9 @@
             }
 
             @if(viewModel.pensions.nonEmpty){
-            <div id="incomeFromPensionSection" class="section flush--bottom">
+            <div id="incomeFromPensionSection" class="govuk-!-margin-top-8 section flush--bottom">
 
-                <h2 id="incomeFromPensionHeading" class="heading-section">@Messages("tai.incomeTaxSummary.pension.section.heading")</h2>
+                <h2 id="incomeFromPensionHeading" class="govuk-heading-m heading-section">@Messages("tai.incomeTaxSummary.pension.section.heading")</h2>
 
                 @incomeTaxSummary_incomeSourceDetail(viewModel.pensions, "pension", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
 
@@ -97,9 +110,9 @@
             }
 
             @if(viewModel.otherIncomeSources.nonEmpty){
-            <div id="otherIncomeSources" class="section flush--bottom">
+            <div id="otherIncomeSources" class="govuk-!-margin-top-8 section flush--bottom">
 
-                <h2 id="otherIncomeSourcesHeading" class="heading-section">@Messages("tai.incomeTaxSummary.otherIncomeSources.heading")</h2>
+                <h2 id="otherIncomeSourcesHeading" class="govuk-heading-m heading-section">@Messages("tai.incomeTaxSummary.otherIncomeSources.heading")</h2>
 
                 @incomeTaxSummary_incomeSourceDetail(viewModel.otherIncomeSources, "otherIncomeSources", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
 
@@ -109,7 +122,7 @@
             @if(viewModel.ceasedEmployments.nonEmpty){
             <div id="endedIncomeSection" class="section">
 
-                <h2 id="endedIncomeHeading" class="heading-section">@Messages("tai.incomeTaxSummary.ceased.section.heading", viewModel.lastTaxYearEnd)</h2>
+                <h2 id="endedIncomeHeading" class="govuk-heading-m heading-section">@Messages("tai.incomeTaxSummary.ceased.section.heading", viewModel.lastTaxYearEnd)</h2>
 
                 @if(viewModel.rtiAvailable) {
                     @incomeTaxSummary_incomeSourceDetail(viewModel.ceasedEmployments, "income", Messages("tai.incomeTaxSummary.ceasedIncomeAmount.prefix"))
@@ -120,31 +133,32 @@
             </div>
             }
 
+
             <div class="print-link-container hide-for-print">
-                <a id="print-link-btn" href="javascript:window.print()" class="font-xsmall gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
+                <a id="print-link-btn" href="javascript:window.print()" class="govuk-link govuk-body-s gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
             </div>
 
         </div>
 
     </div>
 
-    <div class="grid grid-1-3 hide-for-print">
-        <div class="inner-block">
+        <div class="govuk-grid-column-one-third hide-for-print">
+        <div class="inner-block section__box--shaded">
 
             <div id="annualAmountsSummarySection" class="section section__box--shaded flush--bottom">
 
-                <h2 id="annualAmountsSummaryHeading" class="heading-section">@Messages("tai.incomeTaxSummary.annualAmounts.section.heading")</h2>
+                <h2 id="annualAmountsSummaryHeading" class="govuk-heading-m under-line">@Messages("tai.incomeTaxSummary.annualAmounts.section.heading")</h2>
 
                 <div id="incomeTaxSummaryTotalEstimatedIncome" aria-hidden="true">
 
-                <h3>@Messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomeHeading")</h3>
-                <p class="flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomePara")</p>
-                <p class="flush">
-                    <span class="visually-hidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
+                <h3 class="govuk-heading-s">@Messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomeHeading")</h3>
+                <p class="govuk-body flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomePara")</p>
+                <p class="govuk-body flush">
+                    <span class="govuk-visually-hidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
                     <span class="display-block heading-36 faded-text-dark section--narrow flush">@viewModel.totalEstimatedIncome</span>
                 </p>
 
-                <p class="flush--top">
+                <p class="govuk-body flush--top">
                     @link(
                         id=Some("totalEstimatedIncomeLink"),
                         url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
@@ -155,26 +169,26 @@
                 </div>
 
 
-                <h3>@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeHeading")</h3>
-                <p class="flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreePara")</p>
-                <p class="flush">
-                    <span class="visually-hidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
+                <h3 class="govuk-heading-s" >@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeHeading")</h3>
+                <p class=" govuk-body flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreePara")</p>
+                <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                    <span class="govuk-visually-hidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
                     <span class="display-block heading-36 faded-text-dark section--narrow flush">@viewModel.taxFreeAmount</span>
                 </p>
-                <p class="flush--top">
+                <p class=" govuk-body flush--top">
                     @link(
                         id=Some("taxFreeAmountLink"),
                         url=routes.TaxFreeAmountController.taxFreeAmount.toString,
                         copy=Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")
                     )
                 </p>
-                <h3>@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading")</h3>
-                <p class="flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")</p>
-                <p class="flush">
-                    <span class="visually-hidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
+                <h3 class="govuk-heading-s">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading")</h3>
+                <p class="govuk-body flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")</p>
+                <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                    <span class="govuk-visually-hidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
                     <span class="display-block heading-36 faded-text-dark section--narrow flush">@viewModel.estimatedIncomeTaxAmount</span>
                 </p>
-                <p class="flush--top">
+                <p class="govuk-body flush--top">
                     @link(
                         id=Some("estimatedIncomeTaxLink"),
                         url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.toString,
@@ -185,11 +199,11 @@
 
             <div id="addMissingIncomeSourceSection" class="section section__box--shaded">
 
-                <h2 id="addMissingIncomeSourceHeading" class="heading-section">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
+                <h2 id="addMissingIncomeSourceHeading"  class="govuk-heading-m under-line">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
 
-                <ul>
+                <ul class="govuk-list">
                     <li>
-                        <p class="icon icon-plus">
+                        <p class="icon icon-plus-no-rpt">
                             @link(
                                 id=Some("addEmploymentLink"),
                                 url=controllers.employments.routes.AddEmploymentController.addEmploymentName.toString,
@@ -198,7 +212,7 @@
                         </p>
                     </li>
                     <li>
-                        <p class="icon icon-plus">
+                        <p class="icon icon-plus-no-rpt">
                             @link(
                                 id=Some("addPensionLink"),
                                 url=controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.toString,
@@ -207,7 +221,7 @@
                         </p>
                     </li>
                     <li>
-                        <p class="icon icon-plus">
+                        <p class="icon icon-plus-no-rpt">
                         @link(
                             id=Some("addInvestmentLink"),
                             url=appConfig.investmentIncomeLinkUrl,
@@ -216,7 +230,7 @@
                         </p>
                     </li>
                     <li>
-                        <p class="icon icon-plus">
+                        <p class="icon icon-plus-no-rpt">
                             @link(
                                 id=Some("addOtherIncomeSourceLink"),
                                 url=appConfig.otherIncomeLinkUrl,
