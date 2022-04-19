@@ -55,6 +55,7 @@
 
     @main(
         title = viewModel.title,
+        authedUser = Some(request.taiUser),
         pageTitle = Some(Messages("tai.service.navTitle")),
         backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
         backLinkContent = Messages("tai.returnToChooseTaxYear"),
