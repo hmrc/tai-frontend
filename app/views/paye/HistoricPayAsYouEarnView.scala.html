@@ -54,6 +54,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
 @main(
     title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
+    authedUser = Some(request.taiUser),
     pageTitle = Some("Check your Income Tax"),
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
     backLinkContent = Messages("tai.returnToChooseTaxYear"),
@@ -64,7 +65,6 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
         <div class="govuk-grid-column-two-thirds">
             @header
         </div>
-
     </div>
 
 <div class="govuk-grid-row">
@@ -81,7 +81,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                 <div id="lastTaxYearIncome">
 
                     @if(employmentPairsList.nonEmpty) {
-                        <h2 id="lastYearEmploymentHeading" class="govuk-heading-m under-line">
+                        <h2 id="lastYearEmploymentHeading" class="govuk-heading-m heading-section">
                             @messages("tai.paye.incomeEmployment.heading")
                         </h2>
 
@@ -89,7 +89,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                     }
 
                     @if(pensionPairsList.nonEmpty) {
-                        <h2 id="lastYearPensionHeading" class="govuk-heading-m under-line">
+                        <h2 id="lastYearPensionHeading" class="govuk-heading-m under-line govuk-!-margin-top-8 ">
                             @messages("tai.paye.incomePension.heading")
                         </h2>
 
@@ -98,7 +98,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                 </div>
             }
             <div class="hide-for-print">
-            <h3 class="govuk-heading-m under-line">@messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
+            <h3 class="govuk-heading-m under-line govuk-!-margin-top-8 ">@messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
             <p class = "govuk-body">
                 @messages("tai.paye.lastTaxYear.incorrectInformation.text")
                 @link(
@@ -132,7 +132,6 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     </div>
     }
 </div>
-
 }
 
 @incomeList(incomeSourcePairs: List[Seq[EmploymentViewModel]], incomeType: String) = {
