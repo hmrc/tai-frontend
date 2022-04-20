@@ -129,7 +129,7 @@
 
 @beforeContent = {
 
-@if(isGG && !isSa) {
+@if(isGG && isSa) {
   @hmrcAccountMenu(AccountMenu(
     businessTaxAccount = Some(BusinessTaxAccount()),
     language = if(messages.lang.code == "cy") Cy else En,
