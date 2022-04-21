@@ -95,7 +95,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
           Dates.formatDate(TaxYear().next.start)(welshMessage)))
     }
 
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       preHeaderText = "USERNAME",
       mainHeaderText = messages("tai.incomeTaxComparison.heading.same"),
       preHeaderAnnouncementText = Some(messages("tai.incomeTaxComparison.preHeading.screenReader"))
@@ -110,7 +110,6 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
       doc must haveLinkWithUrlWithID(
         "returnToChooseTaxYearLink",
         controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
-      doc must haveLinkWithText(messages("your.paye.income.tax.overview"))
     }
 
     "show the tax codes section" in {
