@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.tai.service
 
-import javax.inject.Inject
-import java.time.LocalDate
+import cats.data.EitherT
+import cats.implicits._
 import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -26,6 +26,8 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWith
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMismatch, TaxCodeRecord}
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -37,25 +39,25 @@ class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnec
       case _                                                           => throw new RuntimeException(s"Could not fetch tax code change")
     }
 
-  def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[HasTaxCodeChanged] = {
-    val hasTaxCodeChangedFuture: Future[Boolean] = taxCodeChanged(nino)
-    val taxCodeMismatchFuture: Future[TaiResponse] = taxCodeMismatch(nino)
+  def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Either[TaxCodeError, HasTaxCodeChanged]] = {
+    val hasTaxCodeChangedFuture = taxCodeChanged(nino)
+    val taxCodeMismatchFuture = taxCodeMismatch(nino)
 
-    for {
-      hasTaxCodeChanged <- hasTaxCodeChangedFuture
-      taxCodeMismatch   <- taxCodeMismatchFuture
-    } yield {
-      (hasTaxCodeChanged, taxCodeMismatch) match {
-        case (_: Boolean, TaiSuccessResponseWithPayload(taxCodeMismatch: TaxCodeMismatch)) => {
+    val hasTaxChanged = for {
+      hasTaxCodeChanged <- EitherT(hasTaxCodeChangedFuture)
+      taxCodeMismatch   <- EitherT.right[TaxCodeError](taxCodeMismatchFuture)
+    } yield
+      taxCodeMismatch match {
+        case TaiSuccessResponseWithPayload(taxCodeMismatch: TaxCodeMismatch) =>
           logger.debug(s"TCMismatch $taxCodeMismatch")
           HasTaxCodeChanged(hasTaxCodeChanged, Some(taxCodeMismatch))
-        }
-        case (_: Boolean, _: TaiTaxAccountFailureResponse) => {
+        case _: TaiTaxAccountFailureResponse =>
           HasTaxCodeChanged(changed = false, None)
-        }
-        case _ => throw new RuntimeException("Could not fetch has tax code changed")
       }
-    }
+    hasTaxChanged.leftMap { _ =>
+      logger.error("Could not fetch the changed tax code")
+      TaxCodeError(nino, Some("Could not fetch the changed tax code"))
+    }.value
   }
 
   def lastTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(
@@ -78,9 +80,9 @@ class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnec
   private def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     taxCodeChangeConnector.taxCodeMismatch(nino)
 
-  private def taxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] =
+  private def taxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Either[TaxCodeError, Boolean]] =
     taxCodeChangeConnector.hasTaxCodeChanged(nino) map {
-      case TaiSuccessResponseWithPayload(hasTaxCodeChanged: Boolean) => hasTaxCodeChanged
-      case _                                                         => throw new RuntimeException("Could not fetch tax code change")
+      case TaiSuccessResponseWithPayload(hasTaxCodeChanged: Boolean) => Right(hasTaxCodeChanged)
+      case _                                                         => Left(TaxCodeError(nino, Some("Could not fetch tax code change")))
     }
 }
