@@ -55,7 +55,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 @main(
     title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
     authedUser = Some(request.taiUser),
-    pageTitle = Some("Check your Income Tax"),
+    pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
     backLinkContent = Messages("tai.returnToChooseTaxYear"),
     pagePrintable = true,
