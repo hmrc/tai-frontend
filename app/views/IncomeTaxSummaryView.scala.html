@@ -133,6 +133,48 @@
             </div>
             }
 
+            @* start of annual amounts print only*@
+
+            <div class="section flush--bottom only-visible-on-print">
+                <h2 class="govuk-heading-m under-line">@Messages("tai.incomeTaxSummary.annualAmounts.section.heading")</h2>
+                <div aria-hidden="true">
+                    <p class="govuk-body flush--top">
+                        @link(
+                        id=Some("totalEstimatedIncomeLink"),
+                        url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+                        copy=Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")
+                        )
+                    </p>
+                </div>
+
+                <h3 class="govuk-heading-s" >@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeHeading")</h3>
+                <p class=" govuk-body flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreePara")</p>
+                <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                    <span class="display-block heading-36 faded-text-dark section--narrow flush">@viewModel.taxFreeAmount</span>
+                </p>
+                <p class=" govuk-body flush--top">
+                    @link(
+                    id=Some("taxFreeAmountLink"),
+                    url=routes.TaxFreeAmountController.taxFreeAmount.toString,
+                    copy=Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")
+                    )
+                </p>
+                <h3 class="govuk-heading-s">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading")</h3>
+                <p class="govuk-body flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")</p>
+                <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                    <span class="display-block heading-36 faded-text-dark section--narrow flush">@viewModel.estimatedIncomeTaxAmount</span>
+                </p>
+                <p class="govuk-body flush--top">
+                    @link(
+                    id=Some("estimatedIncomeTaxLink"),
+                    url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.toString,
+                    copy=Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")
+                    )
+                </p>
+            </div>
+
+
+            @* end of annual amounts print only*@
 
             <div class="print-link-container hide-for-print">
                 <a id="print-link-btn" href="javascript:window.print()" class="govuk-link govuk-body-s gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>

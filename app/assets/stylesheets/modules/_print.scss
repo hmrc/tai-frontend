@@ -523,4 +523,8 @@ tr.print-pension-contributions-data td {
   body.printable-page.future-pay-as-you-earn-summary .highlight {
   background-color:#fff
   }
+ body.printable-page .only-visible-on-print {
+    display: inline-block;
+    visibility: visible;
+ }
 }
