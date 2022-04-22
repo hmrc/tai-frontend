@@ -38,8 +38,14 @@
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accountmenu.BusinessTaxAccount
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
 
+@*
+@import uk.gov.hmrc.play.views.helpers.AttorneyRegime
+@import uk.gov.hmrc.play.views.html.layouts.AttorneyBanner
+*@
 
+@import views.html.includes.attorneyBanner
 
+@import controllers.auth.AuthenticatedRequest
 
 @this(
         govukTemplate: GovukTemplate,
@@ -62,7 +68,8 @@
         link: Link,
         appConfig: ApplicationConfig,
         hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-        hmrcReportTechnicalIssue: HmrcReportTechnicalIssue
+        hmrcReportTechnicalIssue: HmrcReportTechnicalIssue,
+        banner: attorneyBanner
 )(implicit accountMenuConfig: AccountMenuConfig)
 
 
@@ -102,6 +109,40 @@
     _.utr.isDefined
   }
 }
+
+  @*
+@trustedHelperBanner = {
+@{
+  authedUser.map(_.trustedHelper.map{ helper =>
+    attorney_banner(Some(helper.principalName), helper.returnLinkUrl, AttorneyRegime.standAlone)
+  })
+}
+}
+*@
+
+
+
+
+
+
+
+@attorneyBanner = @{
+
+  authedUser match {
+    case Some(auth) => {
+      auth.trustedHelper match {
+        case Some(helper) => banner(helper)
+        case None => "not trusted helper"
+      }
+    }
+    case None => ""
+  }
+
+
+      }
+
+
+
 
 @additionalHeadBlock = {
   <meta name="format-detection" content="telephone=no"/>
@@ -150,6 +191,8 @@
   @if(isWelshTranslationAvailable) {
     @hmrcLanguageSelectHelper()
   }
+[xxx]
+  @attorneyBanner
 
   @backLinkUrl.map(url =>
     govukBackLink(BackLink(attributes = Map("id" -> "returnToChooseTaxYearLink") ,href = url, content = Text(backLinkContent)))
@@ -159,6 +202,9 @@
 
 
 @contentBlock = {
+
+
+
 @content
   <div class="govuk-grid-row govuk-!-margin-top-9">
     <div class="govuk-grid-column-one-half govuk-!-margin-bottom-5">
