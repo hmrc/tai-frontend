@@ -46,7 +46,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
   "historicPayAsYouEarn view" should {
 
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       authRequest.fullName,
       messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year)))
 

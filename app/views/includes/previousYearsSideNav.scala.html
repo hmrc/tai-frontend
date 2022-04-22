@@ -23,22 +23,21 @@
 @(selectedYear: TaxYear, noOfPreviousYearsToShow: Int)(implicit messages: Messages)
 
 <div class="side-navigation side-navigation--right">
-    <h2 id="heading" class="heading-section">@messages("tai.taxYearHeading")</h2>
+    <h2 id="heading" class="govuk-heading-m heading-section">@messages("tai.taxYearHeading")</h2>
 
     <nav id="previousYearsSideNav">
-        <ul>
+        <ul class = "govuk-list">
             @for(year <- (TaxYear().prev.year) to (TaxYear().year - noOfPreviousYearsToShow) by -1) {
-            <li>
-                @if(selectedYear.year != year){
-                <p id="@{year}NavItem" class="inline-block">
+            @if(selectedYear.year != year){
+            <li class = "govuk-link govuk-link--no-visited-state">
+                <p id="@{year}NavItem" >
                     @includes.link(
                         url=routes.PayeControllerHistoric.payePage(TaxYear(year)).toString,
                         copy=TaxPeriodLabelService.taxPeriodLabel(year)
                     )
                 </p>
-                }
             </li>
-            }
+            }}
         </ul>
 
     </nav>
