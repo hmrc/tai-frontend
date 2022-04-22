@@ -1,4 +1,3 @@
-
 @*
 * Copyright 2022 HM Revenue & Customs
 *
@@ -37,12 +36,10 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.RichAccountMenu
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accountmenu.BusinessTaxAccount
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
-
 @*
 @import uk.gov.hmrc.play.views.helpers.AttorneyRegime
 @import uk.gov.hmrc.play.views.html.layouts.AttorneyBanner
 *@
-
 @import views.html.includes.attorneyBanner
 
 @import controllers.auth.AuthenticatedRequest
@@ -99,71 +96,52 @@
 
 
 @isGG = @{
-  authedUser.fold(false) {
-    _.providerType.contains(TaiConstants.AuthProviderGG)
-  }
+    authedUser.fold(false) {
+        _.providerType.contains(TaiConstants.AuthProviderGG)
+    }
 }
 
 @isSa = @{
-  authedUser.fold(false) {
-    _.utr.isDefined
-  }
+    authedUser.fold(false) {
+        _.utr.isDefined
+    }
 }
-
-  @*
-@trustedHelperBanner = {
-@{
-  authedUser.map(_.trustedHelper.map{ helper =>
-    attorney_banner(Some(helper.principalName), helper.returnLinkUrl, AttorneyRegime.standAlone)
-  })
-}
-}
-*@
-
-
-
-
-
 
 
 @attorneyBanner = @{
 
-  authedUser match {
-    case Some(auth) => {
-      auth.trustedHelper match {
-        case Some(helper) => banner(helper)
-        case None => "not trusted helper"
-      }
+    authedUser match {
+        case Some(auth) => {
+            auth.trustedHelper match {
+                case Some(helper) => banner(helper)
+                case None => "not trusted helper"
+            }
+        }
+        case None => ""
     }
-    case None => ""
-  }
-
-
-      }
-
-
+}
 
 
 @additionalHeadBlock = {
-  <meta name="format-detection" content="telephone=no"/>
-  <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tai.css")'/>
-@if(!disableSessionExpired){
-  @hmrcTimeoutDialogHelper(
-    signOutUrl =   routes.ServiceController.serviceSignout().url,
-    keepAliveUrl = Some("/keep-alive")
-  )
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tai.css")'/>
+@if(!disableSessionExpired) {
+    @hmrcTimeoutDialogHelper(
+        signOutUrl = routes.ServiceController.serviceSignout().url,
+        keepAliveUrl = Some("/keep-alive")
+    )
 }
 }
 
 @headerBlock = {
 @hmrcHeader(Header(
-  homepageUrl = "http://www.gov.uk",
-  serviceName = pageTitle,
-  serviceUrl = "",
-  language = En,
-  assetsPath = uk.gov.hmrc.hmrcfrontend.controllers.routes.Assets.at("govuk/images").url,
-  displayHmrcBanner = false,
-  inputLanguageToggle = Some(LanguageToggle((En, switchToLanguage(En.code).url), (Cy, switchToLanguage(Cy.code).url)))
+    homepageUrl = "http://www.gov.uk",
+    serviceName = pageTitle,
+    serviceUrl = "",
+    language = En,
+    assetsPath = uk.gov.hmrc.hmrcfrontend.controllers.routes.Assets.at("govuk/images").url,
+    displayHmrcBanner = false,
+    inputLanguageToggle = Some(LanguageToggle((En, switchToLanguage(En.code).url), (Cy, switchToLanguage(Cy.code).url)))
 ))
 }
 
@@ -171,32 +149,30 @@
 @beforeContent = {
 
 @if(isGG && isSa) {
-  @hmrcAccountMenu(AccountMenu(
-    businessTaxAccount = Some(BusinessTaxAccount()),
-    language = if(messages.lang.code == "cy") Cy else En,
-    signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
-  ).withUrlsFromConfig())
+    @hmrcAccountMenu(AccountMenu(
+        businessTaxAccount = Some(BusinessTaxAccount()),
+        language = if(messages.lang.code == "cy") Cy else En,
+        signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+    ).withUrlsFromConfig())
 
 } else {
-  @hmrcAccountMenu(AccountMenu(
-    language = if(messages.lang.code == "cy") Cy else En,
-    signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
-  ).withUrlsFromConfig())
+    @hmrcAccountMenu(AccountMenu(
+        language = if(messages.lang.code == "cy") Cy else En,
+        signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+    ).withUrlsFromConfig())
 }
 
-
 @if(beforeContentBlock.isDefined) {
-  @beforeContentBlock
+    @beforeContentBlock
 } else {
-  @if(isWelshTranslationAvailable) {
-    @hmrcLanguageSelectHelper()
-  }
-[xxx]
-  @attorneyBanner
+    @if(isWelshTranslationAvailable) {
+        @hmrcLanguageSelectHelper()
+    }
+    @attorneyBanner
 
-  @backLinkUrl.map(url =>
-    govukBackLink(BackLink(attributes = Map("id" -> "returnToChooseTaxYearLink") ,href = url, content = Text(backLinkContent)))
-  )
+    @backLinkUrl.map(url =>
+        govukBackLink(BackLink(attributes = Map("id" -> "returnToChooseTaxYearLink"), href = url, content = Text(backLinkContent)))
+    )
 }
 }
 
@@ -204,71 +180,71 @@
 @contentBlock = {
 
 
-
 @content
-  <div class="govuk-grid-row govuk-!-margin-top-9">
-    <div class="govuk-grid-column-one-half govuk-!-margin-bottom-5">
-    @hmrcReportTechnicalIssueHelper()
+    <div class="govuk-grid-row govuk-!-margin-top-9">
+        <div class="govuk-grid-column-one-half govuk-!-margin-bottom-5">
+        @hmrcReportTechnicalIssueHelper()
+        </div>
     </div>
-  </div>
 
 
 @govukPhaseBanner(PhaseBanner(
-  tag = Some(Tag(
-    content = Text("beta")
-  )),
-  content = HtmlContent(messages("betaBanner.message",
-    link(link = appConfig.betaFeedbackUrl,
-      messageKey = "betaBanner.linkText",
-      inParagraph = true)))
+    tag = Some(Tag(
+        content = Text("beta")
+    )),
+    content = HtmlContent(messages("betaBanner.message",
+        link(link = appConfig.betaFeedbackUrl,
+            messageKey = "betaBanner.linkText",
+            inParagraph = true)))
 ))
 }
 
 
-
 @fullPageTitle = @{
-  s"$title - ${Messages("tai.currentYearSummary.heading")} - GOV.UK"
+    s"$title - ${Messages("tai.currentYearSummary.heading")} - GOV.UK"
 }
 
 
-@accessibilityStatementUrl= @{(appConfig.accessibilityStatementUrl(request.uri))}
+@accessibilityStatementUrl = @{
+    (appConfig.accessibilityStatementUrl(request.uri))
+}
 
 
 @mainContentDefault = {
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full-width govuk-!-margin-left-3 govuk-!-margin-right-3">
-    @contentBlock
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full-width govuk-!-margin-left-3 govuk-!-margin-right-3">
+        @contentBlock
+        </div>
     </div>
-  </div>
 }
 
 
-@footerBlock = @{Some(hmrcStandardFooter(accessibilityStatementUrl = Some(accessibilityStatementUrl.toString())))}
+@footerBlock = @{
+    Some(hmrcStandardFooter(accessibilityStatementUrl = Some(accessibilityStatementUrl.toString())))
+}
 
 @footerDefault = {
 @footerBlock.getOrElse("")
 }
 
 
-
-
 @addPrintableClass = @{
-  if (pagePrintable) {
-    "printable-page " + pagePrintName.getOrElse("")
-  } else ""
+    if(pagePrintable) {
+        "printable-page " + pagePrintName.getOrElse("")
+    } else ""
 }
 
 @govukTemplate(
-  htmlLang = Some("en"),
-  pageTitle = Some(fullPageTitle),
-  headBlock = Some(hmrcHead(nonce = nonce, headBlock = Some(additionalHeadBlock))),
-  headerBlock = headerBlock,
-  beforeContentBlock = Some(beforeContent),
-  mainClasses = Some("govuk-main-wrapper--auto-spacing"),
-  bodyClasses = Some(addPrintableClass),
-  bodyEndBlock = Some(hmrcScripts(nonce = nonce, scriptsBlock = additionalScriptsBlock)),
-  footerBlock = footerDefault,
-  cspNonce = nonce,
+    htmlLang = Some("en"),
+    pageTitle = Some(fullPageTitle),
+    headBlock = Some(hmrcHead(nonce = nonce, headBlock = Some(additionalHeadBlock))),
+    headerBlock = headerBlock,
+    beforeContentBlock = Some(beforeContent),
+    mainClasses = Some("govuk-main-wrapper--auto-spacing"),
+    bodyClasses = Some(addPrintableClass),
+    bodyEndBlock = Some(hmrcScripts(nonce = nonce, scriptsBlock = additionalScriptsBlock)),
+    footerBlock = footerDefault,
+    cspNonce = nonce,
 )(mainContentDefault)
 
 
