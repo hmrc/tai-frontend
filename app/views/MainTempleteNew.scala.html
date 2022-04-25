@@ -36,10 +36,6 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.RichAccountMenu
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accountmenu.BusinessTaxAccount
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
-@*
-@import uk.gov.hmrc.play.views.helpers.AttorneyRegime
-@import uk.gov.hmrc.play.views.html.layouts.AttorneyBanner
-*@
 @import views.html.includes.attorneyBanner
 
 @import controllers.auth.AuthenticatedRequest
@@ -107,18 +103,28 @@
     }
 }
 
+@*
 
-@attorneyBanner = @{
-
+@attorneyBanner: Option[attorneyBanner] = @{
     authedUser match {
         case Some(auth) => {
             auth.trustedHelper match {
                 case Some(helper) => banner(helper)
-                case None => "not trusted helper"
+                case None => None
             }
         }
-        case None => ""
+        case None => None
     }
+}
+
+*@
+
+
+@attorneyBanner: Option[attorneyBanner] = @{
+    for {
+        auth <- authedUser
+        helper <- auth.trustedHelper
+    } yield banner(helper)
 }
 
 
