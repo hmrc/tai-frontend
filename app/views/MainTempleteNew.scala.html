@@ -37,7 +37,6 @@
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accountmenu.BusinessTaxAccount
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
 @import views.html.includes.attorneyBanner
-
 @import controllers.auth.AuthenticatedRequest
 
 @this(
@@ -103,23 +102,6 @@
     }
 }
 
-@*
-
-@attorneyBanner: Option[attorneyBanner] = @{
-    authedUser match {
-        case Some(auth) => {
-            auth.trustedHelper match {
-                case Some(helper) => banner(helper)
-                case None => None
-            }
-        }
-        case None => None
-    }
-}
-
-*@
-
-
 @attorneyBanner = @{
     for {
         auth <- authedUser
@@ -174,6 +156,7 @@
     @if(isWelshTranslationAvailable) {
         @hmrcLanguageSelectHelper()
     }
+
     @attorneyBanner
 
     @backLinkUrl.map(url =>
