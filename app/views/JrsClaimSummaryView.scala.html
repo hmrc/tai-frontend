@@ -22,6 +22,7 @@
 @import scala.concurrent.ExecutionContext
 @import uk.gov.hmrc.tai.model.YearAndMonth.firstClaimDate
 @import includes.link
+@import includes.ptaHeader
 
 @this(main: MainTempleteNew, languageUtils: LanguageUtils)
 
@@ -29,23 +30,11 @@
 
 @employerMessageKey = @{viewModel.employerMessageKey}
 
-<!--@mainTemplate(-->
-<!--    title = messages("check.jrs.claims.title")-->
-<!--){-->
-@header = @{
-    ptaHeader(
-        mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
-        preHeadingText = request.fullName,
-        displayBackLink = false,
-        customBackLinkContent = Some(backLinkToChooseTaxYear),
-        showGdsVersion = true)
-}
 
 @main(
-    title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
-    authedUser = Some(request.taiUser),
+    title = messages("check.jrs.claims.title"),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+    backLinkUrl = None,
     backLinkContent = Messages("tai.returnToChooseTaxYear"),
     pagePrintable = true,
     pagePrintName = Some("job-retention-scheme")
@@ -53,15 +42,15 @@
 
 
     <div class="govuk-grid-row">
-        <div class="grid grid-column-tow-thirds">
-            <div class="inner-block">
+        <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-!-display-inline-block">
 
                 <p class="flush--bottom">
                     @link(
                         id=Some("backLink"),
                         copy=Messages("check.jrs.back.link"),
-                        url = "#",
-                        linkClasses=Seq("link-back js-visible")
+                        url =routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+                        linkClasses=Seq("govuk-back-link")
                     )
                 </p>
 
@@ -72,7 +61,7 @@
 
                 @for(employers <- viewModel.employers) {
                     @if(employers.hasMultipleClaims) {
-                        <p>@messages("check.jrs.employer.made.multiple.claims.for.you", employers.name)</p>
+                        <p class="govuk-body">@messages("check.jrs.employer.made.multiple.claims.for.you", employers.name)</p>
                         <ul class="govuk-list govuk-list--bullet">
                             @for(claims <- employers.claims) {
                                 <li>@claims.formatYearAndMonth(languageUtils.getCurrentLang)</li>
@@ -80,29 +69,28 @@
                         </ul>
 
                     } else {
-                        <p>@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head.formatYearAndMonth(languageUtils.getCurrentLang))</p>
+                        <p class="govuk-body">@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head.formatYearAndMonth(languageUtils.getCurrentLang))</p>
 
                     }
                 }
 
                 @if(!viewModel.hasMultipleEmployments) {
                     @if(viewModel.employers.last.hasMultipleClaims) {
-                        <p>@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
+                        <p class="govuk-body">@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
                     } else {
-                        <p>@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.single.furlough")</p>
+                        <p class="govuk-body">@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.single.furlough")</p>
                     }
                 } else {
-                    <p>@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
+                    <p class="govuk-body">@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
                 }
 
                 <h2 class="govuk-heading-m heading-section govuk-!-margin-top-8">@messages(s"check.jrs.${employerMessageKey}.can.claim.heading")</h2>
-                <p>@messages(s"check.jrs.${employerMessageKey}.can.claim")</p>
+                <p class="govuk-body">@messages(s"check.jrs.${employerMessageKey}.can.claim")</p>
 
                 <h2 class="govuk-heading-m heading-section govuk-!-margin-top-8">@messages("check.jrs.information.is.different.heading")</h2>
-                <p>@messages(s"check.jrs.speak.to.${employerMessageKey}")</p>
-                <p>@messages("check.jrs.you.can")
+                <p class="govuk-body">@messages(s"check.jrs.speak.to.${employerMessageKey}")</p>
+                <p class="govuk-body">@messages("check.jrs.you.can")
                     @link(url = messages("jrs.report.fraud.link"), id = Some("report-fraud-link"), copy = messages("check.jrs.report.fraud"), externalLink = true)
-                </a>
                     @messages(s"check.jrs.report.fraud.if.${employerMessageKey}.abusing.scheme")
                 </p>
 
