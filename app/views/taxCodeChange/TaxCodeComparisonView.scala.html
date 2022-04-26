@@ -40,7 +40,8 @@
         formForErrorSummary = None,
         displayBackLink = false,
         mainHeadingText = messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(taxCodeChangeViewModel.changeDate))),
-        preHeadingText = messages("taxCode.change.journey.preHeading")
+        preHeadingText = messages("taxCode.change.journey.preHeading"),
+        showGdsVersion = true
     )
 }
 
@@ -108,14 +109,14 @@
 
 @taxCodePairs(taxCodePairs: TaxCodePairs) = {
     <div class="column-half tax-code-change__previous">
-        <h2 class="govuk-heading-m section-title tax-code-heading">@messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
+        <h2 class="govuk-heading-m section-title ">@messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
         @for((pair) <- taxCodePairs.combinedTaxCodePairs) {
             @taxCodeRecordPod(pair.previous, "previous")
         }
     </div>
 
     <div class="column-half tax-code-change__current">
-        <h2 class="govuk-heading-m section-title tax-code-heading">@messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
+        <h2 class="govuk-heading-m section-title ">@messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
         @for((pair) <- taxCodePairs.combinedTaxCodePairs) {
             @taxCodeRecordPod(pair.current, "current")
         }

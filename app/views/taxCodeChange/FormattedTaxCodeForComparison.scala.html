@@ -29,7 +29,7 @@
 <div class="tax-code-change__pod">
     <h3 class="tax-code-change__employment-heading govuk-heading-l flush--top flush--bottom carry-over">@taxCodeRecord.employerName</h3>
 
-    <p class="tax-code-change__payroll break-word govuk-body">@taxCodeRecordPayrollHtml(taxCodeRecord)</p>
+    <div class="tax-code-change__payroll break-word govuk-body"> @taxCodeRecordPayrollHtml(taxCodeRecord)</div>
     <div aria-hidden="true" class="tax-code-change__date govuk-heading-s flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</div>
     <div aria-hidden="true" class="tax-code-change__tax-code govuk-heading-l">@TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)</div>
 
@@ -56,18 +56,18 @@
                     TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
                 )),
                 summaryClass=Some("govuk-details__summary"),
-                panelClass = Some("tax-code-change__details")
+                panelClass = Some("tax-code-change__details govuk-details__text")
             ){
                 <ul class="tai-description-list">
                     @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
                     <li>
                         <div class="bold-medium">
                             <span class="govuk-visually-hidden">@Messages("tai.taxCode.part.announce", taxCodeExplanation._1)</span>
-                            <span class="tax-code-change__part" aria-hidden="true">@taxCodeExplanation._1</span>
+                            <span class="tax-code-change__part govuk-!-font-weight-bold" aria-hidden="true">@taxCodeExplanation._1</span>
                         </div>
                         <div class="fixed-small">
                             <span class="govuk-visually-hidden">@Messages("tai.taxCode.definition.announce")</span>
-                            <span class="tax-code-change__part-definition">@Html(taxCodeExplanation._2)</span>
+                            <span class="tax-code-change__part-definition ">@Html(taxCodeExplanation._2)</span>
                         </div>
                     </li>
                     }
