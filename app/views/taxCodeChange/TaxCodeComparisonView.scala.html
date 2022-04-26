@@ -38,7 +38,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = None,
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(taxCodeChangeViewModel.changeDate))),
         preHeadingText = messages("taxCode.change.journey.preHeading")
     )
@@ -46,31 +46,33 @@
 
 @mainTemplate(
     title = messages("taxCode.change.journey.preHeading"),
-    authedUser = Some(user)
+    authedUser = Some(user),
+    backLinkContent=messages("tai.back-link.upper")
     ) {
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         @header
-    </div>
-</div>
 
-    <div class="govuk-grid-column-two-thirds">
-        <div class="govuk-grid-row">
+
+    <div>
+        <div>
             @displayTaxCodeReasons(taxCodeChangeViewModel.taxCodeChangeReasons)
         </div>
-        <div class="govuk-grid-row tax-code-change margin-bottom-xlarge">
+        <div class="tax-code-change margin-bottom-xlarge">
             @taxCodePairs(taxCodeChangeViewModel.pairs)
         </div>
-        <div class="govuk-grid-row">
+        <div>
             @includes.link(
             id=Some("check-your-tax-button"),
             url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
             copy=messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton"),
-            linkClasses=Seq("button"))
+            linkClasses=Seq("govuk-button"))
         </div>
 
+     </div>
     </div>
+</div>
 }
 
 

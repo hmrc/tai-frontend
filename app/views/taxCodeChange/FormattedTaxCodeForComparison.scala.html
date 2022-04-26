@@ -27,13 +27,13 @@
 @(taxCodeRecord: TaxCodeRecord, identifier: String, scottishTaxRateBands: Map[String, BigDecimal], appConfig: ApplicationConfig)(implicit messages: Messages)
 
 <div class="tax-code-change__pod">
-    <p class="tax-code-change__employment-heading heading-medium flush--top flush--bottom carry-over">@taxCodeRecord.employerName</p>
+    <h3 class="tax-code-change__employment-heading govuk-heading-l flush--top flush--bottom carry-over">@taxCodeRecord.employerName</h3>
 
-    <div class="tax-code-change__payroll break-word">@taxCodeRecordPayrollHtml(taxCodeRecord)</div>
-    <div aria-hidden="true" class="tax-code-change__date bold-small flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</div>
-    <div aria-hidden="true" class="tax-code-change__tax-code bold-large">@TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)</div>
+    <p class="tax-code-change__payroll break-word govuk-body">@taxCodeRecordPayrollHtml(taxCodeRecord)</p>
+    <div aria-hidden="true" class="tax-code-change__date govuk-heading-s flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</div>
+    <div aria-hidden="true" class="tax-code-change__tax-code govuk-heading-l">@TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)</div>
 
-    <span class="visuallyhidden">
+    <span class="govuk-visually-hidden">
         @Messages(
             s"taxCode.change.yourTaxCodeChanged.${identifier}TaxCodeDetails.screenReader",
             Dates.formatDate(taxCodeRecord.startDate),
@@ -55,17 +55,18 @@
                     "taxCode.change.yourTaxCodeChanged.understand",
                     TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
                 )),
+                summaryClass=Some("govuk-details__summary"),
                 panelClass = Some("tax-code-change__details")
             ){
                 <ul class="tai-description-list">
                     @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
                     <li>
                         <div class="bold-medium">
-                            <span class="visuallyhidden">@Messages("tai.taxCode.part.announce", taxCodeExplanation._1)</span>
+                            <span class="govuk-visually-hidden">@Messages("tai.taxCode.part.announce", taxCodeExplanation._1)</span>
                             <span class="tax-code-change__part" aria-hidden="true">@taxCodeExplanation._1</span>
                         </div>
                         <div class="fixed-small">
-                            <span class="visuallyhidden">@Messages("tai.taxCode.definition.announce")</span>
+                            <span class="govuk-visually-hidden">@Messages("tai.taxCode.definition.announce")</span>
                             <span class="tax-code-change__part-definition">@Html(taxCodeExplanation._2)</span>
                         </div>
                     </li>
@@ -89,10 +90,10 @@
 }
 
 @taxCodeRecordPayrollInfo(payrollNumber: String, messageKey: String, screenReaderKey: String) = {
-    <div class="tax-code-change__payroll-number" aria-hidden="true">
+    <p class="tax-code-change__payroll-number govuk-body" aria-hidden="true">
         @Messages(messageKey): @payrollNumber
-    </div>
-    <span class="visuallyhidden">
+    </p>
+    <span class="govuk-visually-hidden">
         @Messages(screenReaderKey, payrollNumber)
     </span>
 }

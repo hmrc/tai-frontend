@@ -74,7 +74,7 @@
         isWelshTranslationAvailable: Boolean = false,
         signOutUrl: Option[String] = None,
         serviceUrl: Option[String] = None,
-        backLinkUrl: Option[String] = None,
+        backLinkUrl: Option[String] = Some("javascript:history.go(-1)"),
         backLinkContent: String = "Back",
         displayHmrcBanner: Boolean = false,
         phaseBanner: Option[PhaseBanner] = None,
@@ -152,7 +152,7 @@
   }
 
   @backLinkUrl.map(url =>
-    govukBackLink(BackLink(attributes = Map("id" -> "returnToChooseTaxYearLink") ,href = url, content = Text(backLinkContent)))
+    govukBackLink(BackLink(classes = "js-visible" ,attributes = Map("id" -> "returnToChooseTaxYearLink") ,href = url, content = Text(backLinkContent)))
   )
 }
 }
