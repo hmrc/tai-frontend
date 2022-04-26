@@ -24,7 +24,7 @@
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
 @import views.html.taxCodeChange.FormattedTaxCodeForComparison
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTempleteNew)
 
 
 @(taxCodeChangeViewModel: TaxCodeChangeViewModel,appConfig: ApplicationConfig)(
@@ -46,9 +46,10 @@
 
 @mainTemplate(
     title = messages("taxCode.change.journey.preHeading"),
-    pageHeader = Some(header),
     authedUser = Some(user)
     ) {
+
+@header
 
     <div class="column-two-thirds">
         <div class="grid-row">
