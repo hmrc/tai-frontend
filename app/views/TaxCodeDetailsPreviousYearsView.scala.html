@@ -20,33 +20,35 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.ptaHeader
 
-@this(mainTemplate: MainTemplate)
+@this(main: MainTempleteNew)
 
 @(taxCodeViewModel: TaxCodeViewModelPreviousYears)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
     ptaHeader(
-    displayBackLink = true,
+    displayBackLink = false,
     mainHeadingText = taxCodeViewModel.mainHeading,
-    preHeadingText = taxCodeViewModel.preHeader)
+    preHeadingText = taxCodeViewModel.preHeader,
+    showGdsVersion = true
+    )
 }
 
-@mainTemplate(
+@main(
     title = taxCodeViewModel.title,
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = Some("full-width")){
+    pageTitle = Some(Messages("tai.service.navTitle"))
+    ){
 
-    <div class="grid-row">
-        <div class="grid grid-2-3">
+    <div class="govuk-grid-row grid-row">
+        <div class="govuk-grid-column-two-thirds">
             <div class="inner-block">
 
                 @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
 
                 <div class="section">
 
-                    <h2 class="break-word-only" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
+                        <h2 class="break-word-only" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
 
                     <ul id="taxCodeList@{listIdx.toString}" class="tai-description-list flush">
 
