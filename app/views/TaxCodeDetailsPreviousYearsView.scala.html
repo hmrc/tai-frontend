@@ -36,7 +36,9 @@
 
 @main(
     title = taxCodeViewModel.title,
-    authedUser = Some(user)
+    authedUser = Some(user),
+    backLinkContent=messages("tai.back-link.upper"),
+    backLinkUrl = Some("javascript:history.go(-1)"),
      ){
 
     <div class="govuk-grid-row">
@@ -51,11 +53,11 @@
 
                 @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
 
-                <div class="section">
+                <div class="section govuk-!-margin-bottom-9">
 
                         <h2 class="govuk-!-margin-top-5 govuk-heading-m" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
 
-                    <ul id="taxCodeList@{listIdx.toString}" class="tai-description-list flush">
+                    <ul id="taxCodeList@{listIdx.toString}" class="govuk-!-padding-0 govuk- tai-description-list flush">
 
                         @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
                         <li>
