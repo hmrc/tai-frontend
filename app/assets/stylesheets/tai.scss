@@ -269,6 +269,14 @@ body.printable-page.js-enabled #print-link-btn {
 }
 
 
+
 .flush--bottom {
   margin-bottom: 0 !important;
 }
+
+.only-visible-on-print {
+    display:none;
+    visibility: hidden
+
+}
+
