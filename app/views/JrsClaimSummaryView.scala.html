@@ -34,8 +34,8 @@
 @main(
     title = messages("check.jrs.claims.title"),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkUrl = None,
-    backLinkContent = Messages("tai.returnToChooseTaxYear"),
+    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+    backLinkContent = Messages("check.jrs.back.link"),
 ){
 
 
@@ -43,14 +43,6 @@
         <div class="govuk-grid-column-two-thirds">
             <div class="govuk-!-display-inline-block">
 
-                <p class="flush--bottom">
-                    @link(
-                        id=Some("backLink"),
-                        copy=Messages("check.jrs.back.link"),
-                        url =routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-                        linkClasses=Seq("govuk-back-link")
-                    )
-                </p>
 
                 <h1 class="govuk-heading-xl">@messages("check.jrs.claims.title")</h1>
 
