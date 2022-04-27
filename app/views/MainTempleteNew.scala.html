@@ -161,9 +161,7 @@
     @attorneyBanner
     @backLinkUrl.map(url =>
         govukBackLink(BackLink(classes = "js-visible-back",
-        attributes = Map("id" -> "returnToChooseTaxYearLink"),
-        href = url,
-        content = Text(backLinkContent)))
+        attributes = Map("id" -> "returnToChooseTaxYearLink"), href = url, content = Text(backLinkContent)))
     )
  }
 }
