@@ -54,7 +54,6 @@
         mainHeadingText = headingText,
         preHeadingText = incomeTaxComparisonViewModel.username,
         preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"),
-        customBackLinkContent = Some(backLinkToChooseTaxYear),
         showGdsVersion = true),
 }
 
@@ -63,7 +62,7 @@
     pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(request.taiUser),
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
-    backLinkContent = Messages("tai.returnToChooseTaxYear"),
+    backLinkContent = Messages("your.paye.income.tax.overview"),
     pagePrintable = true,
     pagePrintName = Some("future-pay-as-you-earn-summary")) {
 

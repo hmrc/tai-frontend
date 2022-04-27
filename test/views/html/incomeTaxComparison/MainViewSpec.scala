@@ -110,6 +110,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
       doc must haveLinkWithUrlWithID(
         "returnToChooseTaxYearLink",
         controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+      doc must haveLinkWithText(messages("your.paye.income.tax.overview"))
     }
 
     "show the tax codes section" in {
