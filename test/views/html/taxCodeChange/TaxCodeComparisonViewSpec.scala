@@ -56,7 +56,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
   override def view: HtmlFormat.Appendable = taxCodeComparison(viewModel, appConfig)
 
   def testTaxCodeRecordFormat(record: TaxCodeRecord): Unit = {
-    doc must haveParagraphWithText(record.employerName)
+    doc must haveHeadingH3WithText(record.employerName)
     doc must haveClassWithText(
       Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)),
       "tax-code-change__date")
@@ -71,17 +71,17 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       doc must haveClassWithText(explanation._1, "tax-code-change__part")
 
       doc must haveClassWithText(explanation._2, "tax-code-change__part-definition")
-      doc must haveClassWithText(Messages("tai.taxCode.part.announce", explanation._1), "visuallyhidden")
-      doc must haveClassWithText(Messages("tai.taxCode.definition.announce"), "visuallyhidden")
+      doc must haveClassWithText(Messages("tai.taxCode.part.announce", explanation._1), "govuk-visually-hidden")
+      doc must haveClassWithText(Messages("tai.taxCode.definition.announce"), "govuk-visually-hidden")
     }
   }
 
   "tax code comparison" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
 
     behave like pageWithTitle(Messages("taxCode.change.journey.preHeading"))
 
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       preHeaderText = Messages("taxCode.change.journey.preHeading"),
       mainHeaderText = Messages(
         "taxCode.change.yourTaxCodeChanged.h1",

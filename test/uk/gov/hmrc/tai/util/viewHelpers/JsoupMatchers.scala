@@ -302,6 +302,7 @@ trait JsoupMatchers {
     new CssSelectorWithTextCount(s".$expectedClass", expectedCount)
 
   def haveBackLink = new CssSelector("a[id=backLink]")
+  def haveBackLinkNew = new CssSelector("a[id=returnToChooseTaxYearLink]")
   def haveBackButtonWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "backLink")
   def haveCancelLinkWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "cancelLink")
   def haveLinkWithUrlWithID(id: String, expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, id)
