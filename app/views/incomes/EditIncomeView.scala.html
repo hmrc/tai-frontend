@@ -69,7 +69,7 @@
         <h2>@messages("tai.incomes.edit.incomeTax.update.heading", income("name").value.getOrElse(""))</h2>
         <p>@messages("tai.incomes.monetaryAmount.format.valid")</p>
 
-        @form(action = controllers.routes.IncomeController.editRegularIncome){
+        @form(action = controllers.routes.IncomeController.editRegularIncome(employmentId)){
         <input type="hidden" name="payToDate" value="@payToDate">
         <div class="form-field-group @if(income.hasErrors) {form-group-error}">
 

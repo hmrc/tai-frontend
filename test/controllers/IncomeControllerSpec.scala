@@ -62,6 +62,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
   val payToDate = "100"
   val employerId = 1
   val employerName = "Employer Name"
+  val cachePayToDate = Future.successful(Right(100))
 
   val cachedData = Future.successful(Right(Seq(employerId.toString, payToDate)))
 
@@ -165,12 +166,18 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
         val formData = Json.toJson(editIncomeForm)
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
 
         val result =
-          testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          testController.editRegularIncome(empId = employment.sequenceNumber)(
+            RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IncomeController.confirmRegularIncome().url
+        redirectLocation(result).get mustBe controllers.routes.IncomeController
+          .confirmRegularIncome(empId = employment.sequenceNumber)
+          .url
 
         verify(journeyCacheService).cache(meq(UpdateIncome_NewAmountKey), meq("200"))(any())
       }
@@ -187,12 +194,18 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
         val formData = Json.toJson(editIncomeForm)
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
 
         val result =
-          testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          testController.editRegularIncome(empId = employment.sequenceNumber)(
+            RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IncomeController.confirmRegularIncome().url
+        redirectLocation(result).get mustBe controllers.routes.IncomeController
+          .confirmRegularIncome(empId = employment.sequenceNumber)
+          .url
 
         verify(journeyCacheService).cache(meq(UpdateIncome_NewAmountKey), meq("200"))(any())
       }
@@ -215,9 +228,13 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(sameAmount))
         val formData = Json.toJson(editIncomeForm)
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
 
         val result =
-          testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          testController.editRegularIncome(empId = employment.sequenceNumber)(
+            RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
@@ -237,9 +254,13 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = 212)
         val formData = Json.toJson(editIncomeForm)
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
 
         val result =
-          testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          testController.editRegularIncome(empId = employment.sequenceNumber)(
+            RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
@@ -258,9 +279,13 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(invalidNewAmount))
         val formData = Json.toJson(editIncomeForm)
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
 
         val result =
-          testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          testController.editRegularIncome(empId = employment.sequenceNumber)(
+            RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -278,12 +303,13 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(cachedData)
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(cachePayToDate)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result =
+          testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
       }
@@ -291,14 +317,14 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       "pay to date cannot be determined, due to no annual account records on the income source" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(Nil)
-        when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(cachedData)
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(cachePayToDate)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result =
+          testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
       }
@@ -311,13 +337,16 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(cachedData)
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(cachePayToDate)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
+          .thenReturn(Future.successful(Left("Error")))
 
-        val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result =
+          testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -327,13 +356,16 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(cachedData)
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(cachePayToDate)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
+          .thenReturn(Future.successful(Left("Error")))
 
-        val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result =
+          testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -351,6 +383,24 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
+    }
+
+    "user navigates backwards" in {
+      val testController = createTestIncomeController()
+      val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+      val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+      when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_NewAmountKey))(any()))
+        .thenReturn(Future.failed(new RuntimeException))
+      when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_ConfirmedNewAmountKey))(any()))
+        .thenReturn(cachePayToDate)
+      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+
+      val result =
+        testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
+
     }
   }
 

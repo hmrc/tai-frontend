@@ -22,9 +22,9 @@ import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import uk.gov.hmrc.tai.util.FutureOps._
-
 import javax.inject.{Inject, Singleton}
 import java.time.LocalDate
+
 import play.api.Logging
 import play.api.data.Form
 import play.api.mvc._
@@ -37,16 +37,17 @@ import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
+import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
-import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, SameEstimatedPayViewModel}
 import views.html.incomes._
 
-import scala.Function.tupled
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
+import scala.util.{Failure, Success, Try}
 @Singleton
 class IncomeController @Inject()(
   @Named("Update Income") journeyCacheService: JourneyCacheService,
@@ -112,7 +113,7 @@ class IncomeController @Inject()(
         employerId,
         cachedData(2).toInt,
         isPension = false,
-        routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString)
+        routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
       Ok(sameEstimatedPay(model))
     }).recover {
       case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
@@ -140,35 +141,34 @@ class IncomeController @Inject()(
     })
   }
 
-  def editRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
+  def editRegularIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService
-      .collectedJourneyValues(
-        Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
-        Seq(UpdateIncome_DateKey))
-      .getOrFail flatMap {
-      case (mandatorySeq, optionalSeq) =>
-        val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
-          case Success(optDate) => optDate
-          case Failure(exception) =>
-            logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
-            None
-        }
+      journeyCacheService
+        .collectedJourneyValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_NameKey), Seq(UpdateIncome_DateKey))
+        .getOrFail flatMap {
+        case (mandatorySeq, optionalSeq) =>
+          val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
+            case Success(optDate) => optDate
+            case Failure(exception) =>
+              logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
+              None
+          }
 
-        val employerName = mandatorySeq(2)
-        val payToDate = BigDecimal(mandatorySeq.head)
+          val employerName = mandatorySeq(1)
+          val payToDate = BigDecimal(mandatorySeq.head)
 
-        EditIncomeForm
-          .bind(employerName, payToDate, date)
-          .fold(
-            (formWithErrors: Form[EditIncomeForm]) => {
-              Future.successful(BadRequest(
-                editIncome(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)))
-            },
-            (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome())
-          )
-    }
+          EditIncomeForm
+            .bind(employerName, payToDate, date)
+            .fold(
+              (formWithErrors: Form[EditIncomeForm]) =>
+                Future.successful(
+                  BadRequest(editIncome(formWithErrors, hasMultipleIncomes = false, empId, mandatorySeq.head))),
+              (income: EditIncomeForm) =>
+                determineEditRedirect(income, routes.IncomeController.confirmRegularIncome(empId))
+            )
+      }
   }
 
   private def isCachedIncomeTheSame(currentCache: Map[String, String], newAmount: Option[String]): Boolean =
@@ -177,34 +177,41 @@ class IncomeController @Inject()(
   private def isIncomeTheSame(income: EditIncomeForm): Boolean =
     FormHelper.areEqual(Some(income.oldAmount.toString), income.newAmount)
 
-  def confirmRegularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    val nino = user.nino
+  def confirmRegularIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      val nino = user.nino
+      (for {
+        cachedData           <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_NewAmountKey).getOrFail
+        taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+        employmentDetails    <- employmentService.employment(nino, empId)
+      } yield {
+        (taxCodeIncomeDetails, employmentDetails) match {
+          case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+            taxCodeIncomes.find(_.employmentId.contains(empId)) match {
+              case Some(taxCodeIncome) =>
+                val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
-    (for {
-      cachedData <- journeyCacheService.mandatoryJourneyValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey).getOrFail
-      id = cachedData.head.toInt
-      taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-      employmentDetails    <- employmentService.employment(nino, id)
-    } yield {
-      (taxCodeIncomeDetails, employmentDetails) match {
-        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-          taxCodeIncomes.find(_.employmentId.contains(cachedData.head.toInt)) match {
-            case Some(taxCodeIncome) =>
-              val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
+                val vm =
+                  ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData)
+                Ok(confirmAmountEntered(vm))
 
-              val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
-              Ok(confirmAmountEntered(vm))
-
-            case _ => throw new RuntimeException(s"Not able to found employment with id $id")
+              case _ => throw new RuntimeException(s"Not able to found employment with id $empId")
+            }
+          case _ => throw new RuntimeException("Exception while reading employment and tax code details")
+        }
+      }).recoverWith {
+        case NonFatal(e) =>
+          journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_ConfirmedNewAmountKey).flatMap {
+            case Right(_) =>
+              journeyCacheService.flush().map { _ =>
+                Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+              }
+            case _ => Future.successful(errorPagesHandler.internalServerError(e.getMessage))
           }
-        case _ => throw new RuntimeException("Exception while reading employment and tax code details")
-      }
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-    }
-  }
 
+      }
+  }
   def updateEstimatedIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
