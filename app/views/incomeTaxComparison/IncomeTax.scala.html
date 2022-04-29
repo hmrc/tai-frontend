@@ -21,7 +21,7 @@
 
 @(viewmodel: EstimatedIncomeTaxComparisonViewModel)(implicit messages: Messages)
 
-    <h2 id="incomeTaxHeading" class="heading-large">
+    <h2 id="incomeTaxHeading" class="govuk-heading-l">
 
         @viewmodel.taxComparison.fold(
             gt => Html(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", pounds(gt))),
@@ -33,26 +33,26 @@
 
     <p>@messages("tai.incomeTaxComparison.incomeTax.description")</p>
 
-    <table class="table--font-reset flush--bottom responsive" role="table">
-        <caption class="visually-hidden">@messages("tai.incomeTaxComparison.incomeTax.estimate")</caption>
-        <thead id="estimatedIncomeTaxComparisonTableHeader">
-            <tr role="row">
-                <th scope="col">@messages("tai.incomeTaxComparison.incomeTax.income.tax.type")</th>
-                <th id="estimatedIncomeTaxComparisonTableHeaderCol1" scope="col" class="numeric">
+    <table class="govuk-table table--font-reset flush--bottom responsive" role="table">
+        <caption class="govuk-visually-hidden">@messages("tai.incomeTaxComparison.incomeTax.estimate")</caption>
+        <thead id="estimatedIncomeTaxComparisonTableHeader" class="govuk-table__head">
+            <tr class="govuk-table__row" role="row">
+                <th scope="col" class="govuk-table__header govuk-!-width-one-half">@messages("tai.incomeTaxComparison.incomeTax.income.tax.type")</th>
+                <th id="estimatedIncomeTaxComparisonTableHeaderCol1" scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter">
                     @Html(messages("tai.estimatedTax.ending", viewmodel.currentTaxYearHeader))
                 </th>
-                <th id="estimatedIncomeTaxComparisonTableHeaderCol2" scope="col" class="numeric">
+                <th id="estimatedIncomeTaxComparisonTableHeaderCol2" scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter">
                     @Html(messages("tai.estimatedTax.starting", viewmodel.nextTaxYearHeader))
                 </th>
             </tr>
         </thead>
-        <tbody>
-            <tr role="row">
-                <td role="cell" id="estimatedIncomeTaxComparisonTableRowDescription" class="table-title">
+        <tbody class="govuk-table__body">
+            <tr class="govuk-table__row" role="row">
+                <td role="cell" id="estimatedIncomeTaxComparisonTableRowDescription" class="govuk-table__cell">
                     @messages("tai.incomeTaxComparison.incomeTax.estimate")
                 </td>
 
-                <td role="cell" class="numeric">
+                <td role="cell" class="govuk-table__cell govuk-table__cell--numeric">
                     <span class="table-heading" aria-hidden="true">
                         @Html(viewmodel.htmlNonBroken(messages("tai.CurrentTaxYear")))
                         @Html(viewmodel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", viewmodel.currentTaxYearHeader)))
@@ -60,7 +60,7 @@
                     @pounds(viewmodel.comparisonItemsByYear.head.estimatedIncomeTax)
                 </td>
 
-                <td role="cell" class="numeric">
+                <td role="cell" class="govuk-table__cell govuk-table__cell--numeric">
                     <span class="table-heading" aria-hidden="true">
                         @Html(viewmodel.htmlNonBroken(messages("tai.NextTaxYear")))
                         @Html(viewmodel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", viewmodel.nextTaxYearHeader)))
