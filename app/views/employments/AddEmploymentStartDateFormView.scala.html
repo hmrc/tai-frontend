@@ -16,7 +16,7 @@
 
 @import includes.forms._
 @import includes.{cancelLink, ptaHeaderNoH1}
-@import org.joda.time.LocalDate
+@import java.time.LocalDate
 @import uk.gov.hmrc.play.views.html.helpers._
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
@@ -40,13 +40,13 @@
     articleClasses = None)  {
 
     @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentStartDate()) {
-        @dateWithH1Legend(
+        @dateWithH1Label(
             form = dateForm,
             fieldPrefix = "tellUsStartDateForm",
             labelText = Messages("tai.addEmployment.startDateForm.label", employmentName),
             legendBold = true,
             mainHeadingText = messages("tai.addEmployment.startDateForm.title", employmentName),
-            preHeadingText = messages("add.missing.employment")
+            preHeadingText = Some(messages("add.missing.employment"))
         )
 
         @submit()

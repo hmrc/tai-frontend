@@ -20,7 +20,8 @@ import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
-import org.joda.time.LocalDate
+
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -45,6 +46,7 @@ import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
+import java.time.format.DateTimeFormatter
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
@@ -237,7 +239,7 @@ class EndEmploymentControllerSpec
     "show the error page" in {
       val endEmploymentTest = createEndEmploymentTest
 
-      val dataFromCache = Right(Seq(new LocalDate().minusWeeks(6).minusDays(1).toString, employerName, "1"))
+      val dataFromCache = Right(Seq(LocalDate.now.minusWeeks(6).minusDays(1).toString, employerName, "1"))
 
       when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any()))
         .thenReturn(Future.successful(dataFromCache))
@@ -247,7 +249,9 @@ class EndEmploymentControllerSpec
 
       status(result) mustBe OK
       doc.title() must include(
-        Messages("tai.endEmploymentWithinSixWeeksError.heading", new LocalDate().toString("d MMMM yyyy")))
+        Messages(
+          "tai.endEmploymentWithinSixWeeksError.heading",
+          LocalDate.now.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))))
     }
 
     "show the irregular payment error page" in {
@@ -267,7 +271,7 @@ class EndEmploymentControllerSpec
     "submit the details to backend" in {
       val endEmploymentTest = createEndEmploymentTest
       val employmentId = "0"
-      val dataFromCache = Right(Seq(employmentId, new LocalDate(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST")))
+      val dataFromCache = Right(Seq(employmentId, LocalDate.of(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST")))
       val cacheMap = Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$employmentId" -> "true")
 
       when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any()))
@@ -349,7 +353,7 @@ class EndEmploymentControllerSpec
       val dataToCache = Map(
         EndEmployment_EmploymentIdKey -> "0",
         EndEmployment_NameKey         -> employerName,
-        EndEmployment_EndDateKey      -> new LocalDate(2017, 2, 1).toString)
+        EndEmployment_EndDateKey      -> LocalDate.of(2017, 2, 1).toString)
 
       when(endEmploymentJourneyCacheService.cache(Matchers.eq(dataToCache))(any()))
         .thenReturn(Future.successful(dataToCache))
@@ -370,7 +374,7 @@ class EndEmploymentControllerSpec
 
     "save data into journey cache" in {
       val endEmploymentTest = createEndEmploymentTest
-      val dataToCache = Map(EndEmployment_EndDateKey -> new LocalDate(2017, 2, 1).toString)
+      val dataToCache = Map(EndEmployment_EndDateKey -> LocalDate.of(2017, 2, 1).toString)
 
       when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
 
@@ -391,7 +395,7 @@ class EndEmploymentControllerSpec
       "show the check your answers page" in {
         val endEmploymentTest = createEndEmploymentTest
 
-        val dataFromCache = (Right(Seq("0", new LocalDate(2017, 2, 1).toString, "No"), Seq(Some("EXT-TEST"))))
+        val dataFromCache = (Right(Seq("0", LocalDate.of(2017, 2, 1).toString, "No"), Seq(Some("EXT-TEST"))))
 
         when(
           endEmploymentJourneyCacheService.collectedJourneyValues(
@@ -425,7 +429,7 @@ class EndEmploymentControllerSpec
         val endEmploymentTest = createEndEmploymentTest
         val empId = 0
         val dataFromCache =
-          Right((Seq(empId.toString, new LocalDate(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST"))))
+          Right((Seq(empId.toString, LocalDate.of(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST"))))
 
         when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any()))
           .thenReturn(Future.successful(dataFromCache))
@@ -766,7 +770,7 @@ class EndEmploymentControllerSpec
       "employer",
       Live,
       Some("emp123"),
-      new LocalDate(2000, 5, 20),
+      LocalDate.of(2000, 5, 20),
       None,
       accounts,
       "",
@@ -829,7 +833,7 @@ class EndEmploymentControllerSpec
               employerName,
               Live,
               None,
-              new LocalDate(),
+              LocalDate.now,
               None,
               Nil,
               "",
@@ -840,7 +844,7 @@ class EndEmploymentControllerSpec
               receivingOccupationalPension = false))))
 
     when(endEmploymentJourneyCacheService.currentValueAsDate(any())(any()))
-      .thenReturn(Future.successful(Some(new LocalDate("2017-9-9"))))
+      .thenReturn(Future.successful(Some(LocalDate.parse("2017-09-09"))))
     when(endEmploymentJourneyCacheService.currentValue(any())(any()))
       .thenReturn(Future.successful(Some("Test Value")))
 

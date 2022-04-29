@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.forms.income.estimatedPayment.update
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.AmountComparatorForm

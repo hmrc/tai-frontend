@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.model
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalacheck.Gen
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
@@ -43,7 +43,7 @@ class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
           employerName,
           Live,
           Some("1ABC"),
-          new LocalDate(2017, 3, 1),
+          LocalDate.of(2017, 3, 1),
           None,
           Seq(AnnualAccount(uk.gov.hmrc.tai.model.TaxYear(), realTimeStatus, Nil, Nil)),
           "DIST1",
@@ -69,7 +69,7 @@ class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
         "employer",
         Live,
         Some("1ABC"),
-        new LocalDate(2017, 3, 1),
+        LocalDate.of(2017, 3, 1),
         None,
         Seq(AnnualAccount(uk.gov.hmrc.tai.model.TaxYear(), TemporarilyUnavailable, Nil, Nil)),
         "DIST1",

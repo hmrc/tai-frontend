@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.forms.employments
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
@@ -34,7 +34,7 @@ class EmploymentEndDateFormSpec extends BaseSpec {
     }
 
     "deconstruct a local date correctly" in {
-      val prePopForm = form.fill(new LocalDate(2014, 8, 15))
+      val prePopForm = form.fill(LocalDate.of(2014, 8, 15))
 
       prePopForm.data must contain(employmentEndDateForm.EmploymentFormDay   -> "15")
       prePopForm.data must contain(employmentEndDateForm.EmploymentFormMonth -> "8")

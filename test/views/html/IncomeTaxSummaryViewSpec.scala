@@ -27,16 +27,10 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle("title")
 
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       preHeaderAnnouncementText = Some("This section is the income tax summary for"),
       preHeaderText = "Firstname Surname",
       mainHeaderText = "main heading")
-
-    "display a link to return to choose tax year page" in {
-      doc must haveLinkWithUrlWithID(
-        "returnToChooseTaxYearLink",
-        controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
-    }
 
     "display iForms status message when an iForm has not been fully processed" in {
       doc must haveElementWithId("isAnyFormInProgressBanner")

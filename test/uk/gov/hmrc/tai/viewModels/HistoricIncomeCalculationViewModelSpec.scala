@@ -17,7 +17,8 @@
 package uk.gov.hmrc.tai.viewModels
 
 import controllers.FakeTaiPlayApplication
-import org.joda.time.LocalDate
+
+import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
 import play.twirl.api.Html
@@ -27,6 +28,8 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
 import utils.BaseSpec
+
+import java.time.format.DateTimeFormatter
 
 class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
 
@@ -71,14 +74,14 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
       }
 
       "requested employment has end of tax year update details" in {
-        val date = new LocalDate("2017-06-09")
+        val date = LocalDate.parse("2017-06-09")
         val sampleEndOfTaxYearUpdate = EndOfTaxYearUpdate(date, Seq(Adjustment(NationalInsuranceAdjustment, -10.0)))
         val sampleAnnualAccount = AnnualAccount(previousYear, Available, Nil, List(sampleEndOfTaxYearUpdate))
         val sampleEmployment = Employment(
           "emp1",
           Live,
           None,
-          new LocalDate(2017, 6, 10),
+          LocalDate.of(2017, 6, 10),
           None,
           Seq(sampleAnnualAccount),
           "taxNumber",
@@ -89,7 +92,10 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
           false)
 
         sut(employments = List(sampleEmployment)).endOfTaxYearUpdateMessages mustBe Seq(
-          Messages("tai.income.calculation.eyu.single.nationalInsurance", date.toString(EYU_DATE_FORMAT), "10.0 less"))
+          Messages(
+            "tai.income.calculation.eyu.single.nationalInsurance",
+            date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            "10.0 less"))
       }
     }
   }
@@ -132,17 +138,17 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
       }
 
       "only one endOfYearTaxUpdate is provided with one valid adjustment type" in {
-        val eyu = EndOfTaxYearUpdate(new LocalDate("2017-05-26"), Seq(Adjustment(NationalInsuranceAdjustment, 10)))
+        val eyu = EndOfTaxYearUpdate(LocalDate.parse("2017-05-26"), Seq(Adjustment(NationalInsuranceAdjustment, 10)))
         val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.filterEndOfYearUpdateAdjustments(annualAccount)
-        sut mustBe Seq((Adjustment(NationalInsuranceAdjustment, 10), new LocalDate("2017-05-26")))
+        sut mustBe Seq((Adjustment(NationalInsuranceAdjustment, 10), LocalDate.parse("2017-05-26")))
       }
 
       "only one endOfYearTaxUpdate is provided with multiple valid adjustment type" in {
         val adj1 = Adjustment(NationalInsuranceAdjustment, 10)
         val adj2 = Adjustment(TaxAdjustment, 0)
         val adj3 = Adjustment(IncomeAdjustment, 100)
-        val date = new LocalDate("2017-05-26")
+        val date = LocalDate.parse("2017-05-26")
 
         val eyu = EndOfTaxYearUpdate(date, Seq(adj1, adj2, adj3))
         val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu))
@@ -153,12 +159,12 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
       "multiple endOfYearTaxUpdate is provided with one valid adjustment type" in {
         val adj1 = Adjustment(NationalInsuranceAdjustment, 0)
         val adj2 = Adjustment(TaxAdjustment, 0)
-        val date1 = new LocalDate("2017-05-26")
+        val date1 = LocalDate.parse("2017-05-26")
         val eyu1 = EndOfTaxYearUpdate(date1, Seq(adj1, adj2))
 
         val adj3 = Adjustment(IncomeAdjustment, 0)
         val adj4 = Adjustment(IncomeAdjustment, 10)
-        val date2 = new LocalDate("2017-06-09")
+        val date2 = LocalDate.parse("2017-06-09")
         val eyu2 = EndOfTaxYearUpdate(date2, Seq(adj3, adj4))
 
         val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu1, eyu2))
@@ -169,12 +175,12 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
       "multiple endOfYearTaxUpdate is provided with multiple valid adjustment type" in {
         val adj1 = Adjustment(NationalInsuranceAdjustment, 10)
         val adj2 = Adjustment(TaxAdjustment, 0)
-        val date1 = new LocalDate("2017-05-26")
+        val date1 = LocalDate.parse("2017-05-26")
         val eyu1 = EndOfTaxYearUpdate(date1, Seq(adj1, adj2))
 
         val adj3 = Adjustment(IncomeAdjustment, 0)
         val adj4 = Adjustment(IncomeAdjustment, 10)
-        val date2 = new LocalDate("2017-06-09")
+        val date2 = LocalDate.parse("2017-06-09")
         val eyu2 = EndOfTaxYearUpdate(date2, Seq(adj3, adj4))
 
         val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu1, eyu2))
@@ -184,11 +190,11 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
 
       "multiple endOfYearTaxUpdate is provided with no valid adjustment type" in {
         val adj1 = Adjustment(NationalInsuranceAdjustment, 0)
-        val date1 = new LocalDate("2017-05-26")
+        val date1 = LocalDate.parse("2017-05-26")
         val eyu1 = EndOfTaxYearUpdate(date1, Seq(adj1))
 
         val adj3 = Adjustment(IncomeAdjustment, 0)
-        val date2 = new LocalDate("2017-06-09")
+        val date2 = LocalDate.parse("2017-06-09")
         val eyu2 = EndOfTaxYearUpdate(date2, Seq(adj3))
 
         val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu1, eyu2))
@@ -200,7 +206,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
 
   "createEndOfYearTaxUpdateMessages" should {
     "form valid messages" when {
-      val date = new LocalDate("2017-05-26")
+      val date = LocalDate.parse("2017-05-26")
 
       "there are no valid EndOfYearTaxUpdate object" in {
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(sampleAnnualAccount)
@@ -212,7 +218,10 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
         sut mustBe Seq(
-          Messages("tai.income.calculation.eyu.single.taxPaid", date.toString(EYU_DATE_FORMAT), "100.0 more"))
+          Messages(
+            "tai.income.calculation.eyu.single.taxPaid",
+            date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            "100.0 more"))
       }
 
       "have only NationalInsuranceAdjustment message" in {
@@ -220,7 +229,10 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
         sut mustBe Seq(
-          Messages("tai.income.calculation.eyu.single.nationalInsurance", date.toString(EYU_DATE_FORMAT), "100.0 more"))
+          Messages(
+            "tai.income.calculation.eyu.single.nationalInsurance",
+            date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            "100.0 more"))
       }
 
       "have only IncomeAdjustment message" in {
@@ -228,26 +240,35 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
         sut mustBe Seq(
-          Messages("tai.income.calculation.eyu.single.taxableincome", date.toString(EYU_DATE_FORMAT), "100.0 less"))
+          Messages(
+            "tai.income.calculation.eyu.single.taxableincome",
+            date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            "100.0 less"))
       }
 
       "there are multiple valid EndOfYearTaxUpdate object with multiple received dates" in {
         val adj1 = Adjustment(NationalInsuranceAdjustment, -10.0)
         val adj2 = Adjustment(TaxAdjustment, 0)
-        val date1 = new LocalDate("2017-05-26")
+        val date1 = LocalDate.parse("2017-05-26")
         val eyu1 = EndOfTaxYearUpdate(date1, Seq(adj1, adj2))
 
         val adj3 = Adjustment(IncomeAdjustment, 0)
         val adj4 = Adjustment(TaxAdjustment, 100.0)
-        val date2 = new LocalDate("2017-06-09")
+        val date2 = LocalDate.parse("2017-06-09")
         val eyu2 = EndOfTaxYearUpdate(date2, Seq(adj3, adj4))
 
         val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu1, eyu2))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
 
         sut mustBe Seq(
-          Messages("tai.income.calculation.eyu.multi.nationalInsurance", date1.toString(EYU_DATE_FORMAT), "10.0 less"),
-          Messages("tai.income.calculation.eyu.multi.taxPaid", date2.toString(EYU_DATE_FORMAT), "100.0 more")
+          Messages(
+            "tai.income.calculation.eyu.multi.nationalInsurance",
+            date1.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            "10.0 less"),
+          Messages(
+            "tai.income.calculation.eyu.multi.taxPaid",
+            date2.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            "100.0 more")
         )
       }
 
@@ -260,8 +281,14 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
         sut mustBe Seq(
-          Messages("tai.income.calculation.eyu.multi.nationalInsurance", date.toString(EYU_DATE_FORMAT), "10.0 less"),
-          Messages("tai.income.calculation.eyu.multi.taxableincome", date.toString(EYU_DATE_FORMAT), "100.0 more")
+          Messages(
+            "tai.income.calculation.eyu.multi.nationalInsurance",
+            date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            "10.0 less"),
+          Messages(
+            "tai.income.calculation.eyu.multi.taxableincome",
+            date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            "100.0 more")
         )
       }
     }
@@ -273,7 +300,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
   val sampleRealTimeStatus = TemporarilyUnavailable
   val previousYear = uk.gov.hmrc.tai.model.TaxYear().prev
   val samplePayment = Payment(
-    date = new LocalDate(2017, 5, 26),
+    date = LocalDate.of(2017, 5, 26),
     amountYearToDate = 2000,
     taxAmountYearToDate = 1200,
     nationalInsuranceAmountYearToDate = 1500,
@@ -290,7 +317,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
       empName,
       Live,
       None,
-      new LocalDate(2017, 6, 9),
+      LocalDate.of(2017, 6, 9),
       None,
       Nil,
       "taxNumber",
@@ -303,7 +330,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
     "emp2",
     Live,
     None,
-    new LocalDate(2017, 6, 10),
+    LocalDate.of(2017, 6, 10),
     None,
     Seq(sampleAnnualAccount),
     "taxNumber",

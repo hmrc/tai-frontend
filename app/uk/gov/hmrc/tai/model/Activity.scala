@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.model
 
-import org.joda.time.DateTime
+import java.time.LocalDateTime
 import play.api.libs.json.{Format, Json}
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
@@ -25,7 +25,7 @@ import uk.gov.hmrc.domain.TaxIds
 // This is what we send to activity-logger
 case class Activity(
   applicationName: String,
-  eventTime: DateTime,
+  eventTime: LocalDateTime,
   eventType: String,
   eventDescriptionId: String,
   principalTaxIds: TaxIds)
@@ -38,7 +38,7 @@ object Activity {
 // This is what the activity-logger returns
 case class LogActivityEntry(
   applicationName: String,
-  eventTime: DateTime,
+  eventTime: LocalDateTime,
   eventType: String,
   eventDescription: String,
   principal: PersonDetails,

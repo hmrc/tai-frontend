@@ -40,9 +40,11 @@ class UpdateRemoveEmploymentDecisionViewSpec extends TaiViewSpec with FormValues
 
     behave like pageWithBackLink
 
-    behave like pageWithCombinedHeader(
-      preHeaderText = messages("tai.employment.decision.preHeading"),
-      mainHeaderText = messages("tai.employment.decision.heading", employmentName))
+    "display label with heading" in {
+      doc must haveElementAtPathWithText(
+        "#headingInLabel .form-label",
+        messages("tai.employment.decision.heading", employmentName))
+    }
 
     behave like pageWithYesNoRadioButton(
       UpdateRemoveEmploymentForm.EmploymentDecision + "-yes",

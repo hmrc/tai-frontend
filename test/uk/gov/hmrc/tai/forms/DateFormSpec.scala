@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.forms
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
@@ -53,7 +53,7 @@ class DateFormSpec extends BaseSpec {
 
     "deconstruct a local date correctly" in {
 
-      val prePopForm = form.fill(new LocalDate(2014, 8, 15))
+      val prePopForm = form.fill(LocalDate.of(2014, 8, 15))
 
       prePopForm.data must contain(dateForm.DateFormDay   -> "15")
       prePopForm.data must contain(dateForm.DateFormMonth -> "8")

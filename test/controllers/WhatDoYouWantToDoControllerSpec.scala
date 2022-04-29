@@ -18,7 +18,6 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
@@ -33,18 +32,62 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResp
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
-import uk.gov.hmrc.tai.service.{JrsService, _}
+import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
 import utils.factories.TaxCodeMismatchFactory
 import views.html.WhatDoYouWantToDoTileView
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with BeforeAndAfterEach {
+
+  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+  val auditService: AuditService = mock[AuditService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val jrsService: JrsService = mock[JrsService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  val taxCodeNotChanged: HasTaxCodeChanged =
+    HasTaxCodeChanged(changed = false, Some(TaxCodeMismatchFactory.matchedTaxCode))
+  val taxCodeChanged: HasTaxCodeChanged = HasTaxCodeChanged(changed = true, Some(TaxCodeMismatchFactory.matchedTaxCode))
+
+  private val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
+
+  private val fakeEmploymentData = Seq(
+    Employment(
+      "TEST",
+      Live,
+      Some("12345"),
+      LocalDate.now(),
+      None,
+      List(AnnualAccount(TaxYear(), Available, Nil, Nil)),
+      "",
+      "",
+      2,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    ),
+    Employment(
+      "TEST1",
+      Live,
+      Some("123456"),
+      LocalDate.now(),
+      None,
+      List(AnnualAccount(TaxYear(), Unavailable, Nil, Nil)),
+      "",
+      "",
+      2,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    )
+  )
 
   override def beforeEach: Unit =
     Mockito.reset(auditService, employmentService)
@@ -58,7 +101,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeNotChanged)))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
@@ -75,7 +119,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeNotChanged)))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
@@ -93,7 +138,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
@@ -114,7 +159,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
 
-        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
@@ -136,7 +181,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
         when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
           .thenReturn(Future.successful(true))
-        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
@@ -158,7 +203,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
           .thenReturn(Future.successful(true))
 
-        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
@@ -216,7 +261,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
         when(employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
-          .thenReturn(Future.failed((new NotFoundException("no data found"))))
+          .thenReturn(Future.failed(new NotFoundException("no data found")))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
@@ -293,7 +338,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           .thenReturn(Future.successful(fakeEmploymentData))
         when(employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
-        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
@@ -315,7 +361,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           .thenReturn(Future.successful(fakeEmploymentData))
         when(employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
-        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
@@ -334,7 +381,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           Future.successful(
             TaiNotFoundResponse("Not found")
           ))
-        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(result))
@@ -349,7 +397,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(result))
@@ -362,7 +411,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       "cy plus one data is not available and cy plus one is disabled" in {
         val testController = createTestController(isCyPlusOneEnabled = false)
 
-        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(result))
@@ -380,7 +430,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
       val result =
         Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
@@ -393,7 +443,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       val testController = createTestController()
 
       when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponse))
-      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
       val result =
         Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
@@ -408,7 +458,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiTaxAccountFailureResponse("I have failed")))
-      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
       val result =
         Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
@@ -435,51 +485,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     }
   }
 
-  private val fakeEmploymentData = Seq(
-    Employment(
-      "TEST",
-      Live,
-      Some("12345"),
-      LocalDate.now(),
-      None,
-      List(AnnualAccount(TaxYear(), Available, Nil, Nil)),
-      "",
-      "",
-      2,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    ),
-    Employment(
-      "TEST1",
-      Live,
-      Some("123456"),
-      LocalDate.now(),
-      None,
-      List(AnnualAccount(TaxYear(), Unavailable, Nil, Nil)),
-      "",
-      "",
-      2,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    )
-  )
-
-  private val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
-  val taxCodeNotChanged: HasTaxCodeChanged =
-    HasTaxCodeChanged(changed = false, Some(TaxCodeMismatchFactory.matchedTaxCode))
-  val taxCodeChanged: HasTaxCodeChanged = HasTaxCodeChanged(changed = true, Some(TaxCodeMismatchFactory.matchedTaxCode))
-
   private def createTestController(isCyPlusOneEnabled: Boolean = true) =
     new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled)
-
-  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val auditService: AuditService = mock[AuditService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val jrsService: JrsService = mock[JrsService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
   class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true)
       extends WhatDoYouWantToDoController(

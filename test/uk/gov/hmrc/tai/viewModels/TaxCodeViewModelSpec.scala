@@ -23,27 +23,34 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import utils.BaseSpec
 import views.html.includes.link
 
+import java.time.format.DateTimeFormatter
 import scala.collection.immutable.ListMap
 
 class TaxCodeViewModelSpec extends BaseSpec {
 
   val taxYear = uk.gov.hmrc.tai.model.TaxYear()
   val taxYearSuffix =
-    Messages("tai.taxCode.title.pt2", taxYear.start.toString("d MMMM yyyy"), taxYear.end.toString("d MMMM yyyy"))
+    Messages(
+      "tai.taxCode.title.pt2",
+      taxYear.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
+      taxYear.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+    )
   val expectedNonBreakSuffix = Messages(
     "tai.taxCode.title.pt2",
-    taxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"),
-    taxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"))
+    taxYear.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0"),
+    taxYear.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
+  )
 
   val prevTaxYear = uk.gov.hmrc.tai.model.TaxYear().prev
   val prevTaxYearSuffix = Messages(
     "tai.taxCode.title.pt2",
-    prevTaxYear.start.toString("d MMMM yyyy"),
-    prevTaxYear.end.toString("d MMMM yyyy"))
+    prevTaxYear.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
+    prevTaxYear.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+  )
   val prevExpectedNonBreakSuffix = Messages(
     "tai.taxCode.title.pt2",
-    prevTaxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"),
-    prevTaxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+    prevTaxYear.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0"),
+    prevTaxYear.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
   )
 
   "TaxCodeViewModel apply method" must {
@@ -292,11 +299,13 @@ class TaxCodeViewModelSpec extends BaseSpec {
     }
   }
 
-  val taxYearStartNonBreak = taxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
-  val taxYearEndNonBreak = taxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+  val taxYearStartNonBreak = taxYear.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
+  val taxYearEndNonBreak = taxYear.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
 
-  val previousTaxYearStartNonBreak = taxYear.prev.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
-  val previousTaxYearEndNonBreak = taxYear.prev.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+  val previousTaxYearStartNonBreak =
+    taxYear.prev.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
+  val previousTaxYearEndNonBreak =
+    taxYear.prev.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
 
   private val taxCodeIncomes1 =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)

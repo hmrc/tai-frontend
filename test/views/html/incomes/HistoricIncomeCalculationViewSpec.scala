@@ -16,7 +16,7 @@
 
 package views.html.incomes
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.Html
@@ -24,6 +24,8 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
+
+import java.time.format.DateTimeFormatter
 
 class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
 
@@ -60,7 +62,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages(
             "tai.income.calculation.noRtiDataPreviousYear",
-            TaxYear(TaxYear().year - 1).end.toString(dateFormatPattern)))
+            TaxYear(TaxYear().year - 1).end.format(DateTimeFormatter.ofPattern(dateFormatPattern))))
       }
 
       "there is no RTI data for cy - 2" in {
@@ -69,7 +71,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages(
             "tai.income.calculation.noRtiDataPreviousYear",
-            TaxYear(TaxYear().year - 2).end.toString(dateFormatPattern)))
+            TaxYear(TaxYear().year - 2).end.format(DateTimeFormatter.ofPattern(dateFormatPattern))))
       }
 
       "RTI is available but payment data is not available" in {
@@ -78,7 +80,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages(
             "tai.income.calculation.noRtiDataPreviousYear",
-            TaxYear(TaxYear().year - 1).end.toString(dateFormatPattern)))
+            TaxYear(TaxYear().year - 1).end.format(DateTimeFormatter.ofPattern(dateFormatPattern))))
       }
     }
 
@@ -89,8 +91,9 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages(
             "tai.income.calculation.summary.previous",
-            samplePayments.head.date.toString(dateFormatPattern),
-            samplePayments.last.date.toString(dateFormatPattern)))
+            samplePayments.head.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)),
+            samplePayments.last.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+          ))
       }
 
       "payment information, employer name but no EYU messages are available" in {
@@ -140,7 +143,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
         val view: Html = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(
-          samplePaymentWithoutNic.date.toString(dateFormatPattern))
+          samplePaymentWithoutNic.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
         doc.getElementById("taxable-income-table").text must include(f"${samplePaymentWithoutNic.amount}%,.2f")
         doc.getElementById("taxable-income-table").text must include(f"${samplePaymentWithoutNic.taxAmount}%,.2f")
       }
@@ -149,7 +152,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
         val view: Html = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(
-          samplePaymentWithNic.date.toString(dateFormatPattern))
+          samplePaymentWithNic.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
         doc.getElementById("taxable-income-table").text must include(f"${samplePaymentWithNic.amount}%,.2f")
         doc.getElementById("taxable-income-table").text must include(f"${samplePaymentWithNic.taxAmount}%,.2f")
         doc.getElementById("taxable-income-table").text must include(
@@ -177,7 +180,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
 
   val dateFormatPattern = "d MMMM yyyy"
   val samplePaymentWithoutNic = Payment(
-    date = new LocalDate(2016, 4, 7),
+    date = LocalDate.of(2016, 4, 7),
     amount = 111,
     amountYearToDate = 150,
     taxAmount = 0,
@@ -187,7 +190,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
     payFrequency = BiAnnually
   )
   val samplePaymentWithNic = Payment(
-    date = new LocalDate(2017, 4, 7),
+    date = LocalDate.of(2017, 4, 7),
     amount = 222,
     amountYearToDate = 150,
     taxAmount = 0,

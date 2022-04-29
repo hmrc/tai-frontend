@@ -15,7 +15,7 @@
  *@
 
 @import uk.gov.hmrc.play.views.formatting.Money._
-@import org.joda.time.{DateTime, LocalDate}
+@import java.time.LocalDateTime
 @import uk.gov.hmrc.play.views.html.layouts._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.helpers._
@@ -24,7 +24,7 @@
 
 @this(mainTemplate: MainTemplate, loginStatus: LoginStatus)
 
-@( payYTD: BigDecimal = 0, payDate: org.joda.time.LocalDate, id: Int)(implicit request: Request[_], messages: Messages,
+@( payYTD: BigDecimal = 0, payDate: java.time.LocalDate, id: Int)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(

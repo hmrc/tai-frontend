@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.model.domain.income.{OtherBasisOfOperation, Week1Month1BasisOfOperation}
@@ -27,8 +27,8 @@ class TaxCodeRecordSpec extends PlaySpec {
     "return a valid Emergency TaxCodeRecord object when given valid Json" in {
       val expectedModel = TaxCodeRecord(
         "code",
-        new LocalDate(2018, 7, 11),
-        new LocalDate(2018, 7, 11),
+        LocalDate.of(2018, 7, 11),
+        LocalDate.of(2018, 7, 11),
         Week1Month1BasisOfOperation,
         "Employer name",
         false,
@@ -41,8 +41,8 @@ class TaxCodeRecordSpec extends PlaySpec {
     "return a valid TaxCodeRecord object when given valid Json" in {
       val expectedModel = TaxCodeRecord(
         "code",
-        new LocalDate(2018, 7, 11),
-        new LocalDate(2018, 7, 11),
+        LocalDate.of(2018, 7, 11),
+        LocalDate.of(2018, 7, 11),
         OtherBasisOfOperation,
         "Employer name",
         false,

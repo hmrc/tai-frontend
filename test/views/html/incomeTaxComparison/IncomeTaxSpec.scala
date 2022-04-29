@@ -17,6 +17,7 @@
 package views.html.incomeTaxComparison
 
 import play.twirl.api.Html
+import java.time.format.DateTimeFormatter
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.HtmlFormatter
@@ -84,10 +85,10 @@ class IncomeTaxSpec extends TaiViewSpec {
       "a view model is supplied to the view with appropriate data" in {
 
         doc must haveThWithText(
-          s"${messages("tai.CurrentTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column1", TaxYear().end.toString("d MMMM"))}")
+          s"${messages("tai.CurrentTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column1", TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM")))}")
 
         doc must haveThWithText(
-          s"${messages("tai.NextTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column2", TaxYear().next.start.toString("d MMMM yyyy"))}")
+          s"${messages("tai.NextTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column2", TaxYear().next.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")))}")
       }
     }
   }

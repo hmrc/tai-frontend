@@ -54,7 +54,7 @@
 
 
             @includes.details_summary(Messages("tai.remove.company.benefit.total.value.whatHappens.link")){
-            <p>@Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.toString("yyyy"),TaxYear().end.toString("yyyy"), Dates.formatDate(TaxYear().end))</p>
+            <p>@Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.getYear.toString,TaxYear().end.getYear.toString, Dates.formatDate(TaxYear().end))</p>
         }
 
 

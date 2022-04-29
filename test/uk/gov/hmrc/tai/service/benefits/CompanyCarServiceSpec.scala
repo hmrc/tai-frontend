@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
@@ -110,8 +110,8 @@ class CompanyCarServiceSpec extends BaseSpec with JourneyCacheConstants with Bef
         10,
         "Make Model",
         hasActiveFuelBenefit = true,
-        dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-        dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
+        dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
+        dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
         dateWithdrawn = None
       )),
     Some(1)
@@ -125,9 +125,9 @@ class CompanyCarServiceSpec extends BaseSpec with JourneyCacheConstants with Bef
         10,
         "Make Model",
         hasActiveFuelBenefit = false,
-        dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-        dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
-        dateWithdrawn = Some(new LocalDate("2017-05-12"))
+        dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
+        dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
+        dateWithdrawn = Some(LocalDate.parse("2017-05-12"))
       )),
     Some(1)
   )
@@ -140,16 +140,16 @@ class CompanyCarServiceSpec extends BaseSpec with JourneyCacheConstants with Bef
         10,
         "Make Model",
         hasActiveFuelBenefit = false,
-        dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-        dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
-        dateWithdrawn = Some(new LocalDate("2017-05-12"))
+        dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
+        dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
+        dateWithdrawn = Some(LocalDate.parse("2017-05-12"))
       ),
       CompanyCar(
         11,
         "Make Model2",
         hasActiveFuelBenefit = true,
-        dateMadeAvailable = Some(new LocalDate("2016-10-10")),
-        dateActiveFuelBenefitMadeAvailable = Some(new LocalDate("2016-10-11")),
+        dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
+        dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
         dateWithdrawn = None
       )
     ),
@@ -172,7 +172,7 @@ class CompanyCarServiceSpec extends BaseSpec with JourneyCacheConstants with Bef
   )
 
   val employment =
-    Employment("The Man Plc", Live, None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false, false)
+    Employment("The Man Plc", Live, None, LocalDate.parse("2016-06-09"), None, Nil, "", "", 1, None, false, false)
   val companyCars = Seq(companyCar, companyCarWithDateWithDrawn)
 
   def generateNino: Nino = new Generator(new Random).nextNino

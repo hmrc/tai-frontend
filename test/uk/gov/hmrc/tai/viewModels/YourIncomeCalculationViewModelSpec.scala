@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
@@ -24,6 +24,8 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import utils.BaseSpec
+
+import java.time.format.DateTimeFormatter
 
 class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
@@ -35,11 +37,11 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
         model.empId mustBe 2
         model.employerName mustBe "test employment"
         model.payments mustBe Seq(
-          PaymentDetailsViewModel(new LocalDate().minusWeeks(1), 100, 50, 25),
-          PaymentDetailsViewModel(new LocalDate().minusWeeks(4), 100, 50, 25)
+          PaymentDetailsViewModel(LocalDate.now.minusWeeks(1), 100, 50, 25),
+          PaymentDetailsViewModel(LocalDate.now.minusWeeks(4), 100, 50, 25)
         )
         model.latestPayment mustBe Some(
-          LatestPayment(new LocalDate().minusWeeks(1), 400, 50, 25, Irregular)
+          LatestPayment(LocalDate.now.minusWeeks(1), 400, 50, 25, Irregular)
         )
         model.endDate mustBe None
         model.isPension mustBe false
@@ -57,11 +59,11 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
         model.empId mustBe 2
         model.employerName mustBe "test employment"
         model.payments mustBe Seq(
-          PaymentDetailsViewModel(new LocalDate().minusWeeks(1), 100, 50, 25),
-          PaymentDetailsViewModel(new LocalDate().minusWeeks(4), 100, 50, 25)
+          PaymentDetailsViewModel(LocalDate.now.minusWeeks(1), 100, 50, 25),
+          PaymentDetailsViewModel(LocalDate.now.minusWeeks(4), 100, 50, 25)
         )
         model.latestPayment mustBe Some(
-          LatestPayment(new LocalDate().minusWeeks(1), 400, 50, 25, Irregular)
+          LatestPayment(LocalDate.now.minusWeeks(1), 400, 50, 25, Irregular)
         )
         model.endDate mustBe Some(LocalDate.parse("2017-08-08"))
         model.isPension mustBe false
@@ -106,8 +108,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
         model.incomeCalculationMessage mustBe Messages(
           "tai.income.calculation.rti.midYear.weekly",
-          uk.gov.hmrc.tai.model.TaxYear().start.plusDays(1).toString("d MMMM yyyy"),
-          firstPayment.date.toString("d MMMM yyyy"),
+          uk.gov.hmrc.tai.model.TaxYear().start.plusDays(1).format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
+          firstPayment.date.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
           MoneyPounds(firstPayment.amountYearToDate, 2).quantity
         )
         model.incomeCalculationEstimateMessage mustBe Some(Messages("tai.income.calculation.rti.emp.estimate", 1111))
@@ -119,8 +121,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
         model.incomeCalculationMessage mustBe Messages(
           "tai.income.calculation.rti.ceased.emp",
-          model.endDate.get.toString("d MMMM yyyy"),
-          firstPayment.date.toString("d MMMM yyyy"),
+          model.endDate.get.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
+          firstPayment.date.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
           MoneyPounds(firstPayment.amountYearToDate, 2).quantity
         )
         model.incomeCalculationEstimateMessage mustBe None
@@ -528,8 +530,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(ManualTelephone),
-          Some(new LocalDate().minusWeeks(4)),
-          Some(new LocalDate())
+          Some(LocalDate.now.minusWeeks(4)),
+          Some(LocalDate.now)
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(
@@ -552,7 +554,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(ManualTelephone),
           None,
-          Some(new LocalDate()))
+          Some(LocalDate.now))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.phone.withoutDate"))
       }
@@ -568,7 +570,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(ManualTelephone),
-          Some(new LocalDate().minusWeeks(4)),
+          Some(LocalDate.now.minusWeeks(4)),
           None
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
@@ -605,8 +607,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(Letter),
-          Some(new LocalDate().minusWeeks(4)),
-          Some(new LocalDate())
+          Some(LocalDate.now.minusWeeks(4)),
+          Some(LocalDate.now)
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(
@@ -629,7 +631,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(Letter),
           None,
-          Some(new LocalDate()))
+          Some(LocalDate.now))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.letter.withoutDate"))
       }
@@ -645,7 +647,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(Letter),
-          Some(new LocalDate().minusWeeks(4)),
+          Some(LocalDate.now.minusWeeks(4)),
           None
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
@@ -682,8 +684,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(Email),
-          Some(new LocalDate().minusWeeks(4)),
-          Some(new LocalDate())
+          Some(LocalDate.now.minusWeeks(4)),
+          Some(LocalDate.now)
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(
@@ -706,7 +708,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(Email),
           None,
-          Some(new LocalDate()))
+          Some(LocalDate.now))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.email.withoutDate"))
       }
@@ -722,7 +724,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(Email),
-          Some(new LocalDate().minusWeeks(4)),
+          Some(LocalDate.now.minusWeeks(4)),
           None
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
@@ -759,8 +761,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(AgentContact),
-          Some(new LocalDate().minusWeeks(4)),
-          Some(new LocalDate())
+          Some(LocalDate.now.minusWeeks(4)),
+          Some(LocalDate.now)
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe Some(
           messagesApi("tai.income.calculation.agent"))
@@ -779,8 +781,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(OtherForm),
-          Some(new LocalDate().minusWeeks(4)),
-          Some(new LocalDate())
+          Some(LocalDate.now.minusWeeks(4)),
+          Some(LocalDate.now)
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(
@@ -803,7 +805,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(OtherForm),
           None,
-          Some(new LocalDate()))
+          Some(LocalDate.now))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
@@ -819,7 +821,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(OtherForm),
-          Some(new LocalDate().minusWeeks(4)),
+          Some(LocalDate.now.minusWeeks(4)),
           None
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
@@ -856,8 +858,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(InformationLetter),
-          Some(new LocalDate().minusWeeks(4)),
-          Some(new LocalDate())
+          Some(LocalDate.now.minusWeeks(4)),
+          Some(LocalDate.now)
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(
@@ -880,7 +882,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(InformationLetter),
           None,
-          Some(new LocalDate())
+          Some(LocalDate.now)
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
@@ -897,7 +899,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(InformationLetter),
-          Some(new LocalDate().minusWeeks(4)),
+          Some(LocalDate.now.minusWeeks(4)),
           None
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
@@ -934,7 +936,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(Internet),
-          Some(new LocalDate()),
+          Some(LocalDate.now),
           None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(
@@ -992,8 +994,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
         Week1Month1BasisOfOperation,
         Live,
         Some(ManualTelephone),
-        Some(new LocalDate().minusWeeks(4)),
-        Some(new LocalDate())
+        Some(LocalDate.now.minusWeeks(4)),
+        Some(LocalDate.now)
       )
       ManualUpdateIncomeMessages.manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome) mustBe
         Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount))
@@ -1010,8 +1012,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
         Week1Month1BasisOfOperation,
         Live,
         Some(AgentContact),
-        Some(new LocalDate().minusWeeks(4)),
-        Some(new LocalDate())
+        Some(LocalDate.now.minusWeeks(4)),
+        Some(LocalDate.now)
       )
       ManualUpdateIncomeMessages.manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome) mustBe
         Some(messagesApi("tai.income.calculation.agent.estimate", taxCodeIncome.amount))
@@ -1112,8 +1114,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           Some(ManualTelephone),
-          Some(new LocalDate().minusWeeks(4)),
-          Some(new LocalDate())
+          Some(LocalDate.now.minusWeeks(4)),
+          Some(LocalDate.now)
         )
 
         YourIncomeCalculationViewModel
@@ -1140,8 +1142,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           None,
-          Some(new LocalDate().minusWeeks(4)),
-          Some(new LocalDate())
+          Some(LocalDate.now.minusWeeks(4)),
+          Some(LocalDate.now)
         )
 
         YourIncomeCalculationViewModel
@@ -1178,8 +1180,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           None,
-          Some(new LocalDate().minusWeeks(4)),
-          Some(new LocalDate())
+          Some(LocalDate.now.minusWeeks(4)),
+          Some(LocalDate.now)
         )
 
         YourIncomeCalculationViewModel
@@ -1212,8 +1214,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           None,
-          Some(new LocalDate().minusWeeks(4)),
-          Some(new LocalDate())
+          Some(LocalDate.now.minusWeeks(4)),
+          Some(LocalDate.now)
         )
 
         YourIncomeCalculationViewModel
@@ -1247,8 +1249,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live,
           None,
-          Some(new LocalDate().minusWeeks(4)),
-          Some(new LocalDate())
+          Some(LocalDate.now.minusWeeks(4)),
+          Some(LocalDate.now)
         )
 
         YourIncomeCalculationViewModel
@@ -1259,8 +1261,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     }
   }
 
-  lazy val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-  lazy val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
+  lazy val firstPayment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  lazy val latestPayment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
   val paymentDetails = Seq(
     PaymentDetailsViewModel(latestPayment),

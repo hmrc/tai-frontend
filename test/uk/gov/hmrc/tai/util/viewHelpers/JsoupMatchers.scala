@@ -235,6 +235,10 @@ trait JsoupMatchers {
     new CssSelectorWithTextMatcher(expectedText, s"h2[id=$id]")
   def havePreHeadingWithText(expectedText: String, expectedPreHeadingAnnouncement: String = "This section is") =
     new CssSelectorWithTextMatcher(s"$expectedPreHeadingAnnouncement $expectedText", "header>p")
+
+  def havePreHeadingWithTextGds(expectedText: String, expectedPreHeadingAnnouncement: String = "This section is") =
+    new CssSelectorWithTextMatcher(s"$expectedPreHeadingAnnouncement $expectedText", "span.govuk-caption-xl")
+
   def haveH2HeadingWithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h2")
 
   def haveDescriptionTermWithIdAndText(id: String, expectedText: String) =

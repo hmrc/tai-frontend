@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -614,7 +614,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
     "company name",
     Live,
     Some("888"),
-    new LocalDate(2019, 5, 26),
+    LocalDate.of(2019, 5, 26),
     None,
     Seq.empty[AnnualAccount],
     "",

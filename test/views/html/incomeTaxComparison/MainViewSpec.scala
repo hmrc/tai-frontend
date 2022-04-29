@@ -95,7 +95,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
           Dates.formatDate(TaxYear().next.start)(welshMessage)))
     }
 
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       preHeaderText = "USERNAME",
       mainHeaderText = messages("tai.incomeTaxComparison.heading.same"),
       preHeaderAnnouncementText = Some(messages("tai.incomeTaxComparison.preHeading.screenReader"))

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.YourTaxFreeAmountComparison
@@ -25,7 +25,7 @@ import utils.BaseSpec
 
 class YourTaxFreeAmountSpec extends BaseSpec with YourTaxFreeAmount {
 
-  val date = new LocalDate(2018, 6, 5)
+  val date = LocalDate.of(2018, 6, 5)
 
   def createYourTaxFreeAmountComparison(): YourTaxFreeAmountComparison = {
 

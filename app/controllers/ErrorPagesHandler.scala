@@ -17,7 +17,7 @@
 package controllers
 
 import javax.inject.Inject
-import play.Logger
+import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
@@ -37,7 +37,7 @@ import scala.concurrent.ExecutionContext
 class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, errorNoPrimary: ErrorNoPrimary)(
   implicit val templateRenderer: TemplateRenderer,
   ec: ExecutionContext
-) {
+) extends Logging {
   type RecoveryLocation = Class[_]
 
   def error4xxPageWithLink(pageTitle: String)(implicit request: Request[_], messages: Messages) =
@@ -86,12 +86,12 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     PartialFunction[Throwable, Future[Result]] { throwable: Throwable =>
       throwable match {
         case e: Upstream4xxResponse => {
-          Logger.warn(s"<Upstream4xxResponse> - $methodName nino $nino")
+          logger.warn(s"<Upstream4xxResponse> - $methodName nino $nino")
           Future.successful(BadRequest(error4xxPageWithLink(messages("global.error.badRequest400.title"))))
         }
 
         case e: BadRequestException => {
-          Logger.warn(s"<BadRequestException> - $methodName nino $nino")
+          logger.warn(s"<BadRequestException> - $methodName nino $nino")
 
           val incorrectVersion = request.method == "POST" &&
             e.getMessage().contains("appStatusMessage") &&
@@ -104,13 +104,13 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
 
           incorrectVersion match {
             case true =>
-              Logger.warn(s"<Incorrect Version Number> - $methodName nino $nino")
+              logger.warn(s"<Incorrect Version Number> - $methodName nino $nino")
               Future.successful(BadRequest(badRequestPageWrongVersion))
             case _ =>
               e.getMessage().contains("appStatusMessage") match {
                 case true =>
                   if (noPrimary) {
-                    Logger.warn(
+                    logger.warn(
                       s"<Cannot complete a coding calculation without Primary Employment> - $methodName nino $nino")
                     Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
                   } else {
@@ -128,7 +128,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
             e.getMessage().contains("appStatusMessage") &&
             e.getMessage().contains("No Tax Account Information Found")
 
-          Logger.warn(s"<NotFoundException> - $methodName nino $nino")
+          logger.warn(s"<NotFoundException> - $methodName nino $nino")
           e.getMessage().contains("appStatusMessage") match {
             case true =>
               if (noCyInfo) {
@@ -142,17 +142,17 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
         }
 
         case e: InternalServerException => {
-          Logger.warn(s"<InternalServerException> - $methodName nino $nino")
+          logger.warn(s"<InternalServerException> - $methodName nino $nino")
           Future.successful(InternalServerError(error5xx(messages("tai.technical.error.npsdown.message"))))
         }
 
         case e: Upstream5xxResponse => {
-          Logger.warn(s"<Upstream5xxResponse> - $methodName nino $nino")
+          logger.warn(s"<Upstream5xxResponse> - $methodName nino $nino")
           Future.successful(InternalServerError(error5xx(messages("tai.technical.error.npsdown.message"))))
         }
 
         case e => {
-          Logger.warn(s"<Unknown Exception> - $methodName nino $nino", e)
+          logger.warn(s"<Unknown Exception> - $methodName nino $nino", e)
           Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"))))
         }
       }
@@ -163,7 +163,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: NotFoundException if e.getMessage.toLowerCase.contains(NpsAppStatusMsg) =>
-      Logger.warn(s"<Not found response received from NPS> - for nino $nino @${rl.getName}")
+      logger.warn(s"<Not found response received from NPS> - for nino $nino @${rl.getName}")
       Future.successful(NotFound(error4xxFromNps(messages("global.error.pageNotFound404.title"))))
   }
 
@@ -172,7 +172,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: NotFoundException =>
-      Logger.warn(s"<Not found response received from rti> - for nino $nino @${rl.getName}")
+      logger.warn(s"<Not found response received from rti> - for nino $nino @${rl.getName}")
       Future.successful(NotFound(error4xxPageWithLink(messages("global.error.pageNotFound404.title"))))
   }
 
@@ -181,7 +181,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e @ (_: InternalServerException | _: HttpException) =>
-      Logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
+      logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
       Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"))))
   }
 
@@ -190,7 +190,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e: BadRequestException =>
-      Logger.warn(
+      logger.warn(
         s"<Bad request exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass}",
         e)
       Future.successful(BadRequest(error4xxPageWithLink(messages("global.error.badRequest400.title"))))
@@ -201,7 +201,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e =>
-      Logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
+      logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
       Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"))))
   }
 
@@ -210,7 +210,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.contains(TaiConstants.NpsTaxAccountDeceasedMsg) => {
-      Logger.warn(s"<Deceased response received from nps tax account> - for nino $nino @${rl.getName}")
+      logger.warn(s"<Deceased response received from nps tax account> - for nino $nino @${rl.getName}")
       Some(Redirect(routes.DeceasedController.deceased()))
     }
   }
@@ -221,12 +221,12 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountCYDataAbsentMsg) => {
       prevYearEmployments match {
         case Nil => {
-          Logger.warn(
+          logger.warn(
             s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
           Some(BadRequest(errorNoPrimary()))
         }
         case _ => {
-          Logger.info(
+          logger.info(
             s"<No current year data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")
           None
         }
@@ -241,12 +241,12 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) => {
       prevYearEmployments match {
         case Nil => {
-          Logger.warn(
+          logger.warn(
             s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
           Some(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
         }
         case _ => {
-          Logger.warn(
+          logger.warn(
             s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")
           None
         }
@@ -259,7 +259,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentsRecorded) => {
-      Logger.warn(s"<No data returned from nps employments> - for nino $nino @${rl.getName}")
+      logger.warn(s"<No data returned from nps employments> - for nino $nino @${rl.getName}")
       Some(BadRequest(errorNoPrimary()))
     }
   }
@@ -272,12 +272,12 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
         if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) => {
       prevYearEmployments match {
         case Nil => {
-          Logger.warn(
+          logger.warn(
             s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
           Some(BadRequest(errorNoPrimary()))
         }
         case _ => {
-          Logger.info(
+          logger.info(
             s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")
           None
         }
@@ -288,8 +288,8 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
   def internalServerError(logMessage: String, ex: Option[Throwable] = None)(
     implicit request: Request[_],
     messages: Messages): Result = {
-    Logger.warn(logMessage)
-    ex.map(x => Logger.error(x.getMessage(), x))
+    logger.warn(logMessage)
+    ex.map(x => logger.error(x.getMessage(), x))
     InternalServerError(error5xx(messages("tai.technical.error.message")))
   }
 }

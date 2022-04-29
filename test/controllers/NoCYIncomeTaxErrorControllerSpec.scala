@@ -18,7 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito
@@ -104,7 +104,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
         "empName",
         Live,
         None,
-        new LocalDate(2017, 6, 9),
+        LocalDate.of(2017, 6, 9),
         None,
         Nil,
         "taxNumber",

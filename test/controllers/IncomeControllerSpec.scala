@@ -18,7 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => meq}
 import org.mockito.Mockito._
@@ -159,7 +159,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future
             .successful(
-              Right(Seq(payToDate, employerId.toString, employerName), Seq(Some(new LocalDate(2017, 2, 1).toString)))))
+              Right(Seq(payToDate, employerId.toString, employerName), Seq(Some(LocalDate.of(2017, 2, 1).toString)))))
 
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
@@ -220,7 +220,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future
             .successful(
-              Right(Seq(payToDate, employerId.toString, employerName), Seq(Some(new LocalDate(2017, 2, 1).toString)))))
+              Right(Seq(payToDate, employerId.toString, employerName), Seq(Some(LocalDate.of(2017, 2, 1).toString)))))
 
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         when(journeyCacheService.currentCache(any()))
@@ -275,7 +275,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         val testController = createTestIncomeController()
         when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
           .thenReturn(Future.successful(
-            Right(Seq(payToDate, employerId.toString, employerName), Seq(Some(new LocalDate(2017, 2, 1).toString)))))
+            Right(Seq(payToDate, employerId.toString, employerName), Seq(Some(LocalDate.of(2017, 2, 1).toString)))))
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(invalidNewAmount))
         val formData = Json.toJson(editIncomeForm)
@@ -572,7 +572,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future
             .successful(
-              Right(Seq(payToDate, employerId.toString, employerName), Seq(Some(new LocalDate(2017, 2, 1).toString)))))
+              Right(Seq(payToDate, employerId.toString, employerName), Seq(Some(LocalDate.of(2017, 2, 1).toString)))))
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("201"))
         val formData = Json.toJson(editIncomeForm)
@@ -608,7 +608,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future
             .successful(
-              Right(Seq(payToDate, employerId.toString, employerName), Seq(Some(new LocalDate(2017, 2, 1).toString)))))
+              Right(Seq(payToDate, employerId.toString, employerName), Seq(Some(LocalDate.of(2017, 2, 1).toString)))))
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(""))
         val formData = Json.toJson(editIncomeForm)
@@ -632,7 +632,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future
             .successful(
-              Right(Seq(payToDate, employerId.toString, employerName), Seq(Some(new LocalDate(2017, 2, 1).toString)))))
+              Right(Seq(payToDate, employerId.toString, employerName), Seq(Some(LocalDate.of(2017, 2, 1).toString)))))
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(sameAmount))
         val formData = Json.toJson(editIncomeForm)
@@ -825,7 +825,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
   }
 
   def employmentWithAccounts(accounts: List[AnnualAccount]) =
-    Employment("ABCD", Live, Some("ABC123"), new LocalDate(2000, 5, 20), None, accounts, "", "", 8, None, false, false)
+    Employment("ABCD", Live, Some("ABC123"), LocalDate.of(2000, 5, 20), None, accounts, "", "", 8, None, false, false)
 
   def paymentOnDate(date: LocalDate) =
     Payment(
@@ -852,7 +852,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
     1111,
     None,
     None,
-    Some(new LocalDate(2000, 5, 20)),
+    Some(LocalDate.of(2000, 5, 20)),
     None,
     true,
     false)

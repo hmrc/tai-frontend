@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels.income
 
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 
@@ -35,7 +35,7 @@ case class EndIncomeCheckYourAnswersViewModel(
     val mandatoryLines = Seq(
       CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q2"),
-        Dates.formatDate(new LocalDate(employmentEndDate)),
+        Dates.formatDate(LocalDate.parse(employmentEndDate)),
         controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
       ),
       CheckYourAnswersConfirmationLine(

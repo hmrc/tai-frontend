@@ -51,7 +51,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
         val testService = createTestService
 
         val taxCodeMismatch = TaxCodeMismatchFactory.matchedTaxCode
-        val hasTaxCodeChanged = HasTaxCodeChanged(changed = true, Some(taxCodeMismatch))
+        val hasTaxCodeChanged = Right(HasTaxCodeChanged(changed = true, Some(taxCodeMismatch)))
 
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
@@ -67,7 +67,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
       "invalid response is returned fromm taxCodeChangeConnector.taxCodeMismatch" in {
         val testService = createTestService
 
-        val hasTaxCodeChanged = HasTaxCodeChanged(changed = false, None)
+        val hasTaxCodeChanged = Right(HasTaxCodeChanged(changed = false, None))
 
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
@@ -79,19 +79,19 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
       }
     }
 
-    "throws a could not fetch tax code mismatch" when {
-      "invalid response is returned fromm taxCodeChangeConnector.hasTaxCodeChanged" in {
+    "and could not fetch tax code mismatch" when {
+      "returns a valid error response from taxCodeChangeConnector.hasTaxCodeChanged" in {
         val testService = createTestService
 
         val taxCodeMismatch = TaxCodeMismatchFactory.matchedTaxCode
+        val taxCodeError = Left(TaxCodeError(nino, Some("Could not fetch the changed tax code")))
 
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
         when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
 
-        val ex = the[RuntimeException] thrownBy Await.result(testService.hasTaxCodeChanged(nino), 5 seconds)
-        ex.getMessage must include("Could not fetch tax code change")
+        Await.result(testService.hasTaxCodeChanged(nino), 5 seconds) mustBe taxCodeError
       }
     }
   }

@@ -21,7 +21,7 @@ import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -167,7 +167,7 @@ class AddPensionProviderController @Inject()(
           case Right((mandatorySequence, optionalVals)) =>
             val form = optionalVals.head match {
               case Some(userDateString) =>
-                PensionAddDateForm(mandatorySequence.head).form.fill(new LocalDate(userDateString))
+                PensionAddDateForm(mandatorySequence.head).form.fill(LocalDate.parse(userDateString))
               case _ => PensionAddDateForm(mandatorySequence.head).form
             }
             Ok(addPensionStartDateView(form, mandatorySequence.head))

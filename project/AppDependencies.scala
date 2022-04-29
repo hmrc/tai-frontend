@@ -19,7 +19,9 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "play-ui"                          % s"9.7.0-$playVersion",
     "org.typelevel"     %% "cats-core"                        % "2.0.0",
     "com.typesafe.play" %% "play-json-joda"                   % "2.6.10",
-    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.18.0-$playVersion"
+    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.18.0-$playVersion",
+    "uk.gov.hmrc"       %% "play-frontend-hmrc"               % s"3.9.0-$playVersion",
+    "uk.gov.hmrc"       %% "play-frontend-pta"             % "0.3.0"
   )
 
   trait TestDependencies {
@@ -46,3 +48,4 @@ private object AppDependencies {
 
   def apply() = compile ++ Test()
 }
+

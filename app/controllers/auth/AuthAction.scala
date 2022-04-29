@@ -19,7 +19,7 @@ package controllers.auth
 import javax.inject.{Inject, Singleton}
 import com.google.inject.ImplementedBy
 import controllers.routes
-import play.Logger
+import play.api.Logging
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
@@ -68,7 +68,7 @@ object AuthedUser {
 @Singleton
 class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: MessagesControllerComponents)(
   implicit ec: ExecutionContext)
-    extends AuthAction with AuthorisedFunctions {
+    extends AuthAction with AuthorisedFunctions with Logging {
 
   override def invokeBlock[A](
     request: Request[A],
@@ -143,7 +143,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
   private def handleFailure(redirect: Call): PartialFunction[Throwable, Result] = {
     case _: NoActiveSession => Redirect(redirect)
     case ex: AuthorisationException => {
-      Logger.warn(s"Exception returned during authorisation with exception: ${ex.getClass()}", ex)
+      logger.warn(s"Exception returned during authorisation with exception: ${ex.getClass()}", ex)
       Redirect(routes.UnauthorisedController.onPageLoad())
     }
   }

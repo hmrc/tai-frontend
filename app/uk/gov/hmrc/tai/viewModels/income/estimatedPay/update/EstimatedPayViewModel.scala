@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 
 case class EstimatedPayViewModel(

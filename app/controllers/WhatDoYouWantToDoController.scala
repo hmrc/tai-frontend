@@ -16,27 +16,26 @@
 
 package controllers
 
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-
-import javax.inject.Inject
 import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{Employment, HasTaxCodeChanged}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.domain.{Employment, HasTaxCodeChanged}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import views.html.WhatDoYouWantToDoTileView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WhatDoYouWantToDoController @Inject()(
@@ -118,14 +117,21 @@ class WhatDoYouWantToDoController @Inject()(
     }
   }
 
-  private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
+  private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser) = {
     val nino = user.nino
-    for {
-      hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
-      showJrsTile       <- jrsService.checkIfJrsClaimsDataExist(nino)
-      model             <- whatToDoView(nino, hasTaxCodeChanged, showJrsTile)
-      _                 <- auditNumberOfTaxCodesReturned(nino, showJrsTile)
-    } yield Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+
+    taxCodeChangeService.hasTaxCodeChanged(nino) flatMap {
+      case Right(taxCodeChanged) =>
+        for {
+          showJrsTile <- jrsService.checkIfJrsClaimsDataExist(nino)
+          (model, _) <- (
+                         whatToDoView(nino, taxCodeChanged, showJrsTile),
+                         auditNumberOfTaxCodesReturned(nino, showJrsTile)).tupled
+        } yield Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+      case Left(taxCodeError) =>
+        Future.successful(
+          BadRequest(errorPagesHandler.error4xxPageWithLink(taxCodeError.errorMessage.getOrElse("Tax Code not Found"))))
+    }
   }
 
   private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(
