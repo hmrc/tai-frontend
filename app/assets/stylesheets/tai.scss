@@ -296,3 +296,17 @@ display: inline-block;
     visibility: hidden
 
 }
+
+
+.js-visible-back {
+
+display: none;
+visibility: hidden;
+}
+
+
+body.js-enabled .js-visible-back {
+
+  display: block;
+  visibility: visible;
+  }

@@ -136,6 +136,7 @@
 
 @beforeContent = {
 
+
 @if(isGG && isSa) {
     @hmrcAccountMenu(AccountMenu(
         businessTaxAccount = Some(BusinessTaxAccount()),
@@ -158,11 +159,11 @@
     }
 
     @attorneyBanner
-
     @backLinkUrl.map(url =>
-        govukBackLink(BackLink(attributes = Map("id" -> "returnToChooseTaxYearLink"), href = url, content = Text(backLinkContent)))
+        govukBackLink(BackLink(classes = "js-visible-back",
+        attributes = Map("id" -> "returnToChooseTaxYearLink"), href = url, content = Text(backLinkContent)))
     )
-}
+ }
 }
 
 
