@@ -24,7 +24,7 @@
 @import includes.link
 @import controllers.auth.AuthenticatedRequest
 
-@this(mainTemplate: MainTemplate)
+@this(main: MainTempleteNew)
 
 
 @(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
@@ -50,23 +50,30 @@
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = headingText,
         preHeadingText = incomeTaxComparisonViewModel.username,
         preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"),
-        customBackLinkContent = Some(backLinkToChooseTaxYear))
+        showGdsVersion = true),
 }
 
 
-@mainTemplate(title = headingText,
-    pageHeader = Some(header),
+@main(title = headingText,
+    pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(request.taiUser),
-    articleClasses = Some("full-width"),
+    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+    backLinkContent = Messages("your.paye.income.tax.overview"),
     pagePrintable = true,
     pagePrintName = Some("future-pay-as-you-earn-summary")) {
 
-    <div class="grid-row">
-        <div class="column-two-thirds">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
             @if(incomeTaxComparisonViewModel.isEstimatedCYPlusOneJourneyCompleted){
                 <div class="tai-progress-panel" id="estimatedPayCompletionBanner">
                     <h2 class="heading-small flush-bottom flush--top" id="incomeSummary-banner-heading">
@@ -75,31 +82,31 @@
                 </div>
             }
 
-            <div class="section" id="incomeTax">
+            <div class="govuk-body" id="incomeTax">
                 @IncomeTax(incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel)
             </div>
 
-            <div class="section" id="incomeSummary">
+            <div class="govuk-body" id="incomeSummary">
                 @IncomeSummary(incomeTaxComparisonViewModel.incomeSourceComparisonViewModel)
             </div>
 
-            <div class="section" id="taxCodes">
+            <div class="govuk-body" id="taxCodes">
                 @TaxCodes(incomeTaxComparisonViewModel.taxCodeComparisonViewModel, appConfig)
             </div>
 
-            <div class="section" id="taxFreeAmount">
+            <div class="govuk-body" id="taxFreeAmount">
                 @TaxFreeAmount(incomeTaxComparisonViewModel.taxFreeAmountComparisonViewModel)
             </div>
 
-            <div class="section hide-for-print" id="whatHappensNext">
-                <h2 class="heading-large" id="whatHappensNextHeading">@messages("tai.incomeTaxComparison.whatHappensNext.subHeading")</h2>
+            <div class="govuk-body hide-for-print" id="whatHappensNext">
+                <h2 class="govuk-heading-l" id="whatHappensNextHeading">@messages("tai.incomeTaxComparison.whatHappensNext.subHeading")</h2>
 
 
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text")</p>
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text",s"${Dates.formatDate(TaxYear().next.start)}")</p>
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text")</p>
 
-                <h3 class="heading-medium">@messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading")</h3>
+                <h3 class="govuk-heading-m">@messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading")</h3>
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description",s"${Dates.formatDate(TaxYear().next.start)}")</p>
 
 
@@ -133,15 +140,16 @@
                 </ul>
             </div>
 
-            <p>
+            <p class="flush--top govuk-body">
                 @link(
                 id=Some("returnToPAYEIncomeOverviewLink"),
                 url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
                 copy=messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
             </p>
 
-            <div class="print-link-container hide-for-print">
-                <a id="print-link-btn" href="javascript:window.print()" class="font-xsmall gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
+            <div class="print-link-container">
+                <a id="print-link-btn" href="javascript:window.print()"
+                   class="govuk-link govuk-body-s gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
             </div>
 
         </div>

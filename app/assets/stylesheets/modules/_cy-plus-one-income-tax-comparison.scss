@@ -124,7 +124,7 @@
           text-align: left;
         }
 
-        &.numeric {
+        &.govuk-table__cell--numeric {
           text-align: left;
 
           @media (min-width: $mobile) {
