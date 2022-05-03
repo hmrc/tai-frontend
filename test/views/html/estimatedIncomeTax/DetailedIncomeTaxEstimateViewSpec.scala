@@ -48,7 +48,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
         nonBreakable(Dates.formatDate(TaxYear().start)),
         nonBreakable(Dates.formatDate(TaxYear().end)))
 
-      val accessiblePreHeading = doc.select("""header span[class="visuallyhidden"]""")
+      val accessiblePreHeading = doc.select("""header span[class="visuallyhidden govuk-visually-hidden"]""")
       accessiblePreHeading.text mustBe Messages("tai.estimatedIncome.accessiblePreHeading")
 
       val preHeading = doc.select("header p")

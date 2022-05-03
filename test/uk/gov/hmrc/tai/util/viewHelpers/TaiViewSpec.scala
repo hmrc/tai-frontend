@@ -88,6 +88,11 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
       doc must haveBackLink
     }
 
+  def pageWithBackLinkNew: Unit =
+    "have a back link" in {
+      doc must haveBackLinkNew
+    }
+
   def haveReturnToSummaryButtonWithUrl(previousPage: => Call): Unit =
     "have a return to summary button with url" in {
       doc must haveReturnToSummaryButtonWithUrl(previousPage.url.toString)

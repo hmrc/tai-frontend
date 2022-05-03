@@ -21,11 +21,11 @@
     summaryClass: Option[String]=None,
     panelClass: Option[String]=Some("panel-indent")
 )(body: Html)
-<details>
+<details class="govuk-details" data-module="govuk-details">
     <summary @if(summaryClass.isDefined){class='@summaryClass'}>
         @if(visuallyHiddenTitle) {
-            <span  aria-hidden="true">@title</span>
-            <span class="visuallyhidden">@visuallyHiddenTitle</span>
+            <span class="govuk-details__summary-text"  aria-hidden="true">@title</span>
+            <span class="visuallyhidden govuk-visually-hidden">@visuallyHiddenTitle</span>
         } else {
             @title
         }
