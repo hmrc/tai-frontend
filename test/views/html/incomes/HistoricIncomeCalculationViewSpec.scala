@@ -52,7 +52,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
     }
 
     "have a back link" in {
-      doc.select(".govuk-back-link").text() mustBe messages("tai.back-link.upper")
+      doc must haveBackLinkNew
     }
 
     "have informative text when payment data is not available" when {
