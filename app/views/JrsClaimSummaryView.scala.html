@@ -22,73 +22,69 @@
 @import scala.concurrent.ExecutionContext
 @import uk.gov.hmrc.tai.model.YearAndMonth.firstClaimDate
 @import includes.link
+@import includes.ptaHeader
 
-@this(mainTemplate: MainTemplate, languageUtils: LanguageUtils)
+@this(main: MainTempleteNew, languageUtils: LanguageUtils)
 
 @(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 @employerMessageKey = @{viewModel.employerMessageKey}
 
-@mainTemplate(
-    title = messages("check.jrs.claims.title")
+
+@main(
+    title = messages("check.jrs.claims.title"),
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+    backLinkContent = Messages("check.jrs.back.link"),
 ){
 
 
-    <div class="grid-row">
-        <div class="grid grid-2-3">
-            <div class="inner-block">
-
-                <p class="flush--bottom">
-                    @link(
-                        id=Some("backLink"),
-                        copy=Messages("check.jrs.back.link"),
-                        url = "#",
-                        linkClasses=Seq("link-back js-visible")
-                    )
-                </p>
-
-                <h1 class="heading-xlarge">@messages("check.jrs.claims.title")</h1>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-!-display-inline-block">
 
 
-                <h2 class="heading-section">@messages("check.jrs.from", YearAndMonth.formattedDate(firstClaimDate(appConfig), languageUtils.getCurrentLang))</h2>
+                <h1 class="govuk-heading-xl">@messages("check.jrs.claims.title")</h1>
+
+
+                <h2 class="govuk-heading-m heading-section govuk-!-margin-top-8">@messages("check.jrs.from", YearAndMonth.formattedDate(firstClaimDate(appConfig), languageUtils.getCurrentLang))</h2>
 
                 @for(employers <- viewModel.employers) {
                     @if(employers.hasMultipleClaims) {
-                        <p>@messages("check.jrs.employer.made.multiple.claims.for.you", employers.name)</p>
-                        <ul class="list list-bullet">
+                        <p class="govuk-body">@messages("check.jrs.employer.made.multiple.claims.for.you", employers.name)</p>
+                        <ul class="govuk-list govuk-list--bullet">
                             @for(claims <- employers.claims) {
                                 <li>@claims.formatYearAndMonth(languageUtils.getCurrentLang)</li>
                             }
                         </ul>
 
                     } else {
-                        <p>@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head.formatYearAndMonth(languageUtils.getCurrentLang))</p>
+                        <p class="govuk-body">@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head.formatYearAndMonth(languageUtils.getCurrentLang))</p>
 
                     }
                 }
 
                 @if(!viewModel.hasMultipleEmployments) {
                     @if(viewModel.employers.last.hasMultipleClaims) {
-                        <p>@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
+                        <p class="govuk-body">@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
                     } else {
-                        <p>@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.single.furlough")</p>
+                        <p class="govuk-body">@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.single.furlough")</p>
                     }
                 } else {
-                    <p>@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
+                    <p class="govuk-body">@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
                 }
 
-                <h2 class="heading-section">@messages(s"check.jrs.${employerMessageKey}.can.claim.heading")</h2>
-                <p>@messages(s"check.jrs.${employerMessageKey}.can.claim")</p>
+                <h2 class="govuk-heading-m heading-section govuk-!-margin-top-8">@messages(s"check.jrs.${employerMessageKey}.can.claim.heading")</h2>
+                <p class="govuk-body">@messages(s"check.jrs.${employerMessageKey}.can.claim")</p>
 
-                <h2 class="heading-section">@messages("check.jrs.information.is.different.heading")</h2>
-                <p>@messages(s"check.jrs.speak.to.${employerMessageKey}")</p>
-                <p>@messages("check.jrs.you.can")
+                <h2 class="govuk-heading-m heading-section govuk-!-margin-top-8">@messages("check.jrs.information.is.different.heading")</h2>
+                <p class="govuk-body">@messages(s"check.jrs.speak.to.${employerMessageKey}")</p>
+                <p class="govuk-body">@messages("check.jrs.you.can")
                     @link(url = messages("jrs.report.fraud.link"), id = Some("report-fraud-link"), copy = messages("check.jrs.report.fraud"), externalLink = true)
-                </a>
                     @messages(s"check.jrs.report.fraud.if.${employerMessageKey}.abusing.scheme")
                 </p>
 
-                <ul class="list list-bullet">
+                <ul class="govuk-list govuk-list--bullet">
                     <li>
                         @messages("check.jrs.claiming.on.your.behalf")
                     </li>
