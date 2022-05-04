@@ -38,7 +38,7 @@
     title = taxCodeViewModel.title,
     authedUser = Some(user),
     backLinkContent=messages("tai.back-link.upper"),
-    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url)
+    backLinkUrl = Some("javascript:history.go(-1)"),
     ){
 
     <div class="govuk-grid-row">
