@@ -76,13 +76,13 @@
         serviceUrl: Option[String] = None,
         backLinkUrl: Option[String] = Some("javascript:history.go(-1)"),
         backLinkContent: String = "Back",
+        backLinkId: String = "returnToChooseTaxYearLink",
         displayHmrcBanner: Boolean = false,
         phaseBanner: Option[PhaseBanner] = None,
         disableSessionExpired: Boolean = false,
         additionalScriptsBlock: Option[Html] = None,
         beforeContentBlock: Option[Html] = None,
         nonce: Option[String] = None,
-        mainContentLayout: Option[Html => Html] = Some(defaultMainContent(_)),
         headerContainerClasses: String = Header.defaultObject.containerClasses,
         pagePrintable: Boolean = false,
         pagePrintName: Option[String] = None
@@ -163,7 +163,7 @@
 
     @backLinkUrl.map(url =>
         govukBackLink(BackLink(classes = "js-visible-back",
-        attributes = Map("id" -> "returnToChooseTaxYearLink"), href = url, content = Text(backLinkContent)))
+        attributes = Map("id" -> backLinkId), href = url, content = Text(backLinkContent)))
     )
  }
 

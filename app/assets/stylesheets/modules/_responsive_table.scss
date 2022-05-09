@@ -108,3 +108,23 @@
   justify-content: space-between;
   padding: 1em 0 0.75em;
 }
+
+
+.responsive-table-fix {
+  $mobile: 768px;
+  @media (max-width: $mobile) {
+    .custom-td-format {
+      width: 32% !important;
+      padding-right: 1em;
+    }
+  }
+
+  @media (min-width: $mobile) {
+    .custom-td-format {
+      width: 30% !important;
+      padding-right: 1em;
+      white-space: nowrap;
+    }
+  }
+
+}

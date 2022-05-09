@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryV
 class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
   "Income details spec" must {
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       model.displayName,
       messages(
         "tai.employment.income.details.mainHeading",
@@ -41,7 +41,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
     "display headings" when {
       "income source is pension" in {
-        pensionDoc must havePreHeadingWithText(pensionModel.displayName)
+        pensionDoc must havePreHeadingWithTextGds(pensionModel.displayName)
 
         pensionDoc must haveHeadingWithText(
           messages(
@@ -188,10 +188,10 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "use conditional logic to display a company benefits list" which {
       "displays the list when benefits are present in the view model" in {
         val testDoc = Jsoup.parse(template(modelWithCompanyBenefits).toString)
-        testDoc must haveElementAtPathWithId("#companyBenefitsSection ul", "companyBenefitList")
+        testDoc must haveElementAtPathWithId("#companyBenefitsSection table", "companyBenefitList")
       }
       "does not display the list when benefits are absent from the view model" in {
-        doc must not(haveElementAtPathWithId("#companyBenefitsSection ul", "companyBenefitList"))
+        doc must not(haveElementAtPathWithId("#companyBenefitsSection table", "companyBenefitList"))
       }
       "displays a 'no company benefits' message when benefits are absent from the view model" in {
         doc must haveElementWithId("noCompanyBenefitsMessage")
