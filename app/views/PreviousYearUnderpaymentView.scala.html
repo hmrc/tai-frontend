@@ -21,48 +21,57 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 
-@this(mainTemplate: MainTemplate)
+@this(main: MainTempleteNew)
 
 @(viewModel: PreviousYearUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
         mainHeadingText = Messages("tai.previous.year.underpayment.title"),
-        preHeadingText = Messages("tai.iya.tax.you.owe.preHeading")
+        preHeadingText = Messages("tai.iya.tax.you.owe.preHeading"),
+        displayBackLink = false,
+        showGdsVersion = true
     )
 }
 
-@mainTemplate(
+@main(
     title = Messages("tai.previous.year.underpayment.title"),
-    articleClasses = Some("full-width"),
     authedUser = Some(user),
-    pageHeader = Some(header)
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkUrl = Some(routes.TaxFreeAmountController.taxFreeAmount.url),
+    backLinkContent = Messages("tai.back-link.upper")
+
 ){
 
-<div class="grid-row">
-    <div class="grid grid-2-3">
-        <div class="inner-block">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @header
+    </div>
+</div>
 
-            <p>@messages("tai.previous.year.underpayment.p1")</p>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-!-display-inline-block inner-block">
 
-            <p>@messages("tai.previous.year.underpayment.you.owe")
-                <span class="display-block bold-large">@viewModel.poundedAmountDue</span>
+            <p class="govuk-body">@messages("tai.previous.year.underpayment.p1")</p>
+
+            <p class="govuk-body">@messages("tai.previous.year.underpayment.you.owe")
+                <span class="govuk-!-display-block govuk-heading-l">@viewModel.poundedAmountDue</span>
             </p>
 
-            <h2>@messages("tai.previous.year.underpayment.h1")</h2>
+            <h2 class="govuk-heading-m govuk-!-margin-top-6">@messages("tai.previous.year.underpayment.h1")</h2>
 
-            <p>@messages("tai.previous.year.underpayment.p2", viewModel.allowanceReducedBy, Dates.formatDate(TaxYear().end), viewModel.poundedAmountDue)</p>
+            <p class="govuk-body">@messages("tai.previous.year.underpayment.p2", viewModel.allowanceReducedBy, Dates.formatDate(TaxYear().end), viewModel.poundedAmountDue)</p>
 
-            <p>@messages("tai.previous.year.underpayment.p3")</p>
+            <p class="govuk-body">@messages("tai.previous.year.underpayment.p3")</p>
 
-            <h2>@messages("tai.previous.year.underpayment.h2")</h2>
+            <h2 class="govuk-heading-m govuk-!-margin-top-6">@messages("tai.previous.year.underpayment.h2")</h2>
 
-            <p>@messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRange)</p>
-            <p>@messages("tai.previous.year.underpayment.p5")</p>
+            <p class="govuk-body">@messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRange)</p>
+            <p class="govuk-body">@messages("tai.previous.year.underpayment.p5")</p>
 
-            <p>@viewModel.returnLink</p>
+            <p class="govuk-link">@viewModel.returnLink</p>
         </div>
     </div>
 </div>

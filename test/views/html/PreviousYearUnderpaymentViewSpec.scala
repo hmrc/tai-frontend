@@ -28,13 +28,13 @@ class PreviousYearUnderpaymentViewSpec extends TaiViewSpec {
 
   "previousYearUnderpaymentView" must {
 
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       Messages("tai.iya.tax.you.owe.preHeading"),
       Messages("tai.previous.year.underpayment.title"))
 
     behave like pageWithTitle(Messages("tai.previous.year.underpayment.title"))
 
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
 
     "display paragraphs" in {
 
