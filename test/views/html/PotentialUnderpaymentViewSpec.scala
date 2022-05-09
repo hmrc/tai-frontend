@@ -52,9 +52,9 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
   override def view: HtmlFormat.Appendable = potentialUnderpayment(viewModel)
 
   "Potential Underpayment" must {
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
     behave like pageWithTitle(viewModel.pageTitle)
-    behave like pageWithCombinedHeader(messages("tai.iya.tax.you.owe.preHeading"), viewModel.pageTitle)
+    behave like pageWithCombinedHeaderNewFormat(messages("tai.iya.tax.you.owe.preHeading"), viewModel.pageTitle)
 
     "display text indicating tax is owed " in {
       document() must haveParagraphWithText(messages("tai.iya.paidTooLittle.cy.text"))
@@ -85,7 +85,7 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
       def cyOnlyDoc = document(cyOnlyViewModel)
 
       "display amount owing" in {
-        cyOnlyDoc must haveParagraphWithText(withPoundPrefix(MoneyPounds(cyOnlyViewModel.iyaCYAmount, 2)))
+        cyOnlyDoc must haveH2HeadingWithText(withPoundPrefix(MoneyPounds(cyOnlyViewModel.iyaCYAmount, 2)))
       }
 
       "display heading text in " in {
@@ -106,7 +106,7 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
       def cyAndCYPlusOneDoc = document(cyAndCYPlusOneViewModel)
 
       "display amount owing" in {
-        cyAndCYPlusOneDoc must haveParagraphWithText(
+        cyAndCYPlusOneDoc must haveH2HeadingWithText(
           withPoundPrefix(MoneyPounds(cyAndCYPlusOneViewModel.iyaCYAmount, 2)))
       }
 
