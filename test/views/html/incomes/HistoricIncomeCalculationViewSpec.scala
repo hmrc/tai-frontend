@@ -19,6 +19,7 @@ package views.html.incomes
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -37,12 +38,12 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
 
   "The income calculation previous year page" should {
     behave like pageWithTitle(messages("tai.yourIncome.heading"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.yourIncome.preHeading"),
       messages("tai.income.calculation.TaxableIncomeDetails", "Foo"))
 
     "have a print link" in {
-      val printLink = doc.getElementById("printLink")
+      val printLink = doc.getElementById("print-link-btn")
       printLink must haveLinkURL(
         controllers.routes.YourIncomeCalculationController
           .printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)
@@ -51,7 +52,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
     }
 
     "have a back link" in {
-      doc must haveBackLink
+      doc must haveBackLinkNew
     }
 
     "have informative text when payment data is not available" when {

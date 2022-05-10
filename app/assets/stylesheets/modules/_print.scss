@@ -497,8 +497,8 @@ tr.print-pension-contributions-data td {
   body.printable-page .report-error,
   body.printable-page.historic-pay-as-you-earn .govuk-phase-banner,
   body.printable-page.historic-pay-as-you-earn .govuk-footer,
-  body.printable-page.future-pay-as-you-earn-summary .govuk-phase-banner,
-  body.printable-page.future-pay-as-you-earn-summary .govuk-footer,
+  body.printable-page .govuk-phase-banner,
+  body.printable-page .govuk-footer,
   body.printable-page .service-info {
     display: none;
     visibility: hidden;
