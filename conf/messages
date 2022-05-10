@@ -1406,8 +1406,8 @@ tai.taxCodeComparison.employments.count=you now have {0} employments
 tai.taxCodeComparison.pension.count=you now have {0} pension
 tai.taxCodeComparison.pensions.count=you now have {0} pensions
 tai.taxCodeComparison.incomeSources.count=you now have {0} income sources
-tai.urbanner.title=Help improve HMRC letters
-tai.urbanner.text=Please take part in our short survey (opens in a new window or tab)
+tai.urbanner.title=Help improve GOV.UK
+tai.urbanner.text=Help make the PAYE service better by taking part in a survey (opens in a new window).
 tai.urbanner.reject=No thanks
 
 checkProgress.link=Check the progress of your update
