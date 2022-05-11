@@ -28,8 +28,9 @@
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = viewModel.header,
+        showGdsVersion = true,
         preHeadingText = Messages("tai.taxCode.preHeader"))
 }
 
@@ -44,14 +45,7 @@
     <div class="govuk-grid-row">
 
         <div class="govuk-grid-column-two-thirds">
-@*            <div class="govuk-!-margin-4">*@
-@*                <a href="javascript:history.go(-1)" class="govuk-back-link govuk-!-margin-top-0 govuk-!-margin-bottom-4 js-enabled">Back</a>*@
-@*            </div>*@
-            <span class="govuk-caption-xl">
-                <span class="govuk-visually-hidden">This section is: </span>
-                Understanding your tax
-            </span>
-            <h1 class="govuk-heading-xl">Your tax-free amount for 6 April 2022 to 5 April 2023</h1>
+            @header
         </div>
 
         <div class="govuk-grid-column-two-thirds">
@@ -82,25 +76,25 @@
                     <h2 class = "govuk-heading-m no-print">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
 
                     <ul class="govuk-list no print">
-                        <li><p class="icon icon-plus">
+                        <li><p class="icon icon-plus-no-rpt">
                         @link(
                             id=Some("addMissingAddition"),
                             url=appConfig.taxFreeAllowanceLinkUrl,
                             copy=Messages("tai.taxFreeAmount.missing.section.addition"))
                         </p></li>
-                        <li><p class="icon icon-plus">
+                        <li><p class="icon icon-plus-no-rpt">
                         @link(
                             id=Some("addMissingDeduction"),
                             url=appConfig.companyBenefitsLinkUrl,
                             copy=Messages("add.missing.company.benefit"))
                         </p></li>
-                        <li><p class="icon icon-plus">
+                        <li><p class="icon icon-plus-no-rpt">
                         @link(
                             id=Some("addMissingInvestment"),
                             url=appConfig.investmentIncomeLinkUrl,
                             copy=Messages("tai.taxFreeAmount.missing.section.investment"))
                         </p></li>
-                        <li><p class="icon icon-plus">
+                        <li><p class="icon icon-plus-no-rpt">
                         @link(
                             id=Some("addMissingIncome"),
                             url=appConfig.otherIncomeLinkUrl,
