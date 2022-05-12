@@ -20,62 +20,72 @@
 @import uk.gov.hmrc.play.views.html.layouts._
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import includes.ptaHeader
+@import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-@this(mainTemplate: MainTemplate, loginStatus: LoginStatus)
+@this(main: MainTempleteNew, loginStatus: LoginStatus)
 
 @(viewModel:uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
         mainHeadingText = viewModel.pageTitle,
-        preHeadingText = Messages("tai.iya.tax.you.owe.preHeading")
-    )
+        preHeadingText = Messages("tai.iya.tax.you.owe.preHeading"),
+        displayBackLink = false,
+        showGdsVersion = true)
 }
 
-@mainTemplate(
+@main(
     title = viewModel.pageTitle,
-    articleClasses = Some("full-width"),
     authedUser = Some(user),
-    pageHeader = Some(header)
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad.url),
+    backLinkContent = Messages("tai.back-link.upper")
+
 ){
-    <div class="grid-row">
-        <div class="grid grid-2-3">
-            <div class="inner-block">
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-!-display-inline-block inner-block">
 
                 @if(viewModel.iyaCYAmount > 0){
                     <div class="section soft--top">
-                        <p id="iya-cy-how-much" class="flush--bottom">@messages("tai.iya.paidTooLittle.cy.text")</p>
+                        <p id="iya-cy-how-much" class="govuk-body flush--bottom">@messages("tai.iya.paidTooLittle.cy.text")</p>
 
-                        <p class="bold-large flush--top">@withPoundPrefix(MoneyPounds(viewModel.iyaCYAmount, 2))</p>
+                        <h2 class="govuk-heading-l flush--top">@withPoundPrefix(MoneyPounds(viewModel.iyaCYAmount, 2))</h2>
 
-                        <h2 class="heading-medium">@Messages("tai.iya.how.collected.heading")</h2>
+                        <h2 class="govuk-heading-m">@Messages("tai.iya.how.collected.heading")</h2>
 
-                        <p>@messages("tai.iya.paidTooLittle.cy.text2")</p>
+                        <p class="govuk-body">@messages("tai.iya.paidTooLittle.cy.text2")</p>
 
-                        <p>@Html(
+                        <p class="govuk-body">@Html(
                             Messages("tai.iya.paidTooLittle.cy.text3",
                                 MoneyPounds(viewModel.iyaTaxCodeChangeAmount, 0).quantity,
                                 s"${Dates.formatDate(TaxYear().end)}",
                                 MoneyPounds(viewModel.iyaCYAmount, 2).quantity)) </p>
 
-                        <p>@Messages("tai.iya.paidTooLittle.cy.text4")</p>
+                        <p class="govuk-body">@Messages("tai.iya.paidTooLittle.cy.text4")</p>
 
-                        <p>@Html(
+                        <p class="govuk-body">@Html(
                             Messages("tai.iya.paidTooLittle.get.help",
                                 includes.link(url=routes.HelpController.helpPage.toString,copy=Messages("tai.iya.paidTooLittle.get.help.linkText"),
                                     id=Some("getHelpLink")))) </p>
 
-                        <h2 class="heading-medium">@Messages("tai.iya.what.next.heading")</h2>
+                        <h2 class="govuk-heading-m">@Messages("tai.iya.what.next.heading")</h2>
 
-                        <p>@Messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRange)</p>
+                        <p class="govuk-body">@Messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRange)</p>
 
-                        <p>@Messages("tai.iya.what.next.text2")</p>
+                        <p class="govuk-body">@Messages("tai.iya.what.next.text2")</p>
 
 
                     </div>
@@ -85,21 +95,21 @@
                 @if(viewModel.iyaCYAmount == 0 && viewModel.iyaCYPlusOneAmount > 0) {
                     <div class="section soft--top">
                         <p id="iya-cy-plus-one-how-much">@messages("tai.iya.paidTooLittle.cy.text")</p>
-                        <p class="bold-large flush--top">@withPoundPrefix(MoneyPounds(viewModel.iyaCYPlusOneAmount, 2))</p>
+                        <p class="govuk-body flush--top">@withPoundPrefix(MoneyPounds(viewModel.iyaCYPlusOneAmount, 2))</p>
 
-                        <h2 class="heading-medium">@messages("tai.iya.what.next.heading")</h2>
+                        <h2 class="govuk-heading-m">@messages("tai.iya.what.next.heading")</h2>
 
-                        <p>@Messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRange)</p>
+                        <p class="govuk-body">@Messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRange)</p>
 
-                        <p>@messages("tai.iya.cyPlusOne.what.next.p800.description")</p>
+                        <p class="govuk-body">@messages("tai.iya.cyPlusOne.what.next.p800.description")</p>
 
-                        <h2 class="heading-medium">@messages("tai.iya.cyPlusOne.how.collected.heading")</h2>
+                        <h2 class="govuk-heading-m">@messages("tai.iya.cyPlusOne.how.collected.heading")</h2>
 
-                        <p>@messages("tai.iya.reduce.tax-free.amount.description", s"${Dates.formatDate(TaxYear().next.start)}")</p>
+                        <p  class="govuk-body">@messages("tai.iya.reduce.tax-free.amount.description", s"${Dates.formatDate(TaxYear().next.start)}")</p>
 
-                        <p>@messages("tai.iya.cyPlusOne.taxCodeMayBeChanged.description")</p>
+                        <p  class="govuk-body">@messages("tai.iya.cyPlusOne.taxCodeMayBeChanged.description")</p>
 
-                        <p>@Html(
+                        <p  class="govuk-body">@Html(
                             Messages("tai.iya.paidTooLittle.get.help",
                                 includes.link(url = routes.HelpController.helpPage.toString, copy = Messages("tai.iya.paidTooLittle.get.help.linkText"),
                                     id = Some("getHelpLink"))))
@@ -107,10 +117,9 @@
                     </div>
                 }
 
-                <div class="flush-top">
-                    <p>@viewModel.returnLink</p>
+                <div class="govuk-link flush-top govuk-!-margin-top-8">
+                    @viewModel.returnLink
                 </div>
-
 
             </div>
         </div>
