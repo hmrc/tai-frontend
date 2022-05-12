@@ -24,7 +24,7 @@
 @import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate, loginStatus: LoginStatus)
+@this(main: MainTempleteNew, loginStatus: LoginStatus)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ComplexEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
 request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
@@ -38,25 +38,26 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("tai.estimatedIncome.title"),
         preHeadingText = taxYearRangeString,
-        preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading")
+        preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading"),
+        showGdsVersion = true
 )
 }
 
-@mainTemplate(
+@main(
     title = Messages("tai.estimatedIncome.title"),
     pageHeader = Some(header),
     articleClasses = Some("full-width"),
     authedUser = Some(user)){
 
-    <div class="grid-row">
-        <div class="grid grid-2-3">
+    <div class="govuk-grid-row">
+        <div class="grid govuk-grid-column-two-thirds">
             <div class="inner-block">
                 <div class="soft--top flush--bottom">
-                    <div class="grid-row">
-                        <div class="column-one-half">
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-one-half">
                             <h2 class="flush--bottom">
                                 @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
                                 <span id="total-estimated-income" class="display-block heading-48 section faded-text flush section--narrow">
@@ -64,7 +65,7 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
                                 </span>
                             </h2>
                         </div>
-                        <div class="column-one-half">
+                        <div class="govuk-grid-column-one-half">
                             <h2 class="flush--bottom">
                                 @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
                                 <span id="income-tax-estimate" class="display-block heading-48 section faded-text flush section--narrow">
@@ -79,7 +80,7 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
                     @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,ComplexTaxView)
                 </div>
                 
-                <div class="margin-top">
+                <div class="govuk-!-margin-top-8">
                     @includes.link(
                         id=Some("detailEstimateView"),
                         copy=Messages("tai.estimatedIncome.detailedEstimate.Link"),
