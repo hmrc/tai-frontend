@@ -316,3 +316,17 @@ body.js-enabled .js-visible-back {
   display: block;
   visibility: visible;
   }
+
+
+
+
+.custom-align .govuk-grid-column-one-quarter {
+  width: 25%!important;
+  float:left!important;
+}
+
+
+.custom-align .govuk-grid-column-three-quarters {
+  width: 75%!important;
+  float:right!important;
+}

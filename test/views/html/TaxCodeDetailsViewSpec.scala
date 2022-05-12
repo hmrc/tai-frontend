@@ -27,8 +27,8 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
 
   "Tax code view page" must {
     behave like pageWithTitle("main heading")
-    behave like pageWithCombinedHeader(messages("tai.taxCode.preHeader"), "main heading")
-    behave like pageWithBackLink
+    behave like pageWithCombinedHeaderNewFormat(messages("tai.taxCode.preHeader"), "main heading")
+    behave like pageWithBackLinkNew
 
     "display the provided lede message" in {
       doc must haveParagraphWithText("lede message")
@@ -49,25 +49,25 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
         messages("return.to.your.income.tax.summary"))
     }
 
-    "display an list of tax-code-part descriptions, for each tax code provided in the view model" in {
-      doc must haveUnorderedListWithId("taxCodeList1")
+    "display tax-code-part descriptions, for each tax code provided in the view model" in {
+      doc must haveDivWithId("taxCodeList1")
       doc must haveH2HeadingWithIdAndText("taxCodeList1Heading", "Your tax code for employer1: BR")
       doc must haveElementAtPathWithText("#taxCodeTerm_1_1 span", messages("tai.taxCode.part.announce", "K"))
-      doc must haveElementAtPathWithText("#taxCodeTerm_1_1 span", "K")
+      doc must haveElementAtPathWithText("#taxCodeTerm_1_1 p", "K")
       doc must haveElementAtPathWithText(
         "#taxCodeDescription_1_1",
         s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.BR")}")
 
-      doc must haveUnorderedListWithId("taxCodeList2")
+      doc must haveDivWithId("taxCodeList2")
       doc must haveH2HeadingWithIdAndText("taxCodeList2Heading", "Your tax code for employer2: D0")
       doc must haveElementAtPathWithText("#taxCodeTerm_2_1 span", messages("tai.taxCode.part.announce", "D0"))
-      doc must haveElementAtPathWithText("#taxCodeTerm_2_1 span", "D0")
+      doc must haveElementAtPathWithText("#taxCodeTerm_2_1 p", "D0")
       doc must haveElementAtPathWithText(
         "#taxCodeDescription_2_1",
         s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.DX", 40)}")
 
       doc must haveElementAtPathWithText("#taxCodeTerm_2_2 span", messages("tai.taxCode.part.announce", "K"))
-      doc must haveElementAtPathWithText("#taxCodeTerm_2_2 span", "K")
+      doc must haveElementAtPathWithText("#taxCodeTerm_2_2 p", "K")
       doc must haveElementAtPathWithText(
         "#taxCodeDescription_2_2",
         s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.BR")}")
