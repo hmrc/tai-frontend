@@ -23,6 +23,7 @@
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 @import scala.concurrent.ExecutionContext
+@import views.html.estimatedIncomeTax.navigationLinks
 
 @this(main: MainTempleteNew, loginStatus: LoginStatus)
 
@@ -48,27 +49,33 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
 
 @main(
     title = Messages("tai.estimatedIncome.title"),
-    pageHeader = Some(header),
-    articleClasses = Some("full-width"),
     authedUser = Some(user)){
 
+
     <div class="govuk-grid-row">
-        <div class="grid govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+        </div>
+
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
             <div class="inner-block">
                 <div class="soft--top flush--bottom">
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-one-half">
-                            <h2 class="flush--bottom">
+                            <h2 class="flush--bottom   govuk-heading-m ">
                                 @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
-                                <span id="total-estimated-income" class="display-block heading-48 section faded-text flush section--narrow">
+                                <span id="total-estimated-income" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
                                     @pounds(viewModel.incomeEstimate)
                                 </span>
                             </h2>
                         </div>
                         <div class="govuk-grid-column-one-half">
-                            <h2 class="flush--bottom">
+                            <h2 class="flush--bottom  govuk-heading-m ">
                                 @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
-                                <span id="income-tax-estimate" class="display-block heading-48 section faded-text flush section--narrow">
+                                <span id="income-tax-estimate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
                                     @pounds(viewModel.incomeTaxEstimate)
                                 </span>
                             </h2>
@@ -97,9 +104,9 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
             </div>
         </div>
 
-        <div>
+
             @navigationLinks()
-        </div>
+
 
 
     </div>
