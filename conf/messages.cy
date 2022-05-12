@@ -1411,8 +1411,8 @@ tai.taxCodeComparison.employments.count=mae gennych {0} o gyflogaethau nawr
 tai.taxCodeComparison.pension.count=erbyn hyn mae gennych {0} pensiwn
 tai.taxCodeComparison.pensions.count=erbyn hyn mae gennych {0} bensiwn
 tai.taxCodeComparison.incomeSources.count=erbyn hyn mae gennych {0} ffynhonnell incwm
-tai.urbanner.title=Helpwch i wella llythyrau CThEM
-tai.urbanner.text=Cymerwch ran yn ein harolwg byr (yn agor ffenestr neu dab newydd)
+tai.urbanner.title=Helpwch i wella GOV.UK
+tai.urbanner.text=Helpwch i wella’r gwasanaeth TWE drwy gymryd rhan mewn arolwg (yn agor ffenestr newydd)
 tai.urbanner.reject=Dim diolch
 
 checkProgress.link=Gwiriwch gynnydd eich diweddariad

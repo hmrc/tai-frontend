@@ -49,6 +49,7 @@
   hidePtaAccountNav: Boolean = false,
   pagePrintable: Boolean = false,
   pagePrintName: Option[String] = None,
+  showUrBannerOverride: Boolean = false
 )(mainContent: Html
 )(implicit request: Request[_],
   messages: Messages,
@@ -192,7 +193,7 @@
 }
 
 @templateArguments = @{
-    if(!isUserResearchBannerHidden && appConfig.urBannerEnabled) {
+    if(!isUserResearchBannerHidden && (appConfig.urBannerEnabled || showUrBannerOverride)) {
         mustacheMap ++ Map[String, Any](
             "fullWidthBannerTitle" -> Messages("tai.urbanner.title"),
             "fullWidthBannerText" -> Messages("tai.urbanner.text"),
