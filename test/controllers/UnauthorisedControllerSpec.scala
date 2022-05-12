@@ -66,16 +66,6 @@ class UnauthorisedControllerSpec extends BaseSpec {
     }
   }
 
-  "loginVerify" must {
-    "redirect to a login page" in {
-      val result = controller.loginVerify(fakeRequest)
-      val expectedUrl = "http://localhost:9029/ida/login"
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe expectedUrl
-    }
-  }
-
   "upliftFailedUrl" must {
     "redirect to the failed uplift url" in {
       val result = controller.upliftFailedUrl(fakeRequest)

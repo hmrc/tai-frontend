@@ -581,7 +581,7 @@ class AuditServiceSpec extends BaseSpec {
         val sut = createSUT
         implicit val hc = HeaderCarrier()
         implicit val request =
-          FakeRequest().withHeaders(("Referer", "/test-path")).withSession((AuthProvider, AuthProviderVerify))
+          FakeRequest().withHeaders(("Referer", "/test-path")).withSession((AuthProvider, AuthProviderGG))
 
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 

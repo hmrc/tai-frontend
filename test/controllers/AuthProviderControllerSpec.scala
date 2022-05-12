@@ -29,22 +29,6 @@ class AuthProviderControllerSpec extends BaseSpec {
 
     "return a redirect url" when {
 
-      "verifyEntryPoint is called" in {
-
-        val SUT = createSUT
-
-        val result = SUT.verifyEntryPoint(FakeRequest())
-
-        Await.result(result, 5 seconds)
-
-        status(result) mustBe SEE_OTHER
-
-        redirectLocation(result).getOrElse("") mustBe routes.TaxAccountSummaryController.onPageLoad().url
-      }
-    }
-
-    "return a redirect url" when {
-
       "governmentGatewayEntryPoint is called" in {
 
         val SUT = createSUT

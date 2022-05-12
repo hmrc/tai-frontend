@@ -103,9 +103,6 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
       case Some(Credentials(_, TaiConstants.AuthProviderGG)) => {
         processRequest(user, request, block, handleGGFailure)
       }
-      case Some(Credentials(_, TaiConstants.AuthProviderVerify)) => {
-        processRequest(user, request, block, handleVerifyFailure)
-      }
       case _ => throw new RuntimeException("Can't find valid credentials for user")
     }
 
@@ -126,19 +123,10 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
         Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl()))
     }) recover failureHandler
 
-  private def handleEntryPointFailure[A](request: Request[A]): PartialFunction[Throwable, Result] =
-    request.session.get(TaiConstants.AuthProvider) match {
-      case Some(TaiConstants.AuthProviderVerify) =>
-        handleVerifyFailure
-      case _ =>
-        handleGGFailure
-    }
+  private def handleEntryPointFailure[A](request: Request[A]): PartialFunction[Throwable, Result] = handleGGFailure
 
   private def handleGGFailure: PartialFunction[Throwable, Result] =
     handleFailure(routes.UnauthorisedController.loginGG())
-
-  private def handleVerifyFailure: PartialFunction[Throwable, Result] =
-    handleFailure(routes.UnauthorisedController.loginVerify())
 
   private def handleFailure(redirect: Call): PartialFunction[Throwable, Result] = {
     case _: NoActiveSession => Redirect(redirect)

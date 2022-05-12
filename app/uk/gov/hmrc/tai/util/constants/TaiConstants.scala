@@ -60,7 +60,6 @@ object TaiConstants {
   val EmploymentCeased = 3
 
   val AuthProviderGG = "GovernmentGateway"
-  val AuthProviderVerify = "Verify"
   val AuthProvider = "AuthProvider"
 
   val SessionPostLogoutPage = "postLogoutPage"

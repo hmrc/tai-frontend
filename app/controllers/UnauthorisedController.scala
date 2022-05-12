@@ -50,10 +50,6 @@ class UnauthorisedController @Inject()(
     ggRedirect
   }
 
-  def loginVerify: Action[AnyContent] = Action.async { implicit request =>
-    verifyRedirect
-  }
-
   def upliftFailedUrl: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(
       Redirect(
@@ -65,16 +61,6 @@ class UnauthorisedController @Inject()(
           FailureUrl      -> Seq(failureUrl))
       )
     )
-  }
-
-  private def verifyRedirect(implicit request: Request[_]): Future[Result] = {
-    lazy val idaSignIn = s"${applicationConfig.citizenAuthHost}/ida/login"
-    Future.successful(
-      Redirect(idaSignIn).withSession(
-        SessionKeys.loginOrigin -> "TAI",
-        SessionKeys.redirect -> applicationConfig.postSignInRedirectUrl.getOrElse(
-          controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
-      ))
   }
 
   private def ggRedirect(implicit request: Request[_]): Future[Result] = {
