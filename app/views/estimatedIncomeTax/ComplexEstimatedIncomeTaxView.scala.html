@@ -49,8 +49,8 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
 
 @main(
     title = Messages("tai.estimatedIncome.title"),
+    pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(user)){
-
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -65,20 +65,20 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
                 <div class="soft--top flush--bottom">
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-one-half">
-                            <h2 class="flush--bottom   govuk-heading-m ">
+                            <h2 class="govuk-heading-m ">
                                 @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
-                                <span id="total-estimated-income" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
-                                    @pounds(viewModel.incomeEstimate)
-                                </span>
                             </h2>
+                            <p id="total-estimated-income" class=" govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                            @pounds(viewModel.incomeEstimate)
+                            </p>
                         </div>
                         <div class="govuk-grid-column-one-half">
-                            <h2 class="flush--bottom  govuk-heading-m ">
+                            <h2 class="govuk-heading-m ">
                                 @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
-                                <span id="income-tax-estimate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
-                                    @pounds(viewModel.incomeTaxEstimate)
-                                </span>
                             </h2>
+                            <p id="income-tax-estimate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                            @pounds(viewModel.incomeTaxEstimate)
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -86,13 +86,13 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
                 <div>
                     @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,ComplexTaxView)
                 </div>
-                
-                <div class="govuk-!-margin-top-8">
+
+                <div class="govuk-!-margin-top-8  govuk-!-margin-bottom-4 ">
                     @includes.link(
                         id=Some("detailEstimateView"),
                         copy=Messages("tai.estimatedIncome.detailedEstimate.Link"),
                         url = routes.DetailedIncomeTaxEstimateController.taxExplanationPage.url,
-                        linkClasses=Seq("button")
+                        linkClasses=Seq("govuk-button")
                     )
                 </div>
 
