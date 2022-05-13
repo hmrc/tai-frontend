@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 class ComplexEstimatedIncomeTaxViewSpec extends TaiViewSpec {
 
   "Estimated Income Tax Page" must {
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       messages(
         "tai.taxYear",
         Dates.formatDate(TaxYear().start).replace(" ", "\u00A0"),
@@ -39,11 +39,17 @@ class ComplexEstimatedIncomeTaxViewSpec extends TaiViewSpec {
     behave like pageWithBackLink
 
     "have a heading for the Total estimated Income" in {
-      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalEstimatedIncome.subheading") + " £48,000")
+      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalEstimatedIncome.subheading"))
+    }
+    "have a paragraph for the Total estimated Income value " in {
+      doc(view) must haveParagraphWithText(messages("£48,000"))
     }
 
     "have a heading for the Income tax estimate" in {
-      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.incomeTaxEstimate.subheading") + " £15,000")
+      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.incomeTaxEstimate.subheading"))
+    }
+    "have a paragraph for the Income tax estimate value " in {
+      doc(view) must haveParagraphWithText(messages("£15,000"))
     }
 
     "have view detailed Income tax estimate button" in {
