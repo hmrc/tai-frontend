@@ -39,7 +39,7 @@
     authedUser = Some(user),
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad.url),
-    backLinkContent = Messages("tai.back-link.upper")
+    backLinkContent = Messages("tai.back-link.upper"),
 ){
 
     <div class="govuk-grid-row">
@@ -50,11 +50,12 @@
 
         <div class="govuk-grid-column-two-thirds">
 
+            <div id="taxFreeAmountSummary">
                     <p class="govuk-body-l">
                         @Messages("tai.taxFreeAmount.summarysection.taxFreeExplanation")
                     </p>
 
-                    <h2 class="govuk-heading-m">
+                    <h2 id="xyz" class="govuk-heading-m">
                         @Messages("tai.taxFreeAmount.summarysection.heading")
                     </h2>
 
@@ -67,10 +68,14 @@
                         <li>@Messages("tai.taxFreeAmount.summarysection.bullet1")</li>
                         <li>@Messages("tai.taxFreeAmount.summarysection.bullet2")</li>
                     </ul>
+            </div>
+            <div id="taxFreeAmountDetail" class="govuk-!-margin-top-8">
                     <h2 class="govuk-heading-m">@Messages("tai.taxFreeAmount.detailsection.heading")</h2>
+
 
                     @taxFreeAmountSummary(viewModel.taxFreeAmountSummary.summaryItems)
 
+            </div>
                     <br>
 
                     <h2 class = "govuk-heading-m no-print">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
