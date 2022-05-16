@@ -37,9 +37,9 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
         doc must haveDivWithId("taxFreeAmountSummary")
         doc must haveElementAtPathWithText(
           "div[id=taxFreeAmountSummary]>h2",
-          s"${messages("tai.taxFreeAmount.summarysection.heading")} £2020")
+          messages("tai.taxFreeAmount.summarysection.heading"))
         val summarySection = doc.select("div[id=taxFreeAmountSummary]")
-        summarySection.select("span").get(1) must haveText("£2020")
+        summarySection.select("p").get(1) must haveText("£2020")
       }
 
       "contains the correct text content" in {
