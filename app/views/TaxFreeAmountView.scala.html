@@ -58,7 +58,7 @@
                         @Messages("tai.taxFreeAmount.summarysection.heading")
                     </h2>
 
-                    <p class="goveuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                    <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
                         @viewModel.annualTaxFreeAmount
                     </p>
 
@@ -108,24 +108,29 @@
                 <nav class="section">
                     <h2 class="govuk-heading-m heading-section">@Messages("tai.taxCode.sideBar.heading")</h2>
 
-                    <div class="govuk-list">
+                    <ul class="link-list govuk-list govuk-list--spaced">
+                        <li>
                         @link(
                             id=Some("taxCodesLink"),
                             url=routes.YourTaxCodeController.taxCodes.url,
-                            copy=Messages("check.your.tax.codes"))
+                            copy=Messages("check.your.tax.codes"))</li>
 
+                        <li>
                         @link(
                             id=Some("incomeTaxEstimateLink"),
                             url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
                             copy=Messages("check.your.income.tax.estimate"),
                             linkClasses=Seq("link-list__item"))
+                        </li>
 
+                        <li>
                         @link(
                             id=Some("taxableIncomeLink"),
                             url=routes.TaxAccountSummaryController.onPageLoad.url,
                             copy=Messages("return.to.your.income.tax.summary"),
                             linkClasses=Seq("link-list__item"))
-                    </div>
+                        </li>
+                    </ul>
                 </nav>
             </div>
         </div>

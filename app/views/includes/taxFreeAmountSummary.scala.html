@@ -26,14 +26,14 @@
 
     @if(item.rows.nonEmpty) {
 
-            <div id="summaryTable@{itemIdx.toString}" class="tai-tax-summary-table @if(itemIdx == 1){subsection--wide flush--bottom}">
+            <div id="summaryTable@{itemIdx.toString}" class="govuk-!-margin-top-6 tai-tax-summary-table @if(itemIdx == 1){subsection--wide flush--bottom}">
 
                 @if(!isAllowanceOrTotalItem){
-                <h3 class="heading-small section--narrow flush" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
+                <h3 class="heading-small govuk-heading-s section--narrow flush" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
                 }
 
                 @if(item.rows.length>1) {
-                <dl id="summaryTable@{itemIdx.toString}Body" class="govuk-summary-list govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight} else {flush}">
+                <dl id="summaryTable@{itemIdx.toString}Body" class="govuk-summary-list govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection} else {flush}">
 
                     @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
                         <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}" class="govuk-summary-list__row">
@@ -73,10 +73,10 @@
                 </dl>
                 } else {@if(item.rows.length == 1) {
 
-                <dl id="summaryTable@{itemIdx.toString}Body" class="govuk-summary-list govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight heading-small} else {flush}">
+                <dl id="summaryTable@{itemIdx.toString}Body" class="govuk-summary-list govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection xxxhighlight heading-small} else {flush}">
                     <div id="summaryTable@{itemIdx.toString}Row1" class="govuk-summary-list__row">
 
-                        <dt id="summaryTable@{itemIdx.toString}Row1-header" class="govuk-summary-list__key cya-question break-word ">
+                        <dt id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word ">
 
                             @item.rows(0).label.value
 
@@ -90,9 +90,9 @@
                             }
                         </dt>
 
-                        <dd id="summaryTable@{itemIdx.toString}Row1ValueCell" class="govuk-summary-list__value cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
+                        <dd id="summaryTable@{itemIdx.toString}Row1ValueCell" class=" govuk-summary-list__value cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
                             @if(isAllowanceOrTotalItem){
-                            <span class="visuallyhidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix")</span>
+                            <span class="govuk-visually-hidden visuallyhidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix")</span>
                             }
                             @item.rows(0).value
                         </dd>
