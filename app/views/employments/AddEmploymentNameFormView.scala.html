@@ -24,6 +24,7 @@
 @(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages("tai.addEmployment.addNameForm.title"),
     authedUser = Some(user)) {
         <div class="govuk-grid-row">
@@ -31,6 +32,8 @@
                 @if(nameForm.errors.nonEmpty) {
                     @govukErrorSummary(ErrorSummary(errorList = nameForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
                 }
+
+                @nameForm.data.get("employmentName")
 
                 @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentName()) {
                     <span class="govuk-caption-xl">
