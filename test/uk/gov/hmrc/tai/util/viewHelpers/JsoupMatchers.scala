@@ -260,6 +260,8 @@ trait JsoupMatchers {
   def haveCaptionWithText(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "caption")
   def haveContinueSubmitInput = new CssSelectorWithAttributeValueMatcher("value", "Continue", "input[type=submit]")
   def haveSubmitButton(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "button[type=submit]")
+  def haveSubmitButtonNew(expectedText: String) =
+    new CssSelectorWithTextMatcher(expectedText, "button[class=govuk-button]")
   def haveSummaryWithText(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "summary")
   def haveFormWithSubmitUrl(url: String) = new CssSelectorWithAttributeValueMatcher("action", url, "form[method=POST]")
   def haveDescriptionListWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "dl")
@@ -301,6 +303,8 @@ trait JsoupMatchers {
   def haveLinkWithText(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "a")
   def haveErrorLinkWithText(expectedText: String) =
     new CssSelectorWithTextMatcher(expectedText, "div.error-summary>ul>li>a")
+  def haveErrorLinkWithTextNew(expectedText: String) =
+    new CssSelectorWithTextMatcher(expectedText, "div.govuk-error-summary__body>ul>li>a")
   def haveClassWithText(expectedText: String, className: String) =
     new CssSelectorWithTextMatcher(expectedText, s".$className")
   def haveClassCount(expectedClass: String, expectedCount: Int) =

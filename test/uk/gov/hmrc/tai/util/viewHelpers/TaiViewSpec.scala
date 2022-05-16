@@ -119,9 +119,21 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
   def pageWithContinueButtonForm(submitUrl: String): Unit =
     pageWithButtonForm(submitUrl, "Continue")
 
+  def pageWithContinueButtonFormNew(submitUrl: String): Unit =
+    pageWithButtonFormNew(submitUrl, "Continue")
+
   def pageWithButtonForm(submitUrl: String, buttonText: String): Unit = {
     "have a form with a submit button or input labelled as buttonText" in {
       doc must haveSubmitButton(buttonText)
+    }
+    "have a form with the correct submit url" in {
+      doc must haveFormWithSubmitUrl(submitUrl)
+    }
+  }
+
+  def pageWithButtonFormNew(submitUrl: String, buttonText: String): Unit = {
+    "have a form with a submit button or input labelled as buttonText" in {
+      doc must haveSubmitButtonNew(buttonText)
     }
     "have a form with the correct submit url" in {
       doc must haveFormWithSubmitUrl(submitUrl)

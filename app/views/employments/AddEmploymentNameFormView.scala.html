@@ -14,35 +14,46 @@
  * limitations under the License.
  *@
 
-@import includes.forms.{input, submit}
-@import includes.{cancelLink, ptaHeader}
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import includes.cancelLink
 @import includes.forms.errorSummary
-@import includes.backLink
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@main(
+    title = Messages("tai.addEmployment.addNameForm.title"),
+    authedUser = Some(user)) {
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                @if(nameForm.errors.nonEmpty) {
+                    @govukErrorSummary(ErrorSummary(errorList = nameForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+                }
 
-@mainTemplate(
-  title = Messages("tai.addEmployment.addNameForm.title"),
-  authedUser = Some(user),
-  articleClasses = None) {
+                @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentName()) {
+                    <span class="govuk-caption-xl">
+                        <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading")</span>
+                        @messages("add.missing.employment")
+                    </span>
+                    @govukInput(Input(
+                        id = "employmentName",
+                        name = "employmentName",
+                        value = nameForm.data.get("employmentName"),
+                        label = Label(
+                            classes = "govuk-label--xl",
+                            content = Text(messages("tai.addEmployment.addNameForm.title")),
+                        ),
+                        errorMessage = nameForm.errors.asTextErrorMessages.headOption
+                    ))
 
-  @backLink()
-  @errorSummary(Messages("tai.income.error.form.summary"), nameForm, Seq("flush--bottom"))
+                    @govukButton(Button(content = Text(messages("tai.continue"))))
+                }
 
-  @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentName()) {
-    @input(
-      field = nameForm("employmentName"),
-      labelText = Messages("tai.addEmployment.addNameForm.title"),
-      classes = Seq("form-control form-control--full-width"),
-      preHeadingText = Some(Messages("add.missing.employment"))
-    )
-
-    @submit()
-  }
-
-  @cancelLink(url = controllers.employments.routes.AddEmploymentController.cancel())
+                <div class="govuk-link govuk-body-m">
+                    @cancelLink(url = controllers.employments.routes.AddEmploymentController.cancel())
+                </div>
+            </div>
+        </div>
 }
