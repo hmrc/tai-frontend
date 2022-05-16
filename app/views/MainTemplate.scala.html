@@ -80,12 +80,6 @@
     }
 }
 
-@isVerify = @{
-    authedUser.fold(false) {
-        _.providerType.contains(TaiConstants.AuthProviderVerify)
-    }
-}
-
 @mustacheCheck(str: String) = @{
     if(str.trim == "") false else str
 }
@@ -170,7 +164,6 @@
         ),
         "isGovernmentGateway" -> isGG,
         "isSa" -> isSa,
-        "isVerify" -> isVerify,
         "hideAccountMenu" -> hidePtaAccountNav,
         "signOutUrl" -> signOutUrl,
         "mainContentHeader" -> mainContentHeader,

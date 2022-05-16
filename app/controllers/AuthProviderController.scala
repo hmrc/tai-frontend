@@ -23,12 +23,6 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 class AuthProviderController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
-  def verifyEntryPoint = Action { implicit request =>
-    Redirect(routes.TaxAccountSummaryController.onPageLoad().url).withNewSession.addingToSession(
-      TaiConstants.AuthProvider -> TaiConstants.AuthProviderVerify
-    )
-  }
-
   def governmentGatewayEntryPoint = Action { implicit request =>
     Redirect(routes.TaxAccountSummaryController.onPageLoad().url).withNewSession.addingToSession(
       TaiConstants.AuthProvider -> TaiConstants.AuthProviderGG

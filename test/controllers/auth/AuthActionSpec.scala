@@ -37,9 +37,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 class AuthActionSpec extends BaseSpec {
 
   val cc = stubControllerComponents()
-  lazy val fakeVerifyRequest = FakeRequest("GET", "/").withSession(
-    TaiConstants.AuthProvider -> TaiConstants.AuthProviderVerify
-  )
 
   abstract class Harness(authAction: AuthAction) extends AbstractController(cc) {
 
@@ -134,22 +131,6 @@ class AuthActionSpec extends BaseSpec {
         contentAsString(result) mustBe expectedTaiUser.toString
       }
 
-      "logging in as a verify user" in {
-        val authProvider = Some(TaiConstants.AuthProviderVerify)
-        val creds = Some(Credentials("verify", TaiConstants.AuthProviderVerify))
-        val saUtr = Some("000111222")
-        val nino = new Generator().nextNino.nino
-        val baseRetrieval =
-          creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L500
-
-        val controller = Harness.successful(baseRetrieval ~ None)
-        val result = controller.onPageLoad()(fakeRequest)
-
-        val expectedTaiUser = AuthedUser(nino, saUtr, authProvider, ConfidenceLevel.L500, None)
-
-        contentAsString(result) mustBe expectedTaiUser.toString
-      }
-
       "redirect a user to uplift if the confidence level is below 200" in {
         val authProviderGG = Some(TaiConstants.AuthProviderGG)
         val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
@@ -185,26 +166,6 @@ class AuthActionSpec extends BaseSpec {
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginGG().toString)
-        }
-      })
-    }
-
-    "redirect the user to the Verify log in page" when {
-      val authErrors = Seq[RuntimeException](
-        new InvalidBearerToken,
-        new BearerTokenExpired,
-        new MissingBearerToken,
-        new SessionRecordNotFound
-      )
-
-      authErrors.foreach(error => {
-        s"there is an ${error.toString}" in {
-          val controller = Harness.failure(error)
-
-          val result = controller.onPageLoad()(fakeVerifyRequest)
-
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginVerify().toString)
         }
       })
     }

@@ -45,13 +45,7 @@ class ServiceController @Inject()(
   }
 
   def serviceSignout: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    request.taiUser.providerType match {
-      case Some(TaiConstants.AuthProviderVerify) =>
-        Future.successful(
-          Redirect(applicationConfig.citizenAuthFrontendSignOutUrl)
-            .withSession(TaiConstants.SessionPostLogoutPage -> applicationConfig.feedbackSurveyUrl))
-      case _ => Future.successful(Redirect(applicationConfig.basGatewayFrontendSignOutUrl))
-    }
+    Future.successful(Redirect(applicationConfig.basGatewayFrontendSignOutUrl))
   }
 
   def mciErrorPage() = authenticate.async { implicit request =>

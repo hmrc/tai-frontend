@@ -49,16 +49,6 @@ class ServiceControllerSpec extends BaseSpec {
       status(result) mustBe 303
       redirectLocation(result) mustBe Some(appConfig.basGatewayFrontendSignOutUrl)
     }
-
-    "redirect to citizen auth frontend if it is a Verify user" in {
-      val sut = createSut(FakeAuthActionVerify)
-
-      val result = sut.serviceSignout()(fakeRequest)
-
-      status(result) mustBe 303
-      redirectLocation(result) mustBe Some(appConfig.citizenAuthFrontendSignOutUrl)
-      session(result).get(TaiConstants.SessionPostLogoutPage) mustBe Some(appConfig.feedbackSurveyUrl)
-    }
   }
 
   "keepAlive" should {

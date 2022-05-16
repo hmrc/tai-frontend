@@ -21,17 +21,11 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 class UserDetailsSpec extends PlaySpec {
 
-  "hasVerifyAuthProvider" should {
+  "hasGgAuthProvider" should {
     "return true" when {
-      "authProviderType is Verify" in {
-        val userDetails = UserDetails(TaiConstants.AuthProviderVerify)
-        userDetails.hasVerifyAuthProvider mustBe true
-      }
-    }
-    "return false" when {
-      "authProviderType is NOT Verify" in {
+      "authProviderType is GG" in {
         val userDetails = UserDetails(TaiConstants.AuthProviderGG)
-        userDetails.hasVerifyAuthProvider mustBe false
+        userDetails.hasGgAuthProvider mustBe true
       }
     }
   }

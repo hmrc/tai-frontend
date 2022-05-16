@@ -18,7 +18,6 @@ GET         /deceased                                                           
 GET         /keep-alive                                                                controllers.ServiceController.keepAlive
 GET         /session-expired                                                           controllers.ServiceController.sessionExpiredPage
 
-GET         /start-verify                                                              controllers.AuthProviderController.verifyEntryPoint
 GET         /start-government-gateway                                                  controllers.AuthProviderController.governmentGatewayEntryPoint
 
 GET         /income-summary                                                            controllers.TaxAccountSummaryController.onPageLoad
@@ -262,7 +261,6 @@ GET         /tax-code-change/what-happens-next                                  
 ## Auth error page
 GET         /unauthorised                                                              controllers.UnauthorisedController.onPageLoad
 GET         /unauthorised/login-gg                                                     controllers.UnauthorisedController.loginGG
-GET         /unauthorised/login-verify                                                 controllers.UnauthorisedController.loginVerify
 GET         /unauthorised/confidence-level                                             controllers.UnauthorisedController.upliftFailedUrl
 
 

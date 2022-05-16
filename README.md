@@ -27,12 +27,6 @@ Assets compilation can be done quickly by specifying sbt-web plugin to use NodeJ
 export SBT_OPTS="$SBT_OPTS -Dsbt.jse.engineType=Node"
 For more information see: https://www.playframework.com/documentation/2.8.x/AssetsOverview#Managed-assets
 
-Authentication
-------------
-
-This customer logs into this service using [GOV.UK Verify](https://www.gov.uk/government/publications/introducing-govuk-verify/introducing-govuk-verify).
-
-
 Acronyms
 --------
 In the context of this service we use the following acronyms:
