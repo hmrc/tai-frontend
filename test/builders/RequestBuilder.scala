@@ -50,7 +50,7 @@ object RequestBuilder {
       .withHeaders(headers.toArray: _*)
 
   def buildFakeRequestWithAuth(method: String) =
-    FakeRequest(method = method, path = "")
+    FakeRequest(method = method, path = "/")
       .withFormUrlEncodedBody(
         "name"                  -> "test1",
         "description"           -> "description",

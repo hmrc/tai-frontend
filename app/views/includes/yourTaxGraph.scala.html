@@ -27,7 +27,7 @@
 @swatchLeftPadding=@{ graph.swatch.foldLeft(BigDecimal(100))((acc: BigDecimal, next: Swatch) => acc - next.barPercentage)}
 
 
-    <div aria-hidden="true" class="number-bar__container">
+    <div aria-hidden="true" class="number-bar__container govuk-body ">
         <div class="number-bar">
             <span style="left:0">@pounds(0)</span>
             @if(graph.zeroIncomeTotal != graph.incomeTotal){
@@ -66,37 +66,45 @@
     </div>
 
     @if(taxViewType != ZeroTaxView){
-        <table>
-            <thead>
+        <table  class="govuk-table" >
+            <thead class="govuk-table__head">
                 <tr>
-                    <th>@Messages("tai.key")</th>
-                    <th>@Messages("tai.item")</th>
-                    <th class="text--right">@Messages("tai.amount")</th>
+                    <th class="govuk-table__header">@Messages("tai.key")</th>
+                    <th class="govuk-table__header">@Messages("tai.item")</th>
+                    <th class="govuk-table__header govuk-table__cell--numeric text--right govuk-!-font-weight-bold">@Messages("tai.amount")</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="govuk-table__body">
                 @for((band, count) <- graph.bands.zipWithIndex){
-                    <tr>
-                        <td id="color@{count}"><span class="key-icon @band.colour"/></td>
-                        <td id="bandType@{count}">
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell" id="color@{count}"><span class="key-icon @band.colour"></span></td>
+                        <td class="govuk-table__cell" id="bandType@{count}">
                             @if(band.bandType=="ZeroBand"){
                                 @Messages("tai.bandtype.zeroBand")
                             } else {
                                 @Messages("tai.bandtype.nonZeroBand")
                             }
                         </td>
-                        <td id="income@{count}" class="text--right numeric">@withPoundPrefix(MoneyPounds(band.income,0))</td>
+                        <td id="income@{count}" class="govuk-table__cell govuk-table__cell--numeric text--right numeric">@withPoundPrefix(MoneyPounds(band.income,0))</td>
                     </tr>
                 }
 
                 @graph.swatch.map{ swatch =>
-                    <tr>
-                        <td id="incomeTaxBackground"><span class="key-icon income-tax"/></td>
-                        <td id="IncomeTaxEstimateType">@Messages("tai.bandtype.incomeTaxEstimate")</td>
-                        <td id="IncomeTaxEstimateAmount" class="text--right numeric">@withPoundPrefix(MoneyPounds(swatch.taxAmount,0))</td>
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell" id="incomeTaxBackground"><span class="key-icon income-tax"></span></td>
+                        <td class="govuk-table__cell" id="IncomeTaxEstimateType">@Messages("tai.bandtype.incomeTaxEstimate")</td>
+                        <td class="text--right numeric govuk-table__cell govuk-table__cell--numeric " id="IncomeTaxEstimateAmount" >@withPoundPrefix(MoneyPounds(swatch.taxAmount,0))</td>
+
+
+
                     </tr>
                 }
 
             </tbody>
         </table>
     }
+
+
+
+
+

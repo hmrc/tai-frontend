@@ -18,10 +18,10 @@
 @()(implicit messages: Messages)
 
 
-<h2 class="heading-section">
+<h2 class="heading-section govuk-heading-m">
     @Messages("tai.estimatedIncome.howYouPay.heading")
 </h2>
-<p  id="howYouPayDesc">
+<p class="govuk-body" id="howYouPayDesc">
     @Html(Messages("tai.estimatedIncome.howYouPay.desc",
     includes.link(
     id=Some("taxCodesLink"),
