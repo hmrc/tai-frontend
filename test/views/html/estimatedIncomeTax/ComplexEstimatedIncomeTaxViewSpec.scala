@@ -49,7 +49,7 @@ class ComplexEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.incomeTaxEstimate.subheading"))
     }
     "have a paragraph for the Income tax estimate value " in {
-      doc(view) must haveParagraphWithText(messages("£15,000"))
+      doc(view) must haveParagraphWithText("£15,000")
     }
 
     "have view detailed Income tax estimate button" in {
