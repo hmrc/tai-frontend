@@ -70,7 +70,7 @@ class EndEmploymentControllerSpec
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
-      doc.title() must include(Messages("tai.employment.decision.customGaTitle"))
+      doc.title() must include(messages("tai.employment.decision.legend", employerName))
     }
 
     "redirect to the tax summary page if a value is missing from the cache " in {
