@@ -36,7 +36,7 @@ class UpdateRemoveEmploymentDecisionViewSpec extends TaiViewSpec with FormValues
     template(updateRemoveForm = updateRemoveEmploymentForm, employmentName = employmentName, empId = empId)
 
   "update_remove_employment_decision" must {
-    behave like pageWithTitle(messages("tai.employment.decision.customGaTitle"))
+    behave like pageWithTitle(messages("tai.employment.decision.legend", employmentName))
 
     behave like pageWithBackLinkNew
 
