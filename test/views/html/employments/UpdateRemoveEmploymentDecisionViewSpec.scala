@@ -38,22 +38,28 @@ class UpdateRemoveEmploymentDecisionViewSpec extends TaiViewSpec with FormValues
   "update_remove_employment_decision" must {
     behave like pageWithTitle(messages("tai.employment.decision.customGaTitle"))
 
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
+
+    "display preheading" in {
+      doc must haveElementAtPathWithText(
+        ".govuk-caption-xl",
+        messages("tai.ptaHeader.accessible.preHeading") + " " + messages("tai.employment.decision.preHeading"))
+    }
 
     "display label with heading" in {
       doc must haveElementAtPathWithText(
-        "#headingInLabel .form-label",
+        ".govuk-fieldset__legend--xl",
         messages("tai.employment.decision.heading", employmentName))
     }
 
     behave like pageWithYesNoRadioButton(
-      UpdateRemoveEmploymentForm.EmploymentDecision + "-yes",
-      UpdateRemoveEmploymentForm.EmploymentDecision + "-no",
+      UpdateRemoveEmploymentForm.EmploymentDecision,
+      UpdateRemoveEmploymentForm.EmploymentDecision + "-2",
       messages("tai.employment.decision.radio1"),
       messages("tai.employment.decision.radio2")
     )
 
-    behave like pageWithContinueButtonForm("/check-income-tax/update-remove-employment/decision")
+    behave like pageWithContinueButtonFormNew("/check-income-tax/update-remove-employment/decision")
 
     behave like pageWithCancelLink(controllers.employments.routes.EndEmploymentController.cancel(empId))
   }

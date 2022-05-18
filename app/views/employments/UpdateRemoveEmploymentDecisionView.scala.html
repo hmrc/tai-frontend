@@ -14,55 +14,64 @@
  * limitations under the License.
  *@
 
+@import includes.cancelLink
 @import uk.gov.hmrc.tai.forms.employments.UpdateRemoveEmploymentForm
-@import includes.forms.submit
-@import includes.{cancelLink, ptaHeaderNoH1}
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import includes.forms.inputRadioGroupStylingWithH1Label
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(updateRemoveForm: Form[Option[String]], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 
-@header = @{
-    ptaHeaderNoH1(
-        formForErrorSummary = Some(updateRemoveForm),
-        displayBackLink = true,
-        mainHeadingText = messages("tai.employment.decision.heading", employmentName),
-        preHeadingText = messages("tai.employment.decision.preHeading")
-    )
-}
-
-@mainTemplate(
+@main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.employment.decision.customGaTitle"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None) {
+    backLinkContent = Messages("tai.back-link.upper")) {
 
-    @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove) {
-        <div class="form-group">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if(updateRemoveForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = updateRemoveForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
 
-            @{inputRadioGroupStylingWithH1Label(
-                field=updateRemoveForm(UpdateRemoveEmploymentForm.EmploymentDecision),
-                radioOptions=Seq(("Yes" -> messages("tai.employment.decision.radio1")), ("No" -> messages("tai.employment.decision.radio2")) ),
-                legend=messages("tai.employment.decision.legend", employmentName),
-                legendHint=None,
-                mainHeadingText = messages("tai.employment.decision.heading", employmentName),
-                preHeadingText = messages("tai.employment.decision.preHeading"),
-                labelId  = "employmentDecision-yes",
-                ('_groupDivClass, "form-group" ),
-                ('_fieldsetAttributes, "id=employmentDecision" ),
-                ('_legendSpanClass, "visually-hidden"),
-                ('_radioOption1Attributes, Html("""data-journey-val="Yes"""") ),
-                ('_radioOption2Attributes, Html("""data-journey-val="No"""") )
-            )}
+            @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove) {
+                <span class="govuk-caption-xl">
+                    <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading")</span>
+                    @messages("tai.employment.decision.preHeading")
+                </span>
 
+                @govukRadios(Radios(
+                    fieldset = Some(Fieldset(
+                        legend = Some(Legend(
+                            content = Text(messages("tai.employment.decision.legend", employmentName)),
+                            classes = "govuk-fieldset__legend--xl",
+                            isPageHeading = true
+                        ))
+                    )),
+                    errorMessage = updateRemoveForm.errors.asTextErrorMessages.headOption,
+                    idPrefix = Some("employmentDecision"),
+                    name = "employmentDecision",
+                    items = Seq(
+                        RadioItem(
+                            content = Text(messages("tai.employment.decision.radio1")),
+                            value = Some("Yes")
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.employment.decision.radio2")),
+                            value = Some("No")
+                        )
+                    )
+                ).withFormField(updateRemoveForm(UpdateRemoveEmploymentForm.EmploymentDecision)))
+
+                @govukButton(Button(content = Text(messages("tai.continue"))))
+            }
+
+            <div class="govuk-link govuk-body-m">
+                @cancelLink(controllers.employments.routes.EndEmploymentController.cancel(empId))
+            </div>
         </div>
-
-        @submit(buttonMessageKey = Some(messages("tai.submit")))
-    }
-
-    @cancelLink(controllers.employments.routes.EndEmploymentController.cancel(empId))
+    </div>
 }
