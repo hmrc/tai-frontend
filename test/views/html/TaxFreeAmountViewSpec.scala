@@ -112,7 +112,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       "visually formats the final table" when {
         "the corresponding final summary item view model contains only a single row" in {
           doc.select("#summaryTable4 .cya-question").size() mustBe 1
-          doc must haveElementAtPathWithClass("#summaryTable4 .govuk-check-your-answers", "highlight")
+
         }
       }
     }
