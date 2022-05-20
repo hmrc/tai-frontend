@@ -19,8 +19,11 @@
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm
 @import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(payrollNumberForm: Form[AddEmploymentPayrollNumberForm], payrollNumberViewModel: PayrollNumberViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
@@ -32,11 +35,9 @@
         mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName),
         preHeadingText = Messages("add.missing.employment"))}
 
-@mainTemplate(
+@main(
     title = Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"),
-    authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None
+    authedUser = Some(user)
 ) {
 
     <p>@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
@@ -60,6 +61,42 @@
             ('_fieldsetAttributes, "id=payrollNumberChoice" ),
             ('_legendSpanClass, "visually-hidden")
         )}
+        @textHtml = {
+        @govukInput(Input(
+            id = "payrollNumber",
+            name = "payrollNumber",
+            value = payrollNumberForm.data.get(AddEmploymentPayrollNumberForm.PayrollNumberEntry),
+            label = Label(
+                classes = "govuk-label--xl",
+                content = Text(messages("tai.addEmployment.employmentPayrollNumber.label")),
+            ),
+            errorMessage = payrollNumberForm.errors.asTextErrorMessages.headOption
+        ))
+        }
+
+        @govukRadios(Radios(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("tai.addEmployment.employmentPayrollNumber.legend")),
+                    classes = "govuk-fieldset__legend--xl",
+                    isPageHeading = true
+                ))
+            )),
+            errorMessage = payrollNumberForm.errors.asTextErrorMessages.headOption,
+            idPrefix = Some("employmentPayrollNumber"),
+            name = "employmentPayrollNumber",
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("tai.label.yes")),
+                    value = Some("Yes"),
+                    conditionalHtml = Some(textHtml)
+                ),
+                RadioItem(
+                    content = Text(messages("tai.label.no")),
+                    value = Some("No")
+                )
+            )
+        ).withFormField(payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice)))
 
         <div id="payrollNumberEntry-container" class="@if(payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice).value.getOrElse("") != AddEmploymentPayrollNumberForm.YesValue){js-hidden} data-payrollNumberEntry">
             @input(
