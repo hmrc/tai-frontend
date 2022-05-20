@@ -24,7 +24,7 @@
 @import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate, loginStatus: LoginStatus)
+@this(main: MainTempleteNew, loginStatus: LoginStatus)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
 request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
@@ -36,37 +36,46 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("tai.estimatedIncome.title"),
         preHeadingText = taxYearRangeString,
+        showGdsVersion = true,
         preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading")
-)
+    )
 }
 
-@mainTemplate(
+@main(
     title = Messages("tai.estimatedIncome.title"),
-    pageHeader = Some(header),
-    articleClasses = Some("full-width"),
-    authedUser = Some(user)){
+    authedUser = Some(user),
+    pageTitle = Some(Messages("tai.estimatedIncome.title")),
+    backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad.url),
+    backLinkContent = Messages("tai.back-link.upper"),
+    pagePrintable = false
+){
 
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+        </div>
+    </div>
 
-    <div class="grid-row">
-        <div class="grid grid-2-3">
-            <div class="inner-block">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-!-display-inline-block inner-block">
                 <div class="soft--top flush--bottom">
-                    <div class="grid-row">
-                        <div class="column-one-half">
-                            <h2 class="flush--bottom">
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-one-half">
+                            <h2 class="govuk-heading-m govuk-!-margin-bottom-8">
                                 @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
-                                <span id="total-estimated-income" class="display-block heading-48 section faded-text flush section--narrow">
+                                <span id="total-estimated-income" class="govuk-!-display-block govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark govuk-body govuk-!-margin-top-5">
                                     @pounds(viewModel.incomeEstimate)
                                 </span>
                             </h2>
                         </div>
-                        <div class="column-one-half">
-                            <h2 class="flush--bottom">
+                        <div class="govuk-grid-column-one-half">
+                            <h2 class="govuk-heading-m">
                                 @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
-                                <span id="income-tax-estimate" class="display-block heading-48 section faded-text flush section--narrow">
+                                <span id="income-tax-estimate" class="govuk-!-display-block govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark govuk-body govuk-!-margin-top-5">
                                     @pounds(viewModel.incomeTaxEstimate)
                                 </span>
                             </h2>
@@ -76,10 +85,10 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
 
                 @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,SimpleTaxView)
 
-                <h2 class="heading-section">
+                <h2 class="govuk-heading-m under-line">
                     @viewModel.taxOnIncomeTypeHeading
                 </h2>
-                <p id="taxOnEmploymentIncomeDesc">
+                <p class="govuk-body" id="taxOnEmploymentIncomeDesc">
                     @Html(viewModel.taxOnIncomeTypeDescription)
                 </p>
                 @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.mergedTaxBands, taxRegion = viewModel.taxRegion)

@@ -26,10 +26,16 @@ class taxBandTableSpec extends TaiViewSpec with BandTypesConstants with TaxRegio
   "taxBandTable template" must {
     "display the given column headings" in {
       doc(view).select(".table-id").size() mustBe 1
-      doc(view) must haveTableThWithClassAndText("taxBand", messages("tai.incomeTaxBand"))
-      doc(view) must haveTableThWithClassAndText("numeric taxAmount", messages("tai.amount"))
-      doc(view) must haveTableThWithClassAndText("numeric taxRate", messages("tai.taxRate"))
-      doc(view) must haveTableThWithClassAndText("numeric tax", messages("tai.tax"))
+      doc(view) must haveTableThWithClassAndText("govuk-table__header taxBand", messages("tai.incomeTaxBand"))
+      doc(view) must haveTableThWithClassAndText(
+        "govuk-table__header govuk-table__header--numeric numeric taxAmount",
+        messages("tai.amount"))
+      doc(view) must haveTableThWithClassAndText(
+        "govuk-table__header govuk-table__header--numeric numeric taxRate",
+        messages("tai.taxRate"))
+      doc(view) must haveTableThWithClassAndText(
+        "govuk-table__header govuk-table__header--numeric numeric tax",
+        messages("tai.tax"))
     }
     "display the correct number of rows" in {
       doc(view).getElementsByTag("tr").size mustBe 5

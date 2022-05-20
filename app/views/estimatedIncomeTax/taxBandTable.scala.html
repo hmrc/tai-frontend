@@ -23,23 +23,23 @@
 
 
 
-<table class=@{tableClass}>
-    <thead>
-    <tr>
-        <th class="taxBand">@Messages("tai.incomeTaxBand")</th>
-        <th class="numeric taxAmount">@Messages("tai.amount")</th>
-        <th class="numeric taxRate">@Messages("tai.taxRate")</th>
-        <th class="numeric tax">@Messages("tai.tax")</th>
+<table class="govuk-table @{tableClass}">
+    <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header taxBand">@Messages("tai.incomeTaxBand")</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric numeric taxAmount">@Messages("tai.amount")</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric numeric taxRate">@Messages("tai.taxRate")</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric numeric tax">@Messages("tai.tax")</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody class="govuk-table__body">
 
     @for((taxBand, count) <- taxBands.sortBy(_.rate).zipWithIndex){
-    <tr>
-        <td class="bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
-        <td class="numeric income@{count}">@withPoundPrefix(MoneyPounds(taxBand.income,0))</td>
-        <td class="numeric taxRate@{count}">@taxBand.rate%</td>
-        <td class="numeric tax@{count}">@withPoundPrefix(MoneyPounds(taxBand.tax,0))</td>
+    <tr class="govuk-table__row">
+        <td class="govuk-table__cell bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
+        <td class="govuk-table__cell govuk-table__cell--numeric numeric income@{count}">@withPoundPrefix(MoneyPounds(taxBand.income,0))</td>
+        <td class="govuk-table__cell govuk-table__cell--numeric numeric taxRate@{count}">@taxBand.rate%</td>
+        <td class="govuk-table__cell govuk-table__cell--numeric numeric tax@{count}">@withPoundPrefix(MoneyPounds(taxBand.tax,0))</td>
     </tr>
     }
     </tbody>
