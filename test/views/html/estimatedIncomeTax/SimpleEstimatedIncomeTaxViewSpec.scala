@@ -32,7 +32,7 @@ import views.html.includes.link
 class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
 
   "Estimated Income Tax Page" must {
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       messages(
         "tai.taxYear",
         Dates.formatDate(TaxYear().start).replace(" ", "\u00A0"),
@@ -41,7 +41,7 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))
     )
 
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
 
     "have a heading for the Total estimated Income" in {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalEstimatedIncome.subheading") + " £68,476")
@@ -172,10 +172,16 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
         Messages("your.total.income.from.employment.desc", "47,835", "tax-free amount", "£11,500")).body
 
       document.select(".employmentIncomeTaxDetails").size() mustBe 1
-      document must haveTableThWithClassAndText("taxBand", messages("tai.incomeTaxBand"))
-      document must haveTableThWithClassAndText("numeric taxAmount", messages("tai.amount"))
-      document must haveTableThWithClassAndText("numeric taxRate", messages("tai.taxRate"))
-      document must haveTableThWithClassAndText("numeric tax", messages("tai.tax"))
+      document must haveTableThWithClassAndText("govuk-table__header taxBand", messages("tai.incomeTaxBand"))
+      document must haveTableThWithClassAndText(
+        "govuk-table__header govuk-table__header--numeric numeric taxAmount",
+        messages("tai.amount"))
+      document must haveTableThWithClassAndText(
+        "govuk-table__header govuk-table__header--numeric numeric taxRate",
+        messages("tai.taxRate"))
+      document must haveTableThWithClassAndText(
+        "govuk-table__header govuk-table__header--numeric numeric tax",
+        messages("tai.tax"))
       document.select(".bandType0").text() mustBe messages("estimate.uk.bandtype.pa")
       document.select(".bandType1").text() mustBe messages("estimate.uk.bandtype.B")
       document.select(".bandType2").text() mustBe messages("estimate.uk.bandtype.D0")
