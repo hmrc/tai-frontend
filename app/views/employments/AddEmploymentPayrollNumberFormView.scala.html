@@ -61,16 +61,16 @@
 
                 @govukRadios(Radios(
                     errorMessage = payrollNumberForm.errors.asTextErrorMessages.headOption,
-                    idPrefix = Some("employmentPayrollNumber"),
-                    name = "employmentPayrollNumber",
+                    idPrefix = Some("payrollNumberChoice"),
+                    name = "payrollNumberChoice",
                     items = Seq(
                         RadioItem(
                             content = Text(messages("tai.label.yes")),
                             value = Some("Yes"),
                             conditionalHtml = Some(
                                 govukInput(Input(
-                                    id = "payrollNumber",
-                                    name = "payrollNumber",
+                                    id = "payrollNumberEntry",
+                                    name = "payrollNumberEntry",
                                     value = payrollNumberForm.data.get(AddEmploymentPayrollNumberForm.PayrollNumberEntry),
                                     label = Label(
                                         classes = "govuk-label--s",
