@@ -400,8 +400,8 @@ class AddEmploymentControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 0
-        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=payrollNumberChoice][checked=checked]").size() mustBe 0
+        doc.select("input[id=payrollNumberChoice-2][checked=checked]").size() mustBe 0
         doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe ""
       }
       "the request has an authorised session and a previous 'no' response is held in cache" in {
@@ -421,8 +421,8 @@ class AddEmploymentControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 0
-        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberChoice][checked]").size() mustBe 0
+        doc.select("input[id=payrollNumberChoice-2][checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe ""
       }
       "the request has an authorised session and a previous 'yes' response is held in cache" in {
@@ -442,8 +442,8 @@ class AddEmploymentControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 1
-        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=payrollNumberChoice][checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberChoice-2][checked]").size() mustBe 0
         doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe "should be displayed"
       }
     }

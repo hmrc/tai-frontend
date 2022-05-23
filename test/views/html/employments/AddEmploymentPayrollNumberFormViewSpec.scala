@@ -40,15 +40,15 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
     behave like pageWithBackLinkNew
     behave like pageWithContinueButtonFormNew("/check-income-tax/add-employment/employment-payroll-number")
     behave like pageWithYesNoRadioButton(
-      AddEmploymentPayrollNumberForm.PayrollNumberChoice + "-yes",
-      AddEmploymentPayrollNumberForm.PayrollNumberChoice + "-no")
+      AddEmploymentPayrollNumberForm.PayrollNumberChoice,
+      AddEmploymentPayrollNumberForm.PayrollNumberChoice + "-2")
     behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 
     "have gone back to firstPayChoice page" in {
       val payrollNumberViewModel = PayrollNumberViewModel(employerName, true)
       def view: Html = add_employment_payroll_number_form(employmentPayrollForm, payrollNumberViewModel)
       def doc: Document = Jsoup.parse(view.toString())
-      doc must haveBackLink
+      doc must haveBackLinkNew
     }
 
     "have an input field for payroll number" in {
@@ -62,11 +62,9 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
           "tai.addEmployment.employmentPayrollNumber.error.selectOption")
         val formWithErrors: Form[AddEmploymentPayrollNumberForm] = AddEmploymentPayrollNumberForm.form
           .withError(AddEmploymentPayrollNumberForm.PayrollNumberChoice, noPayrollNumberChooseError)
-        val view: Html = add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
+        val view = add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
 
         val errorMessage = doc(view).select(".govuk-error-message").text
-        println(errorMessage)
-        println(expectedErrorMessage)
         errorMessage mustBe expectedErrorMessage
       }
 
@@ -76,7 +74,7 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
           "tai.addEmployment.employmentPayrollNumber.error.blank")
         val formWithErrors: Form[AddEmploymentPayrollNumberForm] = AddEmploymentPayrollNumberForm.form
           .withError(AddEmploymentPayrollNumberForm.PayrollNumberEntry, noPayrollNumberChooseError)
-        def view: Html = add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
+        val view = add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
 
         val errorMessage = doc(view).select(".govuk-error-message").text
         errorMessage mustBe expectedErrorMessage

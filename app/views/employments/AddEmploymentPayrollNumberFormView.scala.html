@@ -60,13 +60,14 @@
             @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber()) {
 
                 @govukRadios(Radios(
-                    errorMessage = payrollNumberForm.errors.asTextErrorMessages.headOption,
+                    errorMessage = payrollNumberForm.errors.filter(_.key == "payrollNumberChoice").asTextErrorMessages.headOption,
                     idPrefix = Some("payrollNumberChoice"),
                     name = "payrollNumberChoice",
                     items = Seq(
                         RadioItem(
                             content = Text(messages("tai.label.yes")),
                             value = Some("Yes"),
+                            checked = payrollNumberForm.data.get(AddEmploymentPayrollNumberForm.PayrollNumberChoice).exists(_ == "Yes"),
                             conditionalHtml = Some(
                                 govukInput(Input(
                                     id = "payrollNumberEntry",
@@ -76,13 +77,14 @@
                                         classes = "govuk-label--s",
                                         content = Text(messages("tai.addEmployment.employmentPayrollNumber.label")),
                                     ),
-                                    errorMessage = payrollNumberForm.errors.asTextErrorMessages.headOption
+                                    errorMessage = payrollNumberForm.errors.filter(_.key == "payrollNumberEntry").asTextErrorMessages.headOption
                                 ))
                             )
                         ),
                         RadioItem(
                             content = Text(messages("tai.label.no")),
-                            value = Some("No")
+                            value = Some("No"),
+                            checked = payrollNumberForm.data.get(AddEmploymentPayrollNumberForm.PayrollNumberChoice).exists(_ == "No")
                         )
                     )
                 ).withFormField(payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice)))
