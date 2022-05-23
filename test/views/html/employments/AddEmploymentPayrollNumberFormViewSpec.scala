@@ -34,11 +34,11 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
 
   "Add payroll number form page" must {
     behave like pageWithTitle(messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("add.missing.employment"),
       messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
-    behave like pageWithBackLink
-    behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-payroll-number")
+    behave like pageWithBackLinkNew
+    behave like pageWithContinueButtonFormNew("/check-income-tax/add-employment/employment-payroll-number")
     behave like pageWithYesNoRadioButton(
       AddEmploymentPayrollNumberForm.PayrollNumberChoice + "-yes",
       AddEmploymentPayrollNumberForm.PayrollNumberChoice + "-no")
@@ -62,9 +62,11 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
           "tai.addEmployment.employmentPayrollNumber.error.selectOption")
         val formWithErrors: Form[AddEmploymentPayrollNumberForm] = AddEmploymentPayrollNumberForm.form
           .withError(AddEmploymentPayrollNumberForm.PayrollNumberChoice, noPayrollNumberChooseError)
-        def view: Html = add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
+        val view: Html = add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
 
-        val errorMessage = doc(view).select(".error-message").text
+        val errorMessage = doc(view).select(".govuk-error-message").text
+        println(errorMessage)
+        println(expectedErrorMessage)
         errorMessage mustBe expectedErrorMessage
       }
 
@@ -76,7 +78,7 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
           .withError(AddEmploymentPayrollNumberForm.PayrollNumberEntry, noPayrollNumberChooseError)
         def view: Html = add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
 
-        val errorMessage = doc(view).select(".error-message").text
+        val errorMessage = doc(view).select(".govuk-error-message").text
         errorMessage mustBe expectedErrorMessage
       }
     }
