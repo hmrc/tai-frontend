@@ -29,14 +29,17 @@
 
 @header = @{
     ptaHeader(
-        formForErrorSummary = Some(payrollNumberForm),
         displayBackLink = false,
         mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName),
-        preHeadingText = Messages("add.missing.employment"))}
+        preHeadingText = Messages("add.missing.employment"),
+        showGdsVersion = true
+    )}
 
 @main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"),
-    authedUser = Some(user)
+    authedUser = Some(user),
+    backLinkContent = Messages("tai.back-link.upper")
 ) {
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
@@ -54,16 +57,9 @@
                 <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet4")</li>
             </ul>
 
-            @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
+            @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber()) {
 
                 @govukRadios(Radios(
-                    fieldset = Some(Fieldset(
-                        legend = Some(Legend(
-                            content = Text(messages("tai.addEmployment.employmentPayrollNumber.legend")),
-                            classes = "govuk-fieldset__legend--xl govuk-visually-hidden",
-                            isPageHeading = true
-                        ))
-                    )),
                     errorMessage = payrollNumberForm.errors.asTextErrorMessages.headOption,
                     idPrefix = Some("employmentPayrollNumber"),
                     name = "employmentPayrollNumber",
