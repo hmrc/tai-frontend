@@ -21,6 +21,8 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import scala.concurrent.ExecutionContext
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
 
@@ -35,6 +37,16 @@
         showGdsVersion = true
     )}
 
+@hint = {
+<p class="govuk-body">@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
+<ul id="payroll-number-info" class="govuk-list govuk-list--bullet">
+    <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet1")</li>
+    <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet2")</li>
+    <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet3")</li>
+    <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet4")</li>
+</ul>
+}
+
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"),
@@ -46,20 +58,18 @@
             @if(payrollNumberForm.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummary(errorList = payrollNumberForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
-            @header
-        </div>
-        <div class = "govuk-grid-column-two-thirds">
-            <p class="govuk-body">@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
-            <ul id="payroll-number-info" class="govuk-list govuk-list--bullet">
-                <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet1")</li>
-                <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet2")</li>
-                <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet3")</li>
-                <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet4")</li>
-            </ul>
-
             @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber()) {
-
                 @govukRadios(Radios(
+                    fieldset =  Some(
+                        Fieldset(
+                            legend = Some(
+                                HmrcPageHeadingLegend(
+                                    content = Text(Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName)),
+                                    caption = HmrcSectionCaption(Text(messages("add.missing.employment"))))
+                            )
+                        )
+                    ),
+                    hint = Some(Hint(content = HtmlContent(hint))),
                     errorMessage = payrollNumberForm.errors.filter(_.key == "payrollNumberChoice").asTextErrorMessages.headOption,
                     idPrefix = Some("payrollNumberChoice"),
                     name = "payrollNumberChoice",
