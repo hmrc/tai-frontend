@@ -56,6 +56,7 @@
         </div>
 
         <div class="govuk-grid-column-two-thirds">
+            <div class="subsection">
                     @model.employmentStatus match {
                         case PotentiallyCeased => {
                             @if(model.latestPayment.isDefined) {
@@ -85,8 +86,7 @@
                             }
                         }
                     }
-
-
+                </div>
 
                 @if(model.latestPayment.isDefined) {
 
@@ -131,33 +131,27 @@
                         <h3 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h3>
                     }
                 }
-
                 case Ceased => {
-                    @if(model.incomeCalculationEstimateMessage.isDefined){
+                    @if(model.incomeCalculationEstimateMessage.isDefined) {
                         <h3 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h3>
                     }
-
-                    @if(model.hasPayrolledBenefit){
+                    @if(model.hasPayrolledBenefit) {
                         <div>
                             <p class="govuk-body" id="payrolling1">@Messages("tai.income.calculation.payrollingBik.message1")</p>
                             <p class="govuk-body" id="payrolling2">@Messages("tai.income.calculation.payrollingBik.message2")</p>
                         </div>
                     }
                 }
-
-                    case _ => {
-
+                case _ => {
                         @if(model.incomeCalculationEstimateMessage.isDefined){
                             <h3 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h3>
                         }
-
                         @if(model.hasPayrolledBenefit){
-                        <div>
+                            <div>
                                 <p class="govuk-body" id="payrolling1">@Messages("tai.income.calculation.payrollingBik.message1")</p>
                                 <p class="govuk-body" id="payrolling2">@Messages("tai.income.calculation.payrollingBik.message2")</p>
                             </div>
                         }
-
                         @if(model.isPension){
                             <p class="govuk-body" id="pensionUpdateLink">@Html(Messages(
                                 "tai.income.calculation.update.pension",
@@ -170,12 +164,12 @@
                                 ))
                             </p>
                         }
+                        @if(model.incomeCalculationEstimateMessage.isDefined){
+                            <h3 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h3>
+                        }
                 }
-                @if(model.incomeCalculationEstimateMessage.isDefined){
-                    <h3 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h3>
-                }
-
             }
+
             <div class="print-link-container hide-for-print">
                 <a id="print-link-btn" href="@routes.YourIncomeCalculationController.printYourIncomeCalculationPage(model.empId).toString" class="govuk-link govuk-body-s gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
             </div>
