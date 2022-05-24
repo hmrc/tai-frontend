@@ -41,14 +41,17 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
         preHeadingText = taxYearRangeString,
         preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading"),
         showGdsVersion = true
-)
+    )
 }
 
 @main(
     title = Messages("tai.estimatedIncome.title"),
+    authedUser = Some(user),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkId = "backLink",
-    authedUser = Some(user)){
+    backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad.url),
+    backLinkContent = Messages("tai.back-link.upper"),
+    pagePrintable = false
+    ){
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -58,43 +61,41 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
 
     <div class="govuk-grid-row">
         <div class="grid govuk-grid-column-two-thirds">
-            <div class="inner-block">
+            <div class="inner-block govuk-!-display-inline-block">
                 <div class="soft--top flush--bottom">
 
-                    <div class="govuk-grid-row">
-                        <div class="govuk-grid-column-one-half">
-                            <h2 class="govuk-heading-m">
-                                @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
-                            </h2>
-                            <p id="total-estimated-income" class=" govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-one-half">
+                        <h2 class="govuk-heading-m govuk-!-margin-bottom-8">
+                            @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
+                            <p id="total-estimated-income" class="govuk-!-display-block govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark govuk-body govuk-!-margin-top-5">
                                 @pounds(viewModel.incomeEstimate)
                             </p>
-
-                        </div>
+                        </h2>
+                    </div>
 
                         <div class="govuk-grid-column-one-half">
                             <h2 class="govuk-heading-m">
                                 @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
-                                <p id="income-tax-estimate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                                <p id="income-tax-estimate" class="govuk-body govuk-!-display-block govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark govuk-!-margin-top-5">
                                     @pounds(viewModel.incomeTaxEstimate)
                                 </p>
                             </h2>
-
                         </div>
 
-                    </div>
                 </div>
+            </div>
 
-                <div>
-                    @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,ZeroTaxView, Some(viewModel.incomeEstimate))
-                </div>
+            <div>
+                @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,ZeroTaxView, Some(viewModel.incomeEstimate))
+            </div>
 
-                <div id="estimatedIncomeText" class="soft--top flush--bottom">
+                <div id="estimatedIncomeText" class="soft--top govuk-body govuk-!-margin-bottom-8">
                     <p id="estimatedIncomeLowDesc">
                         @Html(Messages("tai.estimatedIncomeLow.desc",
                         includes.link(id=Some("taxFreeAmountLink"),
-                                            url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                                            copy=Messages("tai.estimatedIncome.taxFree.link")),
+                        url=routes.TaxFreeAmountController.taxFreeAmount.url,
+                        copy=Messages("tai.estimatedIncome.taxFree.link")),
                         withPoundPrefix(MoneyPounds(viewModel.taxFreeEstimate, 0))))
                     </p>
                     <div id="balanceEarningsDesc">
@@ -103,19 +104,18 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
                     </div>
                 </div>
 
-                    @whyThisIsAnEstimateDesc()
-                    @howYouPayYourTaxDesc()
-            </div>
-            <div id ="iForms" class="inner-block">
-                @iFormLinks
-            </div>
+            @whyThisIsAnEstimateDesc()
+            @howYouPayYourTaxDesc()
         </div>
+        <div id="iForms" class="inner-block">
+            @iFormLinks
+        </div>
+    </div>
 
-        @navigationLinks()
+    @navigationLinks()
 
 
     </div>
-
 
 
 }

@@ -27,7 +27,7 @@ import views.html.includes.link
 
 class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
   "Zero Tax Estimated Income Tax Page" must {
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       messages(
         "tai.taxYear",
         Dates.formatDate(TaxYear().start).replace(" ", "\u00A0"),
@@ -36,14 +36,14 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))
     )
 
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
 
     "have a heading for the Total estimated Income" in {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalEstimatedIncome.subheading") + " £9,000")
     }
 
     "have a heading for the Income tax estimate" in {
-      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.incomeTaxEstimate.subheading") + " £0")
+      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.incomeTaxEstimate.subheading") + "£0")
     }
 
     "have static messages" in {
