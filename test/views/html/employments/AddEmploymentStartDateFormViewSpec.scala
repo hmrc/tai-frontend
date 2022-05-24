@@ -42,14 +42,14 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
   "Add employment start date form" should {
     behave like pageWithTitle(messages("tai.addEmployment.startDateForm.pagetitle"))
     behave like pageWithBackLink
-    behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-start-date")
+    behave like pageWithContinueButtonFormNew("/check-income-tax/add-employment/employment-start-date")
     behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {
         def view: Html = template(formWithErrors, employmentName)
 
-        val errorSummary = doc(view).select("#error-summary-display a").text
+        val errorSummary = doc(view).select(" .govuk-list.govuk-error-summary__list a").text
 
         errorSummary mustBe globalErrorMessage
       }
@@ -62,33 +62,33 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
     }
 
     "have a form hint" in {
-      val legendItem2 = doc(view).select(".form-hint").text
+      val legendItem2 = doc(view).select("#tellUsStartDateForm-hint").text
 
       legendItem2 mustBe Messages("tai.label.date.example")
     }
 
     "have a form input for day with relevant label" in {
-      val labelDay = doc(view).select(".form-group-day .form-label")
+      val labelDay = doc(view).select("label[for=tellUsStartDateForm-day]")
       val inputLabelDay = labelDay.text
-      val numberOfInputs = doc(view).select(".form-group-day input").size
+      val numberOfInputs = doc(view).select("#tellUsStartDateForm-day").size
 
       inputLabelDay mustBe Messages("tai.label.day")
       numberOfInputs mustBe 1
     }
 
     "have a form input for month with relevant label" in {
-      val labelMonth = doc(view).select(".form-group-month .form-label")
+      val labelMonth = doc(view).select("label[for=tellUsStartDateForm-month]")
       val inputLabelMonth = labelMonth.text
-      val numberOfInputs = doc(view).select(".form-group-month input").size
+      val numberOfInputs = doc(view).select("#tellUsStartDateForm-month").size
 
       inputLabelMonth mustBe Messages("tai.label.month")
       numberOfInputs mustBe 1
     }
 
     "have a form input for year with relevant label" in {
-      val labelYear = doc(view).select(".form-group-year .form-label")
+      val labelYear = doc(view).select("label[for=tellUsStartDateForm-year]")
       val inputLabelYear = labelYear.text
-      val numberOfInputs = doc(view).select(".form-group-year input").size
+      val numberOfInputs = doc(view).select("#tellUsStartDateForm-year").size
 
       inputLabelYear mustBe Messages("tai.label.year")
       numberOfInputs mustBe 1
@@ -98,11 +98,10 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
       "there is a form with an error" in {
         def view: Html = template(formWithErrors, employmentName)
 
-        val errorMessage = doc(view).select(".error-message").text
-        val fieldSetError = doc(view).select("form > div").hasClass("form-group-error")
-
+        val errorMessage = doc(view).select(".govuk-error-message").text
+        val fieldSetError = doc(view).select("form > div").hasClass("govuk-form-group--error")
         fieldSetError mustBe true
-        errorMessage mustBe globalErrorMessage
+        errorMessage contains globalErrorMessage
       }
     }
   }
