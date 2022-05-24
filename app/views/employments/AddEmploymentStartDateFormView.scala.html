@@ -98,47 +98,9 @@
                 ))
             ))
         ))
-
-@*
-
-items = Seq(
-InputItem(
-name= "day",
-label = Some(messages("tai.label.day")),
-classes = s"govuk-input--width-2 ${if(dateForm("tellUsStartDateForm-day").hasErrors || dateForm("tellUsStartDateForm-day").value =="")  " govuk-input--error" else "" }",
-),
-InputItem(
-name = "month",
-label = Some(messages("tai.label.month")),
-classes = s"govuk-input--width-2 ${if(dateForm("tellUsStartDateForm-month").hasErrors || dateForm("tellUsStartDateForm-month").value =="") " govuk-input--error" else "" }",
-),
-InputItem(
-name = "year",
-label = Some(messages("tai.label.year")),
-classes = s"govuk-input--width-4 ${if(dateForm("tellUsStartDateForm-year").hasErrors || dateForm("tellUsStartDateForm-year").value =="")  " govuk-input--error" else "" }",
-)
-),
-
-
-   *@
-
-
-
-@*
-        @dateWithH1Label(
-            form = dateForm,
-            fieldPrefix = "tellUsStartDateForm",
-            labelText = Messages("tai.addEmployment.startDateForm.label", employmentName),
-            legendBold = true,
-            mainHeadingText = messages("tai.addEmployment.startDateForm.title", employmentName),
-            preHeadingText = Some(messages("add.missing.employment"))
-        )
-*@
         @govukButton(Button(content = Text(messages("tai.continue"))))
-
     }
-
-
+    
     <div class="govuk-link govuk-body-m">
     @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
     </div>
