@@ -52,6 +52,9 @@
     @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentStartDate()) {
 
 
+        <div class = "govuk-grid-row">
+            <div class = "govuk-grid-column-two-thirds">
+
         @if(dateForm.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary(errorList = dateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
@@ -93,15 +96,19 @@
             fieldset = Some(Fieldset(
                 legend = Some(Legend(
                     content = Text(messages("tai.addEmployment.startDateForm.title", employmentName)),
-                    classes = "govuk-fieldset__legend--l",
+                    classes = "govuk-fieldset__legend--xl",
                     isPageHeading = true
                 ))
             ))
         ))
         @govukButton(Button(content = Text(messages("tai.continue"))))
     }
-    
+
     <div class="govuk-link govuk-body-m">
     @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
     </div>
+
+
+</div>
+</div>
 }
