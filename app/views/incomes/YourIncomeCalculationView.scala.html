@@ -23,7 +23,7 @@
 
 @import includes.ptaHeader
 
-@this(mainTemplate: MainTemplate)
+@this(main: MainTempleteNew)
 
 @(model: YourIncomeCalculationViewModel)(implicit request: Request[_],
     user: controllers.auth.AuthedUser,
@@ -32,61 +32,62 @@
     ec: scala.concurrent.ExecutionContext)
 
 
-@printLink= {
-    <p class="flush--bottom">
-        @includes.link(
-            url=routes.YourIncomeCalculationController.printYourIncomeCalculationPage(model.empId).toString,
-            copy=Messages("tai.label.print"),
-            linkClasses=Seq("tai-print-link"))
-    </p>
-}
-
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName),
         preHeadingText = Messages("tai.income.details.incomeReceivedToDate"),
-        additionalTopLinkContent = Some(printLink))
+        showGdsVersion = true
+    )
 }
 
-@mainTemplate(
+@main(
     title = Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(model.employerName),
-    articleClasses = None
+    pageTitle = Some(Messages("tai.service.navTitle", model.employerName)),
+    backLinkContent = Messages("tai.back-link.upper"),
+    backLinkId = "backLink",
+    pagePrintable = true
 ){
 
-    <div class="grid-row">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+        </div>
+    </div>
 
-            <div class="inner-block">
+    <div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <div class="govuk-!-display-inline-block inner-block">
                 <div class="subsection">
                     @model.employmentStatus match {
                         case PotentiallyCeased => {
                             @if(model.latestPayment.isDefined) {
-                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</h2>
+                                <h2 class="govuk-heading-m">@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</h2>
                             } else {
-                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
+                                <h2 class="govuk-heading-m">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
                             }
 
-                            <p>@Messages("tai.income.calculation.potentially.ceased.lede")</p>
+                            <p class="govuk-body">@Messages("tai.income.calculation.potentially.ceased.lede")</p>
                         }
 
                         case Ceased => {
                             @if(model.latestPayment.isDefined) {
-                                <h2 class="heading-medium">@Messages("tai.income.calculation.ceased.heading", Dates.formatDate(model.latestPayment.get.date))</h2>
+                                <h2 class="govuk-heading-m">@Messages("tai.income.calculation.ceased.heading", Dates.formatDate(model.latestPayment.get.date))</h2>
                             } else {
-                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
+                                <h2 class="govuk-heading-m">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
                             }
 
-                            <p>@Messages("tai.income.calculation.rti.ceased.emp",s"${DateHelper.toDisplayFormat(model.endDate)}")</p>
+                            <p class="govuk-body">@Messages("tai.income.calculation.rti.ceased.emp",s"${DateHelper.toDisplayFormat(model.endDate)}")</p>
                         }
 
                         case _ => {
                             @if(model.latestPayment.isDefined) {
-                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</h2>
+                                <h2 class="govuk-heading-m">@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</h2>
                             } else {
-                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
+                                <h2 class="govuk-heading-m">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
                             }
                         }
                     }
@@ -94,39 +95,39 @@
 
                 @if(model.latestPayment.isDefined) {
                     <div class="section soft--top soft--bottom">
-                        <table id="taxable-income-table" class="table-section">
-                            <caption class="text--left table__caption table__caption--bottom-border visually-hidden">@Messages("tai.income.calculation.incomeTable.caption")</caption>
-                            <thead>
-                                <tr>
-                                    <th>@Messages("tai.income.calculation.incomeTable.dateHeader")</th>
-                                    <th class="text--right">@Messages("tai.income.calculation.incomeTable.incomeHeader")</th>
-                                    <th class="text--right">@Messages("tai.income.calculation.incomeTable.taxPaidHeader")</th>
-                                    <th class="text--right">@Messages("tai.income.calculation.incomeTable.nationalInsuranceHeader")</th>
+                        <table id="taxable-income-table" class="govuk-table">
+                            <caption class="text--left table__caption table__caption--bottom-border govuk-visually-hidden">@Messages("tai.income.calculation.incomeTable.caption")</caption>
+                            <thead class="govuk-table__head">
+                                <tr class="govuk-table__row">
+                                    <th scope="col" class="govuk-table__header">@Messages("tai.income.calculation.incomeTable.dateHeader")</th>
+                                    <th scope="col" class="govuk-table__header govuk-table__header--numeric">@Messages("tai.income.calculation.incomeTable.incomeHeader")</th>
+                                    <th scope="col" class="govuk-table__header govuk-table__header--numeric">@Messages("tai.income.calculation.incomeTable.taxPaidHeader")</th>
+                                    <th scope="col" class="govuk-table__header govuk-table__header--numeric">@Messages("tai.income.calculation.incomeTable.nationalInsuranceHeader")</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="govuk-table__body">
                                 @for(payment <- model.payments){
-                                    <tr class="pension-contributions-data">
-                                        <td>@Dates.formatDate(payment.date)</td>
-                                        <td class="text--right">@{f"${payment.taxableIncome}%,.2f"}</td>
-                                        <td class="text--right">@{f"${payment.taxAmount}%,.2f"}</td>
-                                        <td class="text--right">@{f"${payment.nationalInsuranceAmount}%,.2f"}</td>
+                                    <tr class=" govuk-table__row">
+                                        <td class="govuk-table__cell">@Dates.formatDate(payment.date)</td>
+                                        <td class="govuk-table__cell govuk-table__cell--numeric">@{f"${payment.taxableIncome}%,.2f"}</td>
+                                        <td class="govuk-table__cell govuk-table__cell--numeric">@{f"${payment.taxAmount}%,.2f"}</td>
+                                        <td class="govuk-table__cell govuk-table__cell--numeric">@{f"${payment.nationalInsuranceAmount}%,.2f"}</td>
                                     </tr>
                                 }
                             </tbody>
                             <tfoot>
-                            <tr class="table__row--bold">
-                                <td>@Messages("tai.taxFree.total")</td>
-                                <td class="text--right">@{f"${model.latestPayment.get.amountYearToDate}%,.2f"}</td>
-                                <td class="text--right">@{f"${model.latestPayment.get.taxAmountYearToDate}%,.2f"}</td>
-                                <td class="text--right">@{f"${model.latestPayment.get.nationalInsuranceAmountYearToDate}%,.2f"}</td>
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__header">@Messages("tai.taxFree.total")</td>
+                                <td class="govuk-table__header govuk-table__header--numeric">@{f"${model.latestPayment.get.amountYearToDate}%,.2f"}</td>
+                                <td class="govuk-table__header govuk-table__header--numeric">@{f"${model.latestPayment.get.taxAmountYearToDate}%,.2f"}</td>
+                                <td class="govuk-table__header govuk-table__header--numeric">@{f"${model.latestPayment.get.nationalInsuranceAmountYearToDate}%,.2f"}</td>
                             </tr>
                             </tfoot>
                         </table>
 
                         @model.messageWhenTotalNotEqual.map { message =>
-                            <p>@message</p>
-                            <p>@Messages("tai.income.calculation.totalNotMatching.message")</p>
+                            <p class="govuk-body">@message</p>
+                            <p class="govuk-body">@Messages("tai.income.calculation.totalNotMatching.message")</p>
                         }
                     </div>
                 }
@@ -135,19 +136,19 @@
                 @model.employmentStatus match {
                     case PotentiallyCeased => {
                         @if(model.incomeCalculationEstimateMessage.isDefined) {
-                            <h3 class="heading-small">@model.incomeCalculationEstimateMessage</h3>
+                            <h3 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h3>
                         }
                     }
 
                     case Ceased => {
                         @if(model.incomeCalculationEstimateMessage.isDefined){
-                            <h3 class="heading-small">@model.incomeCalculationEstimateMessage</h3>
+                            <h3 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h3>
                         }
 
                         @if(model.hasPayrolledBenefit){
                             <div class="panel-indent panel-indent--info panel-indent--gutter">
-                                <p id="payrolling1">@Messages("tai.income.calculation.payrollingBik.message1")</p>
-                                <p id="payrolling2">@Messages("tai.income.calculation.payrollingBik.message2")</p>
+                                <p class="govuk-body" id="payrolling1">@Messages("tai.income.calculation.payrollingBik.message1")</p>
+                                <p class="govuk-body" id="payrolling2">@Messages("tai.income.calculation.payrollingBik.message2")</p>
                             </div>
                         }
                     }
@@ -155,23 +156,23 @@
                     case _ => {
 
                         @if(model.incomeCalculationEstimateMessage.isDefined){
-                            <h3 class="heading-small">@model.incomeCalculationEstimateMessage</h3>
+                            <h3 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h3>
                         }
 
                         @if(model.hasPayrolledBenefit){
                             <div class="panel-indent panel-indent--info panel-indent--gutter">
-                                <p id="payrolling1">@Messages("tai.income.calculation.payrollingBik.message1")</p>
-                                <p id="payrolling2">@Messages("tai.income.calculation.payrollingBik.message2")</p>
+                                <p class="govuk-body" id="payrolling1">@Messages("tai.income.calculation.payrollingBik.message1")</p>
+                                <p class="govuk-body" id="payrolling2">@Messages("tai.income.calculation.payrollingBik.message2")</p>
                             </div>
                         }
 
                         @if(model.isPension){
-                            <p id="pensionUpdateLink">@Html(Messages(
+                            <p class="govuk-body" id="pensionUpdateLink">@Html(Messages(
                                 "tai.income.calculation.update.pension",
                                 includes.link(url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).toString, copy=Messages("tai.income.calculation.updateLink.regular"))
                                 ))</p>
                         } else {
-                            <p id="regularUpdateLink">@Html(Messages(
+                            <p class="govuk-body" id="regularUpdateLink">@Html(Messages(
                                 "tai.income.calculation.update.regular",
                                 includes.link(url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).toString, copy=Messages("tai.income.calculation.updateLink.regular"))
                                 ))
@@ -182,5 +183,10 @@
                 }
 
             </div>
+
+            <div class="print-link-container hide-for-print">
+                <a id="print-link-btn" href="@routes.YourIncomeCalculationController.printYourIncomeCalculationPage(model.empId).toString" class="govuk-link govuk-body-s gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
+            </div>
+        </div>
     </div>
 }
