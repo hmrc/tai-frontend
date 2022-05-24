@@ -50,6 +50,7 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
 @main(
     title = Messages("tai.estimatedIncome.title"),
     pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent= Some(Messages("tai.back-link.upper")),
     backLinkId = "backLink",
     authedUser = Some(user)){
 

@@ -58,7 +58,7 @@
         authedUser = Some(request.taiUser),
         pageTitle = Some(Messages("tai.service.navTitle")),
         backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
-        backLinkContent = Messages("tai.returnToChooseTaxYear"),
+        backLinkContent = Some(Messages("tai.returnToChooseTaxYear")),
         pagePrintable = true,
         pagePrintName = Some("historic-pay-as-you-earn")
     ){

@@ -62,7 +62,7 @@
     pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(request.taiUser),
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
-    backLinkContent = Messages("your.paye.income.tax.overview"),
+    backLinkContent = Some(Messages("your.paye.income.tax.overview")),
     pagePrintable = true,
     pagePrintName = Some("future-pay-as-you-earn-summary")) {
 

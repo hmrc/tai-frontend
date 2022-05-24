@@ -77,7 +77,7 @@
     pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(request.taiUser),
     pagePrintable = true,
-    backLinkContent = Messages("return.to.your.income.tax.summary"),
+    backLinkContent = Some(Messages("return.to.your.income.tax.summary")),
     backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad.url),
     backLinkId = "taxableIncomeLink"
 
