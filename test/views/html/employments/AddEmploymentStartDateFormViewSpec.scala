@@ -99,7 +99,7 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
         def view: Html = template(formWithErrors, employmentName)
 
         val errorMessage = doc(view).select(".govuk-error-message").text
-        val fieldSetError = doc(view).select("form > div").hasClass("govuk-form-group--error")
+        val fieldSetError = doc(view).select("form div").hasClass("govuk-form-group--error")
         fieldSetError mustBe true
         errorMessage contains globalErrorMessage
       }

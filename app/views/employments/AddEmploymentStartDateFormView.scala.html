@@ -25,6 +25,10 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+
+
 @this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 
@@ -60,10 +64,10 @@
         }
 
 
-        <span class="govuk-caption-xl">
-            <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading")</span>
-            @messages("add.missing.employment")
-        </span>
+@*        <span class="govuk-caption-xl">*@
+@*            <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading")</span>*@
+@*            @messages("add.missing.employment")*@
+@*        </span>*@
 
 
         @govukDateInput(DateInput(
@@ -93,16 +97,14 @@
                 )
             ),
             errorMessage = dateForm.errors.asTextErrorMessages.headOption,
-            fieldset = Some(Fieldset(
-                legend = Some(Legend(
+            fieldset =  Some(Fieldset(
+                legend = Some(HmrcPageHeadingLegend(
                     content = Text(messages("tai.addEmployment.startDateForm.title", employmentName)),
-                    classes = "govuk-fieldset__legend--xl",
-                    isPageHeading = true
-                ))
-            ))
-        ))
+                    caption = HmrcSectionCaption(Text(messages("add.missing.employment"))))
+                )))),
+            )
         @govukButton(Button(content = Text(messages("tai.continue"))))
-    }
+    }      
 
     <div class="govuk-link govuk-body-m">
     @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
