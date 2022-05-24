@@ -43,7 +43,7 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
     }
 
     "have a heading for the Income tax estimate" in {
-      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.incomeTaxEstimate.subheading") + "£0")
+      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.incomeTaxEstimate.subheading") + " £0")
     }
 
     "have static messages" in {

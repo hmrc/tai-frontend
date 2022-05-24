@@ -66,20 +66,20 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
 
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-one-half">
-                        <h2 class="govuk-heading-m govuk-!-margin-bottom-8">
+                        <h2 class="govuk-heading-m">
                             @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
-                            <p id="total-estimated-income" class="govuk-!-display-block govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark govuk-body govuk-!-margin-top-5">
+                            <span id="total-estimated-income" class="govuk-!-display-block govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark govuk-body govuk-!-margin-top-5">
                                 @pounds(viewModel.incomeEstimate)
-                            </p>
+                            </span>
                         </h2>
                     </div>
 
                         <div class="govuk-grid-column-one-half">
                             <h2 class="govuk-heading-m">
                                 @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
-                                <p id="income-tax-estimate" class="govuk-body govuk-!-display-block govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark govuk-!-margin-top-5">
+                                <span id="income-tax-estimate" class="govuk-body govuk-!-display-block govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark govuk-!-margin-top-5">
                                     @pounds(viewModel.incomeTaxEstimate)
-                                </p>
+                                </span>
                             </h2>
                         </div>
 
