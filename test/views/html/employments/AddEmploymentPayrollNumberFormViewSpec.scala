@@ -36,7 +36,9 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
     behave like pageWithTitle(messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("add.missing.employment"),
-      messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
+      messages("tai.addEmployment.employmentPayrollNumber.title", employerName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
     behave like pageWithBackLinkNew
     behave like pageWithContinueButtonFormNew("/check-income-tax/add-employment/employment-payroll-number")
     behave like pageWithYesNoRadioButton(
