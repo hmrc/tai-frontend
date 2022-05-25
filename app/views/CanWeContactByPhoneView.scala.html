@@ -14,16 +14,19 @@
  * limitations under the License.
  *@
 
-@import includes.forms.{input, inputRadioGroupStyling, submit}
 @import includes.{cancelLink, ptaHeader}
 @import play.api.mvc.Call
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 @import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import scala.concurrent.ExecutionContext
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(      incomingAuthedUser: Option[controllers.auth.AuthedUser],
         viewModel: CanWeContactByPhoneViewModel,
@@ -35,50 +38,84 @@
 
 @header = @{
     ptaHeader(
-        formForErrorSummary = Some(yesNoForm),
         displayBackLink = true,
         mainHeadingText = viewModel.mainHeading,
-        preHeadingText = viewModel.preHeading)}
+        preHeadingText = viewModel.preHeading,
+        showGdsVersion = true
+    )
+}
 
-@mainTemplate(
+@hint = {
+    <div>
+        <p>@Messages("tai.canWeContactByPhone.explanation")</p>
+        <p>@Messages("tai.canWeContactByPhone.explanation.pt2")</p>
+    </div>
+}
+
+@main(
     title = viewModel.mainHeading,
+    pageTitle = viewModel.pageTitle,
     authedUser = incomingAuthedUser,
-    pageHeader = Some(header),
-    articleClasses = None) {
+    backLinkContent = Messages("tai.back-link.upper")
+) {
 
-    @form(action = Call("POST", viewModel.continueUrl), Symbol("data-dynamic-form") -> "true") {
+<div class = "govuk-grid-row">
+    <div class = "govuk-grid-column-two-thirds">
+        @if(yesNoForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary(errorList = yesNoForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+        }
 
-        <div>
-            <p>@Messages("tai.canWeContactByPhone.explanation")</p>
-            <p>@Messages("tai.canWeContactByPhone.explanation.pt2")</p>
+        @form(action = Call("POST", viewModel.continueUrl)) {
+
+            @govukRadios(Radios(
+                fieldset =  Some(
+                    Fieldset(
+                        legend = Some(
+                        HmrcPageHeadingLegend(
+                            content = Text(viewModel.mainHeading),
+                            caption = HmrcSectionCaption(Text(viewModel.preHeading)))
+                    )
+                    )
+                ),
+                hint = Some(Hint(content = HtmlContent(hint))),
+                errorMessage = yesNoForm.errors.filter(_.key == "yesNoChoice").asTextErrorMessages.headOption,
+                idPrefix = Some("yesNoChoice"),
+                name = "yesNoChoice",
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("tai.label.yes")),
+                        value = Some("Yes"),
+                        checked = yesNoForm.data.get(YesNoTextEntryForm.YesNoChoice).exists(_ == "Yes"),
+                        conditionalHtml = Some(
+                        govukInput(Input(
+                                id = "yesNoTextEntry",
+                                name = "yesNoTextEntry",
+                                hint = Some(Hint(content = Text(Messages("tai.canWeContactByPhone.telephoneNumber.hint")))),
+                                value = yesNoForm.data.get(YesNoTextEntryForm.YesNoTextEntry),
+                                label = Label(
+                                    classes = "govuk-label--s",
+                                    content = Text(Messages("tai.phoneNumber")),
+                                ),
+                                errorMessage = yesNoForm.errors.filter(_.key == "yesNoTextEntry").asTextErrorMessages.headOption
+                                ))
+                            )
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.label.no")),
+                            value = Some("No"),
+                            checked = yesNoForm.data.get(YesNoTextEntryForm.YesNoChoice).exists(_ == "No")
+                    )
+                )
+            ).withFormField(yesNoForm(YesNoTextEntryForm.YesNoChoice)))
+
+            @govukButton(Button(content = Text(messages("tai.continue"))))
+        }
+
+        <div class="govuk-link govuk-body-m">
+            @cancelLink(Call("GET", viewModel.cancelUrl))
         </div>
-
-        @{inputRadioGroupStyling(
-            field = yesNoForm(YesNoTextEntryForm.YesNoChoice),
-            radioOptions = Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
-            legend = Messages("tai.canWeContactByPhone.legend"),
-            legendHint = None,
-            ('_groupDivClass, "form-group" ),
-            ('_radioOption1WrapAttribute, "data-target=telephoneNumberEntry-container"),
-            ('_groupClass, "inline"),
-            ('_fieldsetAttributes, "id=yesNoChoice" ),
-            ('_legendSpanClass, "visually-hidden")
-        )}
-
-        <div id="telephoneNumberEntry-container" class="@if(yesNoForm(YesNoTextEntryForm.YesNoChoice).value.getOrElse("") != YesNoTextEntryForm.YesValue){js-hidden} data-yesNoTextEntry">
-            @input(
-                field=yesNoForm(YesNoTextEntryForm.YesNoTextEntry),
-                labelText = Messages("tai.phoneNumber"),
-                hintText = Messages("tai.canWeContactByPhone.telephoneNumber.hint"),
-                classes = Seq("form-control input--cleared form-control-1-2"),
-                panel = true
-            )
-        </div>
-
-        @submit()
-    }
-
-    @cancelLink(Call("GET", viewModel.cancelUrl))
+    </div>
+</div>
 }
 
 

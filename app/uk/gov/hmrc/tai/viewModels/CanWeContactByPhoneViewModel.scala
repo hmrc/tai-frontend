@@ -21,4 +21,5 @@ case class CanWeContactByPhoneViewModel(
   mainHeading: String,
   backUrl: String,
   continueUrl: String,
-  cancelUrl: String)
+  cancelUrl: String,
+  pageTitle: Option[String] = None)
