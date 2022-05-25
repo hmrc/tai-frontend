@@ -75,7 +75,7 @@
         signOutUrl: Option[String] = None,
         serviceUrl: Option[String] = None,
         backLinkUrl: Option[String] = Some("javascript:history.go(-1)"),
-        backLinkContent: String = "Back",
+        backLinkContent: Option[String],
         backLinkId: String = "returnToChooseTaxYearLink",
         displayHmrcBanner: Boolean = false,
         phaseBanner: Option[PhaseBanner] = None,
@@ -161,12 +161,13 @@
 
     @attorneyBanner
 
+@if(backLinkContent){
     @backLinkUrl.map(url =>
         govukBackLink(BackLink(classes = "js-visible-back",
-        attributes = Map("id" -> backLinkId), href = url, content = Text(backLinkContent)))
+        attributes = Map("id" -> backLinkId), href = url, content = Text(backLinkContent.get)))
     )
- }
-
+        }
+    }
 }
 
 

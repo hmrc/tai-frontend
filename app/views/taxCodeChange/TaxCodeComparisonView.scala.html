@@ -48,7 +48,7 @@
 @mainTemplate(
     title = messages("taxCode.change.journey.preHeading"),
     authedUser = Some(user),
-    backLinkContent=messages("tai.back-link.upper"),
+    backLinkContent=Some(messages("tai.back-link.upper")),
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url)
 ) {
 

@@ -49,7 +49,7 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
     authedUser = Some(user),
     pageTitle = Some(Messages("tai.estimatedIncome.title")),
     backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad.url),
-    backLinkContent = Messages("tai.back-link.upper"),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
     pagePrintable = false
 ){
 
