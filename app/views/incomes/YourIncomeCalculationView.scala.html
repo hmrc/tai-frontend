@@ -44,7 +44,7 @@
 @main(
     title = Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName),
     pageTitle = Some(Messages("tai.currentYearSummary.heading", model.employerName)),
-    backLinkContent = Messages("tai.back-link.upper"),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkId = "backLink",
     pagePrintable = true,
     authedUser = Some(user)
