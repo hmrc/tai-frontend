@@ -33,20 +33,23 @@ class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
 
     behave like pageWithTitle(messages("main heading"))
 
-    behave like pageWithCombinedHeader("pre heading", "main heading")
+    behave like pageWithCombinedHeaderNewTemplate(
+      "pre heading",
+      "main heading",
+      Some(messages("tai.ptaHeader.accessible.preHeading")))
 
-    behave like pageWithBackLink
-    behave like pageWithContinueButtonForm("continueUrl")
-    behave like pageWithYesNoRadioButton(
-      YesNoTextEntryForm.YesNoChoice + "-yes",
-      YesNoTextEntryForm.YesNoChoice + "-no")
+    behave like pageWithBackLinkNew
+    behave like pageWithContinueButtonFormNew("continueUrl")
+    behave like pageWithYesNoRadioButton(YesNoTextEntryForm.YesNoChoice, YesNoTextEntryForm.YesNoChoice + "-2")
     behave like pageWithCancelLink(Call("GET", "cancelUrl"))
 
     "display an input field for text entry" in {
       doc.getElementById("yesNoTextEntry") must not be null
-      doc must haveInputLabelWithText(
-        "yesNoTextEntry",
-        s"${Messages("tai.phoneNumber")} ${Messages("tai.canWeContactByPhone.telephoneNumber.hint")}")
+      doc must haveInputLabelWithText("yesNoTextEntry", Messages("tai.phoneNumber"))
+      doc must haveHintWithText(
+        "yesNoTextEntry-hint",
+        Messages("tai.canWeContactByPhone.telephoneNumber.hint")
+      )
     }
 
     "display an explanation text paragraph" in {
@@ -60,7 +63,7 @@ class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
 
         def sut = template(Some(authedUser), viewModel, formWithErrors)
 
-        val errorMessage = doc(sut).select(".error-message").text
+        val errorMessage = doc(sut).select(".govuk-error-message").text
         errorMessage mustBe messages("tai.error.message") + " answer yes or no"
       }
     }

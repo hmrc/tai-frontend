@@ -63,20 +63,20 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
   def pageWithCombinedHeaderNewTemplate(
     preHeaderText: String,
     mainHeaderText: String,
-    preHeaderAnnouncementText: Option[String] = None): Unit = {
+    preHeaderAnnouncementText: Option[String] = None): Unit =
     "have an accessible pre heading" in {
       if (preHeaderAnnouncementText.isDefined) {
         doc must havePreHeadingWithTextNewTemplate(
           preHeaderText,
           expectedPreHeadingAnnouncement = preHeaderAnnouncementText.get)
+        doc must haveHeadingWithText(mainHeaderText + " " + preHeaderAnnouncementText.get + " " + preHeaderText)
+
       } else {
         doc must havePreHeadingWithTextNewTemplate(preHeaderText)
+        doc must haveHeadingWithText(mainHeaderText)
       }
+
     }
-    "have an h1 header consisting of the main heading text" in {
-      doc must haveHeadingWithText(mainHeaderText)
-    }
-  }
 
   def pageWithCombinedHeaderNewFormat(
     preHeaderText: String,
@@ -93,6 +93,7 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
     }
     "have an h1 header consisting of the main heading text" in {
       doc must haveHeadingWithText(mainHeaderText)
+
     }
   }
 
