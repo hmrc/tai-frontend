@@ -22,8 +22,11 @@
 @()(implicit request: Request[_], authedUser: Option[controllers.auth.AuthedUser] = None, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @main(
-title = Messages("tai.employmentConfirmation.heading"),
-authedUser = authedUser) {
+    title = Messages("tai.employmentConfirmation.heading"),
+    authedUser = authedUser,
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent = None
+) {
 
 <div class="govuk-grid-row">
 
