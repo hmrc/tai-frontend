@@ -20,8 +20,9 @@
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 @import scala.concurrent.ExecutionContext
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF, govukCharacterCount: uk.gov.hmrc.govukfrontend.views.html.components.GovukCharacterCount)
 
 @(
     viewmodel: EmploymentViewModel,
@@ -30,7 +31,6 @@
     user: controllers.auth.AuthedUser,
     messages: Messages,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-
     ec: ExecutionContext
 )
 
@@ -52,12 +52,19 @@
 
     @form(action = controllers.employments.routes.UpdateEmploymentController.submitUpdateEmploymentDetails(viewmodel.empId), args=(Symbol("class"), "subsection")) {
 
-        @textArea(
-            field=updateEmploymentDetailsForm("employmentDetails"),
-            classes = Seq("form-control form-control--full-width js-char-count"),
-            labelText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.text", UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit),
-            maxlength = UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit.toString
-        )
+    @govukCharacterCount(uk.gov.hmrc.govukfrontend.views.html.components.CharacterCount(
+        id = "with-hint",
+        name = "with-hint",
+        maxLength = Some(200),
+        label = Label(
+          isPageHeading = true,
+          classes = "govuk-label--l",
+          content = Text("Can you provide more detail?")
+        ),
+        hint = Some(Hint(
+          content = Text("Do not include personal or financial information like your National Insurance number or credit card details.")
+        ))
+      ))
 
         @submit()
     }
