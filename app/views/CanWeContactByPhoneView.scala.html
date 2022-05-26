@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import includes.{cancelLink, ptaHeader}
+@import includes.cancelLink
 @import play.api.mvc.Call
 @import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 @import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -36,15 +36,6 @@
         ec: ExecutionContext)
 
 
-@header = @{
-    ptaHeader(
-        displayBackLink = true,
-        mainHeadingText = viewModel.mainHeading,
-        preHeadingText = viewModel.preHeading,
-        showGdsVersion = true
-    )
-}
-
 @hint = {
     <div>
         <p>@Messages("tai.canWeContactByPhone.explanation")</p>
@@ -54,7 +45,7 @@
 
 @main(
     title = viewModel.mainHeading,
-    pageTitle = viewModel.pageTitle,
+    pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = incomingAuthedUser,
     backLinkContent = Some(Messages("tai.back-link.upper"))
 ) {

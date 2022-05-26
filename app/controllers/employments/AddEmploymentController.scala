@@ -79,8 +79,7 @@ class AddEmploymentController @Inject()(
       messages("tai.canWeContactByPhone.title"),
       controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url,
       controllers.employments.routes.AddEmploymentController.submitTelephoneNumber().url,
-      controllers.employments.routes.AddEmploymentController.cancel().url,
-      Some(messages("tai.service.navTitle"))
+      controllers.employments.routes.AddEmploymentController.cancel().url
     )
 
   def addEmploymentName(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
