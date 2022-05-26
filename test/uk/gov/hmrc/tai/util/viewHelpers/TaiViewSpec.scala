@@ -177,5 +177,10 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
       doc must haveCheckYourAnswersSummary
     }
 
+  def pageWithCheckYourAnswersSummaryNew(): Unit =
+    "have a 'check your answers' summary section" in {
+      doc must haveCheckYourAnswersSummaryNew
+    }
+
   def nonBreakable(string: String): String = string.replace(" ", "\u00A0")
 }

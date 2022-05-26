@@ -30,7 +30,7 @@ class UpdateEmploymentCheckYourAnswersViewSpec extends TaiViewSpec {
     behave like pageWithButtonForm(
       "/check-income-tax/update-employment/check-your-answers",
       messages("tai.confirmAndSend"))
-    behave like pageWithCheckYourAnswersSummary
+    behave like pageWithCheckYourAnswersSummaryNew
     behave like pageWithCancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(employmentId))
 
     "display a back button" which {
@@ -46,23 +46,23 @@ class UpdateEmploymentCheckYourAnswersViewSpec extends TaiViewSpec {
     }
 
     "display journey confirmation lines" in {
-      doc must haveCheckYourAnswersSummaryLine(1, messages("tai.updateEmployment.cya.currentlyWorkHere"))
-      doc must haveCheckYourAnswersSummaryLineAnswer(1, messages("tai.label.yes"))
+      doc must haveCheckYourAnswersSummaryLineNew(1, messages("tai.updateEmployment.cya.currentlyWorkHere"))
+      doc must haveCheckYourAnswersSummaryLineAnswerNew(1, messages("tai.label.yes"))
 
-      doc must haveCheckYourAnswersSummaryLine(2, messages("tai.checkYourAnswers.whatYouToldUs"))
-      doc must haveCheckYourAnswersSummaryLineAnswer(2, viewModel.whatYouToldUs)
+      doc must haveCheckYourAnswersSummaryLineNew(2, messages("tai.checkYourAnswers.whatYouToldUs"))
+      doc must haveCheckYourAnswersSummaryLineAnswerNew(2, viewModel.whatYouToldUs)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         2,
         controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(viewModel.id).url)
 
-      doc must haveCheckYourAnswersSummaryLine(3, messages("tai.checkYourAnswers.contactByPhone"))
-      doc must haveCheckYourAnswersSummaryLineAnswer(3, viewModel.contactByPhone)
+      doc must haveCheckYourAnswersSummaryLineNew(3, messages("tai.checkYourAnswers.contactByPhone"))
+      doc must haveCheckYourAnswersSummaryLineAnswerNew(3, viewModel.contactByPhone)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         3,
         controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url)
 
-      doc must haveCheckYourAnswersSummaryLine(4, messages("tai.phoneNumber"))
-      doc must haveCheckYourAnswersSummaryLineAnswer(4, viewModel.phoneNumber.getOrElse(""))
+      doc must haveCheckYourAnswersSummaryLineNew(4, messages("tai.phoneNumber"))
+      doc must haveCheckYourAnswersSummaryLineAnswerNew(4, viewModel.phoneNumber.getOrElse(""))
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         4,
         controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url)
