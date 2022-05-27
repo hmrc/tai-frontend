@@ -14,64 +14,97 @@
  * limitations under the License.
  *@
 
-@import includes.forms.{input, inputRadioGroupStyling, submit}
 @import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm
 @import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import scala.concurrent.ExecutionContext
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(payrollNumberForm: Form[AddEmploymentPayrollNumberForm], payrollNumberViewModel: PayrollNumberViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
     ptaHeader(
-        formForErrorSummary = Some(payrollNumberForm),
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName),
-        preHeadingText = Messages("add.missing.employment"))}
+        preHeadingText = Messages("add.missing.employment"),
+        showGdsVersion = true
+    )}
 
-@mainTemplate(
+@hint = {
+<p class="govuk-body">@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
+<ul id="payroll-number-info" class="govuk-list govuk-list--bullet">
+    <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet1")</li>
+    <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet2")</li>
+    <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet3")</li>
+    <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet4")</li>
+</ul>
+}
+
+@main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None
+    backLinkContent = Messages("tai.back-link.upper")
 ) {
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @if(payrollNumberForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = payrollNumberForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
+            @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber()) {
+                @govukRadios(Radios(
+                    fieldset =  Some(
+                        Fieldset(
+                            legend = Some(
+                                HmrcPageHeadingLegend(
+                                    content = Text(Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName)),
+                                    caption = HmrcSectionCaption(Text(messages("add.missing.employment"))))
+                            )
+                        )
+                    ),
+                    hint = Some(Hint(content = HtmlContent(hint))),
+                    errorMessage = payrollNumberForm.errors.filter(_.key == "payrollNumberChoice").asTextErrorMessages.headOption,
+                    idPrefix = Some("payrollNumberChoice"),
+                    name = "payrollNumberChoice",
+                    items = Seq(
+                        RadioItem(
+                            content = Text(messages("tai.label.yes")),
+                            value = Some("Yes"),
+                            checked = payrollNumberForm.data.get(AddEmploymentPayrollNumberForm.PayrollNumberChoice).exists(_ == "Yes"),
+                            conditionalHtml = Some(
+                                govukInput(Input(
+                                    id = "payrollNumberEntry",
+                                    name = "payrollNumberEntry",
+                                    value = payrollNumberForm.data.get(AddEmploymentPayrollNumberForm.PayrollNumberEntry),
+                                    label = Label(
+                                        classes = "govuk-label--s",
+                                        content = Text(messages("tai.addEmployment.employmentPayrollNumber.label")),
+                                    ),
+                                    errorMessage = payrollNumberForm.errors.filter(_.key == "payrollNumberEntry").asTextErrorMessages.headOption
+                                ))
+                            )
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.label.no")),
+                            value = Some("No"),
+                            checked = payrollNumberForm.data.get(AddEmploymentPayrollNumberForm.PayrollNumberChoice).exists(_ == "No")
+                        )
+                    )
+                ).withFormField(payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice)))
 
-    <p>@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
-    <ul id="payroll-number-info" class="bullets">
-        <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet1")</li>
-        <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet2")</li>
-        <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet3")</li>
-        <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet4")</li>
-    </ul>
-
-    @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
-
-        @{inputRadioGroupStyling(
-            field=payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice),
-            radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
-            legend=Messages("tai.addEmployment.employmentPayrollNumber.legend"),
-            legendHint=None,
-            ('_groupDivClass, "form-group" ),
-            ('_radioOption1WrapAttribute, "data-target=payrollNumberEntry-container"),
-            ('_groupClass, "inline"),
-            ('_fieldsetAttributes, "id=payrollNumberChoice" ),
-            ('_legendSpanClass, "visually-hidden")
-        )}
-
-        <div id="payrollNumberEntry-container" class="@if(payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice).value.getOrElse("") != AddEmploymentPayrollNumberForm.YesValue){js-hidden} data-payrollNumberEntry">
-            @input(
-                field = payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberEntry),
-                labelText = Messages("tai.addEmployment.employmentPayrollNumber.label"),
-                classes = Seq("form-control input--cleared"),
-                panel = true
-            )
+                @govukButton(Button(content = Text(messages("tai.continue"))))
+            }
+            <div class="govuk-link govuk-body-m">
+                @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
+            </div>
         </div>
-
-        @submit()
-    }
-
-    @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
+        <div class = "govuk-grid-column-one-third"></div>
+    </div>
 }
