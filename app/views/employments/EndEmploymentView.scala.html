@@ -45,7 +45,7 @@
     pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(user),
     backLinkId = "backLink",
-    backLinkContent = Messages("tai.back-link.upper")
+    backLinkContent = Some(Messages("tai.back-link.upper"))
      ) {
 
     @form(action = controllers.employments.routes.EndEmploymentController.handleEndEmploymentPage(viewmodel.empId)) {
