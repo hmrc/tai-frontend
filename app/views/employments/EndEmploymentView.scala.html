@@ -34,10 +34,8 @@
 
 
 @hint = {
-    <div>
         <span id="date-you-left-hint" class="govuk-!-font-weight-bold govuk-!-display-block" >@Messages("tai.endEmployment.endDateForm.label" , viewmodel.employerName)</span>
         <span id="date-example-hint">@Messages("tai.label.date.example")</span>
-    </div>
 }
 
 @mainTemplate(
@@ -73,7 +71,7 @@
                 InputItem(
                     name = "month",
                     label = Some(messages("tai.label.month")),
-                    classes = s"govuk-input--width-2 ${if(dateForm.hasErrors) " govuk-input--error" else "" }",
+                    classes = s"govuk-input--width-2 ${if(dateForm.hasErrors ) " govuk-input--error" else "" }",
                     value =  dateForm("tellUsAboutEmploymentForm-month").value
                 ),
                 InputItem(

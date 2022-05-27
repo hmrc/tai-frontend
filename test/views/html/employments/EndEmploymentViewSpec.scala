@@ -51,7 +51,8 @@ class EndEmploymentViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.endEmployment.preHeadingText"),
-      messages("tai.endEmployment.endDateForm.title", employmentName)
+      messages("tai.endEmployment.endDateForm.title", employmentName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
 
     behave like pageWithBackLink
