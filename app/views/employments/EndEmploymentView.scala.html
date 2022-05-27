@@ -15,41 +15,88 @@
  *@
 
 @import includes.forms._
-@import includes.{cancelLink, ptaHeader}
+@import includes.{cancelLink}
 @import java.time.LocalDate
-@import uk.gov.hmrc.play.views.html.helpers._
+
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
 @import scala.concurrent.ExecutionContext
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukDateInput
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@(dateForm: Form[LocalDate], viewmodel: EmploymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
+@this(mainTemplate: MainTempleteNew, form: FormWithCSRF,  govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(dateForm),
-        displayBackLink = true,
-        mainHeadingText = Messages("tai.endEmployment.endDateForm.title", viewmodel.employerName),
-        preHeadingText = Messages("tai.endEmployment.preHeadingText")
-    )
+@(dateForm: Form[LocalDate], viewmodel: EmploymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser,  ec: ExecutionContext)
+
+
+@hint = {
+    <div>
+        <span id="date-you-left-hint" class="govuk-!-font-weight-bold govuk-!-display-block" >@Messages("tai.endEmployment.endDateForm.label" , viewmodel.employerName)</span>
+        <span id="date-example-hint">@Messages("tai.label.date.example")</span>
+    </div>
 }
 
-@mainTemplate(title = Messages("tai.endEmployment.endDateForm.pagetitle"),
-      authedUser = Some(user),
-      pageHeader = Some(header),
-      articleClasses = None) {
+@mainTemplate(
+    title = Messages("tai.endEmployment.endDateForm.pagetitle"),
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    authedUser = Some(user),
+    backLinkId = "backLink",
+     ) {
 
     @form(action = controllers.employments.routes.EndEmploymentController.handleEndEmploymentPage(viewmodel.empId)) {
-        @date(
-            form = dateForm,
-            fieldPrefix = "tellUsAboutEmploymentForm",
-            labelText = Messages("tai.endEmployment.endDateForm.label", viewmodel.employerName),
-            legendBold = true
-        )
 
-        @submit()
+
+        <div class = "govuk-grid-row">
+            <div class = "govuk-grid-column-two-thirds">
+
+        @if(dateForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary(errorList = dateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+        }
+
+
+        @govukDateInput(DateInput(
+            id = "tellUsAboutEmploymentForm",
+            namePrefix = Some("tellUsAboutEmploymentForm"),
+            hint = Some(Hint(content = HtmlContent(hint))),
+            items = Seq(
+                InputItem(
+                    name= "day",
+                    label = Some(messages("tai.label.day")),
+                    classes = s"govuk-input--width-2 ${if(dateForm.hasErrors)  " govuk-input--error" else "" }",
+                    value =  dateForm("tellUsAboutEmploymentForm-day").value
+                ),
+                InputItem(
+                    name = "month",
+                    label = Some(messages("tai.label.month")),
+                    classes = s"govuk-input--width-2 ${if(dateForm.hasErrors) " govuk-input--error" else "" }",
+                    value =  dateForm("tellUsAboutEmploymentForm-month").value
+                ),
+                InputItem(
+                    name = "year",
+                    label = Some(messages("tai.label.year")),
+                    classes = s"govuk-input--width-4 ${if(dateForm.hasErrors) " govuk-input--error" else "" }",
+                    value =  dateForm("tellUsAboutEmploymentForm-year").value
+                )
+            ),
+            errorMessage = dateForm.errors.asTextErrorMessages.headOption,
+            fieldset =  Some(Fieldset(
+                legend = Some(HmrcPageHeadingLegend(
+                    content = Text(messages("tai.endEmployment.endDateForm.title",  viewmodel.employerName)),
+                    caption = HmrcSectionCaption(Text(messages("tai.endEmployment.preHeadingText"))))
+                )))),
+        )
+        @govukButton(Button(content = Text(messages("tai.continue"))))
+            </div></div>
+
     }
 
-@cancelLink(controllers.employments.routes.EndEmploymentController.cancel(viewmodel.empId))
+    <div class="govuk-link govuk-body-m">
+    @cancelLink(controllers.employments.routes.EndEmploymentController.cancel(viewmodel.empId))
+    </div>
+
+
 }
