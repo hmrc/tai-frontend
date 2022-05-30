@@ -70,6 +70,7 @@
         id = "employmentDetails",
         name = "employmentDetails",
         maxLength = Some(UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit),
+        value = updateEmploymentDetailsForm.data.get("employmentDetails"),
                 label = (
                     HmrcPageHeadingLabel(
                         content = Text(Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", viewmodel.employerName)),
