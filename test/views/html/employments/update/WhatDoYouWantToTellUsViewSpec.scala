@@ -36,7 +36,9 @@ class WhatDoYouWantToTellUsViewSpec extends TaiViewSpec {
     behave like pageWithTitle(Messages("tai.updateEmployment.whatDoYouWantToTellUs.pagetitle"))
     behave like pageWithCombinedHeaderNewTemplate(
       Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
-      Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", employerName))
+      Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", employerName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
     behave like pageWithContinueButtonFormNew("/check-income-tax/update-employment/what-do-you-want-to-tell-us/1")
     behave like pageWithCancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(empId))
     behave like pageWithBackLink
