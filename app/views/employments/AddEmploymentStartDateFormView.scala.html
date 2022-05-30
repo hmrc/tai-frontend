@@ -17,41 +17,95 @@
 @import includes.forms._
 @import includes.{cancelLink, ptaHeaderNoH1}
 @import java.time.LocalDate
-@import uk.gov.hmrc.play.views.html.helpers._
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@import includes.ptaHeader
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukDateInput
+
+
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+
+
+@this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
+
 
 @(dateForm: Form[LocalDate], employmentName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
-    ptaHeaderNoH1(
+    ptaHeader(
         formForErrorSummary = Some(dateForm),
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("tai.addEmployment.startDateForm.title", employmentName),
-        preHeadingText = Messages("add.missing.employment")
+        preHeadingText = Messages("add.missing.employment"),
+        showGdsVersion = true
     )
 }
 
 @mainTemplate(
     title = Messages("tai.addEmployment.startDateForm.pagetitle"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None)  {
+    backLinkId = "backLink",
+    pageTitle = Some(Messages("tai.service.navTitle")),
+   )  {
+
 
     @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentStartDate()) {
-        @dateWithH1Label(
-            form = dateForm,
-            fieldPrefix = "tellUsStartDateForm",
-            labelText = Messages("tai.addEmployment.startDateForm.label", employmentName),
-            legendBold = true,
-            mainHeadingText = messages("tai.addEmployment.startDateForm.title", employmentName),
-            preHeadingText = Some(messages("add.missing.employment"))
-        )
 
-        @submit()
-    }
 
+        <div class = "govuk-grid-row">
+            <div class = "govuk-grid-column-two-thirds">
+
+        @if(dateForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary(errorList = dateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+        }
+
+
+
+        @govukDateInput(DateInput(
+            id = "tellUsStartDateForm",
+            namePrefix = Some("tellUsStartDateForm"),
+            hint = Some(Hint(
+                content = Text(messages("tai.label.date.example"))
+            )),
+            items = Seq(
+                InputItem(
+                    name= "day",
+                    label = Some(messages("tai.label.day")),
+                    classes = s"govuk-input--width-2 ${if(dateForm.hasErrors)  " govuk-input--error" else "" }",
+                    value =  dateForm("tellUsStartDateForm-day").value
+                ),
+                InputItem(
+                    name = "month",
+                    label = Some(messages("tai.label.month")),
+                    classes = s"govuk-input--width-2 ${if(dateForm.hasErrors) " govuk-input--error" else "" }",
+                    value =  dateForm("tellUsStartDateForm-month").value
+                ),
+                InputItem(
+                    name = "year",
+                    label = Some(messages("tai.label.year")),
+                    classes = s"govuk-input--width-4 ${if(dateForm.hasErrors) " govuk-input--error" else "" }",
+                    value =  dateForm("tellUsStartDateForm-year").value
+                )
+            ),
+            errorMessage = dateForm.errors.asTextErrorMessages.headOption,
+            fieldset =  Some(Fieldset(
+                legend = Some(HmrcPageHeadingLegend(
+                    content = Text(messages("tai.addEmployment.startDateForm.title", employmentName)),
+                    caption = HmrcSectionCaption(Text(messages("add.missing.employment"))))
+                )))),
+            )
+        @govukButton(Button(content = Text(messages("tai.continue"))))
+    }      
+
+    <div class="govuk-link govuk-body-m">
     @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
+    </div>
 
+
+</div>
+</div>
 }

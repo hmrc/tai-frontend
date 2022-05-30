@@ -128,7 +128,7 @@ class AddEmploymentControllerSpec
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.startDateForm.pagetitle"))
-        doc.select("#tellUsStartDateForm_year").get(0).attributes.get("value") mustBe ""
+        doc.select("#tellUsStartDateForm-year").get(0).attributes.get("value") mustBe ""
       }
 
       "the request has an authorised session and a previously supplied start date is present in cache" in {
@@ -142,7 +142,7 @@ class AddEmploymentControllerSpec
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.startDateForm.pagetitle"))
-        doc.select("#tellUsStartDateForm_year").get(0).attributes.get("value") mustBe "2017"
+        doc.select("#tellUsStartDateForm-year").get(0).attributes.get("value") mustBe "2017"
       }
 
       "redirect to the tax summary page if a value is missing from the cache " in {
