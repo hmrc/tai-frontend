@@ -19,42 +19,48 @@
 @import includes._
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 
-@this(mainTemplate: MainTemplate)
+@this(main: MainTempleteNew)
 
 @(viewModel: CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = messages("tai.checkYourAnswers.heading"),
-        preHeadingText = messages("tai.incomes.edit.preHeading", viewModel.employer.name)
+        preHeadingText = messages("tai.incomes.edit.preHeading", viewModel.employer.name),
+        showGdsVersion = true
     )
 }
 
-@mainTemplate(
+@main(
     title = messages("tai.checkYourAnswers.title"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent = Some(Messages("tai.back-link.upper"))
 ){
 
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @header
 
-    @includes.checkYourAnswers(
-        title = None,
-        longQuestions = true,
-        confirmationLines = viewModel.journeyConfirmationLines
-    )
+        @includes.checkYourAnswers(
+            title = None,
+            longQuestions = true,
+            confirmationLines = viewModel.journeyConfirmationLines
+        )
 
 
-<p>@messages("tai.checkYourAnswers.confirmText")</p>
+        <p class="govuk-body">@messages("tai.checkYourAnswers.confirmText")</p>
 
-@includes.link(
-    id=Some("estimatedPayLink"),
-    url=income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage().url,
-    copy=messages("tai.WhatDoYouWantToDo.submit"),
-    linkClasses=Seq("button")
-)
+        @includes.link(
+            id=Some("estimatedPayLink"),
+            url=income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage().url,
+            copy=messages("tai.WhatDoYouWantToDo.submit"),
+            linkClasses=Seq("button")
+        )
 
-@cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
+        @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
+    </div>
+</div>
 
 }
