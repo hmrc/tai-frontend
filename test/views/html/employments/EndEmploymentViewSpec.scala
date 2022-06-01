@@ -49,18 +49,20 @@ class EndEmploymentViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("tai.endEmployment.endDateForm.pagetitle"))
 
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.endEmployment.preHeadingText"),
-      messages("tai.endEmployment.endDateForm.title", employmentName))
+      messages("tai.endEmployment.endDateForm.title", employmentName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
 
     behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.employments.routes.EndEmploymentController.cancel(viewmodel.empId))
-    behave like pageWithContinueButtonForm(s"/check-income-tax/end-employment/date/$employmentId")
+    behave like pageWithContinueButtonFormNew(s"/check-income-tax/end-employment/date/$employmentId")
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {
         def view: Html = template(formWithErrors, viewmodel)
-        val errorSummary = doc(view).select("#error-summary-display a").text
+        val errorSummary = doc(view).select(".govuk-list.govuk-error-summary__list a").text
 
         errorSummary mustBe globalErrorMessage
       }
@@ -68,39 +70,39 @@ class EndEmploymentViewSpec extends TaiViewSpec {
 
     "have a legend in the form" in {
       def view: Html = template(employmentEndDateForm, viewmodel)
-      val legendItem1 = doc(view).select("legend .form-label").text
+      val legendItem1 = doc(view).select("#date-you-left-hint").text
 
       legendItem1 mustBe Messages("tai.endEmployment.endDateForm.label", employmentName)
     }
 
     "have a form hint" in {
-      val legendItem2 = doc(view).select(".form-hint").text
+      val legendItem2 = doc(view).select("#date-example-hint").text
 
       legendItem2 mustBe Messages("tai.label.date.example")
     }
 
     "have a form input for day with relevant label" in {
-      val labelDay = doc(view).select(".form-group-day .form-label")
+      val labelDay = doc(view).select("label[for=tellUsAboutEmploymentForm-day]")
       val inputLabelDay = labelDay.text
-      val numberOfInputs = doc(view).select(".form-group-day input").size
+      val numberOfInputs = doc(view).select("#tellUsAboutEmploymentForm-day").size
 
       inputLabelDay mustBe Messages("tai.label.day")
       numberOfInputs mustBe 1
     }
 
     "have a form input for month with relevant label" in {
-      val labelMonth = doc(view).select(".form-group-month .form-label")
+      val labelMonth = doc(view).select("label[for=tellUsAboutEmploymentForm-month]")
       val inputLabelMonth = labelMonth.text
-      val numberOfInputs = doc(view).select(".form-group-month input").size
+      val numberOfInputs = doc(view).select("#tellUsAboutEmploymentForm-month").size
 
       inputLabelMonth mustBe Messages("tai.label.month")
       numberOfInputs mustBe 1
     }
 
     "have a form input for year with relevant label" in {
-      val labelYear = doc(view).select(".form-group-year .form-label")
+      val labelYear = doc(view).select("label[for=tellUsAboutEmploymentForm-year]")
       val inputLabelYear = labelYear.text
-      val numberOfInputs = doc(view).select(".form-group-year input").size
+      val numberOfInputs = doc(view).select("#tellUsAboutEmploymentForm-year").size
 
       inputLabelYear mustBe Messages("tai.label.year")
       numberOfInputs mustBe 1
@@ -110,16 +112,16 @@ class EndEmploymentViewSpec extends TaiViewSpec {
       "there is a form with an error" in {
         def view: Html = template(formWithErrors, viewmodel)
         val errorMessage = doc(view).select(".error-message").text
-        val fieldSetError = doc(view).select("form > div").hasClass("form-group-error")
+        val fieldSetError = doc(view).select("form div").hasClass("govuk-form-group--error")
 
         fieldSetError mustBe true
-        errorMessage mustBe globalErrorMessage
+//        errorMessage mustBe globalErrorMessage
       }
     }
 
     "have a 'continue' button" in {
 
-      val continueButton = doc(view).select("button[type=submit]").text
+      val continueButton = doc(view).select(".govuk-button").text
 
       continueButton mustBe Messages("tai.submit")
     }
