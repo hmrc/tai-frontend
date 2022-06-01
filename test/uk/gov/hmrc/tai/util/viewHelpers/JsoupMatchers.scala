@@ -330,5 +330,8 @@ trait JsoupMatchers {
   def haveInputLabelWithText(id: String, expectedText: String) =
     new CssSelectorWithTextMatcher(expectedText, s"label[for=$id]")
 
+  def haveHintWithText(id: String, expectedText: String) =
+    new CssSelectorWithTextMatcher(expectedText, s"div.govuk-hint[id=$id]")
+
   def haveStrongWithText(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "strong")
 }

@@ -683,8 +683,8 @@ class AddPensionProviderControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
-        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 1
-        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice-2][checked]").size() mustBe 1
+        doc.select("input[id=yesNoChoice][checked]").size() mustBe 0
         doc.select("input[id=yesNoTextEntry]").get(0).attributes().get("value") mustBe ""
 
       }
@@ -700,8 +700,8 @@ class AddPensionProviderControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
-        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 1
-        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice-2][checked]").size() mustBe 1
+        doc.select("input[id=yesNoChoice][checked]").size() mustBe 0
         doc.select("input[id=yesNoTextEntry]").get(0).attributes().get("value") mustBe ""
 
       }
@@ -718,8 +718,8 @@ class AddPensionProviderControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
-        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 0
-        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=yesNoChoice-2][checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice][checked]").size() mustBe 1
         doc.select("input[id=yesNoTextEntry]").get(0).attributes().get("value") mustBe ""
 
       }
@@ -735,8 +735,8 @@ class AddPensionProviderControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
-        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 0
-        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=yesNoChoice-2][checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice][checked]").size() mustBe 1
         doc.select("input[id=yesNoTextEntry]").get(0).attributes().get("value") mustBe "01215485965"
 
       }

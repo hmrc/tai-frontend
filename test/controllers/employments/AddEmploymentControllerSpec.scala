@@ -584,8 +584,8 @@ class AddEmploymentControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 0
-        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=yesNoChoice][checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice-2][checked]").size() mustBe 1
         doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe ""
       }
       "the request has an authorised session and a previous 'yes' response is held in cache" in {
@@ -597,8 +597,8 @@ class AddEmploymentControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 1
-        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice][checked]").size() mustBe 1
+        doc.select("input[id=yesNoChoice-2][checked]").size() mustBe 0
         doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe "should be displayed"
       }
     }

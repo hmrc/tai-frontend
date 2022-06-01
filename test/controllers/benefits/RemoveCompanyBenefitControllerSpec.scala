@@ -323,9 +323,8 @@ class RemoveCompanyBenefitControllerSpec
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-        doc.getElementsByClass("heading-secondary").text() must endWith(
-          Messages("tai.benefits.ended.journey.preHeader"))
-        doc must haveBackLink
+        doc.getElementsByClass("hmrc-caption").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
+        doc must haveBackLinkNew
         doc
           .getElementById("cancelLink")
           .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
@@ -352,7 +351,7 @@ class RemoveCompanyBenefitControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.getElementById("telephoneNumberEntry-container").getElementsByAttribute("value").toString must include(
+        doc.getElementById("conditional-yesNoChoice").getElementsByAttribute("value").toString must include(
           telephoneNumber)
       }
     }
@@ -373,9 +372,8 @@ class RemoveCompanyBenefitControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-        doc.getElementsByClass("heading-secondary").text() must endWith(
-          Messages("tai.benefits.ended.journey.preHeader"))
-        doc must haveBackLink
+        doc.getElementsByClass("hmrc-caption").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
+        doc must haveBackLinkNew
         doc
           .getElementById("cancelLink")
           .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
