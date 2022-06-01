@@ -20,8 +20,16 @@
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 @import scala.concurrent.ExecutionContext
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew,
+      form: FormWithCSRF,
+      govukButton: GovukButton,
+      govukCharacterCount: GovukCharacterCount
+    )
+
 
 @(
     viewmodel: EmploymentViewModel,
@@ -30,7 +38,6 @@
     user: controllers.auth.AuthedUser,
     messages: Messages,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-
     ec: ExecutionContext
 )
 
@@ -44,23 +51,44 @@
     )
 }
 
-@mainTemplate(
+@main(
     title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.pagetitle"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None) {
+    backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper"))
+    ) {
 
+
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
     @form(action = controllers.employments.routes.UpdateEmploymentController.submitUpdateEmploymentDetails(viewmodel.empId), args=(Symbol("class"), "subsection")) {
 
-        @textArea(
-            field=updateEmploymentDetailsForm("employmentDetails"),
-            classes = Seq("form-control form-control--full-width js-char-count"),
-            labelText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.text", UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit),
-            maxlength = UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit.toString
-        )
+    @govukCharacterCount(uk.gov.hmrc.govukfrontend.views.html.components.CharacterCount(
+        id = "employmentDetails",
+        name = "employmentDetails",
+        maxLength = Some(UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit),
+        value = updateEmploymentDetailsForm.data.get("employmentDetails"),
+                label = (
+                    HmrcPageHeadingLabel(
+                        content = Text(Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", viewmodel.employerName)),
+                        caption = HmrcSectionCaption(Text(messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"))))
+                ),
 
-        @submit()
+        hint = Some(Hint(
+          content = Text(Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.text", UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit))
+        )),
+      ))
+
+    @govukButton(Button(content = Text(messages("tai.continue"))))
+
     }
 
+
+            <div class="govuk-link govuk-body-m">
 @cancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(viewmodel.empId))
+            </div>
+
+        </div></div>
 }
+
+
