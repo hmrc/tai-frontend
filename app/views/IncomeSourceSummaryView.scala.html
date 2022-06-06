@@ -172,6 +172,18 @@
             </p>
         </div>
 
+
+
+        <div class="govuk-grid-column-one-half">
+            <h3 class="govuk-heading-m flush">@messages("tai.income.details.ERN")</h3>
+            <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                @{model.taxDistrctNumber} / @{model.payeNumber}
+            </p>
+        </div>
+    </div>
+
+
+
         <div class="govuk-grid-column-one-half">
             @if(model.isPension){
                 <h2 class="govuk-heading-m flush--top">@messages("tai.pensionNumber")</h2>
