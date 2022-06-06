@@ -170,14 +170,14 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "display ERN number" when {
         "income source is employment" in {
           doc must haveHeadingH3WithText(messages("tai.income.details.ERN"))
-          doc must haveParagraphWithText(s"${model.taxDistrctNumber} / ${model.payeNumber}")
+          doc must haveParagraphWithText(s"${model.taxDistrctNumber}/${model.payeNumber}")
         }
       }
 
       "display ERN number" when {
         "income source is pension" in {
           doc must haveHeadingH3WithText(messages("tai.income.details.ERN"))
-          doc must haveParagraphWithText(s"${model.taxDistrctNumber} / ${model.payeNumber}")
+          doc must haveParagraphWithText(s"${model.taxDistrctNumber}/${model.payeNumber}")
         }
       }
 
