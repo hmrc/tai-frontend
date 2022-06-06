@@ -25,7 +25,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
   "Tax free amount view page" must {
 
     behave like pageWithTitle("main heading")
-    behave like pageWithCombinedHeader(messages("tai.taxCode.preHeader"), "main heading")
+    behave like pageWithCombinedHeaderNewFormat(messages("tai.taxCode.preHeader"), "main heading")
     behave like pageWithBackLink
 
     "display a summary section" which {
@@ -37,9 +37,9 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
         doc must haveDivWithId("taxFreeAmountSummary")
         doc must haveElementAtPathWithText(
           "div[id=taxFreeAmountSummary]>h2",
-          s"${messages("tai.taxFreeAmount.summarysection.heading")} £2020")
+          messages("tai.taxFreeAmount.summarysection.heading"))
         val summarySection = doc.select("div[id=taxFreeAmountSummary]")
-        summarySection.select("span").get(1) must haveText("£2020")
+        summarySection.select("p").get(1) must haveText("£2020")
       }
 
       "contains the correct text content" in {
@@ -112,7 +112,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       "visually formats the final table" when {
         "the corresponding final summary item view model contains only a single row" in {
           doc.select("#summaryTable4 .cya-question").size() mustBe 1
-          doc must haveElementAtPathWithClass("#summaryTable4 .govuk-check-your-answers", "highlight")
+
         }
       }
     }

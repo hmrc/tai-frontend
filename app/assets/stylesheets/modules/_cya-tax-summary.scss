@@ -13,6 +13,17 @@
 
 }
 
+div.tai-tax-summary-table:nth-last-of-type(1) dl {
+    border-top:0!important;
+}
+
+div.tai-tax-summary-table:nth-last-of-type(1) > dl,
+div.tai-tax-summary-table:nth-last-of-type(1) > dd,
+div.tai-tax-summary-table:nth-last-of-type(1)  dt
+{
+    font-weight: bold!important;
+}
+
 @media screen and (max-width: 768px){
 
     .tai-tax-summary-table {

@@ -21,111 +21,121 @@
 @import includes.taxFreeAmountSummary
 @import includes.link
 
-@this(mainTemplate: MainTemplate)
+@this(main: MainTempleteNew)
 
 @(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = viewModel.header,
+        showGdsVersion = true,
         preHeadingText = Messages("tai.taxCode.preHeader"))
 }
 
-@mainTemplate(
+@main(
     title = viewModel.title,
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = Some("full-width")){
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent = Messages("tai.back-link.upper"),
+    backLinkId = "backLink",
+){
 
-    <div class="grid-row">
+    <div class="govuk-grid-row">
 
-        <div class="grid grid-2-3">
-            <div class="inner-block">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+        </div>
 
-                <div id="taxFreeAmountSummary" class="section flush--bottom">
+        <div class="govuk-grid-column-two-thirds">
 
-                    <p id="ledeMessage" class="flush--top">
-                        <span class="lede">@Messages("tai.taxFreeAmount.summarysection.taxFreeExplanation")</span>
+            <div id="taxFreeAmountSummary">
+                    <p class="govuk-body-l">
+                        @Messages("tai.taxFreeAmount.summarysection.taxFreeExplanation")
                     </p>
 
-                    <h2 class="flush--bottom">@Messages("tai.taxFreeAmount.summarysection.heading")
-                        <span class="display-block bold-large section section--narrow flush--bottom">@viewModel.annualTaxFreeAmount</span>
+                    <h2 class="govuk-heading-m">
+                        @Messages("tai.taxFreeAmount.summarysection.heading")
                     </h2>
 
-                    <p>@Messages("tai.taxFreeAmount.summarysection.p2")</p>
-                    <ul class="bullets">
+                    <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                        @viewModel.annualTaxFreeAmount
+                    </p>
+
+                    <p class="govuk-body">@Messages("tai.taxFreeAmount.summarysection.p2")</p>
+                    <ul class="govuk-list govuk-list--bullet">
                         <li>@Messages("tai.taxFreeAmount.summarysection.bullet1")</li>
                         <li>@Messages("tai.taxFreeAmount.summarysection.bullet2")</li>
                     </ul>
-                </div>
+            </div>
+            <div id="taxFreeAmountDetail" class="govuk-!-margin-top-8 govuk-!-margin-bottom-8">
+                    <h2 class="govuk-heading-m">@Messages("tai.taxFreeAmount.detailsection.heading")</h2>
 
-                <div id="taxFreeAmountDetail" class="section">
-                    <h2 class="flush--bottom">@Messages("tai.taxFreeAmount.detailsection.heading")</h2>
 
                     @taxFreeAmountSummary(viewModel.taxFreeAmountSummary.summaryItems)
 
-                </div>
+            </div>
+                    
 
-                <div id="addSomethingMissingSection" class="section">
-                    <h2 id="addSomethingMissingHeading">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
+                    <h2 class = "govuk-heading-m no-print">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
 
-                    <p class="icon icon-plus display-block">
+                    <ul class="govuk-list no print">
+                        <li><p class="icon icon-plus-no-rpt">
                         @link(
-                        id=Some("addMissingAddition"),
-                        url=appConfig.taxFreeAllowanceLinkUrl,
-                        copy=Messages("tai.taxFreeAmount.missing.section.addition"))
-                    </p>
-
-                    <p class="icon icon-plus display-block">
+                            id=Some("addMissingAddition"),
+                            url=appConfig.taxFreeAllowanceLinkUrl,
+                            copy=Messages("tai.taxFreeAmount.missing.section.addition"))
+                        </p></li>
+                        <li><p class="icon icon-plus-no-rpt">
                         @link(
                             id=Some("addMissingDeduction"),
                             url=appConfig.companyBenefitsLinkUrl,
                             copy=Messages("add.missing.company.benefit"))
-                    </p>
-
-                    <p class="icon icon-plus display-block">
+                        </p></li>
+                        <li><p class="icon icon-plus-no-rpt">
                         @link(
                             id=Some("addMissingInvestment"),
                             url=appConfig.investmentIncomeLinkUrl,
                             copy=Messages("tai.taxFreeAmount.missing.section.investment"))
-                    </p>
-
-                    <p class="icon icon-plus display-block">
+                        </p></li>
+                        <li><p class="icon icon-plus-no-rpt">
                         @link(
                             id=Some("addMissingIncome"),
                             url=appConfig.otherIncomeLinkUrl,
                             copy=Messages("tai.taxFreeAmount.missing.section.income"))
-                    </p>
-                </div>
-
-            </div>
+                        </p></li>
+                    </ul>
         </div>
 
-        <div class="grid grid-1-3">
+        <div class="govuk-grid-column-one-third">
             <div class="inner-block">
                 <nav class="section">
-                    <h2 class="heading-section">@Messages("tai.taxCode.sideBar.heading")</h2>
+                    <h2 class="govuk-heading-m heading-section">@Messages("tai.taxCode.sideBar.heading")</h2>
 
-                    <div class="link-list">
+                    <ul class="link-list govuk-list govuk-list--spaced">
+                        <li>
                         @link(
                             id=Some("taxCodesLink"),
                             url=routes.YourTaxCodeController.taxCodes.url,
-                            copy=Messages("check.your.tax.codes"))
+                            copy=Messages("check.your.tax.codes"))</li>
 
+                        <li>
                         @link(
                             id=Some("incomeTaxEstimateLink"),
                             url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
                             copy=Messages("check.your.income.tax.estimate"),
                             linkClasses=Seq("link-list__item"))
+                        </li>
 
+                        <li>
                         @link(
                             id=Some("taxableIncomeLink"),
                             url=routes.TaxAccountSummaryController.onPageLoad.url,
                             copy=Messages("return.to.your.income.tax.summary"),
                             linkClasses=Seq("link-list__item"))
-                    </div>
+                        </li>
+                    </ul>
                 </nav>
             </div>
         </div>
