@@ -23,6 +23,7 @@
     @{includes.link(
         id=Some("cancelLink"),
         url=url.toString,
-        copy=cancelText.getOrElse("")
+        copy=cancelText.getOrElse(""),
+        linkClasses=Seq("govuk-link")
         )}
 </div>

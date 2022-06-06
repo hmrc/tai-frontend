@@ -30,14 +30,14 @@ class AddIncomeCheckYourAnswersViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
 
-    behave like pageWithCombinedHeader(preHeading, messages("tai.checkYourAnswers.heading"))
+    behave like pageWithCombinedHeaderNewFormat(preHeading, messages("tai.checkYourAnswers.heading"))
 
     behave like pageWithButtonForm("/fake/submission/url", messages("tai.confirmAndSend"))
 
-    behave like pageWithCheckYourAnswersSummary
+    behave like pageWithCheckYourAnswersSummaryNew
 
     "display a back button" in {
-      doc must haveBackLink
+      doc must haveBackLinkNew
     }
 
     "display a cancel button" which {
@@ -66,19 +66,19 @@ class AddIncomeCheckYourAnswersViewSpec extends TaiViewSpec {
     }
 
     "display confirmation lines within the summary information, with corresponding change links" in {
-      doc must haveCheckYourAnswersSummaryLine(1, messages("tai.addEmployment.cya.q1"))
+      doc must haveCheckYourAnswersSummaryLineNew(1, messages("tai.addEmployment.cya.q1"))
       doc must haveCheckYourAnswersSummaryLineChangeLink(1, "q1/url?edit=true")
 
-      doc must haveCheckYourAnswersSummaryLine(2, messages("tai.addEmployment.cya.q2"))
+      doc must haveCheckYourAnswersSummaryLineNew(2, messages("tai.addEmployment.cya.q2"))
       doc must haveCheckYourAnswersSummaryLineChangeLink(2, "q2/url?edit=true")
 
-      doc must haveCheckYourAnswersSummaryLine(3, messages("tai.addEmployment.cya.q3"))
+      doc must haveCheckYourAnswersSummaryLineNew(3, messages("tai.addEmployment.cya.q3"))
       doc must haveCheckYourAnswersSummaryLineChangeLink(3, "q3/url?edit=true")
 
-      doc must haveCheckYourAnswersSummaryLine(4, messages("tai.addEmployment.cya.q4"))
+      doc must haveCheckYourAnswersSummaryLineNew(4, messages("tai.addEmployment.cya.q4"))
       doc must haveCheckYourAnswersSummaryLineChangeLink(4, "q4/url?edit=true")
 
-      doc must haveCheckYourAnswersSummaryLine(5, messages("tai.phoneNumber"))
+      doc must haveCheckYourAnswersSummaryLineNew(5, messages("tai.phoneNumber"))
       doc must haveCheckYourAnswersSummaryLineChangeLink(5, "q5/url?edit=true")
     }
   }

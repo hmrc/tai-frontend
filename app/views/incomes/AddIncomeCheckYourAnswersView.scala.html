@@ -23,24 +23,35 @@
 @import play.api.mvc.Call
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("tai.checkYourAnswers.heading"),
-        preHeadingText = viewModel.preHeading)
+        showGdsVersion = true,
+        preHeadingText = viewModel.preHeading
+    )
 }
 
-@mainTemplate(
+@main(
     title = Messages("tai.checkYourAnswers.title"),
     authedUser = authedUser,
-    pageHeader = Some(header),
-    articleClasses = None
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent = Some(Messages("tai.back-link.upper"))
 ) {
 
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @header
+    </div>
+</div>
+
+<div class="govuk-grid-row">
+
+    <div class="govuk-grid-column-two-thirds">
     @form(action=Call("POST", viewModel.submissionUrl), args=(Symbol("class"), "subsection")) {
 
         @checkYourAnswers(
@@ -50,7 +61,7 @@
         )
 
         @if(viewModel.postConfirmationText.isDefined) {
-            <p class="subsection">@viewModel.postConfirmationText.get</p>
+            <p class="govuk-body">@viewModel.postConfirmationText.get</p>
         }
 
         @submit(
@@ -58,4 +69,6 @@
     }
 
     @cancelLink(Call("GET", viewModel.cancelUrl))
+    </div>
+</div>
 }

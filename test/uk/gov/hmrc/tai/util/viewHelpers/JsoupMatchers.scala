@@ -297,6 +297,12 @@ trait JsoupMatchers {
   def haveCheckYourAnswersSummaryLineAnswer(lineNo: Int, expectedAnswerText: String) =
     new TagWithIdAndTextMatcher(expectedAnswerText, "div", s"confirmation-line-$lineNo-answer")
 
+  def haveCheckYourAnswersSummaryNew = new CssSelectorWithAttributeValueMatcher("id", "check-answers-summary", "dl")
+  def haveCheckYourAnswersSummaryLineNew(lineNo: Int, expectedQuestionText: String) =
+    new TagWithIdAndTextMatcher(expectedQuestionText, "dt", s"confirmation-line-$lineNo-question")
+  def haveCheckYourAnswersSummaryLineAnswerNew(lineNo: Int, expectedAnswerText: String) =
+    new TagWithIdAndTextMatcher(expectedAnswerText, "dd", s"confirmation-line-$lineNo-answer")
+
   def haveCheckYourAnswersSummaryLineChangeLink(lineNo: Int, expectedLinkUrl: String) =
     new IdSelectorWithUrlMatcher(expectedLinkUrl, s"confirmation-line-$lineNo-change-link")
 

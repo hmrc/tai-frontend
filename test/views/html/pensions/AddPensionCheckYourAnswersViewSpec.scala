@@ -33,7 +33,7 @@ class AddPensionCheckYourAnswersViewSpec extends TaiViewSpec {
 
     behave like pageWithButtonForm("/fake/submission/url", messages("tai.confirmAndSend"))
 
-    behave like pageWithCheckYourAnswersSummary
+    behave like pageWithCheckYourAnswersSummaryNew
 
     "display a back button" in {
       doc must haveBackLink
@@ -54,19 +54,19 @@ class AddPensionCheckYourAnswersViewSpec extends TaiViewSpec {
     }
 
     "display confirmation lines within the summary information, with corresponding change links" in {
-      doc must haveCheckYourAnswersSummaryLine(1, "q1")
+      doc must haveCheckYourAnswersSummaryLineNew(1, "q1")
       doc must haveCheckYourAnswersSummaryLineChangeLink(1, "q1/url?edit=true")
 
-      doc must haveCheckYourAnswersSummaryLine(2, "q2")
+      doc must haveCheckYourAnswersSummaryLineNew(2, "q2")
       doc must haveCheckYourAnswersSummaryLineChangeLink(2, "q2/url?edit=true")
 
-      doc must haveCheckYourAnswersSummaryLine(3, "q3")
+      doc must haveCheckYourAnswersSummaryLineNew(3, "q3")
       doc must haveCheckYourAnswersSummaryLineChangeLink(3, "q3/url?edit=true")
 
-      doc must haveCheckYourAnswersSummaryLine(4, "q4")
+      doc must haveCheckYourAnswersSummaryLineNew(4, "q4")
       doc must haveCheckYourAnswersSummaryLineChangeLink(4, "q4/url?edit=true")
 
-      doc must haveCheckYourAnswersSummaryLine(5, "q5")
+      doc must haveCheckYourAnswersSummaryLineNew(5, "q5")
       doc must haveCheckYourAnswersSummaryLineChangeLink(5, "q5/url?edit=true")
     }
   }

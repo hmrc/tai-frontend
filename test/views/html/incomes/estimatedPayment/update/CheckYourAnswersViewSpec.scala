@@ -66,14 +66,18 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
       val monthlyPaymentFrequency = "Monthly"
       val totalPay = "£10,000"
 
-      doc must haveCheckYourAnswersSummaryLine(1, messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"))
-      doc must haveCheckYourAnswersSummaryLineAnswer(1, monthlyPaymentFrequency)
+      doc must haveCheckYourAnswersSummaryLineNew(
+        1,
+        messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"))
+      doc must haveCheckYourAnswersSummaryLineAnswerNew(1, monthlyPaymentFrequency)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         1,
         controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage().url)
 
-      doc must haveCheckYourAnswersSummaryLine(2, messages("tai.estimatedPay.update.checkYourAnswers.grossPay.month"))
-      doc must haveCheckYourAnswersSummaryLineAnswer(2, totalPay)
+      doc must haveCheckYourAnswersSummaryLineNew(
+        2,
+        messages("tai.estimatedPay.update.checkYourAnswers.grossPay.month"))
+      doc must haveCheckYourAnswersSummaryLineAnswerNew(2, totalPay)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         2,
         controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage().url)

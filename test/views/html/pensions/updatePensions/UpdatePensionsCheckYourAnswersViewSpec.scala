@@ -29,7 +29,7 @@ class UpdatePensionsCheckYourAnswersViewSpec extends TaiViewSpec {
     behave like pageWithButtonForm(
       "/check-income-tax/incorrect-pension/check-your-answers",
       messages("tai.confirmAndSend"))
-    behave like pageWithCheckYourAnswersSummary
+    behave like pageWithCheckYourAnswersSummaryNew
     behave like pageWithCancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(pensionId))
 
     "display a back button" which {
@@ -45,23 +45,23 @@ class UpdatePensionsCheckYourAnswersViewSpec extends TaiViewSpec {
     }
 
     "display journey confirmation lines" in {
-      doc must haveCheckYourAnswersSummaryLine(1, messages("tai.updatePension.cya.currentlyReceivePension"))
-      doc must haveCheckYourAnswersSummaryLineAnswer(1, messages("tai.label.yes"))
+      doc must haveCheckYourAnswersSummaryLineNew(1, messages("tai.updatePension.cya.currentlyReceivePension"))
+      doc must haveCheckYourAnswersSummaryLineAnswerNew(1, messages("tai.label.yes"))
 
-      doc must haveCheckYourAnswersSummaryLine(2, messages("tai.checkYourAnswers.whatYouToldUs"))
-      doc must haveCheckYourAnswersSummaryLineAnswer(2, viewModel.whatYouToldUs)
+      doc must haveCheckYourAnswersSummaryLineNew(2, messages("tai.checkYourAnswers.whatYouToldUs"))
+      doc must haveCheckYourAnswersSummaryLineAnswerNew(2, viewModel.whatYouToldUs)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         2,
         controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url)
 
-      doc must haveCheckYourAnswersSummaryLine(3, messages("tai.checkYourAnswers.contactByPhone"))
-      doc must haveCheckYourAnswersSummaryLineAnswer(3, viewModel.contactByPhone)
+      doc must haveCheckYourAnswersSummaryLineNew(3, messages("tai.checkYourAnswers.contactByPhone"))
+      doc must haveCheckYourAnswersSummaryLineAnswerNew(3, viewModel.contactByPhone)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         3,
         controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url)
 
-      doc must haveCheckYourAnswersSummaryLine(4, messages("tai.phoneNumber"))
-      doc must haveCheckYourAnswersSummaryLineAnswer(4, viewModel.phoneNumber.getOrElse(""))
+      doc must haveCheckYourAnswersSummaryLineNew(4, messages("tai.phoneNumber"))
+      doc must haveCheckYourAnswersSummaryLineAnswerNew(4, viewModel.phoneNumber.getOrElse(""))
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         4,
         controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url)
