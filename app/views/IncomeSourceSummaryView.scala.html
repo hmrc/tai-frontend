@@ -172,27 +172,26 @@
             </p>
         </div>
 
-
-
         <div class="govuk-grid-column-one-half">
             <h3 class="govuk-heading-m flush">@messages("tai.income.details.ERN")</h3>
             <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
-                @{model.taxDistrctNumber} / @{model.payeNumber}
+                @{model.taxDistrctNumber}/@{model.payeNumber}
             </p>
         </div>
     </div>
 
+    <div class="govuk-!-padding-bottom-7"></div>
 
-
+    <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
             @if(model.isPension){
-                <h2 class="govuk-heading-m flush--top">@messages("tai.pensionNumber")</h2>
-                <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.pensionOrPayrollNumber</p>
-                <p class="govuk-visually-hidden">@messages("tai.pension.income.details.pensionNumber.screenReader", model.pensionOrPayrollNumber)</p>
+            <h2 class="govuk-heading-m flush--top">@messages("tai.pensionNumber")</h2>
+            <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.pensionOrPayrollNumber</p>
+            <p class="govuk-visually-hidden">@messages("tai.pension.income.details.pensionNumber.screenReader", model.pensionOrPayrollNumber)</p>
             } else {
-                <h2 class="govuk-heading-m flush--top">@messages("tai.payRollNumber")</h2>
-                <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.pensionOrPayrollNumber</p>
-                <p class="govuk-visually-hidden">@messages("tai.employment.income.details.payrollNumber.screenReader", model.pensionOrPayrollNumber)</p>
+            <h2 class="govuk-heading-m flush--top">@messages("tai.payRollNumber")</h2>
+            <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.pensionOrPayrollNumber</p>
+            <p class="govuk-visually-hidden">@messages("tai.employment.income.details.payrollNumber.screenReader", model.pensionOrPayrollNumber)</p>
             }
         </div>
     </div>
