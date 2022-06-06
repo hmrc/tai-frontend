@@ -38,7 +38,9 @@ case class IncomeSourceSummaryViewModel(
   benefits: Seq[CompanyBenefitViewModel] = Seq.empty[CompanyBenefitViewModel],
   displayAddCompanyCarLink: Boolean = true,
   estimatedPayJourneyCompleted: Boolean,
-  rtiAvailable: Boolean)
+  rtiAvailable: Boolean,
+  taxDistrctNumber: String,
+  payeNumber: String)
     extends ViewModelHelper {
   def startOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().start)
 
@@ -80,7 +82,9 @@ object IncomeSourceSummaryViewModel {
       benefitVMs,
       displayAddCompanyCar,
       estimatedPayJourneyCompleted,
-      rtiAvailable
+      rtiAvailable,
+      employment.taxDistrictNumber,
+      employment.payeNumber
     )
   }
 

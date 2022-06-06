@@ -123,7 +123,10 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           "EMPLOYER-1122",
           false,
           estimatedPayJourneyCompleted = true,
-          rtiAvailable = false)
+          rtiAvailable = false,
+          taxDistrctNumber = "123",
+          payeNumber = "AB12345"
+        )
 
         val doc = Jsoup.parse(template(model).toString())
         doc must haveSpanWithText(messages("tai.rti.down"))
@@ -141,7 +144,10 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           "EMPLOYER-1122",
           true,
           estimatedPayJourneyCompleted = true,
-          rtiAvailable = false)
+          rtiAvailable = false,
+          taxDistrctNumber = "123",
+          payeNumber = "AB12345"
+        )
 
         val doc = Jsoup.parse(template(model).toString())
         doc must haveSpanWithText(messages("tai.rti.down"))
@@ -159,6 +165,20 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "income source is employment" in {
         doc must haveHeadingH2WithText(messages("tai.payRollNumber"))
         doc must haveParagraphWithText(model.pensionOrPayrollNumber)
+      }
+
+      "display ERN number" when {
+        "income source is employment" in {
+          doc must haveHeadingH3WithText(messages("tai.income.details.ERN"))
+          doc must haveParagraphWithText(s"${model.taxDistrctNumber} / ${model.payeNumber}")
+        }
+      }
+
+      "display ERN number" when {
+        "income source is pension" in {
+          doc must haveHeadingH3WithText(messages("tai.income.details.ERN"))
+          doc must haveParagraphWithText(s"${model.taxDistrctNumber} / ${model.payeNumber}")
+        }
       }
 
       "income source is pension" in {
@@ -268,7 +288,10 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "EMPLOYER-1122",
     false,
     estimatedPayJourneyCompleted = true,
-    rtiAvailable = true)
+    rtiAvailable = true,
+    taxDistrctNumber = "123",
+    payeNumber = "AB12345"
+  )
   private lazy val companyBenefits = Seq(
     CompanyBenefitViewModel("ben1", BigDecimal(100.20), "url1"),
     CompanyBenefitViewModel("ben2", BigDecimal(3002.23), "url2"),
@@ -285,7 +308,10 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "PENSION-1122",
     true,
     estimatedPayJourneyCompleted = true,
-    rtiAvailable = true)
+    rtiAvailable = true,
+    taxDistrctNumber = "123",
+    payeNumber = "AB12345"
+  )
 
   private lazy val pensionDoc = Jsoup.parse(pensionView.toString())
 
