@@ -23,10 +23,12 @@
 @import includes.link
 @import controllers.auth.AuthenticatedRequest
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.tai.model.domain.Person
+
 
 @this(main: MainTempleteNew, govukDetails : GovukDetails)
 
-@(appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
+@(appConfig: ApplicationConfig, person: Person)(implicit request: AuthenticatedRequest[_],
 messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
@@ -53,8 +55,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 }
 
 @detailsContent = {
-    <p><span class="govuk-!-font-weight-bold">Address</span> 21 Surrey Terrace, Airedale, B38 0AL</p>
-    <p><span class="govuk-!-font-weight-bold">National Insurance</span> AS005783D </p>
+    <p><span class="govuk-!-font-weight-bold">messages("tai.incomeTax.history.details.address")</span> @{person.address.line1} @{person.address.line2} @{person.address.postcode} </p>
+<p><span class="govuk-!-font-weight-bold">messages("tai.incomeTax.history.details.nationalInsurance")</span> @person.nino </p>
 }
 
 @main(

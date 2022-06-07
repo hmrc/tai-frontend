@@ -21,13 +21,15 @@ import controllers.auth.AuthAction
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import views.html.employmentHistory.IncomeTaxHistoryView
+import uk.gov.hmrc.tai.service.PersonService
+import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class IncomeTaxHistoryController @Inject()(
   val config: ApplicationConfig,
+  personService: PersonService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   incomeTaxHistoryView: IncomeTaxHistoryView,
@@ -36,7 +38,8 @@ class IncomeTaxHistoryController @Inject()(
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson) { implicit request =>
-    Ok(incomeTaxHistoryView(config))
+  def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    val nino = request.taiUser.nino
+    personService.personDetails(nino) map (person => Ok(incomeTaxHistoryView(config, person)))
   }
 }
