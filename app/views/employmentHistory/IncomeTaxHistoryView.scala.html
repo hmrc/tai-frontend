@@ -1,5 +1,5 @@
 @*
-* Copyright 2021 HM Revenue & Customs
+* Copyright 2022 HM Revenue & Customs
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -22,8 +22,9 @@
 @import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 @import includes.link
 @import controllers.auth.AuthenticatedRequest
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(main: MainTempleteNew)
+@this(main: MainTempleteNew, govukDetails : GovukDetails)
 
 @(appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
 messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
@@ -42,26 +43,38 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
 
 @header = @{
-ptaHeader(
-mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
-preHeadingText = request.fullName,
-displayBackLink = false,
-customBackLinkContent = Some(backLinkToChooseTaxYear),
-showGdsVersion = true)
+    ptaHeader(
+        mainHeadingText = messages("tai.incomeTax.history.title"),
+        preHeadingText = request.fullName,
+        displayBackLink = false,
+        customBackLinkContent = Some(backLinkToChooseTaxYear),
+        showGdsVersion = true
+    )
+}
+
+@detailsContent = {
+    <p><span class="govuk-!-font-weight-bold">Address</span> 21 Surrey Terrace, Airedale, B38 0AL</p>
+    <p><span class="govuk-!-font-weight-bold">National Insurance</span> AS005783D </p>
 }
 
 @main(
-title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
-authedUser = Some(request.taiUser),
-pageTitle = Some(Messages("tai.service.navTitle")),
-backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
-backLinkContent = Some(Messages("tai.returnToChooseTaxYear")),
-pagePrintable = true,
-pagePrintName = Some("historic-pay-as-you-earn")
+    title = messages("tai.paye.heading"),
+    authedUser = Some(request.taiUser),
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+    backLinkContent = Some(Messages("your.paye.income.tax.overview")),
+    pagePrintable = true,
+    pagePrintName = Some("historic-pay-as-you-earn"),
 ){
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         @header
+
+        @govukDetails(Details(
+            summary = Text(messages("tai.incomeTax.history.details.summary", request.fullName)),
+            content = Text("We need to know your nationality so we can work out which elections you’re entitled to vote in. If you cannot provide your nationality, you’ll have to send copies of identity documents through the post.")
+        ))
+
     </div>
 </div>
 
