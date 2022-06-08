@@ -241,6 +241,6 @@ class TaxAccountSummaryServiceSpec
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
 
-  override def fakePerson(nino: Nino) = Person(nino, "firstname", "surname", false, false)
+  override def fakePerson(nino: Nino) = Person(nino, "firstname", "surname", false, false, address)
 
 }

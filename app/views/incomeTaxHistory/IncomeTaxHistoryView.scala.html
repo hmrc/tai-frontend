@@ -43,20 +43,15 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 </p>
 }
 
-
-@header = @{
-    ptaHeader(
-        mainHeadingText = messages("tai.incomeTax.history.title"),
-        preHeadingText = request.fullName,
-        displayBackLink = false,
-        customBackLinkContent = Some(backLinkToChooseTaxYear),
-        showGdsVersion = true
-    )
-}
-
 @detailsContent = {
-    <p><span class="govuk-!-font-weight-bold">messages("tai.incomeTax.history.details.address")</span> @{person.address.line1} @{person.address.line2} @{person.address.postcode} </p>
-<p><span class="govuk-!-font-weight-bold">messages("tai.incomeTax.history.details.nationalInsurance")</span> @person.nino </p>
+    <p>
+        <span class="govuk-!-font-weight-bold">@Messages("tai.incomeTax.history.details.address")</span>
+        @{person.address.line1} @{person.address.line2} @{person.address.line2} @{person.address.postcode}
+    </p>
+    <p>
+        <span class="govuk-!-font-weight-bold">@Messages("tai.incomeTax.history.details.nationalInsurance")</span>
+        @person.nino
+    </p>
 }
 
 @main(
@@ -70,11 +65,11 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 ){
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        @header
+        <h1 class="govuk-heading-xl heading-mobile-responsive xbreak-word">@Messages("tai.incomeTax.history.title")</h1>
 
         @govukDetails(Details(
             summary = Text(messages("tai.incomeTax.history.details.summary", request.fullName)),
-            content = Text("We need to know your nationality so we can work out which elections you’re entitled to vote in. If you cannot provide your nationality, you’ll have to send copies of identity documents through the post.")
+            content = HtmlContent(detailsContent)
         ))
 
     </div>

@@ -40,6 +40,8 @@ class IncomeTaxHistoryController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
+
+
     personService.personDetails(nino) map (person => Ok(incomeTaxHistoryView(config, person)))
   }
 }

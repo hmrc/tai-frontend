@@ -18,14 +18,7 @@ package uk.gov.hmrc.tai.model.domain
 
 import play.api.libs.json.{Format, Json}
 
-case class Address(
-  line1: String,
-  line2: String,
-  line3: String,
-  postcode: String,
-  startDate: String,
-  country: String,
-  addressType: String)
+case class Address(line1: String, line2: String, line3: String, postcode: String, country: String)
 
 object Address {
   implicit val addressFormat: Format[Address] = Json.format[Address]
