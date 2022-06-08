@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.tai.viewModels.incomeTaxHistory
 
-import uk.gov.hmrc.tai.model.TaxYear
-
 import java.time.LocalDate
 
 case class IncomeTaxHistoryViewModel(
@@ -27,4 +25,4 @@ case class IncomeTaxHistoryViewModel(
   endDate: LocalDate,
   taxableIncome: String,
   incomeTaxPaid: String,
-  taxCode: String) {}
+  taxCode: String)

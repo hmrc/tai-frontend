@@ -16,19 +16,25 @@
 
 package controllers
 
+import cats.data.EitherT
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.PersonService
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
+import cats.implicits._
+import uk.gov.hmrc.tai.connectors.responses.TaiResponse
+import uk.gov.hmrc.tai.model.domain.Employment
 
 import java.time.LocalDate
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeTaxHistoryController @Inject()(
   val config: ApplicationConfig,
@@ -37,25 +43,54 @@ class IncomeTaxHistoryController @Inject()(
   validatePerson: ValidatePerson,
   incomeTaxHistoryView: IncomeTaxHistoryView,
   mcc: MessagesControllerComponents,
+  taxAccountService: TaxAccountService,
+  taxCodeChangeService: TaxCodeChangeService,
+  employmentService: EmploymentService,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
+  private def getIncomeTaxHistorySeq(nino: Nino, taxYear: TaxYear)(
+    implicit hc: HeaderCarrier): Future[Either[TaiResponse, Seq[IncomeTaxHistoryViewModel]]] = {
+    val futureTaxCodes = taxAccountService.taxCodeIncomesV2(nino, taxYear)
+    val futureEmployments = employmentService.employments(nino, taxYear)
+    for {
+      taxCodeIncomeDetails <- EitherT(futureTaxCodes)
+      employmentDetails    <- EitherT.right[TaiResponse](futureEmployments)
+    } yield {
+      val taxCodes = taxCodeIncomeDetails.groupBy(_.employmentId)
+      employmentDetails.flatMap { employment => //TODO ask what to do if there are no taxCodes for a given user
+        val maybeTaxCode = taxCodes.get(Some(employment.sequenceNumber)).flatMap(_.headOption)
+        maybeTaxCode.map { taxCode =>
+          IncomeTaxHistoryViewModel(
+            employment.name,
+            employment.payeNumber,
+            employment.startDate,
+            employment.endDate.getOrElse(LocalDate.now()),
+            employment.latestAnnualAccount.get.totalIncomeYearToDate.toString(),
+            taxCode.amount.toString(),
+            taxCode.taxCode
+          )
+        }
+      }
+    }
+  }.value
+
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
+    val taxYears = (TaxYear().year to (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
 
-    /*
+    val x: Future[(List[TaiResponse], List[IncomeTaxYear])] = taxYears
+      .traverse { taxYear =>
+        EitherT(getIncomeTaxHistorySeq(nino, taxYear)).map { seq =>
+          IncomeTaxYear(taxYear, seq.toList)
+        }.value
+      }.map(_.separate)
+
     for {
-      xyz <- call to service
-    } yield IncomeTaxYear(xyz.taxYear, xyz.IncomeTaxHistory)
+      person            <- personService.personDetails(nino)
+      incomeTaxYearList <- x
+    } yield Ok(incomeTaxHistoryView(config, person, incomeTaxYearList._2))
 
-     */
-
-    val firstEmployment = IncomeTaxHistoryViewModel("sainsburys", "", LocalDate.now, LocalDate.now(), "", "", "")
-    val secondEmployment = IncomeTaxHistoryViewModel("tesco", "", LocalDate.now, LocalDate.now(), "", "", "")
-
-    val incomeTaxYearList = List(IncomeTaxYear(TaxYear(2018), List(firstEmployment, secondEmployment)))
-
-    personService.personDetails(nino) map (person => Ok(incomeTaxHistoryView(config, person, incomeTaxYearList)))
   }
 }

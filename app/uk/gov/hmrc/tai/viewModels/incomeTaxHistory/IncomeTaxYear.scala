@@ -18,4 +18,4 @@ package uk.gov.hmrc.tai.viewModels.incomeTaxHistory
 
 import uk.gov.hmrc.tai.model.TaxYear
 
-case class IncomeTaxYear(taxYear: TaxYear, IncomeTaxHistory: List[IncomeTaxHistoryViewModel])
+case class IncomeTaxYear(taxYear: TaxYear, incomeTaxHistory: List[IncomeTaxHistoryViewModel])

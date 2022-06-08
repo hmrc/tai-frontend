@@ -78,7 +78,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
 @for(incomeTaxYear <- incomeTaxYears) {
     <h2 class="govuk-heading-m">@{incomeTaxYear.taxYear.start} to @{incomeTaxYear.taxYear.end}</h2>
-    @for(summary <- incomeTaxYear.IncomeTaxHistory) {
+    @for(summary <- incomeTaxYear.incomeTaxHistory) {
         <div class="employment-card-single-u">
             <div class="employer-name govuk-body">@summary.employerName</div>
             <ul class="govuk-list govuk-!-font-size-16">
