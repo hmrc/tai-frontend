@@ -24,11 +24,12 @@
 @import controllers.auth.AuthenticatedRequest
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.tai.model.domain.Person
+@import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.IncomeTaxYear
 
 
 @this(main: MainTempleteNew, govukDetails : GovukDetails)
 
-@(appConfig: ApplicationConfig, person: Person)(implicit request: AuthenticatedRequest[_],
+@(appConfig: ApplicationConfig, person: Person, incomeTaxYears: List[IncomeTaxYear])(implicit request: AuthenticatedRequest[_],
 messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
@@ -75,9 +76,21 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     </div>
 </div>
 
-}
+@for(incomeTaxYear <- incomeTaxYears) {
+    <h2 class="govuk-heading-m">@{incomeTaxYear.taxYear.start} to @{incomeTaxYear.taxYear.end}</h2>
+    @for(summary <- incomeTaxYear.IncomeTaxHistory) {
+        <div class="employment-card-single-u">
+            <div class="employer-name govuk-body">@summary.employerName</div>
+            <ul class="govuk-list govuk-!-font-size-16">
+                <li><span>Employer PAYE reference</span> @summary.ern	</li>
+                <li><span>Start date</span> @summary.startDate	</li>
+                <li><span>End date</span> @summary.endDate	</li>
+                <li><span>Taxable income</span> @summary.taxableIncome	</li>
+                <li><span>Income tax paid</span> @summary.incomeTaxPaid </li>
+                <li><span>Tax code</span> @summary.taxCode</li>
 
-@textForScreenReader(visibleMessage: String, hiddenMessage: String)= {
-<span aria-hidden="true">@visibleMessage</span>
-<span class="govuk-visually-hidden">@hiddenMessage</span>
+            </ul>
+        </div>
+        }
+    }
 }

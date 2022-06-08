@@ -21,9 +21,12 @@ import controllers.auth.AuthAction
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.PersonService
+import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
@@ -41,7 +44,18 @@ class IncomeTaxHistoryController @Inject()(
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
 
+    /*
+    for {
+      xyz <- call to service
+    } yield IncomeTaxYear(xyz.taxYear, xyz.IncomeTaxHistory)
 
-    personService.personDetails(nino) map (person => Ok(incomeTaxHistoryView(config, person)))
+     */
+
+    val firstEmployment = IncomeTaxHistoryViewModel("sainsburys", "", LocalDate.now, LocalDate.now(), "", "", "")
+    val secondEmployment = IncomeTaxHistoryViewModel("tesco", "", LocalDate.now, LocalDate.now(), "", "", "")
+
+    val incomeTaxYearList = List(IncomeTaxYear(TaxYear(2018), List(firstEmployment, secondEmployment)))
+
+    personService.personDetails(nino) map (person => Ok(incomeTaxHistoryView(config, person, incomeTaxYearList)))
   }
 }
