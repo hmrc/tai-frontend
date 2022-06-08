@@ -48,7 +48,10 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     "PENSION-1122",
     true,
     estimatedPayJourneyCompleted = false,
-    rtiAvailable = true)
+    rtiAvailable = true,
+    taxDistrctNumber = "475",
+    payeNumber = "GA82452"
+  )
 
   val expectedEmploymentViewModel = IncomeSourceSummaryViewModel(
     1,
@@ -60,7 +63,10 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     "EMPLOYER-1122",
     false,
     estimatedPayJourneyCompleted = false,
-    rtiAvailable = true)
+    rtiAvailable = true,
+    taxDistrctNumber = "123",
+    payeNumber = "AB12345"
+  )
 
   def createViewModel(
     taxCodeIncomeSources: Seq[TaxCodeIncome],
@@ -84,8 +90,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           LocalDate.now(),
           None,
           Seq(annualAccount),
-          "",
-          "",
+          "475",
+          "GA82452",
           2,
           None,
           false,
@@ -112,8 +118,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           LocalDate.now(),
           None,
           Seq(annualAccount),
-          "",
-          "",
+          "123",
+          "AB12345",
           2,
           None,
           false,
