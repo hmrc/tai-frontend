@@ -42,7 +42,7 @@
 @tableHeader = {
     @if(showPreviousColumn) {
         <thead class="govuk-table__head">
-            <tr role="row govuk-table__row">
+            <tr>
                 <th scope="col" class="govuk-table__header">@Messages("tai.incomeTaxComparison.taxFreeAmount.how.we.calculate")</th>
                 <th scope="col" class=" govuk-table__header  govuk-table__header--numeric numeric tax-free-amount-comparison-table-header-cell">
                     @Messages("tai.taxFreeAmount.table.previous.taxCodes")
@@ -56,7 +56,7 @@
 }
 
 @personalAllowanceRow = {
-    <tr class="tax-free-amount-comparison-personal-allowance govuk-table__row" role="row">
+    <tr class="tax-free-amount-comparison-personal-allowance govuk-table__row" >
         <td class="tax-free-amount-comparison-row-title govuk-table__cell govuk-!-font-weight-bold">
             @Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "")
         </td>
@@ -77,14 +77,14 @@
 
 @iabdBreakdownRows(sequence: Seq[CodingComponentPairModel], translations: Map[String, String]) = {
 
-    <tr role="row" class="tax-free-amount-comparison-row-heading govuk-table__row">
+    <tr class="tax-free-amount-comparison-row-heading govuk-table__row">
         <td colspan="@taxFreeAmount.columns" class="tax-free-amount-comparison-row-heading govuk-table__cell govuk-!-font-weight-bold ">
             @Messages(translations("title"))
         </td>
     </tr>
 
     @if(sequence.isEmpty) {
-        <tr class="tax-free-amount-comparison-blank-row govuk-table__row" role="row">
+        <tr class="tax-free-amount-comparison-blank-row govuk-table__row">
             <td class="tax-free-amount-comparison-row-title govuk-table__cell">@Messages(translations("noItems"))</td>
             @if(showPreviousColumn) {
                 <td class="numeric govuk-table__cell">
@@ -99,7 +99,7 @@
         </tr>
     } else {
         @for(pair <- sequence) {
-            <tr role="row" class="govuk-table__row">
+            <tr class="govuk-table__row">
                 <td class="tax-free-amount-comparison-row-title govuk-table__cell">
                     @pair.label.value
                     @pair.label.link.map { link =>
@@ -126,7 +126,7 @@
             </tr>
         }
 
-        <tr role="row" class="govuk-table__row">
+        <tr class="govuk-table__row">
             <td class="tax-free-amount-comparison-row-title govuk-table__cell">@Messages(translations("totalTitle"))</td>
 
             @if(showPreviousColumn) {
@@ -145,7 +145,7 @@
 }
 
 @totalTaxFreeAmountRow = {
-    <tr class="tax-free-amount-comparison-total govuk-table__row" role="row">
+    <tr class="tax-free-amount-comparison-total govuk-table__row" >
         <td id="totals-label" class="govuk-table__cell govuk-!-font-weight-bold ">
             @Messages("tai.taxFreeAmount.table.totals.label")
         </td>
