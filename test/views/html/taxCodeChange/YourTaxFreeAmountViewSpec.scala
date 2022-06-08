@@ -34,16 +34,16 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(Messages("taxCode.change.yourTaxFreeAmount.title"))
 
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       Messages("taxCode.change.journey.preHeading"),
       Messages("taxCode.change.yourTaxFreeAmount.title"))
 
     "have explanation of tax-free amount" in {
-      doc must haveParagraphWithText(Messages("taxCode.change.yourTaxFreeAmount.desc"))
+      doc must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.desc"))
     }
 
     "have h2 heading for how tax-free amount is calculated" in {
-      doc must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.summaryHeading"))
+      doc must haveH3HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.summaryHeading"))
     }
 
     "display a detail section" which {
@@ -82,13 +82,13 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
       "contains a heading for the addition section" in {
         doc must haveElementAtPathWithText(
-          "h3.tax-free-amount-comparison-row-heading",
+          "td.tax-free-amount-comparison-row-heading",
           Messages("tai.taxFreeAmount.table.additions.caption"))
       }
 
       "contains a heading for the deduction section" in {
         doc must haveElementAtPathWithText(
-          "h3.tax-free-amount-comparison-row-heading",
+          "td.tax-free-amount-comparison-row-heading",
           Messages("tai.taxFreeAmount.table.deductions.caption"))
       }
 
@@ -99,15 +99,12 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       }
 
       "contains heading for the total category" in {
-        doc must haveElementAtPathWithText(
-          "h3.tax-free-amount-comparison-row-heading",
-          Messages("tai.taxFreeAmount.table.totals.label"))
+        doc must haveElementAtPathWithText("td#totals-label", Messages("tai.taxFreeAmount.table.totals.label"))
       }
 
       "visually formats the final table" when {
         "the corresponding final summary item view model contains only a single row" in {
           doc.select(".tax-free-amount-comparison-total").size() mustBe 1
-          doc must haveElementAtPathWithClass("tr", "tax-free-amount-comparison-total highlight")
         }
       }
     }
