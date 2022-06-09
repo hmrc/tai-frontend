@@ -548,11 +548,14 @@ tai.income.statePensionLumpSum.total=State Pension lump sum
 tai.income=Employer or pension provider
 tai.incomeSources=Income sources
 tai.incomeTax.calculated.title=How your PAYE Income Tax is calculated
+
 tai.incomeTax.history.title=Income Tax history
 tai.incomeTax.history.details.summary=PAYE details for {0}
 tai.incomeTax.history.details.address=Address
 tai.incomeTax.history.details.nationalInsurance=National Insurance
 tai.incomeTax.history.table.link=View {0} tax year summary
+tai.incomeTax.history.pageTitle = Income tax history - Check your Income Tax - GOV.UK
+
 tai.incomeTax.incomeTaxEstimate.subheading=Income tax estimate
 tai.incomeTax.taxCodes.link=Check your tax codes
 tai.incomeTax.taxFree.link=Check your tax-free amount

@@ -68,7 +68,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.incomeTaxComparison.heading.more"))
+      doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
       verify(employmentService).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
     }

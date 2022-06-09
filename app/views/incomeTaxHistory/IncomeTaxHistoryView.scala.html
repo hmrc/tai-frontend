@@ -58,7 +58,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 }
 
 @main(
-    title = messages("tai.paye.heading"),
+    title = messages("tai.incomeTax.history.pageTitle"),
     authedUser = Some(request.taiUser),
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
@@ -87,18 +87,27 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                 <li><span>Employer PAYE reference</span> @summary.ern	</li>
                 <li><span>Start date</span> @summary.startDate	</li>
                 <li><span>End date</span> @summary.endDate	</li>
-                @summary.maybeTaxableIncome.map(taxableIncome => <li><span>Taxable income</span> @taxableIncome	</li>)
-                @summary.maybeIncomeTaxPaid.map(incomeTaxPaid => <li><span>Income tax paid</span> @incomeTaxPaid </li>)
-                @summary.maybeTaxCode.map(taxCode => <li><span>Tax code</span> @taxCode</li>)
-
+                @if(summary.maybeTaxableIncome.isDefined) {
+                    <li><span>Taxable income </span>@summary.maybeTaxableIncome</li>
+                }
+                @if(summary.maybeIncomeTaxPaid.isDefined) {
+                    <li><span>Income tax paid </span>@summary.maybeIncomeTaxPaid</li>
+                }
+                @if(summary.maybeTaxCode.isDefined) {
+                    <li><span>Tax code </span>@summary.maybeTaxCode</li>
+                }
             </ul>
         </div>
     }
 
+    <p>
+
     @if(incomeTaxYear.taxYear == TaxYear()){
-        @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary")
+        @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary", linkClasses = Seq("govuk-link"))
     } else {
-        @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = s"/check-income-tax/historic-paye/${incomeTaxYear.taxYear.year}")
+        @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = s"/check-income-tax/historic-paye/${incomeTaxYear.taxYear.year}", linkClasses = Seq("govuk-link"))
         }
+    </p>
+
     }
 }
