@@ -17,6 +17,7 @@
 package controllers
 
 import cats.data.EitherT
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -24,13 +25,11 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
-import cats.implicits._
-import uk.gov.hmrc.tai.connectors.responses.TaiResponse
-import uk.gov.hmrc.tai.model.domain.Employment
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -44,10 +43,9 @@ class IncomeTaxHistoryController @Inject()(
   incomeTaxHistoryView: IncomeTaxHistoryView,
   mcc: MessagesControllerComponents,
   taxAccountService: TaxAccountService,
-  taxCodeChangeService: TaxCodeChangeService,
   employmentService: EmploymentService,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext, templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
 
   private def getIncomeTaxHistorySeq(nino: Nino, taxYear: TaxYear)(
