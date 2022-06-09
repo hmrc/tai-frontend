@@ -16,17 +16,17 @@
 
 package uk.gov.hmrc.tai.service
 
-import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.PersonConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
 import uk.gov.hmrc.tai.model.domain.Person
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PersonService @Inject()(taiConnector: TaiConnector, personConnector: PersonConnector) {
+class PersonService @Inject()(personConnector: PersonConnector) {
 
   def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] =
     personConnector.person(nino) map {

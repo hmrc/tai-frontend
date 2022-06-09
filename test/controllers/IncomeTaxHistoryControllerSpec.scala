@@ -20,6 +20,7 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito.{verify, when}
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
 import play.api.i18n.Messages
@@ -55,9 +56,12 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
   "onPageLoad" must {
     "display the income tax history page" in {
 
-      when(taxAccountService.taxCodeIncomesV2(nino, TaxYear())) thenReturn Future.successful(Right(Seq(taxCodeIncome)))
-      when(employmentService.employments(nino, TaxYear())) thenReturn Future.successful(
+      when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
+        Right(Seq(taxCodeIncome)))
+      when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
         Seq(empEmployment1, empEmployment2))
+
+      when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
       val controller = new TestController
       val result = controller.onPageLoad()(request)

@@ -55,30 +55,28 @@ class IncomeTaxHistoryController @Inject()(
     for {
       taxCodeIncomeDetails <- EitherT(futureTaxCodes)
       employmentDetails    <- EitherT.right[TaiResponse](futureEmployments)
-    } yield {
-      val taxCodes = taxCodeIncomeDetails.groupBy(_.employmentId)
-      employmentDetails.flatMap { employment => //TODO ask what to do if there are no taxCodes for a given user
+      taxCodes = taxCodeIncomeDetails.groupBy(_.employmentId)
+    } yield
+      employmentDetails.map { employment =>
         val maybeTaxCode = taxCodes.get(Some(employment.sequenceNumber)).flatMap(_.headOption)
-        maybeTaxCode.map { taxCode =>
-          IncomeTaxHistoryViewModel(
-            employment.name,
-            employment.payeNumber,
-            employment.startDate,
-            employment.endDate.getOrElse(LocalDate.now()),
-            employment.latestAnnualAccount.get.totalIncomeYearToDate.toString(),
-            taxCode.amount.toString(),
-            taxCode.taxCode
-          )
-        }
+        IncomeTaxHistoryViewModel(
+          employment.name,
+          employment.payeNumber,
+          employment.startDate,
+          employment.endDate.getOrElse(LocalDate.now()),
+          employment.latestAnnualAccount.map(_.totalIncomeYearToDate.toString),
+          maybeTaxCode.map(_.amount.toString),
+          maybeTaxCode.map(_.taxCode)
+        )
       }
-    }
   }.value
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
-    val taxYears = (TaxYear().year to (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
+    val taxYears =
+      (TaxYear().year to (TaxYear().year - config.numberOfPreviousYearsToShow) by -1).map(TaxYear(_)).toList
 
-    val x: Future[(List[TaiResponse], List[IncomeTaxYear])] = taxYears
+    val futureErrorsAndTaxYears = taxYears
       .traverse { taxYear =>
         EitherT(getIncomeTaxHistorySeq(nino, taxYear)).map { seq =>
           IncomeTaxYear(taxYear, seq.toList)
@@ -88,7 +86,7 @@ class IncomeTaxHistoryController @Inject()(
 
     for {
       person            <- personService.personDetails(nino)
-      incomeTaxYearList <- x
+      incomeTaxYearList <- futureErrorsAndTaxYears
     } yield Ok(incomeTaxHistoryView(config, person, incomeTaxYearList._2))
 
   }

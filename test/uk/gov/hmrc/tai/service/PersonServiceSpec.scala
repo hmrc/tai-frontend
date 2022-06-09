@@ -60,10 +60,5 @@ class PersonServiceSpec extends BaseSpec {
   val personConnector = mock[PersonConnector]
   val taiConnector = mock[TaiConnector]
 
-  class PersonServiceTest
-      extends PersonService(
-        taiConnector,
-        personConnector
-      )
-
+  class PersonServiceTest extends PersonService(personConnector)
 }

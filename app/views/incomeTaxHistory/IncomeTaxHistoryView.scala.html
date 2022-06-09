@@ -87,9 +87,9 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                 <li><span>Employer PAYE reference</span> @summary.ern	</li>
                 <li><span>Start date</span> @summary.startDate	</li>
                 <li><span>End date</span> @summary.endDate	</li>
-                <li><span>Taxable income</span> @summary.taxableIncome	</li>
-                <li><span>Income tax paid</span> @summary.incomeTaxPaid </li>
-                <li><span>Tax code</span> @summary.taxCode</li>
+                @summary.maybeTaxableIncome.map(taxableIncome => <li><span>Taxable income</span> @taxableIncome	</li>)
+                @summary.maybeIncomeTaxPaid.map(incomeTaxPaid => <li><span>Income tax paid</span> @incomeTaxPaid </li>)
+                @summary.maybeTaxCode.map(taxCode => <li><span>Tax code</span> @taxCode</li>)
 
             </ul>
         </div>
