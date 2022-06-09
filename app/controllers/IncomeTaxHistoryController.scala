@@ -85,7 +85,8 @@ class IncomeTaxHistoryController @Inject()(
         EitherT(getIncomeTaxHistorySeq(nino, taxYear)).map { seq =>
           IncomeTaxYear(taxYear, seq.toList)
         }.value
-      }.map(_.separate)
+      }
+      .map(_.separate)
 
     for {
       person            <- personService.personDetails(nino)

@@ -25,6 +25,8 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.tai.model.domain.Person
 @import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.IncomeTaxYear
+@import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 
 
 @this(main: MainTempleteNew, govukDetails : GovukDetails)
@@ -77,7 +79,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 </div>
 
 @for(incomeTaxYear <- incomeTaxYears) {
-    <h2 class="govuk-heading-m">@{incomeTaxYear.taxYear.start} to @{incomeTaxYear.taxYear.end}</h2>
+    <h2 class="govuk-heading-m">@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
     @for(summary <- incomeTaxYear.incomeTaxHistory) {
         <div class="employment-card-single-u">
             <div class="employer-name govuk-body">@summary.employerName</div>
@@ -91,6 +93,12 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
             </ul>
         </div>
+    }
+
+    @if(incomeTaxYear.taxYear == TaxYear()){
+        @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary")
+    } else {
+        @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = s"/check-income-tax/historic-paye/${incomeTaxYear.taxYear.year}")
         }
     }
 }
