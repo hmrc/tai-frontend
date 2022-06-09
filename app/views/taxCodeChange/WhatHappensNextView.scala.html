@@ -17,7 +17,7 @@
 @import includes.ptaHeader
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate)
+@this(main: MainTempleteNew)
 
 @()(implicit request: Request[_],
     user: controllers.auth.AuthedUser,
@@ -28,49 +28,49 @@
 
 @header = @{
     ptaHeader(
-    formForErrorSummary = None,
-    displayBackLink = true,
-    mainHeadingText = Messages("taxCode.change.whatHappensNext.title"),
-    preHeadingText = Messages("taxCode.change.journey.preHeading"))
+        formForErrorSummary = None,
+        displayBackLink = false,
+        showGdsVersion = true,
+        mainHeadingText = Messages("taxCode.change.whatHappensNext.title"),
+        preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
 
-@mainTemplate(
+@main(
     title = Messages("taxCode.change.whatHappensNext.title"),
-    articleClasses = Some("full-width"),
-    pageHeader = Some(header),
-    authedUser = Some(user)
+    authedUser = Some(user),
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink",
 ){
 
-<div class="grid-row">
-    <div class="grid grid-2-3">
-        <div class="inner-block">
-            <div id="tax-code-correct" class="section flush--bottom">
-                <p id="lede-message" class="flush--top">
-                    <span class="lede">@Messages("taxCode.change.whatHappensNext.paragragh1")</span>
-                </p>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @header
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+                <h2 id="lede-message" class="govuk-caption-l">
+                    @Messages("taxCode.change.whatHappensNext.paragragh1")
+                </h2>
 
-                <p id="check-income-tax-estimate" >
+                <p id="check-income-tax-estimate" class="govuk-body" >
                     @Html(Messages("taxCode.change.whatHappensNext.paragragh2",
                     includes.link(
                     id=Some("income-tax-estimate-link"),
                     url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
                     copy=Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link"))))
-                </p>
-            </div>
+                 </p>
 
-            <div id="tax-code-incorrect" class="section flush--bottom">
-                <h2 class="heading-medium">@Messages("taxCode.change.whatHappensNext.wrongInformation.text")</h2>
+                <h3 class="govuk-heading-m">
+                    @Messages("taxCode.change.whatHappensNext.wrongInformation.text")
+                </h3>
 
-                <p id="update-current-income-or-benefits">
+                <p id="update-current-income-or-benefits" class="govuk-body">
                     @Html(Messages("taxCode.change.whatHappensNext.paragragh3",
                     includes.link(
                     id=Some("update-current-income-or-benefits-link"),
                     url=routes.TaxAccountSummaryController.onPageLoad.url.toString,
                     copy=Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link"))))
                 </p>
-            </div>
-
-        </div>
     </div>
 </div>
 }
