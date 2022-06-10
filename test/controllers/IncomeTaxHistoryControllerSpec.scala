@@ -19,9 +19,10 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
@@ -33,11 +34,14 @@ import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
 import scala.concurrent.Future
 
-class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTestData {
+class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTestData with BeforeAndAfterEach {
 
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
   val personService = mock[PersonService]
+
+  override def beforeEach: Unit =
+    Mockito.reset(taxAccountService, employmentService)
 
   class TestController
       extends IncomeTaxHistoryController(
