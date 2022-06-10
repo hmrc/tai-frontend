@@ -53,6 +53,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
       )
 
   implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+  val taxYears = (TaxYear().year to (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
 
   "onPageLoad" must {
     "display the income tax history page" when {
@@ -72,8 +73,10 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(employmentService, times(2)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
-
+        for (taxYear <- taxYears) {
+          verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
+          verify(taxAccountService, times(1)).taxCodeIncomesV2(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
+        }
       }
 
       "pension data is returned" in {
@@ -92,7 +95,13 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(employmentService, times(2)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
+        for (taxYear <- taxYears) {
+          verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
+        }
+
+        for (taxYear <- taxYears) {
+          verify(taxAccountService, times(1)).taxCodeIncomesV2(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
+        }
       }
     }
   }
