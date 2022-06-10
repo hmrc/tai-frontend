@@ -84,7 +84,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                         <h2 id="lastYearEmploymentHeading" class="govuk-heading-m heading-section">
                             @messages("tai.paye.incomeEmployment.heading")
                         </h2>
-
+                        Employments here
                         @incomeList(employmentPairsList, "employment")
                     }
 
@@ -158,11 +158,13 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                     <p class = "govuk-body">
                         @employment.payrollNumber.map{ payrollNumber =>
                                 @if(employment.isPension) {
+                                    @messages("tai.income.details.ERN"):@employment.taxDistrictNumber/@employment.payeNumber
                                     @textForScreenReader(
                                         s"${messages("tai.pensionNumber")}: ${payrollNumber}",
                                         messages("tai.pension.income.details.pensionNumber.screenReader", payrollNumber)
                                     )
                                 } else {
+                                    @messages("tai.income.details.ERN"):@employment.taxDistrictNumber/@employment.payeNumber
                                     @textForScreenReader(
                                         messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber),
                                         messages("tai.employment.income.details.payrollNumber.screenReader", payrollNumber)
