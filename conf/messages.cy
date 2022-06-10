@@ -1416,6 +1416,7 @@ tai.urbanner.title=Helpwch i wella GOV.UK
 tai.urbanner.text=Helpwch i wella’r gwasanaeth TWE drwy gymryd rhan mewn arolwg (yn agor ffenestr newydd)
 tai.urbanner.reject=Dim diolch
 
+checkProgress.important=Pwysig
 checkProgress.link=Gwiriwch gynnydd eich diweddariad
 
 tai.information = Gwybodaeth
