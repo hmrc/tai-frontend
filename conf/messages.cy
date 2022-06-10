@@ -555,6 +555,13 @@ tai.incomeTax.totalEstimatedIncome.subheading=Cyfanswm incwm amcangyfrifedig
 tai.incomeTax.totalIncomeTaxEstimate=Cyfanswm Amcangyfrif Treth Incwm
 tai.incomeTaxBand=Haen Treth Incwm
 
+tai.incomeTax.history.title= xyz
+tai.incomeTax.history.details.summary= xyz {0}
+tai.incomeTax.history.details.address= xyz
+tai.incomeTax.history.details.nationalInsurance = xyz
+tai.incomeTax.history.table.link= xyz {0}
+tai.incomeTax.history.pageTitle = xyz
+
 tai.incomeTaxComparison.incomeSourceAbsent=Ddim ar gael
 tai.incomeTaxComparison.incomeTax.column1=yn dod i ben ar {0}
 tai.incomeTaxComparison.incomeTax.column2=o {0}

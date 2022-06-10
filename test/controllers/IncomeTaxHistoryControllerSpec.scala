@@ -21,7 +21,7 @@ import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{times, verify, when}
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
@@ -38,6 +38,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
   val personService = mock[PersonService]
+
   class TestController
       extends IncomeTaxHistoryController(
         appConfig,
@@ -54,39 +55,45 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
   implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
   "onPageLoad" must {
-    "display the income tax history page" in {
+    "display the income tax history page" when {
+      "employment data is returned" in {
 
-      when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
-        Right(Seq(taxCodeIncome)))
-      when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
-        Seq(empEmployment1, empEmployment2))
+        when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
+          Right(Seq(taxCodeIncome)))
+        when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
+          Seq(empEmployment1, empEmployment2))
 
-      when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
+        when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
-      val controller = new TestController
-      val result = controller.onPageLoad()(request)
-      status(result) mustBe OK
-
-      val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
-
-      verify(employmentService).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
-    }
-
-    "return an error page" when {
-      "not able to fetch details" in {
         val controller = new TestController
-
-        when(taxAccountService.taxCodeIncomesV2(nino, TaxYear())) thenReturn Future.successful(
-          Left(TaiNotFoundResponse("")))
-        when(employmentService.employments(nino, TaxYear())) thenReturn Future.successful(Seq.empty)
-
         val result = controller.onPageLoad()(request)
+        status(result) mustBe OK
 
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
+
+        verify(employmentService, times(2)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
+
+      }
+
+      "pension data is returned" in {
+
+        when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
+          Right(Seq(taxCodeIncome)))
+        when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
+          Seq(pensionEmployment3, pensionEmployment4))
+
+        when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
+
+        val controller = new TestController
+        val result = controller.onPageLoad()(request)
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
+
+        verify(employmentService, times(2)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
       }
     }
-
   }
-
 }
