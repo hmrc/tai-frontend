@@ -34,22 +34,10 @@
 @(appConfig: ApplicationConfig, person: Person, incomeTaxYears: List[IncomeTaxYear])(implicit request: AuthenticatedRequest[_],
 messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-
-@backLinkToChooseTaxYear = {
-<p class="flush--bottom">
-    @link(
-    id=Some("returnToChooseTaxYearLink"),
-    url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-    copy=messages("tai.returnToChooseTaxYear"),
-    linkClasses=Seq("link-back")
-    )
-</p>
-}
-
 @detailsContent = {
     <p>
         <span class="govuk-!-font-weight-bold">@Messages("tai.incomeTax.history.details.address")</span>
-        @{person.address.line1} @{person.address.line2} @{person.address.line2} @{person.address.postcode}
+        @{person.address.line1} @{person.address.line2} @{person.address.line3} @{person.address.postcode}
     </p>
     <p>
         <span class="govuk-!-font-weight-bold">@Messages("tai.incomeTax.history.details.nationalInsurance")</span>
@@ -71,7 +59,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
         <h1 class="govuk-heading-xl heading-mobile-responsive xbreak-word">@Messages("tai.incomeTax.history.title")</h1>
 
         @govukDetails(Details(
-            summary = Text(messages("tai.incomeTax.history.details.summary", request.fullName)),
+            summary = Text(messages("tai.incomeTax.history.details.summary", person.name)),
             content = HtmlContent(detailsContent)
         ))
 
@@ -101,11 +89,10 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     }
 
     <p>
-
-    @if(incomeTaxYear.taxYear == TaxYear()){
-        @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary", linkClasses = Seq("govuk-link"))
-    } else {
-        @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = s"/check-income-tax/historic-paye/${incomeTaxYear.taxYear.year}", linkClasses = Seq("govuk-link"))
+        @if(incomeTaxYear.taxYear == TaxYear()){
+            @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary", linkClasses = Seq("govuk-link"))
+        } else {
+            @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = s"/check-income-tax/historic-paye/${incomeTaxYear.taxYear.year}", linkClasses = Seq("govuk-link"))
         }
     </p>
 

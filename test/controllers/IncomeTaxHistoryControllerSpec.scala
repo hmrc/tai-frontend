@@ -19,14 +19,13 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
+import play.api.http.Status.OK
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
-import uk.gov.hmrc.tai.connectors.responses.TaiNotFoundResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import utils.{BaseSpec, TaxAccountSummaryTestData}
@@ -101,9 +100,6 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
         for (taxYear <- taxYears) {
           verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
-        }
-
-        for (taxYear <- taxYears) {
           verify(taxAccountService, times(1)).taxCodeIncomesV2(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
         }
       }
