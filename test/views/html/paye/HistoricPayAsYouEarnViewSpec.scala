@@ -200,30 +200,11 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       }
     }
 
-    "show a payroll number" when {
-      "the income source of type employer has a payroll number" in {
-        val employment: EmploymentViewModel =
-          EmploymentViewModel("employment", 0.00, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
-        val vm = HistoricPayAsYouEarnViewModel(
-          cyMinusOneTaxYear,
-          Nil,
-          Seq(employment),
-          hasEmploymentsOrPensions = true,
-          showTaxCodeDescriptionLink = true)
-
-        val sut: Html = createSut(vm)
-        val doc: Document = Jsoup.parse(sut.toString)
-
-        doc must haveSpanWithText("Payroll number: payrollNumber")
-        doc must haveSpanWithText("Your payroll number is payrollNumber.")
-      }
-    }
-
     "show the Employer PAYE reference also referred to as ERN number" when {
 
       "the income source of type Employment has a employer paye reference" in {
-        val pension: EmploymentViewModel =
-          EmploymentViewModel("employment", 0.00, 1, isPension = true, "754", "NZ00014", Some("pensionNumber"))
+        val employment: EmploymentViewModel =
+          EmploymentViewModel("employment", 0.00, 1, isPension = false, "123", "A100", Some("pensionNumber"))
         val viewModelEmployment = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Nil,
@@ -237,9 +218,9 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         doc must haveSpanWithText("Employer PAYE reference:123/A100")
       }
 
-      "the income source of type Pension has a employer paye reference" in {
+      "the income source of type Pension has a employer paye reference that is not displayed" in {
         val pension: EmploymentViewModel =
-          EmploymentViewModel("employment", 50.00, 1, isPension = false, "754", "NZ00014", Some("pensionNumber"))
+          EmploymentViewModel("employment", 50.00, 1, isPension = true, "754", "NZ00014", Some("pensionNumber"))
         val viewModelPension = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Seq(pension),
@@ -250,7 +231,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         val sut: Html = createSut(viewModelPension)
         val doc: Document = Jsoup.parse(sut.toString)
 
-        doc must haveSpanWithText("Employer PAYE reference:754/NZ00014")
+        doc mustNot haveSpanWithText("Employer PAYE reference:754/NZ00014")
       }
 
     }
