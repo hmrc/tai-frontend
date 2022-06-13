@@ -18,6 +18,7 @@ package views.html.incomeTaxHistory
 
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
 
@@ -41,8 +42,13 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       )
     }
 
-    "display tax years" in {
-      ???
+    val taxYears = (TaxYear().year until (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
+
+    for (taxYear <- taxYears) {
+      s"display correct tax year link: $taxYear" in {
+        doc must haveParagraphWithText(
+          messages("tai.incomeTax.history.table.link", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
+      }
     }
   }
 
@@ -57,10 +63,68 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     Some("incomeTaxPaid"),
     Some("taxCode")
   )
-  val incomeTaxYears: List[IncomeTaxYear] = List(
-    IncomeTaxYear(taxYear, List(historyViewModel))
+
+  val historyViewModel1: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    "ern",
+    TaxYear(2021).start,
+    TaxYear(2021).end,
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some("taxCode")
   )
+
+  val historyViewModel2: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    "ern",
+    TaxYear(2020).start,
+    TaxYear(2020).end,
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some("taxCode")
+  )
+
+  val historyViewModel3: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    "ern",
+    TaxYear(2019).start,
+    TaxYear(2019).end,
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some("taxCode")
+  )
+
+  val historyViewModel4: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    "ern",
+    TaxYear(2019).start,
+    TaxYear(2019).end,
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some("taxCode")
+  )
+
+  val historyViewModel5: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    "ern",
+    TaxYear(2018).start,
+    TaxYear(2018).end,
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some("taxCode")
+  )
+
+  val incomeTaxYears: List[IncomeTaxYear] = List(
+    IncomeTaxYear(taxYear, List(historyViewModel)),
+    IncomeTaxYear(TaxYear(2021), List(historyViewModel1)),
+    IncomeTaxYear(TaxYear(2020), List(historyViewModel2)),
+    IncomeTaxYear(TaxYear(2020), List(historyViewModel3)),
+    IncomeTaxYear(TaxYear(2019), List(historyViewModel4)),
+    IncomeTaxYear(TaxYear(2018), List(historyViewModel5))
+  )
+
   val person = fakePerson(nino)
+
   override def view: Html =
     incomeTaxHistoryView(appConfig, person, incomeTaxYears)
 }
