@@ -16,7 +16,6 @@
 
 package controllers
 
-import cats.data.EitherT
 import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
@@ -25,7 +24,6 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
@@ -49,16 +47,21 @@ class IncomeTaxHistoryController @Inject()(
     extends TaiBaseController(mcc) {
 
   private def getIncomeTaxHistorySeq(nino: Nino, taxYear: TaxYear)(
-    implicit hc: HeaderCarrier): Future[Either[TaiResponse, Seq[IncomeTaxHistoryViewModel]]] = {
-    val futureTaxCodes = taxAccountService.taxCodeIncomesV2(nino, taxYear)
+    implicit hc: HeaderCarrier): Future[Seq[IncomeTaxHistoryViewModel]] = {
+    val futureMaybeTaxCodes = taxAccountService.taxCodeIncomesV2(nino, taxYear).map(_.toOption)
     val futureEmployments = employmentService.employments(nino, taxYear)
     for {
-      taxCodeIncomeDetails <- EitherT(futureTaxCodes)
-      employmentDetails    <- EitherT.right[TaiResponse](futureEmployments)
-      taxCodes = taxCodeIncomeDetails.groupBy(_.employmentId)
-    } yield
+      maybeTaxCodeIncomeDetails <- futureMaybeTaxCodes
+      employmentDetails         <- futureEmployments
+    } yield {
+      val maybeTaxCodesMap = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
       employmentDetails.map { employment =>
-        val maybeTaxCode = taxCodes.get(Some(employment.sequenceNumber)).flatMap(_.headOption)
+        val maybeTaxCode = for {
+          taxCodesMap <- maybeTaxCodesMap
+          incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))
+          taxCode     <- incomes.headOption
+        } yield taxCode
+
         IncomeTaxHistoryViewModel(
           employment.name,
           employment.payeNumber,
@@ -69,25 +72,24 @@ class IncomeTaxHistoryController @Inject()(
           maybeTaxCode.map(_.taxCode)
         )
       }
-  }.value
+    }
+  }
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
-    val taxYears =
-      (TaxYear().year to (TaxYear().year - config.numberOfPreviousYearsToShow) by -1).map(TaxYear(_)).toList
+    val taxYears = (TaxYear().year to (TaxYear().year - config.numberOfPreviousYearsToShow) by -1)
+      .map(TaxYear(_))
+      .toList
 
-    val futureErrorsAndTaxYears = taxYears
-      .traverse { taxYear =>
-        EitherT(getIncomeTaxHistorySeq(nino, taxYear)).map { seq =>
-          IncomeTaxYear(taxYear, seq.toList)
-        }.value
+    val futureTaxYears = taxYears.traverse { taxYear =>
+      getIncomeTaxHistorySeq(nino, taxYear).map { seq =>
+        IncomeTaxYear(taxYear, seq.toList)
       }
-      .map(_.separate)
+    }
 
     for {
       person            <- personService.personDetails(nino)
-      incomeTaxYearList <- futureErrorsAndTaxYears
-    } yield Ok(incomeTaxHistoryView(config, person, incomeTaxYearList._2))
-
+      incomeTaxYearList <- futureTaxYears
+    } yield Ok(incomeTaxHistoryView(config, person, incomeTaxYearList))
   }
 }
