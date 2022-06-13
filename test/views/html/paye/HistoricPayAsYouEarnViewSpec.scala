@@ -218,6 +218,43 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         doc must haveSpanWithText("Your payroll number is payrollNumber.")
       }
     }
+
+    "show the Employer PAYE reference also referred to as ERN number" when {
+
+      "the income source of type Employment has a employer paye reference" in {
+        val pension: EmploymentViewModel =
+          EmploymentViewModel("employment", 0.00, 1, isPension = true, "754", "NZ00014", Some("pensionNumber"))
+        val viewModelEmployment = HistoricPayAsYouEarnViewModel(
+          cyMinusOneTaxYear,
+          Nil,
+          Seq(employment),
+          hasEmploymentsOrPensions = true,
+          showTaxCodeDescriptionLink = true)
+
+        val sut: Html = createSut(viewModelEmployment)
+        val doc: Document = Jsoup.parse(sut.toString)
+
+        doc must haveSpanWithText("Employer PAYE reference:123/A100")
+      }
+
+      "the income source of type Pension has a employer paye reference" in {
+        val pension: EmploymentViewModel =
+          EmploymentViewModel("employment", 50.00, 1, isPension = false, "754", "NZ00014", Some("pensionNumber"))
+        val viewModelPension = HistoricPayAsYouEarnViewModel(
+          cyMinusOneTaxYear,
+          Seq(pension),
+          Nil,
+          hasEmploymentsOrPensions = true,
+          showTaxCodeDescriptionLink = true)
+
+        val sut: Html = createSut(viewModelPension)
+        val doc: Document = Jsoup.parse(sut.toString)
+
+        doc must haveSpanWithText("Employer PAYE reference:754/NZ00014")
+      }
+
+    }
+
     "show a pension number" when {
       "the income source of type pension has a payroll number" in {
         val pension: EmploymentViewModel =
