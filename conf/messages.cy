@@ -555,10 +555,10 @@ tai.incomeTax.totalEstimatedIncome.subheading=Cyfanswm incwm amcangyfrifedig
 tai.incomeTax.totalIncomeTaxEstimate=Cyfanswm Amcangyfrif Treth Incwm
 tai.incomeTaxBand=Haen Treth Incwm
 
-tai.incomeTax.history.title= xyz
-tai.incomeTax.history.details.summary= xyz {0}
-tai.incomeTax.history.details.address= xyz
-tai.incomeTax.history.details.nationalInsurance = xyz
+tai.incomeTax.history.title=Hanes Treth Incwm
+tai.incomeTax.history.details.summary=Manylion TWE ar gyfer {0}
+tai.incomeTax.history.details.address=Cyfeiriad
+tai.incomeTax.history.details.nationalInsurance=Yswiriant Gwladol
 tai.incomeTax.history.table.link= xyz {0}
 tai.incomeTax.history.pageTitle = xyz
 

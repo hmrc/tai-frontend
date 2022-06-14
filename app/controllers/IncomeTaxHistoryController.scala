@@ -25,6 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
@@ -62,18 +63,23 @@ class IncomeTaxHistoryController @Inject()(
           taxCode     <- incomes.headOption
         } yield taxCode
 
+        val maybeLastPayment = fetchLastPayment(employment, taxYear)
         IncomeTaxHistoryViewModel(
           employment.name,
           employment.payeNumber,
           employment.startDate,
           employment.endDate.getOrElse(LocalDate.now()),
-          employment.latestAnnualAccount.map(_.totalIncomeYearToDate.toString),
-          maybeTaxCode.map(_.amount.toString),
+          maybeLastPayment.map(_.amountYearToDate.toString),
+          maybeLastPayment.map(_.taxAmountYearToDate.toString),
           maybeTaxCode.map(_.taxCode)
         )
       }
     }
   }
+
+  //This method follows the pattern set at HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount
+  private def fetchLastPayment(employment: Employment, taxYear: TaxYear) =
+    employment.annualAccounts.find(_.taxYear.year == taxYear.year).flatMap(_.payments.lastOption)
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
