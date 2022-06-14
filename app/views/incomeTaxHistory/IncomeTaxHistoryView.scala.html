@@ -67,7 +67,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 </div>
 
 @for(incomeTaxYear <- incomeTaxYears) {
-    <h2 class="govuk-heading-m">@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-9" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
     @for(summary <- incomeTaxYear.incomeTaxHistory) {
         <div class="employment-card-single-u">
             <div class="employer-name govuk-body">@summary.employerName</div>
