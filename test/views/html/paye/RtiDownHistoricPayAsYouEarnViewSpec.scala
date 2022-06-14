@@ -34,7 +34,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
   private val cyMinusFourTaxYear: TaxYear = TaxYear(currentYear - 4)
   private val RtiDisabledHistoricPayAsYouEarn = inject[RtiDisabledHistoricPayAsYouEarnView]
   private val employment: EmploymentViewModel =
-    EmploymentViewModel("test employment", 123.32, 1, isPension = false, Some("payrollNumber"))
+    EmploymentViewModel("test employment", 123.32, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
 
   override def view: Html =
     RtiDisabledHistoricPayAsYouEarn(
@@ -64,7 +64,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
     "display a link to view the tax code at the end of the year" when {
       "taxCodeChangeEnabled is true && showTaxCodeDescription is true" in {
         val employment: EmploymentViewModel =
-          EmploymentViewModel("test employment", 0.00, 1, isPension = false, Some("payrollNumber"))
+          EmploymentViewModel("test employment", 0.00, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
         val view: Html = RtiDisabledHistoricPayAsYouEarn(
           HistoricPayAsYouEarnViewModel(
             cyMinusOneTaxYear,
@@ -82,7 +82,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
     "showTaxCodeDescription is false" in {
       val employment: EmploymentViewModel =
-        EmploymentViewModel("test employment", 0.00, 1, isPension = false, Some("payrollNumber"))
+        EmploymentViewModel("test employment", 0.00, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
       val view: Html = RtiDisabledHistoricPayAsYouEarn(
         HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
@@ -107,7 +107,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
     "have a heading for your income" when {
       "when you have a employment" in {
         val employment: EmploymentViewModel =
-          EmploymentViewModel("test employment", 0.00, 1, isPension = false, Some("payrollNumber"))
+          EmploymentViewModel("test employment", 0.00, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
         val view: Html = RtiDisabledHistoricPayAsYouEarn(
           HistoricPayAsYouEarnViewModel(
             cyMinusOneTaxYear,
@@ -122,7 +122,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
       "when you have a pension" in {
         val pension: EmploymentViewModel =
-          EmploymentViewModel("test employment", 0.00, 1, isPension = true, Some("payrollNumber"))
+          EmploymentViewModel("test employment", 0.00, 1, isPension = true, "754", "NZ00014", Some("payrollNumber"))
         val view: Html = RtiDisabledHistoricPayAsYouEarn(
           HistoricPayAsYouEarnViewModel(
             cyMinusOneTaxYear,
@@ -137,9 +137,9 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
       "when you have a pension and employment" in {
         val employment: EmploymentViewModel =
-          EmploymentViewModel("test employment", 0.00, 1, isPension = false, Some("payrollNumber"))
+          EmploymentViewModel("test employment", 0.00, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
         val pension: EmploymentViewModel =
-          EmploymentViewModel("test employment", 0.00, 1, isPension = true, Some("payrollNumber"))
+          EmploymentViewModel("test employment", 0.00, 1, isPension = true, "754", "NZ00014", Some("payrollNumber"))
         val view: Html = RtiDisabledHistoricPayAsYouEarn(
           HistoricPayAsYouEarnViewModel(
             cyMinusOneTaxYear,
@@ -165,7 +165,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       "the viewmodel contains one employment containing an AnnualAccount which has no payments or updates" in {
 
         val employment: EmploymentViewModel =
-          EmploymentViewModel("employment", 0.00, 1, isPension = false, Some("payrollNumber"))
+          EmploymentViewModel("employment", 0.00, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
         val vm = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Nil,
@@ -192,7 +192,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
     "show a payroll number" when {
       "the income source of type employer has a payroll number" in {
         val employment: EmploymentViewModel =
-          EmploymentViewModel("employment", 0.00, 1, isPension = false, Some("payrollNumber"))
+          EmploymentViewModel("employment", 0.00, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
         val vm = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Nil,
@@ -210,7 +210,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
     "show a pension number" when {
       "the income source of type pension has a payroll number" in {
         val pension: EmploymentViewModel =
-          EmploymentViewModel("employment", 0.00, 1, isPension = true, Some("pensionNumber"))
+          EmploymentViewModel("employment", 0.00, 1, isPension = true, "754", "NZ00014", Some("pensionNumber"))
         val vm = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Seq(pension),
@@ -228,7 +228,8 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
     "doesnt show a payroll number" when {
       "the income source of type employer does not have a payroll number" in {
-        val employment: EmploymentViewModel = EmploymentViewModel("employment", 0.00, 1, isPension = false, None)
+        val employment: EmploymentViewModel =
+          EmploymentViewModel("employment", 0.00, 1, isPension = false, "754", "NZ00014", None)
         val vm = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Nil,
@@ -245,7 +246,8 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
     }
     "doesnt show a pension number" when {
       "the income source of type pension does not have a payroll number" in {
-        val pension: EmploymentViewModel = EmploymentViewModel("employment", 0.00, 1, isPension = true, None)
+        val pension: EmploymentViewModel =
+          EmploymentViewModel("employment", 0.00, 1, isPension = true, "754", "NZ00014", None)
         val vm = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Seq(pension),
@@ -265,7 +267,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       "the viewmodel contains one pension" in {
 
         val pension: EmploymentViewModel =
-          EmploymentViewModel("pension", 0.00, 1, isPension = true, Some("payrollNumber"))
+          EmploymentViewModel("pension", 0.00, 1, isPension = true, "754", "NZ00014", Some("payrollNumber"))
         val vm = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Seq(pension),
@@ -340,9 +342,23 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       "multiple employments exist containing an AnnualAccount which has payments" in {
 
         val employment1: EmploymentViewModel =
-          EmploymentViewModel("test employment 1", 123.32, 1, isPension = false, Some("payrollNumber"))
+          EmploymentViewModel(
+            "test employment 1",
+            123.32,
+            1,
+            isPension = false,
+            "754",
+            "NZ00014",
+            Some("payrollNumber"))
         val employment2: EmploymentViewModel =
-          EmploymentViewModel("test employment 2", 345.54, 2, isPension = false, Some("payrollNumber"))
+          EmploymentViewModel(
+            "test employment 2",
+            345.54,
+            2,
+            isPension = false,
+            "754",
+            "NZ00014",
+            Some("payrollNumber"))
         val vm = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Nil,
@@ -487,7 +503,8 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
   "display navigation" when {
     "number of previous years to show is greater than zero" in {
-      val employment: EmploymentViewModel = EmploymentViewModel("", 0.00, 0, isPension = false, Some("payrollNumber"))
+      val employment: EmploymentViewModel =
+        EmploymentViewModel("", 0.00, 0, isPension = false, "754", "NZ00014", Some("payrollNumber"))
       val vm = HistoricPayAsYouEarnViewModel(
         cyMinusOneTaxYear,
         Nil,
@@ -505,7 +522,8 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
   "not display navigation" when {
     "number of previous years to show is 1" in {
-      val employment: EmploymentViewModel = EmploymentViewModel("", 0.00, 0, isPension = false, Some("payrollNumber"))
+      val employment: EmploymentViewModel =
+        EmploymentViewModel("", 0.00, 0, isPension = false, "754", "NZ00014", Some("payrollNumber"))
       val vm = HistoricPayAsYouEarnViewModel(
         cyMinusOneTaxYear,
         Nil,
@@ -521,7 +539,8 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
     }
 
     "number of previous years to show is less than 1" in {
-      val employment: EmploymentViewModel = EmploymentViewModel("", 0.00, 0, isPension = false, Some("payrollNumber"))
+      val employment: EmploymentViewModel =
+        EmploymentViewModel("", 0.00, 0, isPension = false, "754", "NZ00014", Some("payrollNumber"))
       val vm = HistoricPayAsYouEarnViewModel(
         cyMinusOneTaxYear,
         Nil,
