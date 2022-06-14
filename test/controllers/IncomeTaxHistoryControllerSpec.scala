@@ -27,7 +27,7 @@ import play.api.http.Status.OK
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
@@ -37,10 +37,11 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
+  val taxCodeChangeService = mock[TaxCodeChangeService]
   val personService = mock[PersonService]
 
   override def beforeEach: Unit =
-    Mockito.reset(taxAccountService, employmentService)
+    Mockito.reset(taxAccountService, employmentService, taxCodeChangeService)
 
   class TestController
       extends IncomeTaxHistoryController(
@@ -51,6 +52,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         inject[IncomeTaxHistoryView],
         mcc,
         taxAccountService,
+        taxCodeChangeService,
         employmentService,
         inject[ErrorPagesHandler]
       )
@@ -64,6 +66,11 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
         when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
           Right(Seq(taxCodeIncome)))
+        when(taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(any(), any())(any())) thenReturn Future
+          .successful(
+            Nil
+          )
+
         when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
           Seq(empEmployment1, empEmployment2))
 
@@ -76,9 +83,13 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
+        verify(taxAccountService, times(1)).taxCodeIncomesV2(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
         for (taxYear <- taxYears) {
           verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
-          verify(taxAccountService, times(1)).taxCodeIncomesV2(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
+        }
+        for (taxYear <- taxYears.tail) {
+          verify(taxCodeChangeService, times(1))
+            .lastTaxCodeRecordsInYearPerEmployment(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
         }
       }
 
@@ -88,6 +99,10 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
           Right(Seq(taxCodeIncome)))
         when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
           Seq(pensionEmployment3, pensionEmployment4))
+        when(taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(any(), any())(any())) thenReturn Future
+          .successful(
+            Nil
+          )
 
         when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
@@ -98,9 +113,13 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
+        verify(taxAccountService, times(1)).taxCodeIncomesV2(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
         for (taxYear <- taxYears) {
           verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
-          verify(taxAccountService, times(1)).taxCodeIncomesV2(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
+        }
+        for (taxYear <- taxYears.tail) {
+          verify(taxCodeChangeService, times(1))
+            .lastTaxCodeRecordsInYearPerEmployment(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
         }
       }
     }
