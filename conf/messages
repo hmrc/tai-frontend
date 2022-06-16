@@ -646,6 +646,7 @@ tai.incomeTaxSummary.incomeAmount.prefix=Your estimated taxable income is
 tai.incomeTaxSummary.link=Your PAYE Income Tax summary
 tai.incomeTaxSummary.otherIncomeSources.heading=Your income from other sources
 tai.incomeTaxSummary.payrollNumber.prefix=Payroll number: {0}
+tai.incomeTaxSummary.pensionNumber.prefix=Pension number: {0}
 tai.incomeTaxSummary.pension.link=View or update pension details
 tai.incomeTaxSummary.pension.section.heading=Your current private pensions
 tai.incomeTaxSummary.taxCode.prefix=Tax code: {0}
