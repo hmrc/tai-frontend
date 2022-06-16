@@ -24,7 +24,7 @@ class UpdateEmploymentCheckYourAnswersViewSpec extends TaiViewSpec {
 
   "check your answers page" must {
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
       messages("tai.checkYourAnswers.title"))
     behave like pageWithButtonForm(
@@ -36,7 +36,7 @@ class UpdateEmploymentCheckYourAnswersViewSpec extends TaiViewSpec {
     "display a back button" which {
       "links to the add telephone form page" when {
         "page is displayed" in {
-          doc must haveBackLink
+          doc must haveBackLinkNew
         }
       }
     }

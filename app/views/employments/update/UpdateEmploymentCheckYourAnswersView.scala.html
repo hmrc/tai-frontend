@@ -21,36 +21,43 @@
 
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF)
 
 @(viewModel: UpdateEmploymentCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 @header = @{
     ptaHeader(
-    displayBackLink = true,
+    displayBackLink = false,
     mainHeadingText = Messages("tai.checkYourAnswers.title"),
-    preHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")
+    preHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
+    showGdsVersion = true
 )
 }
 
-@mainTemplate(
+@main(
     title = Messages("tai.checkYourAnswers.title"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent = Some(Messages("tai.back-link.upper"))
 ) {
-    @checkYourAnswers(
-        title = Some(viewModel.employerName),
-        confirmationLines = viewModel.journeyConfirmationLines
-    )
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @header
 
-    <p class="subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
+        @checkYourAnswers(
+            title = Some(viewModel.employerName),
+            confirmationLines = viewModel.journeyConfirmationLines
+        )
+
+        <p class="govuk-body">@Messages("tai.checkYourAnswers.confirmText")</p>
 
 
-    @form(action = controllers.employments.routes.UpdateEmploymentController.submitYourAnswers()) {
-        @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
-    }
+        @form(action = controllers.employments.routes.UpdateEmploymentController.submitYourAnswers()) {
+            @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
+        }
 
-    @cancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(viewModel.id))
+        @cancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(viewModel.id))
+    </div>
+</div>
 
 }
