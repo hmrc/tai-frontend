@@ -26,11 +26,13 @@ class HowToUpdateViewSpec extends TaiViewSpec {
   val employerName = "Employer"
 
   "How to update view" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
     behave like pageWithTitle(messages("tai.howToUpdate.title"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.howToUpdate.preHeading", employerName),
-      messages("tai.howToUpdate.heading", employerName))
+      messages("tai.howToUpdate.heading", employerName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
   }
 
   private val template = inject[HowToUpdateView]
