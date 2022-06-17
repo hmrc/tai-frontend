@@ -48,9 +48,15 @@
                         linkClasses = Seq("display-tax-code-for-print"))
                     }
                 }
-                @if(incomeSource.displayPayrollNumber){
+
+                @if(incomeSource.displayPayrollNumber && typeLabel == "employment"){
                 <span id="@{typeLabel}@{idx}PayrollNumber" class="carry-over govuk-!-display-block display-block ">@Messages("tai.incomeTaxSummary.payrollNumber.prefix", incomeSource.payrollNumber)</span>
                 }
+
+                @if(incomeSource.displayPayrollNumber && typeLabel == "pension"){
+                <span id="@{typeLabel}@{idx}PensionNumber" class="carry-over govuk-!-display-block display-block ">@Messages("tai.incomeTaxSummary.pensionNumber.prefix", incomeSource.payrollNumber)</span>
+                }
+
                 @if(incomeSource.displayEndDate){
                 <span id="@{typeLabel}@{idx}EndDate" class="govuk-!-display-block display-block">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</span>
                 }

@@ -648,6 +648,7 @@ tai.incomeTaxSummary.incomeAmount.prefix=Eich incwm trethadwy amcangyfrifedig yw
 tai.incomeTaxSummary.link=Eich crynodeb o Dreth Incwm TWE
 tai.incomeTaxSummary.otherIncomeSources.heading=Eich incwm o ffynonellau eraill
 tai.incomeTaxSummary.payrollNumber.prefix=Rhif cyflogres: {0}
+tai.incomeTaxSummary.pensionNumber.prefix=Rhif pensiwn: {0}
 tai.incomeTaxSummary.pension.link=Gweld neu ddiweddaru manylion pensiwn
 tai.incomeTaxSummary.pension.section.heading=Eich pensiynau preifat presennol
 tai.incomeTaxSummary.taxCode.prefix=Cod treth: {0}
