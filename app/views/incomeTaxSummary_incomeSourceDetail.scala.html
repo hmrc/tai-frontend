@@ -41,11 +41,11 @@
             <p class="govuk-body flush--top">
                 @if(incomeSource.displayTaxCode) {
                     @incomeSource.taxCodeUrl.map { taxCodeUrl =>
-                    @link(
-                        id = Some(s"${typeLabel}${idx}TaxCodeLink"),
-                        url = taxCodeUrl.url,
-                        copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode),
-                        linkClasses = Seq("display-tax-code-for-print"))
+                        @link(
+                            id = Some(s"${typeLabel}${idx}TaxCodeLink"),
+                            url = taxCodeUrl.url,
+                            copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode),
+                            linkClasses = Seq("display-tax-code-for-print"))
                     }
                 }
 
@@ -58,8 +58,9 @@
                 }
 
                 @if(incomeSource.displayEndDate){
-                <span id="@{typeLabel}@{idx}EndDate" class="govuk-!-display-block display-block">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</span>
+                    <span id="@{typeLabel}@{idx}EndDate" class="govuk-!-display-block display-block">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</span>
                 }
+
             </p>
 
             @if(incomeSource.displayDetailsLink){

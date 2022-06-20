@@ -328,10 +328,15 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       document must not(haveElementWithId("employment1TaxCodeLink"))
     }
 
-    "show the payroll number when instructed" in {
+//    messages("tai.income.details.ERN") +":@incomeSource.taxDistrictNumber/@incomeSource.payeNumber
+    "show the Employer PAYE reference also referred to as ERN number" in {
       doc must haveElementAtPathWithText(
-        "#employment1PayrollNumber",
-        messages("tai.incomeTaxSummary.payrollNumber.prefix", activeEmployment.payrollNumber))
+        "#employment1PayeNumber",
+        messages("tai.income.details.ERN") +
+          ":" +
+          activeEmployment.taxDistrictNumber +
+          "/" +
+          activeEmployment.payeNumber)
     }
 
     "omit a payroll number when instructed" in {
@@ -509,6 +514,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       "£23,000",
       "1150L",
       displayTaxCode = true,
+      "123",
+      "A100",
       "123456",
       displayPayrollNumber = true,
       "",
@@ -524,6 +531,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       "1150L",
       displayTaxCode = true,
       "",
+      "",
+      "",
       displayPayrollNumber = false,
       "31 July 2017",
       displayEndDate = true,
@@ -537,29 +546,37 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       "",
       displayTaxCode = false,
       "",
+      "",
+      "",
       displayPayrollNumber = false,
       "",
       displayEndDate = false,
       "view pension details",
-      "fake/pension/url")
+      "fake/pension/url"
+    )
   val employments: Seq[IncomeSourceViewModel] = Seq(
     IncomeSourceViewModel(
       "Company1",
       "£23,000",
       "1150L",
       displayTaxCode = true,
+      "123",
+      "A100",
       "123456",
       displayPayrollNumber = true,
       "",
       displayEndDate = false,
       "view income details",
-      "fake/url"))
+      "fake/url"
+    ))
 
   val otherIncomeSourceViewModel = IncomeSourceViewModel(
     "State Pension",
     "£123",
     "",
     displayTaxCode = false,
+    "",
+    "",
     "",
     displayPayrollNumber = false,
     "",
