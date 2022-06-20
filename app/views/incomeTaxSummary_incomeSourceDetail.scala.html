@@ -48,9 +48,8 @@
                             linkClasses = Seq("display-tax-code-for-print"))
                     }
                 }
-
-                @if(incomeSource.displayPayrollNumber && typeLabel == "employment"){
-                <span id="@{typeLabel}@{idx}PayrollNumber" class="carry-over govuk-!-display-block display-block ">@Messages("tai.incomeTaxSummary.payrollNumber.prefix", incomeSource.payrollNumber)</span>
+                @if(incomeSource.displayPayrollNumber && typeLabel=="employment"){
+                    <span id="@{typeLabel}@{idx}PayeNumber" class="carry-over govuk-!-display-block display-block ">@messages("tai.income.details.ERN"):@incomeSource.taxDistrictNumber/@incomeSource.payeNumber</span>
                 }
 
                 @if(incomeSource.displayPayrollNumber && typeLabel == "pension"){
