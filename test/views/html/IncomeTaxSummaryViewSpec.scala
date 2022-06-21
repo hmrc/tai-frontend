@@ -328,7 +328,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       document must not(haveElementWithId("employment1TaxCodeLink"))
     }
 
-//    messages("tai.income.details.ERN") +":@incomeSource.taxDistrictNumber/@incomeSource.payeNumber
     "show the Employer PAYE reference also referred to as ERN number" in {
       doc must haveElementAtPathWithText(
         "#employment1PayeNumber",
