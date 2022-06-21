@@ -227,6 +227,8 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
           "£1,111",
           "1150L",
           true,
+          "DIST1",
+          "PAYE1",
           "1ABC",
           true,
           "",
