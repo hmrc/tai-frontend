@@ -49,8 +49,8 @@ ec: scala.concurrent.ExecutionContext)
         </div>
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body">@messages("tai.incomes.landing.intro")</p>
-            <a id="updateEstimatedPayTotalIncome" aria-hidden="true" class="govuk-visually-hidden">@messages("tai.incomes.landing.employment.totalIncome", totalEstimatedIncome)</a>
-            <p id="updateEstimatedPayLink" aria-hidden="true" class="govuk-visually-hidden"><a href="@routes.EstimatedIncomeTaxController.estimatedIncomeTax">@messages("tai.incomes.landing.employment.affect")</a></p>
+            <a id="updateEstimatedPayTotalIncome" aria-hidden="true">@messages("tai.incomes.landing.employment.totalIncome", totalEstimatedIncome)</a>
+            <p id="updateEstimatedPayLink" aria-hidden="true" ><a href="@routes.EstimatedIncomeTaxController.estimatedIncomeTax">@messages("tai.incomes.landing.employment.affect")</a></p>
             <p class="govuk-body">
                 @if(isPension) {
                     @messages("tai.incomes.landing.pension.ended", incomeName)
