@@ -37,11 +37,10 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
-  val taxCodeChangeService = mock[TaxCodeChangeService]
   val personService = mock[PersonService]
 
   override def beforeEach: Unit =
-    Mockito.reset(taxAccountService, employmentService, taxCodeChangeService)
+    Mockito.reset(taxAccountService, employmentService, personService)
 
   class TestController
       extends IncomeTaxHistoryController(
@@ -52,7 +51,6 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         inject[IncomeTaxHistoryView],
         mcc,
         taxAccountService,
-        taxCodeChangeService,
         employmentService,
         inject[ErrorPagesHandler]
       )
@@ -64,17 +62,17 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
     "display the income tax history page" when {
       "employment data is returned" in {
 
-        when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
-          Right(Seq(taxCodeIncome)))
-        when(taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(any(), any())(any())) thenReturn Future
-          .successful(
-            Nil
-          )
+        for (taxYear <- taxYears) {
 
-        when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
-          Seq(empEmployment1, empEmployment2))
+          when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
+            Right(Seq(taxCodeIncome)))
 
-        when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
+          when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
+            Seq(empEmployment1, empEmployment2))
+
+          when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
+
+        }
 
         val controller = new TestController
         val result = controller.onPageLoad()(request)
@@ -83,28 +81,21 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(taxAccountService, times(1)).taxCodeIncomesV2(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
-        for (taxYear <- taxYears) {
-          verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
-        }
-        for (taxYear <- taxYears.tail) {
-          verify(taxCodeChangeService, times(1))
-            .lastTaxCodeRecordsInYearPerEmployment(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
-        }
+        verify(employmentService, times(5)).employments(any(), any())(any())
+        verify(taxAccountService, times(5)).taxCodeIncomesV2(any(), any())(any())
+
       }
 
       "pension data is returned" in {
+        for (taxYear <- taxYears) {
 
-        when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
-          Right(Seq(taxCodeIncome)))
-        when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
-          Seq(pensionEmployment3, pensionEmployment4))
-        when(taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(any(), any())(any())) thenReturn Future
-          .successful(
-            Nil
-          )
+          when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
+            Right(Seq(taxCodeIncome)))
+          when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
+            Seq(pensionEmployment3, pensionEmployment4))
+          when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
-        when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
+        }
 
         val controller = new TestController
         val result = controller.onPageLoad()(request)
@@ -113,14 +104,9 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(taxAccountService, times(1)).taxCodeIncomesV2(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
-        for (taxYear <- taxYears) {
-          verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
-        }
-        for (taxYear <- taxYears.tail) {
-          verify(taxCodeChangeService, times(1))
-            .lastTaxCodeRecordsInYearPerEmployment(Matchers.any(), Matchers.eq(taxYear))(Matchers.any())
-        }
+        verify(taxAccountService, times(5)).taxCodeIncomesV2(Matchers.any(), any())(Matchers.any())
+        verify(employmentService, times(5)).employments(Matchers.any(), any())(Matchers.any())
+
       }
     }
   }

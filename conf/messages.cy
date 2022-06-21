@@ -560,7 +560,7 @@ tai.incomeTax.history.details.summary=Manylion TWE ar gyfer {0}
 tai.incomeTax.history.details.address=Cyfeiriad
 tai.incomeTax.history.details.nationalInsurance=Yswiriant Gwladol
 tai.incomeTax.history.table.link= xyz {0}
-tai.incomeTax.history.pageTitle = xyz
+tai.incomeTax.history.pageTitle=Hanes treth incwm – Gwiriwch eich Treth Incwm – GOV.UK
 
 tai.incomeTaxComparison.incomeSourceAbsent=Ddim ar gael
 tai.incomeTaxComparison.incomeTax.column1=yn dod i ben ar {0}
