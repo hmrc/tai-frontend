@@ -16,7 +16,7 @@
 
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@this(mainTemplate: MainTemplate)
+@this(main: MainTempleteNew)
 
 @(incomeName: String, id: Int, totalEstimatedIncome: String, isPension: Boolean, appConfig: ApplicationConfig)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
@@ -30,47 +30,55 @@ ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = messages("tai.incomes.landing.Heading", incomeName),
+        showGdsVersion =true,
         preHeadingText = messages("tai.howToUpdate.preHeading", incomeName)
     )
 }
 
-@mainTemplate(
+@main(
     title = messages("tai.incomes.landing.title", incomeName),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink",
 ){
-    <div>
-        <p>@messages("tai.incomes.landing.intro")</p>
-        <p id="updateEstimatedPayTotalIncome" aria-hidden="true">@messages("tai.incomes.landing.employment.totalIncome", totalEstimatedIncome)</p>
-        <p id="updateEstimatedPayLink" aria-hidden="true"><a href="@routes.EstimatedIncomeTaxController.estimatedIncomeTax">@messages("tai.incomes.landing.employment.affect")</a></p>
-        <p>
-            @if(isPension) {
-                @messages("tai.incomes.landing.pension.ended", incomeName)
-                @link(
-                        url=appConfig.incomeFromEmploymentPensionLinkUrl,
-                        copy=messages("tai.incomes.landing.pension.ended.link"),
-                        id=Some("updatePension")
+    <div class="govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @header
+        </div>
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body">@messages("tai.incomes.landing.intro")</p>
+            <a id="updateEstimatedPayTotalIncome" aria-hidden="true">@messages("tai.incomes.landing.employment.totalIncome", totalEstimatedIncome)</a>
+            <p id="updateEstimatedPayLink" aria-hidden="true" ><a href="@routes.EstimatedIncomeTaxController.estimatedIncomeTax">@messages("tai.incomes.landing.employment.affect")</a></p>
+            <p class="govuk-body">
+                @if(isPension) {
+                    @messages("tai.incomes.landing.pension.ended", incomeName)
+                    @link(
+                            url=appConfig.incomeFromEmploymentPensionLinkUrl,
+                            copy=messages("tai.incomes.landing.pension.ended.link"),
+                            id=Some("updatePension")
+                        )
+                } else {
+                    @messages("tai.incomes.landing.employment.ended", incomeName)
+                    @link(
+                        url=controllers.employments.routes.EndEmploymentController.onPageLoad(id).toString,
+                        copy=messages("tai.incomes.landing.employment.ended.link"),
+                        id=Some("updateEmployer")
                     )
-            } else {
-                @messages("tai.incomes.landing.employment.ended", incomeName)
+                }
+            </p>
+            <div class="govuk-body">
                 @link(
-                    url=controllers.employments.routes.EndEmploymentController.onPageLoad(id).toString,
-                    copy=messages("tai.incomes.landing.employment.ended.link"),
-                    id=Some("updateEmployer")
-                )
-            }
-        </p>
-    </div>
-    <div>
-        @link(
-            copy=messages("tai.income.details.updateTaxableIncome.update"),
-            url = controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).toString,
-            isButton=true
-        )
-
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+                copy=messages("tai.income.details.updateTaxableIncome.update"),
+                url = controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).toString,
+                isButton=true,
+                linkClasses = Seq("govuk-button")
+            )
+                @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+            </div>
+        </div>
+        <div class="govuk-grid-column-one-third"></div>
     </div>
 }

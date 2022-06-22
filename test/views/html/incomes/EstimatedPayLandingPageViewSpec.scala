@@ -29,7 +29,7 @@ class EstimatedPayLandingPageViewSpec extends TaiViewSpec {
   "Estimated Pay Landing Page" should {
     behave like pageWithBackLink
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.howToUpdate.preHeading", employerName),
       messages("tai.incomes.landing.Heading", employerName))
 
