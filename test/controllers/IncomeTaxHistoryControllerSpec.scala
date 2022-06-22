@@ -26,14 +26,18 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.http.Status.OK
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
+import uk.gov.hmrc.http.Upstream5xxResponse
+import uk.gov.hmrc.tai.connectors.responses.TaiTaxAccountFailureResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
+import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
 import scala.concurrent.Future
 
-class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTestData with BeforeAndAfterEach {
+class IncomeTaxHistoryControllerSpec
+    extends BaseSpec with TaxAccountSummaryTestData with BeforeAndAfterEach with JsoupMatchers {
 
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
@@ -103,6 +107,32 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
+
+        verify(taxAccountService, times(5)).taxCodeIncomesV2(Matchers.any(), any())(Matchers.any())
+        verify(employmentService, times(5)).employments(Matchers.any(), any())(Matchers.any())
+
+      }
+    }
+    "display the income tax history page with no tax history message" when {
+      "given taxYear returns no data" in {
+
+        for (taxYear <- taxYears) {
+
+          when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
+            Left(TaiTaxAccountFailureResponse("")))
+          when(employmentService.employments(any(), any())(any())) thenReturn Future.failed(
+            Upstream5xxResponse("", 500, 500, Map.empty))
+          when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
+
+        }
+
+        val controller = new TestController
+        val result = controller.onPageLoad()(request)
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
+        doc must haveParagraphWithText(Messages("tai.incomeTax.history.noTaxHistory"))
 
         verify(taxAccountService, times(5)).taxCodeIncomesV2(Matchers.any(), any())(Matchers.any())
         verify(employmentService, times(5)).employments(Matchers.any(), any())(Matchers.any())
