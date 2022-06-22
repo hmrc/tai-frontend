@@ -83,6 +83,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                 }
                 @if(summary.maybeTaxCode.isDefined) {
                     <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.taxCode") </span>@summary.maybeTaxCode</li>
+                } else {
+                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.taxCode") </span>@messages("tai.incomeTax.history.unavailable")</li>
                 }
             </ul>
         </div>
