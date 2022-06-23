@@ -82,17 +82,17 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
         <div class="employment-card-single-u">
             <div class="employer-name govuk-body">@summary.employerName</div>
             <ul class="govuk-list govuk-!-font-size-16">
-                <li><span>Employer PAYE reference</span> @summary.ern	</li>
-                <li><span>Start date</span> @summary.startDate	</li>
-                <li><span>End date</span> @summary.endDate	</li>
+                <li><span>@Messages("tai.incomeTax.history.employerReference")</span> @summary.ern	</li>
+                <li><span>@Messages("tai.incomeTax.history.startDate")</span> @summary.startDate	</li>
+                <li><span>@Messages("tai.incomeTax.history.endDate")</span> @summary.endDate	</li>
                 @if(summary.maybeTaxableIncome.isDefined) {
-                    <li><span>Taxable income </span>@summary.maybeTaxableIncome</li>
+                    <li><span>@Messages("tai.incomeTax.history.taxableIncome") </span>@summary.maybeTaxableIncome</li>
                 }
                 @if(summary.maybeIncomeTaxPaid.isDefined) {
-                    <li><span>Income tax paid </span>@summary.maybeIncomeTaxPaid</li>
+                    <li><span>@Messages("tai.incomeTax.history.incomeTaxPaid") </span>@summary.maybeIncomeTaxPaid</li>
                 }
                 @if(summary.maybeTaxCode.isDefined) {
-                    <li><span>Tax code </span>@summary.maybeTaxCode</li>
+                    <li><span>@Messages("tai.incomeTax.history.taxCode") </span>@summary.maybeTaxCode</li>
                 }
             </ul>
         </div>
