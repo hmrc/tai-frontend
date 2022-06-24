@@ -1425,6 +1425,7 @@ tai.urbanner.title=Help improve GOV.UK
 tai.urbanner.text=Help make the PAYE service better by taking part in a survey (opens in a new window).
 tai.urbanner.reject=No thanks
 
+checkProgress.important=Important
 checkProgress.link=Check the progress of your update
 
 tai.information = Information

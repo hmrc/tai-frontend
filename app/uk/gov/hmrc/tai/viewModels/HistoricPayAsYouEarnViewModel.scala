@@ -57,6 +57,8 @@ object HistoricPayAsYouEarnViewModel {
         if (account.payments.isEmpty) 0 else account.payments.last.amountYearToDate,
         employment.sequenceNumber,
         employment.receivingOccupationalPension,
+        employment.taxDistrictNumber,
+        employment.payeNumber,
         employment.payrollNumber
       )
 
@@ -65,5 +67,7 @@ object HistoricPayAsYouEarnViewModel {
     taxablePayYTD: BigDecimal,
     id: Int,
     isPension: Boolean,
+    taxDistrictNumber: String,
+    payeNumber: String,
     payrollNumber: Option[String])
 }
