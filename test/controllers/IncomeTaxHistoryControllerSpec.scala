@@ -81,8 +81,8 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(employmentService, times(5)).employments(any(), any())(any())
-        verify(taxAccountService, times(5)).taxCodeIncomesV2(any(), any())(any())
+        verify(employmentService, times(6)).employments(any(), any())(any())
+        verify(taxAccountService, times(6)).taxCodeIncomesV2(any(), any())(any())
 
       }
 
@@ -104,8 +104,8 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(taxAccountService, times(5)).taxCodeIncomesV2(Matchers.any(), any())(Matchers.any())
-        verify(employmentService, times(5)).employments(Matchers.any(), any())(Matchers.any())
+        verify(taxAccountService, times(6)).taxCodeIncomesV2(Matchers.any(), any())(Matchers.any())
+        verify(employmentService, times(6)).employments(Matchers.any(), any())(Matchers.any())
 
       }
     }
