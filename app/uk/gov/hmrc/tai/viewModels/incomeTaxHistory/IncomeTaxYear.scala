@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain
+package uk.gov.hmrc.tai.viewModels.incomeTaxHistory
 
-import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.tai.model.TaxYear
 
-case class Person(
-  nino: Nino,
-  firstName: String,
-  surname: String,
-  isDeceased: Boolean,
-  manualCorrespondenceInd: Boolean,
-  address: Address) {
-  lazy val name = s"$firstName $surname"
-}
-
-object Person {
-  implicit val personFormat: Format[Person] = Json.format[Person]
-}
+case class IncomeTaxYear(taxYear: TaxYear, incomeTaxHistory: List[IncomeTaxHistoryViewModel])

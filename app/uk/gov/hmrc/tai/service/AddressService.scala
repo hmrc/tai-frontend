@@ -16,21 +16,21 @@
 
 package uk.gov.hmrc.tai.service
 
+import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.PersonConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.model.domain.Person
+import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
+import uk.gov.hmrc.tai.model.domain.{Address, Person}
 
-import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PersonService @Inject()(personConnector: PersonConnector) {
+class AddressService @Inject()(taiConnector: TaiConnector, personConnector: PersonConnector) {
 
-  def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] =
+  def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Address] =
     personConnector.person(nino) map {
-      case TaiSuccessResponseWithPayload(person: Person) => person
+      case TaiSuccessResponseWithPayload(address: Address) => address
       case _ =>
         throw new RuntimeException(s"Failed to retrieve person details for nino ${nino.nino}. Unable to proceed.")
     }

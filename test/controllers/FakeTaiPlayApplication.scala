@@ -27,7 +27,7 @@ import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.domain.Person
+import uk.gov.hmrc.tai.model.domain.{Address, Person}
 import uk.gov.hmrc.webchat.client.WebChatClient
 import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
 
@@ -60,7 +60,8 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
     .asInstanceOf[ch.qos.logback.classic.Logger]
     .setLevel(ch.qos.logback.classic.Level.WARN)
 
-  def fakePerson(nino: Nino) = Person(nino, "firstname", "surname", false, false)
+  val address = Address("line1", "line2", "line3", "postcode", "country")
+  def fakePerson(nino: Nino) = Person(nino, "firstname", "surname", false, false, address)
   val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
 
   abstract override def run(testName: Option[String], args: Args): Status =

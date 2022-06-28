@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain
+package uk.gov.hmrc.tai.viewModels.incomeTaxHistory
 
-import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.domain.Nino
+import java.time.LocalDate
 
-case class Person(
-  nino: Nino,
-  firstName: String,
-  surname: String,
-  isDeceased: Boolean,
-  manualCorrespondenceInd: Boolean,
-  address: Address) {
-  lazy val name = s"$firstName $surname"
-}
-
-object Person {
-  implicit val personFormat: Format[Person] = Json.format[Person]
-}
+case class IncomeTaxHistoryViewModel(
+  employerName: String,
+  ern: String,
+  startDate: LocalDate,
+  endDate: LocalDate,
+  maybeTaxableIncome: Option[String],
+  maybeIncomeTaxPaid: Option[String],
+  maybeTaxCode: Option[String])

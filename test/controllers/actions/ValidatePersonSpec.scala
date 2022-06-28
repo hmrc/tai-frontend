@@ -37,7 +37,7 @@ import org.mockito.Matchers._
 import org.mockito.Mockito.when
 import play.api.mvc.AbstractController
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.model.domain.Person
+import uk.gov.hmrc.tai.model.domain.{Address, Person}
 import uk.gov.hmrc.tai.service.PersonService
 import utils.BaseSpec
 
@@ -61,7 +61,8 @@ class ValidatePersonSpec extends BaseSpec {
       "redirect the user to a deceased page " in {
 
         when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(Person(nino, "firstName", "Surname", personDeceased, false)))
+          .thenReturn(Future.successful(
+            Person(nino, "firstName", "Surname", personDeceased, manualCorrespondenceInd = false, address)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 
@@ -78,7 +79,8 @@ class ValidatePersonSpec extends BaseSpec {
       "not redirect the user to a deceased page " in {
 
         when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(Person(nino, "firstName", "Surname", personAlive, false)))
+          .thenReturn(Future.successful(
+            Person(nino, "firstName", "Surname", personAlive, manualCorrespondenceInd = false, address)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 
@@ -91,8 +93,8 @@ class ValidatePersonSpec extends BaseSpec {
 
       "redirect to an mci error page if user's manualCorrespondenceInd is true " in {
         when(personService.personDetails(any())(any()))
-          .thenReturn(
-            Future.successful(Person(nino, "firstName", "Surname", personAlive, manualCorrespondenceInd = true)))
+          .thenReturn(Future.successful(
+            Person(nino, "firstName", "Surname", personAlive, manualCorrespondenceInd = true, address)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 

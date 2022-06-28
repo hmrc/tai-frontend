@@ -16,13 +16,10 @@
 
 package utils
 
-import controllers.FakeAuthAction
-import java.time.LocalDate
-import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 
-import scala.util.Random
+import java.time.LocalDate
 
 trait TaxAccountSummaryTestData {
 
@@ -223,3 +220,5 @@ trait TaxAccountSummaryTestData {
   )
 
 }
+
+object TaxAccountSummaryTestData extends TaxAccountSummaryTestData

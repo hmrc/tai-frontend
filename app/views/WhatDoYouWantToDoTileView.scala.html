@@ -98,12 +98,19 @@
                         bodyContent = None
                     )
 
-                    @if(model.showJrsTile){
                     @card(
-                    url = Some("/check-income-tax/jrs-claims"),
-                    id = "jrsClaims",
-                    heading = messages("check.jrs.claims")
+                        url = Some(s"/check-income-tax/income-tax-history"),
+                        id = "incomeTaxHistory",
+                        heading = messages("income.tax.history"),
+                        bodyContent = Some(messages("income.tax.history.content"))
                     )
+
+                    @if(model.showJrsTile){
+                        @card(
+                            url = Some("/check-income-tax/jrs-claims"),
+                            id = "jrsClaims",
+                            heading = messages("check.jrs.claims")
+                        )
                     }
 
                 </div>

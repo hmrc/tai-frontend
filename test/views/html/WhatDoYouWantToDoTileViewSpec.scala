@@ -45,7 +45,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
         val cards = doc.getElementsByClass("card")
 
-        cards.size mustBe 3
+        cards.size mustBe 4
         cards.toString must include(Messages("current.tax.year"))
         doc(view) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
         cards.toString mustNot include(Messages("next.year"))
@@ -53,7 +53,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.toString must include(Messages("earlier"))
         cards.toString must include(Messages("check.tax.previous.years"))
         cards.toString must include(Messages("claim.tax.relief.wfh"))
-
+        cards.toString must include(Messages("income.tax.history"))
+        cards.toString must include(Messages("income.tax.history.content"))
       }
 
       "CY+1 is enabled" in {
@@ -63,7 +64,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         val nextYearView: Html = whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
 
-        cards.size mustBe 4
+        cards.size mustBe 5
         cards.toString must include(Messages("current.tax.year"))
         doc(nextYearView) must haveParagraphWithText(
           Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
@@ -83,7 +84,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         val nextYearView: Html = whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
 
-        cards.size mustBe 5
+        cards.size mustBe 6
         cards.toString must include("Check your latest tax code change")
         cards.toString must include("Find out what has changed and what happens next")
         cards.toString must include(Messages("claim.tax.relief.wfh"))
@@ -96,7 +97,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         val nextYearView: Html = whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
 
-        cards.size mustBe 4
+        cards.size mustBe 5
         cards.toString mustNot include("Check your latest tax code change")
         cards.toString mustNot include("Find out what has changed and what happens next")
         cards.toString must include(Messages("claim.tax.relief.wfh"))
@@ -110,7 +111,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       val jrsClaimView: Html = whatDoYouWantToDoTileView(form, modelJrsTileEnabled, appConfig)
       val cards = doc(jrsClaimView).getElementsByClass("card")
 
-      cards.size mustBe 4
+      cards.size mustBe 5
 
       cards.toString must include(Messages("current.tax.year"))
       doc(view) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))

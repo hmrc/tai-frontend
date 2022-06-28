@@ -41,6 +41,15 @@ class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     taxAccountConnector.taxCodeIncomes(nino, year)
 
+  def taxCodeIncomesV2(nino: Nino, year: TaxYear)(
+    implicit hc: HeaderCarrier): Future[Either[TaiResponse, Seq[TaxCodeIncome]]] =
+    taxAccountConnector.taxCodeIncomes(nino, year).map {
+      case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) =>
+        Right(taxCodeIncomes)
+      case response: TaiResponse =>
+        Left(response)
+    }
+
   def taxCodeIncomeForEmployment(nino: Nino, year: TaxYear, employmentId: Int)(
     implicit hc: HeaderCarrier): Future[Either[TaiResponse, Option[TaxCodeIncome]]] =
     for {

@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.Inject
 import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -24,6 +23,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.model.domain.Person
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PersonConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext)
