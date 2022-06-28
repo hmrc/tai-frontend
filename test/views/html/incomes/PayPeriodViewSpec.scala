@@ -16,9 +16,6 @@
 
 package views.html.incomes
 
-import org.mockito.Matchers._
-import org.mockito.Mockito._
-import play.api.data.{Field, Form}
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.PayPeriodForm
@@ -30,24 +27,15 @@ class PayPeriodViewSpec extends TaiViewSpec {
   val employerName = "Employer"
 
   "Pay period view" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(id).url))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.payPeriod.preHeading", employerName),
-      messages("tai.payPeriod.heading"))
+      messages("tai.payPeriod.heading"),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
   }
 
-  val payPeriodForm = mock[Form[PayPeriodForm]]
-
-  val field = mock[Field]
-  when(field.value).thenReturn(Some("fakeFieldValue"))
-  when(field.name).thenReturn("fakeFieldValue")
-  when(field.errors).thenReturn(Nil)
-  when(payPeriodForm(any())).thenReturn(field)
-  when(payPeriodForm.errors).thenReturn(Nil)
-  when(payPeriodForm.errors(anyString())).thenReturn(Nil)
-  when(payPeriodForm.hasErrors).thenReturn(false)
-
   private def payPeriod = inject[PayPeriodView]
-  override def view: Html = payPeriod(payPeriodForm, id, employerName, true)
+  override def view: Html = payPeriod(PayPeriodForm.createForm(None), id, employerName, true)
 }
