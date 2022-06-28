@@ -14,6 +14,7 @@
 * limitations under the License.
 *@
 
+@import includes.printBanner
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
@@ -45,22 +46,40 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     </p>
 }
 
+
+@printHeader = @{
+    printBanner(preHeadingText = request.fullName)
+}
+
+
+
 @main(
     title = messages("tai.incomeTax.history.pageTitle"),
     authedUser = Some(request.taiUser),
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
     backLinkContent = Some(Messages("your.paye.income.tax.overview")),
-    pagePrintable = true,
-    pagePrintName = Some("historic-pay-as-you-earn"),
+    pagePrintable = true
 ){
+
+  @printHeader
+
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl heading-mobile-responsive xbreak-word">@Messages("tai.incomeTax.history.title")</h1>
+        <h1 class="govuk-heading-xl heading-mobile-responsive xbreak-word hide-for-print">@Messages("tai.incomeTax.history.title")</h1>
 
         @govukDetails(Details(
             summary = Text(messages("tai.incomeTax.history.details.summary", person.name)),
-            content = HtmlContent(detailsContent)
+            content = HtmlContent(detailsContent),
+            classes = "hide-for-print",
+        ))
+
+        @govukDetails(Details(
+            summary = Text(messages("tai.incomeTax.history.details.summary", person.name)),
+            content = HtmlContent(detailsContent),
+            classes = "only-visible-on-print",
+            attributes = Map("aria-hidden" -> "true"),
+            open = true,
         ))
 
     </div>
@@ -97,4 +116,11 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     </p>
 
     }
+
+
+    <div class="print-link-container hide-for-print">
+        <a id="print-link-btn" href="javascript:window.print()" class="govuk-link govuk-body-s gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
+    </div>
+
+
 }

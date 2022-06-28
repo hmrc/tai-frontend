@@ -445,7 +445,7 @@ tr.print-pension-contributions-data td {
 
 
 
-  body.printable-page div.grid.grid-1-3 .inner-block {
+  body.printable-page div.grid.grid-1-3 .inner-block , .hide-for-print{
     display: none;
     visibility: hidden;
   }

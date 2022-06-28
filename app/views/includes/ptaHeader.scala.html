@@ -15,6 +15,7 @@
  *@
 
 @import includes.forms.errorSummary
+@import includes.printBanner
 
 @(formForErrorSummary: Option[Form[_]] = None,
   displayBackLink: Boolean = false,
@@ -30,6 +31,11 @@
 @preHeadingHidden = @{
     if(preHeadingAccessibleAnnouncement=="") Messages("tai.ptaHeader.accessible.preHeading") else preHeadingAccessibleAnnouncement
 }
+
+@printHeader = @{
+    printBanner(preHeadingText = preHeadingText)
+}
+
 
 @if(displayBackLink) {
 
@@ -47,15 +53,15 @@
     </div>
 }
 
-
-<div class="govuk-grid-row grid-row">
-    <div class="govuk-grid-column-full column-full">
-       <div class="print-banner">
-            <div class="hmrc-logo"><img src="/check-income-tax/assets/images/HMRC-logo.png" alt='HM Revenue & Customs'></div>
-            <div class="name"><h4 class = "govuk-heading-s">@Html(preHeadingText)</h4></div>
-        </div>
-    </div>
-</div>
+@printHeader
+@*<div class="govuk-grid-row grid-row">*@
+@*    <div class="govuk-grid-column-full column-full">*@
+@*       <div class="print-banner">*@
+@*            <div class="hmrc-logo"><img src="/check-income-tax/assets/images/HMRC-logo.png" alt='HM Revenue & Customs'></div>*@
+@*            <div class="name"><h4 class = "govuk-heading-s">@Html(preHeadingText)</h4></div>*@
+@*        </div>*@
+@*    </div>*@
+@*</div>*@
 
 
 
