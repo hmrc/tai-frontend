@@ -569,6 +569,7 @@ tai.incomeTax.history.endDate = Dyddiad dod i ben
 tai.incomeTax.history.taxableIncome = Incwm trethadwy
 tai.incomeTax.history.incomeTaxPaid = Treth incwm a dalwyd
 tai.incomeTax.history.taxCode = Cod treth
+tai.incomeTax.history.unavailable = Ddim ar gael ar hyn o bryd
 
 tai.incomeTaxComparison.incomeSourceAbsent=Ddim ar gael
 tai.incomeTaxComparison.incomeTax.column1=yn dod i ben ar {0}
