@@ -16,26 +16,24 @@
 
 package controllers.income.estimatedPay.update
 
-import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import javax.inject.{Inject, Named}
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.HowToUpdateForm
-import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
-
-import uk.gov.hmrc.renderer.TemplateRenderer
-import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
 import views.html.incomes.HowToUpdateView
 
+import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -87,11 +85,9 @@ class IncomeUpdateHowToUpdateController @Inject()(
           taxCodeIncomeDetails           <- taxCodeIncomeDetailsFuture
           _                              <- cacheEmploymentDetailsFuture
           result                         <- processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
-
-        } yield {
-          result
-        }
-      case None => throw new RuntimeException("Not able to find employment")
+        } yield result
+      case None =>
+        Future.failed(new RuntimeException("Not able to find employment"))
     }).recover {
       case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
     }

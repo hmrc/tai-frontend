@@ -23,6 +23,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.concurrent.ScalaFutures
 import play.api.http.Status.OK
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
@@ -31,13 +32,16 @@ import uk.gov.hmrc.tai.connectors.responses.TaiTaxAccountFailureResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse}
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
 import scala.concurrent.Future
 
 class IncomeTaxHistoryControllerSpec
-    extends BaseSpec with TaxAccountSummaryTestData with BeforeAndAfterEach with JsoupMatchers {
+    extends BaseSpec with TaxAccountSummaryTestData with BeforeAndAfterEach with JsoupMatchers with ScalaFutures {
 
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
@@ -85,8 +89,8 @@ class IncomeTaxHistoryControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(employmentService, times(5)).employments(any(), any())(any())
-        verify(taxAccountService, times(5)).taxCodeIncomesV2(any(), any())(any())
+        verify(employmentService, times(6)).employments(any(), any())(any())
+        verify(taxAccountService, times(6)).taxCodeIncomesV2(any(), any())(any())
 
       }
 
@@ -108,11 +112,71 @@ class IncomeTaxHistoryControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(taxAccountService, times(5)).taxCodeIncomesV2(Matchers.any(), any())(Matchers.any())
-        verify(employmentService, times(5)).employments(Matchers.any(), any())(Matchers.any())
+        verify(taxAccountService, times(6)).taxCodeIncomesV2(Matchers.any(), any())(Matchers.any())
+        verify(employmentService, times(6)).employments(Matchers.any(), any())(Matchers.any())
 
       }
+
+      "tax code is empty if the tax account can't be found" in {
+        for (_ <- taxYears) {
+          when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
+            Left(TaiNotFoundResponse("not found")))
+          when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
+            Seq(pensionEmployment3, pensionEmployment4))
+          when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
+        }
+
+        val controller = new TestController
+        val result = controller.onPageLoad()(request)
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.body().text() must include(Messages("tai.incomeTax.history.unavailable"))
+      }
+
+      "tax code is empty if the tax account throws an exception" in {
+        for (_ <- taxYears) {
+          when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.failed(
+            new Exception("exception"))
+          when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
+            Seq(pensionEmployment3, pensionEmployment4))
+          when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
+        }
+
+        val controller = new TestController
+        val result = controller.onPageLoad()(request)
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.body().text() must include(Messages("tai.incomeTax.history.unavailable"))
+      }
     }
+  }
+
+  "getIncomeTaxYear" must {
+
+    "return an empty tax code if there isn't one" in {
+      when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(Right(Seq()))
+      when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
+      when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
+
+      val controller = new TestController
+      val result = controller.getIncomeTaxYear(nino, TaxYear())
+
+      result.futureValue.incomeTaxHistory.map(_.maybeTaxCode) mustBe List(None)
+    }
+
+    "return an empty tax code if the taxAccountService fails to retrieve" in {
+      when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.failed(new Exception("exception"))
+      when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
+      when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
+
+      val controller = new TestController
+      val result = controller.getIncomeTaxYear(nino, TaxYear())
+
+      result.futureValue.incomeTaxHistory.map(_.maybeTaxCode) mustBe List(None)
+    }
+    
     "display the income tax history page with no tax history message" when {
       "given taxYear returns no data" in {
 
@@ -138,6 +202,18 @@ class IncomeTaxHistoryControllerSpec
         verify(employmentService, times(5)).employments(Matchers.any(), any())(Matchers.any())
 
       }
+    }
+
+    "return a tax code if it's returned by the taxAccountService" in {
+      when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
+        Right(Seq(taxCodeIncome)))
+      when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
+      when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
+
+      val controller = new TestController
+      val result = controller.getIncomeTaxYear(nino, TaxYear())
+
+      result.futureValue.incomeTaxHistory.map(_.maybeTaxCode) mustBe List(Some(taxCodeIncome.taxCode))
     }
   }
 }

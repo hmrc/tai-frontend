@@ -17,6 +17,8 @@ check.your.tax.free.amount=Check your tax-free amount
 check.your.income.tax.estimate=Check your Income Tax estimate
 current.tax.year=Check current tax year
 earlier=Check previous tax years
+income.tax.history=PAYE Income Tax history
+income.tax.history.content=View your PAYE Income Tax history for your employments and pensions.
 error.invalid.date.format=Invalid date format
 error.invalid.date.future=Date must not be in the future
 error.invalid.date.past=Please enter a date in the current tax year
@@ -563,6 +565,7 @@ tai.incomeTax.history.endDate = End date
 tai.incomeTax.history.taxableIncome = Taxable income
 tai.incomeTax.history.incomeTaxPaid = Income tax paid
 tai.incomeTax.history.taxCode = Tax code
+tai.incomeTax.history.unavailable = Currently unavailable
 
 tai.incomeTax.incomeTaxEstimate.subheading=Income tax estimate
 tai.incomeTax.taxCodes.link=Check your tax codes
@@ -662,6 +665,7 @@ tai.incomeTaxSummary.incomeAmount.prefix=Your estimated taxable income is
 tai.incomeTaxSummary.link=Your PAYE Income Tax summary
 tai.incomeTaxSummary.otherIncomeSources.heading=Your income from other sources
 tai.incomeTaxSummary.payrollNumber.prefix=Payroll number: {0}
+tai.incomeTaxSummary.pensionNumber.prefix=Pension number: {0}
 tai.incomeTaxSummary.pension.link=View or update pension details
 tai.incomeTaxSummary.pension.section.heading=Your current private pensions
 tai.incomeTaxSummary.taxCode.prefix=Tax code: {0}
@@ -1427,6 +1431,7 @@ tai.urbanner.title=Help improve GOV.UK
 tai.urbanner.text=Help make the PAYE service better by taking part in a survey (opens in a new window).
 tai.urbanner.reject=No thanks
 
+checkProgress.important=Important
 checkProgress.link=Check the progress of your update
 
 tai.information = Information

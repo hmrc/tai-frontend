@@ -41,19 +41,25 @@
             <p class="govuk-body flush--top">
                 @if(incomeSource.displayTaxCode) {
                     @incomeSource.taxCodeUrl.map { taxCodeUrl =>
-                    @link(
-                        id = Some(s"${typeLabel}${idx}TaxCodeLink"),
-                        url = taxCodeUrl.url,
-                        copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode),
-                        linkClasses = Seq("display-tax-code-for-print"))
+                        @link(
+                            id = Some(s"${typeLabel}${idx}TaxCodeLink"),
+                            url = taxCodeUrl.url,
+                            copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode),
+                            linkClasses = Seq("display-tax-code-for-print"))
                     }
                 }
-                @if(incomeSource.displayPayrollNumber){
-                <span id="@{typeLabel}@{idx}PayrollNumber" class="carry-over govuk-!-display-block display-block ">@Messages("tai.incomeTaxSummary.payrollNumber.prefix", incomeSource.payrollNumber)</span>
+                @if(incomeSource.displayPayrollNumber && typeLabel=="employment"){
+                    <span id="@{typeLabel}@{idx}PayeNumber" class="carry-over govuk-!-display-block display-block ">@messages("tai.income.details.ERN"):@incomeSource.taxDistrictNumber/@incomeSource.payeNumber</span>
                 }
+
+                @if(incomeSource.displayPayrollNumber && typeLabel == "pension"){
+                <span id="@{typeLabel}@{idx}PensionNumber" class="carry-over govuk-!-display-block display-block ">@Messages("tai.incomeTaxSummary.pensionNumber.prefix", incomeSource.payrollNumber)</span>
+                }
+
                 @if(incomeSource.displayEndDate){
-                <span id="@{typeLabel}@{idx}EndDate" class="govuk-!-display-block display-block">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</span>
+                    <span id="@{typeLabel}@{idx}EndDate" class="govuk-!-display-block display-block">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</span>
                 }
+
             </p>
 
             @if(incomeSource.displayDetailsLink){

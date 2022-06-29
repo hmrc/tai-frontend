@@ -26,12 +26,12 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
   "what happens next" should {
     behave like pageWithTitle(messages("taxCode.change.whatHappensNext.title"))
     behave like pageWithBackLink
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("taxCode.change.journey.preHeading"),
       messages("taxCode.change.whatHappensNext.title"))
 
     "display static messages" in {
-      doc must haveParagraphWithText(messages("taxCode.change.whatHappensNext.paragragh1"))
+      doc must haveH2HeadingWithText(messages("taxCode.change.whatHappensNext.paragragh1"))
 
       doc(view).select("#check-income-tax-estimate").html().replaceAll("\\s+", "") mustBe Html(
         messages(
@@ -43,7 +43,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
           )
         )).body.replaceAll("\\s+", "")
 
-      doc must haveH2HeadingWithText(messages("taxCode.change.whatHappensNext.wrongInformation.text"))
+      doc must haveHeadingH3WithText(messages("taxCode.change.whatHappensNext.wrongInformation.text"))
 
       doc(view).select("#update-current-income-or-benefits").html().replaceAll("\\s+", "") mustBe Html(
         messages(

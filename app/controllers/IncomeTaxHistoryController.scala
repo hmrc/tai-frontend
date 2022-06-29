@@ -49,8 +49,9 @@ class IncomeTaxHistoryController @Inject()(
 )(implicit ec: ExecutionContext, templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
 
-  private def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[IncomeTaxYear] = {
-    val futureMaybeTaxCodes = taxAccountService.taxCodeIncomesV2(nino, taxYear).map(_.toOption)
+  def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[IncomeTaxYear] = {
+    val futureMaybeTaxCodes =
+      taxAccountService.taxCodeIncomesV2(nino, taxYear).map(_.toOption).recover { case _ => None }
     val futureEmployments = employmentService.employments(nino, taxYear)
     for {
       maybeTaxCodeIncomeDetails <- futureMaybeTaxCodes
@@ -89,7 +90,7 @@ class IncomeTaxHistoryController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
-    val taxYears = ((TaxYear().year - 1) to (TaxYear().year - config.numberOfPreviousYearsToShow) by -1)
+    val taxYears = ((TaxYear().year) to (TaxYear().year - config.numberOfPreviousYearsToShow) by -1)
       .map(TaxYear(_))
       .toList
 

@@ -81,18 +81,20 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 @for(summary <- incomeTaxYear.incomeTaxHistory) {
         <div class="employment-card-single-u">
             <div class="employer-name govuk-body">@summary.employerName</div>
-            <ul class="govuk-list govuk-!-font-size-16">
-                <li><span>@Messages("tai.incomeTax.history.employerReference")</span> @summary.ern	</li>
-                <li><span>@Messages("tai.incomeTax.history.startDate")</span> @summary.startDate	</li>
-                <li><span>@Messages("tai.incomeTax.history.endDate")</span> @summary.endDate	</li>
+            <ul class="govuk-list govuk-!-font-size-16 .ul-incomeTaxHistory">
+                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.employerReference")</span> @summary.ern	</li>
+                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.startDate")</span> @summary.startDate	</li>
+                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.endDate")</span> @summary.endDate	</li>
                 @if(summary.maybeTaxableIncome.isDefined) {
-                    <li><span>@Messages("tai.incomeTax.history.taxableIncome") </span>@summary.maybeTaxableIncome</li>
+                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.taxableIncome") </span>@summary.maybeTaxableIncome</li>
                 }
                 @if(summary.maybeIncomeTaxPaid.isDefined) {
-                    <li><span>@Messages("tai.incomeTax.history.incomeTaxPaid") </span>@summary.maybeIncomeTaxPaid</li>
+                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.incomeTaxPaid") </span>@summary.maybeIncomeTaxPaid</li>
                 }
                 @if(summary.maybeTaxCode.isDefined) {
-                    <li><span>@Messages("tai.incomeTax.history.taxCode") </span>@summary.maybeTaxCode</li>
+                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.taxCode") </span>@summary.maybeTaxCode</li>
+                } else {
+                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.taxCode") </span>@messages("tai.incomeTax.history.unavailable")</li>
                 }
             </ul>
         </div>

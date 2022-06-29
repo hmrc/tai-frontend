@@ -14,49 +14,63 @@
  * limitations under the License.
  *@
 
-@import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 @import includes.cancelLink
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(howToUpdateForm: Form[uk.gov.hmrc.tai.forms.HowToUpdateForm], id: Int, employerName: String)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(howToUpdateForm),
-        displayBackLink = true,
-        mainHeadingText = Messages("tai.howToUpdate.heading", employerName),
-        preHeadingText = Messages("tai.howToUpdate.preHeading", employerName)
-    )
-}
-
-
-@mainTemplate(
+@main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages("tai.howToUpdate.title"),
-    articleClasses = Some("full-width text"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employerName)){
+    backLinkContent = Some(Messages("tai.back-link.upper"))
+){
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @if(howToUpdateForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = howToUpdateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
+            @form(action=income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.handleChooseHowToUpdate){
+                @govukRadios(Radios(
+                    fieldset =  Some(
+                        Fieldset(
+                            legend = Some(
+                            HmrcPageHeadingLegend(
+                                content = Text(Messages("tai.howToUpdate.heading", employerName)),
+                                caption = HmrcSectionCaption(Text(Messages("tai.howToUpdate.preHeading", employerName))))
+                        )
+                        )
+                    ),
+                    hint = None,
+                    errorMessage = howToUpdateForm.errors.filter(_.key == "howToUpdate").asTextErrorMessages.headOption,
+                    idPrefix = Some("howToUpdate"),
+                    name = "howToUpdate",
+                    items = Seq(
+                        RadioItem(
+                            content = Text(messages("tai.howToUpdate.incomeCalculator")),
+                            value = Some("incomeCalculator"),
+                            checked = howToUpdateForm.data.get("howToUpdate").exists(_ == "incomeCalculator")
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.howToUpdate.enterAnnual")),
+                            value = Some("enterAnnual"),
+                            checked = howToUpdateForm.data.get("howToUpdate").exists(_ == "enterAnnual")
+                        )
+                    )
+                ).withFormField(howToUpdateForm("howToUpdate")))
 
-    <div class="section flush--bottom">
-        @form(action=income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.handleChooseHowToUpdate){
-                @{inputRadioGroupStyling(
-                    field=howToUpdateForm("howToUpdate"),
-                    radioOptions=Seq(("incomeCalculator" -> Messages("tai.howToUpdate.incomeCalculator")), ("enterAnnual" -> Messages("tai.howToUpdate.enterAnnual"))),
-                    legend=Messages("tai.whatDoYouWantToDo"),
-                    legendHint=None,
-                    ('_groupDivClass, "form-group" ),
-                    ('_legendSpanClass, "visually-hidden"),
-                    ('_fieldsetAttributes, "id=howToUpdate" )
-                )}
-            <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
-        }
+                @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+            }
+        </div>
     </div>
 
 }

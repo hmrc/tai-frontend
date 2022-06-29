@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 @import includes.taxFreeAmountSummaryComparison
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTempleteNew)
 
 @(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
@@ -26,29 +26,35 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = None,
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("taxCode.change.yourTaxFreeAmount.title"),
-        preHeadingText = Messages("taxCode.change.journey.preHeading"))
+        preHeadingText = Messages("taxCode.change.journey.preHeading"),
+        showGdsVersion = true)
 }
 
 @mainTemplate(
     title = Messages("taxCode.change.yourTaxFreeAmount.title"),
-    articleClasses = Some("full-width"),
-    pageHeader = Some(header),
-    authedUser = Some(user)
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    authedUser = Some(user),
+    backLinkId = "backLink"
     ) {
 
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+        @header
+        </div>
+    </div>
 
-    <div class="column-two-thirds">
+    <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
         <div class="grid-row">
-            <p class="lede">@Messages("taxCode.change.yourTaxFreeAmount.desc")</p>
+            <h2 class="govuk-caption-l">@Messages("taxCode.change.yourTaxFreeAmount.desc")</h2>
         </div>
 
-        <div class="grid-row" id="yourTaxFreeAmount">
 
-                <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h2>
-
+        <div id="yourTaxFreeAmount" class="govuk-!-margin-top-7">
+                <h3 class="govuk-heading-m">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h3>
                 <div class="margin-bottom-large">
                 @taxFreeAmountSummaryComparison(currentTaxFreeAmount, taxCodeChange = true)
                 </div>
@@ -61,10 +67,12 @@
                 id = Some("seeWhatHappensNext"),
                 copy = Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link"),
                 url = routes.TaxCodeChangeController.whatHappensNext.url,
-                linkClasses = Seq("button")
+                linkClasses = Seq("govuk-button")
             )
             </div>
         </div>
+
+    </div>
 
     </div>
 }

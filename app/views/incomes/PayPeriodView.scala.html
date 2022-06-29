@@ -14,71 +14,86 @@
  * limitations under the License.
  *@
 
-@import includes.ptaHeader
 @import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 @import uk.gov.hmrc.tai.forms.PayPeriodForm
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(payPeriodForm),
-        displayBackLink = true,
-        mainHeadingText = messages("tai.payPeriod.heading"),
-        preHeadingText = messages("tai.payPeriod.preHeading", employerName)
-    )
-}
-
-
-@howOftenPanel = {
-    <div class="data-howOften panel-indent @payPeriodForm.errors.map { error => @if(error.key == "otherInDays"){form-group-error}} @if(isNotDaysError){js-hidden}" id="howOftenPanel">
-            <label for="otherInDays" class="form-label">@messages("tai.payPeriod.howOften")</label>
-            @payPeriodForm.errors.map { error =>
-                @if(error.key == "otherInDays"){
-                    <p class="error-message" id="error-message-daysPay-input"><span class="visuallyhidden">@Messages("tai.error.message") </span>@messages(error.message)</p>
-                }
+@main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
+    title = messages("tai.payPeriod.title"),
+    authedUser = Some(user),
+    backLinkContent = Some(Messages("tai.back-link.upper"))
+){
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @if(payPeriodForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = payPeriodForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            <input type="text" class="form-control form-control-1-2 flush--bottom" id="otherInDays" name="otherInDays" @payPeriodForm.errors.map { error =>  aria-describedBy="error-message-daysPay-input" }/>
+            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
+                @govukRadios(Radios(
+                    fieldset =  Some(
+                        Fieldset(
+                            legend = Some(
+                            HmrcPageHeadingLegend(
+                                content = Text(Messages("tai.payPeriod.heading", employerName)),
+                                caption = HmrcSectionCaption(Text(Messages("tai.payPeriod.preHeading", employerName))))
+                            )
+                        )
+                    ),
+                    hint = None,
+                    errorMessage = payPeriodForm.errors.filter(_.key == PayPeriodForm.PAY_PERIOD_KEY).asTextErrorMessages.headOption,
+                    idPrefix = Some(PayPeriodForm.PAY_PERIOD_KEY),
+                    name = PayPeriodForm.PAY_PERIOD_KEY,
+                    items = Seq(
+                        RadioItem(
+                            content = Text(messages("tai.payPeriod.monthly")),
+                            value = Some(PayPeriodForm.MONTHLY),
+                            checked = payPeriodForm.data.get(PayPeriodForm.PAY_PERIOD_KEY).exists(_ == PayPeriodForm.MONTHLY)
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.payPeriod.weekly")),
+                            value = Some(PayPeriodForm.WEEKLY),
+                            checked = payPeriodForm.data.get(PayPeriodForm.PAY_PERIOD_KEY).exists(_ == PayPeriodForm.WEEKLY)
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.payPeriod.fortnightly")),
+                            value = Some(PayPeriodForm.FORTNIGHTLY),
+                            checked = payPeriodForm.data.get(PayPeriodForm.PAY_PERIOD_KEY).exists(_ == PayPeriodForm.FORTNIGHTLY)
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.payPeriod.other")),
+                            value = Some(PayPeriodForm.OTHER),
+                            checked = payPeriodForm.data.get(PayPeriodForm.PAY_PERIOD_KEY).exists(_ == PayPeriodForm.OTHER),
+                            conditionalHtml = Some(
+                            govukInput(Input(
+                                id = "otherInDays",
+                                name = "otherInDays",
+                                value = payPeriodForm.data.get(PayPeriodForm.OTHER),
+                                label = Label(
+                                    classes = "govuk-label--s",
+                                    content = Text(messages("tai.payPeriod.howOften")),
+                                    ),
+                                errorMessage = payPeriodForm.errors.filter(_.key == "otherInDays").asTextErrorMessages.headOption
+                                ))
+                            )
+                        ),
+                    )
+                ).withFormField(payPeriodForm(PayPeriodForm.PAY_PERIOD_KEY)))
 
-    </div>
-}
+                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
+            }
 
-
-@mainTemplate(
-    title = messages("tai.payPeriod.title"),
-    articleClasses = None,
-    authedUser = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employerName)
-){
-    <div class="section flush--bottom">
-        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
-            @{inputRadioGroupStyling(
-                field=payPeriodForm(PayPeriodForm.PAY_PERIOD_KEY),
-                radioOptions=Seq(
-                    PayPeriodForm.MONTHLY -> messages("tai.payPeriod.monthly"),
-                    PayPeriodForm.WEEKLY -> messages("tai.payPeriod.weekly"),
-                    PayPeriodForm.FORTNIGHTLY -> messages("tai.payPeriod.fortnightly"),
-                    PayPeriodForm.OTHER -> messages("tai.payPeriod.other")
-                ),
-                legend=messages("tai.payPeriod.legend"),
-                legendHint=None,
-                ('_groupDivClass, "form-group" ),
-                ('_radioOption4WrapAttribute, "data-target=howOftenPanel"),
-                ('_legendSpanClass, "visually-hidden"),
-                ('_fieldsetAttributes, "id=payPeriod" ),
-                ('_radioOption4Attributes, Html(s""" ${if(!isNotDaysError) {"checked"} else {""}} """) ),
-                ('_radioOption4AdditionalMarkup, (howOftenPanel))
-            )}
-            <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
-        }
-
-        @cancelLink(controllers.routes.IncomeController.cancel(id))
+            @cancelLink(controllers.routes.IncomeController.cancel(id))
+        </div>
     </div>
 }

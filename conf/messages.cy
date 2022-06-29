@@ -17,6 +17,8 @@ check.your.tax.free.amount=Gwirio’ch swm rhydd o dreth
 check.your.income.tax.estimate=Gwirio’ch amcangyfrif Treth Incwm
 current.tax.year=Gwirio’r flwyddyn dreth bresennol
 earlier=Gwirio blynyddoedd treth blaenorol
+income.tax.history=Hanes Treth Incwm TWE
+income.tax.history.content=Bwrw golwg dros hanes eich Treth Incwm TWE ar gyfer eich cyflogaethau a phensiynau.
 error.invalid.date.format=Fformat dyddiad annilys
 error.invalid.date.future=Ni ddylai’r dyddiad fod yn y dyfodol
 error.invalid.date.past=Nodwch ddyddiad yn y flwyddyn dreth bresennol
@@ -569,6 +571,7 @@ tai.incomeTax.history.endDate = Dyddiad dod i ben
 tai.incomeTax.history.taxableIncome = Incwm trethadwy
 tai.incomeTax.history.incomeTaxPaid = Treth incwm a dalwyd
 tai.incomeTax.history.taxCode = Cod treth
+tai.incomeTax.history.unavailable = Ddim ar gael ar hyn o bryd
 
 tai.incomeTaxComparison.incomeSourceAbsent=Ddim ar gael
 tai.incomeTaxComparison.incomeTax.column1=yn dod i ben ar {0}
@@ -663,6 +666,7 @@ tai.incomeTaxSummary.incomeAmount.prefix=Eich incwm trethadwy amcangyfrifedig yw
 tai.incomeTaxSummary.link=Eich crynodeb o Dreth Incwm TWE
 tai.incomeTaxSummary.otherIncomeSources.heading=Eich incwm o ffynonellau eraill
 tai.incomeTaxSummary.payrollNumber.prefix=Rhif cyflogres: {0}
+tai.incomeTaxSummary.pensionNumber.prefix=Rhif pensiwn: {0}
 tai.incomeTaxSummary.pension.link=Gweld neu ddiweddaru manylion pensiwn
 tai.incomeTaxSummary.pension.section.heading=Eich pensiynau preifat presennol
 tai.incomeTaxSummary.taxCode.prefix=Cod treth: {0}
@@ -1431,6 +1435,7 @@ tai.urbanner.title=Helpwch i wella GOV.UK
 tai.urbanner.text=Helpwch i wella’r gwasanaeth TWE drwy gymryd rhan mewn arolwg (yn agor ffenestr newydd)
 tai.urbanner.reject=Dim diolch
 
+checkProgress.important=Pwysig
 checkProgress.link=Gwiriwch gynnydd eich diweddariad
 
 tai.information = Gwybodaeth

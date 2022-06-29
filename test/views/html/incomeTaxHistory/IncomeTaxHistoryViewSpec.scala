@@ -49,7 +49,22 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages("tai.incomeTax.history.table.link", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
       }
+
+      s"display unavailable if the tax code isn't present or the tax code $taxYear" in {
+        val maybeTaxCode = incomeTaxYears.collectFirst {
+          case IncomeTaxYear(`taxYear`, List(viewModel)) =>
+            viewModel.maybeTaxCode
+        }.flatten
+
+        maybeTaxCode match {
+          case Some(taxCode) =>
+            doc must haveListItemWithText(s"Tax code $taxCode")
+          case None =>
+            doc must haveListItemWithText("Tax code " + messages("tai.incomeTax.history.unavailable"))
+        }
+      }
     }
+
   }
 
   val incomeTaxHistoryView = inject[IncomeTaxHistoryView]
@@ -61,7 +76,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     taxYear.end,
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
-    Some("taxCode")
+    Some(s"taxCode-${taxYear.start}")
   )
 
   val historyViewModel1: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
@@ -71,7 +86,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     TaxYear(2021).end,
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
-    Some("taxCode")
+    Some(s"taxCode-${taxYear.start}")
   )
 
   val historyViewModel2: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
@@ -81,7 +96,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     TaxYear(2020).end,
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
-    Some("taxCode")
+    None
   )
 
   val historyViewModel3: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
@@ -91,7 +106,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     TaxYear(2019).end,
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
-    Some("taxCode")
+    None
   )
 
   val historyViewModel4: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
@@ -101,7 +116,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     TaxYear(2019).end,
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
-    Some("taxCode")
+    Some(s"taxCode-${taxYear.start}")
   )
 
   val historyViewModel5: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
@@ -111,14 +126,13 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     TaxYear(2018).end,
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
-    Some("taxCode")
+    Some(s"taxCode-${taxYear.start}")
   )
 
   val incomeTaxYears: List[IncomeTaxYear] = List(
     IncomeTaxYear(taxYear, List(historyViewModel)),
     IncomeTaxYear(TaxYear(2021), List(historyViewModel1)),
     IncomeTaxYear(TaxYear(2020), List(historyViewModel2)),
-    IncomeTaxYear(TaxYear(2020), List(historyViewModel3)),
     IncomeTaxYear(TaxYear(2019), List(historyViewModel4)),
     IncomeTaxYear(TaxYear(2018), List(historyViewModel5))
   )
