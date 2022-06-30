@@ -176,7 +176,7 @@ class IncomeTaxHistoryControllerSpec
 
       result.futureValue.incomeTaxHistory.map(_.maybeTaxCode) mustBe List(None)
     }
-    
+
     "display the income tax history page with no tax history message" when {
       "given taxYear returns no data" in {
 
@@ -198,8 +198,8 @@ class IncomeTaxHistoryControllerSpec
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
         doc must haveParagraphWithText(Messages("tai.incomeTax.history.noTaxHistory"))
 
-        verify(taxAccountService, times(5)).taxCodeIncomesV2(Matchers.any(), any())(Matchers.any())
-        verify(employmentService, times(5)).employments(Matchers.any(), any())(Matchers.any())
+        verify(taxAccountService, times(6)).taxCodeIncomesV2(Matchers.any(), any())(Matchers.any())
+        verify(employmentService, times(6)).employments(Matchers.any(), any())(Matchers.any())
 
       }
     }
