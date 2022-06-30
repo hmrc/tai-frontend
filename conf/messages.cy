@@ -563,6 +563,8 @@ tai.incomeTax.history.details.address=Cyfeiriad
 tai.incomeTax.history.details.nationalInsurance=Yswiriant Gwladol
 tai.incomeTax.history.table.link= xyz {0}
 tai.incomeTax.history.pageTitle=Hanes treth incwm – Gwiriwch eich Treth Incwm – GOV.UK
+
+tai.incomeTax.history.noTaxHistory=Dim hanes Treth Incwm TWE ar gyfer y flwyddyn hon.
 tai.incomeTax.history.employerReference = Cyfeirnod TWE y Cyflogwr
 tai.incomeTax.history.startDate = Dyddiad dechrau
 tai.incomeTax.history.endDate = Dyddiad dod i ben

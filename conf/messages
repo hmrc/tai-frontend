@@ -557,6 +557,8 @@ tai.incomeTax.history.details.address=Address
 tai.incomeTax.history.details.nationalInsurance=National Insurance
 tai.incomeTax.history.table.link=View {0} tax year summary
 tai.incomeTax.history.pageTitle = Income tax history - Check your Income Tax - GOV.UK
+
+tai.incomeTax.history.noTaxHistory=No PAYE Income Tax history for this year.
 tai.incomeTax.history.employerReference = Employer PAYE reference
 tai.incomeTax.history.startDate = Start date
 tai.incomeTax.history.endDate = End date

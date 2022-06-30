@@ -94,7 +94,12 @@ class IncomeTaxHistoryController @Inject()(
       .map(TaxYear(_))
       .toList
 
-    val allTaxYearsList = taxYears traverse (taxYear => getIncomeTaxYear(nino, taxYear))
+    val allTaxYearsList = taxYears traverse (taxYear => {
+      getIncomeTaxYear(nino, taxYear).recover {
+        case e: Exception =>
+          IncomeTaxYear(taxYear, Nil)
+      }
+    })
 
     for {
       person        <- personService.personDetails(nino)
