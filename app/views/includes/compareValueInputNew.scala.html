@@ -22,42 +22,47 @@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 
+@import uk.gov.hmrc.govukfrontend.views._
 
-@this(govukInput : GovukInput)
+
+
 
 @(
+    govukInput: GovukInput,
     previousLabel: String,
     newLabel: String,
     newField: Field,
     previousFieldName: String,
     previousFieldValue: String,
     attrDescribedBy: String = "",
-    fieldErrorsEnabled: Boolean = false
+    fieldErrorsEnabled: Boolean = false,
+    errorMessagex: String
 )(implicit m: Messages)
 
-
-<h1>new</h1>
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
-        <div class="form-label form-label-bold">@previousLabel</div>
+        <div class="form-label "><h3 class="govuk-heading-s">@previousLabel</h3></div>
         <input type="hidden" id="oldAmount" name='@previousFieldName' value='@previousFieldValue' />
         <p class="govuk-body">@withPoundPrefix(MoneyPounds(previousFieldValue.toInt ,0))</p>
     </div>
     <div class="govuk-grid-column-one-half">
 
-        @input(newField, isCurrency = true,bold = true,  fieldErrorsEnabled = fieldErrorsEnabled, labelText= newLabel, attrDescribedBy = attrDescribedBy, notCompareInput = false)
-
-@*
         @govukInput(Input(
-            id = "event-name",
-            name = "event-name",
+            id =  newField.id,
+            name =  newField.name,
             label = Label(
-                isPageHeading = true,
-                classes = "govuk-label--l",
-                content = Text("What is the name of the event?")
-            )
+                isPageHeading = false,
+                classes = "govuk-label--s",
+                content = Text(newLabel)
+            ),
+            classes = "govuk-input--width-5",
+            spellcheck = Some(false),
+            prefix = Some(PrefixOrSuffix(
+                content = Text("£")
+            ))
         ))
-*@
+
 
     </div>
 </div>
+
