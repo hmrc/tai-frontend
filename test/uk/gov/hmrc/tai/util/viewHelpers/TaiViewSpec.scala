@@ -122,7 +122,6 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
   def pageWithContinueButtonFormNew(submitUrl: String): Unit =
     pageWithButtonFormNew(submitUrl, "Continue")
 
-
   def pageWithPrintThisPageButton(linkText: String): Unit =
     haveInternalLink("javascript:window.print()", linkText, "print-link-btn")
 
