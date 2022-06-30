@@ -42,6 +42,11 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       )
     }
 
+    "display print button" should {
+      behave like pageWithPrintThisPageButton("Print this page")
+
+    }
+
     val taxYears = (TaxYear().year until (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
 
     for (taxYear <- taxYears) {
