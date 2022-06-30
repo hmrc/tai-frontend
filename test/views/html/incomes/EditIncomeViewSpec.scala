@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class EditIncomeViewSpec extends TaiViewSpec {
 
   val empId = 1
-  val employerName = "fakeFieldValue"git
+  val employerName = "fakeFieldValue"
   "Edit income view" should {
     behave like pageWithBackLink
     behave like pageWithCombinedHeaderNewFormat(
