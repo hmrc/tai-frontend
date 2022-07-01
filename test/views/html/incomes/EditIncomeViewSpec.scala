@@ -16,11 +16,9 @@
 
 package views.html.incomes
 
-import org.mockito.Matchers._
-import org.mockito.Mockito._
-import play.api.data.{Field, Form}
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.EditIncomeForm
+import uk.gov.hmrc.tai.model.EmploymentAmount
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
@@ -28,30 +26,21 @@ class EditIncomeViewSpec extends TaiViewSpec {
 
   val empId = 1
   val employerName = "fakeFieldValue"
-
   "Edit income view" should {
     behave like pageWithBackLink
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       messages("tai.incomes.edit.preHeading", employerName),
       messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange)
     )
   }
 
-  val editIncomeForm = mock[Form[EditIncomeForm]]
-
-  val field = mock[Field]
-  val intField = mock[Field]
   private val editIncome = inject[EditIncomeView]
 
-  when(field.value).thenReturn(Some("fakeFieldValue"))
-  when(field.name).thenReturn("fakeFieldValue")
-  when(editIncomeForm(any())).thenReturn(field)
-
-  when(intField.value).thenReturn(Some("123"))
-  when(intField.name).thenReturn("intFakeFieldValue")
-  when(editIncomeForm("oldAmount")).thenReturn(intField)
-
-  when(editIncomeForm.errors(anyString())).thenReturn(Nil)
-
-  override def view: Html = editIncome(editIncomeForm, hasMultipleIncomes = false, empId, "0", None)
+  override def view: Html =
+    editIncome(
+      EditIncomeForm.create(preFillData = EmploymentAmount("fakeFieldValue", "", 1, 1, 1)),
+      hasMultipleIncomes = false,
+      empId,
+      "0",
+      None)
 }
