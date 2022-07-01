@@ -1,67 +1,77 @@
 @*
- * Copyright 2021 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *@
+* Copyright 2021 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import includes.forms.input
 @import includes.ptaHeader
 @import includes.cancelLink
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmountViewModel
 @import includes.forms.{submit, input}
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(mainTemplate: MainTempleteNew, form: FormWithCSRF,govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(viewModel: TaxablePaySlipAmountViewModel)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(viewModel.form),
-        displayBackLink = true,
-        mainHeadingText = Messages(viewModel.title),
-        preHeadingText = Messages("tai.howToUpdate.preHeading", viewModel.employer.name)
-    )
-}
-
 @mainTemplate(
-    title = Messages(viewModel.title),
-    articleClasses = None,
-    authedUser = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(viewModel.employer.name)
-){
-    <div>
-        <p>@messages("tai.taxablePayslip.taxablePay.explanation")</p>
-        <p>@messages("tai.taxablePayslip.shownOnPayslip")</p>
-    </div>
+pageTitle = Some(Messages("tai.currentYearSummary.heading")),
+title = Messages(viewModel.title),
+backLinkContent = Some(Messages("tai.back-link.upper")),
 
-    <div>
-        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handleTaxablePayslipAmount){
-            @input(
-                field = viewModel.form("taxablePay"),
-                labelText = Messages(viewModel.title),
-                labelClass = "visuallyhidden",
-                bold = true,
-                classes = Seq("form-control-1-4"),
-                isCurrency = true
-            )
+){
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <span class="govuk-caption-xl">@Messages("tai.howToUpdate.preHeading", viewModel.employer.name)</span>
+
+        <h1 class="govuk-heading-xl">@Messages(viewModel.title),</h1>
+
+        <p class="govuk-body">@messages("tai.taxablePayslip.taxablePay.explanation")</p>
+        <p class="govuk-body">@messages("tai.taxablePayslip.shownOnPayslip")</p>
+
+        <div>
+
+            @if(viewModel.form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary(errorList = viewModel.form.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
+
+            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handleTaxablePayslipAmount){
+
+            <div class="govuk-form-group">
+                <div class="govuk-input__wrapper">
+                    <div class="govuk-input__prefix" aria-hidden="true">£</div>
+                    @govukInput(Input(
+                    id = "taxablePay",
+                    name = "taxablePay",
+                    classes="govuk-input govuk-input--width-5",
+                    label = Label(
+                    isPageHeading = true,
+                    classes = "govuk-visually-hidden",
+                    content = Text(Messages(viewModel.title))
+                    )
+                    ))
+                </div>
+            </div>
 
             @submit()
             @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
 
-        }
+            }
+        </div>
     </div>
+</div>
 }
