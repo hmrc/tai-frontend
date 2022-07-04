@@ -14,51 +14,66 @@
  * limitations under the License.
  *@
 
-@import includes.ptaHeader
 @import includes.cancelLink
-@import uk.gov.hmrc.play.views.html.helpers._
-@import includes.forms.{inputRadioGroupStyling, submit}
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.forms.YesNoForm
 @import scala.concurrent.ExecutionContext
 @import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(yesNoForm: Form[YesNoForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(yesNoForm),
-        displayBackLink = true,
-        mainHeadingText = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
-        preHeadingText = messages("tai.bonusPayments.preHeading", employer.name)
-    )
-}
-
-@mainTemplate(
+@main(
     title = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
-    articleClasses = Some(""),
+    pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employer.name)
-    ) {
-    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
+    backLinkContent = Some(Messages("tai.back-link.upper"))
+) {
 
-        @{inputRadioGroupStyling(
-            field=yesNoForm(YesNoForm.YesNoChoice),
-            radioOptions=Seq((YesNoForm.YesValue -> messages("tai.label.yes")), (YesNoForm.NoValue -> messages("tai.label.no"))),
-            legend=messages("tai.bonusPayments.question"),
-            legendHint=None,
-            ('_groupDivClass, "form-group flush--bottom" ),
-            ('_groupClass, "inline" ),
-            ('_fieldsetAttributes, "id=yesNoChoice" ),
-            ('_legendSpanClass, "visually-hidden")
-        )}
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @if(yesNoForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = yesNoForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
 
-        @submit()
-        @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(employer.id).url))
-    }
+            @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
+                @govukRadios(Radios(
+                    fieldset =  Some(
+                        Fieldset(
+                            legend = Some(
+                                HmrcPageHeadingLegend(
+                                    content = Text(Messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)),
+                                    caption = HmrcSectionCaption(Text(Messages("tai.bonusPayments.preHeading", employer.name))))
+                            )
+                        )
+                    ),
+                    errorMessage = yesNoForm.errors.filter(_.key == YesNoForm.YesNoChoice).asTextErrorMessages.headOption,
+                    idPrefix = Some("yesNoChoice"),
+                    name = "yesNoChoice",
+                    classes = "govuk-radios--inline",
+                    items = Seq(
+                        RadioItem(
+                            content = Text(messages("tai.label.yes")),
+                            value = Some(YesNoForm.YesValue),
+                            checked = yesNoForm.data.get(YesNoForm.YesNoChoice).exists(_ == "Yes"),
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.label.no")),
+                            value = Some(YesNoForm.NoValue),
+                            checked = yesNoForm.data.get(YesNoForm.YesNoChoice).exists(_ == "No")
+                        )
+                    )
+                ).withFormField(yesNoForm(YesNoForm.YesNoChoice)))
+
+                @govukButton(Button(content = Text(messages("tai.continue"))))
+                @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(employer.id).url))
+            }
+        </div>
+    </div>
 }
