@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(mainTemplate: MainTempleteNew, form: FormWithCSRF,govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
+@this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary, govukButton: GovukButton)
 
 @(viewModel: TaxablePaySlipAmountViewModel)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
@@ -43,7 +43,6 @@ backLinkContent = Some(Messages("tai.back-link.upper")),
         <p class="govuk-body">@messages("tai.taxablePayslip.taxablePay.explanation")</p>
         <p class="govuk-body">@messages("tai.taxablePayslip.shownOnPayslip")</p>
 
-        <div>
 
             @if(viewModel.form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary(errorList = viewModel.form.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
@@ -53,25 +52,29 @@ backLinkContent = Some(Messages("tai.back-link.upper")),
 
             <div class="govuk-form-group">
                 <div class="govuk-input__wrapper">
-                    <div class="govuk-input__prefix" aria-hidden="true">£</div>
                     @govukInput(Input(
                     id = "taxablePay",
                     name = "taxablePay",
-                    classes="govuk-input govuk-input--width-5",
+                    classes = "govuk-input--width-5",
+                    spellcheck = Some(false),
+                    prefix = Some(PrefixOrSuffix(
+                    content = Text("£")
+                    )),
                     label = Label(
                     isPageHeading = true,
                     classes = "govuk-visually-hidden",
                     content = Text(Messages(viewModel.title))
                     )
-                    ))
+                    ).withFormField(viewModel.form("taxablePay")))
                 </div>
             </div>
 
-            @submit()
-            @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
+            @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
 
             }
-        </div>
+
+        @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
+
     </div>
 </div>
 }
