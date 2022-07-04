@@ -16,53 +16,65 @@
 
 @import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 
-@import includes.ptaHeader
 @import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], employer: IncomeSource)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(payslipDeductionsForm),
-        displayBackLink = true,
-        mainHeadingText = messages("tai.payslipDeductions.heading"),
-        preHeadingText = messages("tai.payslipDeductions.preHeading", employer.name)
-    )
-}
-
-@mainTemplate(
+@main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
     title = messages("tai.payslipDeductions.heading"),
-    articleClasses = Some("full-width text"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employer.name)
 ){
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @if(payslipDeductionsForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = payslipDeductionsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
 
-    <div>
-        <p>@messages("tai.payslipDeductions.tellUs")</p>
+            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipDeductions){
+                @govukRadios(Radios(
+                    fieldset =  Some(
+                        Fieldset(
+                            legend = Some(
+                                HmrcPageHeadingLegend(
+                                    content = Text(messages("tai.payslipDeductions.heading")),
+                                    caption = HmrcSectionCaption(Text(messages("tai.payslipDeductions.preHeading", employer.name))))
+                        )
+                        )
+                    ),
+                    hint = Some(Hint(content = Text(messages("tai.payslipDeductions.tellUs")))),
+                    errorMessage = payslipDeductionsForm.errors.filter(_.key == "payslipDeductions").asTextErrorMessages.headOption,
+                    idPrefix = Some("payslipDeductions"),
+                    name = "payslipDeductions",
+                    items = Seq(
+                        RadioItem(
+                            content = Text(messages("tai.payslipDeductions.yes")),
+                            value = Some("Yes"),
+                            checked = payslipDeductionsForm.data.get("payslipDeductions").exists(_ == "Yes")
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.payslipDeductions.no")),
+                            value = Some("No"),
+                            checked = payslipDeductionsForm.data.get("payslipDeductions").exists(_ == "No")
+                        )
+                    ),
+                    classes = "govuk-radios--inline"
+                ).withFormField(payslipDeductionsForm("payslipDeductions")))
 
-        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipDeductions){
+                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
+            }
 
-            @{inputRadioGroupStyling(
-                field=payslipDeductionsForm("payslipDeductions"),
-                radioOptions=Seq(("Yes" -> messages("tai.payslipDeductions.yes")), ("No" -> messages("tai.payslipDeductions.no"))),
-                legend=messages("tai.payslipDeductions.legend"),
-                legendHint=None,
-                ('_groupDivClass, "form-group" ),
-                ('_groupClass, "inline" ),
-                ('_legendSpanClass, "visually-hidden"),
-                ('_fieldsetAttributes, "id=payslipDeductions" )
-            )}
-            <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
-        }
-
-        @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(employer.id).url))
+            @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(employer.id).url))
+        </div>
     </div>
-
 }
