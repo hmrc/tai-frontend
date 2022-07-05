@@ -32,12 +32,13 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
   private val editIncomeIrregularHours = inject[EditIncomeIrregularHoursView]
 
   "Edit income Irregular Hours view" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
     behave like pageWithTitle(messages("tai.irregular.heading"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.estimatedPay.preHeading", employerName),
       messages("tai.irregular.heading", currentTaxYearRangeHtmlNonBreak))
-    behave like pageWithContinueButtonForm(s"/check-income-tax/update-income/edit-income-irregular-hours/$employmentId")
+    behave like pageWithContinueButtonFormNew(
+      s"/check-income-tax/update-income/edit-income-irregular-hours/$employmentId")
 
     "have the correct content" in {
       val document = doc(view)
@@ -54,10 +55,8 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
     }
 
     "have an input box for user to enter new amount" in {
-      doc(view) must haveInputLabelWithText(
-        "income",
-        messages("tai.irregular.newAmount") + " " + messages("tai.inPounds"))
-      doc(view).getElementsByClass("form-control-currency").size() mustBe 1
+      doc(view) must haveInputLabelWithText("income", messages("tai.irregular.newAmount"))
+      doc(view).getElementsByClass("govuk-input").size() mustBe 1
     }
 
   }
