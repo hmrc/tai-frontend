@@ -68,7 +68,7 @@ class IncomeTaxHistoryController @Inject()(
         val maybeLastPayment = fetchLastPayment(employment, taxYear)
         IncomeTaxHistoryViewModel(
           employment.name,
-          employment.payeNumber,
+          s"${employment.taxDistrictNumber}/${employment.payeNumber}",
           employment.startDate,
           employment.endDate.getOrElse(LocalDate.now()),
           maybeLastPayment.map { payment =>
