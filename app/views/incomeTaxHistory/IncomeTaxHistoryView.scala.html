@@ -28,6 +28,7 @@
 @import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.IncomeTaxYear
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.service.TaxPeriodLabelService
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 
 @this(main: MainTempleteNew, govukDetails : GovukDetails)
@@ -102,8 +103,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
             <div class="employer-name govuk-body">@summary.employerName</div>
             <ul class="govuk-list govuk-!-font-size-16 .ul-incomeTaxHistory">
                 <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.employerReference")</span> @summary.ern	</li>
-                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.startDate")</span> @summary.startDate	</li>
-                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.endDate")</span> @summary.endDate	</li>
+                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.startDate")</span> @TaxYearRangeUtil.formatDate(summary.startDate)	</li>
+                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.endDate")</span> @TaxYearRangeUtil.formatDate(summary.endDate)	</li>
                 @if(summary.maybeTaxableIncome.isDefined) {
                     <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.taxableIncome") </span>@summary.maybeTaxableIncome</li>
                 }
