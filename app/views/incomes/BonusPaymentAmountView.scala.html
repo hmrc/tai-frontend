@@ -1,19 +1,18 @@
 @*
- * Copyright 2021 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *@
-
+* Copyright 2021 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
 @import includes.ptaHeader
 @import includes.cancelLink
 
@@ -28,33 +27,34 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
 
-@this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukInput : GovukInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
+@this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages,
-        user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
+        user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(bonusOvertimeAmountForm),
-        displayBackLink = true,
-        mainHeadingText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+        displayBackLink = false,
+        mainHeadingText = messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
         preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading", employer.name),
         showGdsVersion = true
     )
 }
 
 
-@hint = { <p>@messages("tai.bonusPaymentsAmount.hint")</p> }
-
+@hint = {
+    <p>@messages("tai.bonusPaymentsAmount.hint")</p>
+}
 
 
 @mainTemplate(
-    title = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+    title = messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkId = "backLink"
-    ){
+) {
 
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
@@ -63,33 +63,33 @@
                 @govukErrorSummary(ErrorSummary(errorList = bonusOvertimeAmountForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-    <div class="section flush--bottom soft--top">
-        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusOvertimeAmount){
+            <div class="section flush--bottom soft--top">
+            @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusOvertimeAmount) {
 
 
-            @govukInput(Input(
-                id = "amount",
-                name = "amount",
-                value = bonusOvertimeAmountForm.data.get("amount"),
-                classes = "govuk-input--width-5",
-                hint = Some(Hint(content = HtmlContent(hint))),
-                prefix = Some(PrefixOrSuffix(
-                    content = Text("£")
-                )),
-                errorMessage = bonusOvertimeAmountForm.errors.asTextErrorMessages.headOption,
-                label = HmrcPageHeadingLabel(
-                    content = Text(messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)),
-                    caption = HmrcSectionCaption(Text(messages("tai.bonusPaymentsAmount.preHeading", employer.name))))
+                @govukInput(Input(
+                    id = "amount",
+                    name = "amount",
+                    value = bonusOvertimeAmountForm.data.get("amount"),
+                    classes = "govuk-input--width-5",
+                    hint = Some(Hint(content = HtmlContent(hint))),
+                    prefix = Some(PrefixOrSuffix(
+                        content = Text("£")
+                    )),
+                    errorMessage = bonusOvertimeAmountForm.errors.asTextErrorMessages.headOption,
+                    label = HmrcPageHeadingLabel(
+                        content = Text(messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)),
+                        caption = HmrcSectionCaption(Text(messages("tai.bonusPaymentsAmount.preHeading", employer.name))))
                 ),
-            )
+                )
 
-            @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
+                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
 
+                @cancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
+            }
+            </div>
 
-            @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(employer.id).url))
-        }
+        </div>
     </div>
-
-        </div></div>
 
 }
