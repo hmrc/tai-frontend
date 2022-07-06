@@ -29,14 +29,25 @@
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 
+
+
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(yesNoForm),
         displayBackLink = true,
         mainHeadingText = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
-        preHeadingText = messages("tai.bonusPayments.preHeading", employer.name)
+        preHeadingText = messages("tai.bonusPayments.preHeading", employer.name),
+        customBackLinkContent = Some(includes.link(
+            id=Some("backLinkToTaxPayslipAMountPage"),
+            copy=Messages("tai.back-link.upper"),
+            url = controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage.url,
+            linkClasses=Seq("link-back js-visible")
+        )
     )
+)
 }
+
+
 
 @mainTemplate(
     title = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
