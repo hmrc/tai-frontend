@@ -37,6 +37,10 @@ backLinkContent = Some(Messages("tai.back-link.upper")),
     <div class="govuk-grid-column-two-thirds">
 
 
+        @if(viewModel.form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary(errorList = viewModel.form.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+        }
+
         <span class="govuk-caption-xl">
             <span class="visuallyhidden govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>
         @Messages("tai.howToUpdate.preHeading", viewModel.employer.name)</span>
@@ -47,9 +51,7 @@ backLinkContent = Some(Messages("tai.back-link.upper")),
         <p class="govuk-body">@messages("tai.taxablePayslip.shownOnPayslip")</p>
 
 
-            @if(viewModel.form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary(errorList = viewModel.form.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-            }
+
 
             @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handleTaxablePayslipAmount){
 
