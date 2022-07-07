@@ -87,7 +87,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 </div>
 
 @for(incomeTaxYear <- incomeTaxYears) {
-    <h2 class="govuk-heading-m govuk-!-margin-top-9" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-0" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
 
 @{
     if (incomeTaxYear.incomeTaxHistory.isEmpty){
@@ -120,7 +120,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
         </div>
     }
 
-    <p>
+    <p class="govuk-!-font-size-19 govuk-!-margin-bottom-9 ">
         @if(incomeTaxYear.taxYear == TaxYear() && incomeTaxYear.incomeTaxHistory.nonEmpty){
             @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary", linkClasses = Seq("govuk-link"))
         } else if (incomeTaxYear.incomeTaxHistory.nonEmpty){
