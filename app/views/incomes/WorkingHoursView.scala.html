@@ -15,54 +15,90 @@
  *@
 
 @import includes.ptaHeaderNoH1
+@import views.html.includes.ptaHeader
 @import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import includes.forms.inputRadioGroupStylingWithH1Label
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukInput
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukButton
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukRadios
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukErrorSummary
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
+@import uk.gov.hmrc.govukfrontend.views.Aliases.Radios
+@import uk.gov.hmrc.govukfrontend.views.Aliases.Fieldset
+@import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+@import uk.gov.hmrc.govukfrontend.views.Aliases.Button
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.errorsummary.ErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.Aliases.ErrorMessage
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
-
 
 @header = @{
     ptaHeaderNoH1(
         formForErrorSummary = Some(workingHoursForm),
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = messages("tai.workingHours.heading"),
         preHeadingText = messages("tai.workingHours.preHeading", employerName)
     )
 }
 
 
-@mainTemplate(
+@main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.workingHours.title"),
-    articleClasses = Some("full-width"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employerName)
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink",
 ){
-    <div class="grid-row">
-       <div class="column-two-thirds">
-        <div class="section flush--bottom soft--top">
-            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.handleWorkingHours){
-                @{inputRadioGroupStylingWithH1Label(
-                        field=workingHoursForm("workingHours"),
-                        radioOptions=Seq(("regularHours" -> messages("tai.workingHours.regularHours")), ("irregularHours" -> messages("tai.workingHours.irregularHours"))),
-                        legend=messages("tai.workingHours.legend"),
-                        legendHint=None,
-                        mainHeadingText = messages("tai.workingHours.heading"),
-                        preHeadingText = messages("tai.workingHours.preHeading", employerName),
-                        labelId  = "workingHours-regularhours",
-                        ('_groupDivClass, "form-group" ),
-                        ('_legend, messages("tai.workingHours.legend") ),
-                        ('_legendSpanClass, "visually-hidden"),
-                        ('_fieldsetAttributes, "id=workingHours")
-                    )}
-                <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
-                }
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
 
-                @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
-            </div>
+            @if(workingHoursForm.errors.nonEmpty){
+               @govukErrorSummary(ErrorSummary(errorList = workingHoursForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+         }
+
+            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.handleWorkingHours){
+                @govukRadios(Radios(
+                    fieldset = Some(
+                        Fieldset(
+                            legend = Some(
+                                HmrcPageHeadingLegend(
+                                    content = Text(Messages("tai.workingHours.heading", employerName)),
+                                    caption = HmrcSectionCaption(Text(Messages("tai.workingHours.preHeading", employerName)))
+                                )
+                            )
+                        )
+                    ),
+                    hint = None,
+                    errorMessage = workingHoursForm.errors.filter(_.key == "workingHours").asTextErrorMessages.headOption,
+                    idPrefix = Some("workingHours"),
+                    name = "workingHours",
+                    items = Seq(
+                        RadioItem(
+                            content = Text(messages("tai.workingHours.regularHours")),
+                            value = Some("regularHours"),
+                            checked = workingHoursForm.data.get("workingHours").contains("regularHours")
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.workingHours.irregularHours")),
+                            value = Some("irregularHours"),
+                            checked = workingHoursForm.data.get("workingHours").contains("irregularHours")
+                        )
+                    ),
+                ).withFormField(workingHoursForm("workingHours"))
+                )
+
+                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
+            }
+            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+
+
         </div>
     </div>
 }
