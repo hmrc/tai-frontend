@@ -36,4 +36,8 @@ object TaxPeriodLabelService {
     s"${HtmlFormatter.htmlNonBroken(message)}"
   }
 
+  def taxPeriodLabelYears(year: Int)(implicit messages: Messages): String =
+    s"${HtmlFormatter.htmlNonBroken(TaxYear(year).start.getYear.toString)} ${messages("language.to")} " +
+      s"${HtmlFormatter.htmlNonBroken(TaxYear(year).end.getYear.toString)}"
+
 }

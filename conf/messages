@@ -551,7 +551,7 @@ tai.income=Employer or pension provider
 tai.incomeSources=Income sources
 tai.incomeTax.calculated.title=How your PAYE Income Tax is calculated
 
-tai.incomeTax.history.title=Income Tax history
+tai.incomeTax.history.title=PAYE Income Tax history
 tai.incomeTax.history.details.summary=PAYE details for {0}
 tai.incomeTax.history.details.address=Address
 tai.incomeTax.history.details.nationalInsurance=National Insurance
