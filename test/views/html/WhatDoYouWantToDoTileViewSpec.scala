@@ -16,11 +16,13 @@
 
 package views.html
 
-import mocks.{MockTemplateRenderer, MockTemplateRendererWithUrBanner}
+import mocks.MockTemplateRenderer
+import org.mockito.Mockito.when
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
 import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -121,6 +123,32 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       cards.toString must include(Messages("check.tax.previous.years"))
       cards.toString must include(Messages("check.jrs.claims"))
 
+    }
+
+    "IncomeTaxHistory enabled" in {
+      val appConfig = mock[ApplicationConfig]
+      when(appConfig.incomeTaxHistoryEnabled).thenReturn(true)
+
+      val view: Html = whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1, appConfig)
+
+      val cards = doc(view).getElementsByClass("card")
+
+      cards.size mustBe 4
+      cards.toString must include(Messages("income.tax.history"))
+      cards.toString must include(Messages("income.tax.history.content"))
+    }
+
+    "IncomeTaxHistory disabled" in {
+      val appConfig = mock[ApplicationConfig]
+      when(appConfig.incomeTaxHistoryEnabled).thenReturn(false)
+
+      val view: Html = whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1, appConfig)
+
+      val cards = doc(view).getElementsByClass("card")
+
+      cards.size mustBe 3
+      cards.toString mustNot include(Messages("income.tax.history"))
+      cards.toString mustNot include(Messages("income.tax.history.content"))
     }
   }
 
