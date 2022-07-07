@@ -122,9 +122,9 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
     <p class="govuk-!-font-size-19 govuk-!-margin-bottom-9 ">
         @if(incomeTaxYear.taxYear == TaxYear() && incomeTaxYear.incomeTaxHistory.nonEmpty){
-            @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary", linkClasses = Seq("govuk-link"))
+            @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabelYears(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary", linkClasses = Seq("govuk-link"))
         } else if (incomeTaxYear.incomeTaxHistory.nonEmpty){
-            @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = s"/check-income-tax/historic-paye/${incomeTaxYear.taxYear.year}", linkClasses = Seq("govuk-link"))
+            @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabelYears(incomeTaxYear.taxYear.year)), url = s"/check-income-tax/historic-paye/${incomeTaxYear.taxYear.year}", linkClasses = Seq("govuk-link"))
         }
     </p>
 

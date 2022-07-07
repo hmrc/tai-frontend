@@ -557,11 +557,11 @@ tai.incomeTax.totalEstimatedIncome.subheading=Cyfanswm incwm amcangyfrifedig
 tai.incomeTax.totalIncomeTaxEstimate=Cyfanswm Amcangyfrif Treth Incwm
 tai.incomeTaxBand=Haen Treth Incwm
 
-tai.incomeTax.history.title=Hanes Treth Incwm
+tai.incomeTax.history.title=Hanes Treth Incwm TWE
 tai.incomeTax.history.details.summary=Manylion TWE ar gyfer {0}
 tai.incomeTax.history.details.address=Cyfeiriad
 tai.incomeTax.history.details.nationalInsurance=Yswiriant Gwladol
-tai.incomeTax.history.table.link= xyz {0}
+tai.incomeTax.history.table.link= Bwrw golwg dros grynodeb o flwyddyn dreth {0} 
 tai.incomeTax.history.pageTitle=Hanes treth incwm – Gwiriwch eich Treth Incwm – GOV.UK
 
 tai.incomeTax.history.noTaxHistory=Dim hanes Treth Incwm TWE ar gyfer y flwyddyn hon.
