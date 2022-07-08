@@ -17,7 +17,6 @@
 package views.html.benefits
 
 import play.api.data.Form
-import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice
@@ -30,12 +29,14 @@ class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
 
   "decision" should {
     behave like pageWithTitle(messages("tai.benefits.updateOrRemove.decision.heading", benefitType, employerName))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.benefits.updateOrRemove.journey.preHeader"),
-      messages("tai.benefits.updateOrRemove.decision.heading", benefitType, employerName))
-    behave like pageWithBackLink
+      messages("tai.benefits.updateOrRemove.decision.heading", benefitType, employerName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
+    behave like pageWithBackLinkNew
     behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
-    behave like pageWithContinueButtonForm(s"/check-income-tax/company-benefit/decision")
+    behave like pageWithContinueButtonFormNew(s"/check-income-tax/company-benefit/decision")
 
     "have two radio buttons with relevant text" in {
       doc must haveInputLabelWithText(idYesIGetThisBenefit, messages("tai.benefits.updateOrRemove.decision.radio.yes"))
@@ -45,25 +46,19 @@ class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
 
     }
 
-    "have a legend" in {
-      doc must haveElementAtPathWithText(
-        "legend span[id=radioGroupLegendMain]",
-        Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, employerName))
-    }
-
     "display error message" when {
       "form has error" in {
         val errorView = updateOrRemoveCompanyBenefitDecision(viewModelWithErrors)
         doc(errorView) must haveClassWithText(
-          messages("tai.error.message") + " " +
+          messages("tai.income.error.form.summary") + " " +
             messages("tai.benefits.updateOrRemove.decision.radio.error"),
-          "error-message")
+          "govuk-error-summary")
       }
     }
 
     "a decision has not been made" in {
       val errorView = updateOrRemoveCompanyBenefitDecision(viewModelWithErrors)
-      doc(errorView) must haveErrorLinkWithText(messages("tai.benefits.updateOrRemove.decision.radio.error"))
+      doc(errorView) must haveErrorLinkWithTextNew(messages("tai.benefits.updateOrRemove.decision.radio.error"))
     }
 
   }
@@ -73,8 +68,8 @@ class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
       DecisionChoice -> ""
     ))
 
-  private val idYesIGetThisBenefit = "decisionChoice-yesigetthisbenefit"
-  private val idNoIDontGetThisBenefit = "decisionChoice-noidontgetthisbenefit"
+  private val idYesIGetThisBenefit = "decisionChoice"
+  private val idNoIDontGetThisBenefit = "decisionChoice-2"
   private lazy val benefitType = "Expenses"
   private lazy val employerName = "EmployerA"
   private lazy val viewModel =
