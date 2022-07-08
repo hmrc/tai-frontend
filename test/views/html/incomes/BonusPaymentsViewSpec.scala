@@ -40,14 +40,15 @@ class BonusPaymentsViewSpec extends TaiViewSpec with FormValuesConstants {
   override def view: Html = bonusPayments(bonusPaymentsForm, employer)
 
   "Bonus payments view" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.bonusPayments.preHeading", employer.name),
-      messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
+      messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
     behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
-    behave like pageWithContinueButtonForm("/check-income-tax/update-income/bonus-payments")
+    behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-payments")
 
     "return no errors with valid 'yes' choice" in {
       val validYesChoice = Json.obj(choice -> YesValue)
@@ -70,10 +71,10 @@ class BonusPaymentsViewSpec extends TaiViewSpec with FormValuesConstants {
       val invalidatedForm = bonusPaymentsForm.bind(invalidChoice)
 
       val errorView = bonusPayments(invalidatedForm, employer)
-      doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
+      doc(errorView) must haveErrorLinkWithTextNew(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(
-        messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
-        "error-message")
+        messages("tai.income.error.form.summary") + " " + messages(emptySelectionErrorMessage),
+        "govuk-error-summary")
     }
   }
 }
