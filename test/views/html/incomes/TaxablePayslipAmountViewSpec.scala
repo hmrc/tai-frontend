@@ -39,12 +39,13 @@ class TaxablePayslipAmountViewSpec extends TaiViewSpec with EditIncomePayPeriodC
 
   "Taxable Pay slip amount view" should {
     behave like pageWithTitle(messages("tai.taxablePayslip.title.month", MONTHLY))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.howToUpdate.preHeading", employerName),
       messages("tai.taxablePayslip.title.month", MONTHLY))
-    behave like pageWithBackLink
+
+    behave like pageWithBackLinkNew
     behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(taxablePayslipViewModel.employer.id))
-    behave like pageWithButtonForm("/check-income-tax/update-income/taxable-payslip-amount", messages("tai.submit"))
+    behave like pageWithButtonFormNew("/check-income-tax/update-income/taxable-payslip-amount", messages("tai.submit"))
   }
 
   "display two explanation paragraphs" in {
@@ -57,7 +58,8 @@ class TaxablePayslipAmountViewSpec extends TaiViewSpec with EditIncomePayPeriodC
       val formWithErrors = TaxablePayslipForm.createForm(None, Some("blah"), None).bind(Map("taxablePay" -> ""))
       val viewModelError = createViewModel(formWithErrors)
       val errorView = template(viewModelError)
-      doc(errorView) must haveErrorLinkWithText(messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory"))
+      doc(errorView) must haveErrorLinkWithTextNew(
+        messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory"))
     }
 
   }

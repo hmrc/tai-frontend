@@ -14,7 +14,9 @@
  * limitations under the License.
  *@
 
+@import includes.ptaHeader
 @import includes.cancelLink
+@import includes.forms.{inputRadioGroupStyling, submit}
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.forms.YesNoForm
 @import scala.concurrent.ExecutionContext
@@ -33,7 +35,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
     title = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper"))
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl=Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage.url)
 ) {
 
     <div class = "govuk-grid-row">
