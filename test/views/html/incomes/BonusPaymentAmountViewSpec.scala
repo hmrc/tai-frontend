@@ -35,13 +35,16 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
   "Bonus payments amount view" should {
     behave like pageWithBackLink
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.bonusPaymentsAmount.preHeading", employer.name),
-      messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
+      messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited) + " " + "This section is " + messages(
+        "tai.bonusPaymentsAmount.preHeading",
+        employer.name)
     )
+
     behave like pageWithTitle(
       messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
-    behave like pageWithContinueButtonForm("/check-income-tax/update-income/bonus-overtime-amount")
+    behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-overtime-amount")
 
     "contain a paragraph with static text" in {
       doc must haveParagraphWithText(messages("tai.bonusPaymentsAmount.hint"))
@@ -49,7 +52,7 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
 
     "contain an input field with pound symbol appended" in {
       doc must haveElementAtPathWithId("input", "amount")
-      doc must haveElementAtPathWithClass("input", "form-control-currency")
+      doc must haveElementAtPathWithClass("div", "govuk-input__prefix")
     }
 
     "return no errors when a valid monetary amount is entered" in {
@@ -70,10 +73,10 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
         val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 
         val errorView: HtmlFormat.Appendable = bonusPaymentAmount(invalidatedForm, employer)
-        doc(errorView) must haveErrorLinkWithText(emptySelectionErrorMessage)
+        doc(errorView) must haveErrorLinkWithTextNew(emptySelectionErrorMessage)
         doc(errorView) must haveClassWithText(
           messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
-          "error-message")
+          "govuk-error-message")
       }
 
       "the user enters an invalid monetary amount" in {
@@ -82,10 +85,10 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
         val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 
         val errorView: HtmlFormat.Appendable = bonusPaymentAmount(invalidatedForm, employer)
-        doc(errorView) must haveErrorLinkWithText(invalidAmountErrorMessage)
+        doc(errorView) must haveErrorLinkWithTextNew(invalidAmountErrorMessage)
         doc(errorView) must haveClassWithText(
           messages("tai.error.message") + " " + messages(invalidAmountErrorMessage),
-          "error-message")
+          "govuk-error-message")
       }
     }
   }
