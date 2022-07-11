@@ -29,13 +29,15 @@ class RemoveBenefitTotalValueViewSpec extends TaiViewSpec {
 
   "removeBenefitTotalValue" must {
     behave like pageWithTitle(Messages("tai.remove.company.benefit.total.value.heading", benefitName, employerName))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       Messages("tai.benefits.ended.journey.preHeader"),
-      Messages("tai.remove.company.benefit.total.value.heading", benefitName, employerName))
+      Messages("tai.remove.company.benefit.total.value.heading", benefitName, employerName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
 
-    behave like pageWithContinueButtonForm("/check-income-tax/remove-company-benefit/total-value-of-benefit")
+    behave like pageWithContinueButtonFormNew("/check-income-tax/remove-company-benefit/total-value-of-benefit")
     behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
-    behave like pageWithBackLink
+    behave like haveBackButtonWithUrl(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url)
 
     "contain static paragraph with text" in {
       doc must haveParagraphWithText(Messages("tai.remove.company.benefit.total.value.dontKnow"))
@@ -45,18 +47,18 @@ class RemoveBenefitTotalValueViewSpec extends TaiViewSpec {
       doc must haveBulletPointWithText(Messages("tai.remove.company.benefit.total.value.enter"))
     }
     "contain label with static text" in {
-      val label = doc(view).select("form .form-label").get(0).text
+      val label = doc(view).select("#valueOfBenefit").get(0).text
       label must include(Messages("tai.remove.company.benefit.total.value.value"))
       label must include(Messages("tai.inPounds"))
 
     }
     "contain hint with static text" in {
-      val hint = doc(view).select("form .form-hint").get(0).text
-      hint mustBe Messages("tai.remove.company.benefit.total.value.hint")
+      val hint = doc(view).select("#valueOfBenefit").get(0).text
+      hint must include(Messages("tai.remove.company.benefit.total.value.hint"))
     }
     "contain summary with text and a hidden text" in {
       doc must haveSummaryWithText(Messages("tai.remove.company.benefit.total.value.whatHappens.link"))
-      doc must haveParagraphWithText(
+      doc must haveDetailsWithText(
         Messages(
           "tai.remove.company.benefit.total.value.whatHappens.desc",
           TaxYear().start.format(DateTimeFormatter.ofPattern("yyyy")),
@@ -66,7 +68,7 @@ class RemoveBenefitTotalValueViewSpec extends TaiViewSpec {
     }
     "contain an input field with pound symbol appended" in {
       doc must haveElementAtPathWithId("input", "totalValue")
-      doc must haveElementAtPathWithClass("input", "form-control-currency")
+      doc must haveElementAtPathWithClass("div", "govuk-input__prefix")
     }
 
   }

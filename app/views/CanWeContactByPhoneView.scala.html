@@ -47,7 +47,8 @@
     title = viewModel.mainHeading,
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = incomingAuthedUser,
-    backLinkContent = Some(Messages("tai.back-link.upper"))
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(viewModel.backUrl)
 ) {
 
 <div class = "govuk-grid-row">
