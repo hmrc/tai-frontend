@@ -31,7 +31,12 @@ class WorkingHoursViewSpec extends TaiViewSpec {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
 
     "display label with heading" in {
-      doc must haveElementAtPathWithText("#headingInLabel .form-label", messages("tai.workingHours.heading"))
+      doc must haveElementAtPathWithText(
+        ".govuk-fieldset__legend--xl",
+        messages("tai.workingHours.heading", employerName) + " " + messages("tai.ptaHeader.accessible.preHeading") + " " + messages(
+          "tai.workingHours.preHeading",
+          employerName)
+      )
     }
 
   }

@@ -16,9 +16,6 @@
 
 package views.html.incomes
 
-import org.mockito.Matchers._
-import org.mockito.Mockito._
-import play.api.data.{Field, Form}
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.PayslipDeductionsForm
@@ -30,24 +27,15 @@ class PayslipDeductionsViewSpec extends TaiViewSpec {
   val employer = IncomeSource(id = 1, name = "Employer")
 
   "Pay slip deductions view" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.payslipDeductions.preHeading", employer.name),
-      messages("tai.payslipDeductions.heading"))
+      messages("tai.payslipDeductions.heading"),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
   }
 
-  val payslipDeductionsForm = mock[Form[PayslipDeductionsForm]]
-
-  val field = mock[Field]
-  when(field.value).thenReturn(Some("fakeFieldValue"))
-  when(field.name).thenReturn("fakeFieldValue")
-  when(field.errors).thenReturn(Nil)
-  when(payslipDeductionsForm(any())).thenReturn(field)
-  when(payslipDeductionsForm.errors).thenReturn(Nil)
-  when(payslipDeductionsForm.errors(anyString())).thenReturn(Nil)
-  when(payslipDeductionsForm.hasErrors).thenReturn(false)
-
   private def payslipDeductions = inject[PayslipDeductionsView]
-  override def view: Html = payslipDeductions(payslipDeductionsForm, employer)
+  override def view: Html = payslipDeductions(PayslipDeductionsForm.createForm(), employer)
 }

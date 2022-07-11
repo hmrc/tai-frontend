@@ -15,51 +15,59 @@
  *@
 
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.PaySlipAmountViewModel
-@import includes.ptaHeader
 @import includes.cancelLink
-@import includes.forms.input
-@import uk.gov.hmrc.play.views.html.helpers._
+@import includes.forms.errorSummary
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(viewModel: PaySlipAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(viewModel.payslipForm),
-        displayBackLink = true,
-        mainHeadingText = viewModel.payPeriodTitle,
-        preHeadingText = messages("tai.payslip.preHeading", viewModel.employer.name)
-    )
-}
-
-@mainTemplate(
-    title = viewModel.payPeriodTitle,
-    articleClasses = None,
-    authedUser = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(viewModel.employer.name)
-) {
+@hint = {
     <p>@messages("tai.payslip.p1")</p>
     <p>@messages("tai.payslip.p2")</p>
+}
 
-    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipAmount) {
-        @includes.forms.input(
-            field = viewModel.payslipForm("totalSalary"),
-            labelText = viewModel.payPeriodTitle,
-            labelClass = "visuallyhidden",
-            bold = true,
-            fieldErrorsEnabled = true,
-            classes = Seq("form-control-1-4"),
-            isCurrency = true
-        )
+@main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    title = viewModel.payPeriodTitle,
+    authedUser = Some(user)
+) {
 
-        <input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/>
-    }
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if(viewModel.payslipForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = viewModel.payslipForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
 
-    @cancelLink(Call("GET", controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
+            @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipAmount) {
+                @govukInput(Input(
+                    id = "totalSalary",
+                    name = "totalSalary",
+                    value = viewModel.payslipForm.data.get("totalSalary"),
+                    label = HmrcPageHeadingLabel(
+                        content = Text(viewModel.payPeriodTitle),
+                        caption = HmrcSectionCaption(Text(messages("tai.payslip.preHeading", viewModel.employer.name)))
+                    ),
+                    hint = Some(Hint(
+                        content = HtmlContent(hint),
+                    )),
+                    classes = "govuk-!-width-one-quarter",
+                    prefix = Some(PrefixOrSuffix(
+                        content = Text("£")
+                    )),
+                    errorMessage = viewModel.payslipForm.errors.asTextErrorMessages.headOption
+                ))
 
+                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
+            }
+
+        @cancelLink(Call("GET", controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
+        </div>
+    </div>
 }

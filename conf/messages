@@ -551,7 +551,7 @@ tai.income=Employer or pension provider
 tai.incomeSources=Income sources
 tai.incomeTax.calculated.title=How your PAYE Income Tax is calculated
 
-tai.incomeTax.history.title=Income Tax history
+tai.incomeTax.history.title=PAYE Income Tax history
 tai.incomeTax.history.details.summary=PAYE details for {0}
 tai.incomeTax.history.details.address=Address
 tai.incomeTax.history.details.nationalInsurance=National Insurance
@@ -1349,7 +1349,7 @@ understand.your.tax=Understand your tax
 what.does.this.mean=What does this mean?
 what.is.underpayment=What is an underpayment?
 what.is.tax.estimation=What is a tax estimation?
-your.paye.income.tax.overview=Your PAYE Income Tax overview
+your.paye.income.tax.overview=PAYE Income Tax overview
 your.total.income.from.employment.desc=Your total income from employment is estimated at {0} this tax year. You have a {1} for your employment income. This means the first {2} of your employment earnings are tax free.
 your.total.income.from.paye.desc=Your total income from PAYE is estimated at {0} this tax year. You have a {1} for your PAYE income. This means the first {2} of your PAYE earnings are tax free.
 your.total.income.from.private.pension.desc=Your total income from private pension is estimated at {0} this tax year. You have a {1} for your private pension income. This means the first {2} of your private pension earnings are tax free.

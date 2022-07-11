@@ -28,6 +28,7 @@
 @import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.IncomeTaxYear
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.service.TaxPeriodLabelService
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 
 @this(main: MainTempleteNew, govukDetails : GovukDetails)
@@ -86,7 +87,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 </div>
 
 @for(incomeTaxYear <- incomeTaxYears) {
-    <h2 class="govuk-heading-m govuk-!-margin-top-9" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-0" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
 
 @{
     if (incomeTaxYear.incomeTaxHistory.isEmpty){
@@ -102,8 +103,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
             <div class="employer-name govuk-body">@summary.employerName</div>
             <ul class="govuk-list govuk-!-font-size-16 .ul-incomeTaxHistory">
                 <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.employerReference")</span> @summary.ern	</li>
-                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.startDate")</span> @summary.startDate	</li>
-                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.endDate")</span> @summary.endDate	</li>
+                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.startDate")</span> @TaxYearRangeUtil.formatDate(summary.startDate)	</li>
+                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.endDate")</span> @TaxYearRangeUtil.formatDate(summary.endDate)	</li>
                 @if(summary.maybeTaxableIncome.isDefined) {
                     <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.taxableIncome") </span>@summary.maybeTaxableIncome</li>
                 }
@@ -119,11 +120,11 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
         </div>
     }
 
-    <p>
+    <p class="govuk-!-font-size-19 govuk-!-margin-bottom-9 ">
         @if(incomeTaxYear.taxYear == TaxYear() && incomeTaxYear.incomeTaxHistory.nonEmpty){
-            @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary", linkClasses = Seq("govuk-link"))
+            @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabelYears(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary", linkClasses = Seq("govuk-link"))
         } else if (incomeTaxYear.incomeTaxHistory.nonEmpty){
-            @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)), url = s"/check-income-tax/historic-paye/${incomeTaxYear.taxYear.year}", linkClasses = Seq("govuk-link"))
+            @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabelYears(incomeTaxYear.taxYear.year)), url = s"/check-income-tax/historic-paye/${incomeTaxYear.taxYear.year}", linkClasses = Seq("govuk-link"))
         }
     </p>
 

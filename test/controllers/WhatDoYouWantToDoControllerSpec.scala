@@ -506,6 +506,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       ) {
 
     when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled
+    when(mockAppConfig.incomeTaxHistoryEnabled) thenReturn true
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any(), any()))

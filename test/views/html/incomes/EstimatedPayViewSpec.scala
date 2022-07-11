@@ -40,10 +40,10 @@ class EstimatedPayViewSpec extends TaiViewSpec {
   }
 
   "Estimated Pay" must {
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
     behave like pageWithCancelLink(
       Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       messages("tai.estimatedPay.preHeading", employer.name),
       messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRange))
     behave like pageWithTitle(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRange))

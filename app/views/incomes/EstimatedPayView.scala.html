@@ -26,7 +26,7 @@
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.util.MonetaryUtil
 
-@this(mainTemplate: MainTemplate, loginStatus: LoginStatus)
+@this(main: MainTempleteNew, loginStatus: LoginStatus)
 
 @(viewModel: EstimatedPayViewModel)(implicit request: Request[_],messages: Messages, user: controllers.auth.AuthedUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
@@ -37,24 +37,35 @@ ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRange),
+        showGdsVersion = true,
         preHeadingText = messages("tai.estimatedPay.preHeading", viewModel.employer.name)
     )
 }
 
-@mainTemplate(
+@main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
     title = messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRange),
-    articleClasses = Some("full-width text"),
-    authedUser = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(viewModel.employer.name)
+    authedUser = Some(user)
 ){
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
     <div>
-        <p>@messages("tai.estimatedPay.weHaveCalculated")</p>
-        <h2 class="flush--top">@messages("tai.estimatedPay.yourPay")</h2>
-        <p class="bold-large margin-bottom-medium" id="payBeforeTax">@MonetaryUtil.withPoundPrefixAndSign(grossAnnualPay)</p>
-        <p>@messages("tai.estimatedPay.basicPayExplanation")</p>
+        <p class="govuk-body">@messages("tai.estimatedPay.weHaveCalculated")</p>
+        <h2 class="govuk-heading-m">@messages("tai.estimatedPay.yourPay")</h2>
+        <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold" id="payBeforeTax">@MonetaryUtil.withPoundPrefixAndSign(grossAnnualPay)</p>
+        <p class="govuk-body">@messages("tai.estimatedPay.basicPayExplanation")</p>
 
 
         @if(viewModel.isGrossPayApportioned){
@@ -68,34 +79,39 @@ ec: scala.concurrent.ExecutionContext)
     </div>
 
     <div class="margin-bottom-large">
-        <h2>@messages("tai.estimatedPay.yourTaxablePay")</h2>
-        <p class="bold-large margin-bottom-medium" id="amountPayTaxOn">@MonetaryUtil.withPoundPrefixAndSign(netAnnualPay)</p>
-        <p>@messages("tai.estimatedPay.yourTaxablePay.text")</p>
+        <h2 class="govuk-heading-m">@messages("tai.estimatedPay.yourTaxablePay")</h2>
+        <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold" id="amountPayTaxOn">@MonetaryUtil.withPoundPrefixAndSign(netAnnualPay)</p>
+        <p class="govuk-body">@messages("tai.estimatedPay.yourTaxablePay.text")</p>
 
         @if(viewModel.isGrossPayEqualsNetPay){
-            @includes.details_summary(messages("tai.estimatedPay.whySame.title")){
+            @includes.details_summary(messages("tai.estimatedPay.whySame.title"), summaryClass=Some("govuk-details__summary")){
                 @messages("tai.estimatedPay.whySame.text")
             }
         }
 
     </div>
 
-    <div class ="panel panel-border-narrow">
-        <p>@messages("tai.estimatedPay.taxCodeChange.explanation.para1")</p>
-        <p>@messages("tai.estimatedPay.taxCodeChange.explanation.para2")</p>
+    <div class ="panel panel-border-narrow govuk-details__text">
+        <p class="govuk-body">@messages("tai.estimatedPay.taxCodeChange.explanation.para1")</p>
+        <p class="govuk-body">@messages("tai.estimatedPay.taxCodeChange.explanation.para2")</p>
     </div>
 
-    <div class="section">
+    <div class="section govuk-!-margin-top-8">
 
         @includes.link(
             copy=messages("tai.estimatedPay.checkTaxEstimate"),
             url = income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,
             isButton=true,
-            id=Some("confirmAndSend")
+            id=Some("confirmAndSend"),
+            linkClasses=Seq("govuk-button")
         )
 
-        @cancelLink(url = Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employer.id).url),
-                    linkText = Some(messages("tai.cancel.noSave")))
+        @cancelLink(
+            url = Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employer.id).url),
+            linkText = Some(messages("tai.cancel.noSave"))
+        )
     </div>
 
+        </div>
+    </div>
 }

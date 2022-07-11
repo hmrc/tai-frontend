@@ -98,12 +98,14 @@
                         bodyContent = None
                     )
 
-                    @card(
-                        url = Some(s"/check-income-tax/income-tax-history"),
-                        id = "incomeTaxHistory",
-                        heading = messages("income.tax.history"),
-                        bodyContent = Some(messages("income.tax.history.content"))
-                    )
+                   @if(appConfig.incomeTaxHistoryEnabled) {
+                        @card(
+                            url = Some(s"/check-income-tax/income-tax-history"),
+                            id = "incomeTaxHistory",
+                            heading = messages("income.tax.history"),
+                            bodyContent = Some(messages("income.tax.history.content"))
+                        )
+                    }
 
                     @if(model.showJrsTile){
                         @card(

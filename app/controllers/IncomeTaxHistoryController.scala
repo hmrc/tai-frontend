@@ -19,6 +19,7 @@ package controllers
 import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -33,6 +34,7 @@ import uk.gov.hmrc.tai.util.ViewModelHelper._
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -49,7 +51,9 @@ class IncomeTaxHistoryController @Inject()(
 )(implicit ec: ExecutionContext, templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
 
-  def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[IncomeTaxYear] = {
+  def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(
+    implicit hc: HeaderCarrier,
+    messages: Messages): Future[IncomeTaxYear] = {
     val futureMaybeTaxCodes =
       taxAccountService.taxCodeIncomesV2(nino, taxYear).map(_.toOption).recover { case _ => None }
     val futureEmployments = employmentService.employments(nino, taxYear)
@@ -68,7 +72,7 @@ class IncomeTaxHistoryController @Inject()(
         val maybeLastPayment = fetchLastPayment(employment, taxYear)
         IncomeTaxHistoryViewModel(
           employment.name,
-          employment.payeNumber,
+          s"${employment.taxDistrictNumber}/${employment.payeNumber}",
           employment.startDate,
           employment.endDate.getOrElse(LocalDate.now()),
           maybeLastPayment.map { payment =>

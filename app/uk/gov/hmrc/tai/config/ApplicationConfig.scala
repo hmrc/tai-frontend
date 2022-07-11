@@ -141,6 +141,8 @@ trait FeatureTogglesConfig { self: ApplicationConfig =>
   lazy val isTaiCy3Enabled: Boolean = getOptional[Boolean]("tai.cy3.enabled").getOrElse(false)
   val trackingEnabled: Boolean = getOptional[Boolean]("tai.tracking.enabled").getOrElse(false)
 
+  lazy val incomeTaxHistoryEnabled: Boolean = getOptional[Boolean]("tai.incomeTaxHistory.enabled").getOrElse(true)
+
   val numberOfPreviousYearsToShow: Int = 5 // Always 5 in all configs
 }
 

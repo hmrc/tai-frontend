@@ -15,17 +15,17 @@
  *@
 
 @import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
-@import includes.compareValueInput
+@import includes.compareValueInputNew
 @import includes.ptaHeader
 @import includes.cancelLink
-@import includes.forms.input
-@import includes.forms.submit
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF,  govukErrorSummary: GovukErrorSummary, govukInput : GovukInput, govukButton: GovukButton)
 
 @(incomeUpdateForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm],
   viewModel: EditIncomeIrregularHoursViewModel)(
@@ -37,48 +37,60 @@
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = viewModel.heading,
         preHeadingText = viewModel.preHeading,
-        formForErrorSummary=Some(incomeUpdateForm)
+        formForErrorSummary=Some(incomeUpdateForm),
+        showGdsVersion = true,
     )
 }
 
-@mainTemplate(
+@main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.irregular.heading"),
-    pageHeader = Some(header),
-    articleClasses = Some("")
+    backLinkContent = Some(Messages("tai.back-link.upper")),
 ){
-    <h2 class="heading-medium">@Html(messages("tai.irregular.introduction", <span class="carry-over">{viewModel.employerName}</span>))</h2>
-    <p>@messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRange)</p>
-
-    @includes.editIncomeWhatShouldYouInclude()
-
-    <p>@messages("tai.irregular.instruction.wholePounds")</p>
-
-    @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController.handleIncomeIrregularHours(viewModel.employmentId)) {
-        <div class="form-field-group @if(incomeUpdateForm.hasErrors) {form-group-error}">
-            @incomeUpdateForm.errors(incomeUpdateForm("income").name).map{ error =>
-                <span class="error-notification error-message">@messages(error.message)</span>
-
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @if(incomeUpdateForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = incomeUpdateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @compareValueInput(
-                previousLabel = messages("tai.incomes.amount.current"),
-                newLabel = messages("tai.incomes.amount.new"),
-                previousFieldName = "oldAmount",
-                previousFieldValue= viewModel.currentAmount,
-                newField = incomeUpdateForm("income")
-            )
+            @header
+
+            <h2 class="govuk-heading-m">@Html(messages("tai.irregular.introduction", <span class="carry-over">{viewModel.employerName}</span>))</h2>
+            <p class="govuk-body">@messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRange)</p>
+
+            @includes.editIncomeWhatShouldYouInclude()
+
+            <p></p>
+
+            <h3 class="govuk-heading-m">@messages("tai.incomes.edit.incomeTax.update.heading", viewModel.employerName)</h3>
+
+            <p class="govuk-body">@messages("tai.irregular.instruction.wholePounds")</p>
+
+            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController.handleIncomeIrregularHours(viewModel.employmentId)) {
+                <div class="form-field-group @if(incomeUpdateForm.hasErrors) {govuk-form-group govuk-form-group--error}">
+                    @incomeUpdateForm.errors(incomeUpdateForm("income").name).map{ error =>
+                        <span class="govuk-error-message">@messages(error.message)</span>
+                    }
+
+                    @compareValueInputNew(
+                        govukInput,
+                        previousLabel = messages("tai.incomes.amount.current"),
+                        newLabel = messages("tai.incomes.amount.new"),
+                        previousFieldName = "oldAmount",
+                        previousFieldValue= viewModel.currentAmount,
+                        newField = incomeUpdateForm("income"),
+                    )
+                </div>
+
+                @govukButton(Button(content = Text(messages("tai.submit"))))
+            }
+
+            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employmentId).url))
         </div>
-
-        <div class=" form-group">
-            @submit(Some(messages("tai.submit")))
-        </div>
-
-    }
-
-    <p>@cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employmentId).url))</p>
+    </div>
 
 }
 
