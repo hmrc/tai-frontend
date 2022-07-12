@@ -34,12 +34,14 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
   "stop date" should {
 
     behave like pageWithTitle(messages("tai.benefits.ended.stopDate.heading", benefitType, empName))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.benefits.ended.journey.preHeader"),
-      messages("tai.benefits.ended.stopDate.heading", benefitType, empName))
+      messages("tai.benefits.ended.stopDate.heading", benefitType, empName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
     behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
-    behave like pageWithBackLink
-    behave like pageWithContinueButtonForm("/check-income-tax/remove-company-benefit/stop-date")
+    behave like pageWithBackLinkNew
+    behave like pageWithContinueButtonFormNew("/check-income-tax/remove-company-benefit/stop-date")
 
     "have two radio buttons with relevant text" in {
       doc must haveInputLabelWithText(
@@ -62,20 +64,20 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
       "form has error" in {
         val errorView = removeCompanyBenefitStopDate(formWithErrors, benefitType, empName)
         doc(errorView) must haveClassWithText(
-          messages("tai.error.message") + " " +
+          messages("tai.income.error.form.summary") + " " +
             messages("tai.benefits.ended.stopDate.radio.error", taxYearStart),
-          "error-message")
+          "govuk-error-summary")
       }
 
       "a decision has not been made" in {
         val errorView = removeCompanyBenefitStopDate(formWithErrors, benefitType, empName)
-        doc(errorView) must haveErrorLinkWithText(messages("tai.benefits.ended.stopDate.radio.error", taxYearStart))
+        doc(errorView) must haveErrorLinkWithTextNew(messages("tai.benefits.ended.stopDate.radio.error", taxYearStart))
       }
     }
   }
 
-  private val idBeforeTaxYearEnd = "stopDateChoice-beforetaxyearend"
-  private val idOnOrAfterTaxYearEnd = "stopDateChoice-onoraftertaxyearend"
+  private val idBeforeTaxYearEnd = "stopDateChoice"
+  private val idOnOrAfterTaxYearEnd = "stopDateChoice-2"
   private val startOfCurrentTaxYear = TaxYear().start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
   private val endOfCurrentTaxYear = TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
   private lazy val benefitType = "Expenses"
