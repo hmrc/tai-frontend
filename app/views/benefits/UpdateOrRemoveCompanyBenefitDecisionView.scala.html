@@ -14,48 +14,67 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import includes.{ptaHeader, cancelLink}
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+@import includes.cancelLink
 @import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
-@import includes.forms.{inputRadioGroupStyling, submit}
 @import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(viewModel: CompanyBenefitDecisionViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
-@header = @{
-ptaHeader(
-formForErrorSummary = Some(viewModel.decisionForm),
-mainHeadingText = Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName, viewModel.employerName),
-displayBackLink = true,
-preHeadingText = Messages("tai.benefits.updateOrRemove.journey.preHeader"))
-}
-
-
-@mainTemplate(
-title = Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName,viewModel.employerName),
-authedUser = Some(user),
-pageHeader = Some(header),
-articleClasses = None){
-
-    @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
-        @{inputRadioGroupStyling(
-            viewModel.decisionForm(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice),
-            Seq(
-            UpdateOrRemoveCompanyBenefitDecisionForm.YesIGetThisBenefit -> Messages("tai.benefits.updateOrRemove.decision.radio.yes"),
-            UpdateOrRemoveCompanyBenefitDecisionForm.NoIDontGetThisBenefit -> Messages("tai.benefits.updateOrRemove.decision.radio.no")),
-            Messages("tai.benefits.updateOrRemove.decision.heading", viewModel.benefitName,viewModel.employerName),
-            None,
-            ('_fieldsetAttributes, "id=decisionChoice" ),
-            ('_legendClass, "visuallyhidden"))
+@main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
+    title = Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName,viewModel.employerName),
+    authedUser = Some(user),
+    backLinkContent = Some(Messages("tai.back-link.upper"))
+){
+<div class = "govuk-grid-row">
+    <div class = "govuk-grid-column-two-thirds">
+        @if(viewModel.decisionForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary(errorList = viewModel.decisionForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
+        @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
+            @govukRadios(Radios(
+                fieldset =  Some(
+                    Fieldset(
+                        legend = Some(
+                        HmrcPageHeadingLegend(
+                            content = Text(Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName, viewModel.employerName)),
+                            caption = HmrcSectionCaption(Text(Messages("tai.benefits.updateOrRemove.journey.preHeader"))))
+                        )
+                    )
+                ),
+                hint = None,
+                errorMessage = viewModel.decisionForm.errors.filter(_.key == UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice).asTextErrorMessages.headOption,
+                idPrefix = Some(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice),
+                name = UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice,
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("tai.benefits.updateOrRemove.decision.radio.yes")),
+                        value = Some(UpdateOrRemoveCompanyBenefitDecisionForm.YesIGetThisBenefit),
+                        checked = viewModel.decisionForm.data.get(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice).contains(UpdateOrRemoveCompanyBenefitDecisionForm.YesIGetThisBenefit)
+                    ),
+                    RadioItem(
+                        content = Text(messages("tai.benefits.updateOrRemove.decision.radio.no")),
+                        value = Some(UpdateOrRemoveCompanyBenefitDecisionForm.NoIDontGetThisBenefit),
+                        checked = viewModel.decisionForm.data.get(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice).contains(UpdateOrRemoveCompanyBenefitDecisionForm.NoIDontGetThisBenefit)
+                    )
+                )
+            ).withFormField(viewModel.decisionForm(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice)))
 
-        @submit()
 
-    }
+        @govukButton(Button(content = Text(messages("tai.continue"))))
 
-    @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
+        }
+
+        @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
+    </div>
+</div>
 }
