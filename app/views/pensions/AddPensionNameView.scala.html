@@ -14,35 +14,45 @@
  * limitations under the License.
  *@
 
-@import includes.forms.{input, submit}
-@import includes.{cancelLink, ptaHeader}
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import includes.forms.errorSummary
-@import includes.backLink
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+@import includes.cancelLink
+@import includes.forms.submit
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@main(
+    title = Messages("tai.addPensionProvider.addNameForm.title"),
+    pageTitle = Some(messages("tai.service.navTitle")),
+    authedUser = Some(user),
+    backLinkContent = Some(Messages("tai.back-link.upper"))
+) {
 
-@mainTemplate(
-  title = Messages("tai.addPensionProvider.addNameForm.title"),
-  authedUser = Some(user),
-  articleClasses = None) {
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+        @if(nameForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary(errorList = nameForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+        }
 
-    @backLink()
-    @errorSummary(Messages("tai.income.error.form.summary"), nameForm, Seq("flush--bottom"))
+        @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionProviderName(), args=(Symbol("class"), "subsection")) {
+            @govukInput(Input(
+                id = "pensionProviderName",
+                name = "pensionProviderName",
+                label = HmrcPageHeadingLabel(
+                    content = Text(Messages("tai.addPensionProvider.addNameForm.title")),
+                    caption = HmrcSectionCaption(Text(Messages("add.missing.pension")))
+                ),
+                errorMessage = nameForm.errors.asTextErrorMessages.headOption
+            ).withFormField(nameForm("pensionProviderName")))
 
-  @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionProviderName(), args=(Symbol("class"), "subsection")) {
-    @input(
-      field = nameForm("pensionProviderName"),
-      labelText = Messages("tai.addPensionProvider.addNameForm.title"),
-      preHeadingText = Some(Messages("add.missing.pension")),
-      classes = Seq("form-control--full-width")
-    )
+            @submit()
+        }
 
-    @submit()
-  }
-
-  @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
+          @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
+        </div>
+    </div>
 }
