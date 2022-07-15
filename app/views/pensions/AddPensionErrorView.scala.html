@@ -17,27 +17,36 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(mainTemplate: MainTempleteNew, form: FormWithCSRF)
 
 @(pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("tai.addPensionProvider.errorPage.title"),
-        preHeadingText = Messages("add.missing.pension"))}
+        preHeadingText = Messages("add.missing.pension"),
+        showGdsVersion = true
+    )}
 
 
 @mainTemplate(
+  pageTitle = Some(Messages("tai.currentYearSummary.heading")),
   title = Messages("tai.addPensionProvider.errorPage.title"),
   authedUser = Some(user),
-  pageHeader = Some(header),
-  articleClasses = None) {
+  backLinkContent = Some(Messages("tai.back-link.upper")),
+  backLinkId = "backLink"
+  ) {
+
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+
+    @header
 
     <div class="subsection flush--top">
-        <p>@Messages("tai.addPensionProvider.errorPage.para1", pensionProviderName)</p>
-        <p>@Messages("tai.addPensionProvider.errorPage.para2")</p>
+        <p class="govuk-body">@Messages("tai.addPensionProvider.errorPage.para1", pensionProviderName)</p>
+        <p class="govuk-body">@Messages("tai.addPensionProvider.errorPage.para2")</p>
     </div>
 
     <div class="subsection">
@@ -45,8 +54,12 @@
             id=Some("returnToYourIncomeDetails"),
             copy=Messages("return.to.your.income.tax.summary"),
             url = routes.TaxAccountSummaryController.onPageLoad.url,
-            linkClasses=Seq("button")
+            linkClasses=Seq("govuk-button")
         )
+    </div>
+
+
+        </div>
     </div>
 
 }
