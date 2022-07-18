@@ -73,6 +73,8 @@ class IncomeSourceSummaryController @Inject()(
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
           val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
 
+
+
           val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
             empId,
             request.fullName,
@@ -84,6 +86,10 @@ class IncomeSourceSummaryController @Inject()(
             applicationConfig,
             cacheUpdatedIncomeAmount
           )
+
+          if (incomeDetailsViewModel.isUpdateInProgress){
+            journeyCacheService.flush()
+          }
 
           Ok(incomeSourceSummary(incomeDetailsViewModel))
         case _ => errorPagesHandler.internalServerError("Error while fetching income summary details")
