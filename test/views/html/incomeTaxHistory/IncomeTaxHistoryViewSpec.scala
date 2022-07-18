@@ -22,6 +22,8 @@ import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
 
+import java.time.LocalDate
+
 class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   "Income tax history view" must {
@@ -40,6 +42,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
           messages("tai.incomeTax.history.details.nationalInsurance") +
           s" ${person.nino}"
       )
+      doc must haveListItemWithText("End date " + messages("tai.incomeTax.history.endDate.notApplicable"))
     }
 
     "display print button" should {
@@ -134,8 +137,19 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     Some(s"taxCode-${taxYear.start}")
   )
 
+  val incomeWithNoEndDate: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    "ern",
+    TaxYear(2022).start,
+    LocalDate.now(),
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some(s"taxCode-${taxYear.start}")
+  )
+
   val incomeTaxYears: List[IncomeTaxYear] = List(
     IncomeTaxYear(taxYear, List(historyViewModel)),
+    IncomeTaxYear(TaxYear(2022), List(incomeWithNoEndDate)),
     IncomeTaxYear(TaxYear(2021), List(historyViewModel1)),
     IncomeTaxYear(TaxYear(2020), List(historyViewModel2)),
     IncomeTaxYear(TaxYear(2019), List(historyViewModel4)),
