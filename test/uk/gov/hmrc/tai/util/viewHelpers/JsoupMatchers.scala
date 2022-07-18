@@ -344,4 +344,10 @@ trait JsoupMatchers {
     new CssSelectorWithTextMatcher(expectedText, s"div.govuk-hint[id=$id]")
 
   def haveStrongWithText(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "strong")
+
+  def havePanelWithBodyText(expectedText: String) =
+    new CssSelectorWithTextMatcher(expectedText, ".govuk-panel__body")
+
+  def havePanelWithHeaderText(expectedText: String) =
+    new CssSelectorWithTextMatcher(expectedText, ".govuk-panel__title")
 }

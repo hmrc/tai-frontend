@@ -25,11 +25,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
 ec: scala.concurrent.ExecutionContext)
 
 @content={
-    <div>
-        @htmlNonBroken(messages("tai.incomes.updated.check.heading"))
         @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt2"))
         @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt3"))
-    </div>
 }
 @main(
     title = messages("tai.incomes.updated.check.title"),
