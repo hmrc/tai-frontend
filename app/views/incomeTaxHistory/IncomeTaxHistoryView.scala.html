@@ -103,7 +103,11 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
         <div class="employment-card-single-u">
             <div class="employer-name govuk-body">@summary.employerName</div>
             <ul class="govuk-list govuk-!-font-size-16 .ul-incomeTaxHistory">
-                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.employerReference")</span> @summary.ern	</li>
+                @if(summary.isPension && summary.payrollNumber.isDefined) {
+                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.pensionNumber")</span>@summary.payrollNumber</li>
+                } else {
+                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.employerReference")</span>@summary.ern</li>
+                }
                 <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.startDate")</span> @TaxYearRangeUtil.formatDate(summary.startDate)	</li>
                 <li class ="li-incomeTaxHistory"><span id="end-date" class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.endDate")</span>
                     @{if(summary.maybeEndDate.isDefined)

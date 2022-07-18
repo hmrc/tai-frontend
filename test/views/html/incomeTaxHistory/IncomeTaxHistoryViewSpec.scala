@@ -22,8 +22,6 @@ import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
 
-import java.time.LocalDate
-
 class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   "Income tax history view" must {
@@ -47,7 +45,20 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
     "display print button" should {
       behave like pageWithPrintThisPageButton("Print this page")
+    }
 
+    "display ERN or pension" should {
+      "display pension if available" in {
+        doc must haveListItemWithText(messages("tai.pensionNumber") + "pension-number")
+      }
+
+      "display ern if pension but no payroll number" in {
+        doc must haveListItemWithText(messages("tai.incomeTax.history.employerReference") + "ern-for-pension")
+      }
+
+      "display ern if not a pension" in {
+        doc must haveListItemWithText(messages("tai.incomeTax.history.employerReference") + "ern")
+      }
     }
 
     val taxYears = (TaxYear().year until (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
@@ -79,9 +90,11 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
   val taxYear: TaxYear = TaxYear()
   val historyViewModel: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
     "employerName",
+    isPension = true,
     "ern",
+    Some("pension-number"),
     taxYear.start,
-    Some(taxYear.end),
+    None,
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
@@ -89,9 +102,11 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   val historyViewModel1: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
     "employerName",
-    "ern",
-    TaxYear(2021).start,
-    Some(TaxYear(2021).end),
+    isPension = true,
+    "ern-for-pension",
+    None,
+    taxYear.start.minusYears(1),
+    Some(taxYear.end.minusYears(1)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
@@ -99,9 +114,11 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   val historyViewModel2: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
     "employerName",
+    isPension = false,
     "ern",
-    TaxYear(2020).start,
-    Some(TaxYear(2020).end),
+    None,
+    taxYear.start.minusYears(2),
+    Some(taxYear.end.minusYears(2)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     None
@@ -109,9 +126,11 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   val historyViewModel3: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
     "employerName",
+    isPension = false,
     "ern",
-    TaxYear(2019).start,
-    Some(TaxYear(2019).end),
+    None,
+    taxYear.start.minusYears(3),
+    Some(taxYear.end.minusYears(3)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     None
@@ -119,9 +138,11 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   val historyViewModel4: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
     "employerName",
+    isPension = false,
     "ern",
-    TaxYear(2019).start,
-    Some(TaxYear(2019).end),
+    None,
+    taxYear.start.minusYears(4),
+    Some(taxYear.end.minusYears(4)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
@@ -129,19 +150,11 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   val historyViewModel5: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
     "employerName",
+    isPension = false,
     "ern",
-    TaxYear(2018).start,
-    Some(TaxYear(2018).end),
-    Some("taxableIncome"),
-    Some("incomeTaxPaid"),
-    Some(s"taxCode-${taxYear.start}")
-  )
-
-  val incomeWithNoEndDate: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
-    "employerName",
-    "ern",
-    TaxYear(2022).start,
     None,
+    taxYear.start.minusYears(5),
+    Some(taxYear.end.minusYears(5)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
@@ -149,11 +162,10 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   val incomeTaxYears: List[IncomeTaxYear] = List(
     IncomeTaxYear(taxYear, List(historyViewModel)),
-    IncomeTaxYear(TaxYear(2022), List(incomeWithNoEndDate)),
-    IncomeTaxYear(TaxYear(2021), List(historyViewModel1)),
-    IncomeTaxYear(TaxYear(2020), List(historyViewModel2)),
-    IncomeTaxYear(TaxYear(2019), List(historyViewModel4)),
-    IncomeTaxYear(TaxYear(2018), List(historyViewModel5))
+    IncomeTaxYear(TaxYear(taxYear.year - 1), List(historyViewModel1)),
+    IncomeTaxYear(TaxYear(taxYear.year - 2), List(historyViewModel2)),
+    IncomeTaxYear(TaxYear(taxYear.year - 3), List(historyViewModel4)),
+    IncomeTaxYear(TaxYear(taxYear.year - 4), List(historyViewModel5))
   )
 
   val person = fakePerson(nino)
