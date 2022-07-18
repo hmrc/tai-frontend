@@ -15,40 +15,44 @@
  *@
 
 @import uk.gov.hmrc.tai.util.ViewModelHelper.htmlNonBroken
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(mainTemplate: MainTemplate)
+@this(main: MainTempleteNew, govukPanel: GovukPanel, govukButton: GovukButton)
+
 
 @(employerName: String, employerId: Int)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 ec: scala.concurrent.ExecutionContext)
 
-@mainTemplate(
+@content={
+    <div>
+        @htmlNonBroken(messages("tai.incomes.updated.check.heading"))
+        @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt2"))
+        @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt3"))
+    </div>
+}
+@main(
     title = messages("tai.incomes.updated.check.title"),
-    articleClasses = Some("full-width"),
     authedUser = Some(user),
-    employerName = Some(employerName)
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink",
 ){
-    <div class="column-two-thirds">
-        <header class="grid-row margin-bottom-large">
-            <div class="govuk-box-highlight">
-                <h1 class="heading-large" id="currentYearTitle">
-                    @htmlNonBroken(messages("tai.incomes.updated.check.heading"))
-                    @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt2"))
-                    @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt3"))
-                </h1>
-            </div>
-        </header>
+    <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @govukPanel(Panel(
+            title = Text(messages("tai.incomes.updated.check.heading")),
+            content = HtmlContent(content)
+        ))
 
-        <div class="grid-row">
-            <p>@messages("tai.incomes.updated.check.text")</p>
-            <p>@messages("tai.incomes.seeChanges.text", employerName)</p>
-            <p>
-                @includes.link(
-                copy=messages("tai.incomes.updated.check.button"),
-                url = routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString,
-                isButton=true
-                )
-            </p>
-        </div>
+        <p class="govuk-body">@messages("tai.incomes.updated.check.text")</p>
+        <p class="govuk-body">@messages("tai.incomes.seeChanges.text", employerName)</p>
+        <p>
+        @govukButton(Button(
+            href = Some(routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString),
+            content = Text(messages("tai.incomes.updated.check.button"))
+        ))
+        </p>
+    </div>
     </div>
 }
