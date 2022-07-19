@@ -106,8 +106,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                 <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.employerReference")</span> @summary.ern	</li>
                 <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.startDate")</span> @TaxYearRangeUtil.formatDate(summary.startDate)	</li>
                 <li class ="li-incomeTaxHistory"><span id="end-date" class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.endDate")</span>
-                    @{if(summary.endDate.isDefined)
-                        TaxYearRangeUtil.formatDate(summary.endDate.get)
+                    @{if(summary.maybeEndDate.isDefined)
+                        TaxYearRangeUtil.formatDate(summary.maybeEndDate.get)
                     else
                         Messages("tai.incomeTax.history.endDate.notApplicable")
                     }
