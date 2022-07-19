@@ -81,7 +81,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     taxYear.start,
-    taxYear.end,
+    Some(taxYear.end),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
@@ -91,7 +91,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     TaxYear(2021).start,
-    TaxYear(2021).end,
+    Some(TaxYear(2021).end),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
@@ -101,7 +101,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     TaxYear(2020).start,
-    TaxYear(2020).end,
+    Some(TaxYear(2020).end),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     None
@@ -111,7 +111,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     TaxYear(2019).start,
-    TaxYear(2019).end,
+    Some(TaxYear(2019).end),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     None
@@ -121,7 +121,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     TaxYear(2019).start,
-    TaxYear(2019).end,
+    Some(TaxYear(2019).end),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
@@ -131,7 +131,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     TaxYear(2018).start,
-    TaxYear(2018).end,
+    Some(TaxYear(2018).end),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
@@ -141,7 +141,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     TaxYear(2022).start,
-    LocalDate.now(),
+    None,
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")

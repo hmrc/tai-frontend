@@ -22,7 +22,7 @@ case class IncomeTaxHistoryViewModel(
   employerName: String,
   ern: String,
   startDate: LocalDate,
-  endDate: LocalDate,
+  endDate: Option[LocalDate],
   maybeTaxableIncome: Option[String],
   maybeIncomeTaxPaid: Option[String],
   maybeTaxCode: Option[String])
