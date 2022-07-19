@@ -18,6 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -26,11 +27,13 @@ import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -53,6 +56,8 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(employmentId.toString))(any()))
           .thenReturn(Future.successful(true))
+        when(journeyCacheService.currentValueAsInt("updateIncomeConfirmedAmountKey")) thenReturn (Future.successful(
+          None))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -70,6 +75,8 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(pensionId.toString))(any()))
           .thenReturn(Future.successful(true))
+        when(journeyCacheService.currentValueAsInt("updateIncomeConfirmedAmountKey")) thenReturn (Future.successful(
+          Some(23)))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -140,9 +147,12 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
     mock[EstimatedPayJourneyCompletionService]
+  val journeyCacheService = new JourneyCacheService("Update Income", mock[JourneyCacheConnector])
+//  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   def sut = new IncomeSourceSummaryController(
     mock[AuditConnector],
+    journeyCacheService,
     taxAccountService,
     employmentService,
     benefitsService,

@@ -46,7 +46,6 @@ class IncomeSourceSummaryController @Inject()(
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   benefitsService: BenefitsService,
-  journeyCacheConnector: JourneyCacheConnector,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
@@ -73,8 +72,6 @@ class IncomeSourceSummaryController @Inject()(
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
           val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
 
-
-
           val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
             empId,
             request.fullName,
@@ -87,7 +84,7 @@ class IncomeSourceSummaryController @Inject()(
             cacheUpdatedIncomeAmount
           )
 
-          if (incomeDetailsViewModel.isUpdateInProgress){
+          if (incomeDetailsViewModel.isUpdateInProgress) {
             journeyCacheService.flush()
           }
 

@@ -73,7 +73,16 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     employment: Employment,
     benefits: Benefits,
     empId: Int = 1): IncomeSourceSummaryViewModel =
-    IncomeSourceSummaryViewModel(empId, "User Name", taxCodeIncomeSources, employment, benefits, false, true, appConfig)
+    IncomeSourceSummaryViewModel(
+      empId,
+      "User Name",
+      taxCodeIncomeSources,
+      employment,
+      benefits,
+      false,
+      true,
+      appConfig,
+      None)
 
   "IncomeSourceSummaryViewModel apply method" must {
     "return pension details" when {
