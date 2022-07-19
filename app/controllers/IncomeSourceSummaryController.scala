@@ -85,7 +85,7 @@ class IncomeSourceSummaryController @Inject()(
             cacheUpdatedIncomeAmount
           )
 
-          if (incomeDetailsViewModel.isUpdateInProgress) {
+          if (!incomeDetailsViewModel.isUpdateInProgress) {
             journeyCacheService.flush()
           }
 

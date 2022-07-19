@@ -522,6 +522,7 @@ tai.income.details.updateTaxableIncome.update=Update your estimated income
 tai.income.details.yourEstimatedTaxableIncome.with.amount=Your estimated taxable income is {0}.
 tai.income.details.yourTaxCode=Your tax code is {0}.
 tai.income.details.ERN=Employer PAYE reference
+tai.income.details.updateInProgress=Your updated estimated income
 tai.income.error.form.incomes.radioButton.mandatory=Please select an income or taxable benefit to update
 tai.income.error.form.summary=There is a problem
 tai.income.personalAllowance=Personal Allowance

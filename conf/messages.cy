@@ -522,6 +522,7 @@ tai.income.details.updateTaxableIncome.update=Diweddarwch eich incwm amcangyfrif
 tai.income.details.yourEstimatedTaxableIncome.with.amount=Eich incwm trethadwy amcangyfrifedig yw {0}.
 tai.income.details.yourTaxCode=Eich cod treth yw {0}.
 tai.income.details.ERN=Cyfeirnod TWE y Cyflogwr
+tai.income.details.updateInProgress=Add when I get back
 tai.income.error.form.incomes.radioButton.mandatory=Dewiswch incwm neu fuddiant trethadwy i’w ddiweddaru
 tai.income.error.form.summary=Mae problem wedi codi
 tai.income.personalAllowance=Lwfans Personol
