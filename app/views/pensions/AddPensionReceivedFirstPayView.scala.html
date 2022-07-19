@@ -14,45 +14,65 @@
  * limitations under the License.
  *@
 
-@import includes.forms.{inputRadioGroupStyling, submit}
-@import includes.{cancelLink, ptaHeader}
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import includes.cancelLink
+@import includes.forms.submit
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 @import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderFirstPayForm
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(firstPayForm: Form[Option[String]], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 ec: scala.concurrent.ExecutionContext)
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(firstPayForm),
-        displayBackLink = true,
-        mainHeadingText = Messages("tai.addPensionProvider.firstPay.title", pensionProviderName),
-        preHeadingText = Messages("add.missing.pension"))}
-
-@mainTemplate(
+@main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages("tai.addPensionProvider.firstPay.pagetitle"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None
+    backLinkContent = Some(Messages("tai.back-link.upper"))
 ) {
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @if(firstPayForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary(errorList = firstPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+        }
 
-    @form(action = controllers.pensions.routes.AddPensionProviderController.submitFirstPay(), Symbol("data-dynamic-form") -> "true") {
+        @form(action = controllers.pensions.routes.AddPensionProviderController.submitFirstPay(), Symbol("data-dynamic-form") -> "true") {
+            @govukRadios(Radios(
+                fieldset =  Some(
+                    Fieldset(
+                        legend = Some(
+                        HmrcPageHeadingLegend(
+                            content = Text(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName)),
+                            caption = HmrcSectionCaption(Text(Messages("add.missing.pension"))))
+                        )
+                    )
+                ),
+                errorMessage = firstPayForm.errors.asTextErrorMessages.headOption,
+                idPrefix = Some("firstPayChoice"),
+                classes = "govuk-radios--inline",
+                name = "firstPayChoice",
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("tai.label.yes")),
+                        value = Some("Yes"),
+                        checked = firstPayForm.data.get(AddPensionProviderFirstPayForm.FirstPayChoice).exists(_ == "No")
+                    ),
+                    RadioItem(
+                        content = Text(messages("tai.label.no")),
+                        value = Some("No"),
+                        checked = firstPayForm.data.get(AddPensionProviderFirstPayForm.FirstPayChoice).exists(_ == "No")
+                    )
+                )
+                ).withFormField(firstPayForm(AddPensionProviderFirstPayForm.FirstPayChoice))
+            )
 
-        @{inputRadioGroupStyling(
-            field=firstPayForm(AddPensionProviderFirstPayForm.FirstPayChoice),
-            radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
-            legend=Messages("tai.addPensionProvider.firstPay.legend"),
-            legendHint=None,
-            ('_groupDivClass, "form-group" ),
-            ('_groupClass, "inline"),
-            ('_fieldsetAttributes, "id=firstPayChoice" ),
-            ('_legendSpanClass, "visually-hidden")
-        )}
+            @submit()
+        }
 
-        @submit()
-    }
-
-    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
+        @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
+    </div>
+</div>
 }

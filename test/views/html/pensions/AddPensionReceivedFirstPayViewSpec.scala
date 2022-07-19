@@ -28,14 +28,16 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec with FormValuesCons
 
   "Add first pay form page" must {
     behave like pageWithTitle(messages("tai.addPensionProvider.firstPay.pagetitle"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("add.missing.pension"),
-      messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
-    behave like pageWithBackLink
+      messages("tai.addPensionProvider.firstPay.title", pensionProviderName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
+    behave like pageWithBackLinkNew
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/received-first-payment")
     behave like pageWithYesNoRadioButton(
-      AddPensionProviderFirstPayForm.FirstPayChoice + "-yes",
-      AddPensionProviderFirstPayForm.FirstPayChoice + "-no")
+      AddPensionProviderFirstPayForm.FirstPayChoice,
+      AddPensionProviderFirstPayForm.FirstPayChoice + "-2")
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "display an error notification" when {

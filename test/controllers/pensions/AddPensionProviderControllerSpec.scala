@@ -182,7 +182,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.firstPay.pagetitle"))
-        doc.select("input[id=firstPayChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=firstPayChoice-2][checked]").size() mustBe 1
       }
 
       "the request has an authorised session and a previous value of 'Yes' is held in the cache" in {
@@ -202,7 +202,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.firstPay.pagetitle"))
-        doc.select("input[id=firstPayChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=firstPayChoice][checked]").size() mustBe 1
       }
 
       "redirect to the tax summary page if a value is missing from the cache " in {
