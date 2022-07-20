@@ -22,37 +22,50 @@
 @import includes._
 @import includes.forms._
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF)
 
 @(viewModel: RemoveCompanyBenefitCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @header = @{
   ptaHeader(
-    displayBackLink = true,
+    displayBackLink = false,
+    showGdsVersion = true,
     mainHeadingText = Messages("tai.checkYourAnswers.title"),
     preHeadingText = Messages("tai.benefits.ended.journey.preHeader"))
 }
 
-@mainTemplate(
-  title = Messages("tai.checkYourAnswers.title"),
-  authedUser = Some(user),
-  pageHeader = Some(header),
-  articleClasses = None
+@main(
+    title = Messages("tai.checkYourAnswers.title"),
+    pageTitle = Some(Messages("tai.checkYourAnswers.title")),
+    authedUser = Some(user),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink"
 ){
 
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @header
+    </div>
+</div>
+
+<div class="govuk-grid-row">
+
+    <div class="govuk-grid-column-two-thirds">
             @checkYourAnswers(
                 title = Some(viewModel.tableHeader),
                 confirmationLines = viewModel.journeyConfirmationLines
             )
 
 
-    <p class="subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
+    <p class="govuk-body">@Messages("tai.checkYourAnswers.confirmText")</p>
 
     @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitYourAnswers()) {
       @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
     }
 
     @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url))
+    </div>
+</div>
 }
 
 
