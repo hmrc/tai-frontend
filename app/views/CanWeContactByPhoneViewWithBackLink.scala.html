@@ -1,0 +1,119 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.cancelLink
+@import play.api.mvc.Call
+@import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
+@import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import scala.concurrent.ExecutionContext
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+
+@import scala.concurrent.ExecutionContext
+
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
+
+@(      incomingAuthedUser: Option[controllers.auth.AuthedUser],
+        viewModel: CanWeContactByPhoneViewModel,
+        yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_],
+        messages: Messages,
+        templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+        ec: ExecutionContext)
+
+
+@hint = {
+    <div>
+        <p>@Messages("tai.canWeContactByPhone.explanation")</p>
+        <p>@Messages("tai.canWeContactByPhone.explanation.pt2")</p>
+    </div>
+}
+
+@main(
+    title = viewModel.mainHeading,
+    pageTitle = Some(messages("tai.service.navTitle")),
+    authedUser = incomingAuthedUser,
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(viewModel.backUrl),
+    backLinkId = "backLink"
+) {
+
+@*TODO remove this whole file once the *@
+<script src="@controllers.routes.AssetsController.versioned("javascripts/tai-backlink.js")"></script>
+<div class = "govuk-grid-row">
+    <div class = "govuk-grid-column-two-thirds">
+        @if(yesNoForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary(errorList = yesNoForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+        }
+
+        @form(action = Call("POST", viewModel.continueUrl)) {
+
+            @govukRadios(Radios(
+                fieldset =  Some(
+                    Fieldset(
+                        legend = Some(
+                        HmrcPageHeadingLegend(
+                            content = Text(viewModel.mainHeading),
+                            caption = HmrcSectionCaption(Text(viewModel.preHeading)))
+                    )
+                    )
+                ),
+                hint = Some(Hint(content = HtmlContent(hint))),
+                errorMessage = yesNoForm.errors.filter(_.key == "yesNoChoice").asTextErrorMessages.headOption,
+                idPrefix = Some("yesNoChoice"),
+                name = "yesNoChoice",
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("tai.label.yes")),
+                        value = Some("Yes"),
+                        checked = yesNoForm.data.get(YesNoTextEntryForm.YesNoChoice).exists(_ == "Yes"),
+                        conditionalHtml = Some(
+                        govukInput(Input(
+                                id = "yesNoTextEntry",
+                                name = "yesNoTextEntry",
+                                hint = Some(Hint(content = Text(Messages("tai.canWeContactByPhone.telephoneNumber.hint")))),
+                                value = yesNoForm.data.get(YesNoTextEntryForm.YesNoTextEntry),
+                                label = Label(
+                                    classes = "govuk-label--s",
+                                    content = Text(Messages("tai.phoneNumber")),
+                                ),
+                                errorMessage = yesNoForm.errors.filter(_.key == "yesNoTextEntry").asTextErrorMessages.headOption
+                                ))
+                            )
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.label.no")),
+                            value = Some("No"),
+                            checked = yesNoForm.data.get(YesNoTextEntryForm.YesNoChoice).exists(_ == "No")
+                    )
+                )
+            ).withFormField(yesNoForm(YesNoTextEntryForm.YesNoChoice)))
+
+            @govukButton(Button(content = Text(messages("tai.continue"))))
+        }
+
+        <div class="govuk-link govuk-body-m">
+            @cancelLink(Call("GET", viewModel.cancelUrl))
+        </div>
+    </div>
+</div>
+}
+
+
+
+
+
