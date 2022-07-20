@@ -126,8 +126,16 @@
         <div class="govuk-grid-column-one-half">
                 <h2 class="govuk-heading-m flush">@messages("tai.income.details.estimatedTaxableIncome")</h2>
                 <p class="govuk-body break-word">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>
+
+            @if(model.isUpdateInProgress){
+            <p class="govuk-inset-text govuk-!-font-size-16">
+                @messages("tai.income.details.updateInProgress")
+            </p>
+            } else {
                 <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@pounds(model.estimatedTaxableIncome)</span>
                 <span class="govuk-visually-hidden">@Html(messages("tai.income.details.yourEstimatedTaxableIncome.with.amount", pounds(model.estimatedTaxableIncome)))</span>
+            }
+
                 <p>
                     @link(
                         id=Some("updateIncome"),

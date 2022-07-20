@@ -145,15 +145,14 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
           .thenReturn(Future.successful(true))
         when(journeyCacheService.currentValueAsInt(Matchers.eq(updateIncomeConfirmedAmountKey))(any())) thenReturn Future
           .successful(Some(3333))
-        when(journeyCacheService.flush()(any())) thenReturn (Future.successful(TaiSuccessResponse))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.income.details.updateInProgress"))
-        verify(journeyCacheService, times(1)).flush()(any())
+        doc.toString must include(Messages("tai.income.details.updateInProgress"))
+        verify(journeyCacheService, times(0)).flush()(any())
       }
     }
     "display the income details page with an update message" when {
@@ -165,15 +164,14 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(pensionId.toString))(any()))
           .thenReturn(Future.successful(true))
         when(journeyCacheService.currentValueAsInt(Matchers.eq(updateIncomeConfirmedAmountKey))(any())) thenReturn (Future
-          .successful(None))
+          .successful(Some(3333)))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.income.details.updateInProgress"))
-        verify(journeyCacheService, times(1)).flush()(any())
+        doc.toString must include(Messages("tai.income.details.updateInProgress"))
       }
     }
   }
