@@ -60,14 +60,14 @@ class IncomeSourceSummaryController @Inject()(
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
 
-    val CacheUpdatedIncomeAmount = journeyCacheService.currentValueAsInt(updateIncomeConfirmedAmountKey)
+    val cacheUpdatedIncomeAmountFuture = journeyCacheService.currentValueAsInt(updateIncomeConfirmedAmountKey)
 
     (for {
       taxCodeIncomeDetails     <- taxAccountService.taxCodeIncomes(nino, TaxYear())
       employmentDetails        <- employmentService.employment(nino, empId)
       benefitsDetails          <- benefitsService.benefits(nino, TaxYear().year)
       estimatedPayCompletion   <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
-      cacheUpdatedIncomeAmount <- CacheUpdatedIncomeAmount
+      cacheUpdatedIncomeAmount <- cacheUpdatedIncomeAmountFuture
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>

@@ -315,7 +315,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     estimatedPayJourneyCompleted = true,
     rtiAvailable = true,
     taxDistrctNumber = "123",
-    payeNumber = "AB12345",
+    payeNumber = "AB12345"
   )
 
   private lazy val modelWithUpdateInProgressEmployment = IncomeSourceSummaryViewModel(
