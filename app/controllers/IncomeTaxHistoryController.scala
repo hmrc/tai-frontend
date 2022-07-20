@@ -33,8 +33,6 @@ import views.html.incomeTaxHistory.IncomeTaxHistoryView
 import uk.gov.hmrc.tai.util.ViewModelHelper._
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -74,7 +72,7 @@ class IncomeTaxHistoryController @Inject()(
           employment.name,
           s"${employment.taxDistrictNumber}/${employment.payeNumber}",
           employment.startDate,
-          employment.endDate.getOrElse(LocalDate.now()),
+          employment.endDate,
           maybeLastPayment.map { payment =>
             withPoundPrefix(MoneyPounds(payment.amountYearToDate, 2, roundUp = false))
           },

@@ -22,6 +22,8 @@ import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
 
+import java.time.LocalDate
+
 class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   "Income tax history view" must {
@@ -40,6 +42,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
           messages("tai.incomeTax.history.details.nationalInsurance") +
           s" ${person.nino}"
       )
+      doc must haveListItemWithText("End date " + messages("tai.incomeTax.history.endDate.notApplicable"))
     }
 
     "display print button" should {
@@ -78,7 +81,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     taxYear.start,
-    taxYear.end,
+    Some(taxYear.end),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
@@ -88,7 +91,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     TaxYear(2021).start,
-    TaxYear(2021).end,
+    Some(TaxYear(2021).end),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
@@ -98,7 +101,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     TaxYear(2020).start,
-    TaxYear(2020).end,
+    Some(TaxYear(2020).end),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     None
@@ -108,7 +111,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     TaxYear(2019).start,
-    TaxYear(2019).end,
+    Some(TaxYear(2019).end),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     None
@@ -118,7 +121,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     TaxYear(2019).start,
-    TaxYear(2019).end,
+    Some(TaxYear(2019).end),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
@@ -128,7 +131,17 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "employerName",
     "ern",
     TaxYear(2018).start,
-    TaxYear(2018).end,
+    Some(TaxYear(2018).end),
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some(s"taxCode-${taxYear.start}")
+  )
+
+  val incomeWithNoEndDate: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    "ern",
+    TaxYear(2022).start,
+    None,
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
@@ -136,6 +149,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   val incomeTaxYears: List[IncomeTaxYear] = List(
     IncomeTaxYear(taxYear, List(historyViewModel)),
+    IncomeTaxYear(TaxYear(2022), List(incomeWithNoEndDate)),
     IncomeTaxYear(TaxYear(2021), List(historyViewModel1)),
     IncomeTaxYear(TaxYear(2020), List(historyViewModel2)),
     IncomeTaxYear(TaxYear(2019), List(historyViewModel4)),

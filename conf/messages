@@ -566,6 +566,7 @@ tai.incomeTax.history.taxableIncome = Taxable income
 tai.incomeTax.history.incomeTaxPaid = Income tax paid
 tai.incomeTax.history.taxCode = Tax code
 tai.incomeTax.history.unavailable = Currently unavailable
+tai.incomeTax.history.endDate.notApplicable = not applicable
 
 tai.incomeTax.incomeTaxEstimate.subheading=Income tax estimate
 tai.incomeTax.taxCodes.link=Check your tax codes
