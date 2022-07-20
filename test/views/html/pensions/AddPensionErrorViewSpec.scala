@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class AddPensionErrorViewSpec extends TaiViewSpec {
   "Display error page when pension provider cannot be added" must {
     behave like pageWithTitle(messages("tai.addPensionProvider.errorPage.title"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("add.missing.pension"),
       messages("tai.addPensionProvider.errorPage.title"))
 
