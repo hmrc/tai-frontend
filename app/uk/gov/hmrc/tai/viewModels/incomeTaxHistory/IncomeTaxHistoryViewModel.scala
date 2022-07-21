@@ -20,7 +20,9 @@ import java.time.LocalDate
 
 case class IncomeTaxHistoryViewModel(
   employerName: String,
+  isPension: Boolean,
   ern: String,
+  payrollNumber: Option[String],
   startDate: LocalDate,
   maybeEndDate: Option[LocalDate],
   maybeTaxableIncome: Option[String],

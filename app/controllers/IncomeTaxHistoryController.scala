@@ -23,15 +23,15 @@ import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
+import uk.gov.hmrc.tai.model.domain.{Employment, PensionIncome}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.util.ViewModelHelper._
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
-import uk.gov.hmrc.tai.util.ViewModelHelper._
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -68,9 +68,13 @@ class IncomeTaxHistoryController @Inject()(
         } yield taxCode
 
         val maybeLastPayment = fetchLastPayment(employment, taxYear)
+        val isPension = maybeTaxCode.exists(_.componentType == PensionIncome)
+
         IncomeTaxHistoryViewModel(
           employment.name,
+          isPension,
           s"${employment.taxDistrictNumber}/${employment.payeNumber}",
+          employment.payrollNumber,
           employment.startDate,
           employment.endDate,
           maybeLastPayment.map { payment =>
