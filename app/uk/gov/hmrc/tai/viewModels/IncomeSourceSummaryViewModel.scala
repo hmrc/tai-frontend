@@ -73,7 +73,7 @@ object IncomeSourceSummaryViewModel {
       !benefitVMs.map(_.name).contains(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
 
     val isUpdateInProgress = cacheUpdatedIncomeAmount match {
-      case Some(cacheUpdateAMount) => if (cacheUpdateAMount != taxCodeIncomeSource.amount.toInt) true else false
+      case Some(cacheUpdateAMount) => cacheUpdateAMount != taxCodeIncomeSource.amount.toInt
       case None                    => false
     }
 
