@@ -32,20 +32,22 @@ class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
 
   "Add payroll number form page" must {
     behave like pageWithTitle(messages("tai.addPensionProvider.pensionNumber.pagetitle"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("add.missing.pension"),
-      messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
-    behave like pageWithBackLink
+      messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
+    behave like pageWithBackLinkNew
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/pension-number")
     behave like pageWithYesNoRadioButton(
-      AddPensionProviderNumberForm.PayrollNumberChoice + "-yes",
-      AddPensionProviderNumberForm.PayrollNumberChoice + "-no")
+      AddPensionProviderNumberForm.PayrollNumberChoice,
+      AddPensionProviderNumberForm.PayrollNumberChoice + "-2")
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "have gone back to firstPayChoice page" in {
       def view: Html = addPensionNumber(pensionNumberForm, pensionNumberViewModel)
       def doc: Document = Jsoup.parse(view.toString())
-      doc must haveBackLink
+      doc must haveBackLinkNew
     }
 
     "have an input field for payroll number" in {
@@ -61,7 +63,7 @@ class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
           .withError(AddPensionProviderNumberForm.PayrollNumberChoice, noPayrollNumberChooseError)
         def view: Html = addPensionNumber(formWithErrors, pensionNumberViewModel)
 
-        val errorMessage = doc(view).select(".error-message").text
+        val errorMessage = doc(view).select(".govuk-error-message").text
         errorMessage mustBe expectedErrorMessage
       }
 
@@ -73,7 +75,7 @@ class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
           .withError(AddPensionProviderNumberForm.PayrollNumberEntry, noPayrollNumberChooseError)
         def view: Html = addPensionNumber(formWithErrors, pensionNumberViewModel)
 
-        val errorMessage = doc(view).select(".error-message").text
+        val errorMessage = doc(view).select(".govuk-error-message").text
         errorMessage mustBe expectedErrorMessage
       }
     }

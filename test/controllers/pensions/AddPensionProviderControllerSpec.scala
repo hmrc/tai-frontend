@@ -476,7 +476,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberChoice-2][checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe ""
 
       }
@@ -497,7 +497,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberChoice-2][checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe ""
 
       }
@@ -515,7 +515,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberChoice][checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe ""
       }
 
@@ -535,7 +535,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberChoice][checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe "123456789"
       }
     }
