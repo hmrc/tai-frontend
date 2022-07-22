@@ -60,7 +60,8 @@ class IncomeSourceSummaryController @Inject()(
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
 
-    val cacheUpdatedIncomeAmountFuture = journeyCacheService.currentValueAsInt(updateIncomeConfirmedAmountKey)
+    val cacheUpdatedIncomeAmountFuture =
+      journeyCacheService.currentValueAsInt(s"$updateIncomeConfirmedAmountKey-$empId")
 
     (for {
       taxCodeIncomeDetails     <- taxAccountService.taxCodeIncomes(nino, TaxYear())

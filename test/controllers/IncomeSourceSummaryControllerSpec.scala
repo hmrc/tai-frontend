@@ -49,6 +49,8 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
 
   val employmentId = 1
   val pensionId = 2
+  val cacheKeyEmployment = s"$updateIncomeConfirmedAmountKey-$employmentId"
+  val cacheKeyPension = s"$updateIncomeConfirmedAmountKey-$pensionId"
 
   "onPageLoad" must {
     "display the income details page" when {
@@ -59,7 +61,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(employmentId.toString))(any()))
           .thenReturn(Future.successful(true))
-        when(journeyCacheService.currentValueAsInt(Matchers.eq(updateIncomeConfirmedAmountKey))(any())) thenReturn Future
+        when(journeyCacheService.currentValueAsInt(Matchers.eq(cacheKeyEmployment))(any())) thenReturn Future
           .successful(None)
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -78,7 +80,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(pensionId.toString))(any()))
           .thenReturn(Future.successful(true))
-        when(journeyCacheService.currentValueAsInt(Matchers.eq(updateIncomeConfirmedAmountKey))(any())) thenReturn (Future
+        when(journeyCacheService.currentValueAsInt(Matchers.eq(cacheKeyPension))(any())) thenReturn (Future
           .successful(None))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -121,7 +123,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(employmentId.toString))(any()))
           .thenReturn(Future.successful(true))
-        when(journeyCacheService.currentValueAsInt(Matchers.eq(updateIncomeConfirmedAmountKey))(any())) thenReturn Future
+        when(journeyCacheService.currentValueAsInt(Matchers.eq(cacheKeyEmployment))(any())) thenReturn Future
           .successful(Some(1111))
         when(journeyCacheService.flush()(any())) thenReturn (Future.successful(TaiSuccessResponse))
 
@@ -143,7 +145,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(employmentId.toString))(any()))
           .thenReturn(Future.successful(true))
-        when(journeyCacheService.currentValueAsInt(Matchers.eq(updateIncomeConfirmedAmountKey))(any())) thenReturn Future
+        when(journeyCacheService.currentValueAsInt(Matchers.eq(cacheKeyEmployment))(any())) thenReturn Future
           .successful(Some(3333))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -163,7 +165,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(pensionId.toString))(any()))
           .thenReturn(Future.successful(true))
-        when(journeyCacheService.currentValueAsInt(Matchers.eq(updateIncomeConfirmedAmountKey))(any())) thenReturn (Future
+        when(journeyCacheService.currentValueAsInt(Matchers.eq(cacheKeyPension))(any())) thenReturn (Future
           .successful(Some(3333)))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))

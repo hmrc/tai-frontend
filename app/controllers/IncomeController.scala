@@ -218,7 +218,7 @@ class IncomeController @Inject()(
     def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(
       implicit user: AuthedUser,
       request: Request[AnyContent]): Result = {
-      journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newAmount)
+      journeyCacheService.cache(s"$UpdateIncome_ConfirmedNewAmountKey-$employerId", newAmount)
       incomeType match {
         case TaiConstants.IncomeTypePension => Ok(editPensionSuccess(employerName, employerId))
         case _                              => Ok(editSuccess(employerName, employerId))
