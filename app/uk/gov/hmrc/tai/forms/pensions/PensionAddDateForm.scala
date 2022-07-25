@@ -77,7 +77,7 @@ case class PensionAddDateForm(employerName: String) {
     Form(localDateMapping)
   }
 
-  val PensionFormDay = "tellUsStartDateForm_day"
-  val PensionFormMonth = "tellUsStartDateForm_month"
-  val PensionFormYear = "tellUsStartDateForm_year"
+  val PensionFormDay = "tellUsStartDateForm-day"
+  val PensionFormMonth = "tellUsStartDateForm-month"
+  val PensionFormYear = "tellUsStartDateForm-year"
 }

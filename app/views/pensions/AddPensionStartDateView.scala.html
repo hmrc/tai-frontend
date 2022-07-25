@@ -15,41 +15,76 @@
  *@
 
 @import includes.forms._
-@import includes.{cancelLink, ptaHeader}
+@import includes.cancelLink
 @import java.time.LocalDate
-@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+
+@this(main: MainTempleteNew, form: FormWithCSRF,  govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(dateForm: Form[LocalDate], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 ec: scala.concurrent.ExecutionContext)
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(dateForm),
-        displayBackLink = true,
-        mainHeadingText = Messages("tai.addPensionProvider.startDateForm.title",pensionProviderName),
-        preHeadingText = Messages("add.missing.pension")
-    )
+@hint = {
+    <p class="govuk-!-font-weight-bold govuk-!-display-block">@messages("tai.addPensionProvider.startDateForm.label", pensionProviderName)</p>
+    <p>@messages("tai.label.date.example")</p>
 }
 
-@mainTemplate(
+@main(
     title = Messages("tai.addPensionProvider.startDateForm.pagetitle"),
+    pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None)  {
+    backLinkContent = Some(Messages("tai.back-link.upper"))
+)  {
 
-    @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionProviderStartDate(), args=(Symbol("class"), "subsection")) {
-        @date(
-            form = dateForm,
-            fieldPrefix = "tellUsStartDateForm",
-            labelText = Messages("tai.addPensionProvider.startDateForm.label", pensionProviderName),
-            legendBold = true
-        )
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @if(dateForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = dateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
 
-        @submit()
-    }
+            @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionProviderStartDate(), args=(Symbol("class"), "subsection")) {
+                @govukDateInput(DateInput(
+                    id = "tellUsStartDateForm",
+                    namePrefix = Some("tellUsStartDateForm"),
+                    hint = Some(Hint(content = HtmlContent(hint))),
+                    items = Seq(
+                        InputItem(
+                            name= "day",
+                            label = Some(messages("tai.label.day")),
+                            classes = s"govuk-input--width-2 ${if(dateForm.hasErrors)  " govuk-input--error" else "" }",
+                            value =  dateForm("tellUsStartDateForm-day").value
+                        ),
+                        InputItem(
+                            name = "month",
+                            label = Some(messages("tai.label.month")),
+                            classes = s"govuk-input--width-2 ${if(dateForm.hasErrors) " govuk-input--error" else "" }",
+                            value =  dateForm("tellUsStartDateForm-month").value
+                        ),
+                        InputItem(
+                            name = "year",
+                            label = Some(messages("tai.label.year")),
+                            classes = s"govuk-input--width-4 ${if(dateForm.hasErrors) " govuk-input--error" else "" }",
+                            value =  dateForm("tellUsStartDateForm-year").value
+                        )
+                    ),
+                    fieldset = Some(Fieldset(
+                      legend = Some(HmrcPageHeadingLegend(
+                        content = Text(Messages("tai.addPensionProvider.startDateForm.title",pensionProviderName)),
+                        caption = HmrcSectionCaption(Text(Messages("add.missing.pension"))),
+                      ))
+                    )),
+                    errorMessage = dateForm.errors.asTextErrorMessages.headOption,
+                  ))
 
-    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
+                @submit()
+            }
+
+            @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
+        </div>
+    </div>
 
 }
