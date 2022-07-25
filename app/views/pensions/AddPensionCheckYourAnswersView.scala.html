@@ -20,35 +20,49 @@
 @import includes.forms._
 @import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 @import play.api.mvc.Call
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(mainTemplate: MainTempleteNew, form: FormWithCSRF)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.pensions.CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("tai.checkYourAnswers.title"),
-        preHeadingText = viewModel.preHeading) }
+        showGdsVersion = true,
+        preHeadingText = viewModel.preHeading
+        ) }
 
 @mainTemplate(
     title = Messages("tai.checkYourAnswers.title"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None) {
+    pageTitle = Some(messages("tai.service.navTitle")),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink"
+    ) {
 
-    @form(action=Call("POST", viewModel.submissionUrl), args=(Symbol("class"), "subsection")) {
 
-        @includes.checkYourAnswers(
-            title = Some(viewModel.title),
-            longQuestions = true,
-            confirmationLines = viewModel.journeyConfirmationLines
-        )
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
 
-        <p class="subsection">@viewModel.postConfirmationText</p>
+        @header
 
-        @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
-    }
+        @form(action=Call("POST", viewModel.submissionUrl), args=(Symbol("class"), "subsection")) {
+
+            @includes.checkYourAnswers(
+                title = Some(viewModel.title),
+                longQuestions = true,
+                confirmationLines = viewModel.journeyConfirmationLines
+            )
+
+            <p class="subsection govuk-body">@viewModel.postConfirmationText</p>
+
+            @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
+        }
+
+     </div>
+   </div>
 
     @cancelLink(Call("GET", viewModel.cancelUrl))
 }
