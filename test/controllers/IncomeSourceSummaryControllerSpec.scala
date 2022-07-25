@@ -125,7 +125,8 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
           .thenReturn(Future.successful(true))
         when(journeyCacheService.currentValueAsInt(Matchers.eq(cacheKeyEmployment))(any())) thenReturn Future
           .successful(Some(1111))
-        when(journeyCacheService.flush()(any())) thenReturn (Future.successful(TaiSuccessResponse))
+        when(journeyCacheService.flushWithEmpId(Matchers.eq(employmentId))(any())) thenReturn (Future.successful(
+          TaiSuccessResponse))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -134,7 +135,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
           Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange))
-        verify(journeyCacheService, times(1)).flush()(any())
+        verify(journeyCacheService, times(1)).flushWithEmpId(Matchers.eq(employmentId))(any())
       }
     }
     "display the income details page with an update message" when {

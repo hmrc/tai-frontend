@@ -80,4 +80,8 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
 
   def flush(journeyName: String)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.deleteFromApi(cacheUrl(journeyName)).map(_ => TaiSuccessResponse)
+
+  def flushWithEmpId(journeyName: String, empId: Int)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+    httpHandler.deleteFromApi(cacheUrl(s"$journeyName/$empId")).map(_ => TaiSuccessResponse)
+
 }

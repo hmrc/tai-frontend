@@ -132,4 +132,7 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
 
   def flush()(implicit hc: HeaderCarrier): Future[TaiResponse] =
     journeyCacheConnector.flush(journeyName)
+
+  def flushWithEmpId(empId: Int)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+    journeyCacheConnector.flushWithEmpId(journeyName, empId)
 }

@@ -66,6 +66,8 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
   val cachedData = Future.successful(Right(Seq(employerId.toString, payToDate)))
 
+  val cacheKey = s"$UpdateIncome_ConfirmedNewAmountKey-$employerId"
+
   "cancel" must {
     "flush the journey cache and redirect to the employer id's income details page" in {
       val testController = createTestIncomeController()

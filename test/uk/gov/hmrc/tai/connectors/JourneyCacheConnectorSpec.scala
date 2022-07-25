@@ -153,6 +153,17 @@ class JourneyCacheConnectorSpec extends BaseSpec {
     }
   }
 
+  "flushWithEmpId" must {
+    "remove journey cache data for company car journey" in {
+      val url = s"${sut.cacheUrl(s"$journeyName/1")}"
+      when(httpHandler.deleteFromApi(Matchers.eq(url))(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
+
+      val result = Await.result(sut.flushWithEmpId(journeyName, 1), 5 seconds)
+      result mustBe TaiSuccessResponse
+    }
+  }
+
   private val journeyName = "journey1"
 
   val httpHandler: HttpHandler = mock[HttpHandler]

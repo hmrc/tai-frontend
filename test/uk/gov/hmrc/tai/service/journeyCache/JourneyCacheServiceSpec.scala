@@ -338,6 +338,15 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
     }
   }
 
+  "flushWithEmpId the cache" must {
+    "remove the cache" in {
+      val sut = createSut
+      when(journeyCacheConnector.flushWithEmpId(Matchers.eq(sut.journeyName), Matchers.eq(1))(any()))
+        .thenReturn(Future.successful(TaiSuccessResponse))
+      Await.result(sut.flushWithEmpId(1), 5 seconds) mustBe TaiSuccessResponse
+    }
+  }
+
   val testCache = Map(
     "key1" -> "val1",
     "key2" -> "val2",
