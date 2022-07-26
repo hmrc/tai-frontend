@@ -29,7 +29,7 @@ class AddPensionCheckYourAnswersViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
 
-    behave like pageWithCombinedHeader(preHeading, messages("tai.checkYourAnswers.title"))
+    behave like pageWithCombinedHeaderNewTemplate(preHeading, messages("tai.checkYourAnswers.title"))
 
     behave like pageWithButtonForm("/fake/submission/url", messages("tai.confirmAndSend"))
 
