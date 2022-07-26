@@ -19,7 +19,7 @@
         confirmationLines : Seq[uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine],
         longQuestions: Boolean = false)(implicit m: Messages)
 
-@if(title.isDefined) { <h2 class="govuk-heading-m heading-medium section flush soft--top carry-over">@title.get.replace("&nbsp;", "\u00A0")</h2> }
+@if(title.isDefined) { <h2 class="govuk-heading-m">@title.get.replace("&nbsp;", "\u00A0")</h2> }
 
 <dl class="govuk-summary-list govuk-check-your-answers @if(longQuestions) {cya-questions-long} else {cya-questions-short}" id="check-answers-summary">
     @for((line, idx) <- confirmationLines zip (Stream from 1)) {
