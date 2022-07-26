@@ -39,10 +39,12 @@ class AddPensionStartDateViewSpec extends TaiViewSpec {
 
   "Add pension start date form" should {
     behave like pageWithTitle(messages("tai.addPensionProvider.startDateForm.pagetitle"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("add.missing.pension"),
-      messages("tai.addPensionProvider.startDateForm.title", pensionName))
-    behave like pageWithBackLink
+      messages("tai.addPensionProvider.startDateForm.title", pensionName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
+    behave like pageWithBackLinkNew
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/first-payment-date")
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
@@ -50,7 +52,7 @@ class AddPensionStartDateViewSpec extends TaiViewSpec {
       "a form with errors is passed into the view" in {
         def view: Html = addPensionStartDate(formWithErrors, pensionName)
 
-        val errorSummary = doc(view).select("#error-summary-display a").text
+        val errorSummary = doc(view).select(".govuk-list.govuk-error-summary__list a").text
 
         errorSummary mustBe globalErrorMessage
       }
@@ -59,37 +61,37 @@ class AddPensionStartDateViewSpec extends TaiViewSpec {
     "have a label in the form" in {
       val legendItem1 = doc(view).select("legend .form-label").text
 
-      legendItem1 mustBe Messages("tai.addPensionProvider.startDateForm.label", pensionName)
+      legendItem1 contains Messages("tai.addPensionProvider.startDateForm.label", pensionName)
     }
 
     "have a form hint" in {
-      val legendItem2 = doc(view).select(".form-hint").text
+      val legendItem2 = doc(view).select("#tellUsStartDateForm-hint").text
 
-      legendItem2 mustBe Messages("tai.label.date.example")
+      legendItem2 contains Messages("tai.label.date.example")
     }
 
     "have a form input for day with relevant label" in {
-      val labelDay = doc(view).select(".form-group-day .form-label")
+      val labelDay = doc(view).select("label[for=tellUsStartDateForm-day]")
       val inputLabelDay = labelDay.text
-      val numberOfInputs = doc(view).select(".form-group-day input").size
+      val numberOfInputs = doc(view).select("#tellUsStartDateForm-day").size
 
       inputLabelDay mustBe Messages("tai.label.day")
       numberOfInputs mustBe 1
     }
 
     "have a form input for month with relevant label" in {
-      val labelMonth = doc(view).select(".form-group-month .form-label")
+      val labelMonth = doc(view).select("label[for=tellUsStartDateForm-month]")
       val inputLabelMonth = labelMonth.text
-      val numberOfInputs = doc(view).select(".form-group-month input").size
+      val numberOfInputs = doc(view).select("#tellUsStartDateForm-month").size
 
       inputLabelMonth mustBe Messages("tai.label.month")
       numberOfInputs mustBe 1
     }
 
     "have a form input for year with relevant label" in {
-      val labelYear = doc(view).select(".form-group-year .form-label")
+      val labelYear = doc(view).select("label[for=tellUsStartDateForm-year]")
       val inputLabelYear = labelYear.text
-      val numberOfInputs = doc(view).select(".form-group-year input").size
+      val numberOfInputs = doc(view).select("#tellUsStartDateForm-year").size
 
       inputLabelYear mustBe Messages("tai.label.year")
       numberOfInputs mustBe 1
@@ -97,13 +99,13 @@ class AddPensionStartDateViewSpec extends TaiViewSpec {
 
     "have an error message with the form inputs" when {
       "there is a form with an error" in {
-        def view: Html = addPensionStartDate(formWithErrors, pensionName)
+        val view: Html = addPensionStartDate(formWithErrors, pensionName)
 
-        val errorMessage = doc(view).select(".error-message").text
-        val fieldSetError = doc(view).select("form > div").hasClass("form-group-error")
+        val errorMessage = doc(view).select(".govuk-error-message").text
+        val fieldSetError = doc(view).select("form > div").hasClass("govuk-form-group--error")
 
         fieldSetError mustBe true
-        errorMessage mustBe globalErrorMessage
+        errorMessage contains globalErrorMessage
       }
     }
   }
