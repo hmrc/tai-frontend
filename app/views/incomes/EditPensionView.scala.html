@@ -48,7 +48,7 @@ ec: scala.concurrent.ExecutionContext)
     <h2 class="heading-medium">@messages("tai.incomes.edit.incomeTax.update.heading", income("name").value.getOrElse(""))</h2>
     <p>@messages("tai.incomes.monetaryAmount.format.valid")</p>
 
-    @form(action = controllers.routes.IncomeController.editPensionIncome) {
+    @form(action = controllers.routes.IncomeController.editPensionIncome(employmentId)) {
     <input type="hidden" name="pensionToDate" value="@pensionToDate">
     <div class="form-field-group @if(income.hasErrors) {form-group-error}">
 

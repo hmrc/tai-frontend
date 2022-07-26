@@ -138,7 +138,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
 
         def estimatedPayPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateEstimatedPayController()
-            .estimatedPayPage()(request)
+            .estimatedPayPage(employer.id)(request)
       }
 
       def setup(
@@ -190,12 +190,13 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
       "the pay is the same" in {
 
         val result = EstimatedPayPageHarness
-          .setup(currentCache = Map(UpdateIncome_ConfirmedNewAmountKey -> "100"))
+          .setup(currentCache = Map(s"$UpdateIncome_ConfirmedNewAmountKey-${employer.id}" -> "100"))
           .estimatedPayPage(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
+        redirectLocation(result) mustBe Some(
+          controllers.routes.IncomeController.sameEstimatedPayInCache(employer.id).url)
       }
     }
     "Redirect to /income-summary page" when {
@@ -208,7 +209,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
         when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
-        val result = controller.estimatedPayPage(RequestBuilder.buildFakeGetRequestWithAuth())
+        val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)

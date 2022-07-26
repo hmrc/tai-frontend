@@ -300,7 +300,8 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
           .confirmIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
+        redirectLocation(result) mustBe Some(
+          controllers.routes.IncomeController.sameEstimatedPayInCache(employer.id).url)
       }
     }
 

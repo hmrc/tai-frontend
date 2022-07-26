@@ -50,7 +50,7 @@
 
 @includes.link(
     id=Some("estimatedPayLink"),
-    url=income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage().url,
+    url=income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage(viewModel.employer.id).url,
     copy=messages("tai.WhatDoYouWantToDo.submit"),
     linkClasses=Seq("button")
 )

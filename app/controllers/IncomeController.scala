@@ -98,26 +98,27 @@ class IncomeController @Inject()(
       }
   }
 
-  def sameEstimatedPayInCache(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    (for {
-      cachedData <- journeyCacheService
-                     .mandatoryJourneyValues(
-                       UpdateIncome_NameKey,
-                       UpdateIncome_IdKey,
-                       UpdateIncome_ConfirmedNewAmountKey)
-                     .getOrFail
-    } yield {
-      val employerId = cachedData(1).toInt
-      val model = SameEstimatedPayViewModel(
-        cachedData.head,
-        employerId,
-        cachedData(2).toInt,
-        isPension = false,
-        routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
-      Ok(sameEstimatedPay(model))
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-    }
+  def sameEstimatedPayInCache(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      (for {
+        cachedData <- journeyCacheService
+                       .mandatoryJourneyValues(
+                         UpdateIncome_NameKey,
+                         UpdateIncome_IdKey,
+                         s"$UpdateIncome_ConfirmedNewAmountKey-$empId")
+                       .getOrFail
+      } yield {
+        val employerId = cachedData(1).toInt
+        val model = SameEstimatedPayViewModel(
+          cachedData.head,
+          employerId,
+          cachedData(2).toInt,
+          isPension = false,
+          routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
+        Ok(sameEstimatedPay(model))
+      }).recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      }
   }
 
   def sameAnnualEstimatedPay(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -166,13 +167,13 @@ class IncomeController @Inject()(
                 Future.successful(
                   BadRequest(editIncome(formWithErrors, hasMultipleIncomes = false, empId, mandatorySeq.head))),
               (income: EditIncomeForm) =>
-                determineEditRedirect(income, routes.IncomeController.confirmRegularIncome(empId))
+                determineEditRedirect(income, routes.IncomeController.confirmRegularIncome(empId), empId)
             )
       }
   }
 
-  private def isCachedIncomeTheSame(currentCache: Map[String, String], newAmount: Option[String]): Boolean =
-    FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), newAmount)
+  private def isCachedIncomeTheSame(currentCache: Map[String, String], newAmount: Option[String], empId: Int): Boolean =
+    FormHelper.areEqual(currentCache.get(s"$UpdateIncome_ConfirmedNewAmountKey-$empId"), newAmount)
 
   private def isIncomeTheSame(income: EditIncomeForm): Boolean =
     FormHelper.areEqual(Some(income.oldAmount.toString), income.newAmount)
@@ -202,7 +203,7 @@ class IncomeController @Inject()(
         }
       }).recoverWith {
         case NonFatal(e) =>
-          journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_ConfirmedNewAmountKey).flatMap {
+          journeyCacheService.mandatoryJourneyValueAsInt(s"$UpdateIncome_ConfirmedNewAmountKey-$empId").flatMap {
             case Right(_) =>
               journeyCacheService.flush().map { _ =>
                 Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
@@ -280,11 +281,11 @@ class IncomeController @Inject()(
       }
   }
 
-  private def determineEditRedirect(income: EditIncomeForm, confirmationCallback: Call)(
+  private def determineEditRedirect(income: EditIncomeForm, confirmationCallback: Call, empId: Int)(
     implicit hc: HeaderCarrier): Future[Result] =
     for {
       currentCache <- journeyCacheService.currentCache
-      result       <- pickRedirectLocation(currentCache, income, confirmationCallback)
+      result       <- pickRedirectLocation(currentCache, income, confirmationCallback, empId)
     } yield {
       result
     }
@@ -292,9 +293,10 @@ class IncomeController @Inject()(
   private def pickRedirectLocation(
     currentCache: Map[String, String],
     income: EditIncomeForm,
-    confirmationCallback: Call)(implicit hc: HeaderCarrier): Future[Result] =
-    if (isCachedIncomeTheSame(currentCache, income.newAmount)) {
-      Future.successful(Redirect(routes.IncomeController.sameEstimatedPayInCache()))
+    confirmationCallback: Call,
+    empId: Int)(implicit hc: HeaderCarrier): Future[Result] =
+    if (isCachedIncomeTheSame(currentCache, income.newAmount, empId)) {
+      Future.successful(Redirect(routes.IncomeController.sameEstimatedPayInCache(empId)))
     } else if (isIncomeTheSame(income)) {
       Future.successful(Redirect(routes.IncomeController.sameAnnualEstimatedPay()))
     } else {
@@ -309,32 +311,34 @@ class IncomeController @Inject()(
       Redirect(confirmationCallback)
     }
 
-  def editPensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
+  def editPensionIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService
-      .collectedJourneyValues(
-        Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
-        Seq(UpdateIncome_DateKey))
-      .getOrFail flatMap {
-      case (mandatorySeq, optionalSeq) =>
-        val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
-          case Success(optDate) => optDate
-          case Failure(exception) =>
-            logger.warn(s"Unable to parse updateIncomeDateKey $exception")
-            None
-        }
+      journeyCacheService
+        .collectedJourneyValues(
+          Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
+          Seq(UpdateIncome_DateKey))
+        .getOrFail flatMap {
+        case (mandatorySeq, optionalSeq) =>
+          val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
+            case Success(optDate) => optDate
+            case Failure(exception) =>
+              logger.warn(s"Unable to parse updateIncomeDateKey $exception")
+              None
+          }
 
-        EditIncomeForm
-          .bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date)
-          .fold(
-            formWithErrors => {
-              Future.successful(BadRequest(
-                editPension(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)))
-            },
-            (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome())
-          )
-    }
+          EditIncomeForm
+            .bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date)
+            .fold(
+              formWithErrors => {
+                Future.successful(BadRequest(
+                  editPension(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)))
+              },
+              (income: EditIncomeForm) =>
+                determineEditRedirect(income, routes.IncomeController.confirmPensionIncome(), empId)
+            )
+      }
 
   }
 
