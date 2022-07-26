@@ -48,7 +48,8 @@ class IncomeUpdateCalculatorControllerSpec
     extends BaseSpec with JsoupMatchers with JourneyCacheConstants with EditIncomeIrregularPayConstants
     with FormValuesConstants with ControllerViewTestHelper with EditIncomePayPeriodConstants with ScalaFutures {
 
-  val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
+  val employerId = 1
+  val employer: IncomeSource = IncomeSource(id = employerId, name = "sample employer")
   val defaultEmployment: Employment =
     Employment(
       "company",
@@ -59,7 +60,7 @@ class IncomeUpdateCalculatorControllerSpec
       Nil,
       "",
       "",
-      1,
+      employerId,
       None,
       hasPayrolledBenefit = false,
       receivingOccupationalPension = false)
@@ -104,7 +105,7 @@ class IncomeUpdateCalculatorControllerSpec
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(eqTo("1"))(any()))
           .thenReturn(Future.successful(hasJourneyCompleted))
 
-        def onPageLoad(employerId: Int = 1): Future[Result] =
+        def onPageLoad(employerId: Int = employerId): Future[Result] =
           new TestIncomeUpdateCalculatorController()
             .onPageLoad(employerId)(RequestBuilder.buildFakeGetRequestWithAuth())
       }
@@ -121,7 +122,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe SEE_OTHER
 
         redirectLocation(result).get mustBe controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
-          .duplicateSubmissionWarningPage()
+          .duplicateSubmissionWarningPage(employerId)
           .url
       }
     }
@@ -161,7 +162,7 @@ class IncomeUpdateCalculatorControllerSpec
 
         def duplicateSubmissionWarning(): Future[Result] =
           new TestIncomeUpdateCalculatorController()
-            .duplicateSubmissionWarningPage()(RequestBuilder.buildFakeGetRequestWithAuth())
+            .duplicateSubmissionWarningPage(employerId)(RequestBuilder.buildFakeGetRequestWithAuth())
       }
 
       def setup(): DuplicateSubmissionWarningHarness = new DuplicateSubmissionWarningHarness()
@@ -188,7 +189,7 @@ class IncomeUpdateCalculatorControllerSpec
 
         def submitDuplicateSubmissionWarning(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateCalculatorController()
-            .submitDuplicateSubmissionWarning()(request)
+            .submitDuplicateSubmissionWarning(employerId)(request)
       }
 
       def setup(): SubmitDuplicateSubmissionWarningHarness = new SubmitDuplicateSubmissionWarningHarness()

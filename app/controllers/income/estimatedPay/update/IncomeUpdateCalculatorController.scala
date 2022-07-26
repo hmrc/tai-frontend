@@ -70,7 +70,7 @@ class IncomeUpdateCalculatorController @Inject()(
     } yield {
 
       if (estimatedPayCompletion) {
-        Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage())
+        Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(id))
       } else {
         Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage())
       }
@@ -92,14 +92,14 @@ class IncomeUpdateCalculatorController @Inject()(
       case _ => throw new RuntimeException("Not able to find employment")
     }
 
-  def duplicateSubmissionWarningPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def duplicateSubmissionWarningPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
 
       journeyCacheService.mandatoryJourneyValues(
         UpdateIncome_NameKey,
         UpdateIncome_IdKey,
-        UpdateIncome_ConfirmedNewAmountKey,
+        s"$UpdateIncome_ConfirmedNewAmountKey-$empId",
         UpdateIncome_IncomeTypeKey) map {
         case Right(mandatoryValues) =>
           val incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil = mandatoryValues.toList
@@ -113,7 +113,7 @@ class IncomeUpdateCalculatorController @Inject()(
       }
   }
 
-  def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def submitDuplicateSubmissionWarning(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
 
@@ -121,7 +121,7 @@ class IncomeUpdateCalculatorController @Inject()(
         .mandatoryJourneyValues(
           UpdateIncome_NameKey,
           UpdateIncome_IdKey,
-          UpdateIncome_ConfirmedNewAmountKey,
+          s"$UpdateIncome_ConfirmedNewAmountKey-$empId",
           UpdateIncome_IncomeTypeKey)
         .getOrFail
         .flatMap { mandatoryJourneyValues =>

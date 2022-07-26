@@ -41,7 +41,7 @@
     pageHeader = Some(header),
     articleClasses = None) {
 
-    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitDuplicateSubmissionWarning) {
+    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitDuplicateSubmissionWarning(empId)) {
     <div class="form-group">
 
         <p>@viewModel.paragraphOne</p>

@@ -63,7 +63,7 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
       messages("tai.incomes.warning.employment.radio2")
     )
 
-    behave like pageWithContinueButtonForm("/check-income-tax/update-income/warning")
+    behave like pageWithContinueButtonForm(s"/check-income-tax/update-income/warning/$empId")
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
 
     "return no errors with valid 'yes' choice" in {
