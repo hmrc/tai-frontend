@@ -21,7 +21,7 @@
 
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(mainTemplate: MainTempleteNew, form: FormWithCSRF)
 
 @(
     viewModel: UpdatePensionCheckYourAnswersViewModel
@@ -35,31 +35,38 @@
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("tai.checkYourAnswers.title"),
-        preHeadingText = Messages("tai.updatePension.preHeading")
+        preHeadingText = Messages("tai.updatePension.preHeading"),
+        showGdsVersion = true
     )
 }
 
 @mainTemplate(
     title = Messages("tai.checkYourAnswers.title"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink"
 ) {
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
 
-    @checkYourAnswers(
-        title = Some(viewModel.pensionProviderName),
-        confirmationLines = viewModel.journeyConfirmationLines
-    )
+            @checkYourAnswers(
+                title = Some(viewModel.pensionProviderName),
+                confirmationLines = viewModel.journeyConfirmationLines
+            )
 
-    <p class="subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
+            <p class="govuk-body">@Messages("tai.checkYourAnswers.confirmText")</p>
 
-    @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitYourAnswers()) {
-        @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
-    }
+            @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitYourAnswers()) {
+                @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
+            }
 
-    @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(viewModel.id))
+            @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(viewModel.id))
+        </div>
+    </div>
 }
 
 

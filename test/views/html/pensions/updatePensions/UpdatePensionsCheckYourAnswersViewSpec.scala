@@ -25,7 +25,9 @@ class UpdatePensionsCheckYourAnswersViewSpec extends TaiViewSpec {
 
   "check your answers page" must {
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
-    behave like pageWithCombinedHeader(messages("tai.updatePension.preHeading"), messages("tai.checkYourAnswers.title"))
+    behave like pageWithCombinedHeaderNewTemplate(
+      messages("tai.updatePension.preHeading"),
+      messages("tai.checkYourAnswers.title"))
     behave like pageWithButtonForm(
       "/check-income-tax/incorrect-pension/check-your-answers",
       messages("tai.confirmAndSend"))
