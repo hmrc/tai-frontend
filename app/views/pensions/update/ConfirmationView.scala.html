@@ -18,24 +18,33 @@
 
 @import views.html.includes.confirmationSuccessBanner
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTempleteNew)
 
 @()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(
-title = Messages("tai.updatePension.confirmation.heading"),
-authedUser = Some(user),
-articleClasses = None) {
+    title = Messages("tai.updatePension.confirmation.heading"),
+    pageTitle = Some(messages("tai.service.navTitle")),
+    authedUser = Some(user),
+    backLinkContent = None
+) {
 
-    @confirmationSuccessBanner()
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-    @confirmation_summary("tai.confirmation.paraTwo")
+        @confirmationSuccessBanner()
 
-    @includes.link(
-        id=Some("returnToSummary"),
-        copy=Messages("return.to.your.income.tax.summary"),
-        url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
-        isButton=true
-    )
+        @confirmation_summary("tai.confirmation.paraTwo")
+
+        @includes.link(
+            id=Some("returnToSummary"),
+            copy=Messages("return.to.your.income.tax.summary"),
+            url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
+            isButton=true,
+            linkClasses=Seq("govuk-button", "govuk-!-margin-top-4")
+        )
+    </div>
+</div>
+
 }
