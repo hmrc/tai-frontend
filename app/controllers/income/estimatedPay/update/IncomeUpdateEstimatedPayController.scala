@@ -141,7 +141,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
         }
       }
 
-      result.value.map(_.sequence).flatMap(identity).map {
+      result.value.flatMap(_.sequence).map {
         case Some(result) => result
         case None         => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
