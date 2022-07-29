@@ -135,7 +135,7 @@ class AddEmploymentController @Inject()(
             date => {
               val startDateBoundary = LocalDate.now.minusWeeks(6)
               val data = currentCache + (AddEmployment_StartDateKey -> date.toString)
-              if (date.isAfter(startDateBoundary)) {
+              if (true) {
                 val firstPayChoiceCacheData = data + (AddEmployment_StartDateWithinSixWeeks -> YesValue)
                 journeyCacheService.cache(firstPayChoiceCacheData)
                 Redirect(controllers.employments.routes.AddEmploymentController.receivedFirstPay())
@@ -173,9 +173,9 @@ class AddEmploymentController @Inject()(
         firstPayYesNo => {
           journeyCacheService.cache(AddEmployment_RecewivedFirstPayKey, firstPayYesNo.getOrElse("")) map { _ =>
             firstPayYesNo match {
+              case _ => Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError())
               case Some(YesValue) =>
                 Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
-              case _ => Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError())
             }
           }
         }
