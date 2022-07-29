@@ -273,7 +273,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     }
 
     "display an estimated pay update confirmation banner when the journey has been successfully completed" in {
-      doc must haveH2HeadingWithText(messages("tai.estimatedIncome.confirmation.banner.heading"))
+      doc must haveParagraphWithText(messages("tai.estimatedIncome.confirmation.banner.heading"))
     }
 
   }
