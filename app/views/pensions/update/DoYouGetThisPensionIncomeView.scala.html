@@ -21,47 +21,93 @@
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import includes.forms.inputRadioGroupStyling
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 ec: scala.concurrent.ExecutionContext)
 
-
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(updateOrRemoveForm),
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("tai.updatePension.decision.heading", model.pensionName),
         preHeadingText = Messages("tai.updatePension.preHeading")
     )
 }
 
-@mainTemplate(
+@main(
     title = Messages("tai.updatePension.decision.pagetitle"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None) {
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink",
+    ) {
+    <div class = "govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if(updateOrRemoveForm.errors.nonEmpty){
+                @govukErrorSummary(ErrorSummary(errorList = updateOrRemoveForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
+            @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension) {
+                @govukRadios(Radios(
+                    fieldset = Some(
+                        Fieldset(
+                            legend = Some(
+                                HmrcPageHeadingLegend(
+                                    content = Text(Messages("tai.updatePension.decision.heading", model.pensionName)),
+                                    caption = HmrcSectionCaption(Text(Messages("tai.updatePension.preHeading")))
+                                )
+                            )
+                        )
+                    ),
+                    hint = None,
+                    errorMessage = updateOrRemoveForm.errors.filter(_.key == UpdateRemovePensionForm.IncorrectPensionDecision).asTextErrorMessages.headOption,
+                    idPrefix = Some("incorrectPensionDecision"),
+                    name = "incorrectPensionDecision",
+                    classes = "govuk-radios--inline",
+                    items = Seq(
+                        RadioItem(
+                            content = Text(Messages("tai.label.yes")),
+                            value = Some("Yes"),
+                            checked = updateOrRemoveForm.data.get(UpdateRemovePensionForm.IncorrectPensionDecision).contains("Yes"),
+                        ),
+                        RadioItem(
+                            content = Text(Messages("tai.label.no")),
+                            value = Some("No"),
+                            checked = updateOrRemoveForm.data.get(UpdateRemovePensionForm.IncorrectPensionDecision).contains("No"),
+                        )
+                    ),
+                ).withFormField(updateOrRemoveForm(UpdateRemovePensionForm.IncorrectPensionDecision))
+                )
 
-    @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension) {
-        <div class="form-group">
-
-            @{inputRadioGroupStyling(
-                field=updateOrRemoveForm(UpdateRemovePensionForm.IncorrectPensionDecision),
-                radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
-                legend=Messages("tai.updatePension.decision.legend"),
-                legendHint=None,
-                ('_groupDivClass, "form-group" ),
-                ('_fieldsetAttributes, "id=incorrectPensionDecision" ),
-                ('_groupClass, "inline" ),
-                ('_legendSpanClass, "visually-hidden"),
-                ('_radioOption1Attributes, Html("""data-journey-val="Yes"""") ),
-                ('_radioOption2Attributes, Html("""data-journey-val="No"""") )
-            )}
-
+                @govukButton(Button(content = Text(messages("tai.continue"))))
+                @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(model.id))
+            }
         </div>
+    </div>
 
-        @submit(buttonMessageKey = Some(messages("tai.submit")))
-    }
-    @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(model.id))
+@*    @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension) {*@
+@*        <div abc class="form-group">*@
+
+@*            @{inputRadioGroupStyling(*@
+@*                field=updateOrRemoveForm(UpdateRemovePensionForm.IncorrectPensionDecision),*@
+@*                radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),*@
+@*                legend=Messages("tai.updatePension.decision.legend"),*@
+@*                legendHint=None,*@
+@*                ('_groupDivClass, "form-group" ),*@
+@*                ('_fieldsetAttributes, "id=incorrectPensionDecision" ),*@
+@*                ('_groupClass, "inline" ),*@
+@*                ('_legendSpanClass, "visually-hidden"),*@
+@*                ('_radioOption1Attributes, Html("""data-journey-val="Yes"""") ),*@
+@*                ('_radioOption2Attributes, Html("""data-journey-val="No"""") )*@
+@*            )}*@
+
+@*        </div>*@
+
+@*        @submit(buttonMessageKey = Some(messages("tai.submit")))*@
+@*    }*@
+@*    @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(model.id))*@
 }
