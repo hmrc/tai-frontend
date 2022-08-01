@@ -70,11 +70,13 @@ ec: scala.concurrent.ExecutionContext)
                     classes = "govuk-radios--inline",
                     items = Seq(
                         RadioItem(
+                            id = Some("incorrectPensionDecision-yes"),
                             content = Text(Messages("tai.label.yes")),
                             value = Some("Yes"),
                             checked = updateOrRemoveForm.data.get(UpdateRemovePensionForm.IncorrectPensionDecision).contains("Yes"),
                         ),
                         RadioItem(
+                            id = Some("incorrectPensionDecision-no"),
                             content = Text(Messages("tai.label.no")),
                             value = Some("No"),
                             checked = updateOrRemoveForm.data.get(UpdateRemovePensionForm.IncorrectPensionDecision).contains("No"),
@@ -88,26 +90,4 @@ ec: scala.concurrent.ExecutionContext)
             }
         </div>
     </div>
-
-@*    @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension) {*@
-@*        <div abc class="form-group">*@
-
-@*            @{inputRadioGroupStyling(*@
-@*                field=updateOrRemoveForm(UpdateRemovePensionForm.IncorrectPensionDecision),*@
-@*                radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),*@
-@*                legend=Messages("tai.updatePension.decision.legend"),*@
-@*                legendHint=None,*@
-@*                ('_groupDivClass, "form-group" ),*@
-@*                ('_fieldsetAttributes, "id=incorrectPensionDecision" ),*@
-@*                ('_groupClass, "inline" ),*@
-@*                ('_legendSpanClass, "visually-hidden"),*@
-@*                ('_radioOption1Attributes, Html("""data-journey-val="Yes"""") ),*@
-@*                ('_radioOption2Attributes, Html("""data-journey-val="No"""") )*@
-@*            )}*@
-
-@*        </div>*@
-
-@*        @submit(buttonMessageKey = Some(messages("tai.submit")))*@
-@*    }*@
-@*    @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(model.id))*@
 }

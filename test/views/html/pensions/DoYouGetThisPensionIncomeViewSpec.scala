@@ -31,9 +31,11 @@ class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec with FormValuesConst
   "IncorrectPension page" must {
     behave like pageWithTitle(messages("tai.updatePension.decision.pagetitle"))
     behave like pageWithBackLink
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.updatePension.preHeading"),
-      messages("tai.updatePension.decision.heading", model.pensionName))
+      messages("tai.updatePension.decision.heading", model.pensionName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
 
     behave like pageWithYesNoRadioButton(
       UpdateRemovePensionForm.IncorrectPensionDecision + "-yes",
@@ -42,7 +44,7 @@ class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec with FormValuesConst
       messages("tai.label.no")
     )
 
-    behave like pageWithContinueButtonForm("/check-income-tax/incorrect-pension/decision")
+    behave like pageWithContinueButtonFormNew("/check-income-tax/incorrect-pension/decision")
     behave like pageWithCancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(model.id))
 
     "show error" when {
@@ -54,9 +56,9 @@ class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec with FormValuesConst
         val errorDoc = doc(viewWithError)
 
         errorDoc must haveElementAtPathWithText(
-          ".error-message",
+          ".govuk-error-message",
           Messages("tai.error.message") + " " + Messages("tai.error.chooseOneOption"))
-        errorDoc must haveElementAtPathWithClass("form div", "form-group-error")
+        errorDoc must haveElementAtPathWithClass("form div", "govuk-form-group--error")
       }
     }
   }
