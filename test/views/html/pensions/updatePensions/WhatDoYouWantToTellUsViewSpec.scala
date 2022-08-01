@@ -33,16 +33,18 @@ class WhatDoYouWantToTellUsViewSpec extends TaiViewSpec {
 
   "whatDoYouWantToTellUs" must {
     behave like pageWithTitle(Messages("tai.updatePension.whatDoYouWantToTellUs.pagetitle"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       Messages("tai.updatePension.preHeading"),
-      Messages("tai.updatePension.whatDoYouWantToTellUs.heading", pensionName))
+      Messages("tai.updatePension.whatDoYouWantToTellUs.heading", pensionName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
     behave like pageWithContinueButtonForm("/check-income-tax/incorrect-pension/what-do-you-want-to-tell-us")
     behave like pageWithCancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(pensionId))
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
 
     "display a text area to collect further information" in {
       doc must haveElementAtPathWithAttribute("textarea", "name", "pensionDetails")
-      doc must haveElementAtPathWithAttribute("textarea", "maxlength", "500")
+      doc must haveElementAtPathWithAttribute("textarea", "rows", "5")
     }
 
   }

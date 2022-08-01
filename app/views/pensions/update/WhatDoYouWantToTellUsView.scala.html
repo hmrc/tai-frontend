@@ -14,44 +14,61 @@
  * limitations under the License.
  *@
 
-@import includes.forms.{submit, textArea}
-@import includes.{cancelLink, ptaHeader}
+@import includes.forms.submit
+@import includes.cancelLink
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 @import uk.gov.hmrc.tai.forms.pensions.WhatDoYouWantToTellUsForm
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukCharacterCount
+@import uk.gov.hmrc.govukfrontend.views.html.components.Text
+@import uk.gov.hmrc.govukfrontend.views.html.components.Hint
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.html.components.ErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.html.components.CharacterCount
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+
+@this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukCharacterCount : GovukCharacterCount, govukErrorSummary: GovukErrorSummary)
 
 @(name: String, id:Int, whatDoYouWantToTellUsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(whatDoYouWantToTellUsForm),
-        displayBackLink = true,
-        mainHeadingText = Messages("tai.updatePension.whatDoYouWantToTellUs.heading", name),
-        preHeadingText = Messages("tai.updatePension.preHeading")
-    )
-}
-
 @mainTemplate(
     title = Messages("tai.updatePension.whatDoYouWantToTellUs.pagetitle"),
+    pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None) {
+    backLinkContent = Some(Messages("tai.back-link.upper"))
+) {
 
-    @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitWhatDoYouWantToTellUs(), args=(Symbol("class"), "subsection")) {
+<div class = "govuk-grid-row">
+    <div class = "govuk-grid-column-two-thirds">
+        @if(whatDoYouWantToTellUsForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary(errorList = whatDoYouWantToTellUsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+        }
 
-        @textArea(
-            field=whatDoYouWantToTellUsForm("pensionDetails"),
-            classes = Seq("form-control form-control--full-width js-char-count"),
-            labelText = Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.text", WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit),
-            maxlength =  WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit.toString
-        )
+        @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitWhatDoYouWantToTellUs(), args=(Symbol("class"), "subsection")) {
+            @govukCharacterCount(CharacterCount(
+                id = "pensionDetails",
+                name = "pensionDetails",
+                label = HmrcPageHeadingLabel(
+                    content = Text(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", name)),
+                    caption = HmrcSectionCaption(Text(Messages("tai.updatePension.preHeading")))
+                ),
+                value = whatDoYouWantToTellUsForm.data.get("pensionDetails"),
+                maxLength = Some(WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit),
+                hint = Some(Hint(
+                  content = Text(Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.text", WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit))
+                )),
+                errorMessage = whatDoYouWantToTellUsForm.errors.asTextErrorMessages.headOption
+              ))
 
-        @submit()
-    }
+            @submit()
+        }
 
-    @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(id))
+        @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(id))
+    </div>
+</div>
 }
