@@ -116,9 +116,21 @@
         }
     }
 
+
     @if(model.estimatedPayJourneyCompleted){
-        <div class="tai-progress-panel" id="estimatedPayCompletionBanner">
-            <h2 class="heading-medium flush-bottom flush--top" id="incomeSummary-banner-heading">@messages("tai.estimatedIncome.confirmation.banner.heading")</h2>
+
+        <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                        @messages("checkProgress.important")
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <h3 class="govuk-notification-banner__heading">
+                    @messages("tai.whatDoYouWantToDo.iformPanel.p1")
+                </h3>
+                <p>@messages("tai.estimatedIncome.confirmation.banner.heading")</p>
+            </div>
         </div>
     }
 
