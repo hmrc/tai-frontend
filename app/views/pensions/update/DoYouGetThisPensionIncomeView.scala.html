@@ -70,13 +70,11 @@ ec: scala.concurrent.ExecutionContext)
                     classes = "govuk-radios--inline",
                     items = Seq(
                         RadioItem(
-                            id = Some("incorrectPensionDecision-yes"),
                             content = Text(Messages("tai.label.yes")),
                             value = Some("Yes"),
                             checked = updateOrRemoveForm.data.get(UpdateRemovePensionForm.IncorrectPensionDecision).contains("Yes"),
                         ),
                         RadioItem(
-                            id = Some("incorrectPensionDecision-no"),
                             content = Text(Messages("tai.label.no")),
                             value = Some("No"),
                             checked = updateOrRemoveForm.data.get(UpdateRemovePensionForm.IncorrectPensionDecision).contains("No"),

@@ -38,8 +38,8 @@ class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec with FormValuesConst
     )
 
     behave like pageWithYesNoRadioButton(
-      UpdateRemovePensionForm.IncorrectPensionDecision + "-yes",
-      UpdateRemovePensionForm.IncorrectPensionDecision + "-no",
+      UpdateRemovePensionForm.IncorrectPensionDecision,
+      UpdateRemovePensionForm.IncorrectPensionDecision + "-2",
       messages("tai.label.yes"),
       messages("tai.label.no")
     )
