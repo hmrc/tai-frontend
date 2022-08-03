@@ -89,13 +89,11 @@
             errorMessage = duplicateSubmissionWarningForm.errors.asTextErrorMessages.headOption,
             items = Seq(
                 RadioItem(
-                    id = Some(YesNoForm.YesNoChoice + "-yes"),
                     content = Text(viewModel.optionOne),
                     value = Some(YesNoForm.YesValue),
                     attributes = Map("data-journey-val" -> "Yes"),
                 ),
                 RadioItem(
-                    id = Some(YesNoForm.YesNoChoice + "-no"),
                     content = Text(viewModel.optionTwo),
                     value = Some(viewModel.optionTwo),
                     attributes = Map("data-journey-val" -> "No"),

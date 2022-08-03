@@ -57,8 +57,8 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
       mainHeaderText = messages("tai.incomes.warning.employment.heading", employmentName))
 
     behave like pageWithYesNoRadioButton(
-      s"$YesNoChoice-yes",
-      s"$YesNoChoice-no",
+      s"$YesNoChoice",
+      s"$YesNoChoice-2",
       messages("tai.incomes.warning.employment.radio1", employmentName),
       messages("tai.incomes.warning.employment.radio2")
     )
@@ -103,11 +103,11 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
         messages("tai.incomes.warning.pension.text1", MonetaryUtil.withPoundPrefix(newAmount), employmentName))
 
       doc(pensionView) must haveInputLabelWithText(
-        s"$YesNoChoice-yes",
+        s"$YesNoChoice",
         messages("tai.incomes.warning.pension.radio1", employmentName))
-      doc(pensionView) must haveInputLabelWithText(s"$YesNoChoice-no", messages("tai.incomes.warning.pension.radio2"))
-      doc(pensionView).getElementById(s"$YesNoChoice-yes") must not be null
-      doc(pensionView).getElementById(s"$YesNoChoice-no") must not be null
+      doc(pensionView) must haveInputLabelWithText(s"$YesNoChoice-2", messages("tai.incomes.warning.pension.radio2"))
+      doc(pensionView).getElementById(s"$YesNoChoice") must not be null
+      doc(pensionView).getElementById(s"$YesNoChoice-2") must not be null
     }
   }
 
