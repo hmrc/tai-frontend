@@ -35,7 +35,7 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
     behave like pageWithBackLink
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
 
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
       messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRange(1)))
 
@@ -48,11 +48,9 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
       doc(view) must haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentEstPay), 0)))
     }
 
-    "have an input box for user to enter new amount" in {
-      doc(view) must haveInputLabelWithText(
-        "income",
-        messages("tai.irregular.newAmount") + " " + messages("tai.inPounds"))
-      doc(view).getElementsByClass("form-control-currency").size() mustBe 1
+    "contain an input field with pound symbol appended" in {
+      doc must haveElementAtPathWithId("input", "income")
+      doc must haveElementAtPathWithClass("div", "govuk-input__prefix")
     }
   }
 

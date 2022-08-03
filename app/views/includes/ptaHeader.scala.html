@@ -16,6 +16,8 @@
 
 @import includes.forms.errorSummary
 @import includes.printBanner
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @(formForErrorSummary: Option[Form[_]] = None,
   displayBackLink: Boolean = false,
@@ -25,7 +27,8 @@
   preHeadingAccessibleAnnouncement: String = "",
   customBackLinkContent: Option[Html] = None,
   additionalTopLinkContent: Option[Html] = None,
-  showGdsVersion: Boolean = false
+  showGdsVersion: Boolean = false,
+  govukErrorSummary: Option[GovukErrorSummary] = None
 )(implicit m: Messages)
 
 @preHeadingHidden = @{
@@ -56,12 +59,13 @@
 @printHeader
 
 
-  @if(showGdsVersion) {
-            <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)</span>
-            <h1 class="govuk-heading-xl heading-mobile-responsive xbreak-word">@Html(mainHeadingText)</h1>
-    }else {
-
-
+@if(showGdsVersion) {
+    @if(formForErrorSummary.exists(_.errors.nonEmpty) && govukErrorSummary.isDefined) {
+        @govukErrorSummary.get(ErrorSummary(errorList = formForErrorSummary.get.errors.asTextErrorLinks, title = Text(Messages("tai.income.error.form.summary"))))
+    }
+    <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)</span>
+    <h1 class="govuk-heading-xl heading-mobile-responsive xbreak-word">@Html(mainHeadingText)</h1>
+}else {
     <div class="grid-row">
         <div class="@headerWidthClasses.getOrElse("")">
             @if(formForErrorSummary.isDefined) {
@@ -73,6 +77,6 @@
         </header>
         </div>
     </div>
-  }
+}
 
 
