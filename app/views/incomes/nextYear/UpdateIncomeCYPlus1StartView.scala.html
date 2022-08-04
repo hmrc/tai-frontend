@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template)
+@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1TemplateNew)
 
 @(employmentName: String, employmentId: Int, isPension: Boolean)(
     implicit request: Request[_],
@@ -32,19 +32,21 @@
     heading = messages("tai.updateIncome.CYPlus1.start.heading", <span class="carry-over">{employmentName}</span>),
     cancelText = Some("Cancel")
 ){
+
     <div>
-        <p>@messages("tai.updateIncome.CYPlus1.start.paragraph1", employmentName)</p>
+        <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.start.paragraph1", employmentName)</p>
 
         @if(isPension) {
-        <p>@messages("tai.updateIncome.CYPlus1.start.pension.paragraph2", employmentName)</p>
+            <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.start.pension.paragraph2", employmentName)</p>
         } else {
-        <p>@messages("tai.updateIncome.CYPlus1.start.paragraph2", employmentName)</p>
+            <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.start.paragraph2", employmentName)</p>
         }
 
         @includes.link(
             copy=messages("tai.income.details.updateTaxableIncome.update"),
             url = controllers.income.routes.UpdateIncomeNextYearController.edit(employmentId).url,
             id = Some("CYPlus1StartButton"),
+            linkClasses=Seq("govuk-button"),
             isButton=true
         )
     </div>
