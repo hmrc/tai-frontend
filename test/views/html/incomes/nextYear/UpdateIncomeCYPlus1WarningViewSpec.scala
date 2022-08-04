@@ -90,10 +90,10 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec with FormValuesCons
       val warningTemplate = inject[DuplicateSubmissionWarningView]
 
       val errorView = warningTemplate(invalidatedForm, employmentViewModel, empId)
-      doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
+      doc(errorView) must haveErrorLinkWithTextNew(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(
         messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
-        "error-message")
+        "govuk-error-message")
     }
 
     "display the correct content when the income source is a pension" in {

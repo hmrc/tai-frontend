@@ -52,18 +52,18 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.incomes.warning.customGaTitle"))
     behave like pageWithBackLink
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       preHeaderText = messages("tai.incomes.warning.preHeading"),
       mainHeaderText = messages("tai.incomes.warning.employment.heading", employmentName))
 
     behave like pageWithYesNoRadioButton(
-      s"$YesNoChoice-yes",
-      s"$YesNoChoice-no",
+      s"$YesNoChoice",
+      s"$YesNoChoice-2",
       messages("tai.incomes.warning.employment.radio1", employmentName),
       messages("tai.incomes.warning.employment.radio2")
     )
 
-    behave like pageWithContinueButtonForm("/check-income-tax/update-income/warning")
+    behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/warning")
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
 
     "return no errors with valid 'yes' choice" in {
@@ -88,10 +88,10 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
       val emptySelectionErrorMessage = messages("tai.employment.warning.error")
 
       val errorView: Html = duplicateSubmissionWarning(invalidatedForm, employmentViewModel, empId)
-      doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
+      doc(errorView) must haveErrorLinkWithTextNew(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(
         messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
-        "error-message")
+        "govuk-error-message")
     }
 
     "display the correct content when the income source is a pension" in {
@@ -103,11 +103,11 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
         messages("tai.incomes.warning.pension.text1", MonetaryUtil.withPoundPrefix(newAmount), employmentName))
 
       doc(pensionView) must haveInputLabelWithText(
-        s"$YesNoChoice-yes",
+        s"$YesNoChoice",
         messages("tai.incomes.warning.pension.radio1", employmentName))
-      doc(pensionView) must haveInputLabelWithText(s"$YesNoChoice-no", messages("tai.incomes.warning.pension.radio2"))
-      doc(pensionView).getElementById(s"$YesNoChoice-yes") must not be null
-      doc(pensionView).getElementById(s"$YesNoChoice-no") must not be null
+      doc(pensionView) must haveInputLabelWithText(s"$YesNoChoice-2", messages("tai.incomes.warning.pension.radio2"))
+      doc(pensionView).getElementById(s"$YesNoChoice") must not be null
+      doc(pensionView).getElementById(s"$YesNoChoice-2") must not be null
     }
   }
 
