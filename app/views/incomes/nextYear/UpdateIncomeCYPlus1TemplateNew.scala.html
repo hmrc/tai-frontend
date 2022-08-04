@@ -26,7 +26,6 @@
 @(employerName: String,
   form: Option[Form[_]],
   heading: String,
-  title: String,
   showCancel: Boolean = true,
   cancelText : Option[String] = None
 
@@ -49,7 +48,7 @@
 
 @mainTemplate(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
-    title = title,
+    title = heading,
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkId = "backLink"
