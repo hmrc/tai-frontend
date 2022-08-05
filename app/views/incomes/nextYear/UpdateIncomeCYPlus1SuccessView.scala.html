@@ -28,39 +28,32 @@
     ec: scala.concurrent.ExecutionContext
 )
 
-@content ={
-    @htmlNonBroken(messages("tai.updateIncome.CYPlus1.success.heading.p1"))
-    @htmlNonBroken(messages("tai.updateIncome.CYPlus1.success.heading.p2"))
-}
-
 @main(
     title = messages("tai.updateIncome.CYPlus1.success.title", TaxYearRangeUtil.futureTaxYearRange(1)),
     authedUser = Some(user),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "backLink",
+    backLinkContent = None
 ){
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             @govukPanel(Panel(
-                title = HtmlContent(content)
+                title = Text(messages("tai.updateIncome.CYPlus1.success.heading.p1")),
+                content = HtmlContent(messages("tai.updateIncome.CYPlus1.success.heading.p2"))
             ))
 
             <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.success.p1")</p>
+            <p class="govuk-body">
+                @if(isPension) {
+                    @messages("tai.updateIncome.CYPlus1.success.pension.p2", employmentName)
+                } else {
+                    @messages("tai.updateIncome.CYPlus1.success.employment.p2", employmentName)
+                }
+            </p>
 
-           @if(isPension) {
-               <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.success.pension.p2", employmentName)</p>
-            } else {
-              <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.success.employment.p2", employmentName)</p>
-           }
-
-            <p>
             @govukButton(Button(
                 href = Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url.toString),
                 content = Text(messages("tai.returnToIncomeTaxSummary"))
             ))
-            </p>
-
         </div>
     </div>
 }
