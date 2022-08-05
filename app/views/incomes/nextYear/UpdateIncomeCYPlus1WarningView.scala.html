@@ -20,52 +20,71 @@
 @import includes.forms.submit
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.DuplicateSubmissionEstimatedPay
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+
+
+
+@this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(duplicateSubmissionWarningForm),
-        displayBackLink = true,
-        mainHeadingText = viewModel.heading,
-        preHeadingText = messages("tai.incomes.warning.preHeading")
-    )
+@hint = {
+    <p class="govuk-body">@viewModel.paragraphOne</p>
+    <p class="govuk-body">@messages("tai.incomes.warning.text2")</p>
+    <p class="govuk-inset-text">@messages("tai.incomes.warning.text3")</p>
 }
 
 @mainTemplate(
     title = messages("tai.incomes.warning.customGaTitle"),
+    pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None) {
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink",
+) {
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @if(duplicateSubmissionWarningForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = duplicateSubmissionWarningForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
+    
+            @form(action = controllers.income.routes.UpdateIncomeNextYearController.submitDuplicateWarning(empId)) {
+                @govukRadios(Radios(
+                    fieldset =  Some(
+                        Fieldset(
+                            legend = Some(
+                            HmrcPageHeadingLegend(
+                                content = Text(viewModel.heading),
+                                caption = HmrcSectionCaption(Text(messages("tai.incomes.warning.preHeading"))))
+                        )
+                        )
+                    ),
+                    hint = Some(Hint(content = HtmlContent(hint))),
+                    errorMessage = duplicateSubmissionWarningForm.errors.asTextErrorMessages.headOption,
+                    idPrefix = Some(YesNoForm.YesNoChoice),
+                    name = YesNoForm.YesNoChoice,
+                    items = Seq(
+                        RadioItem(
+                            content = Text(viewModel.optionOne),
+                            value = Some("Yes"),
+                            checked = duplicateSubmissionWarningForm.data.get(YesNoForm.YesNoChoice).exists(_ == "Yes")
+                        ),
+                            RadioItem(
+                                content = Text(viewModel.optionTwo),
+                                value = Some("No"),
+                                checked = duplicateSubmissionWarningForm.data.get(YesNoForm.YesNoChoice).exists(_ == "No")
+                        )
+                    )
+                ).withFormField(duplicateSubmissionWarningForm(YesNoForm.YesNoChoice)))
 
-    @form(action = controllers.income.routes.UpdateIncomeNextYearController.submitDuplicateWarning(empId)) {
-    <div class="form-group">
+                @submit(buttonMessageKey = Some(messages("tai.submit")))
 
-        <p>@viewModel.paragraphOne</p>
-        <p>@messages("tai.incomes.warning.text2")</p>
-        <div class="panel panel-border-wide">
-            <p>@messages("tai.incomes.warning.text3")</p>
+                @cancelLink(routes.IncomeTaxComparisonController.onPageLoad())
+            }
         </div>
-
-        @{inputRadioGroupStyling(
-        field=duplicateSubmissionWarningForm(YesNoForm.YesNoChoice),
-        radioOptions=Seq((YesNoForm.YesValue -> viewModel.optionOne), (YesNoForm.NoValue -> viewModel.optionTwo) ),
-        legend=messages("tai.employment.warning.legend"),
-        legendHint=None,
-        ('_groupDivClass, "form-group" ),
-        ('_fieldsetAttributes, s"id=${YesNoForm.YesNoChoice}" ),
-        ('_legendSpanClass, "visually-hidden"),
-        ('_radioOption1Attributes, Html("""data-journey-val="Yes"""") ),
-        ('_radioOption2Attributes, Html("""data-journey-val="No"""") )
-        )}
-
     </div>
-
-@submit(buttonMessageKey = Some(messages("tai.submit")))
-
-    @cancelLink(routes.IncomeTaxComparisonController.onPageLoad())
-}
 }

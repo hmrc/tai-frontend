@@ -52,13 +52,15 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec with FormValuesCons
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.incomes.warning.customGaTitle"))
     behave like pageWithBackLink
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       preHeaderText = messages("tai.incomes.warning.preHeading"),
-      mainHeaderText = messages("tai.incomes.warning.cyPlus1.heading", employmentName))
+      mainHeaderText = messages("tai.incomes.warning.cyPlus1.heading", employmentName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
 
     behave like pageWithYesNoRadioButton(
-      s"$YesNoChoice-yes",
-      s"$YesNoChoice-no",
+      YesNoChoice,
+      s"$YesNoChoice-2",
       messages("tai.incomes.warning.employment.radio1", employmentName),
       messages("tai.incomes.warning.cyPlus1.radio2")
     )
@@ -101,7 +103,6 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec with FormValuesCons
       val pensionView: Html =
         template(duplicateSubmissionWarningForm, pensionViewModel, empId)
 
-      doc(pensionView) must haveHeadingWithText(messages("tai.incomes.warning.cyPlus1.heading", employmentName))
       doc(pensionView) must haveParagraphWithText(
         messages(
           "tai.incomes.warning.cyPlus1.text1",
@@ -109,11 +110,11 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec with FormValuesCons
           TaxYearRangeUtil.futureTaxYearRange(1)))
 
       doc(pensionView) must haveInputLabelWithText(
-        s"$YesNoChoice-yes",
+        YesNoChoice,
         messages("tai.incomes.warning.pension.radio1", employmentName))
-      doc(pensionView) must haveInputLabelWithText(s"$YesNoChoice-no", messages("tai.incomes.warning.cyPlus1.radio2"))
-      doc(pensionView).getElementById(s"$YesNoChoice-yes") must not be null
-      doc(pensionView).getElementById(s"$YesNoChoice-no") must not be null
+      doc(pensionView) must haveInputLabelWithText(s"$YesNoChoice-2", messages("tai.incomes.warning.cyPlus1.radio2"))
+      doc(pensionView).getElementById(YesNoChoice) must not be null
+      doc(pensionView).getElementById(s"$YesNoChoice-2") must not be null
     }
   }
 
