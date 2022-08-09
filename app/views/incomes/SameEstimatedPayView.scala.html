@@ -29,7 +29,7 @@
 @import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 
 
-@this(mainTemplate: MainTemplate, loginStatus: LoginStatus)
+@this(mainTemplate: MainTempleteNew)
 
 @(model: SameEstimatedPayViewModel)(implicit
 request: Request[_],
@@ -39,36 +39,37 @@ ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = messages("tai.updateEmployemnt.incomeSame.heading", TaxYearRangeUtil.currentTaxYearRange),
-        preHeadingText = messages("tai.updateEmployment.incomeSame.preHeading",model.employerName)
+        preHeadingText = messages("tai.updateEmployment.incomeSame.preHeading",model.employerName),
+        showGdsVersion = true
     )
 }
 
 @mainTemplate(
+    pageTitle = Some(Messages("tai.service.navTitle")),
     title = messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRange),
-    pageHeader = Some(header),
-    articleClasses = Some("")
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink"
 ) {
-    <div class="grid-row">
-            <div class="inner-block">
-                <div class="section flush--bottom soft--ends">
-                    <p>@messages("tai.updateEmployment.incomeSame.newEstimate.text") <span class="bold-large">@model.amountWithPounds</span></p>
-                    <div class="panel panel-border-narrow">
-                        <p>@messages("tai.updateEmployment.incomeSame.description", model.employerName,TaxYearRangeUtil.currentTaxYearRange)</p>
-                    </div>
-                </div>
-
-                <div class="subsection">
-                    @includes.link(
-                        id=Some("returnToEmploymentDetails"),
-                        copy=model.returnLinkLabel,
-                        url = model.returnLinkUrl,
-                        linkClasses=Seq("button")
-                    )
-                </div>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @header
+        <div class="section flush--bottom soft--ends">
+            <p class="govuk-body">@messages("tai.updateEmployment.incomeSame.newEstimate.text") <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.amountWithPounds</span></p>
+            <div class="govuk-details__text">
+                <p class="govuk-body">@messages("tai.updateEmployment.incomeSame.description", model.employerName,TaxYearRangeUtil.currentTaxYearRange)</p>
             </div>
+        </div>
 
-
+        <div class="govuk-!-margin-bottom-5">
+            @includes.link(
+                id=Some("returnToEmploymentDetails"),
+                copy=model.returnLinkLabel,
+                url = model.returnLinkUrl,
+                linkClasses=Seq("govuk-button", "govuk-!-margin-top-4")
+            )
+        </div>
     </div>
+</div>
 }
