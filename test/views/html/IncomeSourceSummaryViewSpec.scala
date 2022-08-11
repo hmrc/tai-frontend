@@ -298,7 +298,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     }
 
     "display an estimated pay update confirmation banner when the journey has been successfully completed" in {
-      doc must haveParagraphWithText(messages("tai.estimatedIncome.confirmation.banner.heading"))
+      docWithUpdateInProgressEmployment must haveParagraphWithText(
+        messages("tai.estimatedIncome.confirmation.banner.heading"))
     }
 
   }
@@ -312,7 +313,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "1100L",
     "EMPLOYER-1122",
     false,
-    estimatedPayJourneyCompleted = true,
+    estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrctNumber = "123",
     payeNumber = "AB12345"
@@ -365,7 +366,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "1100L",
     "PENSION-1122",
     true,
-    estimatedPayJourneyCompleted = true,
+    estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrctNumber = "123",
     payeNumber = "AB12345"

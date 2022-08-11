@@ -57,8 +57,8 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
       mainHeaderText = messages("tai.incomes.warning.employment.heading", employmentName))
 
     behave like pageWithYesNoRadioButton(
-      s"$YesNoChoice-yes",
-      s"$YesNoChoice-no",
+      s"$YesNoChoice",
+      s"$YesNoChoice-2",
       messages("tai.incomes.warning.employment.radio1", employmentName),
       messages("tai.incomes.warning.employment.radio2")
     )
