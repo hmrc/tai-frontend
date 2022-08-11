@@ -37,8 +37,8 @@ class UpdateIncomeCYPlus1ConfirmViewSpec extends TaiViewSpec {
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink
-    behave like pageWithTitle(messages("tai.irregular.title"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithTitle(messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRange))
+    behave like pageWithCombinedHeaderNewFormat(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
       messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRange)
     )

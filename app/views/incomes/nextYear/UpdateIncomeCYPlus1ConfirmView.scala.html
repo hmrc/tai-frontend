@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 @import uk.gov.hmrc.tai.util.MonetaryUtil
 
-@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template)
+@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1TemplateNew)
 
 @(viewModel: ConfirmAmountEnteredViewModel
 )(implicit request: Request[_],
@@ -34,39 +34,38 @@
 @updateIncomeCYPlus1Template(
     employerName = viewModel.employerName,
     form = None,
-    title = messages("tai.irregular.title"),
     heading = messages("tai.incomes.confirm.save.heading", viewModel.yearRange),
     showCancel = false
 ){
 
-    <div class="section flush--bottom soft--ends">
+    <div>
 
-        <p>
+        <p class="govuk-body">
             @messages("tai.updateIncome.CYPlus1.confirm.paragraph")
-            <span class="tai-detail-large">
-            @MonetaryUtil.withPoundPrefix(viewModel.estimatedIncome)
+            <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                @MonetaryUtil.withPoundPrefix(viewModel.estimatedIncome)
             </span>
         </p>
-        <div class="panel panel-border-narrow">
-            <p>@messages("tai.updateIncome.CYPlus1.confirm.details.p1")</p>
-            <p>@messages("tai.updateIncome.CYPlus1.confirm.details.p2")</p>
+        <div class="govuk-details__text">
+            <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.confirm.details.p1")</p>
+            <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.confirm.details.p2")</p>
         </div>
 
     </div>
 
-    <div class="margin-bottom-large">
-        <p>
+    <div class="govuk-!-padding-top-5">
+        <p class="govuk-body">
             @messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom", toDisplayFormat(Some(TaxYear().next.start)))
         </p>
     </div>
 
-    <div class="margin-bottom-large">
-        <a id="confirmAndSend" class="button section" role="button" href="@viewModel.onConfirm">
+    <div class="govuk-!-padding-top-5">
+        <a id="confirmAndSend" class="govuk-button" role="button" href="@viewModel.onConfirm">
             @messages("tai.confirmAndSend")
         </a>
     </div>
 
-    <div>
+    <div class="govuk-body">
         <a href="@viewModel.onCancel">
             @messages("tai.cancel.noSave")
         </a>
