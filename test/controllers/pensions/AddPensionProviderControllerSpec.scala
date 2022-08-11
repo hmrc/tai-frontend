@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
-import views.html.CanWeContactByPhoneView
+import views.html.CanWeContactByPhoneViewWithBackLink
 import views.html.pensions._
 
 import scala.concurrent.duration._
@@ -182,7 +182,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.firstPay.pagetitle"))
-        doc.select("input[id=firstPayChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=firstPayChoice-2][checked]").size() mustBe 1
       }
 
       "the request has an authorised session and a previous value of 'Yes' is held in the cache" in {
@@ -202,7 +202,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.firstPay.pagetitle"))
-        doc.select("input[id=firstPayChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=firstPayChoice][checked]").size() mustBe 1
       }
 
       "redirect to the tax summary page if a value is missing from the cache " in {
@@ -476,7 +476,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberChoice-no][checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe ""
 
       }
@@ -497,7 +497,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberChoice-no][checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe ""
 
       }
@@ -515,7 +515,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberChoice-yes][checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe ""
       }
 
@@ -535,7 +535,7 @@ class AddPensionProviderControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberChoice-yes][checked]").size() mustBe 1
         doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe "123456789"
       }
     }
@@ -934,7 +934,7 @@ class AddPensionProviderControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[CanWeContactByPhoneView],
+        inject[CanWeContactByPhoneViewWithBackLink],
         inject[AddPensionConfirmationView],
         inject[AddPensionCheckYourAnswersView],
         inject[AddPensionNumberView],

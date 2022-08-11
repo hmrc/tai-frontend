@@ -51,7 +51,8 @@
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper"))
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url)
 ) {
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
@@ -65,6 +66,7 @@
                             legend = Some(
                                 HmrcPageHeadingLegend(
                                     content = Text(Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName)),
+                                    classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
                                     caption = HmrcSectionCaption(Text(messages("add.missing.employment"))))
                             )
                         )

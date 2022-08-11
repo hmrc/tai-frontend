@@ -32,9 +32,11 @@ class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
 
   "Add payroll number form page" must {
     behave like pageWithTitle(messages("tai.addPensionProvider.pensionNumber.pagetitle"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("add.missing.pension"),
-      messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
+      messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/pension-number")
     behave like pageWithYesNoRadioButton(
@@ -61,7 +63,7 @@ class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
           .withError(AddPensionProviderNumberForm.PayrollNumberChoice, noPayrollNumberChooseError)
         def view: Html = addPensionNumber(formWithErrors, pensionNumberViewModel)
 
-        val errorMessage = doc(view).select(".error-message").text
+        val errorMessage = doc(view).select(".govuk-error-message").text
         errorMessage mustBe expectedErrorMessage
       }
 
@@ -73,7 +75,7 @@ class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
           .withError(AddPensionProviderNumberForm.PayrollNumberEntry, noPayrollNumberChooseError)
         def view: Html = addPensionNumber(formWithErrors, pensionNumberViewModel)
 
-        val errorMessage = doc(view).select(".error-message").text
+        val errorMessage = doc(view).select(".govuk-error-message").text
         errorMessage mustBe expectedErrorMessage
       }
     }

@@ -14,11 +14,13 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import includes.compareValueInput
+@import includes.compareValueInputNew
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template, form: FormWithCSRF)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+
+@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1TemplateNew, form: FormWithCSRF, govukInput : GovukInput)
 
 @(employmentName: String, employmentId: Int, isPension: Boolean, currentValue: Int, incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
     implicit request: Request[_],
@@ -32,47 +34,46 @@
 @updateIncomeCYPlus1Template(
     employerName = employmentName,
     form = Some(incomeForm),
-    title = messages("tai.updateIncome.CYPlus1.edit.title"),
     heading = messages("tai.updateIncome.CYPlus1.edit.heading", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1)),
     cancelText = Some("Cancel")
 ){
 
     @if(!isPension) {
         <div>
-            <p>@messages("tai.incomes.edit.average.hours", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1))</p>
+            <p class="govuk-body">@messages("tai.incomes.edit.average.hours", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1))</p>
         </div>
-        <div class="panel panel-border-narrow">
-            <h2 class="heading-small">@messages("tai.incomes.edit.what.should.you.include")</h2>
-            <p>@messages("tai.incomes.edit.what.should.you.include.payments")</p>
-            <h2 class="heading-small">@messages("tai.incomes.edit.what.should.you.deduct")</h2>
-            <p>@messages("tai.incomes.edit.what.should.you.deduct.payments")</p>
+        <div class="govuk-details__text">
+            <h2 class="govuk-heading-s">@messages("tai.incomes.edit.what.should.you.include")</h2>
+            <p class="govuk-body">@messages("tai.incomes.edit.what.should.you.include.payments")</p>
+            <h2 class="govuk-heading-s">@messages("tai.incomes.edit.what.should.you.deduct")</h2>
+            <p class="govuk-body">@messages("tai.incomes.edit.what.should.you.deduct.payments")</p>
         </div>
     }
 
     <div>
         <br/>
-        <h2>@messages("tai.updateIncome.CYPlus1.edit.subheading", employmentName)</h2>
-        <p>@messages("tai.updateIncome.CYPlus1.edit.wholePounds")</p>
+        <h2 class="govuk-heading-m" >@messages("tai.updateIncome.CYPlus1.edit.subheading", employmentName)</h2>
+        <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.edit.wholePounds")</p>
     </div>
 
     @form(action = controllers.income.routes.UpdateIncomeNextYearController.update(employmentId)){
-    <div class="form-field-group @if(incomeForm.hasErrors) {form-group-error}">
-    @incomeForm.errors(incomeForm("income").name).map{ error =>
-        <span class="error-notification error-message" id="incomeFieldError">@messages(error.message)</span>
-    }
-        @compareValueInput(
-            previousLabel = messages("tai.incomes.amount.current"),
-            newLabel = messages("tai.incomes.amount.new"),
-            previousFieldName = "oldAmount",
-            previousFieldValue= currentValue.toString,
-            newField = incomeForm("income"),
-            attrDescribedBy = if(incomeForm.errors(incomeForm("income").name).nonEmpty){"incomeFieldError"}else{""},
-            fieldErrorsEnabled = incomeForm.errors(incomeForm("income").name).nonEmpty
-        )
-    </div>
+        <div class="form-field-group @if(incomeForm.hasErrors) {govuk-form-group govuk-form-group--error}">
+            @incomeForm.errors(incomeForm("income").name).map{ error =>
+                <span class="govuk-error-message" id="incomeFieldError">@messages(error.message)</span>
+            }
+            @compareValueInputNew(
+                govukInput,
+                previousLabel = messages("tai.incomes.amount.current"),
+                newLabel = messages("tai.incomes.amount.new"),
+                previousFieldName = "oldAmount",
+                previousFieldValue= currentValue.toString,
+                newField = incomeForm("income"),
+                attrDescribedBy = if(incomeForm.errors(incomeForm("income").name).nonEmpty){"incomeFieldError"}else{""},
+                fieldErrorsEnabled = incomeForm.errors(incomeForm("income").name).nonEmpty
+            )
+        </div>
 
-    <button class="button" type="submit" id="CYPlus1EditButton">@messages("tai.continue")</button>
-
+        <button class="govuk-button" type="submit" id="CYPlus1EditButton">@messages("tai.continue")</button>
     }
 }
 

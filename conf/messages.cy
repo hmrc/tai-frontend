@@ -364,7 +364,7 @@ tai.estimatedIncome.ukdividends.lessThanOrEqualToBasic=Mae’r £{0} cyntaf o in
 tai.estimatedIncome.ukdividends.moreThanBasic=Rydych yn talu {0} ar yr holl ddifidendau uwchlaw £{1}.
 tai.estimatedIncome.whyEstimate.desc=Mae swm y dreth a dalwch yn dibynnu ar gyfanswm eich incwm ar gyfer y flwyddyn dreth gyfan. Ni allwn roi union ffigur oherwydd ni fyddwn yn gwybod am eich holl incwm tan ar ôl i’r flwyddyn dreth ddod i ben ar {0}.
 tai.estimatedIncome.whyEstimate.link=Pam mai amcangyfrif yw hwn
-tai.estimatedIncome.confirmation.banner.heading=Dangosir diweddariad o fanylion eich incwm amcangyfrifedig yma ymhen 48 awr
+tai.estimatedIncome.confirmation.banner.heading=Bydd diweddariad o fanylion eich incwm amcangyfrifedig yn ymddangos yma ymhen 48 awr.
 tai.estimatedIncomeEarning.desc=Gallwch ennill {0} yn fwy cyn i chi gyrraedd haen treth.
 tai.estimatedIncomeLow.desc=Rydym yn amcangyfrif y byddwch yn ennill llai na’ch {0} o {1}, mae hyn yn golygu na ddylech dalu unrhyw Dreth Incwm ar eich enillion y flwyddyn hon.
 tai.estimatedIncomeTax.paperlessActivation.returnLinkText=Ewch i’r Dreth Incwm Amcangyfrifedig
@@ -573,6 +573,7 @@ tai.incomeTax.history.taxableIncome = Incwm trethadwy
 tai.incomeTax.history.incomeTaxPaid = Treth incwm a dalwyd
 tai.incomeTax.history.taxCode = Cod treth
 tai.incomeTax.history.unavailable = Ddim ar gael ar hyn o bryd
+tai.incomeTax.history.endDate.notApplicable = ddim yn gymwys
 
 tai.incomeTaxComparison.incomeSourceAbsent=Ddim ar gael
 tai.incomeTaxComparison.incomeTax.column1=yn dod i ben ar {0}

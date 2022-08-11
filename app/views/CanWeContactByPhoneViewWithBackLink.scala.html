@@ -48,9 +48,12 @@
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = incomingAuthedUser,
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(viewModel.backUrl)
+    backLinkUrl = Some(viewModel.backUrl),
+    backLinkId = "backLink"
 ) {
 
+@*TODO remove this whole file once the *@
+<script src="@controllers.routes.AssetsController.versioned("javascripts/tai-backlink.js")"></script>
 <div class = "govuk-grid-row">
     <div class = "govuk-grid-column-two-thirds">
         @if(yesNoForm.errors.nonEmpty) {

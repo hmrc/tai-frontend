@@ -16,12 +16,9 @@
 
 package controllers.pensions
 
-import cats.data.EitherT
-import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import java.time.LocalDate
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -37,11 +34,11 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Jour
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
-import views.html.CanWeContactByPhoneView
+import views.html.CanWeContactByPhoneViewWithBackLink
 import views.html.pensions._
 
+import java.time.LocalDate
 import javax.inject.{Inject, Named}
-import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
 import scala.util.control.NonFatal
@@ -53,7 +50,7 @@ class AddPensionProviderController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  can_we_contact_by_phone: CanWeContactByPhoneView,
+  can_we_contact_by_phone: CanWeContactByPhoneViewWithBackLink, //TODO remove once backLink issue is resolved
   addPensionConfirmationView: AddPensionConfirmationView,
   addPensionCheckYourAnswersView: AddPensionCheckYourAnswersView,
   addPensionNumber: AddPensionNumberView,

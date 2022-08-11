@@ -27,9 +27,13 @@ class EditSuccessViewSpec extends TaiViewSpec {
 
   "Edit Success Employment view" should {
     "contain the success heading" in {
-      doc(view) must haveHeadingWithText(
-        s"${htmlNonBroken(messages("tai.incomes.updated.check.heading"))} " +
-          s"${htmlNonBroken(messages("tai.incomes.updated.check.heading.pt2"))} " +
+      doc(view) must havePanelWithHeaderText(
+        messages("tai.incomes.updated.check.heading")
+      )
+    }
+    "contain the success body" in {
+      doc(view) must havePanelWithBodyText(
+        s"${htmlNonBroken(messages("tai.incomes.updated.check.heading.pt2"))} " +
           s"${htmlNonBroken(messages("tai.incomes.updated.check.heading.pt3"))}"
       )
     }

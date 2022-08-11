@@ -18,26 +18,37 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate)
+@import includes.confirmation_summary
+@import views.html.includes.confirmationSuccessBanner
+
+@this(main: MainTempleteNew)
 
 @()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
-@mainTemplate(
+@main(
 title = Messages("tai.income.previousYears.confirmation.heading"),
+pageTitle = Some(Messages("tai.service.navTitle")),
 authedUser = Some(user),
-articleClasses = None) {
+backLinkContent = None,
+) {
 
-<div class="transaction-banner--complete">
-    <h1 class="transaction-banner__heading">@Messages("tai.income.previousYears.confirmation.heading")</h1>
+<div class="govuk-grid-row">
+
+    <div class="govuk-grid-column-two-thirds">
+
+        @confirmationSuccessBanner()
+
+        @confirmation_summary("tai.confirmation.paraTwo")
+
+        @includes.link(
+        id=Some("returnToSummary"),
+        copy=Messages("return.to.your.income.tax.summary"),
+        url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
+        isButton=true,
+        linkClasses=Seq("govuk-button", "govuk-!-margin-top-4")
+        )
+
+    </div>
+
 </div>
-
-@confirmation_summary()
-
-@includes.link(
-  id=Some("returnToSummary"),
-  copy=Messages("return.to.your.income.tax.summary"),
-  url = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
-  linkClasses=Seq("button")
-)
-
 }

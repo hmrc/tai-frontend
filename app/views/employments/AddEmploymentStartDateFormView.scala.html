@@ -50,7 +50,8 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkContent = Some(Messages("tai.back-link.upper"))
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.employments.routes.AddEmploymentController.addEmploymentName().url)
    )  {
 
 
@@ -96,6 +97,7 @@
             fieldset =  Some(Fieldset(
                 legend = Some(HmrcPageHeadingLegend(
                     content = Text(messages("tai.addEmployment.startDateForm.title", employmentName)),
+                    classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
                     caption = HmrcSectionCaption(Text(messages("add.missing.employment"))))
                 )))),
             )

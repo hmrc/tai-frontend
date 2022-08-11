@@ -34,7 +34,7 @@ case class DuplicateSubmissionEmploymentViewModel(incomeName: String, newAmount:
   override val heading: String = messages("tai.incomes.warning.employment.heading", incomeName)
   override val paragraphOne: String = messages("tai.incomes.warning.employment.text1", formattedNewAmount, incomeName)
   override val optionOne: String =
-    messages("tai.incomes.warning.employment.radio1", <span class="carry-over">{incomeName}</span>)
+    messages("tai.incomes.warning.employment.radio1", { incomeName })
   override val optionTwo: String = messages("tai.incomes.warning.employment.radio2", incomeName)
 }
 
