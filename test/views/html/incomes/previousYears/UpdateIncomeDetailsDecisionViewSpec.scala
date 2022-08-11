@@ -33,15 +33,16 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(
       messages("tai.income.previousYears.decision.title", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.income.previousYears.journey.preHeader"),
-      messages("tai.income.previousYears.decision.header", TaxPeriodLabelService.taxPeriodLabel(taxYear.year))
+      messages("tai.income.previousYears.decision.header", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
     behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(taxYear))
     behave like pageWithYesNoRadioButton(
-      UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice + "-yes",
-      UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice + "-no",
+      UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice,
+      UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice + "-2",
       messages("tai.income.previousYears.decision.radio.yes"),
       messages("tai.income.previousYears.decision.radio.no")
     )
@@ -49,10 +50,8 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
 
   }
 
-  "display 'I want to:' legend" in {
-    doc must haveElementAtPathWithText(
-      "form fieldset legend span",
-      messages("tai.income.previousYears.decision.IWantTo")) // haveH2HeadingWithText(messages("tai.income.previousYears.decision.IWantTo"))
+  "display 'I want to:' h2" in {
+    doc must haveH2HeadingWithText(messages("tai.income.previousYears.decision.IWantTo"))
   }
 
   "display paragraphs" in {
@@ -66,14 +65,14 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
       val errorView: HtmlFormat.Appendable = UpdateIncomeDetailsDecision(formWithErrors, taxYear)
       doc(errorView) must haveClassWithText(
         messages("tai.error.message") + " " + messages("tai.income.previousYears.decision.error"),
-        "error-message")
+        "govuk-error-message")
     }
   }
 
   "display error message" when {
     "a decision has not been made" in {
       val view: HtmlFormat.Appendable = UpdateIncomeDetailsDecision(formWithErrors, taxYear)
-      doc(view) must haveErrorLinkWithText(messages("tai.income.previousYears.decision.error"))
+      doc(view) must haveErrorLinkWithTextNew(messages("tai.income.previousYears.decision.error"))
     }
   }
 
