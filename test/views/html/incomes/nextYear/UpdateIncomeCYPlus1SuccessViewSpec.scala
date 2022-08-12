@@ -29,8 +29,14 @@ class UpdateIncomeCYPlus1SuccessViewSpec extends TaiViewSpec {
 
   "CYPlus1 Success Page" should {
     "contain the success heading" in {
-      doc(view).getElementsByTag("h1").text must include(
-        s"${messages("tai.updateIncome.CYPlus1.success.heading.p1")} ${messages("tai.updateIncome.CYPlus1.success.heading.p2")}"
+      doc(view) must havePanelWithHeaderText(
+        messages("tai.updateIncome.CYPlus1.success.heading.p1")
+      )
+    }
+
+    "contain the success body" in {
+      doc(view) must havePanelWithBodyText(
+        messages("tai.updateIncome.CYPlus1.success.heading.p2")
       )
     }
 

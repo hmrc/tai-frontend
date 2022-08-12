@@ -15,8 +15,10 @@
  *@
 
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.tai.util.ViewModelHelper.htmlNonBroken
 
-@this(mainTemplate: MainTemplate)
+@this(main: MainTempleteNew, govukPanel: GovukPanel, govukButton: GovukButton)
 
 @(employmentName: String, isPension: Boolean)(
     implicit request: Request[_],
@@ -26,39 +28,32 @@
     ec: scala.concurrent.ExecutionContext
 )
 
-
-@mainTemplate(
+@main(
     title = messages("tai.updateIncome.CYPlus1.success.title", TaxYearRangeUtil.futureTaxYearRange(1)),
-    articleClasses = Some("full-width"),
     authedUser = Some(user),
-    employerName = Some(employmentName)
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent = None
 ){
-<div class="column-two-thirds">
-    <header class="grid-row margin-bottom-large">
-        <div class="govuk-box-highlight">
-            <h1 class="heading-large" id="currentYearTitle">
-                @messages("tai.updateIncome.CYPlus1.success.heading.p1")
-                <br/>
-                @messages("tai.updateIncome.CYPlus1.success.heading.p2")
-            </h1>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @govukPanel(Panel(
+                title = Text(messages("tai.updateIncome.CYPlus1.success.heading.p1")),
+                content = HtmlContent(messages("tai.updateIncome.CYPlus1.success.heading.p2"))
+            ))
+
+            <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.success.p1")</p>
+            <p class="govuk-body">
+                @if(isPension) {
+                    @messages("tai.updateIncome.CYPlus1.success.pension.p2", employmentName)
+                } else {
+                    @messages("tai.updateIncome.CYPlus1.success.employment.p2", employmentName)
+                }
+            </p>
+
+            @govukButton(Button(
+                href = Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url.toString),
+                content = Text(messages("tai.returnToIncomeTaxSummary"))
+            ))
         </div>
-    </header>
-
-    <div class="grid-row">
-       <p>@messages("tai.updateIncome.CYPlus1.success.p1")</p>
-        @if(isPension) {
-            <p>@messages("tai.updateIncome.CYPlus1.success.pension.p2", employmentName)</p>
-        } else {
-            <p>@messages("tai.updateIncome.CYPlus1.success.employment.p2", employmentName)</p>
-        }
-
-        <p>
-        @includes.link(
-            copy=messages("tai.returnToIncomeTaxSummary"),
-            url = controllers.routes.IncomeTaxComparisonController.onPageLoad.url.toString,
-            isButton=true
-        )
-        </p>
     </div>
-</div>
 }
