@@ -85,7 +85,8 @@ class CompanyBenefitController @Inject()(
           val viewModel = CompanyBenefitDecisionViewModel(
             currentCache(EndCompanyBenefit_BenefitTypeKey),
             employment.name,
-            form
+            form,
+            employment.sequenceNumber
           )
 
           val cache = Map(
@@ -127,7 +128,9 @@ class CompanyBenefitController @Inject()(
           val viewModel = CompanyBenefitDecisionViewModel(
             currentCache(EndCompanyBenefit_BenefitTypeKey),
             currentCache(EndCompanyBenefit_EmploymentNameKey),
-            formWithErrors)
+            formWithErrors,
+            currentCache(EndCompanyBenefit_EmploymentIdKey).toInt
+          )
           BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel))
         }
       },

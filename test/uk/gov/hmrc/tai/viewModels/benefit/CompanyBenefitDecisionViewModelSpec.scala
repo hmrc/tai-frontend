@@ -26,7 +26,7 @@ class CompanyBenefitDecisionViewModelSpec extends BaseSpec {
       val benefitType = "NonCashBenefit"
       val formattedBenefitName = "Non-cash"
       val viewModel =
-        CompanyBenefitDecisionViewModel(benefitType, employerName, UpdateOrRemoveCompanyBenefitDecisionForm.form)
+        CompanyBenefitDecisionViewModel(benefitType, employerName, UpdateOrRemoveCompanyBenefitDecisionForm.form, 1)
 
       viewModel.benefitName mustBe formattedBenefitName
     }
@@ -35,7 +35,7 @@ class CompanyBenefitDecisionViewModelSpec extends BaseSpec {
       val benefitType = "ServiceBenefit"
       val formattedBenefitName = "Service"
       val viewModel =
-        CompanyBenefitDecisionViewModel(benefitType, employerName, UpdateOrRemoveCompanyBenefitDecisionForm.form)
+        CompanyBenefitDecisionViewModel(benefitType, employerName, UpdateOrRemoveCompanyBenefitDecisionForm.form, 1)
 
       viewModel.benefitName mustBe formattedBenefitName
 

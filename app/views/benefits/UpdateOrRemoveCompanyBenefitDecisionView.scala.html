@@ -32,7 +32,9 @@
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName,viewModel.employerName),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper"))
+    backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employerId).url)
 ){
 <div class = "govuk-grid-row">
     <div class = "govuk-grid-column-two-thirds">

@@ -34,7 +34,9 @@ class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
       messages("tai.benefits.updateOrRemove.decision.heading", benefitType, employerName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
-    behave like pageWithBackLinkNew
+    behave like haveLinkWithUrlWithID(
+      "backLink",
+      controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employerId).url)
     behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
     behave like pageWithContinueButtonFormNew(s"/check-income-tax/company-benefit/decision")
 
@@ -73,8 +75,8 @@ class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
   private lazy val benefitType = "Expenses"
   private lazy val employerName = "EmployerA"
   private lazy val viewModel =
-    CompanyBenefitDecisionViewModel(benefitType, employerName, UpdateOrRemoveCompanyBenefitDecisionForm.form)
-  private lazy val viewModelWithErrors = CompanyBenefitDecisionViewModel(benefitType, employerName, formWithErrors)
+    CompanyBenefitDecisionViewModel(benefitType, employerName, UpdateOrRemoveCompanyBenefitDecisionForm.form, 1)
+  private lazy val viewModelWithErrors = CompanyBenefitDecisionViewModel(benefitType, employerName, formWithErrors, 1)
 
   override def view: Html = updateOrRemoveCompanyBenefitDecision(viewModel)
 }
