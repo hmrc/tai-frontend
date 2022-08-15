@@ -38,7 +38,8 @@
     title = Messages("tai.checkYourAnswers.title"),
     authedUser = Some(user),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkContent = Some(Messages("tai.back-link.upper"))
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber.toString)
 ) {
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
