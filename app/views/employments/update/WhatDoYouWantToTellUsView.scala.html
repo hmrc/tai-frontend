@@ -55,7 +55,8 @@
     title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.pagetitle"),
     authedUser = Some(user),
     backLinkId = "backLink",
-    backLinkContent = Some(Messages("tai.back-link.upper"))
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.toString)
     ) {
 
 
