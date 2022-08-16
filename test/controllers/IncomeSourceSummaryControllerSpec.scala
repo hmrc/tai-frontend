@@ -18,31 +18,39 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import java.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{times, verify, when}
+import org.mockito.{Matchers, Mockito}
+import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.constants.TaiConstants.updateIncomeConfirmedAmountKey
 import utils.BaseSpec
 import views.html.IncomeSourceSummaryView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
-class IncomeSourceSummaryControllerSpec extends BaseSpec {
+class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach {
+
+  override def beforeEach(): Unit =
+    Mockito.reset(journeyCacheService)
 
   val employmentId = 1
   val pensionId = 2
+  val cacheKeyEmployment = s"$updateIncomeConfirmedAmountKey-$employmentId"
+  val cacheKeyPension = s"$updateIncomeConfirmedAmountKey-$pensionId"
 
   "onPageLoad" must {
     "display the income details page" when {
@@ -53,6 +61,8 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(employmentId.toString))(any()))
           .thenReturn(Future.successful(true))
+        when(journeyCacheService.currentValueAsInt(Matchers.eq(cacheKeyEmployment))(any())) thenReturn Future
+          .successful(None)
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -70,6 +80,8 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(pensionId.toString))(any()))
           .thenReturn(Future.successful(true))
+        when(journeyCacheService.currentValueAsInt(Matchers.eq(cacheKeyPension))(any())) thenReturn (Future
+          .successful(None))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -100,6 +112,69 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "flush the cache" when {
+      "cache update amount is the same as the HOD amount" in {
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(employmentId.toString))(any()))
+          .thenReturn(Future.successful(true))
+        when(journeyCacheService.currentValueAsInt(Matchers.eq(cacheKeyEmployment))(any())) thenReturn Future
+          .successful(Some(1111))
+        when(journeyCacheService.flushWithEmpId(Matchers.eq(employmentId))(any())) thenReturn (Future.successful(
+          TaiSuccessResponse))
+
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(
+          Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange))
+        verify(journeyCacheService, times(1)).flushWithEmpId(Matchers.eq(employmentId))(any())
+      }
+    }
+    "display the income details page with an update message" when {
+      "update is in progress for employment as cache update amount is different to the HOD amount" in {
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(employmentId.toString))(any()))
+          .thenReturn(Future.successful(true))
+        when(journeyCacheService.currentValueAsInt(Matchers.eq(cacheKeyEmployment))(any())) thenReturn Future
+          .successful(Some(3333))
+
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.toString must include(Messages("tai.income.details.updateInProgress"))
+        verify(journeyCacheService, times(0)).flush()(any())
+      }
+    }
+    "display the income details page with an update message" when {
+      "update is in progress for pension as cache update amount is different to the HOD amount" in {
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(pensionId.toString))(any()))
+          .thenReturn(Future.successful(true))
+        when(journeyCacheService.currentValueAsInt(Matchers.eq(cacheKeyPension))(any())) thenReturn (Future
+          .successful(Some(3333)))
+
+        val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.toString must include(Messages("tai.income.details.updateInProgress"))
       }
     }
   }
@@ -140,9 +215,11 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
     mock[EstimatedPayJourneyCompletionService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   def sut = new IncomeSourceSummaryController(
     mock[AuditConnector],
+    journeyCacheService,
     taxAccountService,
     employmentService,
     benefitsService,

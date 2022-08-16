@@ -89,57 +89,61 @@ class IncomeUpdateEstimatedPayController @Inject()(
     }
   }
 
-  private def isCachedAmountSameAsEnteredAmount(cache: Map[String, String], newAmount: Option[BigDecimal]): Boolean =
-    FormHelper.areEqual(cache.get(UpdateIncome_ConfirmedNewAmountKey), newAmount map (_.toString()))
+  private def isCachedAmountSameAsEnteredAmount(
+    cache: Map[String, String],
+    newAmount: Option[BigDecimal],
+    empId: Int): Boolean =
+    FormHelper.areEqual(cache.get(s"$UpdateIncome_ConfirmedNewAmountKey-$empId"), newAmount map (_.toString()))
 
-  def estimatedPayPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    val nino = user.nino
+  def estimatedPayPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      val nino = user.nino
 
-    val employerFuture = IncomeSource.create(journeyCacheService)
+      val employerFuture = IncomeSource.create(journeyCacheService)
 
-    val result = for {
-      incomeSource  <- OptionT(employerFuture.map(_.toOption))
-      income        <- OptionT.liftF(incomeService.employmentAmount(nino, incomeSource.id))
-      cache         <- OptionT.liftF(journeyCacheService.currentCache)
-      calculatedPay <- OptionT.liftF(incomeService.calculateEstimatedPay(cache, income.startDate))
-      payment       <- OptionT.liftF(incomeService.latestPayment(nino, incomeSource.id))
-    } yield {
+      val result = for {
+        incomeSource  <- OptionT(employerFuture.map(_.toOption))
+        income        <- OptionT.liftF(incomeService.employmentAmount(nino, incomeSource.id))
+        cache         <- OptionT.liftF(journeyCacheService.currentCache)
+        calculatedPay <- OptionT.liftF(incomeService.calculateEstimatedPay(cache, income.startDate))
+        payment       <- OptionT.liftF(incomeService.latestPayment(nino, incomeSource.id))
+      } yield {
 
-      val payYearToDate: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
-      val paymentDate: Option[LocalDate] = payment.map(_.date)
+        val payYearToDate: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
+        val paymentDate: Option[LocalDate] = payment.map(_.date)
 
-      calculatedPay.grossAnnualPay match {
-        case newAmount if isCachedAmountSameAsEnteredAmount(cache, newAmount) =>
-          Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache()))
-        case Some(newAmount) if newAmount > payYearToDate =>
-          val cache = Map(
-            UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
-            UpdateIncome_NewAmountKey      -> calculatedPay.netAnnualPay.map(_.toString).getOrElse("")
-          )
+        calculatedPay.grossAnnualPay match {
+          case newAmount if isCachedAmountSameAsEnteredAmount(cache, newAmount, empId) =>
+            Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(empId)))
+          case Some(newAmount) if newAmount > payYearToDate =>
+            val cache = Map(
+              UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
+              UpdateIncome_NewAmountKey      -> calculatedPay.netAnnualPay.map(_.toString).getOrElse("")
+            )
 
-          val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
+            val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
 
-          journeyCache(cacheMap = cache) map { _ =>
-            val viewModel = EstimatedPayViewModel(
-              calculatedPay.grossAnnualPay,
-              calculatedPay.netAnnualPay,
-              isBonusPayment,
-              calculatedPay.annualAmount,
-              calculatedPay.startDate,
-              incomeSource)
+            journeyCache(cacheMap = cache) map { _ =>
+              val viewModel = EstimatedPayViewModel(
+                calculatedPay.grossAnnualPay,
+                calculatedPay.netAnnualPay,
+                isBonusPayment,
+                calculatedPay.annualAmount,
+                calculatedPay.startDate,
+                incomeSource)
 
-            Ok(estimatedPay(viewModel))
-          }
-        case _ =>
-          Future.successful(
-            Ok(incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(LocalDate.now), incomeSource.id)))
+              Ok(estimatedPay(viewModel))
+            }
+          case _ =>
+            Future.successful(
+              Ok(incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(LocalDate.now), incomeSource.id)))
+        }
       }
-    }
 
-    result.value.map(_.sequence).flatMap(identity).map {
-      case Some(result) => result
-      case None         => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-    }
+      result.value.flatMap(_.sequence).map {
+        case Some(result) => result
+        case None         => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      }
   }
 }

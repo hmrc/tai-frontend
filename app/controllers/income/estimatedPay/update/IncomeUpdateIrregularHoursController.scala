@@ -96,7 +96,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
       val collectedValues = journeyCacheService
         .collectedJourneyValues(
           Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_PayToDateKey),
-          Seq(UpdateIncome_ConfirmedNewAmountKey))
+          Seq(s"$UpdateIncome_ConfirmedNewAmountKey-$employmentId"))
         .getOrFail
 
       (for {
@@ -106,7 +106,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
         val confirmedNewAmount = optionalCache.head
 
         if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
-          Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache())
+          Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(employmentId))
         } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
           Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
         } else {
@@ -155,7 +155,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
       }
 
       val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) => {
-        journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newPay) map { _ =>
+        journeyCacheService.cache(s"$UpdateIncome_ConfirmedNewAmountKey-$employmentId", newPay) map { _ =>
           Ok(editSuccess(incomeName, incomeId.toInt))
         }
       }

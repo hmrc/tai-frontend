@@ -67,7 +67,7 @@
             }
 
             @header
-    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitDuplicateSubmissionWarning) {
+    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitDuplicateSubmissionWarning(empId)) {
     <div class="form-group">
 
         <p class="govuk-body">@viewModel.paragraphOne</p>

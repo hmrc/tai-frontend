@@ -40,7 +40,8 @@ case class IncomeSourceSummaryViewModel(
   estimatedPayJourneyCompleted: Boolean,
   rtiAvailable: Boolean,
   taxDistrctNumber: String,
-  payeNumber: String)
+  payeNumber: String,
+  isUpdateInProgress: Boolean = false)
     extends ViewModelHelper {
   def startOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().start)
 
@@ -56,7 +57,8 @@ object IncomeSourceSummaryViewModel {
     benefits: Benefits,
     estimatedPayJourneyCompleted: Boolean,
     rtiAvailable: Boolean,
-    applicationConfig: ApplicationConfig)(implicit messages: Messages): IncomeSourceSummaryViewModel = {
+    applicationConfig: ApplicationConfig,
+    cacheUpdatedIncomeAmount: Option[Int])(implicit messages: Messages): IncomeSourceSummaryViewModel = {
     val amountYearToDate = for {
       latestAnnualAccount <- employment.latestAnnualAccount
       latestPayment       <- latestAnnualAccount.latestPayment
@@ -69,6 +71,11 @@ object IncomeSourceSummaryViewModel {
     val benefitVMs = companyBenefitViewModels(empId, benefits, applicationConfig)
     val displayAddCompanyCar =
       !benefitVMs.map(_.name).contains(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
+
+    val isUpdateInProgress = cacheUpdatedIncomeAmount match {
+      case Some(cacheUpdateAMount) => cacheUpdateAMount != taxCodeIncomeSource.amount.toInt
+      case None                    => false
+    }
 
     IncomeSourceSummaryViewModel(
       empId,
@@ -84,7 +91,8 @@ object IncomeSourceSummaryViewModel {
       estimatedPayJourneyCompleted,
       rtiAvailable,
       employment.taxDistrictNumber,
-      employment.payeNumber
+      employment.payeNumber,
+      isUpdateInProgress
     )
   }
 

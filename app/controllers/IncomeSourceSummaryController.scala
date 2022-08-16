@@ -16,21 +16,25 @@
 
 package controllers
 
+import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
+import uk.gov.hmrc.tai.util.constants.TaiConstants.updateIncomeConfirmedAmountKey
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
 
@@ -39,6 +43,7 @@ import scala.util.control.NonFatal
 
 class IncomeSourceSummaryController @Inject()(
   val auditConnector: AuditConnector,
+  @Named("Update Income") journeyCacheService: JourneyCacheService,
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   benefitsService: BenefitsService,
@@ -55,11 +60,15 @@ class IncomeSourceSummaryController @Inject()(
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
 
+    val cacheUpdatedIncomeAmountFuture =
+      journeyCacheService.currentValueAsInt(s"$updateIncomeConfirmedAmountKey-$empId")
+
     (for {
-      taxCodeIncomeDetails   <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-      employmentDetails      <- employmentService.employment(nino, empId)
-      benefitsDetails        <- benefitsService.benefits(nino, TaxYear().year)
-      estimatedPayCompletion <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
+      taxCodeIncomeDetails     <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+      employmentDetails        <- employmentService.employment(nino, empId)
+      benefitsDetails          <- benefitsService.benefits(nino, TaxYear().year)
+      estimatedPayCompletion   <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
+      cacheUpdatedIncomeAmount <- cacheUpdatedIncomeAmountFuture
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
@@ -73,8 +82,13 @@ class IncomeSourceSummaryController @Inject()(
             benefitsDetails,
             estimatedPayCompletion,
             rtiAvailable,
-            applicationConfig
+            applicationConfig,
+            cacheUpdatedIncomeAmount
           )
+
+          if (!incomeDetailsViewModel.isUpdateInProgress) {
+            journeyCacheService.flushWithEmpId(empId)
+          }
 
           Ok(incomeSourceSummary(incomeDetailsViewModel))
         case _ => errorPagesHandler.internalServerError("Error while fetching income summary details")

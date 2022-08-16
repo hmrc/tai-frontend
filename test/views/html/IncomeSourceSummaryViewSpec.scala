@@ -69,6 +69,28 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       }
     }
 
+    "display update message" when {
+      "update is in progress and income source is employment" in {
+        docWithUpdateInProgressEmployment must haveParagraphWithText(
+          messages("tai.employment.income.details.updateLinkText", "Employer"))
+        docWithUpdateInProgressEmployment must haveLinkWithUrlWithID(
+          "updateEmployer",
+          controllers.employments.routes.EndEmploymentController
+            .onPageLoad(modelWithUpdateInProgressEmployment.empId)
+            .url)
+      }
+
+      "update is in progress and income source is pension" in {
+        docWithUpdateInProgressPension must haveParagraphWithText(
+          messages("tai.pension.income.details.updateLinkText", "Pension"))
+        docWithUpdateInProgressPension must haveLinkWithUrlWithID(
+          "updatePension",
+          controllers.pensions.routes.UpdatePensionProviderController
+            .UpdatePension(modelWithUpdateInProgressPension.empId)
+            .url)
+      }
+    }
+
     "display estimated income details" when {
       "income source is employment" in {
         doc must haveHeadingH2WithText(messages("tai.income.details.estimatedTaxableIncome"))
@@ -78,6 +100,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         doc must haveLinkWithUrlWithID(
           "updateIncome",
           controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url)
+        doc mustNot haveParagraphWithText(messages("tai.income.details.updateInProgress"))
       }
 
       "income source is pension" in {
@@ -88,6 +111,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         pensionDoc must haveLinkWithUrlWithID(
           "updateIncome",
           controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url)
+        doc mustNot haveParagraphWithText(messages("tai.income.details.updateInProgress"))
+
       }
     }
 
@@ -273,7 +298,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     }
 
     "display an estimated pay update confirmation banner when the journey has been successfully completed" in {
-      doc must haveParagraphWithText(messages("tai.estimatedIncome.confirmation.banner.heading"))
+      docWithUpdateInProgressEmployment must haveParagraphWithText(
+        messages("tai.estimatedIncome.confirmation.banner.heading"))
     }
 
   }
@@ -287,11 +313,44 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "1100L",
     "EMPLOYER-1122",
     false,
-    estimatedPayJourneyCompleted = true,
+    estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrctNumber = "123",
     payeNumber = "AB12345"
   )
+
+  private lazy val modelWithUpdateInProgressEmployment = IncomeSourceSummaryViewModel(
+    1,
+    "User Name",
+    "Employer",
+    100,
+    400,
+    "1100L",
+    "EMPLOYER-1122",
+    false,
+    estimatedPayJourneyCompleted = true,
+    rtiAvailable = true,
+    taxDistrctNumber = "123",
+    payeNumber = "AB12345",
+    isUpdateInProgress = true
+  )
+
+  private lazy val modelWithUpdateInProgressPension = IncomeSourceSummaryViewModel(
+    1,
+    "User Name",
+    "Pension",
+    100,
+    400,
+    "1100L",
+    "PENSION-1122",
+    true,
+    estimatedPayJourneyCompleted = true,
+    rtiAvailable = true,
+    taxDistrctNumber = "123",
+    payeNumber = "AB12345",
+    isUpdateInProgress = true
+  )
+
   private lazy val companyBenefits = Seq(
     CompanyBenefitViewModel("ben1", BigDecimal(100.20), "url1"),
     CompanyBenefitViewModel("ben2", BigDecimal(3002.23), "url2"),
@@ -307,7 +366,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "1100L",
     "PENSION-1122",
     true,
-    estimatedPayJourneyCompleted = true,
+    estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrctNumber = "123",
     payeNumber = "AB12345"
@@ -320,4 +379,9 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
   override def view: Html = template(model)
 
   def pensionView: Html = template(pensionModel)
+
+  def viewWithUpdateInProgressEmployment: Html = template(modelWithUpdateInProgressEmployment)
+  def viewWithUpdateInProgressPension: Html = template(modelWithUpdateInProgressPension)
+  val docWithUpdateInProgressEmployment = Jsoup.parse(viewWithUpdateInProgressEmployment.toString())
+  val docWithUpdateInProgressPension = Jsoup.parse(viewWithUpdateInProgressPension.toString())
 }

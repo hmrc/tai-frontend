@@ -110,4 +110,6 @@ object TaiConstants {
   val CurrentTaxYearPlusOne = "currentTaxYearPlusOne"
 
   val HigherRateBandIncome = 150000
+
+  val updateIncomeConfirmedAmountKey = "updateIncomeConfirmedAmountKey"
 }

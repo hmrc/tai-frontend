@@ -53,6 +53,22 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     payeNumber = "GA82452"
   )
 
+  val expectedPensionVmUpdateInProgress = IncomeSourceSummaryViewModel(
+    1,
+    "User Name",
+    "Pension",
+    100,
+    400,
+    "1100L",
+    "PENSION-1122",
+    true,
+    estimatedPayJourneyCompleted = false,
+    rtiAvailable = true,
+    taxDistrctNumber = "475",
+    payeNumber = "GA82452",
+    isUpdateInProgress = true
+  )
+
   val expectedEmploymentViewModel = IncomeSourceSummaryViewModel(
     1,
     "User Name",
@@ -68,12 +84,37 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     payeNumber = "AB12345"
   )
 
+  val expectedEmploymentVmUpdateInProgress = IncomeSourceSummaryViewModel(
+    1,
+    "User Name",
+    "Employer",
+    100,
+    400,
+    "1100L",
+    "EMPLOYER-1122",
+    false,
+    estimatedPayJourneyCompleted = false,
+    rtiAvailable = true,
+    taxDistrctNumber = "123",
+    payeNumber = "AB12345",
+    isUpdateInProgress = true
+  )
+
   def createViewModel(
     taxCodeIncomeSources: Seq[TaxCodeIncome],
     employment: Employment,
     benefits: Benefits,
     empId: Int = 1): IncomeSourceSummaryViewModel =
-    IncomeSourceSummaryViewModel(empId, "User Name", taxCodeIncomeSources, employment, benefits, false, true, appConfig)
+    IncomeSourceSummaryViewModel(
+      empId,
+      "User Name",
+      taxCodeIncomeSources,
+      employment,
+      benefits,
+      false,
+      true,
+      appConfig,
+      None)
 
   "IncomeSourceSummaryViewModel apply method" must {
     "return pension details" when {
@@ -394,6 +435,200 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
         val benefits = Benefits(companyCars, Seq.empty[GenericBenefit])
         val model = createViewModel(taxCodeIncomeSources, employment, benefits)
         model.displayAddCompanyCarLink mustBe false
+      }
+    }
+    "generate a view model with isUpdateInProgress set to true" when {
+      "update is in progress for employment as the taxCodeIncomeSource amount is different to the cache amount" in {
+
+        def createViewModel(
+          taxCodeIncomeSources: Seq[TaxCodeIncome],
+          employment: Employment,
+          benefits: Benefits,
+          empId: Int = 1): IncomeSourceSummaryViewModel =
+          IncomeSourceSummaryViewModel(
+            empId,
+            "User Name",
+            taxCodeIncomeSources,
+            employment,
+            benefits,
+            false,
+            true,
+            appConfig,
+            Some(300))
+
+        val taxCodeIncomeSources = Seq(
+          TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", OtherBasisOfOperation, Live),
+          TaxCodeIncome(EmploymentIncome, Some(2), 100, "Test", "100L", "Employer2", OtherBasisOfOperation, Live)
+        )
+
+        val employment = Employment(
+          "test employment",
+          Live,
+          Some("EMPLOYER-1122"),
+          LocalDate.now(),
+          None,
+          Seq(annualAccount),
+          "123",
+          "AB12345",
+          2,
+          None,
+          false,
+          false)
+
+        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+
+        model mustBe expectedEmploymentVmUpdateInProgress
+      }
+
+      "update is in progress for pension as the taxCodeIncomeSource amount is different to the cache amount" in {
+
+        def createViewModel(
+          taxCodeIncomeSources: Seq[TaxCodeIncome],
+          employment: Employment,
+          benefits: Benefits,
+          empId: Int = 1): IncomeSourceSummaryViewModel =
+          IncomeSourceSummaryViewModel(
+            empId,
+            "User Name",
+            taxCodeIncomeSources,
+            employment,
+            benefits,
+            false,
+            true,
+            appConfig,
+            Some(300))
+
+        val taxCodeIncomeSources = Seq(
+          TaxCodeIncome(PensionIncome, Some(1), 100, "Test", "1100L", "Pension", Week1Month1BasisOfOperation, Live),
+          TaxCodeIncome(PensionIncome, Some(2), 100, "Test", "100L", "Pension2", Week1Month1BasisOfOperation, Live)
+        )
+
+        val employment = Employment(
+          "test employment",
+          Live,
+          Some("PENSION-1122"),
+          LocalDate.now(),
+          None,
+          Seq(annualAccount),
+          "475",
+          "GA82452",
+          2,
+          None,
+          false,
+          false)
+
+        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+
+        model mustBe expectedPensionVmUpdateInProgress
+      }
+    }
+
+    "generate a view model with isUpdateInProgress set to false" when {
+      "update is not in progress for employment as the taxCodeIncomeSource amount is the same as the cache amount" in {
+
+        def createViewModel(
+          taxCodeIncomeSources: Seq[TaxCodeIncome],
+          employment: Employment,
+          benefits: Benefits,
+          empId: Int = 1): IncomeSourceSummaryViewModel =
+          IncomeSourceSummaryViewModel(
+            empId,
+            "User Name",
+            taxCodeIncomeSources,
+            employment,
+            benefits,
+            false,
+            true,
+            appConfig,
+            Some(100))
+
+        val taxCodeIncomeSources = Seq(
+          TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", OtherBasisOfOperation, Live),
+          TaxCodeIncome(EmploymentIncome, Some(2), 100, "Test", "100L", "Employer2", OtherBasisOfOperation, Live)
+        )
+
+        val employment = Employment(
+          "test employment",
+          Live,
+          Some("EMPLOYER-1122"),
+          LocalDate.now(),
+          None,
+          Seq(annualAccount),
+          "123",
+          "AB12345",
+          2,
+          None,
+          false,
+          false)
+
+        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+
+        model mustBe expectedEmploymentViewModel
+      }
+      "update is not in progress for pension as the taxCodeIncomeSource amount is the same as the cache amount" in {
+        def createViewModel(
+          taxCodeIncomeSources: Seq[TaxCodeIncome],
+          employment: Employment,
+          benefits: Benefits,
+          empId: Int = 1): IncomeSourceSummaryViewModel =
+          IncomeSourceSummaryViewModel(
+            empId,
+            "User Name",
+            taxCodeIncomeSources,
+            employment,
+            benefits,
+            false,
+            true,
+            appConfig,
+            Some(100))
+
+        val taxCodeIncomeSources = Seq(
+          TaxCodeIncome(PensionIncome, Some(1), 100, "Test", "1100L", "Pension", Week1Month1BasisOfOperation, Live),
+          TaxCodeIncome(PensionIncome, Some(2), 100, "Test", "100L", "Pension2", Week1Month1BasisOfOperation, Live)
+        )
+
+        val employment = Employment(
+          "test employment",
+          Live,
+          Some("PENSION-1122"),
+          LocalDate.now(),
+          None,
+          Seq(annualAccount),
+          "475",
+          "GA82452",
+          2,
+          None,
+          false,
+          false)
+
+        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+
+        model mustBe expectedPenisonViewModel
+
+      }
+      "cacheUpdatedIncomeAmount is a None" in {
+        val taxCodeIncomeSources = Seq(
+          TaxCodeIncome(PensionIncome, Some(1), 100, "Test", "1100L", "Pension", Week1Month1BasisOfOperation, Live),
+          TaxCodeIncome(PensionIncome, Some(2), 100, "Test", "100L", "Pension2", Week1Month1BasisOfOperation, Live)
+        )
+
+        val employment = Employment(
+          "test employment",
+          Live,
+          Some("PENSION-1122"),
+          LocalDate.now(),
+          None,
+          Seq(annualAccount),
+          "475",
+          "GA82452",
+          2,
+          None,
+          false,
+          false)
+
+        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+
+        model mustBe expectedPenisonViewModel
       }
     }
   }
