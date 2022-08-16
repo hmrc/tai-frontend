@@ -29,7 +29,8 @@
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.employment.decision.legend", employmentName),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper"))) {
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).toString)) {
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
