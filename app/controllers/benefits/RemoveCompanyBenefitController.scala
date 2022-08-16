@@ -88,9 +88,14 @@ class RemoveCompanyBenefitController @Inject()(
           }
       }, {
         case Some(BeforeTaxYearEnd) =>
-          journeyCacheService.cache(EndCompanyBenefit_BenefitStopDateKey, BeforeTaxYearEnd) map { _ =>
-            Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber())
-          }
+          
+          for {
+            current <- journeyCacheService.currentCache
+            _ <- journeyCacheService.flush()
+            filtered = current.filterKeys(_ != EndCompanyBenefit_BenefitValueKey)
+            _ <- journeyCacheService.cache(filtered ++ Map(EndCompanyBenefit_BenefitStopDateKey -> BeforeTaxYearEnd))
+          } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber())
+
         case Some(OnOrAfterTaxYearEnd) =>
           journeyCacheService.cache(EndCompanyBenefit_BenefitStopDateKey, OnOrAfterTaxYearEnd) map { _ =>
             Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit())
