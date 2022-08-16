@@ -14,53 +14,79 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import includes.{cancelLink, ptaHeader}
+@import includes.cancelLink
 @import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 @import uk.gov.hmrc.tai.model.TaxYear
 @import includes.forms.submit
 @import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsDecisionForm
-@import includes.forms.inputRadioGroupStyling
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+
+@this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(decisionForm: Form[Option[String]], taxYear: TaxYear)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@hint = {
+    <p class="govuk-body-l">@messages("tai.income.previousYears.decision.paragraph.one")</p>
+    <p class="govuk-body">@messages("tai.income.previousYears.decision.paragraph.two")</p>
+    <p class="govuk-body">@messages("tai.income.previousYears.decision.paragraph.three")</p>
 
-@header = @{
-    ptaHeader(
-    formForErrorSummary = Some(decisionForm),
-    displayBackLink = true,
-    mainHeadingText = messages("tai.income.previousYears.decision.header",TaxPeriodLabelService.taxPeriodLabel(taxYear.year)),
-    preHeadingText = messages("tai.income.previousYears.journey.preHeader"))
+    <h2 class="govuk-body-l govuk-!-font-weight-bold ">@messages("tai.income.previousYears.decision.IWantTo")</h2>
 }
 
 @mainTemplate(
     title = messages("tai.income.previousYears.decision.title", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)),
+    pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink"
 ){
 
-    <p class="lede">@messages("tai.income.previousYears.decision.paragraph.one")</p>
-    <p>@messages("tai.income.previousYears.decision.paragraph.two")</p>
-    <p>@messages("tai.income.previousYears.decision.paragraph.three")</p>
+<div class = "govuk-grid-row">
+    <div class = "govuk-grid-column-two-thirds">
 
-    @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
+     @if(decisionForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary(errorList = decisionForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+    }
 
-        @{inputRadioGroupStyling(
-            field=decisionForm(UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice),
-            radioOptions=Seq(("Yes" -> messages("tai.income.previousYears.decision.radio.yes")), ("No" -> messages("tai.income.previousYears.decision.radio.no")) ),
-            legend=messages("tai.income.previousYears.decision.IWantTo"),
-            legendHint=None,
-            ('_groupDivClass, "form-group" ),
-            ('_fieldsetAttributes, "id=updateIncomeChoice" ),
-            ('_legendClass, "subsection"),
-            ('_legendSpanClass, "heading-medium")
-        )}
+    @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDecision()) {
+
+        @govukRadios(Radios(
+            fieldset =  Some(
+                Fieldset(
+                    legend = Some(
+                    HmrcPageHeadingLegend(
+                        content = Text(messages("tai.income.previousYears.decision.header",TaxPeriodLabelService.taxPeriodLabel(taxYear.year))),
+                        caption = HmrcSectionCaption(Text(messages("tai.income.previousYears.journey.preHeader"))))
+                )
+                )
+            ),
+            hint = Some(Hint(content = HtmlContent(hint))),
+            errorMessage = decisionForm.errors.filter(_.key == "yesNoChoice").asTextErrorMessages.headOption,
+            idPrefix = Some("updateIncomeChoice"),
+            name = "updateIncomeChoice",
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("tai.income.previousYears.decision.radio.yes")),
+                    value = Some("Yes"),
+                    checked = decisionForm.data.get(UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice).exists(_ == "Yes"),
+                ),
+                RadioItem(
+                    content = Text(messages("tai.income.previousYears.decision.radio.no")),
+                    value = Some("No"),
+                    checked = decisionForm.data.get(UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice).exists(_ == "No")
+                )
+            )
+        ).withFormField(decisionForm(UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice)))
 
         @submit()
     }
 
     @cancelLink(controllers.routes.PayeControllerHistoric.payePage(taxYear))
+    </div>
+</div>
 }
