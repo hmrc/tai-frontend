@@ -103,8 +103,11 @@ class RemoveCompanyBenefitControllerSpec
       "the form has the value beforeTaxYearEnd" in {
 
         val SUT = createSUT
-        when(removeCompanyBenefitJourneyCacheService.cache(any(), any())(any()))
-          .thenReturn(Future.successful(Map("" -> "")))
+
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
+          .thenReturn(Future.successful(Map("keep" -> "me")))
+        when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(removeCompanyBenefitJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitStopDate(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> BeforeTaxYearEnd))
@@ -115,7 +118,7 @@ class RemoveCompanyBenefitControllerSpec
         redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
-          .cache(Matchers.eq(EndCompanyBenefit_BenefitStopDateKey), Matchers.eq(BeforeTaxYearEnd))(any())
+          .cache(Matchers.eq(Map("keep" -> "me", EndCompanyBenefit_BenefitStopDateKey -> BeforeTaxYearEnd)))(any())
       }
     }
 
