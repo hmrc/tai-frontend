@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Jour
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
-import views.html.CanWeContactByPhoneViewWithBackLink
+import views.html.CanWeContactByPhoneView
 import views.html.pensions._
 
 import java.time.LocalDate
@@ -50,7 +50,7 @@ class AddPensionProviderController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  can_we_contact_by_phone: CanWeContactByPhoneViewWithBackLink, //TODO remove once backLink issue is resolved
+  can_we_contact_by_phone: CanWeContactByPhoneView, //TODO remove once backLink issue is resolved
   addPensionConfirmationView: AddPensionConfirmationView,
   addPensionCheckYourAnswersView: AddPensionCheckYourAnswersView,
   addPensionNumber: AddPensionNumberView,

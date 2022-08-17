@@ -29,7 +29,9 @@
     title = Messages("tai.addPensionProvider.addNameForm.title"),
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper"))
+    backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
 ) {
 
     <div class = "govuk-grid-row">
