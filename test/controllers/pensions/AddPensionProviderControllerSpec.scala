@@ -20,10 +20,9 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.MockTemplateRenderer
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
-import org.mockito.Mockito.{when, _}
+import org.mockito.Mockito._
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
@@ -38,9 +37,10 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
-import views.html.CanWeContactByPhoneViewWithBackLink
+import views.html.CanWeContactByPhoneView
 import views.html.pensions._
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
@@ -934,7 +934,7 @@ class AddPensionProviderControllerSpec
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[CanWeContactByPhoneViewWithBackLink],
+        inject[CanWeContactByPhoneView],
         inject[AddPensionConfirmationView],
         inject[AddPensionCheckYourAnswersView],
         inject[AddPensionNumberView],

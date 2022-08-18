@@ -33,7 +33,7 @@ class AddPensionNameViewSpec extends TaiViewSpec {
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
 
-    behave like pageWithBackLinkNew
+    behave like haveLinkWithUrlWithID("backLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url)
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/name")
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 

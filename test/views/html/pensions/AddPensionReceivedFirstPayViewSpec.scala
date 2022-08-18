@@ -33,7 +33,9 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec with FormValuesCons
       messages("tai.addPensionProvider.firstPay.title", pensionProviderName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
-    behave like pageWithBackLinkNew
+    behave like haveLinkWithUrlWithID(
+      "backLink",
+      controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url)
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/received-first-payment")
     behave like pageWithYesNoRadioButton(
       AddPensionProviderFirstPayForm.FirstPayChoice,

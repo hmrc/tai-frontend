@@ -44,7 +44,9 @@ class AddPensionStartDateViewSpec extends TaiViewSpec {
       messages("tai.addPensionProvider.startDateForm.title", pensionName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
-    behave like pageWithBackLinkNew
+    behave like haveLinkWithUrlWithID(
+      "backLink",
+      controllers.pensions.routes.AddPensionProviderController.receivedFirstPay.url)
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/first-payment-date")
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 

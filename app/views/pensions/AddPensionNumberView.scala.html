@@ -33,82 +33,70 @@
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
-
-
 @mainTemplate(
     title = Messages("tai.addPensionProvider.pensionNumber.pagetitle"),
     authedUser = Some(user),
     pageTitle = Some(messages("tai.service.navTitle")),
+    backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "backLink"
-
-
+    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate.url)
 ) {
 
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
 
-    @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionNumber(), Symbol("data-dynamic-form") -> "true") {
+            @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionNumber(), Symbol("data-dynamic-form") -> "true") {
 
-        @if(payrollNumberForm.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary(errorList =  payrollNumberForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-        }
+                @if(payrollNumberForm.errors.nonEmpty) {
+                    @govukErrorSummary(ErrorSummary(errorList =  payrollNumberForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+                }
 
 
-        @govukRadios(Radios(
-            fieldset =  Some(
-                Fieldset(
-                    legend = Some(
-                        HmrcPageHeadingLegend(
-                            content = Text( Messages("tai.addPensionProvider.pensionNumber.title", pensionNumberViewModel.pensionProviderName)),
-                            caption = HmrcSectionCaption(Text(Messages("add.missing.pension"))))
+                @govukRadios(Radios(
+                    fieldset =  Some(
+                        Fieldset(
+                            legend = Some(
+                                HmrcPageHeadingLegend(
+                                    content = Text( Messages("tai.addPensionProvider.pensionNumber.title", pensionNumberViewModel.pensionProviderName)),
+                                    caption = HmrcSectionCaption(Text(Messages("add.missing.pension"))))
+                            )
+                        )
+                    ),
+                    errorMessage = payrollNumberForm.errors.filter(_.key == "PayrollNumberChoice").asTextErrorMessages.headOption,
+                    idPrefix = Some("payrollNumberChoice"),
+                    name = "payrollNumberChoice",
+                    items = Seq(
+                        RadioItem(
+                            id =Some("payrollNumberChoice-yes"),
+                            content = Text(messages("tai.label.yes")),
+                            value = Some("Yes"),
+                            checked = payrollNumberForm.data.get(AddPensionProviderNumberForm.PayrollNumberChoice).exists(_ == "Yes"),
+                            conditionalHtml = Some(
+                                govukInput(Input(
+                                    id = "payrollNumberEntry",
+                                    name = "payrollNumberEntry",
+                                    value = payrollNumberForm.data.get(AddPensionProviderNumberForm.PayrollNumberEntry),
+                                    label = Label(
+                                        classes = "govuk-label--s",
+                                        content = Text(Messages("tai.addPensionProvider.pensionNumber.label")),
+                                    ),
+                                    errorMessage = payrollNumberForm.errors.filter(_.key == "payrollNumberEntry").asTextErrorMessages.headOption
+                                ))
+                            )
+                        ),
+                        RadioItem(
+                            id =Some("payrollNumberChoice-no"),
+                            content = Text(messages("tai.label.no")),
+                            value = Some("No"),
+                            checked = payrollNumberForm.data.get(AddPensionProviderNumberForm.PayrollNumberChoice).exists(_ == "No")
+                        )
                     )
-                )
-            ),
-            errorMessage = payrollNumberForm.errors.filter(_.key == "PayrollNumberChoice").asTextErrorMessages.headOption,
-            idPrefix = Some("payrollNumberChoice"),
-            name = "payrollNumberChoice",
-            items = Seq(
-                RadioItem(
-                    id =Some("payrollNumberChoice-yes"),
-                    content = Text(messages("tai.label.yes")),
-                    value = Some("Yes"),
-                    checked = payrollNumberForm.data.get(AddPensionProviderNumberForm.PayrollNumberChoice).exists(_ == "Yes"),
-                    conditionalHtml = Some(
-                        govukInput(Input(
-                            id = "payrollNumberEntry",
-                            name = "payrollNumberEntry",
-                            value = payrollNumberForm.data.get(AddPensionProviderNumberForm.PayrollNumberEntry),
-                            label = Label(
-                                classes = "govuk-label--s",
-                                content = Text(Messages("tai.addPensionProvider.pensionNumber.label")),
-                            ),
-                            errorMessage = payrollNumberForm.errors.filter(_.key == "payrollNumberEntry").asTextErrorMessages.headOption
-                        ))
-                    )
-                ),
-                RadioItem(
-                    id =Some("payrollNumberChoice-no"),
-                    content = Text(messages("tai.label.no")),
-                    value = Some("No"),
-                    checked = payrollNumberForm.data.get(AddPensionProviderNumberForm.PayrollNumberChoice).exists(_ == "No")
-                )
-            )
-        ).withFormField(payrollNumberForm(AddPensionProviderNumberForm.PayrollNumberChoice)))
+                ).withFormField(payrollNumberForm(AddPensionProviderNumberForm.PayrollNumberChoice)))
 
+                @submit()
+            }
 
-
-
-
-
-
-
-
-
-        @submit()
-    }
-
-    @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
+            @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
 
         </div>
     </div>
