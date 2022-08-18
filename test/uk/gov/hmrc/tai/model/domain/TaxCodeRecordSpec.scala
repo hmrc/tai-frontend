@@ -64,7 +64,7 @@ class TaxCodeRecordSpec extends PlaySpec {
       "taxCode"          -> "code",
       "startDate"        -> "2018-07-11",
       "endDate"          -> "2018-07-11",
-      "basisOfOperation" -> "Week1/Month1",
+      "basisOfOperation" -> "Week 1 Month 1",
       "employerName"     -> "Employer name",
       "pensionIndicator" -> false,
       "payrollNumber"    -> "1234",
