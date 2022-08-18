@@ -40,7 +40,9 @@ class WhatDoYouWantToTellUsViewSpec extends TaiViewSpec {
     )
     behave like pageWithContinueButtonForm("/check-income-tax/incorrect-pension/what-do-you-want-to-tell-us")
     behave like pageWithCancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(pensionId))
-    behave like pageWithBackLinkNew
+    behave like haveLinkWithUrlWithID(
+      "backLink",
+      controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url)
 
     "display a text area to collect further information" in {
       doc must haveElementAtPathWithAttribute("textarea", "name", "pensionDetails")

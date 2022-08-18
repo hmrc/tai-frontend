@@ -87,7 +87,7 @@ class UpdatePensionProviderController @Inject()(
     CanWeContactByPhoneViewModel(
       messages("tai.updatePension.preHeading"),
       messages("tai.canWeContactByPhone.title"),
-      "/thisBackLinkUrlIsNoLongerUsed",
+      controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url,
       controllers.pensions.routes.UpdatePensionProviderController.submitTelephoneNumber().url,
       controllers.pensions.routes.UpdatePensionProviderController.cancel(pensionId).url
     )
