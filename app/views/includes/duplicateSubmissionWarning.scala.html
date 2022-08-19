@@ -19,33 +19,56 @@
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import includes.forms.inputRadioGroupStyling
 @import play.api.mvc.Call
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
 @this(form: FormWithCSRF)
 
 
-@(duplicateSubmissionWarningForm: Form[YesNoForm], yesChoiceText: String, noChoiceText: String, actionRoute: Call)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(duplicateSubmissionWarningForm: Form[YesNoForm], preHeading: String, heading: String, yesChoiceText: String, noChoiceText: String, actionRoute: Call, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@hint = {
+<div>
+    <p>@messages("tai.employment.warning.text1")</p>
+    <p>@messages("tai.employment.warning.text2")</p>
+    <p>@messages("tai.employment.warning.text3")</p>
+</div>
+}
 
-    @form(action = actionRoute) {
-        <div class="form-group">
+@if(duplicateSubmissionWarningForm.errors.nonEmpty) {
+    @govukErrorSummary(ErrorSummary(errorList = duplicateSubmissionWarningForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+}
 
-            <p>@messages("tai.employment.warning.text1")</p>
-            <p>@messages("tai.employment.warning.text2")</p>
-            <p>@messages("tai.employment.warning.text3")</p>
+@form(action = actionRoute) {
+    @govukRadios(Radios(
+        fieldset =  Some(
+            Fieldset(
+                legend = Some(
+                    HmrcPageHeadingLegend(
+                        content = Text(heading),
+                        caption = HmrcSectionCaption(Text(preHeading)))
+                )
+            )
+        ),
+        errorMessage = duplicateSubmissionWarningForm.errors.filter(_.key == YesNoForm.YesNoChoice).asTextErrorMessages.headOption,
+        idPrefix = Some("yesNoChoice"),
+        name = "yesNoChoice",
+        hint = Some(Hint(content = HtmlContent(hint))),
+        items = Seq(
+            RadioItem(
+                content = Text(yesChoiceText),
+                value = Some(YesNoForm.YesValue),
+                checked = duplicateSubmissionWarningForm.data.get(YesNoForm.YesNoChoice).exists(_ == "Yes"),
+            ),
+            RadioItem(
+                content = Text(noChoiceText),
+                value = Some(YesNoForm.NoValue),
+                checked = duplicateSubmissionWarningForm.data.get(YesNoForm.YesNoChoice).exists(_ == "No")
+            )
+        )
+    ).withFormField(duplicateSubmissionWarningForm(YesNoForm.YesNoChoice)))
 
-            @{inputRadioGroupStyling(
-                field=duplicateSubmissionWarningForm(YesNoForm.YesNoChoice),
-                radioOptions=Seq((YesNoForm.YesValue -> yesChoiceText), (YesNoForm.NoValue -> noChoiceText) ),
-                legend=messages("tai.employment.warning.legend"),
-                legendHint=None,
-                ('_groupDivClass, "form-group" ),
-                ('_fieldsetAttributes, s"id=${YesNoForm.YesNoChoice}" ),
-                ('_legendSpanClass, "visually-hidden"),
-                ('_radioOption1Attributes, Html("""data-journey-val="Yes"""") ),
-                ('_radioOption2Attributes, Html("""data-journey-val="No"""") )
-            )}
-
-        </div>
-
-        @submit(buttonMessageKey = Some(messages("tai.submit")))
-    }
+    @submit(buttonMessageKey = Some(messages("tai.submit")))
+}

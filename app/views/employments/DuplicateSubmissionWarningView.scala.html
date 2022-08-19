@@ -16,33 +16,33 @@
 
 @import uk.gov.hmrc.tai.forms.YesNoForm
 @import includes.{cancelLink, ptaHeader}
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(mainTemplate: MainTemplate, duplicateSubmissionWarning: includes.duplicateSubmissionWarning)
+@this(mainTemplate: MainTempleteNew, duplicateSubmissionWarning: includes.duplicateSubmissionWarning, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)
 
 @(duplicateSubmissionWarningForm: Form[YesNoForm], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
-
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(duplicateSubmissionWarningForm),
-        displayBackLink = true,
-        mainHeadingText = messages("tai.employment.warning.heading", employmentName),
-        preHeadingText = messages("tai.employment.warning.preHeading")
-    )
-}
 
 @mainTemplate(
     title = messages("tai.employment.warning.customGaTitle"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None) {
-
-    @duplicateSubmissionWarning(
-        duplicateSubmissionWarningForm,
-        messages("tai.employment.warning.radio1", <span class="carry-over">{employmentName}</span>),
-        messages("tai.employment.warning.radio2"),
-        controllers.employments.routes.EndEmploymentController.submitDuplicateSubmissionWarning
-)
-
-    @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(empId))
+    backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url)
+){
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @duplicateSubmissionWarning(
+            duplicateSubmissionWarningForm,
+            messages("tai.employment.warning.preHeading"),
+            messages("tai.employment.warning.heading", employmentName),
+            messages("tai.employment.warning.radio1", employmentName),
+            messages("tai.employment.warning.radio2"),
+            controllers.employments.routes.EndEmploymentController.submitDuplicateSubmissionWarning,
+            govukRadios,
+            govukErrorSummary
+        )
+        @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(empId))
+    </div>
+</div>
 }
