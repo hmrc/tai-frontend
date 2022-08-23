@@ -37,7 +37,9 @@ class UpdatePensionsCheckYourAnswersViewSpec extends TaiViewSpec {
     "display a back button" which {
       "links to the add telephone form page" when {
         "page is displayed" in {
-          doc must haveBackLink
+          behave like haveLinkWithUrlWithID(
+            "backLink",
+            controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url)
         }
       }
     }
