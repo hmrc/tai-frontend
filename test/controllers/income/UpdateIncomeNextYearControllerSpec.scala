@@ -442,7 +442,13 @@ class UpdateIncomeNextYearControllerSpec
             Future.successful(serviceResponse)
           )
 
-          val vm = ConfirmAmountEnteredViewModel(employmentID, employerName, currentAmount, newAmount, NextYearPay)
+          val vm = ConfirmAmountEnteredViewModel(
+            employmentID,
+            employerName,
+            currentAmount,
+            newAmount,
+            NextYearPay,
+            "javascript:history.go(-1)")
           val expectedView = updateIncomeCYPlus1ConfirmView(vm)(
             request,
             messages,

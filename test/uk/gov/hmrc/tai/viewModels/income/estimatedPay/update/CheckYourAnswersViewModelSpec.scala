@@ -195,7 +195,8 @@ class CheckYourAnswersViewModelSpec
       taxablePay,
       hasBonusOrOvertime,
       totalBonusOrOvertime,
-      employer = IncomeSource(1, "employer name")
+      employer = IncomeSource(1, "employer name"),
+      "backUrl"
     )
 
   val totalPay = "10000"

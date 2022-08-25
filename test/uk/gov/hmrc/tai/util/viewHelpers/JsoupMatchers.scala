@@ -325,6 +325,7 @@ trait JsoupMatchers {
   def haveBackButtonWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "backLink")
   def haveCancelLinkWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "cancelLink")
   def haveLinkWithUrlWithID(id: String, expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, id)
+  def haveBackLinkWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "backLink")
   def haveLinkWithUrlWithClass(classes: String, expectedURL: String) =
     new ClassSelectorWithUrlMatcher(expectedURL, classes)
   def haveReturnToSummaryButtonWithUrl(expectedURL: String) =

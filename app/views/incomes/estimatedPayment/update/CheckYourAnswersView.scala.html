@@ -19,13 +19,14 @@
 @import includes._
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTempleteNew)
 
 @(viewModel: CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
+        showGdsVersion = true,
         mainHeadingText = messages("tai.checkYourAnswers.heading"),
         preHeadingText = messages("tai.incomes.edit.preHeading", viewModel.employer.name)
     )
@@ -33,11 +34,16 @@
 
 @mainTemplate(
     title = messages("tai.checkYourAnswers.title"),
+    pageTitle = Some(Messages("tai.checkYourAnswers.title")),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None
+    backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(viewModel.backUrl)
 ){
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
+    @header
 
     @includes.checkYourAnswers(
         title = None,
@@ -46,15 +52,16 @@
     )
 
 
-<p>@messages("tai.checkYourAnswers.confirmText")</p>
+    <p class="govuk-body">@messages("tai.checkYourAnswers.confirmText")</p>
 
-@includes.link(
-    id=Some("estimatedPayLink"),
-    url=income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage(viewModel.employer.id).url,
-    copy=messages("tai.WhatDoYouWantToDo.submit"),
-    linkClasses=Seq("button")
-)
+    @includes.link(
+        id=Some("estimatedPayLink"),
+        url=income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage(viewModel.employer.id).url,
+        copy=messages("tai.WhatDoYouWantToDo.submit"),
+        linkClasses=Seq("govuk-button")
+    )
 
-@cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
-
+    @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
+    </div>
+</div>
 }

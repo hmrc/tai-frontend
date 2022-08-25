@@ -52,8 +52,9 @@
 @mainTemplate(
     title = messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     authedUser = Some(user),
+    backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "backLink"
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage.url)
 ) {
 
     <div class = "govuk-grid-row">

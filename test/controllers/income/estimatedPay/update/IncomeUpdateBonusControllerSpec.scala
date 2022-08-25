@@ -64,6 +64,8 @@ class IncomeUpdateBonusControllerSpec
       .thenReturn(Future.successful(Right(employer.id)))
     when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
       .thenReturn(Future.successful(Right(employer.name)))
+    when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TaxablePayKey))(any()))
+      .thenReturn(Future.successful(Some("taxablepay")))
   }
 
   "bonusPaymentsPage" must {
@@ -92,7 +94,12 @@ class IncomeUpdateBonusControllerSpec
 
       val expectedForm = BonusPaymentsForm.createForm.fill(YesNoForm(Some(cachedAmount)))
       val expectedView =
-        bonusPaymentsView(expectedForm, employer)(fakeRequest, messages, authedUser, templateRenderer, ec)
+        bonusPaymentsView(
+          expectedForm,
+          employer,
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController
+            .taxablePayslipAmountPage()
+            .url)(fakeRequest, messages, authedUser, templateRenderer, ec)
 
       result rendersTheSameViewAs expectedView
     }
@@ -174,7 +181,13 @@ class IncomeUpdateBonusControllerSpec
           .handleBonusPayments(fakeRequest)
 
         status(result) mustBe BAD_REQUEST
-        result rendersTheSameViewAs bonusPaymentsView(BonusPaymentsForm.createForm.bindFromRequest(), employer)(
+        result rendersTheSameViewAs bonusPaymentsView(
+          BonusPaymentsForm.createForm.bindFromRequest(),
+          employer,
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController
+            .taxablePayslipAmountPage()
+            .url
+        )(
           fakeRequest,
           messages,
           authedUser,

@@ -30,7 +30,8 @@ case class CheckYourAnswersViewModel(
   taxablePay: Option[String],
   hasBonusOrOvertime: String,
   totalBonusOrOvertime: Option[String],
-  employer: IncomeSource)
+  employer: IncomeSource,
+  backUrl: String)
     extends ViewModelHelper with DynamicPayPeriodTitle {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
