@@ -50,7 +50,7 @@ class IncomeUpdateBonusControllerSpec
 
   private val bonusPaymentAmountView = inject[BonusPaymentAmountView]
 
-  class TestIncomeUpdateBonusController
+  class TestIncomeUpdateBonusController(maybeTaxablePayKey: Option[String] = Some("taxablePay"))
       extends IncomeUpdateBonusController(
         FakeAuthAction,
         FakeValidatePerson,
@@ -65,7 +65,7 @@ class IncomeUpdateBonusControllerSpec
     when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
       .thenReturn(Future.successful(Right(employer.name)))
     when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TaxablePayKey))(any()))
-      .thenReturn(Future.successful(Some("taxablepay")))
+      .thenReturn(Future.successful(maybeTaxablePayKey))
   }
 
   "bonusPaymentsPage" must {
@@ -74,15 +74,39 @@ class IncomeUpdateBonusControllerSpec
         when(journeyCacheService.currentValue(eqTo(UpdateIncome_BonusPaymentsKey))(any()))
           .thenReturn(Future.successful(Some(cachedAmount)))
 
-        def bonusPaymentsPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdateBonusController()
+        def bonusPaymentsPage(
+          request: FakeRequest[AnyContentAsFormUrlEncoded],
+          maybeTaxablePayKey: Option[String] = Some("taxablePay")): Future[Result] =
+          new TestIncomeUpdateBonusController(maybeTaxablePayKey)
             .bonusPaymentsPage()(request)
       }
 
       def setup(cachedAmount: String): BonusPaymentsPageHarness =
         new BonusPaymentsPageHarness(cachedAmount)
     }
-    "display bonusPayments" in {
+
+    "display bonusPayments with back link to deductions page" in {
+      val cachedAmount = "1231231"
+
+      val result = BonusPaymentsPageHarness
+        .setup(cachedAmount)
+        .bonusPaymentsPage(fakeRequest.asInstanceOf[FakeRequest[AnyContentAsFormUrlEncoded]], None)
+
+      status(result) mustBe OK
+
+      val expectedForm = BonusPaymentsForm.createForm.fill(YesNoForm(Some(cachedAmount)))
+      val expectedView =
+        bonusPaymentsView(
+          expectedForm,
+          employer,
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController
+            .payslipDeductionsPage()
+            .url)(fakeRequest, messages, authedUser, templateRenderer, ec)
+
+      result rendersTheSameViewAs expectedView
+    }
+
+    "display bonusPayments with back link to enter your taxable pay for the month" in {
 
       val cachedAmount = "1231231"
 

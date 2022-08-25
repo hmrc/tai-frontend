@@ -40,7 +40,7 @@ class BonusPaymentsViewSpec extends TaiViewSpec with FormValuesConstants {
   override def view: Html = bonusPayments(bonusPaymentsForm, employer, "backUrl")
 
   "Bonus payments view" should {
-    behave like pageWithBackLinkNew
+    behave like pageWithBackLinkWithUrl("backUrl")
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.bonusPayments.preHeading", employer.name),

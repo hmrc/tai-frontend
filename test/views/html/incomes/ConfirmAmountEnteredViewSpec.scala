@@ -34,7 +34,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
   override lazy val view: Html = confirmAmountEntered(vm)
 
   "Confirm income Irregular Hours view" should {
-    doc must haveLinkWithUrlWithID("backLink", "backUrl")
+    behave like haveBackLinkWithUrl("backUrl")
     behave like pageWithTitle(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.payPeriod.preHeading", employerName),
