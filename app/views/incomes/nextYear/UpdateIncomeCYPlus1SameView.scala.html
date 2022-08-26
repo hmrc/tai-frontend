@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template)
+@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1TemplateNew)
 
 @(employmentName: String, employmentId: Int, value: Int)(
     implicit request: Request[_],
@@ -33,21 +33,19 @@
 @updateIncomeCYPlus1Template(
     employerName = employmentName,
     form = None,
-    title = messages("tai.updateIncome.CYPlus1.same.title"),
     cancelText = Some(messages("tai.updateIncome.CYPlus1.same.cancel")),
     heading = messages("tai.updateIncome.CYPlus1.same.heading", TaxYearRangeUtil.futureTaxYearRange(1))
 ){
     <div>
-
-        <p>
+        <p class="govuk-body">
             @messages("tai.updateIncome.CYPlus1.confirm.paragraph")
-            <span class="tai-detail-large">
+            <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
                 @withPoundPrefix(MoneyPounds(value, 0))
             </span>
         </p>
 
-        <div class="panel panel-border-narrow">
-            <p>@messages("tai.updateEmployment.incomeSame.description", employmentName, TaxYearRangeUtil.futureTaxYearRange(1))</p>
+        <div class="govuk-details__text govuk-!-margin-bottom-5">
+            <p class="govuk-body ">@messages("tai.updateEmployment.incomeSame.description", employmentName, TaxYearRangeUtil.futureTaxYearRange(1))</p>
         </div>
     </div>
 }
