@@ -35,12 +35,18 @@ class UpdateIncomeDetailsViewSpec extends TaiViewSpec {
 
   "UpdateIncomeDetails" must {
     behave like pageWithTitle(Messages("tai.income.previousYears.details.title"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       Messages("tai.income.previousYears.details.preHeading"),
-      Messages("tai.income.previousYears.details.heading", formattedTaxYear))
+      Messages("tai.income.previousYears.details.heading", formattedTaxYear),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
     behave like pageWithContinueButtonForm("/check-income-tax/update-income-details/what-do-you-want-to-tell-us")
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(givenTaxYear))
     behave like pageWithBackLink
+    "display a text area to collect further information" in {
+      doc must haveElementAtPathWithAttribute("textarea", "name", "employmentDetails")
+      doc must haveElementAtPathWithAttribute("textarea", "rows", "5")
+    }
 
   }
 
