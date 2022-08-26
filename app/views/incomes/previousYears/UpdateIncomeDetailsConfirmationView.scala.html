@@ -16,27 +16,34 @@
 
 @import includes.confirmation_summary
 @import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.tai.util.ViewModelHelper.htmlNonBroken
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTempleteNew, govukPanel: GovukPanel)
 
 @()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(
-title = Messages("tai.income.previousYears.confirmation.heading"),
-authedUser = Some(user),
-articleClasses = None) {
+    title = Messages("tai.income.previousYears.confirmation.heading"),
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent = None,
+) {
 
-<div class="transaction-banner--complete">
-    <h1 class="transaction-banner__heading">@Messages("tai.income.previousYears.confirmation.heading")</h1>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @govukPanel(Panel(
+            title = Text(messages("tai.income.previousYears.confirmation.heading"))
+        ))
+
+        @confirmation_summary()
+
+        @includes.link(
+          id=Some("returnToSummary"),
+          copy=Messages("tai.income.previousYears.confirmation.back"),
+          url = controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev).url,
+          linkClasses=Seq("govuk-button")
+        )
+    </div>
 </div>
-
-@confirmation_summary()
-
-@includes.link(
-  id=Some("returnToSummary"),
-  copy=Messages("tai.income.previousYears.confirmation.back"),
-  url = controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev).url,
-  linkClasses=Seq("button")
-)
 
 }
