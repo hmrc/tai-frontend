@@ -36,7 +36,9 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
     behave like pageWithCheckYourAnswersSummaryNew
 
     "display a back button" in {
-      doc must haveBackLink
+      doc must haveLinkWithUrlWithID(
+        "backLink",
+        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url)
     }
 
     "display the header for the check your answers section" in {

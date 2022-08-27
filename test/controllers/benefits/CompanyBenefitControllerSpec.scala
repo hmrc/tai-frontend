@@ -128,7 +128,7 @@ class CompanyBenefitControllerSpec
 
         val expectedForm: Form[Option[String]] =
           UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(YesIGetThisBenefit))
-        val expectedViewModel = CompanyBenefitDecisionViewModel(benefitType, empName, expectedForm)
+        val expectedViewModel = CompanyBenefitDecisionViewModel(benefitType, empName, expectedForm, 2)
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
         val result = SUT.decision()(request)
@@ -262,7 +262,8 @@ class CompanyBenefitControllerSpec
         val cache = Map(
           EndCompanyBenefit_EmploymentNameKey -> "Employer A",
           EndCompanyBenefit_BenefitTypeKey    -> "Expenses",
-          EndCompanyBenefit_RefererKey        -> "/check-income-tax/income-summary"
+          EndCompanyBenefit_RefererKey        -> "/check-income-tax/income-summary",
+          EndCompanyBenefit_EmploymentIdKey   -> "1"
         )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
