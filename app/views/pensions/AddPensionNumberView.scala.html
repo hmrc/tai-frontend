@@ -32,6 +32,12 @@
         messages: Messages, user: controllers.auth.AuthedUser,
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@hint = {
+<div>
+    <p>@Messages("tai.addPensionProvider.pensionNumber.para1")</p>
+    <p>@Messages("tai.addPensionProvider.pensionNumber.para2")</p>
+</div>
+}
 
 @mainTemplate(
     title = Messages("tai.addPensionProvider.pensionNumber.pagetitle"),
@@ -62,6 +68,7 @@
                             )
                         )
                     ),
+                    hint = Some(Hint(content = HtmlContent(hint))),
                     errorMessage = payrollNumberForm.errors.filter(_.key == "PayrollNumberChoice").asTextErrorMessages.headOption,
                     idPrefix = Some("payrollNumberChoice"),
                     name = "payrollNumberChoice",
