@@ -16,8 +16,10 @@
 
 @import uk.gov.hmrc.tai.forms.YesNoForm
 @import includes.{cancelLink, ptaHeader}
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(mainTemplate: MainTemplate, duplicateSubmissionWarning: includes.duplicateSubmissionWarning)
+@this(mainTemplate: MainTempleteNew, duplicateSubmissionWarning: includes.duplicateSubmissionWarning, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)
 
 @(duplicateSubmissionWarningForm: Form[YesNoForm], pensionName: String, pensionId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 ec: scala.concurrent.ExecutionContext)
@@ -26,24 +28,34 @@ ec: scala.concurrent.ExecutionContext)
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(duplicateSubmissionWarningForm),
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = messages("tai.pension.warning.heading", pensionName),
-        preHeadingText = messages("tai.pension.warning.preHeading")
+        preHeadingText = messages("tai.pension.warning.preHeading"),
+        showGdsVersion = true
     )
 }
 
 @mainTemplate(
     title = messages("tai.pension.warning.customGaTitle"),
     authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None) {
+    backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId).url)
+){
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @duplicateSubmissionWarning(
+            duplicateSubmissionWarningForm,
+            messages("tai.pension.warning.preHeading"),
+            messages("tai.pension.warning.heading", pensionName),
+            messages("tai.pension.warning.radio1", pensionName),
+            messages("tai.pension.warning.radio2"),
+            controllers.pensions.routes.UpdatePensionProviderController.submitDuplicateSubmissionWarning,
+            govukRadios,
+            govukErrorSummary
+        )
 
-    @duplicateSubmissionWarning(
-        duplicateSubmissionWarningForm,
-        messages("tai.pension.warning.radio1", pensionName),
-        messages("tai.pension.warning.radio2"),
-        controllers.pensions.routes.UpdatePensionProviderController.submitDuplicateSubmissionWarning
-)
-
-    @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(pensionId))
+        @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(pensionId))
+    </div>
+</div>
 }

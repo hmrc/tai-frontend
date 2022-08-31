@@ -51,13 +51,15 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.pension.warning.customGaTitle"))
     behave like pageWithBackLink
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       preHeaderText = messages("tai.pension.warning.preHeading"),
-      mainHeaderText = messages("tai.pension.warning.heading", pensionName))
+      mainHeaderText = messages("tai.pension.warning.heading", pensionName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
 
     behave like pageWithYesNoRadioButton(
-      s"$YesNoChoice-yes",
-      s"$YesNoChoice-no",
+      YesNoChoice,
+      s"$YesNoChoice-2",
       messages("tai.pension.warning.radio1", pensionName),
       messages("tai.pension.warning.radio2"))
 
@@ -86,10 +88,10 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
       val emptySelectionErrorMessage = messages("tai.pension.warning.error")
 
       val errorView: HtmlFormat.Appendable = duplicateSubmissionWarningView(invalidatedForm, pensionName, pensionId)
-      doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
+      doc(errorView) must haveErrorLinkWithTextNew(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(
         messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
-        "error-message")
+        "govuk-error-message")
     }
   }
 
