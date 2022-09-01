@@ -18,18 +18,19 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTempleteNew)
 
 @(applicationConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @mainTemplate(
-    title = messages("global.error.InternalServerError500.tai.title")
+    title = messages("global.error.InternalServerError500.tai.title"),
+    backLinkContent = None
 ){
 
-    <div class="grid-row pertax-error">
-        <div class="column-two-thirds">
-            <h1 class="heading-xlarge">@messages("global.error.InternalServerError500.tai.title")</h1>
-            <p>@messages("global.error.InternalServerError500.tai.message.you.can") <a href="@applicationConfig.contactHelplineUrl">@messages("global.error.InternalServerError500.tai.message.contact.hmrc")</a> @messages("global.error.InternalServerError500.tai.message.by.phone.post")</p>
+<div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-row grid-row">
+            <h1 class="govuk-heading-xl">@messages("global.error.InternalServerError500.tai.title")</h1>
+            <p class="govuk-body">@messages("global.error.InternalServerError500.tai.message.you.can") <a href="@applicationConfig.contactHelplineUrl">@messages("global.error.InternalServerError500.tai.message.contact.hmrc")</a> @messages("global.error.InternalServerError500.tai.message.by.phone.post")</p>
         </div>
     </div>
 }
