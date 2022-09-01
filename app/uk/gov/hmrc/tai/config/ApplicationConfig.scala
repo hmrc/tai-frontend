@@ -60,8 +60,8 @@ class ApplicationConfig @Inject()(
 
   lazy val reportAProblemPartialUrl =
     s"${servicesConfig.baseUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
-  lazy val betaFeedbackUrl = s"$contactProtocol://$contactHost:$contactPort/contact/beta-feedback"
-  lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
+  lazy val betaFeedbackUnauthenticatedUrl =
+    "https://www.tax.service.gov.uk/contact/beta-feedback-unauthenticated?service=TES"
 
   lazy val urBannerEnabled: Boolean = getOptional[String]("feature.ur-banner.enabled").getOrElse("true").toBoolean
   lazy val urBannerLink: String = getOptional[String]("ur-banner.url").getOrElse("")
