@@ -19,7 +19,7 @@
   id: String,
   gaAction: Option[String] = None,
   heading: String,
-  headingTag: String = "h2",
+  headingTag: String = "h3",
   bodyContent: Option[String] = None,
   cardActionUrl: Option[String] = None,
   cardActionText: Option[String] = None
@@ -27,18 +27,18 @@
 
 <div class="@cardClass" id="@id">
 
-  <div class="card-body @if(url){active}">
+  <div class="card-body cardSize @if(url){active}">
 
-    <@headingTag class="heading-small card-heading">
+    <@headingTag class="govuk-heading-s card-heading">
       @if(url){
-        <a class="card-link" href="@url">
+        <a class="card-linkxx" href="@url">
           @heading
         </a>
       } else {
         @heading
       }
     </@headingTag>
-    <p>@bodyContent</p>
+    <p> @bodyContent</p>
   </div>
 
   @if(cardActionUrl && cardActionText) {
@@ -47,3 +47,8 @@
     </div>
   }
 </div>
+
+
+
+
+
