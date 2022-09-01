@@ -78,14 +78,14 @@
         backLinkContent: Option[String],
         backLinkId: String = "returnToChooseTaxYearLink",
         displayHmrcBanner: Boolean = false,
-        phaseBanner: Option[PhaseBanner] = None,
         disableSessionExpired: Boolean = false,
         additionalScriptsBlock: Option[Html] = None,
         beforeContentBlock: Option[Html] = None,
         nonce: Option[String] = None,
         headerContainerClasses: String = Header.defaultObject.containerClasses,
         pagePrintable: Boolean = false,
-        pagePrintName: Option[String] = None
+        pagePrintName: Option[String] = None,
+        hidePtaAccountNav: Boolean = false
 )(content: Html)(implicit request: Request[_],
         messages: Messages)
 
@@ -137,20 +137,22 @@
 
 @beforeContent = {
 
+@if(!hidePtaAccountNav) {
+    @if(isGG && isSa) {
+        @hmrcAccountMenu(AccountMenu(
+            businessTaxAccount = Some(BusinessTaxAccount()),
+            language = if(messages.lang.code == "cy") Cy else En,
+            signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+        ).withUrlsFromConfig())
 
-@if(isGG && isSa) {
-    @hmrcAccountMenu(AccountMenu(
-        businessTaxAccount = Some(BusinessTaxAccount()),
-        language = if(messages.lang.code == "cy") Cy else En,
-        signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
-    ).withUrlsFromConfig())
-
-} else {
-    @hmrcAccountMenu(AccountMenu(
-        language = if(messages.lang.code == "cy") Cy else En,
-        signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
-    ).withUrlsFromConfig())
+    } else {
+        @hmrcAccountMenu(AccountMenu(
+            language = if(messages.lang.code == "cy") Cy else En,
+            signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+        ).withUrlsFromConfig())
+    }
 }
+
 
 @if(beforeContentBlock.isDefined) {
     @beforeContentBlock
