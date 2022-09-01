@@ -1,54 +1,62 @@
 @*
- * Copyright 2021 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *@
+* Copyright 2021 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
 
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTempleteNew)
 
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @mainTemplate(
-    title=Messages("tai.noPrimary.heading")
-){
-    <div class="section">
-        <h1 class="h1-heading">@Messages("tai.noPrimary.heading")</h1>
-        <div class="grid grid-2-3">
-            <p  id="paraOne">@Messages("tai.noPrimary.para1")</p>
-            <ul class="bullets" id="reason">
-                <li>@Messages("tai.noPrimary.reasonItem1")</li>
-                <li>@Messages("tai.noPrimary.reasonItem2")</li>
-            </ul>
-            <p  id="paraTwo">@Messages("tai.noPrimary.para2")</p>
+title=Messages("tai.noPrimary.heading"),
+backLinkContent = None
 
-            <p  id="paraThree">@Messages("tai.noPrimary.para3")</p>
-            <ul class="bullets" id="notPaying">
-                <li>@Messages("tai.noPrimary.notPayingItem1")</li>
-                <li>@Messages("tai.noPrimary.notPayingItem2")</li>
-            </ul>
-            <p  id="paraFour">@Html(
-                Messages(
+){
+
+<div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-row grid-row">
+
+        <div class="section">
+            <h1 class="govuk-heading-xl heading-mobile-responsive xbreak-word">@Messages("tai.noPrimary.heading")</h1>
+            <div class="grid grid-2-3">
+                <p class="govuk-body" id="paraOne">@Messages("tai.noPrimary.para1")</p>
+                <ul class="govuk-list govuk-list--bullet" id="reason">
+                    <li>@Messages("tai.noPrimary.reasonItem1")</li>
+                    <li>@Messages("tai.noPrimary.reasonItem2")</li>
+                </ul>
+                <p class="govuk-body" id="paraTwo">@Messages("tai.noPrimary.para2")</p>
+
+                <p class="govuk-body" id="paraThree">@Messages("tai.noPrimary.para3")</p>
+                <ul class="govuk-list govuk-list--bullet" id="notPaying">
+                    <li>@Messages("tai.noPrimary.notPayingItem1")</li>
+                    <li>@Messages("tai.noPrimary.notPayingItem2")</li>
+                </ul>
+                <p class="govuk-body" id="paraFour">@Html(
+                    Messages(
                     "tai.noPrimary.para4",
                     includes.link(
-                        url="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees/",
-                        copy=Messages("tai.noPrimary.contact")
+                    url="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees/",
+                    copy=Messages("tai.noPrimary.contact")
                     )
-                )
-            )
-            </p>
+                    )
+                    )
+                </p>
+            </div>
         </div>
     </div>
+</div>
 }
 
