@@ -17,38 +17,45 @@
 @import uk.gov.hmrc.tai.util.HtmlFormatter
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTempleteNew)
 
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 
 @mainTemplate(
-    title = messages("tai.deceased.title")
+    title = messages("tai.deceased.title"),
+    pageTitle = Some(messages("tai.service.navTitle")),
+    backLinkContent = None
 ){
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <header class="page-header">
+            <h1 class="govuk-heading-xl">@Html(s"${messages("tai.deceased.heading.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.part2"))}") </h1>
+        </header>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
 
-    <header class="page-header">
-        <h1 class="flush--bottom">@Html(s"${messages("tai.deceased.heading.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.part2"))}") </h1>
-    </header>
+        <h2 class="govuk-heading-l">@messages("tai.deceased.question")</h2>
+        <p class="govuk-body">@messages("tai.deceased.callHmrc.paragraph")</p>
 
-    <h2 class="heading-large">@messages("tai.deceased.question")</h2>
-    <p>@messages("tai.deceased.callHmrc.paragraph")</p>
+        <h3 class="govuk-heading-s govuk-!-font-weight-regular govuk-body govuk-!-margin-0">@messages("tai.deceased.telephone.title")</h3>
+        <p class="govuk-body govuk-!-font-weight-bold govuk-body govuk-!-margin-0">@messages("tai.deceased.telephone.number")</p>
+        <p class="govuk-body govuk-body">@messages("tai.deceased.telephone.advice")</p>
 
-    <h3 class="font-small push-half--bottom">@messages("tai.deceased.telephone.title")</h3>
-    <p class="bold-small push-half--ends">@messages("tai.deceased.telephone.number")</p>
-    <p class="push-half--top">@messages("tai.deceased.telephone.advice")</p>
+        <h3 class="govuk-heading-s govuk-!-font-weight-regular govuk-body govuk-!-margin-0">@messages("tai.deceased.textphone.title")</h3>
+        <p class="govuk-body govuk-!-font-weight-bold">@messages("tai.deceased.textphone.number")</p>
 
-    <h3 class="font-small push-half--bottom">@messages("tai.deceased.textphone.title")</h3>
-    <p class="bold-small push-half--top">@messages("tai.deceased.textphone.number")</p>
+        <h3 id="outsideUk" class="govuk-heading-s govuk-!-font-weight-regular govuk-body govuk-!-margin-0">@messages("tai.deceased.outsideUK.title")
+            <span class="govuk-visually-hidden">@messages("tai.deceased.telephone")</span>
+        </h3>
 
-    <h3 id="outsideUk" class="font-small push-half--bottom">@messages("tai.deceased.outsideUK.title")
-        <span class="visually-hidden">@messages("tai.deceased.telephone")</span>
-    </h3>
+        <p class="govuk-body govuk-!-font-weight-bold">@messages("tai.deceased.outsideUK.number")</p>
 
-    <p class="bold-small push-half--top">@messages("tai.deceased.outsideUK.number")</p>
-
-    <h3 id="openingTimes" class="visually-hidden">@messages("tai.deceased.opening.times")</h3>
-    <p class="push-half--bottom">@messages("tai.deceased.openingTimes.mondayToFriday")</p>
-    <p class="push-half--top">@messages("tai.deceased.openingTimes.saturday")</p>
-    <p>@messages("tai.deceased.daysClosed")</p>
+        <h3 id="openingTimes" class="govuk-visually-hidden">@messages("tai.deceased.opening.times")</h3>
+        <p class="govuk-body govuk-!-margin-0">@messages("tai.deceased.openingTimes.mondayToFriday")</p>
+        <p class="govuk-body govuk-!-padding-bottom-2">@messages("tai.deceased.openingTimes.saturday")</p>
+        <p class="govuk-body govuk-!-margin-0">@messages("tai.deceased.daysClosed")</p>
+    </div>
+</div>
 
  }
