@@ -42,9 +42,6 @@
 }
 
 
-
-
-
 @mainTemplate(
     title = messages("your.paye.income.tax.overview"),
     authedUser = Some(user),
@@ -59,7 +56,6 @@
     <div class="govuk-grid-row">
         <div class="grid">
             <div class="inner-block">
-
                 <div class="flex-container govuk-grid-row">
                 @if(model.showTaxCodeChangeTile()){
                   @card(
@@ -118,10 +114,6 @@
                             heading = messages("check.jrs.claims")
                         )
                     }
-
-
-
-
 
                 </div>
             </div>
