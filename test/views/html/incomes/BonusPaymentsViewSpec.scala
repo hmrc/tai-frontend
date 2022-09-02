@@ -37,10 +37,10 @@ class BonusPaymentsViewSpec extends TaiViewSpec with FormValuesConstants {
 
   private val bonusPayments = inject[BonusPaymentsView]
 
-  override def view: Html = bonusPayments(bonusPaymentsForm, employer)
+  override def view: Html = bonusPayments(bonusPaymentsForm, employer, "backUrl")
 
   "Bonus payments view" should {
-    behave like pageWithBackLinkNew
+    behave like pageWithBackLinkWithUrl("backUrl")
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.bonusPayments.preHeading", employer.name),
@@ -70,7 +70,7 @@ class BonusPaymentsViewSpec extends TaiViewSpec with FormValuesConstants {
       val invalidChoice = Json.obj(choice -> "")
       val invalidatedForm = bonusPaymentsForm.bind(invalidChoice)
 
-      val errorView = bonusPayments(invalidatedForm, employer)
+      val errorView = bonusPayments(invalidatedForm, employer, "backUrl")
       doc(errorView) must haveErrorLinkWithTextNew(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(
         messages("tai.income.error.form.summary") + " " + messages(emptySelectionErrorMessage),

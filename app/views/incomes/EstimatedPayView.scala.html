@@ -46,9 +46,11 @@ ec: scala.concurrent.ExecutionContext)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
     title = messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRange),
-    authedUser = Some(user)
+    authedUser = Some(user),
+    backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage.url)
 ){
 
     <div class="govuk-grid-row">

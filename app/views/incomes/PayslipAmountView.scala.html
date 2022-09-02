@@ -34,9 +34,11 @@
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
     title = viewModel.payPeriodTitle,
-    authedUser = Some(user)
+    authedUser = Some(user),
+    backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url)
 ) {
 
     <div class="govuk-grid-row">

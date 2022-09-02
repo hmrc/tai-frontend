@@ -29,11 +29,12 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
   val employmentId = 1
   private val confirmAmountEntered = inject[ConfirmAmountEnteredView]
 
-  val vm = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedAmount, IrregularPay)
+  val vm =
+    ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedAmount, IrregularPay, "backUrl")
   override lazy val view: Html = confirmAmountEntered(vm)
 
   "Confirm income Irregular Hours view" should {
-    behave like pageWithBackLinkNew
+    behave like haveBackLinkWithUrl("backUrl")
     behave like pageWithTitle(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.payPeriod.preHeading", employerName),
@@ -66,7 +67,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
   "Confirm income Annual Amount view" should {
 
     "display the correct confirm and send button" in {
-      val vm = ConfirmAmountEnteredViewModel(employerName, currentAmount, estimatedAmount)
+      val vm = ConfirmAmountEnteredViewModel(employerName, currentAmount, estimatedAmount, "backUrl")
       val annualPayView: Html = confirmAmountEntered(vm)
 
       doc(annualPayView) must haveLinkElement(
@@ -80,7 +81,13 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
   "Confirm income CY+1 view" should {
 
     "display the correct confirm and send button" in {
-      val vm = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedAmount, NextYearPay)
+      val vm = ConfirmAmountEnteredViewModel(
+        employmentId,
+        employerName,
+        currentAmount,
+        estimatedAmount,
+        NextYearPay,
+        "backUrl")
       val cyPlus1PayView: Html = confirmAmountEntered(vm)
 
       doc(cyPlus1PayView) must haveLinkElement(

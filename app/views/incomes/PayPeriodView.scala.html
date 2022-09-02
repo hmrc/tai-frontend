@@ -31,7 +31,9 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.Ex
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.payPeriod.title"),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper"))
+    backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage().url)
 ){
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">

@@ -177,6 +177,13 @@ class IncomeUpdateCalculatorController @Inject()(
         val bonusPaymentAmount = optionalSeq(1)
         val payPeriodInDays = optionalSeq(2)
 
+        val backUrl = bonusPaymentAmount match {
+          case None =>
+            controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
+          case _ =>
+            controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url
+        }
+
         val viewModel = CheckYourAnswersViewModel(
           payPeriodFrequency,
           payPeriodInDays,
@@ -185,7 +192,9 @@ class IncomeUpdateCalculatorController @Inject()(
           taxablePay,
           hasBonusPayments,
           bonusPaymentAmount,
-          employer)
+          employer,
+          backUrl
+        )
 
         Ok(checkYourAnswers(viewModel))
     }
@@ -208,7 +217,12 @@ class IncomeUpdateCalculatorController @Inject()(
         Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
       } else {
 
-        val vm = ConfirmAmountEnteredViewModel(employmentName, employmentAmount.oldAmount, employmentAmount.newAmount)
+        val vm = ConfirmAmountEnteredViewModel(
+          employmentName,
+          employmentAmount.oldAmount,
+          employmentAmount.newAmount,
+          controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage(id).url
+        )
         Ok(confirmAmountEntered(vm))
       }
     }).fold(errorPagesHandler.internalServerError(_, None), identity _)

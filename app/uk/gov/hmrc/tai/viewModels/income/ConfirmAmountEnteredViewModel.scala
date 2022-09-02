@@ -19,8 +19,6 @@ package uk.gov.hmrc.tai.viewModels.income
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
-import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 sealed trait PayType
 case object IrregularPay extends PayType
@@ -32,13 +30,15 @@ case class ConfirmAmountEnteredViewModel(
   mainText: Option[String] = None,
   onConfirm: String,
   onCancel: String,
-  estimatedIncome: Int)
+  estimatedIncome: Int,
+  backUrl: String
+)
 
 object ConfirmAmountEnteredViewModel {
 
   private implicit def toMoneyPounds(amount: Int): MoneyPounds = MoneyPounds(amount, 0)
 
-  def apply(employmentId: Int, empName: String, currentAmount: Int, estIncome: Int, payType: PayType)(
+  def apply(employmentId: Int, empName: String, currentAmount: Int, estIncome: Int, payType: PayType, backUrl: String)(
     implicit messages: Messages): ConfirmAmountEnteredViewModel = {
 
     val irregularPayCurrentYear = {
@@ -48,10 +48,10 @@ object ConfirmAmountEnteredViewModel {
         mainText = Some(messages("tai.incomes.confirm.save.message")),
         onConfirm = controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController
           .submitIncomeIrregularHours(employmentId)
-          .url
-          .toString,
+          .url,
         onCancel = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url,
-        estimatedIncome = estIncome
+        estimatedIncome = estIncome,
+        backUrl = backUrl
       )
     }
 
@@ -60,8 +60,9 @@ object ConfirmAmountEnteredViewModel {
         yearRange = TaxYearRangeUtil.futureTaxYearRange(1),
         employerName = empName,
         onConfirm = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url,
-        onCancel = controllers.routes.IncomeTaxComparisonController.onPageLoad.url,
-        estimatedIncome = estIncome
+        onCancel = controllers.routes.IncomeTaxComparisonController.onPageLoad().url,
+        estimatedIncome = estIncome,
+        backUrl = backUrl
       )
     }
 
@@ -72,7 +73,7 @@ object ConfirmAmountEnteredViewModel {
 
   }
 
-  def apply(empName: String, currentAmount: Int, estIncome: Int)(
+  def apply(empName: String, currentAmount: Int, estIncome: Int, backUrl: String)(
     implicit messages: Messages): ConfirmAmountEnteredViewModel =
     ConfirmAmountEnteredViewModel(
       yearRange = TaxYearRangeUtil.currentTaxYearRange,
@@ -80,6 +81,7 @@ object ConfirmAmountEnteredViewModel {
       mainText = Some(messages("tai.incomes.confirm.save.message")),
       onConfirm = controllers.routes.IncomeController.updateEstimatedIncome().url,
       onCancel = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
-      estimatedIncome = estIncome
+      estimatedIncome = estIncome,
+      backUrl = backUrl
     )
 }

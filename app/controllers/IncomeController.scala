@@ -21,10 +21,6 @@ import cats.implicits._
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import uk.gov.hmrc.tai.util.FutureOps._
-import javax.inject.{Inject, Singleton}
-import java.time.LocalDate
-
 import play.api.Logging
 import play.api.data.Form
 import play.api.mvc._
@@ -44,6 +40,7 @@ import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import views.html.incomes._
 
+import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -194,7 +191,11 @@ class IncomeController @Inject()(
                 val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
                 val vm =
-                  ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData)
+                  ConfirmAmountEnteredViewModel(
+                    employment.name,
+                    employmentAmount.oldAmount,
+                    cachedData,
+                    controllers.routes.IncomeController.regularIncome.url)
                 Ok(confirmAmountEntered(vm))
 
               case _ => throw new RuntimeException(s"Not able to found employment with id $empId")
@@ -359,7 +360,11 @@ class IncomeController @Inject()(
             case Some(taxCodeIncome) =>
               val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
-              val vm = ConfirmAmountEnteredViewModel(employment.name, employmentAmount.oldAmount, cachedData(1).toInt)
+              val vm = ConfirmAmountEnteredViewModel(
+                employment.name,
+                employmentAmount.oldAmount,
+                cachedData(1).toInt,
+                "javascript:history.go(-1)") //TODO this is temporary
               Ok(confirmAmountEntered(vm))
             case _ => throw new RuntimeException(s"Not able to found employment with id $id")
           }

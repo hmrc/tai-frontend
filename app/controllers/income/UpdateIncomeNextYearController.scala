@@ -197,7 +197,13 @@ class UpdateIncomeNextYearController @Inject()(
             .map {
               case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue) =>
                 val vm =
-                  ConfirmAmountEnteredViewModel(employmentId, employmentName, currentValue, newAmount, NextYearPay)
+                  ConfirmAmountEnteredViewModel(
+                    employmentId,
+                    employmentName,
+                    currentValue,
+                    newAmount,
+                    NextYearPay,
+                    "javascript:history.go(-1)") //TODO this is temporary
                 Ok(updateIncomeCYPlus1Confirm(vm))
             }
         case Left(error) =>

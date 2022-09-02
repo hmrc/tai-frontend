@@ -32,7 +32,7 @@ ec: scala.concurrent.ExecutionContext)
     ptaHeader(
         displayBackLink = false,
         mainHeadingText = messages("tai.incomes.landing.Heading", incomeName),
-        showGdsVersion =true,
+        showGdsVersion = true,
         preHeadingText = messages("tai.howToUpdate.preHeading", incomeName)
     )
 }
@@ -41,8 +41,9 @@ ec: scala.concurrent.ExecutionContext)
     title = messages("tai.incomes.landing.title", incomeName),
     authedUser = Some(user),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url)
 ){
     <div class="govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
