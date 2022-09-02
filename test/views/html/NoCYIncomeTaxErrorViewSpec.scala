@@ -26,7 +26,9 @@ class NoCYIncomeTaxErrorViewSpec extends TaiViewSpec {
 
   "noCYIncomeTaxErrorPage" should {
     behave like pageWithTitle(messages("tai.noCYIncomeError.heading"))
-    behave like pageWithCombinedHeader(preHeaderText = "Current tax year", mainHeaderText = "Your PAYE Income Tax")
+    behave like pageWithCombinedHeaderNewTemplate(
+      preHeaderText = "Current tax year",
+      mainHeaderText = "Your PAYE Income Tax")
 
     "display no income message" when {
       "name and end date of employer is not present" in {
@@ -51,8 +53,8 @@ class NoCYIncomeTaxErrorViewSpec extends TaiViewSpec {
     }
 
     "have a back link" in {
-      doc.select("#returnToChooseTaxYearLink").text() mustBe messages("tai.returnToChooseTaxYear")
-      doc.select("#returnToChooseTaxYearLink").attr("href") mustBe routes.WhatDoYouWantToDoController
+      doc.select("#backLinkId").text() mustBe messages("tai.returnToChooseTaxYear")
+      doc.select("#backLinkId").attr("href") mustBe routes.WhatDoYouWantToDoController
         .whatDoYouWantToDoPage()
         .toString
     }
