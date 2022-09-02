@@ -85,7 +85,7 @@
         headerContainerClasses: String = Header.defaultObject.containerClasses,
         pagePrintable: Boolean = false,
         pagePrintName: Option[String] = None,
-        hidePtaAccountNav: Boolean = false
+        showPtaAccountNav: Boolean = true
 )(content: Html)(implicit request: Request[_],
         messages: Messages)
 
@@ -137,7 +137,7 @@
 
 @beforeContent = {
 
-@if(!hidePtaAccountNav) {
+@if(showPtaAccountNav) {
     @if(isGG && isSa) {
         @hmrcAccountMenu(AccountMenu(
             businessTaxAccount = Some(BusinessTaxAccount()),
