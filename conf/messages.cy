@@ -840,6 +840,7 @@ tai.noPrimary.reasonItem2=mae gennych fwy nag un incwm ac nid ydym yn gwybod pa 
 tai.notKnown.response=Dwi ddim yn gwybod
 tai.notifications.iya.banner.text=Efallai nad ydych yn talu digon o dreth.
 tai.notifications.iya.linkText=Gwiriwch y tandaliad amcangyfrifedig ar gyfer eleni
+tai.page.title.error=Gwall:
 tai.payPeriod.error.form.incomes.other.mandatory=Nodwch sawl diwrnod sydd rhwng bob diwrnod cyflog
 tai.payPeriod.error.form.incomes.other.invalid=Mae’n rhaid i nifer y diwrnodau rhwng bob diwrnod cyflog fod yn rif
 tai.payPeriod.error.form.incomes.radioButton.mandatory=Dewiswch a ydych yn cael eich talu’n fisol, yn wythnosol, bob pythefnos neu nifer gwahanol o ddiwrnodau

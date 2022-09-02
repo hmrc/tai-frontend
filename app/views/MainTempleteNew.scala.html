@@ -81,11 +81,11 @@
         disableSessionExpired: Boolean = false,
         additionalScriptsBlock: Option[Html] = None,
         beforeContentBlock: Option[Html] = None,
-        nonce: Option[String] = None,
         headerContainerClasses: String = Header.defaultObject.containerClasses,
         pagePrintable: Boolean = false,
         pagePrintName: Option[String] = None,
-        showPtaAccountNav: Boolean = true
+        showPtaAccountNav: Boolean = true,
+        formForErrorSummary: Option[Form[_]] = None
 )(content: Html)(implicit request: Request[_],
         messages: Messages)
 
@@ -153,7 +153,6 @@
     }
 }
 
-
 @if(beforeContentBlock.isDefined) {
     @beforeContentBlock
 } else {
@@ -195,7 +194,13 @@
 
 
 @fullPageTitle = @{
-    s"$title - ${Messages("tai.currentYearSummary.heading")} - GOV.UK"
+    val prefix =
+        if(formForErrorSummary.exists(_.errors.nonEmpty)) {
+            s"${Messages("tai.page.title.error")} "
+        } else {
+            ""
+        }
+    s"$prefix$title - ${Messages("tai.currentYearSummary.heading")} - GOV.UK"
 }
 
 
@@ -231,14 +236,14 @@
 @govukTemplate(
     htmlLang = Some("en"),
     pageTitle = Some(fullPageTitle),
-    headBlock = Some(hmrcHead(nonce = nonce, headBlock = Some(additionalHeadBlock))),
+    headBlock = Some(hmrcHead(nonce = None, headBlock = Some(additionalHeadBlock))),
     headerBlock = headerBlock,
     beforeContentBlock = Some(beforeContent),
     mainClasses = Some("govuk-main-wrapper--auto-spacing"),
     bodyClasses = Some(addPrintableClass),
-    bodyEndBlock = Some(hmrcScripts(nonce = nonce, scriptsBlock = additionalScriptsBlock)),
+    bodyEndBlock = Some(hmrcScripts(nonce = None, scriptsBlock = additionalScriptsBlock)),
     footerBlock = footerDefault,
-    cspNonce = nonce,
+    cspNonce = None,
 )(mainContentDefault)
 
 
