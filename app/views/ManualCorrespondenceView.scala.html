@@ -17,32 +17,40 @@
 @import views.html.includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTempleteNew)
 
 @(contactUrl: String)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
     @header = @{
         ptaHeader(
             mainHeadingText = messages("mci.title"),
-            preHeadingText = ""
+            preHeadingText = "",
+            showGdsVersion = true
         )
     }
 
-    @mainTemplate(
-        title = messages("mci.title"),
-        pageHeader = Some(header),
-        hidePtaAccountNav = true) {
+@mainTemplate(
+    title = messages("mci.title"),
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkContent = None,
+    showPtaAccountNav = false
 
-        <div class="grid-row">
-            <div class="column-two-thirds">
-                <p>@messages("mci.p1")</p>
+) {
 
-                <p>
-                    @messages("mci.p2") <a href=@contactUrl>
-                @messages("mci.link.text")</a>.
-                </p>
-            </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+            <p class="govuk-body">@messages("mci.p1")</p>
+
+            <p class="govuk-body">
+                @messages("mci.p2") <a href="@contactUrl">
+            @messages("mci.link.text")</a>.
+            </p>
         </div>
+    </div>
+
+
+
 
     }
 
