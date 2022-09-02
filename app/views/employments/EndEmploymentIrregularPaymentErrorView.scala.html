@@ -49,7 +49,7 @@
             @Messages("tai.irregular.heading", model.employerName)</h1>
 
 
-        <p class="govuk-body">
+        <p class="govuk-body-l">
             <span class="lede">@Messages("tai.irregular.para1", model.employerName)</span>
         </p>
         <p class="govuk-body">@Messages("tai.irregular.para2", model.employerName)</p>
@@ -61,7 +61,7 @@
             fieldset = Some(Fieldset(
                 legend = Some(Legend(
                     content = Text(Messages("tai.irregular.para4")),
-                    classes = "govuk-fieldset__legend--l",
+                    classes = "govuk-!-font-weight-bold govuk-body",
             ))
         )),
             idPrefix = Some("irregularPayDecision"),
