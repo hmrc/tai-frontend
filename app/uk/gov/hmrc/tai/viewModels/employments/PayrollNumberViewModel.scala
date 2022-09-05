@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels.employments
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 
-case class PayrollNumberViewModel(employmentName: String, firstPayChoice: Boolean)
+case class PayrollNumberViewModel(employmentName: String, firstPayChoice: Boolean, backUrl: String)
 
 object PayrollNumberViewModel extends JourneyCacheConstants with FormValuesConstants {
 
@@ -29,6 +29,10 @@ object PayrollNumberViewModel extends JourneyCacheConstants with FormValuesConst
       case Some(YesValue) => true
       case _              => false
     }
-    PayrollNumberViewModel(employerName, firstPayChoice)
+    val backUrl = cache.get(AddEmployment_ReceivedFirstPayKey) match {
+      case None => controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
+      case _    => controllers.employments.routes.AddEmploymentController.receivedFirstPay().url
+    }
+    PayrollNumberViewModel(employerName, firstPayChoice, backUrl)
   }
 }

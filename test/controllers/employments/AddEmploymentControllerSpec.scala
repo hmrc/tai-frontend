@@ -275,7 +275,7 @@ class AddEmploymentControllerSpec
         when(
           addEmploymentJourneyCacheService.collectedJourneyValues(
             Matchers.eq(Seq(AddEmployment_NameKey)),
-            Matchers.eq(Seq(AddEmployment_RecewivedFirstPayKey)))(any()))
+            Matchers.eq(Seq(AddEmployment_ReceivedFirstPayKey)))(any()))
           .thenReturn(Future.successful(Right(Seq(employmentName), Seq(None))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -293,7 +293,7 @@ class AddEmploymentControllerSpec
         when(
           addEmploymentJourneyCacheService.collectedJourneyValues(
             Matchers.eq(Seq(AddEmployment_NameKey)),
-            Matchers.eq(Seq(AddEmployment_RecewivedFirstPayKey)))(any()))
+            Matchers.eq(Seq(AddEmployment_ReceivedFirstPayKey)))(any()))
           .thenReturn(Future.successful(Right(Seq(employmentName), Seq(Some(YesValue)))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -302,8 +302,8 @@ class AddEmploymentControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.employmentFirstPay.title", employmentName))
-        doc.select("input[id=firstPayChoice-yes][checked=checked]").size() mustBe 1
-        doc.select("input[id=firstPayChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=firstPayChoice][checked]").size() mustBe 1
+        doc.select("input[id=firstPayChoice-2][checked]").size() mustBe 0
       }
     }
   }
@@ -313,7 +313,7 @@ class AddEmploymentControllerSpec
     "redirect user to payroll number page" when {
       "yes is selected" in {
         val sut = createSUT
-        when(addEmploymentJourneyCacheService.cache(mockEq(AddEmployment_RecewivedFirstPayKey), any())(any()))
+        when(addEmploymentJourneyCacheService.cache(mockEq(AddEmployment_ReceivedFirstPayKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.submitFirstPay()(
@@ -332,7 +332,7 @@ class AddEmploymentControllerSpec
       "no is selected" in {
         val sut = createSUT
         val employmentName = "TEST-Employer"
-        when(addEmploymentJourneyCacheService.cache(mockEq(AddEmployment_RecewivedFirstPayKey), any())(any()))
+        when(addEmploymentJourneyCacheService.cache(mockEq(AddEmployment_ReceivedFirstPayKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.submitFirstPay()(

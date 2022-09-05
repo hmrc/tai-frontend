@@ -26,14 +26,16 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec with FormValuesConst
 
   "Add first pay form page" must {
     behave like pageWithTitle(messages("tai.addEmployment.employmentFirstPay.title", employerName))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("add.missing.employment"),
-      messages("tai.addEmployment.employmentFirstPay.title", employerName))
-    behave like pageWithBackLink
+      messages("tai.addEmployment.employmentFirstPay.title", employerName),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
+    behave like haveBackLinkWithUrl(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url)
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-first-pay")
     behave like pageWithYesNoRadioButton(
-      AddEmploymentFirstPayForm.FirstPayChoice + "-yes",
-      AddEmploymentFirstPayForm.FirstPayChoice + "-no")
+      AddEmploymentFirstPayForm.FirstPayChoice,
+      AddEmploymentFirstPayForm.FirstPayChoice + "-2")
     behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 
     "have an error message with the form inputs" when {
@@ -44,7 +46,7 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec with FormValuesConst
           AddEmploymentFirstPayForm.form.withError(AddEmploymentFirstPayForm.FirstPayChoice, noPayrollNumberChooseError)
         def view: Html = template(formWithErrors, employerName)
 
-        val errorMessage = doc(view).select(".error-message").text
+        val errorMessage = doc(view).select(".govuk-error-message").text
         errorMessage mustBe expectedErrorMessage
       }
     }

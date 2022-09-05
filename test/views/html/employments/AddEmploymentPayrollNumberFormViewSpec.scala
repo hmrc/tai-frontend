@@ -47,7 +47,10 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
     behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 
     "have gone back to firstPayChoice page" in {
-      val payrollNumberViewModel = PayrollNumberViewModel(employerName, true)
+      val payrollNumberViewModel = PayrollNumberViewModel(
+        employerName,
+        true,
+        controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url)
       def view: Html = add_employment_payroll_number_form(employmentPayrollForm, payrollNumberViewModel)
       def doc: Document = Jsoup.parse(view.toString())
       doc must haveBackLinkNew
@@ -90,5 +93,9 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
     ))
 
   private lazy val employerName = "Employer"
-  private lazy val payrollNumberViewModel = PayrollNumberViewModel(employerName, false)
+  private lazy val payrollNumberViewModel = PayrollNumberViewModel(
+    employerName,
+    firstPayChoice = false,
+    controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
+  )
 }
