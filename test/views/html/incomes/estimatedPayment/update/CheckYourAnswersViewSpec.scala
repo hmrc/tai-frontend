@@ -46,16 +46,18 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
       taxablePay,
       hasBonusOrOvertime,
       totalBonusOrOvertime,
-      employer)
+      employer,
+      "backUrl"
+    )
 
   "checkYourAnswers" should {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       messages("tai.incomes.edit.preHeading", employer.name),
       messages("tai.checkYourAnswers.heading"))
     behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(employer.id))
-    behave like pageWithBackLink
+    behave like pageWithBackLinkWithUrl("backUrl")
 
     "display confirmation static text" in {
       doc must haveParagraphWithText(messages("tai.checkYourAnswers.confirmText"))

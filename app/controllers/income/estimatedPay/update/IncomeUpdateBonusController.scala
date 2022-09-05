@@ -19,9 +19,10 @@ package controllers.income.estimatedPay.update
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+
 import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, BonusPaymentsForm, YesNoForm}
@@ -48,10 +49,11 @@ class IncomeUpdateBonusController @Inject()(
     for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)
       bonusPayment       <- journeyCacheService.currentValue(UpdateIncome_BonusPaymentsKey)
+      backUrl            <- bonusPaymentBackUrl
     } yield {
       val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
       incomeSourceEither match {
-        case Right(incomeSource) => Ok(bonusPayments(form, incomeSource))
+        case Right(incomeSource) => Ok(bonusPayments(form, incomeSource, backUrl))
         case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
     }
@@ -66,9 +68,10 @@ class IncomeUpdateBonusController @Inject()(
         formWithErrors => {
           for {
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
+            backUrl            <- bonusPaymentBackUrl
           } yield {
             incomeSourceEither match {
-              case Right(incomeSource) => BadRequest(bonusPayments(formWithErrors, incomeSource))
+              case Right(incomeSource) => BadRequest(bonusPayments(formWithErrors, incomeSource, backUrl))
               case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           }
@@ -135,4 +138,12 @@ class IncomeUpdateBonusController @Inject()(
         }
       )
   }
+
+  private def bonusPaymentBackUrl(implicit hc: HeaderCarrier) =
+    journeyCacheService.currentValue(UpdateIncome_TaxablePayKey).map {
+      case None =>
+        controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url
+      case _ =>
+        controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage().url
+    }
 }

@@ -48,7 +48,9 @@
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.irregular.heading"),
+    backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage.url)
 ){
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">

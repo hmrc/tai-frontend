@@ -32,7 +32,7 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
   private val editIncomeIrregularHours = inject[EditIncomeIrregularHoursView]
 
   "Edit income Irregular Hours view" should {
-    behave like pageWithBackLinkNew
+    behave like pageWithBackLink
     behave like pageWithTitle(messages("tai.irregular.heading"))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.estimatedPay.preHeading", employerName),

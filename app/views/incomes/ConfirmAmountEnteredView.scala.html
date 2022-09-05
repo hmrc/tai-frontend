@@ -41,7 +41,9 @@
 @main(
     title = messages("tai.incomes.confirm.save.title", viewModel.yearRange),
     pageTitle = Some(messages("tai.service.navTitle")),
-    backLinkContent = Some(Messages("tai.back-link.upper"))
+    backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(viewModel.backUrl)
 ){
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">

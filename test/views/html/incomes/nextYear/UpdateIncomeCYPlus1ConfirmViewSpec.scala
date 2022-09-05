@@ -30,7 +30,13 @@ class UpdateIncomeCYPlus1ConfirmViewSpec extends TaiViewSpec {
   val estimatedAmount = 1000
   val employmentId = 1
 
-  val vm = ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedAmount, IrregularPay)
+  val vm = ConfirmAmountEnteredViewModel(
+    employmentId,
+    employerName,
+    currentAmount,
+    estimatedAmount,
+    IrregularPay,
+    "javascript:history.go(-1)")
   private val template = inject[UpdateIncomeCYPlus1ConfirmView]
 
   override lazy val view: Html = template(vm)

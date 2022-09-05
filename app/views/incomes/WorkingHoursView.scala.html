@@ -53,15 +53,16 @@
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.workingHours.title"),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).url)
 ){
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
 
             @if(workingHoursForm.errors.nonEmpty){
                @govukErrorSummary(ErrorSummary(errorList = workingHoursForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-         }
+            }
 
             @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.handleWorkingHours){
                 @govukRadios(Radios(

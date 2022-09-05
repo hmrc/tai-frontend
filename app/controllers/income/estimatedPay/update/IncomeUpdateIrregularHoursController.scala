@@ -111,7 +111,16 @@ class IncomeUpdateIrregularHoursController @Inject()(
           Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
         } else {
           val vm =
-            ConfirmAmountEnteredViewModel(employmentId, name, paymentToDate.toInt, newIrregularPay.toInt, IrregularPay)
+            ConfirmAmountEnteredViewModel(
+              employmentId,
+              name,
+              paymentToDate.toInt,
+              newIrregularPay.toInt,
+              IrregularPay,
+              controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController
+                .editIncomeIrregularHours(employmentId)
+                .url
+            )
           Ok(confirmAmountEntered(vm))
         }
       }).recover {

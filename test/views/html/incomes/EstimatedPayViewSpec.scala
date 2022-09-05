@@ -40,7 +40,8 @@ class EstimatedPayViewSpec extends TaiViewSpec {
   }
 
   "Estimated Pay" must {
-    behave like pageWithBackLinkNew
+    behave like pageWithBackLinkWithUrl(
+      controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
     behave like pageWithCancelLink(
       Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url))
     behave like pageWithCombinedHeaderNewFormat(
