@@ -22,10 +22,19 @@
 @import includes.forms.inputRadioGroupStyling
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
 @this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukRadios : GovukRadios, govukErrorSummary: GovukErrorSummary)
 
 @(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+
+@hint = {
+    <p class="govuk-body-l">@Messages("tai.irregular.para1", model.employerName)</p>
+    <p class="govuk-body">@Messages("tai.irregular.para2", model.employerName)</p>
+    <p class="govuk-body">@Messages("tai.irregular.para3")</p>
+    <p class="govuk-!-font-weight-bold govuk-body"> @Messages("tai.irregular.para4")</p>
+}
 
 @mainTemplate(
     title = Messages("tai.irregular.preHeadingText"),
@@ -37,35 +46,23 @@
     @govukErrorSummary(ErrorSummary(errorList = irregularPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
 }
 
-<div class="govuk-grid-column-two-thirds">
-    <div class="govuk-grid-row grid-row">
 
-        <span class="govuk-caption-xl break-word hide-for-print">
-            <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading")</span>
-                        @messages("tai.irregular.preHeadingText")
-        </span>
-
-        <h1 class="govuk-heading-xl heading-xlarge heading-mobile-responsive xbreak-word">
-            @Messages("tai.irregular.heading", model.employerName)</h1>
-
-
-        <p class="govuk-body-l">
-            <span class="lede">@Messages("tai.irregular.para1", model.employerName)</span>
-        </p>
-        <p class="govuk-body">@Messages("tai.irregular.para2", model.employerName)</p>
-        <p class="govuk-body">@Messages("tai.irregular.para3")</p>
+<div class="govuk-grid-row grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
         @form(action= controllers.employments.routes.EndEmploymentController.handleIrregularPaymentError()) {
 
         @govukRadios(Radios(
-            fieldset = Some(Fieldset(
-                legend = Some(Legend(
-                    content = Text(Messages("tai.irregular.para4")),
-                    classes = "govuk-!-font-weight-bold govuk-body",
-            ))
-        )),
+            fieldset =  Some(Fieldset(
+                                legend = Some(HmrcPageHeadingLegend(
+                                    content = Text(Messages("tai.irregular.heading", model.employerName)),
+                                    caption = HmrcSectionCaption(Text(Messages("tai.irregular.preHeadingText" ))))
+                            )
+                        )
+                    ),
             idPrefix = Some("irregularPayDecision"),
             name = "irregularPayDecision",
+            hint = Some(Hint(content = HtmlContent(hint))),
             errorMessage=irregularPayForm.errors.filter(_.key == "irregularPayDecision").asTextErrorMessages.headOption,
             items = Seq(
                 RadioItem(
