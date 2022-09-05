@@ -25,7 +25,7 @@ class NoCurrentIncomeViewSpec extends TaiViewSpec {
 
   "noCurrentIncome view" must {
 
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       messages(
         "tai.taxYear",
         Dates.formatDate(TaxYear().start).replace(" ", "\u00A0"),
