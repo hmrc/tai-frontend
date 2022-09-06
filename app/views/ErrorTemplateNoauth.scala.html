@@ -27,11 +27,11 @@
     showPtaAccountNav = false
 ){
     <div class="govuk-grid-row">
-        <h1 class="govuk-heading-l">@heading</h1>
         <div class="govuk-grid-column-two-thirds">
-            <p>@Html(message1)</p>
+        <h1 class="govuk-heading-l">@heading</h1>
+            <p class="govuk-body">@Html(message1)</p>
             @additionalMessages.map{ message =>
-              <p>@Html(message)</p>
+              <p class="govuk-body">@Html(message)</p>
             }
         </div>
     </div>
