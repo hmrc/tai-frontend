@@ -16,23 +16,30 @@
 
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTempleteNew)
 
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 
 @mainTemplate(
-    title = messages("tai.timeout.title")
+    title = messages("tai.timeout.title"),
+    pageTitle = Some(messages("tai.service.navTitle")),
+    backLinkContent = None
 ){
-    <header class="page-header">
-        <h1>@messages("tai.timeout.title")</h1>
-    </header>
-    <p>@messages("tai.timeout.message")</p>
-    <p>@messages("tai.timeout.message.pleaseLogin")</p>
-    @includes.link(
-        url=routes.TaxAccountSummaryController.onPageLoad().toString,
-        copy=messages("tai.timeout.login_button.text"),
-        linkClasses=Seq("button")
-    )
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <header class="page-header">
+            <h1 class="govuk-heading-xl">@messages("tai.timeout.title")</h1>
+        </header>
+        <p class="govuk-body">@messages("tai.timeout.message")</p>
+        <p class="govuk-body">@messages("tai.timeout.message.pleaseLogin")</p>
+        @includes.link(
+            url=routes.TaxAccountSummaryController.onPageLoad().toString,
+            copy=messages("tai.timeout.login_button.text"),
+            linkClasses=Seq("govuk-button")
+        )
+    </div>
+</div>
 }
