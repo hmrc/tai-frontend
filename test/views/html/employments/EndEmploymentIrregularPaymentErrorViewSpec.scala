@@ -27,23 +27,24 @@ class EndEmploymentIrregularPaymentErrorViewSpec extends TaiViewSpec with Irregu
 
   "Irregular pay page" must {
     behave like pageWithTitle(messages("tai.irregular.preHeadingText"))
-    behave like pageWithBackLink
+    behave like pageWithBackLinkNew
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.empId))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.irregular.preHeadingText"),
-      messages("tai.irregular.heading", model.employerName))
+      messages("tai.irregular.heading", model.employerName),
+      Some(messages("tai.ptaHeader.accessible.preHeading")))
     behave like pageWithContinueButtonForm("/check-income-tax/end-employment/handle-irregular-payment")
 
     "display paragraphs" in {
       doc(view) must haveParagraphWithText(messages("tai.irregular.para1", model.employerName))
       doc(view) must haveParagraphWithText(messages("tai.irregular.para2", model.employerName))
       doc(view) must haveParagraphWithText(messages("tai.irregular.para3"))
-      doc(view) must haveElementAtPathWithText("legend span", messages("tai.irregular.para4"))
+      doc(view) must haveParagraphWithText(messages("tai.irregular.para4"))
     }
 
     "display radio buttons" in {
-      doc must haveElementAtPathWithId("fieldset input", "irregularPayDecision-contactemployer")
-      doc must haveElementAtPathWithId("fieldset input", "irregularPayDecision-updatedetails")
+      doc must haveElementAtPathWithId("fieldset input", "irregularPayDecision")
+      doc must haveElementAtPathWithId("fieldset input", "irregularPayDecision-2")
       doc must haveElementAtPathWithText("fieldset label", messages("tai.irregular.option1", model.employerName))
       doc must haveElementAtPathWithText("fieldset label", messages("tai.irregular.option2"))
     }
@@ -52,8 +53,8 @@ class EndEmploymentIrregularPaymentErrorViewSpec extends TaiViewSpec with Irregu
       "form has error" in {
         val errorView = template(formWithErrors, model)
         doc(errorView) must haveClassWithText(
-          messages("tai.error.message") + " " + messages("tai.error.chooseOneOption"),
-          "error-message")
+          messages("tai.errorMessage.heading") + " " + messages("tai.error.chooseOneOption"),
+          "govuk-error-summary")
       }
     }
   }
