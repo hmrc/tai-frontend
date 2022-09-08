@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1TemplateNew, form: FormWithCSRF, govukInput : GovukInput)
+@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template, form: FormWithCSRF, govukInput : GovukInput)
 
 @(employmentName: String, employmentId: Int, isPension: Boolean, currentValue: Int, incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
     implicit request: Request[_],
