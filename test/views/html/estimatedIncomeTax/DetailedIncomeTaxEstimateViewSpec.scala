@@ -44,8 +44,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
     behave like pageWithCombinedHeaderNewFormat(
       Messages(
         "tai.taxYear",
-        Dates.formatDate(TaxYear().start),
-        Dates.formatDate(TaxYear().end)
+        nonBreakable(Dates.formatDate(TaxYear().start)),
+        nonBreakable(Dates.formatDate(TaxYear().end))
       ),
       Messages("tai.estimatedIncome.detailedEstimate.heading"),
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))
