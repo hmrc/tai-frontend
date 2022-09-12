@@ -598,7 +598,7 @@ tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensi
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions=Incwm o bensiynau preifat
 tai.incomeTaxComparison.incomeTax.subHeading.less=Rydym yn amcangyfrif y byddwch yn talu {0} yn llai o dreth y flwyddyn nesaf
 tai.incomeTaxComparison.incomeTax.subHeading.more=Rydym yn amcangyfrif y byddwch yn talu {0} yn fwy o dreth y flwyddyn dreth nesaf
-tai.incomeTaxComparison.incomeTax.subHeading.same=Rydym yn amcangyfrif y byddwch yn talu’r un faint o dreth y flwyddyn dreth nesaf
+tai.incomeTaxComparison.incomeTax.subHeading.same=Treth amcangyfrifedig y byddwch yn ei thalu’r flwyddyn nesaf
 tai.incomeTaxComparison.preHeading.screenReader=Yr adran hon yw’r gymhariaeth treth incwm ar gyfer
 tai.incomeTaxComparison.sidebar.subHeading=Ewch i’r flwyddyn dreth bresennol
 tai.incomeTaxComparison.taxCodes.description=Defnyddir eich codau treth i gyfrifo faint o Dreth Incwm i’w chymryd o’ch cyflog neu’ch pensiwn.
@@ -630,7 +630,7 @@ tai.incomeTaxComparison.whatHappensNext.subHeading=Yr hyn sy’n digwydd nesaf
 tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text=Os yw’r wybodaeth hon yn gywir, nid oes angen i chi wneud unrhyw beth.
 tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text=Caiff eich codau treth a’ch amcangyfrifon incwm ar gyfer y flwyddyn dreth nesaf eu defnyddio ar gyfer eich cyfrif o {0} ymlaen.
 tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text=Gall y cyfrifiad hwn newid pan gawn y diweddariad terfynol o’ch cyflogres neu ddatganiad pensiwn ar gyfer y flwyddyn dreth bresennol.
-tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading=Os yw’r wybodaeth yr ydych wedi’i gweld yn anghywir neu’n anghyflawn
+tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading=Rhowch wybod i ni am unrhyw newidiadau
 tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description=Gallwch roi gwybod i ni am newidiadau a fydd yn gymwys o {0} ymlaen ar gyfer unrhyw rai o’r canlynol:
 tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText=buddiannau cwmni
 tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText=Rhoi gwybod i ni am fuddiannau cwmni.
