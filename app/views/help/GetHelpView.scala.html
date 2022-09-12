@@ -18,7 +18,7 @@
 @import includes.ptaHeader
 @import scala.concurrent.ExecutionContext
 
-@this(mainTemplate: MainTemplate)
+@this(mainTemplate: MainTempleteNew)
 
 @(appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.AuthedUser,
@@ -27,38 +27,47 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("tai.getHelp.h1"),
-        preHeadingText = Messages("tai.iya.tax.you.owe.preHeading")
+        preHeadingText = Messages("tai.iya.tax.you.owe.preHeading"),
+        showGdsVersion = true
     )
 }
 
 @mainTemplate(
     title = Messages("tai.getHelp.h1"),
-    articleClasses = Some("full-width"),
+    pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(user),
-    pageHeader = Some(header)
+    backLinkId = "backLink",
+    backLinkContent = Some(Messages("tai.back-link.upper")),
 ){
 
-<p>@Messages("tai.getHelp.p1")</p>
+<div class = "govuk-grid-row">
+    <div class = "govuk-grid-column-two-thirds">
+        @header
 
-<p>
-@Html(Messages("tai.getHelp.contact", includes.link(
-    url = if (messages.lang.language == "cy") {
-        appConfig.contactHelplineWelshUrl
-    } else {
-        appConfig.contactHelplineUrl
-    },
-    copy = messages("tai.getHelp.contact.link"),
-    externalLink = true
-)))
-</p>
-
-<p>
-@Html(Messages("tai.getHelp.form.p1.text.with.also",
-    includes.link(id=Some("get-help-iform-link"),
-    url=appConfig.hardshipHelpUrl,
-    copy=Messages("tai.getHelp.form.link.title"))))
-</p>
+        <p class="govuk-body">@Messages("tai.getHelp.p1")</p>
+        
+        <p class="govuk-body">
+        @Html(Messages("tai.getHelp.contact", includes.link(
+            url = if (messages.lang.language == "cy") {
+                appConfig.contactHelplineWelshUrl
+            } else {
+                appConfig.contactHelplineUrl
+            },
+            copy = messages("tai.getHelp.contact.link"),
+            externalLink = true
+        )))
+        </p>
+        
+        <p class="govuk-body">
+        @Html(Messages("tai.getHelp.form.p1.text.with.also",
+            includes.link(id=Some("get-help-iform-link"),
+            url=appConfig.hardshipHelpUrl,
+            copy=Messages("tai.getHelp.form.link.title"))))
+        </p>
+        
+    </div>
+</div>
 
 }
