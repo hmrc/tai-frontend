@@ -18,12 +18,14 @@
 @import includes.cancelLink
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
-@this(mainTemplate: MainTemplate)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+
+@this(mainTemplate: MainTempleteNew, govukErrorSummary: GovukErrorSummary)
 
 @(employerName: String,
   form: Option[Form[_]],
   heading: String,
-  title: String,
   showCancel: Boolean = true,
   cancelText : Option[String] = None
 
@@ -36,24 +38,30 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = form,
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = heading,
-        preHeadingText = messages("tai.updateIncome.CYPlus1.preheading", employerName)
+        preHeadingText = messages("tai.updateIncome.CYPlus1.preheading", employerName),
+        showGdsVersion = true,
+        govukErrorSummary = Some(govukErrorSummary)
     )
 }
 
 @mainTemplate(
-    title = title,
-    articleClasses = Some(""),
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
+    title = heading,
     authedUser = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employerName)
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink"
 ){
-    <div class="section flush--bottom soft--top soft--bottom">
+<div class = "govuk-grid-row">
+    <div class = "govuk-grid-column-two-thirds">
+        @header
+
         @content
 
         @if(showCancel){
-          @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url), linkText = cancelText)
+            @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url), linkText = cancelText)
         }
     </div>
+</div>
 }
