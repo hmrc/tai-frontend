@@ -3,7 +3,7 @@ global.error.InternalServerError500.heading = Sorry, there is a problem with the
 global.error.InternalServerError500.message = Try again later.
 
 add.missing.company.benefit=Add a missing company benefit
-add.missing.employment=Add a missing employment
+add.missing.employment=Add a missing employer
 add.missing.pension=Add a missing pension
 account.closed=Account closed
 action=Action
@@ -150,6 +150,7 @@ tai.addEmployment.employmentPayrollNumber.pagetitle=Do you know your payroll num
 tai.addEmployment.startDateForm.customGaTitle=When did you start working for this employer?
 tai.addEmployment.startDateForm.label=Enter the date you started at {0}. The date cannot be in the future.
 tai.addEmployment.startDateForm.title=When did you start working for {0}?
+tai.addEmployment.startDateForm.subHeading=Enter the date you started working at {0}. This date cannot be in the future.
 tai.addEmployment.startDateForm.pagetitle=When did you start working for this employer?
 tai.addPensionProvider.addNameForm.title=What is the name of the pension provider you want to add?
 tai.addPensionProvider.cya.q1=Provider name
