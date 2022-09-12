@@ -51,7 +51,7 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec with FormValuesCons
         val add_employment_first_pay_form = inject[AddEmploymentFirstPayFormView]
         def view: Html = add_employment_first_pay_form(formWithErrors, pensionProviderName)
 
-        val errorMessage = doc(view).select(".error-message").text
+        val errorMessage = doc(view).select(".govuk-error-message").text
         errorMessage mustBe expectedErrorMessage
       }
     }

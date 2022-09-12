@@ -151,7 +151,7 @@ class AddEmploymentController @Inject()(
 
   def receivedFirstPay(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService
-      .collectedJourneyValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_RecewivedFirstPayKey))
+      .collectedJourneyValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_ReceivedFirstPayKey))
       .getOrFail
       .map {
         case (mandSeq, optSeq) =>
@@ -171,7 +171,7 @@ class AddEmploymentController @Inject()(
           }
         },
         firstPayYesNo => {
-          journeyCacheService.cache(AddEmployment_RecewivedFirstPayKey, firstPayYesNo.getOrElse("")) map { _ =>
+          journeyCacheService.cache(AddEmployment_ReceivedFirstPayKey, firstPayYesNo.getOrElse("")) map { _ =>
             firstPayYesNo match {
               case Some(YesValue) =>
                 Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
