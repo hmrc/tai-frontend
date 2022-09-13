@@ -76,7 +76,7 @@ class DeceasedHelplineViewSpec extends TaiViewSpec {
       val spanElement = element.children().first()
       spanElement.text mustBe messages("tai.deceased.telephone")
       spanElement.tag().toString mustBe "span"
-      spanElement.attr("class") mustBe "visually-hidden"
+      spanElement.attr("class") mustBe "govuk-visually-hidden"
     }
 
     "include an outside of uk telephone number" in {
@@ -88,7 +88,7 @@ class DeceasedHelplineViewSpec extends TaiViewSpec {
 
     "include the hidden heading opening times" in {
       doc must haveHeadingH3WithText(messages("tai.deceased.opening.times"))
-      doc must haveElementAtPathWithClass("h3[id=openingTimes]", "visually-hidden")
+      doc must haveElementAtPathWithClass("h3[id=openingTimes]", "govuk-visually-hidden")
     }
 
     "include a time for Monday to Friday" in {
