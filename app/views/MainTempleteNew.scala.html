@@ -81,15 +81,17 @@
         disableSessionExpired: Boolean = false,
         additionalScriptsBlock: Option[Html] = None,
         beforeContentBlock: Option[Html] = None,
-        headerContainerClasses: String = Header.defaultObject.containerClasses,
         pagePrintable: Boolean = false,
         pagePrintName: Option[String] = None,
         showPtaAccountNav: Boolean = true,
-        formForErrorSummary: Option[Form[_]] = None
+        formForErrorSummary: Option[Form[_]] = None,
+        nonce: Option[String] = None,
+        showUrBannerOverride: Boolean = false
 )(content: Html)(implicit request: Request[_],
         messages: Messages)
 
 
+@isUserResearchBannerHidden = @{request.cookies.exists((x: Cookie) => x.name == "mdtpurr")}
 
 @isGG = @{
     authedUser.fold(false) {
@@ -122,6 +124,24 @@
 }
 }
 
+@urBanner = {
+    <div class="hmrc-user-research-banner" data-module="hmrc-user-research-banner">
+        <div class="hmrc-user-research-banner__container govuk-width-container">
+            <div class="hmrc-user-research-banner__text">
+                <div class="hmrc-user-research-banner__title govuk-!-font-weight-bold">
+                    @{Messages("tai.urbanner.title")}
+                </div>
+                    <a class="govuk-link hmrc-user-research-banner__link" rel="noopener noreferrer" href="@appConfig.urBannerLink" target="_blank">
+                            @{Messages("tai.urbanner.text")}
+                    </a>
+            </div>
+            <button class="govuk-link hmrc-user-research-banner__close">
+            @messages("tai.urbanner.reject")
+            </button>
+        </div>
+    </div>
+}
+
 @headerBlock = {
 @hmrcHeader(Header(
     homepageUrl = "http://www.gov.uk",
@@ -132,6 +152,10 @@
     displayHmrcBanner = false,
     inputLanguageToggle = Some(LanguageToggle((En, switchToLanguage(En.code).url), (Cy, switchToLanguage(Cy.code).url)))
 ))
+
+@if(!isUserResearchBannerHidden && (appConfig.urBannerEnabled || showUrBannerOverride)) {
+    @urBanner
+}
 }
 
 
