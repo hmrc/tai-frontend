@@ -39,7 +39,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
 
     behave like pageWithTitle(messages("tai.estimatedIncome.detailedEstimate.title"))
     behave like pageWithHeader(messages("tai.estimatedIncome.detailedEstimate.heading"))
-    behave like pageWithBackLink
+    behave like pageWithBackLinkWithUrl(routes.EstimatedIncomeTaxController.estimatedIncomeTax().url)
 
     behave like pageWithCombinedHeaderNewFormat(
       Messages(
