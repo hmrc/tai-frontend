@@ -44,7 +44,10 @@
         showGdsVersion = true
     )
 }
-
+@hint = {
+    <p class="govuk-body">@messages("tai.addEmployment.startDateForm.subHeading", employmentName)</p>
+    <p>@messages("tai.label.date.example")</p>
+}
 @mainTemplate(
     title = Messages("tai.addEmployment.startDateForm.pagetitle"),
     authedUser = Some(user),
@@ -70,9 +73,8 @@
         @govukDateInput(DateInput(
             id = "tellUsStartDateForm",
             namePrefix = Some("tellUsStartDateForm"),
-            hint = Some(Hint(
-                content = Text(messages("tai.label.date.example"))
-            )),
+            hint = Some(Hint(content = HtmlContent(hint))),
+
             items = Seq(
                 InputItem(
                     name= "day",

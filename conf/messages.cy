@@ -3,7 +3,7 @@ global.error.InternalServerError500.heading = Mae’n ddrwg gennym, mae problem 
 global.error.InternalServerError500.message = Rhowch gynnig arall arni yn nes ymlaen.
 
 add.missing.company.benefit=Ychwanegu buddiant cwmni sydd ar goll
-add.missing.employment=Ychwanegu Cyflogaeth sydd ar goll
+add.missing.employment=Ychwanegu cyflogwr sydd ar goll
 add.missing.pension=Ychwanegu pensiwn sydd ar goll
 account.closed=Cyfrif wedi cau
 action=Camau i’w cymryd
@@ -150,6 +150,7 @@ tai.addEmployment.employmentPayrollNumber.pagetitle=A ydych yn gwybod beth yw’
 tai.addEmployment.startDateForm.customGaTitle=Pryd wnaethoch ddechrau gweithio i’r cyflogwr hwn?
 tai.addEmployment.startDateForm.label=Nodwch y dyddiad y dechreuoch yn {0}. Ni all y dyddiad fod yn y dyfodol.
 tai.addEmployment.startDateForm.title=Pryd wnaethoch ddechrau gweithio i {0}?
+tai.addEmployment.startDateForm.subHeading= Nodwch y dyddiad y gwnaethoch ddechrau gweithio i {0}. Ni all y dyddiad hwn fod yn y dyfodol.
 tai.addEmployment.startDateForm.pagetitle=Pryd gwnaethoch ddechrau gweithio i’r cyflogwr hwn?
 tai.addPensionProvider.addNameForm.title=Beth yw enw’r darparwr pensiwn yr hoffech ei ychwanegu?
 tai.addPensionProvider.cya.q1=Enw’r darparwr
