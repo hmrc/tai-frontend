@@ -31,7 +31,7 @@ class EstimatedPayLandingPageViewSpec extends TaiViewSpec {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
   }
 
-  "have an accessible pre heading" in {
+  "have an accessible heading" in {
     doc(view) must haveHeadingWithText(messages("tai.incomes.landing.Heading", employerName))
   }
 
