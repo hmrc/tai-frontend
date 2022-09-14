@@ -46,9 +46,10 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
   "RtiDisabledHistoricPayAsYouEarn view" should {
 
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewFormat(
       messages("tai.paye.lastTaxYear.preHeading"),
-      messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year)))
+      messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year))
+    )
 
     behave like pageWithTitle(
       messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year)))
@@ -75,7 +76,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           appConfig)
 
         doc(view) must haveLinkWithUrlWithClass(
-          "taxCodeDescription",
+          "govuk-link",
           controllers.routes.YourTaxCodeController.prevTaxCodes(cyMinusOneTaxYear).url)
       }
     }
@@ -516,7 +517,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
       val doc: Document = Jsoup.parse(sut.toString)
 
-      doc.select(".grid-1-3").size() mustBe 1
+      doc.select(".govuk-grid-column-one-third").size() mustBe 1
     }
   }
 
