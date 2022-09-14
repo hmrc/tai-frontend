@@ -65,7 +65,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
       val title = doc.select("title").text()
       title must include("Bad request - 400")
 
-      val heading = doc.select(".h1-heading").text()
+      val heading = doc.select(".govuk-heading-l").text()
       heading mustBe "There is a problem"
 
     }
@@ -92,7 +92,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
       val title = doc.select("title").text()
       title must include("Bad request - 400")
 
-      val heading = doc.select(".h1-heading").text()
+      val heading = doc.select(".govuk-heading-l").text()
       heading mustBe Messages("tai.errorMessage.heading.nps")
     }
 
@@ -111,7 +111,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
       val title = doc.select("title").text()
       title must include("Bad request - 400")
 
-      val heading = doc.select(".h1-heading").text()
+      val heading = doc.select(".govuk-heading-l").text()
       heading mustBe "There is a problem"
 
     }
@@ -128,7 +128,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      val heading = doc.select(".h1-heading").text()
+      val heading = doc.select(".govuk-heading-l").text()
       heading mustBe "Sorry, there is a problem with the service"
 
       val title = doc.select("title").text()
@@ -160,7 +160,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      val heading = doc.select(".h1-heading").text()
+      val heading = doc.select(".govuk-heading-l").text()
       heading mustBe Messages("tai.errorMessage.heading.nps")
 
       val title = doc.select("title").text()
@@ -177,7 +177,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      val heading = doc.select(".h1-heading").text()
+      val heading = doc.select(".govuk-heading-l").text()
       heading mustBe "There is a problem"
 
       val title = doc.select("title").text()
@@ -197,7 +197,7 @@ class ErrorPagesHandlerSpec extends BaseSpec {
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      val heading = doc.select(".h1-heading").text()
+      val heading = doc.select(".govuk-heading-l").text()
       heading mustBe "Sorry, there is a problem with the service"
 
       val title = doc.select("title").text()
