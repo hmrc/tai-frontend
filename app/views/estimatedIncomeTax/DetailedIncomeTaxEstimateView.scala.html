@@ -48,13 +48,6 @@
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkId = "backLink"
 ){
-<style>
-    .govuk-details {
-        padding: 1px;
-        margin: 1px;
-    }
-</style>
-
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         @header
@@ -131,6 +124,7 @@
                 @Messages("tai.estimatedIncome.additionalTax.title")</h3>
             <p id="additionalTaxTable-desc" class="govuk-body">@Messages("tai.estimatedIncome.additionalTax.desc")</p>
             <table id="additionalTaxTable" class="govuk-table">
+                <caption class="govuk-table__caption govuk-table__caption--m">@Messages("tai.estimatedIncome.additionalTax.table.caption")</caption>
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                     @if(viewModel.additionalTaxTable.size>1) {
@@ -169,6 +163,7 @@
             <p id="taxPaidElsewhereTable-desc" class="govuk-body">
                 @Messages("tai.estimatedIncome.reductionsTax.desc")</p>
             <table id="taxPaidElsewhereTable" class="govuk-table">
+                <caption class="govuk-table__caption govuk-table__caption--m">@Messages("tai.estimatedIncome.reductionsTax.desc")</caption>
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                     @if(viewModel.reductionTaxTable.size>1) {
