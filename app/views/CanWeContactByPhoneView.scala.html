@@ -82,12 +82,15 @@
                         govukInput(Input(
                                 id = "yesNoTextEntry",
                                 name = "yesNoTextEntry",
+                                inputmode = Some("numeric"),
                                 hint = Some(Hint(content = Text(Messages("tai.canWeContactByPhone.telephoneNumber.hint")))),
                                 value = yesNoForm.data.get(YesNoTextEntryForm.YesNoTextEntry),
                                 label = Label(
                                     classes = "govuk-label--s",
                                     content = Text(Messages("tai.phoneNumber")),
+
                                 ),
+                                pattern = Some("[0-9]*"),
                                 errorMessage = yesNoForm.errors.filter(_.key == "yesNoTextEntry").asTextErrorMessages.headOption
                                 ))
                             )
