@@ -32,24 +32,12 @@
   ec: scala.concurrent.ExecutionContext)
 
 
-@backLinkToChooseTaxYear = {
-    <p class="flush--bottom">
-        @link(
-            id=Some("returnToChooseTaxYearLink"),
-            url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-            copy=Messages("tai.returnToChooseTaxYear"),
-            linkClasses=Seq("link-back")
-        )
-    </p>
-}
-
 @header = @{
     ptaHeader(
         displayBackLink = false,
         mainHeadingText = viewModel.header,
         preHeadingText = request.fullName,
         preHeadingAccessibleAnnouncement = "This section is the income tax summary for",
-        customBackLinkContent = Some(backLinkToChooseTaxYear),
         showGdsVersion = true)
 }
 
@@ -58,7 +46,7 @@
         authedUser = Some(request.taiUser),
         pageTitle = Some(Messages("tai.service.navTitle")),
         backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
-        backLinkContent = Some(Messages("tai.returnToChooseTaxYear")),
+        backLinkContent = Some(Messages("your.paye.income.tax.overview")),
         pagePrintable = true,
         pagePrintName = Some("historic-pay-as-you-earn")
     ){
