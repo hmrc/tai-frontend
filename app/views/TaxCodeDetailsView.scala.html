@@ -65,10 +65,9 @@
                             <div class="govuk-grid-row under-line custom-align">
                                 <div class="govuk-grid-column-one-quarter " id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
                                     <span class="govuk-visually-hidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
-                                    <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@taxCodeTerm</p>
+                                    <p aria-hidden="true" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@taxCodeTerm</p>
                                 </div>
                                 <div class="govuk-grid-column-three-quarters  fixed-small" id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
-                                    <span class="govuk-visually-hidden">@messages("tai.taxCode.definition.announce") </span>
                                     <p class="govuk-body-s print">@Html(taxCodeList.descriptionItems(taxCodeTerm))</p>
                                 </div>
                             </div>
