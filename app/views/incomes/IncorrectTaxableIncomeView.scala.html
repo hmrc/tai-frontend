@@ -22,43 +22,51 @@
 @import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 @import uk.gov.hmrc.tai.util.DateHelper
 
-@this(mainTemplate: MainTemplate, loginStatus: LoginStatus)
+@this(mainTemplate: MainTempleteNew, loginStatus: LoginStatus)
 
 @( payYTD: BigDecimal = 0, payDate: java.time.LocalDate, id: Int)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(
     title = messages("tai.estimatedPay.error.incorrectTaxableIncome.title"),
-    articleClasses = Some("full-width text"),
-    authedUser = Some(user)
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkId = "backLink",
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage.url),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    authedUser = Some(user),
 ){
-    <header class="page-header">
-        <h1 class="heading-xlarge " id="currentYearTitle">@messages("tai.estimatedPay.error.incorrectTaxableIncome.heading")</h1>
-    </header>
-    
-    <div class="flash error-summary error-summary--show">
-        <h2 class="error-summary-heading flush--top" >
-            @messages("tai.estimatedPay.error.incorrectTaxableIncome.errorTitle")
-        </h2>
-        <p>@messages("tai.estimatedPay.error.incorrectTaxableIncome.description", MoneyPounds(payYTD, 0, true).quantity, DateHelper.monthOfYear(Dates.formatDate(payDate))) </p>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <header class="page-header">
+            <h1 class="govuk-heading-xl" id="currentYearTitle">@messages("tai.estimatedPay.error.incorrectTaxableIncome.heading")</h1>
+        </header>
+
+        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+            <h2 class="govuk-error-summary__title flush--top" >
+                @messages("tai.estimatedPay.error.incorrectTaxableIncome.errorTitle")
+            </h2>
+            <p class="govuk-body">@messages("tai.estimatedPay.error.incorrectTaxableIncome.description", MoneyPounds(payYTD, 0, true).quantity, DateHelper.monthOfYear(Dates.formatDate(payDate))) </p>
+        </div>
+
+        <div>
+            <h2 class="govuk-heading-m">
+                @messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext")
+            </h2>
+            <p class="govuk-body">@messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line1")</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>@messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line2")</li>
+                <li>@messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line3")</li>
+                <li>@messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line4")</li>
+            </ul>
+            @includes.link(
+                copy=messages("tai.estimatedPay.error.incorrectTaxableIncome.button"),
+                url = income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).toString,
+                isButton=true,
+                isSecondary=true,
+                linkClasses=Seq("govuk-button", "govuk-!-margin-top-4")
+            )
+        </div>
     </div>
-    
-    <div>
-        <h2>
-            @messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext")
-        </h2>
-        <p>@messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line1")</p>
-        <ul class="list list-bullet">
-            <li>@messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line2")</li>
-            <li>@messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line3")</li>
-            <li>@messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line4")</li>
-        </ul>
-        @includes.link(
-            copy=messages("tai.estimatedPay.error.incorrectTaxableIncome.button"),
-            url = income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).toString,
-            isButton=true,
-            isSecondary=true
-        )
-    </div>
+</div>
 
 }
