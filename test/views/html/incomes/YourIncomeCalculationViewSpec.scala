@@ -44,11 +44,17 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
 
         def potentiallyCeasedView = template(model)
 
-        doc(potentiallyCeasedView) must haveH2HeadingWithText(
+        doc(potentiallyCeasedView) must haveParagraphWithText(
           messages(
             "tai.income.calculation.heading",
             s"${TaxYear().start.format(DateTimeFormatter.ofPattern(dateFormatPattern))}",
             s"${TaxYear().end.format(DateTimeFormatter.ofPattern(dateFormatPattern))}"
+          )
+        )
+        doc(potentiallyCeasedView) must haveParagraphWithText(
+          messages(
+            "tai.income.calculation.heading.employerInfo",
+            s"${model.employerName}"
           )
         )
       }
@@ -58,10 +64,16 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
 
         def potentiallyCeasedView = template(model)
 
-        doc(potentiallyCeasedView) must haveH2HeadingWithText(
+        doc(potentiallyCeasedView) must haveParagraphWithText(
           messages(
             "tai.income.calculation.heading.withRti",
             model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
+        )
+        doc(potentiallyCeasedView) must haveParagraphWithText(
+          messages(
+            "tai.income.calculation.heading.employerInfo",
+            s"${model.employerName}"
+          )
         )
         doc(potentiallyCeasedView) must haveParagraphWithText(
           messages("tai.income.calculation.potentially.ceased.lede"))
@@ -74,11 +86,17 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
 
         def ceasedView = template(model)
 
-        doc(ceasedView) must haveH2HeadingWithText(
+        doc(ceasedView) must haveParagraphWithText(
           messages(
             "tai.income.calculation.heading",
             s"${TaxYear().start.format(DateTimeFormatter.ofPattern(dateFormatPattern))}",
             s"${TaxYear().end.format(DateTimeFormatter.ofPattern(dateFormatPattern))}"
+          )
+        )
+        doc(ceasedView) must haveParagraphWithText(
+          messages(
+            "tai.income.calculation.heading.employerInfo",
+            s"${model.employerName}"
           )
         )
       }
@@ -88,10 +106,16 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
 
         def ceasedView = template(model)
 
-        doc(ceasedView) must haveH2HeadingWithText(
+        doc(ceasedView) must haveParagraphWithText(
           messages(
             "tai.income.calculation.ceased.heading",
             model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
+        )
+        doc(ceasedView) must haveParagraphWithText(
+          messages(
+            "tai.income.calculation.heading.employerInfo",
+            s"${model.employerName}"
+          )
         )
         doc(ceasedView) must haveParagraphWithText(
           messages("tai.income.calculation.rti.ceased.emp", s"${DateHelper.toDisplayFormat(model.endDate)}"))
@@ -104,20 +128,32 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
 
         def liveView = template(model)
 
-        doc(liveView) must haveH2HeadingWithText(
+        doc(liveView) must haveParagraphWithText(
           messages(
             "tai.income.calculation.heading",
             s"${TaxYear().start.format(DateTimeFormatter.ofPattern(dateFormatPattern))}",
             s"${TaxYear().end.format(DateTimeFormatter.ofPattern(dateFormatPattern))}"
           )
         )
+        doc(liveView) must haveParagraphWithText(
+          messages(
+            "tai.income.calculation.heading.employerInfo",
+            s"${model.employerName}"
+          )
+        )
       }
 
       "payments are present" in {
-        doc(view) must haveH2HeadingWithText(
+        doc(view) must haveParagraphWithText(
           messages(
             "tai.income.calculation.heading.withRti",
             model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
+        )
+        doc(view) must haveParagraphWithText(
+          messages(
+            "tai.income.calculation.heading.employerInfo",
+            s"${model.employerName}"
+          )
         )
       }
 
