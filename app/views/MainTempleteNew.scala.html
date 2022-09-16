@@ -256,6 +256,11 @@
     } else ""
 }
 
+@additionalScriptsBlock = {
+    (<script src='@controllers.routes.AssetsController.versioned("javascripts/newcard.js")'></script>
+}
+
+
 @govukTemplate(
     htmlLang = Some("en"),
     pageTitle = Some(fullPageTitle),
@@ -264,7 +269,7 @@
     beforeContentBlock = Some(beforeContent),
     mainClasses = Some("govuk-main-wrapper--auto-spacing"),
     bodyClasses = Some(addPrintableClass),
-    bodyEndBlock = Some(hmrcScripts(nonce = None, scriptsBlock = additionalScriptsBlock)),
+    bodyEndBlock = Some(hmrcScripts(nonce = None, scriptsBlock = Some(additionalScriptsBlock))),
     footerBlock = footerDefault,
     cspNonce = None,
 )(mainContentDefault)
