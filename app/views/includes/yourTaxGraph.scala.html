@@ -69,7 +69,7 @@
         <table  class="govuk-table" >
             <thead class="govuk-table__head">
                 <tr>
-                    <th class="govuk-table__header">@Messages("tai.key")</th>
+                    <th aria-hidden="true" class="govuk-table__header">@Messages("tai.key")</th>
                     <th class="govuk-table__header">@Messages("tai.item")</th>
                     <th class="govuk-table__header govuk-table__cell--numeric text--right govuk-!-font-weight-bold">@Messages("tai.amount")</th>
                 </tr>
@@ -77,7 +77,7 @@
             <tbody class="govuk-table__body">
                 @for((band, count) <- graph.bands.zipWithIndex){
                     <tr class="govuk-table__row">
-                        <td class="govuk-table__cell" id="color@{count}"><span class="key-icon @band.colour"></span></td>
+                        <td aria-hidden="true" class="govuk-table__cell" id="color@{count}"><span class="key-icon @band.colour"></span></td>
                         <td class="govuk-table__cell" id="bandType@{count}">
                             @if(band.bandType=="ZeroBand"){
                                 @Messages("tai.bandtype.zeroBand")
@@ -91,12 +91,9 @@
 
                 @graph.swatch.map{ swatch =>
                     <tr class="govuk-table__row">
-                        <td class="govuk-table__cell" id="incomeTaxBackground"><span class="key-icon income-tax"></span></td>
+                        <td aria-hidden="true" class="govuk-table__cell" id="incomeTaxBackground"><span class="key-icon income-tax"></span></td>
                         <td class="govuk-table__cell" id="IncomeTaxEstimateType">@Messages("tai.bandtype.incomeTaxEstimate")</td>
                         <td class="text--right numeric govuk-table__cell govuk-table__cell--numeric " id="IncomeTaxEstimateAmount" >@withPoundPrefix(MoneyPounds(swatch.taxAmount,0))</td>
-
-
-
                     </tr>
                 }
 
