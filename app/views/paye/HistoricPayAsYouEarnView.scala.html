@@ -48,7 +48,6 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
         mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
         preHeadingText = request.fullName,
         displayBackLink = false,
-        customBackLinkContent = Some(backLinkToChooseTaxYear),
         showGdsVersion = true)
 }
 
@@ -57,7 +56,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     authedUser = Some(request.taiUser),
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
-    backLinkContent = Some(Messages("tai.returnToChooseTaxYear")),
+    backLinkContent = Some(Messages("your.paye.income.tax.overview")),
     pagePrintable = true,
     pagePrintName = Some("historic-pay-as-you-earn")
 ){

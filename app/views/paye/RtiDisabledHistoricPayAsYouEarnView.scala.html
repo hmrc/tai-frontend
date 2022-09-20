@@ -43,7 +43,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 @mainTemplate(
     title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkContent = Some(Messages("tai.returnToChooseTaxYear")),
+    backLinkContent = Some(Messages("your.paye.income.tax.overview")),
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
     backLinkId = "returnToChooseTaxYearLink"
 ){
