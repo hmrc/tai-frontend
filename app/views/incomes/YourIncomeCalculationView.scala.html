@@ -60,9 +60,11 @@
                     @model.employmentStatus match {
                         case PotentiallyCeased => {
                             @if(model.latestPayment.isDefined) {
-                                <h2 class="govuk-heading-m">@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</h2>
+                                <p class="govuk-body">@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</p>
+                                <p class="govuk-body">@Messages("tai.income.calculation.heading.employerInfo", model.employerName)</p>
                             } else {
-                                <h2 class="govuk-heading-m">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
+                                <p class="govuk-body">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</p>
+                                <p class="govuk-body">@Messages("tai.income.calculation.heading.employerInfo", model.employerName)</p>
                             }
 
                             <p class="govuk-body">@Messages("tai.income.calculation.potentially.ceased.lede")</p>
@@ -70,9 +72,11 @@
 
                         case Ceased => {
                             @if(model.latestPayment.isDefined) {
-                                <h2 class="govuk-heading-m">@Messages("tai.income.calculation.ceased.heading", Dates.formatDate(model.latestPayment.get.date))</h2>
+                                <p class="govuk-body">@Messages("tai.income.calculation.ceased.heading", Dates.formatDate(model.latestPayment.get.date))</p>
+                                <p class="govuk-body">@Messages("tai.income.calculation.heading.employerInfo", model.employerName)</p>
                             } else {
-                                <h2 class="govuk-heading-m">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
+                                <p class="govuk-body">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</p>
+                                <p class="govuk-body">@Messages("tai.income.calculation.heading.employerInfo", model.employerName)</p>
                             }
 
                             <p class="govuk-body">@Messages("tai.income.calculation.rti.ceased.emp",s"${DateHelper.toDisplayFormat(model.endDate)}")</p>
@@ -80,9 +84,11 @@
 
                         case _ => {
                             @if(model.latestPayment.isDefined) {
-                                <h2 class="govuk-heading-m">@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</h2>
+                                <p class="govuk-body">@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</p>
+                                <p class="govuk-body">@Messages("tai.income.calculation.heading.employerInfo", model.employerName)</p>
                             } else {
-                                <h2 class="govuk-heading-m">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
+                                <p class="govuk-body">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</p>
+                                <p class="govuk-body">@Messages("tai.income.calculation.heading.employerInfo", model.employerName)</p>
                             }
                         }
                     }

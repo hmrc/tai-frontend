@@ -453,6 +453,7 @@ tai.income.calculation.eyu.summary.multi=Mae {0} wedi gwneud rhai newidiadau i�
 tai.income.calculation.eyu.summary.single=Gwnaeth {0} newid yr wybodaeth a roddodd i ni yn y lle cyntaf. Daeth hyn ar ôl diwedd y flwyddyn dreth ac felly nid yw wedi’i gynnwys yn y tabl.
 tai.income.calculation.heading.withRti=Treth Incwm ac Yswiriant Gwladol a delir i {0}
 tai.income.calculation.heading=Treth Incwm ac Yswiriant Gwladol a delir o {0} i {1}
+tai.income.calculation.heading.employerInfo=Mae {0} wedi anfon yr wybodaeth hon atom.
 tai.income.calculation.incomeTable.caption=Dyddiadau a symiau
 tai.income.calculation.incomeTable.dateHeader=Dyddiad
 tai.income.calculation.incomeTable.incomeHeader=Incwm trethadwy (£)

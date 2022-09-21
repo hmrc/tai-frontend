@@ -453,6 +453,7 @@ tai.income.calculation.eyu.summary.multi={0} has made some changes to the inform
 tai.income.calculation.eyu.summary.single={0} made a change to the information they first gave us. This came after the end of the tax year and is therefore not included in the table.
 tai.income.calculation.heading.withRti=Income Tax and National Insurance paid to {0}
 tai.income.calculation.heading=Income Tax and National Insurance paid from {0} to {1}
+tai.income.calculation.heading.employerInfo={0} has sent us this information.
 tai.income.calculation.incomeTable.caption=Dates and amounts
 tai.income.calculation.incomeTable.dateHeader=Date
 tai.income.calculation.incomeTable.incomeHeader=Taxable income (£)
