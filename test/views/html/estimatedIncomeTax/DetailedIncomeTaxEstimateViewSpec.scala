@@ -41,19 +41,15 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
     behave like pageWithHeader(messages("tai.estimatedIncome.detailedEstimate.heading"))
     behave like pageWithBackLink
 
-    "show correct header content" in {
-
-      val expectedTaxYearString = Messages(
+    behave like pageWithCombinedHeaderNewFormat(
+      Messages(
         "tai.taxYear",
         nonBreakable(Dates.formatDate(TaxYear().start)),
-        nonBreakable(Dates.formatDate(TaxYear().end)))
-
-      val accessiblePreHeading = doc.select("""header span[class="visuallyhidden govuk-visually-hidden"]""")
-      accessiblePreHeading.text mustBe Messages("tai.estimatedIncome.accessiblePreHeading")
-
-      val preHeading = doc.select("header p")
-      preHeading.text mustBe s"${Messages("tai.estimatedIncome.accessiblePreHeading")} $expectedTaxYearString"
-    }
+        nonBreakable(Dates.formatDate(TaxYear().end))
+      ),
+      Messages("tai.estimatedIncome.detailedEstimate.heading"),
+      Some(messages("tai.estimatedIncome.accessiblePreHeading"))
+    )
 
     "have a heading for the Total Income Tax Estimate" in {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalIncomeTaxEstimate") + " £18,573")
@@ -633,7 +629,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
 
   def createViewModel(
     additionalTaxTable: Seq[AdditionalTaxDetailRow],
-    reductionTaxTable: Seq[ReductionTaxRow]): DetailedIncomeTaxEstimateViewModel =
+    reductionTaxTable: Seq[ReductionTaxRow]
+  ): DetailedIncomeTaxEstimateViewModel =
     DetailedIncomeTaxEstimateViewModel(
       nonSavings = List.empty[TaxBand],
       savings = Seq.empty[TaxBand],
