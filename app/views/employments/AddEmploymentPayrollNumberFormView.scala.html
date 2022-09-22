@@ -52,7 +52,8 @@
     title = Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"),
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(payrollNumberViewModel.backUrl)
+    backLinkUrl = Some(payrollNumberViewModel.backUrl),
+    formForErrorSummary = Some(payrollNumberForm)
 ) {
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">

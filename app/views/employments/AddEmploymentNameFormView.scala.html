@@ -28,6 +28,7 @@
     backLinkContent = Some(Messages("tai.back-link.upper")),
     title = Messages("tai.addEmployment.addNameForm.title"),
     backLinkUrl = Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url),
+    formForErrorSummary = Some(nameForm),
     authedUser = Some(user)) {
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
