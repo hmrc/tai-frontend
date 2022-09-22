@@ -40,7 +40,8 @@ ec: scala.concurrent.ExecutionContext)
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId).url)
+    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId).url),
+    formForErrorSummary = Some(duplicateSubmissionWarningForm),
 ){
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
