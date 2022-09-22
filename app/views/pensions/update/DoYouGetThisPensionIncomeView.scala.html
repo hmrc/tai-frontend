@@ -45,8 +45,10 @@ ec: scala.concurrent.ExecutionContext)
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.id).url)
+    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.id).url),
+    formForErrorSummary =  Some(updateOrRemoveForm)
 ) {
+    
     <div class = "govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             @if(updateOrRemoveForm.errors.nonEmpty){
