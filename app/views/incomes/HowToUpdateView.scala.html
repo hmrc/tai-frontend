@@ -32,7 +32,9 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage().url)
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage().url),
+    formForErrorSummary = Some(howToUpdateForm)
+
 ){
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">

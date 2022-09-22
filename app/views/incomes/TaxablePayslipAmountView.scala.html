@@ -31,7 +31,9 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     title = Messages(viewModel.title),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url)
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url),
+    formForErrorSummary = Some(viewModel.form)
+
 ){
 
 <div class="govuk-grid-row">
