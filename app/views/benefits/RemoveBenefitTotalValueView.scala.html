@@ -60,7 +60,8 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkUrl = Some(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url),
-    backLinkContent = Some(Messages("tai.back-link.upper"))
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    formForErrorSummary = Some(companyBenefitTotalValueForm)
 ) {
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">

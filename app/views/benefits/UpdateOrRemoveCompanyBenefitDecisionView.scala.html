@@ -34,7 +34,8 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employerId).url)
+    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employerId).url),
+    formForErrorSummary = Some(viewModel.decisionForm)
 ){
 <div class = "govuk-grid-row">
     <div class = "govuk-grid-column-two-thirds">
