@@ -31,7 +31,9 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+    backLinkUrl = Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url),
+    formForErrorSummary = Some(nameForm)
+
 ) {
 
     <div class = "govuk-grid-row">

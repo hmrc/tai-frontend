@@ -33,7 +33,9 @@ ec: scala.concurrent.ExecutionContext)
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url)
+    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url),
+    formForErrorSummary = Some(firstPayForm)
+
 ) {
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">

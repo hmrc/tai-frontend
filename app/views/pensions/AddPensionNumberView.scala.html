@@ -45,7 +45,9 @@
     pageTitle = Some(messages("tai.service.navTitle")),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate.url)
+    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate.url),
+    formForErrorSummary = Some(payrollNumberForm)
+
 ) {
 
     <div class = "govuk-grid-row">

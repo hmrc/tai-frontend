@@ -15,9 +15,8 @@
  *@
 
 @import includes.ptaHeader
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 
-@this(mainTemplate: MainTempleteNew, form: FormWithCSRF)
+@this(mainTemplate: MainTempleteNew)
 
 @(pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
