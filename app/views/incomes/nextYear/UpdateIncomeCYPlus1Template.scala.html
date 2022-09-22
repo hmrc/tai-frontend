@@ -27,6 +27,7 @@
   form: Option[Form[_]],
   heading: String,
   showCancel: Boolean = true,
+  formForErrorSummary: Option[Form[_]] = None,
   cancelText : Option[String] = None
 
 )(content: Html
@@ -51,7 +52,8 @@
     title = heading,
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "backLink"
+    backLinkId = "backLink",
+    formForErrorSummary = formForErrorSummary
 ){
 <div class = "govuk-grid-row">
     <div class = "govuk-grid-column-two-thirds">

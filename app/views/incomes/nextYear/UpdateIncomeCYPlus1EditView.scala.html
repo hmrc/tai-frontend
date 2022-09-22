@@ -35,7 +35,8 @@
     employerName = employmentName,
     form = Some(incomeForm),
     heading = messages("tai.updateIncome.CYPlus1.edit.heading", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1)),
-    cancelText = Some("Cancel")
+    cancelText = Some("Cancel"),
+    formForErrorSummary = Some(incomeForm)
 ){
 
     @if(!isPension) {
