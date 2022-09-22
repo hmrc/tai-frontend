@@ -44,8 +44,9 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkUrl = Some(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.toString),
-    backLinkContent = Some(Messages("tai.back-link.upper"))
-     ) {
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    formForErrorSummary = Some(dateForm),
+) {
 
     @form(action = controllers.employments.routes.EndEmploymentController.handleEndEmploymentPage(viewmodel.empId)) {
 
