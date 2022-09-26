@@ -38,6 +38,7 @@
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
     backLinkId = "backLink",
+    backLinkUrl = Some(controllers.routes.PayeControllerHistoric.payePage(viewModel.givenTaxYear).url),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     formForErrorSummary = Some(updateIncomeDetailsForm)
 
