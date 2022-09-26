@@ -45,7 +45,8 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.benefits.routes.CompanyBenefitController.decision().url)
+    backLinkUrl = Some(controllers.benefits.routes.CompanyBenefitController.decision().url),
+    formForErrorSummary = Some(stopDateForm)
 ){
 
     <div class="govuk-grid-row">
