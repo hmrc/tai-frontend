@@ -346,3 +346,21 @@ header + .hmrc-user-research-banner {
   top: -10px;
 
 }
+
+.print-this {
+  background-image: url(../images/printer-icon-hmrc-1.svg);
+  background-position: 0 4px;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  margin: 1em 0;
+
+}
+
+
+.print-this__link {
+    color: #000!important;
+    padding-left:25px;
+    text-underline-offset: 0.2em;
+    font-family: "GDS Transport", arial, sans-serif;
+}
+
