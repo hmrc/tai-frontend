@@ -230,7 +230,7 @@ hr {
 }
 
 div.print-banner,
-#print-link-btn {
+#print-link-btn, div.print-this{
   display: none;
   visibility: hidden;
 }
@@ -258,6 +258,11 @@ div.print-link-container {
 body.printable-page.js-enabled #print-link-btn {
     display: inline;
     visibility: visible;
+}
+
+body.printable-page.js-enabled .print-this {
+  display: inline;
+  visibility: visible;
 }
 
 .under-line {
