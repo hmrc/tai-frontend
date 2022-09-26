@@ -30,7 +30,9 @@
     title = messages("tai.employment.decision.legend", employmentName),
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).toString)) {
+    backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).toString),
+    formForErrorSummary = Some(updateRemoveForm)
+) {
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
