@@ -33,7 +33,9 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.Ex
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage().url)
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage().url),
+    formForErrorSummary = Some(payPeriodForm)
+
 ){
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">

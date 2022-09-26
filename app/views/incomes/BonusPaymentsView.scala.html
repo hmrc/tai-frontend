@@ -37,7 +37,9 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(backUrl)
+    backLinkUrl = Some(backUrl),
+    formForErrorSummary = Some(yesNoForm)
+
 ) {
 
     <div class = "govuk-grid-row">

@@ -29,6 +29,7 @@
   showCancel: Boolean = true,
   cancelText : Option[String] = None
 
+
 )(content: Html
 )(implicit request: Request[_],
   user: controllers.auth.AuthedUser,
@@ -51,7 +52,8 @@
     title = heading,
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "backLink"
+    backLinkId = "backLink",
+    formForErrorSummary = form
 ){
 <div class = "govuk-grid-row">
     <div class = "govuk-grid-column-two-thirds">

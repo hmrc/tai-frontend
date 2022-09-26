@@ -55,7 +55,9 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).url)
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).url),
+    formForErrorSummary = Some(workingHoursForm)
+
 ){
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">

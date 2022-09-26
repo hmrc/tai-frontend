@@ -38,7 +38,9 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url)
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url),
+    formForErrorSummary = Some(viewModel.payslipForm)
+
 ) {
 
     <div class="govuk-grid-row">

@@ -278,7 +278,7 @@ class IncomeUpdateCalculatorControllerSpec
       def setup(currentValue: Option[String]): HandleCalculationResultHarness =
         new HandleCalculationResultHarness(currentValue)
     }
-    "display confirm_save_Income page" when {
+    "display ConfirmAmountEnteredView" when {
       "journey cache returns employment name, net amount and id" in {
 
         val result = HandleCalculationResultHarness

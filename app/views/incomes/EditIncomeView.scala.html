@@ -59,7 +59,9 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(employmentId).url)
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(employmentId).url),
+    formForErrorSummary = Some(income)
+
 )  {
 
 
