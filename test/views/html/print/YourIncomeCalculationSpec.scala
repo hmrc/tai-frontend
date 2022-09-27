@@ -224,7 +224,8 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
       totalNotEqualMessage,
       incomeCalculationMessage,
       incomeCalculationEstimateMessage,
-      hasPayrolledBenefit
+      hasPayrolledBenefit,
+      "test user"
     )
   }
 }

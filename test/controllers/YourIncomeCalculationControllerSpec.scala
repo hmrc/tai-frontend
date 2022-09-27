@@ -165,44 +165,6 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
   }
 
-  "Print Your Income Calculation" must {
-    "return rti details page" when {
-      "rti details are present" in {
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-
-        val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.yourIncome.heading"))
-
-      }
-    }
-
-    "return internal server error" when {
-      "employment details are not present" in {
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
-
-        val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe INTERNAL_SERVER_ERROR
-
-      }
-
-      "tax code details are not present" in {
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error")))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-
-        val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-    }
-  }
-
   val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
   val thirdPayment: Payment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)

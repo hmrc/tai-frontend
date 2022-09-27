@@ -37,7 +37,9 @@
         displayBackLink = false,
         mainHeadingText = Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName),
         preHeadingText = Messages("tai.income.details.incomeReceivedToDate"),
-        showGdsVersion = true
+        showGdsVersion = true,
+        userName = model.username
+
         )
 }
 
@@ -176,9 +178,10 @@
                 }
             }
 
-            <div class="print-link-container hide-for-print">
-                <a id="print-link-btn" href="@routes.YourIncomeCalculationController.printYourIncomeCalculationPage(model.empId).toString" class="govuk-link govuk-body-s gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
+            <div class="print-this">
+                <a class="print-this__link" href="javascript:window.print()">Print this page </a>
             </div>
+
         </div>
     </div>
 }

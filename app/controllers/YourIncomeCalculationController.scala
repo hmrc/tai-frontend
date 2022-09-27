@@ -51,17 +51,10 @@ class YourIncomeCalculationController @Inject()(
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      incomeCalculationPage(empId, printPage = false)
+      incomeCalculationPage(empId)
   }
 
-  def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      incomeCalculationPage(empId, printPage = true)
-
-  }
-
-  private def incomeCalculationPage(empId: Int, printPage: Boolean)(
-    implicit request: AuthenticatedRequest[AnyContent]) = {
+  private def incomeCalculationPage(empId: Int)(implicit request: AuthenticatedRequest[AnyContent]) = {
     val nino = request.taiUser.nino
 
     val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
@@ -78,14 +71,10 @@ class YourIncomeCalculationController @Inject()(
           val model = YourIncomeCalculationViewModel(
             taxCodeIncomes.find(_.employmentId.contains(empId)),
             employment,
-            paymentDetails)
+            paymentDetails,
+            request.fullName)
           implicit val user: AuthedUser = request.taiUser
-
-          if (printPage) {
-            Ok(views.html.print.yourIncomeCalculation(model, appConfig))
-          } else {
-            Ok(yourIncomeCalculation(model))
-          }
+          Ok(yourIncomeCalculation(model))
         case _ => errorPagesHandler.internalServerError("Error while fetching RTI details")
       }
     }
