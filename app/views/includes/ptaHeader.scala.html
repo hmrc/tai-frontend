@@ -23,13 +23,13 @@
   displayBackLink: Boolean = false,
   mainHeadingText: String,
   preHeadingText: String,
+  userName: Option[String] = None,
   headerWidthClasses: Option[String] = Some("column-two-thirds"),
   preHeadingAccessibleAnnouncement: String = "",
   customBackLinkContent: Option[Html] = None,
   additionalTopLinkContent: Option[Html] = None,
   showGdsVersion: Boolean = false,
-  govukErrorSummary: Option[GovukErrorSummary] = None,
-  userName: String = ""
+  govukErrorSummary: Option[GovukErrorSummary] = None
 )(implicit m: Messages)
 
 @preHeadingHidden = @{

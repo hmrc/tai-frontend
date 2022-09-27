@@ -14,15 +14,12 @@
  * limitations under the License.
  *@
 
-@(preHeadingText: String, userName: String = "")(implicit m: Messages)
+@(preHeadingText: String, userName: Option[String] = None)(implicit m: Messages)
 
 @printDisplayName = {
-    @if(userName.isEmpty) {
-        @preHeadingText
-        } else {
-            @userName
-        }
-    }
+    @userName.getOrElse(preHeadingText)
+}
+
 
 <div class="govuk-grid-row grid-row">
     <div class="govuk-grid-column-full column-full">
