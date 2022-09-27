@@ -22,7 +22,7 @@
 
 @this(main: MainTempleteNew)
 
-@(taxCodeViewModel: TaxCodeViewModelPreviousYears)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(taxCodeViewModel: TaxCodeViewModelPreviousYears, userName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -30,7 +30,8 @@
     displayBackLink = false,
     mainHeadingText = taxCodeViewModel.mainHeading,
     preHeadingText = taxCodeViewModel.preHeader,
-    showGdsVersion = true
+    showGdsVersion = true,
+    userName = userName
     )
 }
 

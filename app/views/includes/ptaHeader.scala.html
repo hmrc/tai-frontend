@@ -28,7 +28,8 @@
   customBackLinkContent: Option[Html] = None,
   additionalTopLinkContent: Option[Html] = None,
   showGdsVersion: Boolean = false,
-  govukErrorSummary: Option[GovukErrorSummary] = None
+  govukErrorSummary: Option[GovukErrorSummary] = None,
+  userName: String = ""
 )(implicit m: Messages)
 
 @preHeadingHidden = @{
@@ -36,7 +37,7 @@
 }
 
 @printHeader = @{
-    printBanner(preHeadingText = preHeadingText)
+    printBanner(preHeadingText = preHeadingText, userName = userName)
 }
 
 
