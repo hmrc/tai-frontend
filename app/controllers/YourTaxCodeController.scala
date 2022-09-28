@@ -85,9 +85,14 @@ class YourTaxCodeController @Inject()(
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeRecords.map(_.taxCode))
       } yield {
         val taxCodeViewModel =
-          TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year, applicationConfig)
+          TaxCodeViewModelPreviousYears(
+            taxCodeRecords,
+            scottishTaxRateBands,
+            year,
+            applicationConfig,
+            Some(request.fullName))
         implicit val user: AuthedUser = request.taiUser
-        Ok(taxCodeDetailsPreviousYears(taxCodeViewModel, Some(request.fullName)))
+        Ok(taxCodeDetailsPreviousYears(taxCodeViewModel))
       }) recover {
         case NonFatal(e) =>
           errorPagesHandler.internalServerError(s"Exception: ${e.getClass()}")

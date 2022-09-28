@@ -14,10 +14,10 @@
  * limitations under the License.
  *@
 
-@(preHeadingText: String, userName: Option[String] = None)(implicit m: Messages)
+@(preHeadingText: String, maybeUserName: Option[String] = None)(implicit m: Messages)
 
 @printDisplayName = {
-    @userName.getOrElse(preHeadingText)
+    @maybeUserName.getOrElse(preHeadingText)
 }
 
 
