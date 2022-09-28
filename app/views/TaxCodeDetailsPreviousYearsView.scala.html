@@ -22,7 +22,7 @@
 
 @this(main: MainTempleteNew)
 
-@(taxCodeViewModel: TaxCodeViewModelPreviousYears, userName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(taxCodeViewModel: TaxCodeViewModelPreviousYears)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -31,7 +31,7 @@
     mainHeadingText = taxCodeViewModel.mainHeading,
     preHeadingText = taxCodeViewModel.preHeader,
     showGdsVersion = true,
-    userName = userName
+    maybeUserName = taxCodeViewModel.maybeUserName
     )
 }
 
@@ -80,7 +80,7 @@
 
             </div>
             <div class="print-this">
-                <a class="print-this__link" href="javascript:window.print()">Print this page </a>
+                <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
             </div>
         </div>
 

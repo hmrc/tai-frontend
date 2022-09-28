@@ -310,6 +310,6 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
   private val scottishTaxRateBands = Map.empty[String, BigDecimal]
 
   def previousYearTestViewModel(taxCodeRecords: List[TaxCodeRecord]) =
-    TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, TaxYear().prev, appConfig)
+    TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, TaxYear().prev, appConfig, None)
 
 }
