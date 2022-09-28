@@ -529,4 +529,13 @@ tr.print-pension-contributions-data td {
     display: inline-block;
     visibility: visible;
  }
+
+   body.printable-page div.card-body  {
+     background-color:#fff!important;
+   }
+
+   body.printable-page h3.card-heading a {
+     display: block!important;
+     visibility: visible!important;
+   }
 }
