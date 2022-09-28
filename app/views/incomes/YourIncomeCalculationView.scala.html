@@ -38,7 +38,7 @@
         mainHeadingText = Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName),
         preHeadingText = Messages("tai.income.details.incomeReceivedToDate"),
         showGdsVersion = true,
-        userName = model.username
+        maybeUserName = Some(model.username)
 
         )
 }
