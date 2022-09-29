@@ -103,7 +103,12 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
       val result = createController().taxCodeComparison()(request)
 
       val expectedViewModel =
-        TaxCodeChangeViewModel(taxCodeChange, scottishRates, reasons, isAGenericReason = false, maybeUserName = None)
+        TaxCodeChangeViewModel(
+          taxCodeChange,
+          scottishRates,
+          reasons,
+          isAGenericReason = false,
+          maybeUserName = Some("Firstname Surname"))
 
       status(result) mustBe OK
       result rendersTheSameViewAs taxCodeComparisonView(expectedViewModel, appConfig)
