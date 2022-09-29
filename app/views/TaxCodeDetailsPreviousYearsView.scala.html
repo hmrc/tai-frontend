@@ -30,7 +30,8 @@
     displayBackLink = false,
     mainHeadingText = taxCodeViewModel.mainHeading,
     preHeadingText = taxCodeViewModel.preHeader,
-    showGdsVersion = true
+    showGdsVersion = true,
+    maybeUserName = taxCodeViewModel.maybeUserName
     )
 }
 
@@ -39,6 +40,7 @@
     authedUser = Some(user),
     backLinkContent=Some(messages("tai.back-link.upper")),
     backLinkUrl = Some("javascript:history.go(-1)"),
+    pagePrintable = true
     ){
 
     <div class="govuk-grid-row">
@@ -77,8 +79,13 @@
                 }
 
             </div>
+            <div class="print-this">
+                <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
+            </div>
         </div>
 
     </div>
+
+
 
 }

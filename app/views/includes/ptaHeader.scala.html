@@ -23,6 +23,7 @@
   displayBackLink: Boolean = false,
   mainHeadingText: String,
   preHeadingText: String,
+  maybeUserName: Option[String] = None,
   headerWidthClasses: Option[String] = Some("column-two-thirds"),
   preHeadingAccessibleAnnouncement: String = "",
   customBackLinkContent: Option[Html] = None,
@@ -36,7 +37,7 @@
 }
 
 @printHeader = @{
-    printBanner(preHeadingText = preHeadingText)
+    printBanner(preHeadingText = preHeadingText, maybeUserName = maybeUserName)
 }
 
 
