@@ -1308,7 +1308,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
       None
     }
 
-    YourIncomeCalculationViewModel(taxCodeIncome, employment, paymentDetails)
+    YourIncomeCalculationViewModel(taxCodeIncome, employment, paymentDetails, "test user")
   }
 
 }

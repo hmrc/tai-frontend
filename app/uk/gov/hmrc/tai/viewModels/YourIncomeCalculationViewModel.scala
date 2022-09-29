@@ -45,12 +45,16 @@ case class YourIncomeCalculationViewModel(
   messageWhenTotalNotEqual: Option[String],
   incomeCalculationMessage: String,
   incomeCalculationEstimateMessage: Option[String],
-  hasPayrolledBenefit: Boolean
+  hasPayrolledBenefit: Boolean,
+  username: String
 )
 
 object YourIncomeCalculationViewModel {
-  def apply(taxCodeIncome: Option[TaxCodeIncome], employment: Employment, paymentDetails: Seq[PaymentDetailsViewModel])(
-    implicit messages: Messages): YourIncomeCalculationViewModel = {
+  def apply(
+    taxCodeIncome: Option[TaxCodeIncome],
+    employment: Employment,
+    paymentDetails: Seq[PaymentDetailsViewModel],
+    username: String)(implicit messages: Messages): YourIncomeCalculationViewModel = {
 
     val latestPayment = latestPaymentDetails(employment)
     val isPension = taxCodeIncome.exists(_.componentType == PensionIncome)
@@ -79,7 +83,8 @@ object YourIncomeCalculationViewModel {
       totalNotEqualMessage(status == Live, paymentDetails, latestPayment, isPension),
       incomeCalculationMessage.getOrElse(""),
       if (status == Ceased) None else incomeCalculationEstimateMessage,
-      employment.hasPayrolledBenefit
+      employment.hasPayrolledBenefit,
+      username
     )
   }
 
