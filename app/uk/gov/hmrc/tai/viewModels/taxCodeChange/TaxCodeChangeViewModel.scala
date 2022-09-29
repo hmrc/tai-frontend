@@ -30,7 +30,8 @@ case class TaxCodeChangeViewModel(
   changeDate: LocalDate,
   scottishTaxRateBands: Map[String, BigDecimal],
   taxCodeChangeReasons: Seq[String],
-  isAGenericReason: Boolean)
+  isAGenericReason: Boolean,
+  maybeUserName: Option[String])
 
 object TaxCodeChangeViewModel extends TaxCodeDescriptor {
 
@@ -38,7 +39,8 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
     taxCodeChange: TaxCodeChange,
     scottishTaxRateBands: Map[String, BigDecimal],
     taxCodeChangeReasons: Seq[String] = Seq.empty[String],
-    isAGenericReason: Boolean = true): TaxCodeChangeViewModel = {
+    isAGenericReason: Boolean = true,
+    maybeUserName: Option[String]): TaxCodeChangeViewModel = {
 
     val taxCodePairs = TaxCodePairs(taxCodeChange)
     val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
@@ -48,7 +50,8 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
       changeDate,
       scottishTaxRateBands,
       taxCodeChangeReasons,
-      isAGenericReason
+      isAGenericReason,
+      maybeUserName
     )
   }
 
