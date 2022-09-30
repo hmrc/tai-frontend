@@ -536,6 +536,7 @@ tr.print-pension-contributions-data td {
     visibility: visible;
  }
 
+
    body.printable-page div.card-body  {
      background-color:#fff!important;
    }
@@ -544,4 +545,12 @@ tr.print-pension-contributions-data td {
      display: block!important;
      visibility: visible!important;
    }
+
+
+
+  body.printable-page details.govuk-details.only-visible-on-print > summary {
+    color: #000;
+  }
+
+
 }
