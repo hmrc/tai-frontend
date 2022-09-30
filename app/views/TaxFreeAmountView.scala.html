@@ -23,7 +23,7 @@
 
 @this(main: MainTempleteNew)
 
-@(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig, userName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -31,7 +31,8 @@
         displayBackLink = false,
         mainHeadingText = viewModel.header,
         showGdsVersion = true,
-        preHeadingText = Messages("tai.taxCode.preHeader"))
+        preHeadingText = Messages("tai.taxCode.preHeader"),
+        maybeUserName=Some(userName))
 }
 
 @main(
