@@ -21,7 +21,7 @@
     summaryClass: Option[String]=None,
     panelClass: Option[String]=Some("panel-indent")
 )(body: Html)
-<details class="govuk-details" data-module="govuk-details">
+<details class="govuk-details hide-for-print " data-module="govuk-details">
     <summary @if(summaryClass.isDefined){class='@summaryClass'}>
         @if(visuallyHiddenTitle) {
             <span class="govuk-details__summary-text"  aria-hidden="true">@title</span>
@@ -32,5 +32,19 @@
     </summary>
     <div @if(panelClass.isDefined){class='@panelClass'}>
         @body
+    </div>
+</details>
+
+<details  aria-hidden="true" class="govuk-details only-visible-on-print" data-module="govuk-details" open>
+    <summary @if(summaryClass.isDefined){class='@summaryClass'}>
+    @if(visuallyHiddenTitle) {
+        <span class="govuk-details__summary-text"  aria-hidden="true">@title</span>
+        <span class="visuallyhidden govuk-visually-hidden">@visuallyHiddenTitle</span>
+    } else {
+        @title
+    }
+    </summary>
+    <div @if(panelClass.isDefined){class='@panelClass'}>
+    @body
     </div>
 </details>

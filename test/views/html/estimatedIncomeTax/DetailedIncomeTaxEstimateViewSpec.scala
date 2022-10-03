@@ -557,28 +557,39 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
       "tai.estimatedIncome.reductionsTax.title")
     doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-desc").text() mustBe Messages(
       "tai.estimatedIncome.reductionsTax.desc")
-    doc(reductionTaxDetailView) must haveTdWithText(
+    doc(reductionTaxDetailView) must haveDetailsWithTextNew(
       s"${messages("tai.taxCollected.atSource.otherIncome.title")} ${messages("tai.taxCollected.atSource.otherIncome.description")}")
-    doc(reductionTaxDetailView) must haveTdWithText(
+
+    doc(reductionTaxDetailView) must haveDetailsWithTextNew(
       s"${messages("tai.taxCollected.atSource.dividends.title")} ${messages("tai.taxCollected.atSource.dividends.description", 10)}")
-    doc(reductionTaxDetailView) must haveTdWithText(
+
+    doc(reductionTaxDetailView) must haveDetailsWithTextNew(
       s"${messages("tai.taxCollected.atSource.bank.title")} ${messages("tai.taxCollected.atSource.bank.description", 20)}")
-    doc(reductionTaxDetailView) must haveTdWithText(
+
+    doc(reductionTaxDetailView) must haveDetailsWithTextNew(
       s"${messages("tai.taxCollected.atSource.marriageAllowance.title")} ${messages("tai.taxCollected.atSource.marriageAllowance.description", 0, Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))}")
-    doc(reductionTaxDetailView) must haveTdWithText(
+
+    doc(reductionTaxDetailView) must haveDetailsWithTextNew(
       s"${messages("tai.taxCollected.atSource.marriageAllowance.title")} ${messages("tai.taxCollected.atSource.maintenancePayments.description", 200)}")
+
     doc(reductionTaxDetailView) must haveLinkWithText(
       Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
-    doc(reductionTaxDetailView) must haveTdWithText(
+
+    doc(reductionTaxDetailView) must haveDetailsWithTextNew(
       s"${messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")} ${messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description", 100)}")
-    doc(reductionTaxDetailView) must haveTdWithText(
+
+    doc(reductionTaxDetailView) must haveDetailsWithTextNew(
       s"${messages("tai.taxCollected.atSource.concessionalRelief.title")} ${messages("tai.taxCollected.atSource.concessionalRelief.description")}")
-    doc(reductionTaxDetailView) must haveTdWithText(
+
+    doc(reductionTaxDetailView) must haveDetailsWithTextNew(
       s"${messages("tai.taxCollected.atSource.doubleTaxationRelief.title")} ${messages("tai.taxCollected.atSource.doubleTaxationRelief.description")}")
-    doc(reductionTaxDetailView) must haveTdWithText(
+
+    doc(reductionTaxDetailView) must haveDetailsWithTextNew(
       s"${messages("gift.aid.savings")} ${messages("gift.aid.tax.relief", 0, 1000)}")
-    doc(reductionTaxDetailView) must haveTdWithText(
+
+    doc(reductionTaxDetailView) must haveDetailsWithTextNew(
       s"${messages("personal.pension.payments")} ${messages("personal.pension.payment.relief", 0, 1100)}")
+
   }
 
   "display navigational links to other pages in the service" in {
