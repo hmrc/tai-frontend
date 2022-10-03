@@ -18,6 +18,7 @@ package controllers
 
 import builders.{RequestBuilder, UserBuilder}
 import controllers.actions.FakeValidatePerson
+
 import java.time.LocalDate
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -37,12 +38,15 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import utils.BaseSpec
 import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIncomeView, SimpleEstimatedIncomeTaxView, ZeroTaxEstimatedIncomeTaxView}
 import views.html.includes.link
+import controllers.auth.{AuthedUser, AuthenticatedRequest}
+import play.api.mvc.Request
 
 import scala.concurrent.Future
 
 class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants with TaxRegionConstants {
 
-  implicit val request = FakeRequest()
+  implicit val request: Request[_] = FakeRequest()
+  implicit val fakeAuthenticatedRequest = AuthenticatedRequest(request, authedUser, "Firstname Surname")
   private val noCurrentIncomeView = inject[NoCurrentIncomeView]
   private val simpleEstimatedIncomeTaxView = inject[SimpleEstimatedIncomeTaxView]
   private val complexEstimatedIncomeTaxView = inject[ComplexEstimatedIncomeTaxView]
