@@ -36,6 +36,7 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
   def currentCache(journeyName: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
     httpHandler.getFromApiV2(cacheUrl(journeyName)).map(_.as[Map[String, String]]) recover {
       case e: HttpException if e.responseCode == NO_CONTENT => Map.empty[String, String]
+      case e: HttpException if e.responseCode == NO_CONTENT => Map.empty[String, String]
     }
 
   def currentValueAs[T](journeyName: String, key: String, convert: String => T)(

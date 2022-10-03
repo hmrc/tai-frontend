@@ -67,7 +67,7 @@ class TaxFreeAmountController @Inject()(
           implicit val user: AuthedUser = request.taiUser
           Ok(taxFreeAmount(viewModel, applicationConfig))
         case TaiNotFoundResponse(_) => Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-        case _                      => throw new RuntimeException("Failed to fetch total tax details")
+        case _                      => errorPagesHandler.internalServerError(s"Failed to fetch total tax details for $nino")
       }
     }) recover {
       case NonFatal(e) => errorPagesHandler.internalServerError(s"Could not get tax free amount", Some(e))

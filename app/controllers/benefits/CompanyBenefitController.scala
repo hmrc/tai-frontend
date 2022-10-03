@@ -22,7 +22,6 @@ import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
@@ -34,7 +33,7 @@ import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import views.html.benefits.UpdateOrRemoveCompanyBenefitDecisionView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class CompanyBenefitController @Inject()(
@@ -59,7 +58,6 @@ class CompanyBenefitController @Inject()(
       journeyCacheService.cache(cacheValues) map { _ =>
         Redirect(controllers.benefits.routes.CompanyBenefitController.decision())
       }
-
     }
 
   def decision: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -99,7 +97,8 @@ class CompanyBenefitController @Inject()(
             Ok(updateOrRemoveCompanyBenefitDecision(viewModel))
           }
 
-        case None => throw new RuntimeException("No employment found")
+        case None =>
+          Future.successful(errorPagesHandler.internalServerError(s"No employment found for ${user.nino}"))
       }
     }).flatMap(identity) recover {
       case NonFatal(e) => errorPagesHandler.internalServerError("CompanyBenefitController exception", Some(e))

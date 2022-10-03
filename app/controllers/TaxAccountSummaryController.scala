@@ -69,7 +69,8 @@ class TaxAccountSummaryController @Inject()(
             Ok(incomeTaxSummary(vm, appConfig))
           }
         case TaiTaxAccountFailureResponse(message) =>
-          throw new RuntimeException(s"Failed to fetch tax account summary details with exception: $message")
+          Future.successful(
+            errorPagesHandler.internalServerError(s"For $nino failed to fetch tax account summary details: $message"))
         case TaiUnauthorisedResponse(_) =>
           Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
       }
