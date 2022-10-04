@@ -559,4 +559,7 @@ tr.print-pension-contributions-data td {
   color:black;
   text-decoration:none;
   }
+
+  +body.printable-page thead {display: table-row-group;}
+
 }
