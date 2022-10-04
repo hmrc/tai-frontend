@@ -538,4 +538,25 @@ tr.print-pension-contributions-data td {
      display: block!important;
      visibility: visible!important;
    }
+
+   body.printable-page #taxCodesLink {
+   display:inline!important;
+   visibility:visible!important;
+   color:black;
+   text-decoration:none;
+   }
+
+  body.printable-page #taxOnEmploymentIncomeDesc > #taxFreeAmountLink {
+  display:inline!important;
+  visibility:visible!important;
+  color:black;
+  text-decoration:none;
+  }
+
+  body.printable-page #estimatedIncomeLowDesc > #taxFreeAmountLink {
+  display:inline!important;
+  visibility:visible!important;
+  color:black;
+  text-decoration:none;
+  }
 }
