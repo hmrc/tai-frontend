@@ -266,6 +266,9 @@ trait JsoupMatchers {
   def haveSummaryWithText(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "summary")
   def haveDetailsWithText(expectedText: String) =
     new CssSelectorWithTextMatcher(expectedText, "div.govuk-details__text")
+  def haveDetailsWithTextNew(expectedText: String) =
+    new CssSelectorWithTextMatcher(expectedText, "details.govuk-details.hide-for-print")
+
   def haveFormWithSubmitUrl(url: String) = new CssSelectorWithAttributeValueMatcher("action", url, "form[method=POST]")
   def haveDescriptionListWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "dl")
   def haveUnorderedListWithId(id: String) = new CssSelectorWithAttributeValueMatcher("id", id, "ul")

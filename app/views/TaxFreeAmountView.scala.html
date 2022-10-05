@@ -23,7 +23,7 @@
 
 @this(main: MainTempleteNew)
 
-@(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig, userName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -31,7 +31,8 @@
         displayBackLink = false,
         mainHeadingText = viewModel.header,
         showGdsVersion = true,
-        preHeadingText = Messages("tai.taxCode.preHeader"))
+        preHeadingText = Messages("tai.taxCode.preHeader"),
+        maybeUserName=Some(userName))
 }
 
 @main(
@@ -40,6 +41,8 @@
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkId = "backLink",
+    pagePrintable=true
+
 ){
 
     <div class="govuk-grid-row">
@@ -76,9 +79,9 @@
                     @taxFreeAmountSummary(viewModel.taxFreeAmountSummary.summaryItems)
 
             </div>
-                    
 
-                    <h2 class = "govuk-heading-m no-print">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
+
+                    <h2 class = "govuk-heading-m no-print hide-for-print">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
 
                     <ul class="govuk-list no print">
                         <li><p class="icon icon-plus-no-rpt">
@@ -106,12 +109,17 @@
                             copy=Messages("tai.taxFreeAmount.missing.section.income"))
                         </p></li>
                     </ul>
+
+            <div class="print-this">
+                <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
+            </div>
+
         </div>
 
         <div class="govuk-grid-column-one-third">
             <div class="inner-block">
                 <nav class="section">
-                    <h2 class="govuk-heading-m heading-section">@Messages("tai.taxCode.sideBar.heading")</h2>
+                    <h2 class="govuk-heading-m heading-section hide-for-print">@Messages("tai.taxCode.sideBar.heading")</h2>
 
                     <ul class="link-list govuk-list govuk-list--spaced">
                         <li>

@@ -41,7 +41,8 @@
         displayBackLink = false,
         mainHeadingText = messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(taxCodeChangeViewModel.changeDate))),
         preHeadingText = messages("taxCode.change.journey.preHeading"),
-        showGdsVersion = true
+        showGdsVersion = true,
+        maybeUserName = taxCodeChangeViewModel.maybeUserName
     )
 }
 
@@ -49,8 +50,10 @@
     title = messages("taxCode.change.journey.preHeading"),
     authedUser = Some(user),
     backLinkContent=Some(messages("your.paye.income.tax.overview")),
-    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url)
+    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+    pagePrintable = true
 ) {
+
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -64,7 +67,7 @@
         <div class="tax-code-change margin-bottom-xlarge">
             @taxCodePairs(taxCodeChangeViewModel.pairs)
         </div>
-        <div>
+        <div class="govuk-!-margin-bottom-5">
             @includes.link(
             id=Some("check-your-tax-button"),
             url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
@@ -72,9 +75,23 @@
             linkClasses=Seq("govuk-button"))
         </div>
 
+
+
      </div>
+
+
+        <div class="print-this">
+            <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
+        </div>
+
     </div>
+
+
+
+
 </div>
+
+
 }
 
 

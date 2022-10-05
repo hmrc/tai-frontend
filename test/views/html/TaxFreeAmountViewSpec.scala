@@ -148,7 +148,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
             vm)))
       val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", svm)
 
-      val document = doc(template(viewModel, appConfig))
+      val document = doc(template(viewModel, appConfig, "test user"))
 
       document must haveLinkElement("estimatedTaxOwedLink", "testHref", "testValue")
     }
@@ -232,5 +232,5 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
 
   private val template = inject[TaxFreeAmountView]
 
-  override def view: Html = template(viewModel, appConfig)
+  override def view: Html = template(viewModel, appConfig, "test user")
 }

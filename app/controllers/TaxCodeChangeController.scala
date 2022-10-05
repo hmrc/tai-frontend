@@ -62,9 +62,15 @@ class TaxCodeChangeController @Inject()(
       val taxCodeChangeReasons = taxCodeChangeReasonsService
         .combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons, yourTaxFreeAmountComparison.iabdPairs, taxCodeChange)
       val isAGenericReason = taxCodeChangeReasonsService.isAGenericReason(taxCodeChangeReasons)
+      val maybeUserName = Some(request.fullName)
 
       val viewModel =
-        TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
+        TaxCodeChangeViewModel(
+          taxCodeChange,
+          scottishTaxRateBands,
+          taxCodeChangeReasons,
+          isAGenericReason,
+          maybeUserName)
 
       implicit val user: AuthedUser = request.taiUser
       Ok(taxCodeComparisonView(viewModel, appConfig))

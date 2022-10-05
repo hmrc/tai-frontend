@@ -50,7 +50,8 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     payrollNumber = Some("Payroll Number"))
   val taxCodeChange: TaxCodeChange =
     TaxCodeChange(List(taxCodeRecord1, taxCodeRecord3), List(taxCodeRecord2, taxCodeRecord3))
-  val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
+  val viewModel: TaxCodeChangeViewModel =
+    TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal](), maybeUserName = None)
 
   private val taxCodeComparison = inject[TaxCodeComparisonView]
   override def view: HtmlFormat.Appendable = taxCodeComparison(viewModel, appConfig)
@@ -139,7 +140,12 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     "display tax code change reasons" when {
       "primary employments have changed" in {
         val viewModel: TaxCodeChangeViewModel =
-          TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), isAGenericReason = false)
+          TaxCodeChangeViewModel(
+            taxCodeChange,
+            Map.empty,
+            Seq("a reason", "another reason"),
+            isAGenericReason = false,
+            maybeUserName = None)
 
         val view: HtmlFormat.Appendable = taxCodeComparison(viewModel, appConfig)
         doc(view) must haveClassCount("tax-code-reason", 2)
@@ -147,7 +153,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
       "display a generic tax code reason" in {
         val viewModel: TaxCodeChangeViewModel =
-          TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"))
+          TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), maybeUserName = None)
 
         val view: HtmlFormat.Appendable = taxCodeComparison(viewModel, appConfig)
         doc(view) must haveClassCount("tax-code-reason", 1)

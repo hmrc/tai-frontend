@@ -520,6 +520,12 @@ tr.print-pension-contributions-data td {
     width: 100%;
   }
 
+  body.printable-page  div.govuk-grid-column-two-thirds {
+    width: 95%!important;
+    margin: 30px!important;
+  }
+
+
   body.printable-page.future-pay-as-you-earn-summary .table__row--top-border,
   body.printable-page.future-pay-as-you-earn-summary .table__footer--highlight,
   body.printable-page.future-pay-as-you-earn-summary .highlight {
@@ -529,6 +535,7 @@ tr.print-pension-contributions-data td {
     display: inline-block;
     visibility: visible;
  }
+
 
    body.printable-page div.card-body  {
      background-color:#fff!important;
@@ -562,4 +569,7 @@ tr.print-pension-contributions-data td {
 
   +body.printable-page thead {display: table-row-group;}
 
+  body.printable-page details.govuk-details.only-visible-on-print > summary {
+    color: #000;
+  }
 }

@@ -59,7 +59,7 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
 
   "TaxCodeChangeViewModel apply method" must {
     "translate the taxCodeChange object into a TaxCodePairs" in {
-      val model = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
+      val model = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal](), maybeUserName = None)
 
       val primaryPairs = List(TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)))
       val secondaryPairs = List(TaxCodePair(Some(previousTaxCodeRecord1), Some(currentTaxCodeRecord1)))
@@ -73,7 +73,7 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
     }
 
     "sets the changeDate to the mostRecentTaxCodeChangeDate" in {
-      val model = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
+      val model = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal](), maybeUserName = None)
 
       model.changeDate mustEqual currentTaxCodeRecord1.startDate
     }
