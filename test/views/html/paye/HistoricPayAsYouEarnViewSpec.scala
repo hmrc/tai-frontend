@@ -102,8 +102,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
   }
 
-  "display print button link with javascript print function " in {
-    doc must haveLinkWithUrlWithID("print-link-btn", "javascript:window.print()")
+  "display print link with javascript print function " in {
+    doc must haveLinkWithUrlWithClass("print-this__link", "javascript:window.print()")
   }
 
   "income from employment section" must {
