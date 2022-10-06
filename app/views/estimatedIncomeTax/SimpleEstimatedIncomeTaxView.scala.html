@@ -23,11 +23,12 @@
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 @import scala.concurrent.ExecutionContext
+@import controllers.auth.AuthenticatedRequest
 
 @this(main: MainTempleteNew, loginStatus: LoginStatus)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
-request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
+request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
 
 @taxYearRangeString = @{
@@ -40,7 +41,8 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
         mainHeadingText = Messages("tai.estimatedIncome.title"),
         preHeadingText = taxYearRangeString,
         showGdsVersion = true,
-        preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading")
+        preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading"),
+        maybeUserName=Some(request.fullName)
     )
 }
 
@@ -50,7 +52,7 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
     pageTitle = Some(Messages("tai.estimatedIncome.title")),
     backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad.url),
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    pagePrintable = false
+    pagePrintable = true,
 ){
 
     <div class="govuk-grid-row">
@@ -99,9 +101,14 @@ request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, temp
             <div id ="iForms" class="inner-block">
                 @iFormLinks
             </div>
+            <div class="print-this">
+                <a class="print-this__link" href="javascript:window.print()">@Messages("tai.label.print")</a>
+            </div>
         </div>
 
+    <div class="hide-for-print">
         @navigationLinks()
+    </div>
 
 
     </div>
