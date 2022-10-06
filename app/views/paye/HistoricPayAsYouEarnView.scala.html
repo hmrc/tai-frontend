@@ -116,8 +116,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                     @messages("tai.paye.lastTaxYear.checkIncomeTax.for", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year))
                 </p>
             }
-                <div class="print-link-container">
-                    <a id="print-link-btn" href="javascript:window.print()" class="govuk-link govuk-body-s gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
+                <div class="print-this">
+                    <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
                 </div>
             </div>
         </div>
