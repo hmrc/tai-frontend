@@ -17,10 +17,11 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 @import includes.taxFreeAmountSummaryComparison
+@import controllers.auth.AuthenticatedRequest
 
 @this(mainTemplate: MainTempleteNew)
 
-@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: AuthenticatedRequest[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
@@ -29,14 +30,17 @@
         displayBackLink = false,
         mainHeadingText = Messages("taxCode.change.yourTaxFreeAmount.title"),
         preHeadingText = Messages("taxCode.change.journey.preHeading"),
-        showGdsVersion = true)
+        showGdsVersion = true,
+        maybeUserName = Some(request.fullName))
+
 }
 
 @mainTemplate(
     title = Messages("taxCode.change.yourTaxFreeAmount.title"),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     authedUser = Some(user),
-    backLinkId = "backLink"
+    backLinkId = "backLink",
+    pagePrintable = true
     ) {
 
     <div class="govuk-grid-row">
@@ -71,7 +75,9 @@
             )
             </div>
         </div>
-
+        <div class="print-this">
+            <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
+        </div>
     </div>
 
     </div>

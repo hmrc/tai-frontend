@@ -18,6 +18,8 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
+import controllers.auth.AuthenticatedRequest
+
 import java.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => meq}
@@ -44,7 +46,8 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
   "whatHappensNext" must {
     "show 'What happens next' page" when {
       "the request has an authorised session" in {
-        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val request =
+          AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "Firstname Surname")
 
         val result = createController().whatHappensNext()(request)
 
@@ -66,7 +69,8 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
             Seq.empty
           )
 
-        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val fakeAuthenticatedRequest =
+          AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "Firstname Surname")
 
         when(describedYourTaxFreeAmountService.taxFreeAmountComparison(Matchers.eq(FakeAuthAction.nino))(any(), any()))
           .thenReturn(Future.successful(expectedViewModel))
