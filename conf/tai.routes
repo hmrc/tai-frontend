@@ -170,7 +170,7 @@ GET         /update-income/edit-taxable-pay                                     
 POST        /update-income/edit-taxable-pay/:empId                                     controllers.IncomeController.editRegularIncome(empId: Int)
 
 ## Pension Income URIs
-GET         /update-income/edit-pension                                                controllers.IncomeController.pensionIncome
+GET         /update-income/edit-pension/:empId                                                controllers.IncomeController.pensionIncome(empId: Int)
 POST        /update-income/edit-pension/:empId                                                controllers.IncomeController.editPensionIncome(empId: Int)
 
 

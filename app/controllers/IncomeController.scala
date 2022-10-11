@@ -258,16 +258,15 @@ class IncomeController @Inject()(
       }
   }
 
-  def pensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def pensionIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     (for {
-      id               <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
-      employmentAmount <- EitherT.right[String](incomeService.employmentAmount(nino, id))
-      latestPayment    <- EitherT.right[String](incomeService.latestPayment(nino, id))
+      employmentAmount <- incomeService.employmentAmount(nino, empId)
+      latestPayment    <- incomeService.latestPayment(nino, empId)
       cacheData = incomeService.cachePaymentForRegularIncome(latestPayment)
-      _ <- EitherT.right[String](journeyCacheService.cache(cacheData))
+      _ <- journeyCacheService.cache(cacheData)
     } yield {
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
@@ -276,10 +275,9 @@ class IncomeController @Inject()(
           hasMultipleIncomes = false,
           employmentAmount.employmentId,
           amountYearToDate.toString()))
-    }).fold(errorPagesHandler.internalServerError(_, None), identity _)
-      .recover {
-        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-      }
+    }).recover {
+      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+    }
   }
 
   private def determineEditRedirect(income: EditIncomeForm, confirmationCallback: Call, empId: Int)(
@@ -383,7 +381,7 @@ class IncomeController @Inject()(
       (employmentAmount.isLive, employmentAmount.isOccupationalPension) match {
         case (true, false)  => Redirect(routes.IncomeController.regularIncome())
         case (false, false) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
-        case _              => Redirect(routes.IncomeController.pensionIncome())
+        case _              => Redirect(routes.IncomeController.pensionIncome(id))
       }
     }).fold(errorPagesHandler.internalServerError(_, None), identity _)
       .recover {
