@@ -130,8 +130,8 @@ POST        /update-income/warning/:empId                                       
 GET         /update-income/check-your-answers                                          controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.checkYourAnswersPage
 GET         /update-income/confirm-estimated-pay                                       controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleCalculationResult
 
-GET         /update-income/start                                                       controllers.income.estimatedPay.update.IncomeUpdateEstimatedPayController.estimatedPayLandingPage
-GET         /update-income/estimated-pay/:empId                                               controllers.income.estimatedPay.update.IncomeUpdateEstimatedPayController.estimatedPayPage(empId: Int)
+GET         /update-income/start/:empId                                                controllers.income.estimatedPay.update.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(empId: Int)
+GET         /update-income/estimated-pay/:empId                                        controllers.income.estimatedPay.update.IncomeUpdateEstimatedPayController.estimatedPayPage(empId: Int)
 
 GET         /update-income/how-to-update-income/:empId                                 controllers.income.estimatedPay.update.IncomeUpdateHowToUpdateController.howToUpdatePage(empId: Int)
 POST        /update-income/how-to-update-income                                        controllers.income.estimatedPay.update.IncomeUpdateHowToUpdateController.handleChooseHowToUpdate
