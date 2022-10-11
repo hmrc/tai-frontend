@@ -123,7 +123,7 @@ class IncomeUpdateCalculatorController @Inject()(
           s"$UpdateIncome_ConfirmedNewAmountKey-$empId",
           UpdateIncome_IncomeTypeKey)
         .getOrFail
-        .flatMap { mandatoryJourneyValues =>
+        .map { mandatoryJourneyValues =>
           val incomeName :: newAmount :: incomeType :: Nil = mandatoryJourneyValues.toList
 
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
@@ -134,14 +134,14 @@ class IncomeUpdateCalculatorController @Inject()(
                 DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
               }
 
-              Future.successful(BadRequest(duplicateSubmissionWarning(formWithErrors, vm, empId)))
+              BadRequest(duplicateSubmissionWarning(formWithErrors, vm, empId))
             },
             success => {
               success.yesNoChoice match {
                 case Some(YesValue) =>
-                  Future.successful(Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(empId)))
+                  Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(empId))
                 case Some(NoValue) =>
-                  Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+                  Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
               }
             }
           )
