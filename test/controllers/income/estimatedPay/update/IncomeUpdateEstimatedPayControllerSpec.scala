@@ -81,7 +81,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
 
     def estimatedPayLandingPage(): Future[Result] =
       new TestIncomeUpdateEstimatedPayController()
-        .estimatedPayLandingPage()(RequestBuilder.buildFakeGetRequestWithAuth())
+        .estimatedPayLandingPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
 
     "display the estimatedPayLandingPage view" in {
 

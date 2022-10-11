@@ -136,7 +136,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe SEE_OTHER
 
         redirectLocation(result).get mustBe controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController
-          .estimatedPayLandingPage()
+          .estimatedPayLandingPage(employerId)
           .url
       }
     }
@@ -204,7 +204,7 @@ class IncomeUpdateCalculatorControllerSpec
       status(result) mustBe SEE_OTHER
 
       redirectLocation(result).get mustBe controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController
-        .estimatedPayLandingPage()
+        .estimatedPayLandingPage(employerId)
         .url
     }
 

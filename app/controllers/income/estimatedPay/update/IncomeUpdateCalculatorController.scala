@@ -124,7 +124,7 @@ class IncomeUpdateCalculatorController @Inject()(
           UpdateIncome_IncomeTypeKey)
         .getOrFail
         .map { mandatoryJourneyValues =>
-          val incomeName :: newAmount :: incomeType :: Nil = mandatoryJourneyValues.toList
+          val incomeName :: newAmount :: incomeType = mandatoryJourneyValues.toList
 
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
             formWithErrors => {
