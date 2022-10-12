@@ -321,27 +321,28 @@ class IncomeController @Inject()(
         .collectedJourneyValues(
           Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
           Seq(UpdateIncome_DateKey))
-        .getOrFail flatMap {
-        case (mandatorySeq, optionalSeq) =>
-          val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
-            case Success(optDate) => optDate
-            case Failure(exception) =>
-              logger.warn(s"Unable to parse updateIncomeDateKey $exception")
-              None
-          }
-
-          EditIncomeForm
-            .bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date)
-            .fold(
-              formWithErrors => {
-                Future.successful(BadRequest(
-                  editPension(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)))
-              },
-              (income: EditIncomeForm) =>
-                determineEditRedirect(income, routes.IncomeController.confirmPensionIncome(empId), empId)
-            )
-      }
-
+        .flatMap {
+          case Left(errorMessage) =>
+            logger.warn(errorMessage)
+            Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+          case Right((mandatorySeq, optionalSeq)) =>
+            val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
+              case Success(optDate) => optDate
+              case Failure(exception) =>
+                logger.warn(s"Unable to parse updateIncomeDateKey $exception")
+                None
+            }
+            EditIncomeForm
+              .bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date)
+              .fold(
+                formWithErrors => {
+                  Future.successful(BadRequest(
+                    editPension(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)))
+                },
+                (income: EditIncomeForm) =>
+                  determineEditRedirect(income, routes.IncomeController.confirmPensionIncome(empId), empId)
+              )
+        }
   }
 
   def confirmPensionIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
