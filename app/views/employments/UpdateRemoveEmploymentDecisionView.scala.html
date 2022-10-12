@@ -50,7 +50,7 @@
                     fieldset = Some(Fieldset(
                         legend = Some(Legend(
                             content = Text(messages("tai.employment.decision.legend", employmentName)),
-                            classes = "govuk-fieldset__legend--xl",
+                            classes = "govuk-fieldset__legend--xl carry-over",
                             isPageHeading = true
                         ))
                     )),
@@ -67,7 +67,7 @@
                             value = Some("No")
                         )
                     )
-                ).withFormField(updateRemoveForm(UpdateRemoveEmploymentForm.EmploymentDecision)))
+                ).withFormField(updateRemoveForm(UpdateRemoveEmploymentForm.EmploymentDecision) ))
 
                 @govukButton(Button(content = Text(messages("tai.continue"))))
             }

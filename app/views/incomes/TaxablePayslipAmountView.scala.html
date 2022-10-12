@@ -44,7 +44,7 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
             @govukErrorSummary(ErrorSummary(errorList = viewModel.form.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
-        <span class="govuk-caption-xl">
+        <span class="govuk-caption-xl carry-over">
             <span class="visuallyhidden govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>
         @Messages("tai.howToUpdate.preHeading", viewModel.employer.name)</span>
 

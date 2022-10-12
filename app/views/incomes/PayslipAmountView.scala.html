@@ -56,7 +56,8 @@
                     value = viewModel.payslipForm.data.get("totalSalary"),
                     label = HmrcPageHeadingLabel(
                         content = Text(viewModel.payPeriodTitle),
-                        caption = HmrcSectionCaption(Text(messages("tai.payslip.preHeading", viewModel.employer.name)))
+                        caption = HmrcSectionCaption(Text(messages("tai.payslip.preHeading", viewModel.employer.name))),
+                        classes = "govuk-label--xl carry-over"
                     ),
                     hint = Some(Hint(
                         content = HtmlContent(hint),

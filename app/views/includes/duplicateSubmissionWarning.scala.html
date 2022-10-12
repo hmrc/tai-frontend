@@ -48,7 +48,8 @@
                 legend = Some(
                     HmrcPageHeadingLegend(
                         content = Text(heading),
-                        caption = HmrcSectionCaption(Text(preHeading)))
+                        caption = HmrcSectionCaption(Text(preHeading)),
+                        classes = "govuk-fieldset__legend--xl carry-over")
                 )
             )
         ),
@@ -67,8 +68,10 @@
                 value = Some(YesNoForm.NoValue),
                 checked = duplicateSubmissionWarningForm.data.get(YesNoForm.YesNoChoice).exists(_ == "No")
             )
-        )
+        ),    classes = "carry-over"
     ).withFormField(duplicateSubmissionWarningForm(YesNoForm.YesNoChoice)))
+
+
 
     @submit(buttonMessageKey = Some(messages("tai.submit")))
 }
