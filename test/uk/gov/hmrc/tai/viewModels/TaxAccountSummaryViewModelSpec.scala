@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
@@ -161,6 +161,26 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
           sut.ceasedEmployments.size mustBe 2
           sut.ceasedEmployments.head.name mustBe "Employer name3"
           sut.ceasedEmployments(1).name mustBe "Employer name4"
+        }
+      }
+      "has no ceased employment list" when {
+        "employments ceased before the tax year" in {
+          val ceasedEmployments = incomeSources.ceasedEmploymentIncomeSources.map { taxCodeIncome =>
+            val employment = taxCodeIncome.employment.copy(endDate = Some(TaxYear().prev.start))
+            taxCodeIncome.copy(employment = employment)
+          }
+
+          val sut = TaxAccountSummaryViewModel(
+            TaxAccountSummary(0, 0, 0, 0, 0),
+            ThreeWeeks,
+            nonTaxCodeIncome,
+            incomeSources.copy(
+              liveEmploymentIncomeSources = Seq(),
+              livePensionIncomeSources = Seq(),
+              ceasedEmploymentIncomeSources = ceasedEmployments),
+            Seq()
+          )
+          sut.ceasedEmployments.size mustBe 0
         }
       }
       "has the iya banner boolean set to true" when {
@@ -331,7 +351,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
         noIncomesSources,
         Seq(ceasedEmployment.copy(sequenceNumber = nonMatchingSequenceNumber)))
       sut.ceasedEmployments.size mustBe 1
-      sut.ceasedEmployments(0) mustBe IncomeSourceViewModel(
+      sut.ceasedEmployments.head mustBe IncomeSourceViewModel(
         name = "Ceased employer name",
         amount = "£123",
         taxCode = "",
@@ -340,7 +360,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
         "PAYE543",
         payrollNumber = "123ABC",
         displayPayrollNumber = true,
-        endDate = "21 April 2018",
+        endDate = s"21 April ${TaxYear().next.year}",
         displayEndDate = true,
         detailsLinkLabel = Messages("tai.incomeTaxSummary.employment.link"),
         detailsLinkUrl =

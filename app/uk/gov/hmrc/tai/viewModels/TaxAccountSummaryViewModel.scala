@@ -60,9 +60,21 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
 
     val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome(_))
 
-    val ceasedEmploymentViewModels = incomesSources.ceasedEmploymentIncomeSources.map(
-      IncomeSourceViewModel.createFromTaxedIncome(_)) ++
-      nonMatchingCeasedEmployments.map(IncomeSourceViewModel.createFromEmployment(_))
+    def employmentCeasedThisYear(employment: Employment): Boolean = {
+      val currentYear = TaxYear()
+      //Default to true as if there is no endDate it's potentially ceased
+      employment.endDate.fold(true) { endDate =>
+        !(endDate isBefore currentYear.start)
+      }
+    }
+
+    val ceasedEmploymentViewModels = incomesSources.ceasedEmploymentIncomeSources.collect {
+      case ti @ TaxedIncome(_, employment) if employmentCeasedThisYear(employment) =>
+        IncomeSourceViewModel.createFromTaxedIncome(ti)
+    } ++ nonMatchingCeasedEmployments.collect {
+      case employment if employmentCeasedThisYear(employment) =>
+        IncomeSourceViewModel.createFromEmployment(employment)
+    }
 
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
 

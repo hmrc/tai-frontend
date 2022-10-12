@@ -17,7 +17,8 @@
 package uk.gov.hmrc.tai.viewModels
 
 import java.time.LocalDate
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, PotentiallyCeased}
 import uk.gov.hmrc.tai.model.domain.{JobSeekerAllowanceIncome, OtherIncome, PensionIncome, TaxedIncome}
 import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
@@ -108,13 +109,13 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
         "employment model has endDate and employment status is ceased" in {
           val ceasedEmployment = employment.copy(employmentStatus = Ceased)
           val sut = IncomeSourceViewModel(taxCodeIncome, ceasedEmployment)
-          sut.endDate mustBe "21 April 2018"
+          sut.endDate mustBe s"21 April ${TaxYear().next.year}"
           sut.displayEndDate mustBe true
         }
         "employment model has endDate and employment status is potentially ceased" in {
           val potentiallyCeasedEmployment = employment.copy(employmentStatus = PotentiallyCeased)
           val sut = IncomeSourceViewModel(taxCodeIncome, potentiallyCeasedEmployment)
-          sut.endDate mustBe "21 April 2018"
+          sut.endDate mustBe s"21 April ${TaxYear().next.year}"
           sut.displayEndDate mustBe true
         }
       }
@@ -206,7 +207,7 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       "has a formatted endDate field and the corresponding boolean set to instruct display" when {
         "employment model has  endDate" in {
           val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment)
-          sut.endDate mustBe "21 April 2018"
+          sut.endDate mustBe s"21 April ${TaxYear().next.year}"
           sut.displayEndDate mustBe true
         }
       }

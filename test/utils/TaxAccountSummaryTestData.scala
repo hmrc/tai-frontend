@@ -16,6 +16,7 @@
 
 package utils
 
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 
@@ -23,12 +24,18 @@ import java.time.LocalDate
 
 trait TaxAccountSummaryTestData {
 
+  private val startDate: LocalDate =
+    TaxYear().start.withMonth(3).withDayOfMonth(1)
+
+  private val endDate: LocalDate =
+    TaxYear().end.withMonth(4).withDayOfMonth(21)
+
   val employment = Employment(
     "Employer name",
     Live,
     Some("123ABC"),
-    LocalDate.of(2017, 3, 1),
-    Some(LocalDate.of(2018, 4, 21)),
+    startDate,
+    Some(endDate),
     Seq.empty[AnnualAccount],
     "DIST123",
     "PAYE543",
@@ -81,7 +88,7 @@ trait TaxAccountSummaryTestData {
     "Employer name1",
     Live,
     Some("1ABC"),
-    LocalDate.of(2017, 3, 1),
+    startDate,
     None,
     Seq.empty[AnnualAccount],
     "DIST1",
@@ -94,7 +101,7 @@ trait TaxAccountSummaryTestData {
     "Employer name2",
     Live,
     Some("1ABC"),
-    LocalDate.of(2017, 3, 1),
+    startDate,
     None,
     Seq.empty[AnnualAccount],
     "DIST2",
@@ -107,7 +114,7 @@ trait TaxAccountSummaryTestData {
     "Pension name1",
     Live,
     Some("3ABC"),
-    LocalDate.of(2017, 3, 1),
+    startDate,
     None,
     Seq.empty[AnnualAccount],
     "DIST3",
@@ -120,7 +127,7 @@ trait TaxAccountSummaryTestData {
     "Pension name2",
     Live,
     Some("4ABC"),
-    LocalDate.of(2017, 3, 1),
+    startDate,
     None,
     Seq.empty[AnnualAccount],
     "DIST4",
@@ -133,7 +140,7 @@ trait TaxAccountSummaryTestData {
     "Employer name3",
     Live,
     Some("9ABC"),
-    LocalDate.of(2017, 3, 1),
+    startDate,
     None,
     Seq.empty[AnnualAccount],
     "DIST9",
@@ -146,8 +153,8 @@ trait TaxAccountSummaryTestData {
     "Employer name4",
     Live,
     Some("10ABC"),
-    LocalDate.of(2017, 3, 1),
-    Some(LocalDate.of(2018, 4, 21)),
+    startDate,
+    Some(endDate),
     Seq.empty[AnnualAccount],
     "DIST10",
     "PAYE10",
@@ -191,8 +198,8 @@ trait TaxAccountSummaryTestData {
     "Ceased employer name",
     Ceased,
     Some("123ABC"),
-    LocalDate.of(2017, 3, 1),
-    Some(LocalDate.of(2018, 4, 21)),
+    startDate,
+    Some(endDate),
     Seq(annualAccount),
     "DIST123",
     "PAYE543",
@@ -208,7 +215,7 @@ trait TaxAccountSummaryTestData {
       "Pension name1",
       Live,
       Some("3ABC"),
-      LocalDate.of(2017, 3, 1),
+      startDate,
       None,
       Seq.empty[AnnualAccount],
       "DIST3",
