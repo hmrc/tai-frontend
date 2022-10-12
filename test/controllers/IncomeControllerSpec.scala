@@ -66,6 +66,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
   val cachedData = Future.successful(Right(Seq(employerId.toString, payToDate)))
   val cachedUpdateIncomeNewAmountKey: Future[Either[String, String]] = Future.successful(Right("700"))
+  val emptyCache = Future.successful(Left("empty cache"))
 
   val cacheKey = s"$UpdateIncome_ConfirmedNewAmountKey-$employerId"
 
@@ -680,6 +681,25 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
       }
     }
+    "redirect to /income-details" when {
+      "nothing is present in the cache" in {
+        val testController = createTestIncomeController()
+
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+          .thenReturn(emptyCache)
+
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = 212)
+        val formData = Json.toJson(editIncomeForm)
+
+        val result =
+          testController.editPensionIncome(employerId)(
+            RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
+      }
+    }
   }
 
   "confirmPensionIncome" must {
@@ -744,6 +764,23 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         val result = testController.confirmPensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "return SEE_OTHER" when {
+      "nohing is present in the cache" in {
+
+        val testController = createTestIncomeController()
+        when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(emptyCache)
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+        val result = testController.confirmPensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
       }
     }
   }

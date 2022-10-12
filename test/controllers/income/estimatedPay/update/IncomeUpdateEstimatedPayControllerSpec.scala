@@ -119,6 +119,12 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
       status(result) mustBe INTERNAL_SERVER_ERROR
 
     }
+    "return to /income-details when nothing is present in the cache" in {
+      when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(Future.successful(Left("empty cache")))
+
+      val result = estimatedPayLandingPage()
+      redirectLocation(result) mustBe Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url)
+    }
   }
 
   "estimatedPayPage" must {
