@@ -315,6 +315,18 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
       }
     }
+
+    "redirect to /income-details" when {
+      "no value is present in the cache" in {
+        val result = ConfirmIncomeIrregularHoursHarness
+          .setup(failure = true)
+          .confirmIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url)
+      }
+    }
   }
 
   "submitIncomeIrregularHours" must {
