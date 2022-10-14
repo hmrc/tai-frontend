@@ -71,14 +71,13 @@ class IncomeController @Inject()(
     }
   }
 
-  def regularIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def regularIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     (for {
-      id               <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
-      employmentAmount <- EitherT.right[String](incomeService.employmentAmount(nino, id))
-      latestPayment    <- EitherT.right[String](incomeService.latestPayment(nino, id))
+      employmentAmount <- EitherT.right[String](incomeService.employmentAmount(nino, empId))
+      latestPayment    <- EitherT.right[String](incomeService.latestPayment(nino, empId))
       cacheData = incomeService.cachePaymentForRegularIncome(latestPayment)
       _ <- EitherT.right[String](journeyCacheService.cache(cacheData))
     } yield {
@@ -195,7 +194,7 @@ class IncomeController @Inject()(
                     employment.name,
                     employmentAmount.oldAmount,
                     cachedData,
-                    controllers.routes.IncomeController.regularIncome.url)
+                    controllers.routes.IncomeController.regularIncome(empId).url)
                 Ok(confirmAmountEntered(vm))
 
               case _ => throw new RuntimeException(s"Not able to found employment with id $empId")
@@ -381,7 +380,7 @@ class IncomeController @Inject()(
       employmentAmount <- EitherT.right[String](incomeService.employmentAmount(request.taiUser.nino, id))
     } yield {
       (employmentAmount.isLive, employmentAmount.isOccupationalPension) match {
-        case (true, false)  => Redirect(routes.IncomeController.regularIncome())
+        case (true, false)  => Redirect(routes.IncomeController.regularIncome(id))
         case (false, false) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
         case _              => Redirect(routes.IncomeController.pensionIncome())
       }
