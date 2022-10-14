@@ -388,7 +388,5 @@ class IncomeController @Inject()(
       .recover {
         case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
       }
-
   }
-
 }

@@ -95,7 +95,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(incomeService.cachePaymentForRegularIncome(any())(any())).thenReturn(Map.empty[String, String])
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = testController.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.regularIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -116,7 +116,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = testController.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.regularIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -133,7 +133,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = testController.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.regularIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -147,7 +147,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = testController.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.regularIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -388,7 +388,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = testController.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.regularIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -760,7 +760,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
         val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe routes.IncomeController.regularIncome().url
+        redirectLocation(result).get mustBe routes.IncomeController.regularIncome(employerId).url
       }
 
       "employment is not live and is not occupational pension" in {
