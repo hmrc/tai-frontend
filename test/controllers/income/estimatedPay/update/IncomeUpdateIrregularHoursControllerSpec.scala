@@ -245,10 +245,13 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         failure: Boolean,
         newAmount: Int,
         confirmedNewAmount: Int,
-        payToDate: Int) {
+        payToDate: Int,
+        futureFailed: Boolean = false) {
 
         val future: Future[Either[String, (Seq[String], Seq[Option[String]])]] =
-          if (failure) {
+          if (futureFailed) {
+            Future.failed(new RuntimeException("failed"))
+          } else if (failure) {
             Future.successful(Left("Error"))
           } else {
             Future.successful(
@@ -268,8 +271,9 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         failure: Boolean = false,
         newAmount: Int = 1235,
         confirmedNewAmount: Int = 1234,
-        payToDate: Int = 123): ConfirmIncomeIrregularHoursHarness =
-        new ConfirmIncomeIrregularHoursHarness(failure, newAmount, confirmedNewAmount, payToDate)
+        payToDate: Int = 123,
+        futureFailed: Boolean = false): ConfirmIncomeIrregularHoursHarness =
+        new ConfirmIncomeIrregularHoursHarness(failure, newAmount, confirmedNewAmount, payToDate, futureFailed)
     }
 
     "respond with Ok" in {
@@ -286,7 +290,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
     "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
 
       val result = ConfirmIncomeIrregularHoursHarness
-        .setup(failure = true)
+        .setup(failure = true, futureFailed = true)
         .confirmIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe INTERNAL_SERVER_ERROR
