@@ -24,6 +24,7 @@ import controllers.auth.{AuthAction, AuthedUser}
 import play.api.Logging
 import play.api.data.Form
 import play.api.mvc._
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses._
@@ -45,6 +46,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
+
 @Singleton
 class IncomeController @Inject()(
   @Named("Update Income") journeyCacheService: JourneyCacheService,
@@ -62,7 +64,8 @@ class IncomeController @Inject()(
   editIncome: EditIncomeView,
   sameEstimatedPay: SameEstimatedPayView,
   implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -177,54 +180,65 @@ class IncomeController @Inject()(
   def confirmRegularIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val nino = user.nino
-      (for {
-        cachedData           <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_NewAmountKey).getOrFail
-        taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-        employmentDetails    <- employmentService.employment(nino, empId)
-      } yield {
-        (taxCodeIncomeDetails, employmentDetails) match {
-          case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-            taxCodeIncomes.find(_.employmentId.contains(empId)) match {
-              case Some(taxCodeIncome) =>
-                val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
+      val nino: Nino = user.nino
 
-                val vm =
-                  ConfirmAmountEnteredViewModel(
-                    employment.name,
-                    employmentAmount.oldAmount,
-                    cachedData,
-                    controllers.routes.IncomeController.regularIncome(empId).url)
-                Ok(confirmAmountEntered(vm))
+      journeyCacheService
+        .mandatoryJourneyValueAsInt(UpdateIncome_NewAmountKey)
+        .flatMap {
+          case Left(errorMessage) =>
+            logger.warn(errorMessage)
+            Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
+          case Right(cachedData) =>
+            (for {
+              taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+              employmentDetails    <- employmentService.employment(nino, empId)
+            } yield {
+              (taxCodeIncomeDetails, employmentDetails) match {
+                case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+                  taxCodeIncomes.find(_.employmentId.contains(empId)) match {
+                    case Some(taxCodeIncome) =>
+                      val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
-              case _ => throw new RuntimeException(s"Not able to found employment with id $empId")
-            }
-          case _ => throw new RuntimeException("Exception while reading employment and tax code details")
-        }
-      }).recoverWith {
-        case NonFatal(e) =>
-          journeyCacheService.mandatoryJourneyValueAsInt(s"$UpdateIncome_ConfirmedNewAmountKey-$empId").flatMap {
-            case Right(_) =>
-              journeyCacheService.flush().map { _ =>
-                Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+                      val vm =
+                        ConfirmAmountEnteredViewModel(
+                          employment.name,
+                          employmentAmount.oldAmount,
+                          cachedData,
+                          controllers.routes.IncomeController.regularIncome(empId).url)
+                      Ok(confirmAmountEntered(vm))
+
+                    case _ => throw new RuntimeException(s"Not able to found employment with id $empId")
+                  }
+                case _ => throw new RuntimeException("Exception while reading employment and tax code details")
               }
-            case _ => Future.successful(errorPagesHandler.internalServerError(e.getMessage))
-          }
-
-      }
+            })
+        }
+        .recoverWith {
+          case NonFatal(e) =>
+            journeyCacheService.mandatoryJourneyValueAsInt(s"$UpdateIncome_ConfirmedNewAmountKey-$empId").flatMap {
+              case Right(_) =>
+                journeyCacheService.flush().map { _ =>
+                  Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+                }
+              case _ => Future.successful(errorPagesHandler.internalServerError(e.getMessage))
+            }
+        }
   }
+
   def updateEstimatedIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(
       implicit user: AuthedUser,
-      request: Request[AnyContent]): Result = {
+      request: Request[AnyContent]
+    ): Result = {
       journeyCacheService.cache(s"$UpdateIncome_ConfirmedNewAmountKey-$employerId", newAmount)
       incomeType match {
         case TaiConstants.IncomeTypePension => Ok(editPensionSuccess(employerName, employerId))
         case _                              => Ok(editSuccess(employerName, employerId))
       }
     }
+
     journeyCacheService
       .mandatoryJourneyValues(
         UpdateIncome_NameKey,
@@ -282,7 +296,8 @@ class IncomeController @Inject()(
   }
 
   private def determineEditRedirect(income: EditIncomeForm, confirmationCallback: Call, empId: Int)(
-    implicit hc: HeaderCarrier): Future[Result] =
+    implicit hc: HeaderCarrier
+  ): Future[Result] =
     for {
       currentCache <- journeyCacheService.currentCache
       result       <- pickRedirectLocation(currentCache, income, confirmationCallback, empId)
@@ -294,7 +309,8 @@ class IncomeController @Inject()(
     currentCache: Map[String, String],
     income: EditIncomeForm,
     confirmationCallback: Call,
-    empId: Int)(implicit hc: HeaderCarrier): Future[Result] =
+    empId: Int
+  )(implicit hc: HeaderCarrier): Future[Result] =
     if (isCachedIncomeTheSame(currentCache, income.newAmount, empId)) {
       Future.successful(Redirect(routes.IncomeController.sameEstimatedPayInCache(empId)))
     } else if (isIncomeTheSame(income)) {
@@ -304,7 +320,8 @@ class IncomeController @Inject()(
     }
 
   private def cacheAndRedirect(income: EditIncomeForm, confirmationCallback: Call)(
-    implicit hc: HeaderCarrier): Future[Result] =
+    implicit hc: HeaderCarrier
+  ): Future[Result] =
     for {
       _ <- journeyCacheService.cache(UpdateIncome_NewAmountKey, income.toEmploymentAmount().newAmount.toString)
     } yield {
