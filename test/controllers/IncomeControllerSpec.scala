@@ -415,6 +415,20 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
 
     }
+
+    "Redirect to /Income-details" when {
+      "cache is empty" in {
+        val testController = createTestIncomeController()
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncome_NewAmountKey))(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+        val result =
+          testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
+
+      }
+    }
   }
 
   "updateEstimatedIncome" must {
