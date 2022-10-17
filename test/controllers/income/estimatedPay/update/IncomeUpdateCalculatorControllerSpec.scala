@@ -109,6 +109,7 @@ class IncomeUpdateCalculatorControllerSpec
           new TestIncomeUpdateCalculatorController()
             .onPageLoad(employerId)(RequestBuilder.buildFakeGetRequestWithAuth())
       }
+
       def setup(hasJourneyCompleted: Boolean, returnedEmployment: Option[Employment]): OnPageLoadHarness =
         new OnPageLoadHarness(hasJourneyCompleted, returnedEmployment)
     }
@@ -262,7 +263,10 @@ class IncomeUpdateCalculatorControllerSpec
 
   "handleCalculationResult" must {
     object HandleCalculationResultHarness {
-      sealed class HandleCalculationResultHarness(currentValue: Option[String]) {
+      sealed class HandleCalculationResultHarness(
+        currentValue: Option[String],
+        failure: Boolean,
+        futureFailed: Boolean = false) {
 
         when(incomeService.employmentAmount(any(), any())(any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
@@ -275,8 +279,11 @@ class IncomeUpdateCalculatorControllerSpec
             .handleCalculationResult()(request)
       }
 
-      def setup(currentValue: Option[String]): HandleCalculationResultHarness =
-        new HandleCalculationResultHarness(currentValue)
+      def setup(
+        currentValue: Option[String],
+        failure: Boolean = false,
+        futureFailed: Boolean = false): HandleCalculationResultHarness =
+        new HandleCalculationResultHarness(currentValue, failure, futureFailed)
     }
     "display ConfirmAmountEnteredView" when {
       "journey cache returns employment name, net amount and id" in {
@@ -313,6 +320,18 @@ class IncomeUpdateCalculatorControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
+      }
+    }
+
+    "redirect to /income-details" when {
+      "no value is present in the cache" in {
+        val result = HandleCalculationResultHarness
+          .setup(Some("1"), failure = true, futureFailed = true)
+          .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
       }
     }
   }
