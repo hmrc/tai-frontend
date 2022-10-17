@@ -147,28 +147,31 @@ class IncomeController @Inject()(
 
       journeyCacheService
         .collectedJourneyValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_NameKey), Seq(UpdateIncome_DateKey))
-        .getOrFail flatMap {
-        case (mandatorySeq, optionalSeq) =>
-          val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
-            case Success(optDate) => optDate
-            case Failure(exception) =>
-              logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
-              None
-          }
+        .flatMap {
+          case Left(errorMessage) =>
+            logger.warn(errorMessage)
+            Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+          case Right((mandatorySeq, optionalSeq)) =>
+            val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
+              case Success(optDate) => optDate
+              case Failure(exception) =>
+                logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
+                None
+            }
 
-          val employerName = mandatorySeq(1)
-          val payToDate = BigDecimal(mandatorySeq.head)
+            val employerName = mandatorySeq(1)
+            val payToDate = BigDecimal(mandatorySeq.head)
 
-          EditIncomeForm
-            .bind(employerName, payToDate, date)
-            .fold(
-              (formWithErrors: Form[EditIncomeForm]) =>
-                Future.successful(
-                  BadRequest(editIncome(formWithErrors, hasMultipleIncomes = false, empId, mandatorySeq.head))),
-              (income: EditIncomeForm) =>
-                determineEditRedirect(income, routes.IncomeController.confirmRegularIncome(empId), empId)
-            )
-      }
+            EditIncomeForm
+              .bind(employerName, payToDate, date)
+              .fold(
+                (formWithErrors: Form[EditIncomeForm]) =>
+                  Future.successful(
+                    BadRequest(editIncome(formWithErrors, hasMultipleIncomes = false, empId, mandatorySeq.head))),
+                (income: EditIncomeForm) =>
+                  determineEditRedirect(income, routes.IncomeController.confirmRegularIncome(empId), empId)
+              )
+        }
   }
 
   private def isCachedIncomeTheSame(currentCache: Map[String, String], newAmount: Option[String], empId: Int): Boolean =

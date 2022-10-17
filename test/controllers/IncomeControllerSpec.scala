@@ -275,6 +275,31 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       }
     }
 
+    "redirect to /income-details" when {
+      "cache is empty" in {
+
+        val testController = createTestIncomeController()
+
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+          .thenReturn(Future.successful(Left("empty cache")))
+
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = 212)
+        val formData = Json.toJson(editIncomeForm)
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
+
+        val result =
+          testController.editRegularIncome(empId = employment.sequenceNumber)(
+            RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(employment.sequenceNumber).url)
+
+      }
+    }
+
     "return Bad request" when {
       "an input error occurs" in {
         val invalidNewAmount = ""
