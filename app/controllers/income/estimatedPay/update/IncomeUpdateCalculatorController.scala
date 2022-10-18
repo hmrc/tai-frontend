@@ -16,7 +16,7 @@
 
 package controllers.income.estimatedPay.update
 
-import cats.data.EitherT
+import cats.data.{EitherT, OptionT}
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import controllers.{ErrorPagesHandler, TaiBaseController}
@@ -222,6 +222,10 @@ class IncomeUpdateCalculatorController @Inject()(
       income         <- EitherT.right[String](incomeService.employmentAmount(nino, id))
       netAmount      <- EitherT.right[String](journeyCacheService.currentValue(UpdateIncome_NewAmountKey))
     } yield {
+      println(employmentName)
+      println(id)
+      println(income)
+      println(netAmount)
       val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
       val employmentAmount = income.copy(newAmount = convertedNetAmount)
 
@@ -237,7 +241,7 @@ class IncomeUpdateCalculatorController @Inject()(
         )
         Ok(confirmAmountEntered(vm))
       }
-    }).fold(errorPagesHandler.internalServerError(_, None), identity _)
+    }).fold(_ => Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(1).url), identity _)
       .recover {
         case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
       }
