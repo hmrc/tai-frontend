@@ -24,14 +24,14 @@
 
 @this(mainTemplate: MainTempleteNew, loginStatus: LoginStatus)
 
-@( payYTD: BigDecimal = 0, payDate: java.time.LocalDate, id: Int)(implicit request: Request[_], messages: Messages,
+@( payYTD: BigDecimal = 0, payDate: java.time.LocalDate, id: Int, employerId: Int)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(
     title = messages("tai.estimatedPay.error.incorrectTaxableIncome.title"),
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkId = "backLink",
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage(1).url),
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage(employerId).url),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     authedUser = Some(user),
 ){
