@@ -222,7 +222,7 @@ class IncomeUpdateCalculatorControllerSpec
 
   "checkYourAnswersPage" must {
     object CheckYourAnswersPageHarness {
-      sealed class CheckYourAnswersPageHarness() {
+      sealed class CheckYourAnswersPageHarness(cacheEmpty: Boolean) {
 
         val employerName = "Employer1"
         val payFrequency = "monthly"
@@ -234,29 +234,47 @@ class IncomeUpdateCalculatorControllerSpec
         val payPeriodInDays = "3"
         val employerId = "1"
 
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
-          .thenReturn(Future.successful(Right(
-            Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
-            Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
-          )))
+        if (cacheEmpty) {
+          when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+            .thenReturn(Future.successful(Left("cacheEmpty")))
+        } else {
+          when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+            .thenReturn(Future.successful(Right(
+              Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
+              Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
+            )))
+        }
 
         def checkYourAnswersPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateCalculatorController()
             .checkYourAnswersPage()(request)
       }
 
-      def setup(): CheckYourAnswersPageHarness =
-        new CheckYourAnswersPageHarness()
+      def setup(cacheEmpty: Boolean): CheckYourAnswersPageHarness =
+        new CheckYourAnswersPageHarness(cacheEmpty)
     }
     "display check your answers containing populated values from the journey cache" in {
 
       val result = CheckYourAnswersPageHarness
-        .setup()
+        .setup(false)
         .checkYourAnswersPage(RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(messages("tai.checkYourAnswers.title"))
+    }
+
+    "Redirect to /Income-details" when {
+      "the cache is empty" in {
+        val result = CheckYourAnswersPageHarness
+          .setup(true)
+          .checkYourAnswersPage(RequestBuilder.buildFakeGetRequestWithAuth())
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
+
+      }
     }
   }
 
