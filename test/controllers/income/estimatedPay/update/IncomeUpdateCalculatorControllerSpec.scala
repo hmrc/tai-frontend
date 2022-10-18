@@ -20,6 +20,7 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import mocks.MockTemplateRenderer
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -28,7 +29,7 @@ import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live}
@@ -109,6 +110,7 @@ class IncomeUpdateCalculatorControllerSpec
           new TestIncomeUpdateCalculatorController()
             .onPageLoad(employerId)(RequestBuilder.buildFakeGetRequestWithAuth())
       }
+
       def setup(hasJourneyCompleted: Boolean, returnedEmployment: Option[Employment]): OnPageLoadHarness =
         new OnPageLoadHarness(hasJourneyCompleted, returnedEmployment)
     }
@@ -281,21 +283,29 @@ class IncomeUpdateCalculatorControllerSpec
 
   "handleCalculationResult" must {
     object HandleCalculationResultHarness {
-      sealed class HandleCalculationResultHarness(currentValue: Option[String]) {
+      sealed class HandleCalculationResultHarness(currentValue: Option[String], cacheEmpty: Boolean) {
 
         when(incomeService.employmentAmount(any(), any())(any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
 
-        when(journeyCacheService.currentValue(eqTo(UpdateIncome_NewAmountKey))(any()))
-          .thenReturn(Future.successful(currentValue))
+        if (cacheEmpty) {
+          when(journeyCacheService.mandatoryJourneyValue(any())(any()))
+            .thenReturn(Future.successful(Left("empty cache")))
+          when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
+            .thenReturn(Future.successful(Left("empty cache")))
+          when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
+        } else {
+          when(journeyCacheService.currentValue(eqTo(UpdateIncome_NewAmountKey))(any()))
+            .thenReturn(Future.successful(currentValue))
+        }
 
         def handleCalculationResult(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateCalculatorController()
             .handleCalculationResult()(request)
       }
 
-      def setup(currentValue: Option[String]): HandleCalculationResultHarness =
-        new HandleCalculationResultHarness(currentValue)
+      def setup(currentValue: Option[String], cacheEmpty: Boolean = false): HandleCalculationResultHarness =
+        new HandleCalculationResultHarness(currentValue, cacheEmpty)
     }
     "display ConfirmAmountEnteredView" when {
       "journey cache returns employment name, net amount and id" in {
@@ -332,6 +342,19 @@ class IncomeUpdateCalculatorControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
+      }
+    }
+    "redirect to /income-details" when {
+      "cache is empty" in {
+
+        val result = HandleCalculationResultHarness
+          .setup(Some("1"), true)
+          .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
+
       }
     }
   }
