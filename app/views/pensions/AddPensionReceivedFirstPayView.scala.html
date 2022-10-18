@@ -50,7 +50,8 @@ ec: scala.concurrent.ExecutionContext)
                         legend = Some(
                         HmrcPageHeadingLegend(
                             content = Text(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName)),
-                            caption = HmrcSectionCaption(Text(Messages("add.missing.pension"))))
+                            caption = HmrcSectionCaption(Text(Messages("add.missing.pension"))),
+                            classes = "govuk-fieldset__legend--xl carry-over")
                         )
                     )
                 ),

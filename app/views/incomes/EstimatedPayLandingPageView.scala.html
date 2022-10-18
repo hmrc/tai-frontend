@@ -53,7 +53,7 @@ ec: scala.concurrent.ExecutionContext)
             <p class="govuk-body">@messages("tai.incomes.landing.intro")</p>
             <a id="updateEstimatedPayTotalIncome" aria-hidden="true">@messages("tai.incomes.landing.employment.totalIncome", totalEstimatedIncome)</a>
             <p id="updateEstimatedPayLink" aria-hidden="true" ><a href="@routes.EstimatedIncomeTaxController.estimatedIncomeTax">@messages("tai.incomes.landing.employment.affect")</a></p>
-            <p class="govuk-body">
+            <p class="govuk-body carry-over">
                 @if(isPension) {
                     @messages("tai.incomes.landing.pension.ended", incomeName)
                     @link(
