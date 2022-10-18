@@ -31,7 +31,7 @@ user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.Templa
     title = messages("tai.estimatedPay.error.incorrectTaxableIncome.title"),
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkId = "backLink",
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage.url),
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage(1).url),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     authedUser = Some(user),
 ){

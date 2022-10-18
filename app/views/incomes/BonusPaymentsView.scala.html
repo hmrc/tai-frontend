@@ -48,7 +48,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
                 @govukErrorSummary(ErrorSummary(errorList = yesNoForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
+            @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusPayments(employer.id), Symbol("data-dynamic-form") -> "true") {
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(

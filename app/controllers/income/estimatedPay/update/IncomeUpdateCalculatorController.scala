@@ -21,6 +21,8 @@ import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import cats.implicits._
+import play.api.Logger
+
 import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -38,6 +40,7 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
 import uk.gov.hmrc.tai.util.FutureOps._
+
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -55,9 +58,12 @@ class IncomeUpdateCalculatorController @Inject()(
   confirmAmountEntered: ConfirmAmountEnteredView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants
     with UpdatedEstimatedPayJourneyCache with FormValuesConstants {
+
+  val logger = Logger(this.getClass)
 
   def onPageLoad(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val estimatedPayCompletionFuture = estimatedPayJourneyCompletionService.hasJourneyCompleted(id.toString)
@@ -80,7 +86,8 @@ class IncomeUpdateCalculatorController @Inject()(
   }
 
   private def cacheEmploymentDetails(id: Int, employmentFuture: Future[Option[Employment]])(
-    implicit hc: HeaderCarrier): Future[Map[String, String]] =
+    implicit hc: HeaderCarrier
+  ): Future[Map[String, String]] =
     employmentFuture flatMap {
       case Some(employment) =>
         val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
@@ -150,54 +157,59 @@ class IncomeUpdateCalculatorController @Inject()(
         }
   }
 
-  def checkYourAnswersPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user = request.taiUser
+  def checkYourAnswersPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user = request.taiUser
 
-    journeyCacheService
-      .collectedJourneyValues(
-        Seq(
-          UpdateIncome_NameKey,
-          UpdateIncome_PayPeriodKey,
-          UpdateIncome_TotalSalaryKey,
-          UpdateIncome_PayslipDeductionsKey,
-          UpdateIncome_BonusPaymentsKey,
-          UpdateIncome_IdKey
-        ),
-        Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey, UpdateIncome_OtherInDaysKey)
-      )
-      .getOrFail map {
-      case (mandatorySeq, optionalSeq) =>
-        val employer = IncomeSource(id = mandatorySeq(5).toInt, name = mandatorySeq(0))
-        val payPeriodFrequency = mandatorySeq(1)
-        val totalSalaryAmount = mandatorySeq(2)
-        val hasPayslipDeductions = mandatorySeq(3)
-        val hasBonusPayments = mandatorySeq(4)
-
-        val taxablePay = optionalSeq(0)
-        val bonusPaymentAmount = optionalSeq(1)
-        val payPeriodInDays = optionalSeq(2)
-
-        val backUrl = bonusPaymentAmount match {
-          case None =>
-            controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
-          case _ =>
-            controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url
-        }
-
-        val viewModel = CheckYourAnswersViewModel(
-          payPeriodFrequency,
-          payPeriodInDays,
-          totalSalaryAmount,
-          hasPayslipDeductions,
-          taxablePay,
-          hasBonusPayments,
-          bonusPaymentAmount,
-          employer,
-          backUrl
+      val collectedValues = journeyCacheService
+        .collectedJourneyValues(
+          Seq(
+            UpdateIncome_NameKey,
+            UpdateIncome_PayPeriodKey,
+            UpdateIncome_TotalSalaryKey,
+            UpdateIncome_PayslipDeductionsKey,
+            UpdateIncome_BonusPaymentsKey,
+            UpdateIncome_IdKey
+          ),
+          Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey, UpdateIncome_OtherInDaysKey)
         )
 
-        Ok(checkYourAnswers(viewModel))
-    }
+      collectedValues.map {
+        case Left(errorMessage) =>
+          logger.warn(errorMessage)
+          Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url)
+        case Right((mandatorySeq, optionalSeq)) =>
+          val employer = IncomeSource(id = mandatorySeq(5).toInt, name = mandatorySeq(0))
+          val payPeriodFrequency = mandatorySeq(1)
+          val totalSalaryAmount = mandatorySeq(2)
+          val hasPayslipDeductions = mandatorySeq(3)
+          val hasBonusPayments = mandatorySeq(4)
+
+          val taxablePay = optionalSeq(0)
+          val bonusPaymentAmount = optionalSeq(1)
+          val payPeriodInDays = optionalSeq(2)
+
+          val backUrl = bonusPaymentAmount match {
+            case None =>
+              controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
+            case _ =>
+              controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url
+          }
+
+          val viewModel = CheckYourAnswersViewModel(
+            payPeriodFrequency,
+            payPeriodInDays,
+            totalSalaryAmount,
+            hasPayslipDeductions,
+            taxablePay,
+            hasBonusPayments,
+            bonusPaymentAmount,
+            employer,
+            backUrl
+          )
+
+          Ok(checkYourAnswers(viewModel))
+      }
   }
 
   def handleCalculationResult: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
