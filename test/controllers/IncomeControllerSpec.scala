@@ -290,7 +290,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         val employment = employmentWithAccounts(List(annualAccount))
 
         val result =
-          testController.editRegularIncome(empId = employment.sequenceNumber)(
+          testController.editRegularIncome(empId = employerId)(
             RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
