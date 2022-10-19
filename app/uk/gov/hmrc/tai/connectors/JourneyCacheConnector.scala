@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.Inject
+import akka.Done
 import play.api.Logging
 import play.api.http.Status.NO_CONTENT
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
@@ -78,8 +79,8 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
       )
       .map(_.json.as[Map[String, String]])
 
-  def flush(journeyName: String)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.deleteFromApi(cacheUrl(journeyName)).map(_ => TaiSuccessResponse)
+  def flush(journeyName: String)(implicit hc: HeaderCarrier): Future[Done] =
+    httpHandler.deleteFromApi(cacheUrl(journeyName)).map(_ => Done)
 
   def flushWithEmpId(journeyName: String, empId: Int)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.deleteFromApi(cacheUrl(s"$journeyName/$empId")).map(_ => TaiSuccessResponse)

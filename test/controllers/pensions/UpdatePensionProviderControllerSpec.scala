@@ -16,17 +16,18 @@
 
 package controllers.pensions
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
-import org.mockito.Matchers.{any, eq => mockEq}
+import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.service._
@@ -389,7 +390,7 @@ class UpdatePensionProviderControllerSpec
           successfulJourneyCacheService
             .cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId"), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId" -> "true")))
-        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = createController.submitYourAnswers()(fakePostRequest)
 
@@ -419,7 +420,7 @@ class UpdatePensionProviderControllerSpec
           successfulJourneyCacheService
             .cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId"), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId" -> "true")))
-        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = createController.submitYourAnswers()(fakePostRequest)
 

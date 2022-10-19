@@ -16,6 +16,7 @@
 
 package controllers.employments
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
@@ -731,7 +732,7 @@ class AddEmploymentControllerSpec
 
         when(employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any()))
           .thenReturn(Future.successful("envelope-123"))
-        when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
         when(
           trackSuccessJourneyCacheService
             .cache(Matchers.eq(TrackSuccessfulJourney_AddEmploymentKey), Matchers.eq("true"))(any()))
@@ -754,7 +755,7 @@ class AddEmploymentControllerSpec
 
         when(employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any()))
           .thenReturn(Future.successful("envelope-123"))
-        when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
         when(trackSuccessJourneyCacheService.cache(any(), any())(any()))
           .thenReturn(Future.successful(expectedSuccessfulJourneyCache))
 
@@ -782,7 +783,7 @@ class AddEmploymentControllerSpec
   "cancel" must {
     "redirect to the the TaxAccountSummaryController" in {
 
-      when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
       val result = createSUT.cancel()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER

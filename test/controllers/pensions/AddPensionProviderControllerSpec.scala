@@ -16,6 +16,7 @@
 
 package controllers.pensions
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
@@ -29,7 +30,6 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderNumberForm._
 import uk.gov.hmrc.tai.forms.pensions.{AddPensionProviderFirstPayForm, PensionAddDateForm}
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
@@ -888,7 +888,7 @@ class AddPensionProviderControllerSpec
           )))
       when(trackSuccessJourneyCacheService.cache(any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, String]))
-      when(addPensionProviderJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(addPensionProviderJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
       val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
@@ -910,7 +910,7 @@ class AddPensionProviderControllerSpec
   "cancel" must {
     "redirect to the the TaxAccountSummaryController" in {
 
-      when(addPensionProviderJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(addPensionProviderJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
       val result = createSUT.cancel()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER

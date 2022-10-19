@@ -16,6 +16,7 @@
 
 package controllers.income.estimatedPay.update
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
@@ -27,7 +28,6 @@ import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -373,7 +373,7 @@ class IncomeUpdatePayslipAmountControllerSpec
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         when(journeyCacheService.flush()(any()))
-          .thenReturn(Future.successful(TaiSuccessResponse))
+          .thenReturn(Future.successful(Done))
 
         def handlePayslipDeductions(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdatePayslipAmountController()

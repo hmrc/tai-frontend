@@ -16,16 +16,17 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import java.time.LocalDate
+import akka.Done
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status._
 import play.api.libs.json._
-import uk.gov.hmrc.http.{HttpException, HttpResponse, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.{HttpException, HttpResponse, InternalServerException}
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import utils.BaseSpec
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
@@ -149,7 +150,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
 
       val result = Await.result(sut.flush(journeyName), 5 seconds)
-      result mustBe TaiSuccessResponse
+      result mustBe Done
     }
   }
 

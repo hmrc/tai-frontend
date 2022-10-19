@@ -16,8 +16,10 @@
 
 package controllers
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => meq}
@@ -72,7 +74,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
     "flush the journey cache and redirect to the employer id's income details page" in {
       val testController = createTestIncomeController()
 
-      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
       val result = testController.cancel(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -403,7 +405,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       when(
         journeyCacheService.mandatoryJourneyValueAsInt(meq(s"$UpdateIncome_ConfirmedNewAmountKey-$employerId"))(any()))
         .thenReturn(cachePayToDate)
-      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
       val result =
         testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -898,7 +900,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       ) {
 
     when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
-    when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+    when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
     def renderSuccess(employerName: String, employerId: Int): FakeRequest[_] => HtmlFormat.Appendable = {
       implicit request: FakeRequest[_] =>
