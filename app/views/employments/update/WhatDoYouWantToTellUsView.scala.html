@@ -73,7 +73,9 @@
                 label = (
                     HmrcPageHeadingLabel(
                         content = Text(Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", viewmodel.employerName)),
-                        caption = HmrcSectionCaption(Text(messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"))))
+                        caption = HmrcSectionCaption(Text(messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"))),
+                        classes = "govuk-label--xl carry-over"
+                    )
                 ),
 
         hint = Some(Hint(

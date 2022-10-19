@@ -64,8 +64,8 @@
     @if(formForErrorSummary.exists(_.errors.nonEmpty) && govukErrorSummary.isDefined) {
         @govukErrorSummary.get(ErrorSummary(errorList = formForErrorSummary.get.errors.asTextErrorLinks, title = Text(Messages("tai.income.error.form.summary"))))
     }
-    <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)</span>
-    <h1 class="govuk-heading-xl heading-mobile-responsive xbreak-word">@Html(mainHeadingText)</h1>
+    <span class="govuk-caption-xl carry-over"><span class="govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)</span>
+    <h1 class="govuk-heading-xl heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
 }else {
     <div class="grid-row">
         <div class="@headerWidthClasses.getOrElse("")">
@@ -73,7 +73,8 @@
                 @errorSummary(Messages("tai.income.error.form.summary"), formForErrorSummary.get, Seq("flush--bottom"))
             }
         <header class="page-heading soft--top">
-            <h1 class="govuk-heading-xl heading-xlarge heading-mobile-responsive xbreak-word">@Html(mainHeadingText)</h1>
+            <h1 class="govuk-heading-xl heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
+            <h1 class="govuk-heading-xl heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
             <p class="heading-secondary break-word hide-for-print govuk-visually-hidden"><span class="visuallyhidden govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
         </header>
         </div>

@@ -52,7 +52,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
                             legend = Some(
                                 HmrcPageHeadingLegend(
                                     content = Text(messages("tai.payslipDeductions.heading")),
-                                    caption = HmrcSectionCaption(Text(messages("tai.payslipDeductions.preHeading", employer.name))))
+                                    caption = HmrcSectionCaption(Text(messages("tai.payslipDeductions.preHeading", employer.name))),
+                                    classes = "govuk-fieldset__legend--xl carry-over")
                         )
                         )
                     ),

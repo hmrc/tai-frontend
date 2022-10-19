@@ -50,7 +50,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.Ex
                             legend = Some(
                             HmrcPageHeadingLegend(
                                 content = Text(Messages("tai.payPeriod.heading", employerName)),
-                                caption = HmrcSectionCaption(Text(Messages("tai.payPeriod.preHeading", employerName))))
+                                caption = HmrcSectionCaption(Text(Messages("tai.payPeriod.preHeading", employerName))),
+                                classes = "govuk-fieldset__legend--xl carry-over")
                             )
                         )
                     ),

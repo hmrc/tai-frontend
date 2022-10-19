@@ -55,7 +55,9 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
                             legend = Some(
                                 HmrcPageHeadingLegend(
                                     content = Text(Messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)),
-                                    caption = HmrcSectionCaption(Text(Messages("tai.bonusPayments.preHeading", employer.name))))
+                                    caption = HmrcSectionCaption(Text(Messages("tai.bonusPayments.preHeading", employer.name))),
+                                    classes = "govuk-fieldset__legend--xl carry-over"
+                                   )
                             )
                         )
                     ),

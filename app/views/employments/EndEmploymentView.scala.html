@@ -34,7 +34,7 @@
 
 
 @hint = {
-        <span id="date-you-left-hint" class="govuk-!-font-weight-bold govuk-!-display-block" >@Messages("tai.endEmployment.endDateForm.label" , viewmodel.employerName)</span>
+        <span id="date-you-left-hint" class="govuk-!-font-weight-bold govuk-!-display-block carry-over" >@Messages("tai.endEmployment.endDateForm.label" , viewmodel.employerName)</span>
         <span id="date-example-hint">@Messages("tai.label.date.example")</span>
 }
 
@@ -87,7 +87,8 @@
             fieldset =  Some(Fieldset(
                 legend = Some(HmrcPageHeadingLegend(
                     content = Text(messages("tai.endEmployment.endDateForm.title",  viewmodel.employerName)),
-                    caption = HmrcSectionCaption(Text(messages("tai.endEmployment.preHeadingText"))))
+                    caption = HmrcSectionCaption(Text(messages("tai.endEmployment.preHeadingText"))),
+                    classes = "govuk-fieldset__legend--xl carry-over")
                 )))),
         )
         @govukButton(Button(content = Text(messages("tai.continue"))))
