@@ -287,10 +287,10 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
       doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
     }
 
-    "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
+    "respond with INTERNAL_SERVER_ERROR for a future failed when we call the cache" in {
 
       val result = ConfirmIncomeIrregularHoursHarness
-        .setup(failure = true, futureFailed = true)
+        .setup(futureFailed = true)
         .confirmIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe INTERNAL_SERVER_ERROR

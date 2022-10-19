@@ -295,7 +295,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.routes.IncomeSourceSummaryController.onPageLoad(employment.sequenceNumber).url)
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
 
       }
     }
