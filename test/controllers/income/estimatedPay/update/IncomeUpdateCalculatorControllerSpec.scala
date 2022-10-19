@@ -303,13 +303,11 @@ class IncomeUpdateCalculatorControllerSpec
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
 
         if (cacheEmpty) {
-          println("helloooooooooooooooooooooooo")
           when(journeyCacheService.mandatoryJourneyValue(any())(any()))
             .thenReturn(Future.successful(Left("empty cache")))
           when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
             .thenReturn(Future.successful(Left("empty cache")))
           when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
-          println("enddddddddddddddddddddddd")
         } else {
           when(journeyCacheService.currentValue(eqTo(UpdateIncome_NewAmountKey))(any()))
             .thenReturn(Future.successful(currentValue))

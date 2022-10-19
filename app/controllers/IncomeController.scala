@@ -207,7 +207,9 @@ class IncomeController @Inject()(
                           employment.name,
                           employmentAmount.oldAmount,
                           cachedData,
-                          controllers.routes.IncomeController.regularIncome(empId).url)
+                          controllers.routes.IncomeController.regularIncome(empId).url,
+                          empId
+                        )
                       Ok(confirmAmountEntered(vm))
 
                     case _ => throw new RuntimeException(s"Not able to found employment with id $empId")
@@ -228,50 +230,54 @@ class IncomeController @Inject()(
         }
   }
 
-  def updateEstimatedIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
+  def updateEstimatedIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
 
-    def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(
-      implicit user: AuthedUser,
-      request: Request[AnyContent]
-    ): Result = {
-      journeyCacheService.cache(s"$UpdateIncome_ConfirmedNewAmountKey-$employerId", newAmount)
-      incomeType match {
-        case TaiConstants.IncomeTypePension => Ok(editPensionSuccess(employerName, employerId))
-        case _                              => Ok(editSuccess(employerName, employerId))
+      def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(
+        implicit user: AuthedUser,
+        request: Request[AnyContent]
+      ): Result = {
+        journeyCacheService.cache(s"$UpdateIncome_ConfirmedNewAmountKey-$employerId", newAmount)
+        incomeType match {
+          case TaiConstants.IncomeTypePension => Ok(editPensionSuccess(employerName, employerId))
+          case _                              => Ok(editSuccess(employerName, employerId))
+        }
       }
-    }
 
-    journeyCacheService
-      .mandatoryJourneyValues(
-        UpdateIncome_NameKey,
-        UpdateIncome_NewAmountKey,
-        UpdateIncome_IdKey,
-        UpdateIncome_IncomeTypeKey)
-      .getOrFail
-      .flatMap(cache => {
+      val collectedValues = journeyCacheService
+        .mandatoryJourneyValues(
+          UpdateIncome_NameKey,
+          UpdateIncome_NewAmountKey,
+          UpdateIncome_IdKey,
+          UpdateIncome_IncomeTypeKey)
 
-        val incomeName :: newAmount :: incomeId :: incomeType :: Nil = cache.toList
+      collectedValues
+        .flatMap {
+          case Left(errorMessage) =>
+            logger.warn(errorMessage)
+            Future(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+          case Right(cache) =>
+            val incomeName :: newAmount :: incomeId :: incomeType :: Nil = cache.toList
 
-        journeyCacheService.flush().flatMap {
-          _ =>
-            taxAccountService.updateEstimatedIncome(
-              user.nino,
-              FormHelper.stripNumber(newAmount).toInt,
-              TaxYear(),
-              incomeId.toInt) flatMap {
-              case TaiSuccessResponse =>
-                estimatedPayJourneyCompletionService.journeyCompleted(incomeId).map { _ =>
-                  respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
-                }
-              case failure: TaiFailureResponse =>
-                throw new RuntimeException(s"Failed to update estimated income with exception: ${failure.message}")
+            journeyCacheService.flush().flatMap { _ =>
+              taxAccountService.updateEstimatedIncome(
+                user.nino,
+                FormHelper.stripNumber(newAmount).toInt,
+                TaxYear(),
+                incomeId.toInt) flatMap {
+                case TaiSuccessResponse =>
+                  estimatedPayJourneyCompletionService.journeyCompleted(incomeId).map { _ =>
+                    respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
+                  }
+                case failure: TaiFailureResponse =>
+                  throw new RuntimeException(s"Failed to update estimated income with exception: ${failure.message}")
+              }
             }
         }
-      })
-      .recover {
-        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage, Some(e))
-      }
+        .recover {
+          case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage, Some(e))
+        }
   }
 
   def pensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -356,42 +362,47 @@ class IncomeController @Inject()(
                   editPension(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)))
               },
               (income: EditIncomeForm) =>
-                determineEditRedirect(income, routes.IncomeController.confirmPensionIncome(), empId)
+                determineEditRedirect(income, routes.IncomeController.confirmPensionIncome(empId), empId)
             )
       }
 
   }
 
-  def confirmPensionIncome(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    val nino = user.nino
+  def confirmPensionIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      val nino = user.nino
 
-    (for {
-      cachedData <- journeyCacheService.mandatoryJourneyValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey).getOrFail
-      id = cachedData.head.toInt
-      taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-      employmentDetails    <- employmentService.employment(nino, id)
-    } yield {
+      (for {
+        cachedData <- journeyCacheService
+                       .mandatoryJourneyValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey)
+                       .getOrFail
+        id = cachedData.head.toInt
+        taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+        employmentDetails    <- employmentService.employment(nino, id)
+      } yield {
 
-      (taxCodeIncomeDetails, employmentDetails) match {
-        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-          taxCodeIncomes.find(_.employmentId.contains(cachedData.head.toInt)) match {
-            case Some(taxCodeIncome) =>
-              val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
+        (taxCodeIncomeDetails, employmentDetails) match {
+          case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+            taxCodeIncomes.find(_.employmentId.contains(cachedData.head.toInt)) match {
+              case Some(taxCodeIncome) =>
+                val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
-              val vm = ConfirmAmountEnteredViewModel(
-                employment.name,
-                employmentAmount.oldAmount,
-                cachedData(1).toInt,
-                "javascript:history.go(-1)") //TODO this is temporary
-              Ok(confirmAmountEntered(vm))
-            case _ => throw new RuntimeException(s"Not able to found employment with id $id")
-          }
-        case _ => throw new RuntimeException("Exception while reading employment and tax code details")
+                val vm = ConfirmAmountEnteredViewModel(
+                  employment.name,
+                  employmentAmount.oldAmount,
+                  cachedData(1).toInt,
+                  "javascript:history.go(-1)", //TODO this is temporary
+                  empId
+                )
+                Ok(confirmAmountEntered(vm))
+              case _ => throw new RuntimeException(s"Not able to found employment with id $id")
+            }
+          case _ => throw new RuntimeException("Exception while reading employment and tax code details")
+        }
+      }).recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
       }
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-    }
   }
 
   def viewIncomeForEdit: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

@@ -222,10 +222,7 @@ class IncomeUpdateCalculatorController @Inject()(
       income         <- EitherT.right[String](incomeService.employmentAmount(nino, id))
       netAmount      <- EitherT.right[String](journeyCacheService.currentValue(UpdateIncome_NewAmountKey))
     } yield {
-      println(employmentName)
-      println(id)
-      println(income)
-      println(netAmount)
+
       val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
       val employmentAmount = income.copy(newAmount = convertedNetAmount)
 
@@ -237,7 +234,8 @@ class IncomeUpdateCalculatorController @Inject()(
           employmentName,
           employmentAmount.oldAmount,
           employmentAmount.newAmount,
-          controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage(id).url
+          controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage(id).url,
+          id
         )
         Ok(confirmAmountEntered(vm))
       }

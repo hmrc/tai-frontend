@@ -178,10 +178,10 @@ GET         /update-income/income/:empId/check-save                             
 GET         /update-income/income/same-estimated-pay/:empId                            controllers.IncomeController.sameEstimatedPayInCache(empId: Int)
 GET         /update-income/income/same-annual-estimated-pay                            controllers.IncomeController.sameAnnualEstimatedPay
 
-GET         /update-income/pension/check-save                                          controllers.IncomeController.confirmPensionIncome
+GET         /update-income/pension/check-save/:empId                                   controllers.IncomeController.confirmPensionIncome(empId: Int)
 
 
-GET         /update-income/success-page                                                controllers.IncomeController.updateEstimatedIncome
+GET         /update-income/success-page/:empId                                         controllers.IncomeController.updateEstimatedIncome(empId: Int)
 
 
 ## Get Help Pages
