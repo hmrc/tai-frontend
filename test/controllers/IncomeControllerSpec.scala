@@ -547,10 +547,10 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
     "Redirect to /Income-details" when {
       "cache is empty" in {
         val testController = createTestIncomeController()
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
         val result =
-          testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+          testController.updateEstimatedIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
