@@ -47,8 +47,9 @@ class IncomeUpdatePayPeriodController @Inject()(
 
     for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)
-      payPeriod          <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
-      payPeriodInDays    <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
+      payPeriod :: payPeriodInDays :: _ <- journeyCacheService
+                                            .optionalValues(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
+
     } yield {
       val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
       incomeSourceEither match {
