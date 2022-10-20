@@ -23,7 +23,7 @@
 @import uk.gov.hmrc.tai.forms.PayPeriodForm
 @import uk.gov.hmrc.tai.util.constants.PayPeriodConstants
 
-@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
+@this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)

@@ -25,7 +25,7 @@
 @import scala.concurrent.ExecutionContext
 @import controllers.auth.AuthenticatedRequest
 
-@this(main: MainTempleteNew, loginStatus: LoginStatus)
+@this(main: MainTemplate, loginStatus: LoginStatus)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
 request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)

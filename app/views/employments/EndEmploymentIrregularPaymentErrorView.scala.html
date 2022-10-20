@@ -25,7 +25,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukRadios : GovukRadios, govukErrorSummary: GovukErrorSummary)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF, govukRadios : GovukRadios, govukErrorSummary: GovukErrorSummary)
 
 @(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
