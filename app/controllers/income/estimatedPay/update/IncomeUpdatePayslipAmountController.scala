@@ -79,8 +79,8 @@ class IncomeUpdatePayslipAmountController @Inject()(
 
     val result: Future[Future[Result]] = for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)
-      payPeriod          <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
-      payPeriodInDays    <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
+      payPeriod :: payPeriodInDays :: _ <- journeyCacheService
+                                            .optionalValues(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
     } yield {
       val errorMessage = GrossPayPeriodTitle.title(payPeriod, payPeriodInDays)
       PayslipForm
