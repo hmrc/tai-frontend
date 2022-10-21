@@ -135,9 +135,10 @@ class IncomeUpdatePayslipAmountController @Inject()(
 
     (for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)
-      payPeriod          <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
-      payPeriodInDays    <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
-      totalSalary        <- journeyCacheService.currentValue(UpdateIncome_TotalSalaryKey)
+      payPeriod :: payPeriodInDays :: totalSalary :: _ <- journeyCacheService.optionalValues(
+                                                           UpdateIncome_PayPeriodKey,
+                                                           UpdateIncome_OtherInDaysKey,
+                                                           UpdateIncome_TotalSalaryKey)
     } yield {
       TaxablePayslipForm
         .createForm(FormHelper.stripNumber(totalSalary), payPeriod, payPeriodInDays)

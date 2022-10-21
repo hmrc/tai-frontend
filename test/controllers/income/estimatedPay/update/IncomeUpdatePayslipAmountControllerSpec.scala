@@ -265,14 +265,8 @@ class IncomeUpdatePayslipAmountControllerSpec
     object HandleTaxablePayslipAmountPageHarness {
       sealed class HandleTaxablePayslipAmountPageHarness() {
 
-        when(journeyCacheService.currentValue(eqTo(UpdateIncome_TotalSalaryKey))(any()))
-          .thenReturn(Future.successful(Some("4000")))
-
-        when(journeyCacheService.currentValue(eqTo(UpdateIncome_PayPeriodKey))(any()))
-          .thenReturn(Future.successful(Some(MONTHLY)))
-
-        when(journeyCacheService.currentValue(eqTo(UpdateIncome_OtherInDaysKey))(any()))
-          .thenReturn(Future.successful(None))
+        when(journeyCacheService.optionalValues(any())(any()))
+          .thenReturn(Future.successful(Seq(Some(MONTHLY), None, Some("4000"))))
 
         when(journeyCacheService.cache(eqTo[Map[String, String]](Map(UpdateIncome_TaxablePayKey -> "3000")))(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
