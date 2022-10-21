@@ -77,7 +77,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
   def handlePayslipAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    val result: Future[Future[Result]] = for {
+    (for {
       incomeSourceEither <- IncomeSource.create(journeyCacheService)
       payPeriod :: payPeriodInDays :: _ <- journeyCacheService
                                             .optionalValues(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
@@ -102,9 +102,9 @@ class IncomeUpdatePayslipAmountController @Inject()(
             case _ => Future.successful(Redirect(routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage()))
           }
         )
-    }
+    }).flatten
 
-    result.flatMap(identity)
+
   }
 
   def taxablePayslipAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
