@@ -71,7 +71,7 @@ ec: scala.concurrent.ExecutionContext)
 
 
         @if(viewModel.isGrossPayApportioned){
-            @includes.details_summary(messages("tai.estimatedPay.whyLower.title")) {
+            @includes.detailsSummary(messages("tai.estimatedPay.whyLower.title")) {
                 @Html(messages("tai.estimatedPay.whyLower.message",Dates.formatDate(viewModel.incomeStartDate.get),
                     TaxYearRangeUtil.currentTaxYearRange,
                     MoneyPounds(viewModel.annualAmount.get,0).quantity))
@@ -86,7 +86,7 @@ ec: scala.concurrent.ExecutionContext)
         <p class="govuk-body">@messages("tai.estimatedPay.yourTaxablePay.text")</p>
 
         @if(viewModel.isGrossPayEqualsNetPay){
-            @includes.details_summary(messages("tai.estimatedPay.whySame.title"), summaryClass=Some("govuk-details__summary")){
+            @includes.detailsSummary(messages("tai.estimatedPay.whySame.title"), summaryClass=Some("govuk-details__summary")){
                 @messages("tai.estimatedPay.whySame.text")
             }
         }
