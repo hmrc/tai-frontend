@@ -29,7 +29,7 @@
 ec: scala.concurrent.ExecutionContext)
 
 @hint = {
-    <p class="govuk-!-font-weight-bold govuk-!-display-block">@messages("tai.addPensionProvider.startDateForm.label", pensionProviderName)</p>
+    <p class="govuk-!-font-weight-bold govuk-!-display-block carry-over ">@messages("tai.addPensionProvider.startDateForm.label", pensionProviderName)</p>
     <p>@messages("tai.label.date.example")</p>
 }
 
@@ -79,6 +79,7 @@ ec: scala.concurrent.ExecutionContext)
                       legend = Some(HmrcPageHeadingLegend(
                         content = Text(Messages("tai.addPensionProvider.startDateForm.title",pensionProviderName)),
                         caption = HmrcSectionCaption(Text(Messages("add.missing.pension"))),
+                        classes = "govuk-fieldset__legend--xl carry-over"
                       ))
                     )),
                     errorMessage = dateForm.errors.asTextErrorMessages.headOption,

@@ -66,9 +66,9 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
   @printHeader
 
-<div class="govuk-grid-row">
+    <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl heading-mobile-responsive xbreak-word hide-for-print">@Messages("tai.incomeTax.history.title")</h1>
+        <h1 class="govuk-heading-xl heading-mobile-responsive break-word hide-for-print">@Messages("tai.incomeTax.history.title")</h1>
 
         @govukDetails(Details(
             summary = Text(messages("tai.incomeTax.history.details.summary", person.name)),
@@ -101,7 +101,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
 @for(summary <- incomeTaxYear.incomeTaxHistory) {
         <div class="employment-card-single-u">
-            <div class="employer-name govuk-body">@summary.employerName</div>
+            <div class="employer-name govuk-body carry-over">@summary.employerName</div>
             <ul class="govuk-list govuk-!-font-size-16 .ul-incomeTaxHistory">
                 @if(summary.isPension && summary.payrollNumber.isDefined) {
                     <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.pensionNumber")</span>@summary.payrollNumber</li>
