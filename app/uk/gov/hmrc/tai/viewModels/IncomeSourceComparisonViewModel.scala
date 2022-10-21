@@ -105,7 +105,7 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
       val incomeSourceDetailSeq = map._2
       incomeSourceDetailSeq.size match {
         case (1) =>
-          incomeSourceDetailSeq(0) match {
+          incomeSourceDetailSeq.head match {
             case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYear, isLive) =>
               IncomeSourceComparisonDetail(id, name, amount, TaiConstants.notApplicable.toLowerCase(), isLive)
             case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYearPlusOne, isLive) =>
@@ -114,11 +114,11 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
         case (2) => {
           val sortedSeq = incomeSourceDetailSeq.sortBy(_.taxYearStatus)
           IncomeSourceComparisonDetail(
-            sortedSeq(0).empId,
-            sortedSeq(0).name,
-            sortedSeq(0).amount,
+            sortedSeq.head.empId,
+            sortedSeq.head.name,
+            sortedSeq.head.amount,
             sortedSeq(1).amount,
-            sortedSeq(0).isLive)
+            sortedSeq.head.isLive)
         }
       }
     }

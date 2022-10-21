@@ -43,7 +43,7 @@ case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxCo
 
   lazy val comparisonItemsByYear = items.sortBy(_.year)
 
-  lazy val changeInTaxAmount = comparisonItemsByYear(1).estimatedIncomeTax - comparisonItemsByYear(0).estimatedIncomeTax
+  lazy val changeInTaxAmount = comparisonItemsByYear(1).estimatedIncomeTax - comparisonItemsByYear.head.estimatedIncomeTax
 }
 
 case class EstimatedIncomeTaxComparisonItem(year: TaxYear, estimatedIncomeTax: BigDecimal)

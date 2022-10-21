@@ -78,9 +78,9 @@
 
                         <dt id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word ">
 
-                            @item.rows(0).label.value
+                            @item.rows.head.label.value
 
-                            @item.rows(0).label.link.map { link =>
+                            @item.rows.head.label.link.map { link =>
                                 @includes.link(
                                     id=Some(link.id),
                                     copy=link.value,
@@ -94,17 +94,17 @@
                             @if(isAllowanceOrTotalItem){
                             <span class="govuk-visually-hidden visuallyhidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix")</span>
                             }
-                            @item.rows(0).value
+                            @item.rows.head.value
                         </dd>
 
                     @if(!taxCodeChange) {
-                        @if(item.rows(0).link.isDisplayed) {
+                        @if(item.rows.head.link.isDisplayed) {
                         <dd id="summaryTable@{itemIdx.toString}Row1ChangeLinkCell" class="govuk-summary-list__value cya-change">
                             @includes.link(
                             id = Some(s"summaryTable${itemIdx.toString}Row1ChangeLink"),
-                            url = item.rows(0).link.href,
+                            url = item.rows.head.link.href,
                             copy=Messages("tai.updateOrRemove"),
-                            altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows(0).link.value)
+                            altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows.head.link.value)
                             )
                         </dd>
                         } else @{if(oneOrMoreLinksPresent) {

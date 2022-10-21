@@ -26,6 +26,6 @@ object UpdateRemoveEmploymentForm extends EmploymentDecisionConstants {
     single(
       EmploymentDecision ->
         optional(text)
-          .verifying(error = Messages("tai.employment.decision.error.empty", employerName), constraint = !_.isEmpty))
+          .verifying(error = Messages("tai.employment.decision.error.empty", employerName), constraint = _.nonEmpty))
   )
 }
