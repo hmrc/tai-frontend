@@ -16,6 +16,7 @@
 
 package controllers.employments
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
@@ -278,7 +279,7 @@ class EndEmploymentControllerSpec
         .thenReturn(Future.successful(dataFromCache))
       when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
       when(trackSuccessJourneyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
-      when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
       val result = endEmploymentTest.confirmAndSendEndEmployment()(fakeGetRequest)
 
@@ -438,7 +439,7 @@ class EndEmploymentControllerSpec
           trackSuccessJourneyCacheService
             .cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId"), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId" -> "true")))
-        when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = endEmploymentTest.confirmAndSendEndEmployment()(fakeGetRequest)
 
@@ -757,7 +758,7 @@ class EndEmploymentControllerSpec
   "cancel" must {
     "redirect to the the IncomeSourceSummaryController" in {
       val employmentId = 1
-      when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
       val result = createEndEmploymentTest.cancel(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER

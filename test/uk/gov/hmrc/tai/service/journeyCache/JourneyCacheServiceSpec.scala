@@ -16,16 +16,17 @@
 
 package uk.gov.hmrc.tai.service.journeyCache
 
-import java.time.LocalDate
+import akka.Done
+import cats.syntax.either._
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import utils.BaseSpec
-import cats.syntax.either._
+
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
@@ -333,8 +334,8 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
     "remove the cache" in {
       val sut = createSut
       when(journeyCacheConnector.flush(Matchers.eq(sut.journeyName))(any()))
-        .thenReturn(Future.successful(TaiSuccessResponse))
-      Await.result(sut.flush(), 5 seconds) mustBe TaiSuccessResponse
+        .thenReturn(Future.successful(Done))
+      Await.result(sut.flush(), 5 seconds) mustBe Done
     }
   }
 

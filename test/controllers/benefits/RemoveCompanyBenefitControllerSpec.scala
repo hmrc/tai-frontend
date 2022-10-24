@@ -16,10 +16,10 @@
 
 package controllers.benefits
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
@@ -29,8 +29,6 @@ import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -40,11 +38,13 @@ import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
 import utils.BaseSpec
-import views.html.benefits.{RemoveBenefitTotalValueView, RemoveCompanyBenefitCheckYourAnswersView, RemoveCompanyBenefitConfirmationView, RemoveCompanyBenefitStopDateView}
 import views.html.CanWeContactByPhoneView
+import views.html.benefits.{RemoveBenefitTotalValueView, RemoveCompanyBenefitCheckYourAnswersView, RemoveCompanyBenefitConfirmationView, RemoveCompanyBenefitStopDateView}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class RemoveCompanyBenefitControllerSpec
@@ -106,7 +106,7 @@ class RemoveCompanyBenefitControllerSpec
 
         when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map("keep" -> "me")))
-        when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
         when(removeCompanyBenefitJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitStopDate(
@@ -535,7 +535,7 @@ class RemoveCompanyBenefitControllerSpec
           trackSuccessJourneyCacheService
             .cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
-        when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -566,7 +566,7 @@ class RemoveCompanyBenefitControllerSpec
           trackSuccessJourneyCacheService
             .cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
-        when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -596,7 +596,7 @@ class RemoveCompanyBenefitControllerSpec
           trackSuccessJourneyCacheService
             .cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
-        when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -627,7 +627,7 @@ class RemoveCompanyBenefitControllerSpec
           trackSuccessJourneyCacheService
             .cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
-        when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -646,7 +646,7 @@ class RemoveCompanyBenefitControllerSpec
 
       when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any()))
         .thenReturn(Future.successful(Right(Seq("Url"))))
-      when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
       val result = SUT.cancel(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER

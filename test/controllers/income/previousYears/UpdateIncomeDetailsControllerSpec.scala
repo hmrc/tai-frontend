@@ -16,6 +16,7 @@
 
 package controllers.income.previousYears
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
@@ -318,7 +319,7 @@ class UpdateIncomeDetailsControllerSpec
           trackingjourneyCacheService
             .cache(Matchers.eq(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey -> "true")))
-        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -346,7 +347,7 @@ class UpdateIncomeDetailsControllerSpec
           trackingjourneyCacheService
             .cache(Matchers.eq(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey -> "true")))
-        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
