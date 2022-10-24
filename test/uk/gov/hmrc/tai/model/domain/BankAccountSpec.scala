@@ -46,7 +46,7 @@ class BankAccountSpec extends PlaySpec {
 
         bankAccounts.size mustBe 1
 
-        val bankAccount1 = bankAccounts(0)
+        val bankAccount1 = bankAccounts.head
 
         bankAccount1.accountNumber mustBe None
         bankAccount1.sortCode mustBe None
@@ -69,7 +69,7 @@ class BankAccountSpec extends PlaySpec {
 
       bankAccounts.size mustBe 2
 
-      val bankAccount1 = bankAccounts(0)
+      val bankAccount1 = bankAccounts.head
 
       bankAccount1.accountNumber mustBe None
       bankAccount1.sortCode mustBe None
@@ -96,7 +96,7 @@ class BankAccountSpec extends PlaySpec {
 
       bankAccounts.size mustBe 1
 
-      val bankAccount1 = bankAccounts(0)
+      val bankAccount1 = bankAccounts.head
 
       bankAccount1.accountNumber mustBe Some(accountNo)
       bankAccount1.sortCode mustBe Some(sortCode)

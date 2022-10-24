@@ -16,12 +16,15 @@
 
 package uk.gov.hmrc.tai.service.journeyCache
 
+import akka.Done
+
 import javax.inject.Inject
 import java.time.LocalDate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import play.api.Logging
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -99,7 +102,7 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
   private def mappedMandatoryDeprecated(cache: Map[String, String], mandatoryJourneyValues: Seq[String]): Seq[String] =
     mandatoryJourneyValues map { key =>
       cache.get(key) match {
-        case Some(str) if !str.trim.isEmpty => str
+        case Some(str) if str.trim.nonEmpty => str
         case _ =>
           throw new RuntimeException(
             s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
@@ -109,7 +112,7 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
   private def mappedOptional(cache: Map[String, String], optionalValues: Seq[String]): Seq[Option[String]] =
     optionalValues map { key =>
       cache.get(key) match {
-        case found @ Some(str) if !str.trim.isEmpty => found
+        case found @ Some(str) if str.trim.nonEmpty => found
         case _                                      => None
       }
     }
@@ -130,7 +133,7 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
   def cache(data: Map[String, String])(implicit hc: HeaderCarrier): Future[Map[String, String]] =
     journeyCacheConnector.cache(journeyName, data)
 
-  def flush()(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def flush()(implicit hc: HeaderCarrier): Future[Done] =
     journeyCacheConnector.flush(journeyName)
 
   def flushWithEmpId(empId: Int)(implicit hc: HeaderCarrier): Future[TaiResponse] =

@@ -38,7 +38,7 @@ object AddEmploymentPayrollNumberForm extends AddEmploymentPayrollNumberConstant
       PayrollNumberEntry -> mandatoryIfEqual(
         PayrollNumberChoice,
         YesValue,
-        text.verifying(Messages("tai.addEmployment.employmentPayrollNumber.error.blank"), !_.isEmpty))
+        text.verifying(Messages("tai.addEmployment.employmentPayrollNumber.error.blank"), _.nonEmpty))
     )(AddEmploymentPayrollNumberForm.apply)(AddEmploymentPayrollNumberForm.unapply)
   )
 

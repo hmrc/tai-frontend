@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.Inject
 import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Writes}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -105,7 +105,7 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
     url: String,
     data: I)(implicit hc: HeaderCarrier, rds: HttpReads[I], writes: Writes[I]): Future[HttpResponse] =
     http.POST[I, HttpResponse](url, data) flatMap { httpResponse =>
-      httpResponse status match {
+      httpResponse.status match {
         case OK | CREATED =>
           Future.successful(httpResponse)
 
@@ -118,10 +118,9 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
 
   def deleteFromApi(url: String)(implicit hc: HeaderCarrier, rds: HttpReads[HttpResponse]): Future[HttpResponse] =
     http.DELETE[HttpResponse](url) flatMap { httpResponse =>
-      httpResponse status match {
+      httpResponse.status match {
         case OK | NO_CONTENT | ACCEPTED =>
           Future.successful(httpResponse)
-
         case _ =>
           logger.warn(
             s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}")

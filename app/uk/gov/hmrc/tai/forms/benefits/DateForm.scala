@@ -30,11 +30,11 @@ case class DateForm(emptyDateMessage: String) {
     implicit val dateFormatter = new Formatter[LocalDate] {
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
 
-        val dayErrors: Boolean = data.getOrElse(DateFormDay, "").length == 0
+        val dayErrors: Boolean = data.getOrElse(DateFormDay, "").isEmpty
 
-        val monthErrors: Boolean = data.getOrElse(DateFormMonth, "").length == 0
+        val monthErrors: Boolean = data.getOrElse(DateFormMonth, "").isEmpty
 
-        val yearErrors: Boolean = data.getOrElse(DateFormYear, "").length == 0
+        val yearErrors: Boolean = data.getOrElse(DateFormYear, "").isEmpty
 
         val errors = if (dayErrors || monthErrors || yearErrors) {
           Seq(FormError(key = DateFormDay, message = emptyDateMessage))

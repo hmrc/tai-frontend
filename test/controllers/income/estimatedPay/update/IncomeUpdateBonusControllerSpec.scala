@@ -16,6 +16,7 @@
 
 package controllers.income.estimatedPay.update
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
@@ -27,7 +28,6 @@ import play.api.data.FormBinding.Implicits.formBinding
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -156,7 +156,7 @@ class IncomeUpdateBonusControllerSpec
         when(journeyCacheService.cache(any(), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
         when(journeyCacheService.flush()(any()))
-          .thenReturn(Future.successful(TaiSuccessResponse))
+          .thenReturn(Future.successful(Done))
         when(journeyCacheService.mandatoryJourneyValues(any())(any()))
           .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
 

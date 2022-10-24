@@ -48,6 +48,6 @@ object CompanyBenefitTotalValueForm {
       case _                                             => Invalid(currencyErrorMsg)
     }
 
-  def notBlank(value: String): Boolean = !value.trim.isEmpty
+  def notBlank(value: String): Boolean = value.trim.nonEmpty
 
 }

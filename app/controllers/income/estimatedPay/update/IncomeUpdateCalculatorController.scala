@@ -40,7 +40,6 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
 import uk.gov.hmrc.tai.util.FutureOps._
-
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -58,8 +57,7 @@ class IncomeUpdateCalculatorController @Inject()(
   confirmAmountEntered: ConfirmAmountEnteredView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler
-)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants
     with UpdatedEstimatedPayJourneyCache with FormValuesConstants {
 
@@ -86,8 +84,7 @@ class IncomeUpdateCalculatorController @Inject()(
   }
 
   private def cacheEmploymentDetails(id: Int, employmentFuture: Future[Option[Employment]])(
-    implicit hc: HeaderCarrier
-  ): Future[Map[String, String]] =
+    implicit hc: HeaderCarrier): Future[Map[String, String]] =
     employmentFuture flatMap {
       case Some(employment) =>
         val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
@@ -183,9 +180,9 @@ class IncomeUpdateCalculatorController @Inject()(
           val hasPayslipDeductions = mandatorySeq(3)
           val hasBonusPayments = mandatorySeq(4)
 
-          val taxablePay = optionalSeq(0)
-          val bonusPaymentAmount = optionalSeq(1)
-          val payPeriodInDays = optionalSeq(2)
+        val taxablePay = optionalSeq.head
+        val bonusPaymentAmount = optionalSeq(1)
+        val payPeriodInDays = optionalSeq(2)
 
           val backUrl = bonusPaymentAmount match {
             case None =>
@@ -220,7 +217,6 @@ class IncomeUpdateCalculatorController @Inject()(
       income         <- EitherT.right[String](incomeService.employmentAmount(nino, id))
       netAmount      <- EitherT.right[String](journeyCacheService.currentValue(UpdateIncome_NewAmountKey))
     } yield {
-
       val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
       val employmentAmount = income.copy(newAmount = convertedNetAmount)
 

@@ -65,7 +65,7 @@ trait BaseValidator extends DateValidator with ViewModelHelper {
       case _ => Invalid(validateTaxablePayYTDError, "validateInputAmount")
     }
 
-  def notBlank(value: String): Boolean = !value.trim.isEmpty
+  def notBlank(value: String): Boolean = value.trim.nonEmpty
 
   def isValidMaxLength(maxLength: Int)(value: Option[String]): Boolean = value.getOrElse("").length <= maxLength
 

@@ -16,11 +16,11 @@
 
 package controllers.employments
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.MockTemplateRenderer
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.Mockito._
@@ -29,7 +29,6 @@ import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -40,6 +39,7 @@ import views.html.CanWeContactByPhoneView
 import views.html.employments.ConfirmationView
 import views.html.employments.update.{UpdateEmploymentCheckYourAnswersView, WhatDoYouWantToTellUsView}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 import scala.language.postfixOps
 
@@ -387,7 +387,7 @@ class UpdateEmploymentControllerSpec
           successfulJourneyCacheService
             .cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId"), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId" -> "true")))
-        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -413,7 +413,7 @@ class UpdateEmploymentControllerSpec
           successfulJourneyCacheService
             .cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId"), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId" -> "true")))
-        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -440,7 +440,7 @@ class UpdateEmploymentControllerSpec
   "cancel" must {
     "redirect to the the IncomeSourceSummaryController" in {
       val employmentId = 1
-      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
       val result = createSUT.cancel(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
