@@ -61,11 +61,7 @@ class IncomeUpdatePayPeriodControllerSpec
     object PayPeriodPageHarness {
       sealed class PayPeriodPageHarness() {
 
-        when(journeyCacheService.currentValue(eqTo(UpdateIncome_PayPeriodKey))(any()))
-          .thenReturn(Future.successful(Some(MONTHLY)))
-        when(journeyCacheService.currentValue(eqTo(UpdateIncome_OtherInDaysKey))(any()))
-          .thenReturn(Future.successful(None))
-
+        when(journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(MONTHLY), None)))
         def payPeriodPage(): Future[Result] =
           new TestIncomeUpdatePayPeriodController()
             .payPeriodPage()(RequestBuilder.buildFakeGetRequestWithAuth())

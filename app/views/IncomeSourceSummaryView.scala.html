@@ -127,7 +127,8 @@
             @link(
                 id = Some("updateEmployer"),
                 url = controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url,
-                copy = messages("tai.employment.income.details.updateLinkText", model.empOrPensionName))
+                copy = messages("tai.employment.income.details.updateLinkText", model.empOrPensionName),
+                linkClasses = Seq("carry-over"))
             </p>
         }
     } else {
@@ -172,7 +173,8 @@
                              @link(
                                 id=Some("viewIncomeReceivedToDate"),
                                 url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
-                                copy=messages("tai.income.details.checkPaymentsReceived.with.employer", model.empOrPensionName))
+                                copy=messages("tai.income.details.checkPaymentsReceived.with.employer", model.empOrPensionName),
+                                 linkClasses=Seq("carry-over"))
                         </p>
                 } else {
                     <span>@messages("tai.rti.down")</span>
@@ -224,7 +226,7 @@
     <div class="govuk-!-padding-bottom-7"></div>
     <div class="govuk-grid-row">
         <div id="companyBenefitsSection" class="govuk-!-padding-left-3">
-            <h2 id="companyBenefitsHeading" class="govuk-heading-m ">@Messages("tai.income.details.companyuBenefitsHeading", model.empOrPensionName)</h2>
+            <h2 id="companyBenefitsHeading" class="govuk-heading-m carry-over">@Messages("tai.income.details.companyuBenefitsHeading", model.empOrPensionName)</h2>
             @if(model.benefits.size > 0) {
                 <table id="companyBenefitList" class="govuk-table responsive-table-fix">
                     <thead class="govuk-table__head">
@@ -262,7 +264,7 @@
                     </tbody>
                 </table>
             } else {
-                <p id="noCompanyBenefitsMessage" class="govuk-body">@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
+                <p id="noCompanyBenefitsMessage" class="govuk-body carry-over">@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
             }
 
             <p class="icon icon-plus-no-rpt">

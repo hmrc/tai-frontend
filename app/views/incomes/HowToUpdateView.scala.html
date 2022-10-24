@@ -48,7 +48,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
                             legend = Some(
                             HmrcPageHeadingLegend(
                                 content = Text(Messages("tai.howToUpdate.heading", employerName)),
-                                caption = HmrcSectionCaption(Text(Messages("tai.howToUpdate.preHeading", employerName))))
+                                caption = HmrcSectionCaption(Text(Messages("tai.howToUpdate.preHeading", employerName))),
+                                classes = "govuk-fieldset__legend--xl carry-over")
                         )
                         )
                     ),

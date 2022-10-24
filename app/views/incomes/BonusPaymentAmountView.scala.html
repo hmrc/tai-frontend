@@ -81,7 +81,8 @@
                     errorMessage = bonusOvertimeAmountForm.errors.asTextErrorMessages.headOption,
                     label = HmrcPageHeadingLabel(
                         content = Text(messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)),
-                        caption = HmrcSectionCaption(Text(messages("tai.bonusPaymentsAmount.preHeading", employer.name))))
+                        caption = HmrcSectionCaption(Text(messages("tai.bonusPaymentsAmount.preHeading", employer.name))),
+                        classes = "govuk-label--xl carry-over")
                 ),
                 )
 

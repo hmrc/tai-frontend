@@ -63,7 +63,7 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
     for {
       cache <- currentCache
     } yield {
-      mappedOptional(cache, keys)
+      mappedOptional(cache, keys).toList
     }
 
   def collectedJourneyValues(mandatoryJourneyValues: Seq[String], optionalValues: Seq[String])(
