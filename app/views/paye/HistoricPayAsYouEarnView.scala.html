@@ -140,7 +140,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
             @for((employment, idx) <- pair zip (Stream from pidx)) {
 
                 <div id="@incomeType@idx" class="subsection flush--top @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-column-one-half}">
-                    <h3 class="govuk-heading-l">@employment.name</h3>
+                    <h3 class="govuk-heading-l carry-over">@employment.name</h3>
                     <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark ">
                         <span>@withPoundPrefix(MoneyPounds(employment.taxablePayYTD))</span>
                     </p>

@@ -149,11 +149,8 @@ class IncomeUpdatePayslipAmountControllerSpec
     object HandlePayslipAmountHarness {
       sealed class HandlePayslipAmountHarness(salary: String) {
 
-        when(journeyCacheService.currentValue(eqTo(UpdateIncome_PayPeriodKey))(any()))
-          .thenReturn(Future.successful(Some(MONTHLY)))
-
-        when(journeyCacheService.currentValue(eqTo(UpdateIncome_OtherInDaysKey))(any()))
-          .thenReturn(Future.successful(None))
+        when(journeyCacheService.optionalValues(any())(any()))
+          .thenReturn(Future.successful(Seq(Some(MONTHLY), None)))
 
         when(
           journeyCacheService.cache(Matchers.eq[Map[String, String]](Map(UpdateIncome_TotalSalaryKey -> salary)))(
