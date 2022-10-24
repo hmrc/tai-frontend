@@ -22,7 +22,7 @@
 
 @(appConfig: ApplicationConfig)(implicit request:Request[_], messages: Messages, templateRenderer: TemplateRenderer)
 
-@unauthenticated_main(
+@unauthenticatedMain(
 title = messages("session_expired.title")) {
 
     <div class="grid-row">
