@@ -128,7 +128,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
             pounds(47835),
             link(
               id = Some("taxFreeAmountLink"),
-              url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
+              url = routes.TaxFreeAmountController.taxFreeAmount.url,
               copy = messages("tai.estimatedIncome.taxFree.link")
             ),
             pounds(11500)

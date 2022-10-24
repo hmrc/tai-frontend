@@ -67,7 +67,7 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
           "tai.estimatedIncome.howYouPay.desc",
           link(
             id = Some("taxCodesLink"),
-            url = routes.YourTaxCodeController.taxCodes().url.toString,
+            url = routes.YourTaxCodeController.taxCodes().url,
             copy = Messages("tai.estimatedIncome.taxCodes.link"))
         )).body.replaceAll("\\s+", "")
     }

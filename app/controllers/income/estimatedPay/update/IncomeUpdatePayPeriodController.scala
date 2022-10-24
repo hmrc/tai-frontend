@@ -86,9 +86,7 @@ class IncomeUpdatePayPeriodController @Inject()(
         formData => {
           val cacheMap = formData.otherInDays match {
             case Some(days) =>
-              Map(
-                UpdateIncome_PayPeriodKey   -> formData.payPeriod.getOrElse(""),
-                UpdateIncome_OtherInDaysKey -> days.toString)
+              Map(UpdateIncome_PayPeriodKey -> formData.payPeriod.getOrElse(""), UpdateIncome_OtherInDaysKey -> days)
             case _ => Map(UpdateIncome_PayPeriodKey -> formData.payPeriod.getOrElse(""))
           }
 

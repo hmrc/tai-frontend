@@ -454,7 +454,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
           Some(
             HelpLink(
               Messages("what.is.underpayment"),
-              controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
+              controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url,
               "underPaymentFromPreviousYear"
             ))
         ),
@@ -466,7 +466,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
           Some(
             HelpLink(
               Messages("what.is.tax.estimation"),
-              controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+              controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url,
               "estimatedTaxOwedLink"))
         ),
         50
@@ -496,12 +496,12 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec with BandTypesConsta
       s"${messages("tai.taxCalc.UnderpaymentPreviousYear.title")} ${messages("what.is.underpayment")}")
     doc(additionalDetailView)
       .select("#underPaymentFromPreviousYear")
-      .attr("href") mustBe controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
+      .attr("href") mustBe controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url
     doc(additionalDetailView) must haveTdWithText(
       s"${messages("tai.taxcode.deduction.type-45")} ${messages("what.is.tax.estimation")}")
     doc(additionalDetailView)
       .select("#estimatedTaxOwedLink")
-      .attr("href") mustBe controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
+      .attr("href") mustBe controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url
   }
 
   "have reduction tax table" in {

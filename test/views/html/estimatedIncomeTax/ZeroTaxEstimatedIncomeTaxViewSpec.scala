@@ -62,7 +62,7 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
           "tai.estimatedIncome.howYouPay.desc",
           link(
             id = Some("taxCodesLink"),
-            url = routes.YourTaxCodeController.taxCodes.url.toString,
+            url = routes.YourTaxCodeController.taxCodes.url,
             copy = Messages("tai.estimatedIncome.taxCodes.link"))
         )).body.replaceAll("\\s+", "")
     }
@@ -77,7 +77,7 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
             "tai.estimatedIncomeLow.desc",
             link(
               id = Some("taxFreeAmountLink"),
-              url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
+              url = routes.TaxFreeAmountController.taxFreeAmount.url,
               copy = messages("tai.estimatedIncome.taxFree.link")
             ),
             "£11,500"

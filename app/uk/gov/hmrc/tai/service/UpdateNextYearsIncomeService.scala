@@ -53,10 +53,9 @@ class UpdateNextYearsIncomeService @Inject()(
       employmentOption    <- employmentFuture
     } yield
       (taxCodeIncomeOption, employmentOption) match {
-        case (Right(Some(taxCodeIncome)), Some(employment)) => {
+        case (Right(Some(taxCodeIncome)), Some(employment)) =>
           val isPension = taxCodeIncome.componentType == PensionIncome
           UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, taxCodeIncome.amount.toInt)
-        }
         case _ =>
           throw new RuntimeException(
             "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey")

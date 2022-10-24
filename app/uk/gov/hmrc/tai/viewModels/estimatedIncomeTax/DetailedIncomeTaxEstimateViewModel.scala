@@ -128,7 +128,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
         Some(
           HelpLink(
             Messages("what.is.underpayment"),
-            controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
+            controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url,
             "underPaymentFromPreviousYear"
           ))
       )
@@ -140,7 +140,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
         Some(
           HelpLink(
             Messages("what.is.tax.estimation"),
-            controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+            controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url,
             "estimatedTaxOwedLink"))
       )
     )

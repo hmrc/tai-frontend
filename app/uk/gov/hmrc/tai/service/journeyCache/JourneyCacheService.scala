@@ -84,10 +84,9 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
     val allPresentValues = mandatoryJourneyValues flatMap { key =>
       cache.get(key) match {
         case Some(str) if str.trim.nonEmpty => Some(str)
-        case _ => {
+        case _ =>
           logger.warn(s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
           None
-        }
       }
     }
 

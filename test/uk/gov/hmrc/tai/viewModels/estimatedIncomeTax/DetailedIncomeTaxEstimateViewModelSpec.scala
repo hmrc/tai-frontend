@@ -260,11 +260,12 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
             AdditionalTaxDetailRow(
               TaxSummaryLabel(
                 Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
-                Some(HelpLink(
-                  Messages("what.is.underpayment"),
-                  controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
-                  "underPaymentFromPreviousYear"
-                ))
+                Some(
+                  HelpLink(
+                    Messages("what.is.underpayment"),
+                    controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url,
+                    "underPaymentFromPreviousYear"
+                  ))
               ),
               10
             ),
@@ -274,7 +275,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
                 Some(
                   HelpLink(
                     Messages("what.is.tax.estimation"),
-                    controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+                    controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url,
                     "estimatedTaxOwedLink"))
               ),
               50

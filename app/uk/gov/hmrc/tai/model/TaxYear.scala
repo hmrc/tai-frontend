@@ -61,7 +61,7 @@ object TaxYear {
       val CUT_OFF_YEAR = 70
 
       def unapply(in: String): Option[Int] = in match {
-        case SimpleYear(cenStr, yearStr) => {
+        case SimpleYear(cenStr, yearStr) =>
           val year = yearStr.toInt
           val century = Option(cenStr).filter(_.nonEmpty) match {
             case None if year > CUT_OFF_YEAR => NINETEENTH_CENTURY
@@ -69,7 +69,6 @@ object TaxYear {
             case Some(x)                     => x.toInt * CENTURY
           }
           Some(century + year)
-        }
         case _ => None
       }
     }

@@ -39,10 +39,9 @@ class BenefitsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Serv
     httpHandler.getFromApiV2(benefitsUrl(nino.nino, taxYear)) map (
       json => (json \ "data").as[Benefits]
     ) recover {
-      case _: RuntimeException => {
+      case _: RuntimeException =>
         logger.warn(s"Couldn't retrieve benefits for nino: $nino")
         throw new RuntimeException(s"Couldn't retrieve benefits for nino: $nino")
-      }
     }
 
   def endedCompanyBenefit(nino: Nino, employmentId: Int, endedCompanyBenefit: EndedCompanyBenefit)(

@@ -56,9 +56,8 @@ class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
       taxCodeIncomesResponse <- taxAccountConnector.taxCodeIncomes(nino, year)
     } yield {
       taxCodeIncomesResponse match {
-        case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => {
+        case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) =>
           Right(taxCodeIncomes.find(_.employmentId.contains(employmentId)))
-        }
         case response: TaiResponse => Left(response)
       }
     }

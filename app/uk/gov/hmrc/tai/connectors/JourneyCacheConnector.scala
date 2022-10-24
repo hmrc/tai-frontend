@@ -51,11 +51,10 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
     val url = s"${cacheUrl(journeyName)}/values/$key"
 
     httpHandler.getFromApiV2(url).map(value => Right(convert(value.as[String]))) recover {
-      case e: HttpException if e.responseCode == NO_CONTENT => {
+      case e: HttpException if e.responseCode == NO_CONTENT =>
         val errorMessage = s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'"
         logger.warn(errorMessage)
         Left(errorMessage)
-      }
     }
   }
 
