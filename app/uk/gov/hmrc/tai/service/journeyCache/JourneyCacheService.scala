@@ -60,11 +60,8 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
     }
 
   def optionalValues(keys: String*)(implicit hc: HeaderCarrier): Future[Seq[Option[String]]] =
-    for {
-      cache <- currentCache
-    } yield {
-      mappedOptional(cache, keys).toList
-    }
+    currentCache.map(cache => mappedOptional(cache, keys).toList)
+
 
   def collectedJourneyValues(mandatoryJourneyValues: Seq[String], optionalValues: Seq[String])(
     implicit hc: HeaderCarrier): Future[Either[String, (Seq[String], Seq[Option[String]])]] =
