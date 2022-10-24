@@ -182,7 +182,7 @@ class IncomeController @Inject()(
   def confirmRegularIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val nino: Nino = user.nino
+      val nino = user.nino
 
       journeyCacheService
         .mandatoryJourneyValueAsInt(UpdateIncome_NewAmountKey)
@@ -389,7 +389,10 @@ class IncomeController @Inject()(
                       employment.name,
                       employmentAmount.oldAmount,
                       updateIncome_NewAmountKey.toInt,
-                      "javascript:history.go(-1)") //TODO this is temporary
+                      "javascript:history.go(-1)", //TODO this is temporary
+                      empId
+                    )
+
                     Ok(confirmAmountEntered(vm))
                   case _ => throw new RuntimeException(s"Not able to found employment with id $empId")
                 }
