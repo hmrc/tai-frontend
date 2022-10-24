@@ -267,7 +267,7 @@ object PaymentFrequencyIncomeMessages {
     val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
 
     paymentFrequency collect {
-      case (Weekly | FortNightly | FourWeekly | Monthly | Quarterly | BiAnnually) =>
+      case Weekly | FortNightly | FourWeekly | Monthly | Quarterly | BiAnnually =>
         if (isMidYear)
           messages(
             s"tai.income.calculation.rti.midYear.weekly",
@@ -303,7 +303,7 @@ object PaymentFrequencyIncomeMessages {
     paymentDate: Option[LocalDate],
     amount: BigDecimal)(implicit messages: Messages): Option[String] =
     paymentFrequency collect {
-      case (Weekly | FortNightly | FourWeekly | Monthly | Quarterly | BiAnnually | Annually | OneOff) =>
+      case Weekly | FortNightly | FourWeekly | Monthly | Quarterly | BiAnnually | Annually | OneOff =>
         messages(s"tai.income.calculation.rti.$pensionOrEmployment.estimate", MoneyPounds(amount, 0).quantity)
 
       case Irregular =>

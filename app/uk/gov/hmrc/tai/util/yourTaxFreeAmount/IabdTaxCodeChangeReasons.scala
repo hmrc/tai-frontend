@@ -102,7 +102,7 @@ class IabdTaxCodeChangeReasons {
       }
 
     (pair.previous, pair.current) match {
-      case (Some(previousAmount), Some(currentAmount)) if (previousAmount != currentAmount) =>
+      case (Some(previousAmount), Some(currentAmount)) if previousAmount != currentAmount =>
         Some(createAmmendmentMessage(previousAmount, currentAmount))
       case _ => None
     }

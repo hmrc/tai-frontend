@@ -79,7 +79,6 @@ class IncomeTaxComparisonController @Inject()(
             TaiSuccessResponseWithPayload(taxAccountSummaryCYPlusOne: TaxAccountSummary),
             TaiSuccessResponseWithPayload(taxCodeIncomesCY: Seq[TaxCodeIncome]),
             TaiSuccessResponseWithPayload(taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome])) =>
-
           val estimatedIncomeTaxComparisonViewModel = {
             val cyEstimatedTax = EstimatedIncomeTaxComparisonItem(currentTaxYear, taxAccountSummaryCY.totalEstimatedTax)
             val cyPlusOneEstimatedTax =

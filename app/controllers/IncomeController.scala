@@ -124,7 +124,7 @@ class IncomeController @Inject()(
     val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey).getOrFail
     val nino = request.taiUser.nino
 
-    (for {
+    for {
       cachedData <- cachedDataFuture
       id         <- idFuture
       income     <- incomeService.employmentAmount(nino, id)
@@ -136,7 +136,7 @@ class IncomeController @Inject()(
         income.isOccupationalPension,
         routes.IncomeSourceSummaryController.onPageLoad(id).url)
       Ok(sameEstimatedPay(model))
-    })
+    }
   }
 
   def editRegularIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {

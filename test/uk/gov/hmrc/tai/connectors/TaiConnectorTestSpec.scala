@@ -50,7 +50,7 @@ class TaiConnectorTestSpec
 
       val response = Await.result(taiConnector.calculateEstimatedPay(payDetails), 5.seconds)
 
-      response mustBe (expectedResponse)
+      response mustBe expectedResponse
     }
   }
 }

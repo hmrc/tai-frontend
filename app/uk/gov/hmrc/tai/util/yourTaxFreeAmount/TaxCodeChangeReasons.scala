@@ -60,7 +60,7 @@ class TaxCodeChangeReasons @Inject()() {
       val previous = primaryPair.previous.map(_.employerName)
 
       (current, previous) match {
-        case (Some(current), Some(previous)) if (current != previous) =>
+        case (Some(current), Some(previous)) if current != previous =>
           removeEmployerMessage(List(previous)) ++ addSingleEmployerMessage(primaryPair.current)
         case (Some(current), Some(previous)) if isDifferentPayRollWithSameEmployerName(primaryPair) =>
           genericMessage

@@ -823,9 +823,9 @@ class AddPensionProviderControllerSpec
         val sut = createSUT
         when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (Right(
+            Right(
               Seq[String]("a pension provider", "2017-06-15", "pension-ref-1234", "Yes"),
-              Seq[Option[String]](Some("123456789")))))
+              Seq[Option[String]](Some("123456789"))))
         )
 
         val result = sut.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))

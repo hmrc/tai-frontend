@@ -121,7 +121,6 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
           }
 
         case e: NotFoundException =>
-
           val noCyInfo = request.method == "GET" &&
             e.getMessage().contains("appStatusMessage") &&
             e.getMessage().contains("No Tax Account Information Found")
@@ -254,8 +253,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     implicit request: Request[AnyContent],
     messages: Messages,
     rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
-    case TaiTaxAccountFailureResponse(msg)
-        if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
+    case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
       prevYearEmployments match {
         case Nil =>
           logger.warn(
