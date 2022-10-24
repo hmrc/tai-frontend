@@ -53,7 +53,7 @@ case class DateForm(validations: Seq[((LocalDate) => Boolean, String)], blankDat
           ).getOrElse(None)
 
           inputDate match {
-            case Some(date) => {
+            case Some(date) =>
 
               val validationResult = validate[LocalDate](date, validations, DateFormDay)
 
@@ -62,7 +62,6 @@ case class DateForm(validations: Seq[((LocalDate) => Boolean, String)], blankDat
               } else {
                 Left(validationResult.seq)
               }
-            }
             case _ => Left(Seq(FormError(key = DateFormDay, message = Messages("tai.date.error.invalid"))))
           }
         } else {

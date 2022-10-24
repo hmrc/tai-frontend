@@ -35,22 +35,17 @@ class DecisionCacheWrapper @Inject()(@Named("End Company Benefit") journeyCacheS
   def getDecision()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefit_BenefitTypeKey)
     benefitType.flatMap[Option[String]] {
-      case Right(bt) => {
+      case Right(bt) =>
         getBenefitDecisionKey(Some(bt)) match {
-          case Some(bdk) => {
+          case Some(bdk) =>
             journeyCacheService.currentValue(bdk)
-          }
-          case _ => {
+          case _ =>
             logger.error(s"Unable to form compound key for $DecisionChoice using $benefitType")
             Future.successful(None)
-          }
         }
-
-      }
-      case Left(_) => {
+      case Left(_) =>
         logger.error(s"Unable to find $EndCompanyBenefit_BenefitTypeKey when retrieving decision")
         Future.successful(None)
-      }
     }
   }
 
@@ -59,24 +54,19 @@ class DecisionCacheWrapper @Inject()(@Named("End Company Benefit") journeyCacheS
     ec: ExecutionContext): Future[Result] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefit_BenefitTypeKey)
     benefitType.flatMap[Result] {
-      case Right(bt) => {
+      case Right(bt) =>
         getBenefitDecisionKey(Some(bt)) match {
-          case Some(bdk) => {
+          case Some(bdk) =>
             journeyCacheService.cache(bdk, decision).map { _ =>
               f(decision, journeyStartRedirection)
             }
-          }
-          case _ => {
+          case _ =>
             logger.error(s"Unable to form compound key for $DecisionChoice using $benefitType")
             Future.successful(journeyStartRedirection)
-          }
         }
-
-      }
-      case Left(_) => {
+      case Left(_) =>
         logger.error(s"Unable to find $EndCompanyBenefit_BenefitTypeKey when retrieving decision")
         Future.successful(journeyStartRedirection)
-      }
     }
   }
 

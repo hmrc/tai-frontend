@@ -29,9 +29,8 @@ object TelephoneNumberConstraint {
         case txt
             if txt.nonEmpty && (txt.length < 8 || txt.length > 30 || !telephoneRegex
               .findAllMatchIn(txt)
-              .exists(_ => true)) => {
+              .exists(_ => true)) =>
           Invalid(Messages("tai.canWeContactByPhone.telephone.invalid"))
-        }
         case _ => Valid
     })
 }

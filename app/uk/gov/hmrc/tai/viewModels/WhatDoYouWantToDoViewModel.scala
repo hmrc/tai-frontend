@@ -48,14 +48,13 @@ case class WhatDoYouWantToDoViewModel(
 
   private def taxCodeChangeDimensions: ListMap[String, String] =
     (taxCodeMismatch) match {
-      case (Some(mismatch)) => {
+      case (Some(mismatch)) =>
         ListMap(
           GoogleAnalyticsConstants.taiLandingPageTCCKey         -> hasTaxCodeChanged.toString,
           GoogleAnalyticsConstants.taiLandingPageTCMKey         -> mismatch.mismatch.toString,
           GoogleAnalyticsConstants.taiLandingPageConfirmedKey   -> formatSeqToString(mismatch.confirmedTaxCodes),
           GoogleAnalyticsConstants.taiLandingPageUnconfirmedKey -> formatSeqToString(mismatch.unconfirmedTaxCodes)
         )
-      }
       case _ => ListMap(GoogleAnalyticsConstants.taiLandingPageTCCKey -> hasTaxCodeChanged.toString)
     }
 

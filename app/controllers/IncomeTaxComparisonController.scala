@@ -78,7 +78,7 @@ class IncomeTaxComparisonController @Inject()(
             TaiSuccessResponseWithPayload(taxAccountSummaryCY: TaxAccountSummary),
             TaiSuccessResponseWithPayload(taxAccountSummaryCYPlusOne: TaxAccountSummary),
             TaiSuccessResponseWithPayload(taxCodeIncomesCY: Seq[TaxCodeIncome]),
-            TaiSuccessResponseWithPayload(taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome])) => {
+            TaiSuccessResponseWithPayload(taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome])) =>
 
           val estimatedIncomeTaxComparisonViewModel = {
             val cyEstimatedTax = EstimatedIncomeTaxComparisonItem(currentTaxYear, taxAccountSummaryCY.totalEstimatedTax)
@@ -117,7 +117,6 @@ class IncomeTaxComparisonController @Inject()(
           )
 
           Ok(mainView(model, applicationConfig))
-        }
         case _ => throw new RuntimeException("Not able to fetch income tax comparision details")
       }
     }) recover {

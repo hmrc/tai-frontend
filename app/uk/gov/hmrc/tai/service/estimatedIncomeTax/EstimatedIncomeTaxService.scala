@@ -37,17 +37,15 @@ object EstimatedIncomeTaxService extends TaxRegionConstants with BandTypesConsta
     hasCurrentIncome: Boolean): TaxViewType =
     hasCurrentIncome match {
       case false => NoIncomeTaxView
-      case true => {
+      case true =>
         isComplexViewType(codingComponents, totalTax, nonTaxCodeIncome) match {
           case true => ComplexTaxView
-          case false => {
+          case false =>
             (totalEstimatedIncome < taxFreeAllowance) && totalEstimatedTax == 0 match {
               case true  => ZeroTaxView
               case false => SimpleTaxView
             }
-          }
         }
-      }
     }
 
   def isComplexViewType(

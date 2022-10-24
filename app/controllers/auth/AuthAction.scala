@@ -78,18 +78,16 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
 
     authorised().retrieve(
       Retrievals.credentials and Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper) {
-      case credentials ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) => {
+      case credentials ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) =>
         val providerType = credentials.map(_.providerType)
         val user = AuthedUser(helper, saUtr, providerType, confidenceLevel)
 
         authWithCredentials(request, block, credentials, user)
-      }
-      case credentials ~ nino ~ saUtr ~ confidenceLevel ~ _ => {
+      case credentials ~ nino ~ saUtr ~ confidenceLevel ~ _ =>
         val providerType = credentials.map(_.providerType)
         val user = AuthedUser(nino, saUtr, providerType, confidenceLevel)
 
         authWithCredentials(request, block, credentials, user)
-      }
       case _ => throw new RuntimeException("Can't find credentials for user")
     } recover handleEntryPointFailure(request)
   }
@@ -100,9 +98,8 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
     credentials: Option[Credentials],
     user: AuthedUser)(implicit hc: HeaderCarrier): Future[Result] =
     credentials match {
-      case Some(Credentials(_, TaiConstants.AuthProviderGG)) => {
+      case Some(Credentials(_, TaiConstants.AuthProviderGG)) =>
         processRequest(user, request, block, handleGGFailure)
-      }
       case _ => throw new RuntimeException("Can't find valid credentials for user")
     }
 
@@ -112,13 +109,12 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
     block: InternalAuthenticatedRequest[A] => Future[Result],
     failureHandler: PartialFunction[Throwable, Result])(implicit hc: HeaderCarrier): Future[Result] =
     (user.confidenceLevel.level match {
-      case level if level >= 200 => {
+      case level if level >= 200 =>
         for {
           result <- block(InternalAuthenticatedRequest(request, user))
         } yield {
           result
         }
-      }
       case _ =>
         Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl()))
     }) recover failureHandler
@@ -130,10 +126,9 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
 
   private def handleFailure(redirect: Call): PartialFunction[Throwable, Result] = {
     case _: NoActiveSession => Redirect(redirect)
-    case ex: AuthorisationException => {
+    case ex: AuthorisationException =>
       logger.warn(s"Exception returned during authorisation with exception: ${ex.getClass()}", ex)
       Redirect(routes.UnauthorisedController.onPageLoad())
-    }
   }
   override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
   override protected def executionContext: ExecutionContext = ec
