@@ -167,13 +167,13 @@ class IncomeUpdateCalculatorController @Inject()(
       )
       .getOrFail map {
       case (mandatorySeq, optionalSeq) =>
-        val employer = IncomeSource(id = mandatorySeq(5).toInt, name = mandatorySeq(0))
+        val employer = IncomeSource(id = mandatorySeq(5).toInt, name = mandatorySeq.head)
         val payPeriodFrequency = mandatorySeq(1)
         val totalSalaryAmount = mandatorySeq(2)
         val hasPayslipDeductions = mandatorySeq(3)
         val hasBonusPayments = mandatorySeq(4)
 
-        val taxablePay = optionalSeq(0)
+        val taxablePay = optionalSeq.head
         val bonusPaymentAmount = optionalSeq(1)
         val payPeriodInDays = optionalSeq(2)
 

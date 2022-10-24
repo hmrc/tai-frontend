@@ -38,7 +38,7 @@ object AddPensionProviderNumberForm extends AddPensionNumberConstants with FormV
       PayrollNumberEntry -> mandatoryIfEqual(
         PayrollNumberChoice,
         YesValue,
-        text.verifying(Messages("tai.addPensionProvider.pensionNumber.error.blank"), !_.isEmpty))
+        text.verifying(Messages("tai.addPensionProvider.pensionNumber.error.blank"), _.nonEmpty))
     )(AddPensionProviderNumberForm.apply)(AddPensionProviderNumberForm.unapply)
   )
 

@@ -31,11 +31,11 @@ case class EmploymentEndDateForm(employerName: String) {
     implicit val dateFormatter = new Formatter[LocalDate] {
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
 
-        val dayErrors: Boolean = data.getOrElse(EmploymentFormDay, "").length == 0
+        val dayErrors: Boolean = data.getOrElse(EmploymentFormDay, "").isEmpty
 
-        val monthErrors: Boolean = data.getOrElse(EmploymentFormMonth, "").length == 0
+        val monthErrors: Boolean = data.getOrElse(EmploymentFormMonth, "").isEmpty
 
-        val yearErrors: Boolean = data.getOrElse(EmploymentFormYear, "").length == 0
+        val yearErrors: Boolean = data.getOrElse(EmploymentFormYear, "").isEmpty
 
         val errors = if (dayErrors || monthErrors || yearErrors) {
           Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.blank", employerName)))
