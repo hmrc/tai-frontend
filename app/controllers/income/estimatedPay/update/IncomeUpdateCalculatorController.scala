@@ -128,7 +128,7 @@ class IncomeUpdateCalculatorController @Inject()(
           UpdateIncome_IncomeTypeKey)
         .getOrFail
         .map { mandatoryJourneyValues =>
-          val incomeName :: newAmount :: incomeType = mandatoryJourneyValues.toList
+          val incomeName :: newAmount :: incomeType :: _ = mandatoryJourneyValues.toList
 
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
             formWithErrors => {
@@ -180,9 +180,9 @@ class IncomeUpdateCalculatorController @Inject()(
           val hasPayslipDeductions = mandatorySeq(3)
           val hasBonusPayments = mandatorySeq(4)
 
-        val taxablePay = optionalSeq.head
-        val bonusPaymentAmount = optionalSeq(1)
-        val payPeriodInDays = optionalSeq(2)
+          val taxablePay = optionalSeq.head
+          val bonusPaymentAmount = optionalSeq(1)
+          val payPeriodInDays = optionalSeq(2)
 
           val backUrl = bonusPaymentAmount match {
             case None =>

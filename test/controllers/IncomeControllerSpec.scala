@@ -279,7 +279,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       }
     }
 
-    "redirect to /income-details" when { 
+    "redirect to /income-details" when {
       "cache is empty" in {
 
         val testController = createTestIncomeController()
