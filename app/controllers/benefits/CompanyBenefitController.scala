@@ -47,8 +47,7 @@ class CompanyBenefitController @Inject()(
   updateOrRemoveCompanyBenefitDecision: UpdateOrRemoveCompanyBenefitDecisionView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants
-    with Logging {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with Logging {
 
   def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
@@ -108,9 +107,9 @@ class CompanyBenefitController @Inject()(
 
   def submitDecisionRedirect(decision: String, failureRoute: Result): Result =
     decision match {
-      case NoIDontGetThisBenefit =>
+      case UpdateOrRemoveCompanyBenefitDecisionConstants.NoIDontGetThisBenefit =>
         Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
-      case YesIGetThisBenefit =>
+      case UpdateOrRemoveCompanyBenefitDecisionConstants.YesIGetThisBenefit =>
         Redirect(
           controllers.routes.ExternalServiceRedirectController
             .auditAndRedirectService(TaiConstants.CompanyBenefitsIform))

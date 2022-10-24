@@ -19,6 +19,7 @@
 @import includes.forms.{inputRadioGroupStyling, submit}
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.forms.YesNoForm
+@import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 @import scala.concurrent.ExecutionContext
 @import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 @import uk.gov.hmrc.govukfrontend.views.html.components._
@@ -61,23 +62,23 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
                             )
                         )
                     ),
-                    errorMessage = yesNoForm.errors.filter(_.key == YesNoForm.YesNoChoice).asTextErrorMessages.headOption,
+                    errorMessage = yesNoForm.errors.filter(_.key == FormValuesConstants.YesNoChoice).asTextErrorMessages.headOption,
                     idPrefix = Some("yesNoChoice"),
                     name = "yesNoChoice",
                     classes = "govuk-radios--inline",
                     items = Seq(
                         RadioItem(
                             content = Text(messages("tai.label.yes")),
-                            value = Some(YesNoForm.YesValue),
-                            checked = yesNoForm.data.get(YesNoForm.YesNoChoice).exists(_ == "Yes"),
+                            value = Some(FormValuesConstants.YesValue),
+                            checked = yesNoForm.data.get(FormValuesConstants.YesNoChoice).exists(_ == "Yes"),
                         ),
                         RadioItem(
                             content = Text(messages("tai.label.no")),
-                            value = Some(YesNoForm.NoValue),
-                            checked = yesNoForm.data.get(YesNoForm.YesNoChoice).exists(_ == "No")
+                            value = Some(FormValuesConstants.NoValue),
+                            checked = yesNoForm.data.get(FormValuesConstants.YesNoChoice).exists(_ == "No")
                         )
                     )
-                ).withFormField(yesNoForm(YesNoForm.YesNoChoice)))
+                ).withFormField(yesNoForm(FormValuesConstants.YesNoChoice)))
 
                 @govukButton(Button(content = Text(messages("tai.continue"))))
                 @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(employer.id).url))

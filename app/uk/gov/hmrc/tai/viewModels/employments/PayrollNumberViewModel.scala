@@ -21,13 +21,13 @@ import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstant
 
 case class PayrollNumberViewModel(employmentName: String, firstPayChoice: Boolean, backUrl: String)
 
-object PayrollNumberViewModel extends JourneyCacheConstants with FormValuesConstants {
+object PayrollNumberViewModel extends JourneyCacheConstants {
 
   def apply(cache: Map[String, String])(implicit messages: Messages): PayrollNumberViewModel = {
     val employerName = cache.getOrElse(AddEmployment_NameKey, "")
     val firstPayChoice = cache.get(AddEmployment_StartDateWithinSixWeeks) match {
-      case Some(YesValue) => true
-      case _              => false
+      case Some(FormValuesConstants.YesValue) => true
+      case _                                  => false
     }
     val backUrl = cache.get(AddEmployment_ReceivedFirstPayKey) match {
       case None => controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url

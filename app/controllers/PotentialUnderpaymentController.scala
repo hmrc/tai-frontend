@@ -43,7 +43,7 @@ class PotentialUnderpaymentController @Inject()(
   potentialUnderpayment: PotentialUnderpaymentView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with AuditConstants with Referral {
+    extends TaiBaseController(mcc) with Referral {
 
   def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -59,7 +59,9 @@ class PotentialUnderpaymentController @Inject()(
           TaiSuccessResponseWithPayload(tas: TaxAccountSummary) <- tasFuture
           ccs                                                   <- ccFuture
         } yield {
-          auditService.createAndSendAuditEvent(PotentialUnderpayment_InYearAdjustment, Map("nino" -> nino.toString()))
+          auditService.createAndSendAuditEvent(
+            AuditConstants.PotentialUnderpaymentInYearAdjustment,
+            Map("nino" -> nino.toString()))
           val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
           Ok(potentialUnderpayment(vm))
         }

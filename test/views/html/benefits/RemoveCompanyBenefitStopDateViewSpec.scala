@@ -19,11 +19,11 @@ package views.html.benefits
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
-import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm.StopDateChoice
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.constants.RemoveCompanyBenefitStopDateConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 
 import java.time.format.DateTimeFormatter
 
@@ -85,7 +85,7 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
 
   private lazy val formWithErrors: Form[Option[String]] = RemoveCompanyBenefitStopDateForm.form.bind(
     Map(
-      StopDateChoice -> ""
+      RemoveCompanyBenefitStopDateConstants.StopDateChoice -> ""
     ))
 
   override def view: Html =

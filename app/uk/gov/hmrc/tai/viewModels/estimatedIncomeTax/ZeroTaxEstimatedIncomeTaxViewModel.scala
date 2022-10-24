@@ -35,7 +35,7 @@ case class ZeroTaxEstimatedIncomeTaxViewModel(
   taxRegion: String
 ) extends ViewModelHelper
 
-object ZeroTaxEstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants {
+object ZeroTaxEstimatedIncomeTaxViewModel {
 
   def apply(
     codingComponents: Seq[CodingComponent],

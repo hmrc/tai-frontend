@@ -21,15 +21,16 @@ import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import uk.gov.voa.play.form.ConditionalMappings._
-import uk.gov.hmrc.tai.util.constants.{AddPensionNumberConstants, FormValuesConstants}
+import uk.gov.hmrc.tai.util.constants.AddPensionNumberConstants._
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 
 case class AddPensionProviderNumberForm(payrollNumberChoice: Option[String], payrollNumberEntry: Option[String])
 
-object AddPensionProviderNumberForm extends AddPensionNumberConstants with FormValuesConstants {
+object AddPensionProviderNumberForm {
 
   private def yesNoChoiceValidation(implicit messages: Messages) = Constraint[Option[String]]("") {
-    case Some(txt) if txt == YesValue || txt == NoValue => Valid
-    case _                                              => Invalid(Messages("tai.addPensionProvider.pensionNumber.error.selectOption"))
+    case Some(FormValuesConstants.YesValue) | Some(FormValuesConstants.NoValue) => Valid
+    case _                                                                      => Invalid(Messages("tai.addPensionProvider.pensionNumber.error.selectOption"))
   }
 
   def form(implicit messages: Messages): Form[AddPensionProviderNumberForm] = Form[AddPensionProviderNumberForm](
@@ -37,7 +38,7 @@ object AddPensionProviderNumberForm extends AddPensionNumberConstants with FormV
       PayrollNumberChoice -> optional(text).verifying(yesNoChoiceValidation),
       PayrollNumberEntry -> mandatoryIfEqual(
         PayrollNumberChoice,
-        YesValue,
+        FormValuesConstants.YesValue,
         text.verifying(Messages("tai.addPensionProvider.pensionNumber.error.blank"), _.nonEmpty))
     )(AddPensionProviderNumberForm.apply)(AddPensionProviderNumberForm.unapply)
   )

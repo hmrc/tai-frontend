@@ -23,7 +23,8 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, EditIncomePayPeriodConstants}
+import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePayPeriod
 import play.api.libs.json.OFormat
 
@@ -49,15 +50,15 @@ object HowToUpdateForm {
 
 case class HoursWorkedForm(workingHours: Option[String])
 
-object HoursWorkedForm extends EditIncomeIrregularPayConstants {
+object HoursWorkedForm {
   implicit val formats: OFormat[HoursWorkedForm] = Json.format[HoursWorkedForm]
 
   def createForm()(implicit messages: Messages): Form[HoursWorkedForm] = {
 
     val hoursWorkedValidation = Constraint[Option[String]]("Your working hours") {
-      case Some(REGULAR_HOURS)   => Valid
-      case Some(IRREGULAR_HOURS) => Valid
-      case _                     => Invalid(messages("tai.workingHours.error.form.incomes.radioButton.mandatory"))
+      case Some(EditIncomeIrregularPayConstants.RegularHours)   => Valid
+      case Some(EditIncomeIrregularPayConstants.IrregularHours) => Valid
+      case _                                                    => Invalid(messages("tai.workingHours.error.form.incomes.radioButton.mandatory"))
     }
 
     Form[HoursWorkedForm](
@@ -70,7 +71,7 @@ object HoursWorkedForm extends EditIncomeIrregularPayConstants {
 
 case class PayPeriodForm(payPeriod: Option[String], otherInDays: Option[String] = None) {}
 
-object PayPeriodForm extends EditIncomePayPeriodConstants {
+object PayPeriodForm {
   implicit val formats: OFormat[PayPeriodForm] = Json.format[PayPeriodForm]
 
   def createForm(howOftenError: Option[String], payPeriod: Option[String] = None)(
@@ -79,7 +80,7 @@ object PayPeriodForm extends EditIncomePayPeriodConstants {
     val payPeriodValidation = Constraint[Option[String]]("Please select a period") {
       case Some(txt) =>
         txt match {
-          case OTHER | MONTHLY | WEEKLY | FORTNIGHTLY => Valid
+          case Other | Monthly | Weekly | Fortnightly => Valid
           case _                                      => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
         }
       case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
@@ -91,9 +92,9 @@ object PayPeriodForm extends EditIncomePayPeriodConstants {
       Constraint[Option[String]]("days") { days: Option[String] =>
         {
           (payPeriod, days) match {
-            case (Some(OTHER), Some(digitsOnly())) => Valid
-            case (Some(OTHER), None)               => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
-            case (Some(OTHER), _)                  => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
+            case (Some(Other), Some(digitsOnly())) => Valid
+            case (Some(Other), None)               => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
+            case (Some(Other), _)                  => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
             case _                                 => Valid
           }
         }
@@ -102,8 +103,8 @@ object PayPeriodForm extends EditIncomePayPeriodConstants {
 
     Form[PayPeriodForm](
       mapping(
-        PAY_PERIOD_KEY    -> optional(text).verifying(payPeriodValidation),
-        OTHER_IN_DAYS_KEY -> optional(text).verifying(otherInDaysValidation(payPeriod))
+        PayPeriodKey   -> optional(text).verifying(payPeriodValidation),
+        OtherInDaysKey -> optional(text).verifying(otherInDaysValidation(payPeriod))
       )(PayPeriodForm.apply)(PayPeriodForm.unapply)
     )
   }

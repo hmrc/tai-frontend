@@ -35,8 +35,7 @@ import views.html.incomes.WorkingHoursView
 
 import scala.concurrent.Future
 
-class IncomeUpdateWorkingHoursControllerSpec
-    extends BaseSpec with JourneyCacheConstants with EditIncomeIrregularPayConstants {
+class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec with JourneyCacheConstants {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
@@ -63,7 +62,7 @@ class IncomeUpdateWorkingHoursControllerSpec
       sealed class WorkingHoursPageHarness() {
 
         when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_WorkingHoursKey))(any()))
-          .thenReturn(Future.successful(Option(REGULAR_HOURS)))
+          .thenReturn(Future.successful(Option(EditIncomeIrregularPayConstants.RegularHours)))
 
         def workingHoursPage(): Future[Result] =
           new TestIncomeUpdateWorkingHoursController()
@@ -131,7 +130,8 @@ class IncomeUpdateWorkingHoursControllerSpec
 
         val result = HandleWorkingHoursHarness
           .setup()
-          .handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth("workingHours" -> REGULAR_HOURS))
+          .handleWorkingHours(
+            RequestBuilder.buildFakePostRequestWithAuth("workingHours" -> EditIncomeIrregularPayConstants.RegularHours))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(

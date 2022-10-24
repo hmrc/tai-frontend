@@ -20,12 +20,9 @@ import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import javax.inject.Inject
-import java.time.LocalDate
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
@@ -33,6 +30,7 @@ import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, AddEmployme
 import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
+import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -42,9 +40,9 @@ import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
-import scala.Function.tupled
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.tai.util.FutureOps._
 
 class AddEmploymentController @Inject()(
   auditService: AuditService,
@@ -64,8 +62,7 @@ class AddEmploymentController @Inject()(
   confirmationView: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with AuditConstants with FormValuesConstants
-    with EmptyCacheRedirect {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with EmptyCacheRedirect {
 
   def cancel(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>
@@ -136,11 +133,11 @@ class AddEmploymentController @Inject()(
               val startDateBoundary = LocalDate.now.minusWeeks(6)
               val data = currentCache + (AddEmployment_StartDateKey -> date.toString)
               if (date.isAfter(startDateBoundary)) {
-                val firstPayChoiceCacheData = data + (AddEmployment_StartDateWithinSixWeeks -> YesValue)
+                val firstPayChoiceCacheData = data + (AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
                 journeyCacheService.cache(firstPayChoiceCacheData)
                 Redirect(controllers.employments.routes.AddEmploymentController.receivedFirstPay())
               } else {
-                val firstPayChoiceCacheData = data + (AddEmployment_StartDateWithinSixWeeks -> NoValue)
+                val firstPayChoiceCacheData = data + (AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.NoValue)
                 journeyCacheService.cache(firstPayChoiceCacheData)
                 Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
               }
@@ -173,7 +170,7 @@ class AddEmploymentController @Inject()(
         firstPayYesNo => {
           journeyCacheService.cache(AddEmployment_ReceivedFirstPayKey, firstPayYesNo.getOrElse("")) map { _ =>
             firstPayYesNo match {
-              case Some(YesValue) =>
+              case Some(FormValuesConstants.YesValue) =>
                 Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
               case _ => Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError())
             }
@@ -183,10 +180,11 @@ class AddEmploymentController @Inject()(
   }
 
   def sixWeeksError(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    journeyCacheService.mandatoryJourneyValue(AddEmployment_NameKey) map {
+    journeyCacheService.mandatoryJourneyValue(AddEmployment_NameKey).map {
       case Right(employmentName) =>
         implicit val user: AuthedUser = request.taiUser
-        auditService.createAndSendAuditEvent(AddEmployment_CantAddEmployer, Map("nino" -> user.nino.toString()))
+        auditService
+          .createAndSendAuditEvent(AuditConstants.AddEmploymentCantAddEmployer, Map("nino" -> user.nino.toString()))
         Ok(add_employment_error_page(employmentName))
       case Left(err) =>
         InternalServerError(err)
@@ -199,8 +197,8 @@ class AddEmploymentController @Inject()(
         val viewModel = PayrollNumberViewModel(cache)
         val payrollChoice = cache.get(AddEmployment_PayrollNumberQuestionKey)
         val payroll = payrollChoice match {
-          case Some(YesValue) => cache.get(AddEmployment_PayrollNumberKey)
-          case _              => None
+          case Some(FormValuesConstants.YesValue) => cache.get(AddEmployment_PayrollNumberKey)
+          case _                                  => None
         }
         implicit val user: AuthedUser = request.taiUser
 
@@ -241,8 +239,8 @@ class AddEmploymentController @Inject()(
     journeyCacheService.optionalValues(AddEmployment_TelephoneQuestionKey, AddEmployment_TelephoneNumberKey) map {
       optSeq =>
         val telNoToDisplay = optSeq.head match {
-          case Some(YesValue) => optSeq(1)
-          case _              => None
+          case Some(FormValuesConstants.YesValue) => optSeq(1)
+          case _                                  => None
         }
         implicit val user: AuthedUser = request.taiUser
 
@@ -271,9 +269,9 @@ class AddEmploymentController @Inject()(
         form => {
           val mandatoryData = Map(
             AddEmployment_TelephoneQuestionKey -> Messages(
-              s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
+              s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"))
           val dataForCache = form.yesNoChoice match {
-            case Some(yn) if yn == YesValue =>
+            case Some(yn) if yn == FormValuesConstants.YesValue =>
               mandatoryData ++ Map(AddEmployment_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
             case _ => mandatoryData ++ Map(AddEmployment_TelephoneNumberKey -> "")
           }

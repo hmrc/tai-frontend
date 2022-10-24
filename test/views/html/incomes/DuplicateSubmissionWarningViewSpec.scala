@@ -42,12 +42,12 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionEmploymentViewModel, DuplicateSubmissionPensionViewModel}
 
-class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesConstants {
+class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
   private val duplicateSubmissionWarning = inject[DuplicateSubmissionWarningView]
   val employmentName = "Employment Name"
   val empId = 1
   val duplicateSubmissionWarningForm: Form[YesNoForm] = DuplicateSubmissionWarningForm.createForm
-  val choice = YesNoForm.YesNoChoice
+  val choice = FormValuesConstants.YesNoChoice
 
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.incomes.warning.customGaTitle"))
@@ -57,8 +57,8 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
       mainHeaderText = messages("tai.incomes.warning.employment.heading", employmentName))
 
     behave like pageWithYesNoRadioButton(
-      s"$YesNoChoice",
-      s"$YesNoChoice-2",
+      s"${FormValuesConstants.YesNoChoice}",
+      s"${FormValuesConstants.YesNoChoice}-2",
       messages("tai.incomes.warning.employment.radio1", employmentName),
       messages("tai.incomes.warning.employment.radio2")
     )
@@ -67,19 +67,19 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
 
     "return no errors with valid 'yes' choice" in {
-      val validYesChoice = Json.obj(choice -> YesValue)
+      val validYesChoice = Json.obj(choice -> FormValuesConstants.YesValue)
       val validatedForm = duplicateSubmissionWarningForm.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value.get mustBe YesNoForm(Some(YesValue))
+      validatedForm.value.get mustBe YesNoForm(Some(FormValuesConstants.YesValue))
     }
 
     "return no errors with valid 'no' choice" in {
-      val validNoChoice = Json.obj(choice -> NoValue)
+      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue)
       val validatedForm = duplicateSubmissionWarningForm.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value.get mustBe YesNoForm(Some(NoValue))
+      validatedForm.value.get mustBe YesNoForm(Some(FormValuesConstants.NoValue))
     }
 
     "display an error for invalid choice" in {
@@ -103,11 +103,13 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
         messages("tai.incomes.warning.pension.text1", MonetaryUtil.withPoundPrefix(newAmount), employmentName))
 
       doc(pensionView) must haveInputLabelWithText(
-        s"$YesNoChoice",
+        s"${FormValuesConstants.YesNoChoice}",
         messages("tai.incomes.warning.pension.radio1", employmentName))
-      doc(pensionView) must haveInputLabelWithText(s"$YesNoChoice-2", messages("tai.incomes.warning.pension.radio2"))
-      doc(pensionView).getElementById(s"$YesNoChoice") must not be null
-      doc(pensionView).getElementById(s"$YesNoChoice-2") must not be null
+      doc(pensionView) must haveInputLabelWithText(
+        s"${FormValuesConstants.YesNoChoice}-2",
+        messages("tai.incomes.warning.pension.radio2"))
+      doc(pensionView).getElementById(s"${FormValuesConstants.YesNoChoice}") must not be null
+      doc(pensionView).getElementById(s"${FormValuesConstants.YesNoChoice}-2") must not be null
     }
   }
 

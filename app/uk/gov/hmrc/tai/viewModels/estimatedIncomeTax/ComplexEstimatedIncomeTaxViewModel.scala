@@ -23,7 +23,6 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.util._
-import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 
 import scala.math.BigDecimal
 
@@ -35,7 +34,7 @@ case class ComplexEstimatedIncomeTaxViewModel(
   taxRegion: String
 ) extends ViewModelHelper
 
-object ComplexEstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants {
+object ComplexEstimatedIncomeTaxViewModel {
 
   def apply(
     codingComponents: Seq[CodingComponent],

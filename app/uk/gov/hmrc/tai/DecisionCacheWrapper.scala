@@ -16,19 +16,19 @@
 
 package uk.gov.hmrc.tai
 
-import javax.inject.{Inject, Named, Singleton}
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import play.api.Logging
-import play.api.mvc.Result
-import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
-
-import scala.concurrent.{ExecutionContext, Future}
-import play.api.mvc.Results
+import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants._
+
+import javax.inject.{Inject, Named, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DecisionCacheWrapper @Inject()(@Named("End Company Benefit") journeyCacheService: JourneyCacheService)
-    extends JourneyCacheConstants with UpdateOrRemoveCompanyBenefitDecisionConstants with Results with Logging {
+    extends JourneyCacheConstants with Results with Logging {
 
   private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 

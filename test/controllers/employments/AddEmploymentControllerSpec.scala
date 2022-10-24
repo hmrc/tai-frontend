@@ -21,8 +21,6 @@ import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
-
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.Mockito._
@@ -33,24 +31,24 @@ import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
-import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm._
-import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, EmploymentAddDateForm}
+import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
 import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.AddEmploymentPayrollNumberConstants._
+import uk.gov.hmrc.tai.util.constants.{AddEmploymentFirstPayChoiceConstants, AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class AddEmploymentControllerSpec
-    extends BaseSpec with JourneyCacheConstants with AuditConstants with FormValuesConstants with BeforeAndAfterEach {
+class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(addEmploymentJourneyCacheService)
@@ -241,7 +239,7 @@ class AddEmploymentControllerSpec
             Map(
               AddEmployment_NameKey                 -> "Test",
               AddEmployment_StartDateKey            -> "2017-02-01",
-              AddEmployment_StartDateWithinSixWeeks -> NoValue)))(any())
+              AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.NoValue)))(any())
       }
 
       "form is valid and start date is less than 6 weeks" in {
@@ -262,7 +260,7 @@ class AddEmploymentControllerSpec
         verify(addEmploymentJourneyCacheService, times(1)).cache(Matchers.eq(Map(
           AddEmployment_NameKey                 -> "Test",
           AddEmployment_StartDateKey            -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-          AddEmployment_StartDateWithinSixWeeks -> YesValue
+          AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.YesValue
         )))(any())
       }
     }
@@ -295,7 +293,7 @@ class AddEmploymentControllerSpec
           addEmploymentJourneyCacheService.collectedJourneyValues(
             Matchers.eq(Seq(AddEmployment_NameKey)),
             Matchers.eq(Seq(AddEmployment_ReceivedFirstPayKey)))(any()))
-          .thenReturn(Future.successful(Right(Seq(employmentName), Seq(Some(YesValue)))))
+          .thenReturn(Future.successful(Right(Seq(employmentName), Seq(Some(FormValuesConstants.YesValue)))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -317,10 +315,9 @@ class AddEmploymentControllerSpec
         when(addEmploymentJourneyCacheService.cache(mockEq(AddEmployment_ReceivedFirstPayKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.submitFirstPay()(
-          RequestBuilder
-            .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(AddEmploymentFirstPayForm.FirstPayChoice -> YesValue))
+        val result = sut.submitFirstPay()(RequestBuilder
+          .buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(AddEmploymentFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.YesValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController
@@ -339,7 +336,7 @@ class AddEmploymentControllerSpec
         val result = sut.submitFirstPay()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(AddEmploymentFirstPayForm.FirstPayChoice -> NoValue))
+            .withFormUrlEncodedBody(AddEmploymentFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.NoValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController.sixWeeksError().url
@@ -357,12 +354,13 @@ class AddEmploymentControllerSpec
           sut.sixWeeksError()(
             RequestBuilder
               .buildFakeRequestWithAuth("POST")
-              .withFormUrlEncodedBody(AddEmploymentFirstPayForm.FirstPayChoice -> NoValue)),
+              .withFormUrlEncodedBody(
+                AddEmploymentFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.NoValue)),
           5 seconds
         )
 
         verify(auditService, times(1)).createAndSendAuditEvent(
-          Matchers.eq(AddEmployment_CantAddEmployer),
+          Matchers.eq(AuditConstants.AddEmploymentCantAddEmployer),
           Matchers.eq(Map("nino" -> FakeAuthAction.nino.nino)))(Matchers.any(), Matchers.any())
       }
     }
@@ -378,7 +376,7 @@ class AddEmploymentControllerSpec
         val result = sut.submitFirstPay()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(AddEmploymentFirstPayForm.FirstPayChoice -> ""))
+            .withFormUrlEncodedBody(AddEmploymentFirstPayChoiceConstants.FirstPayChoice -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -392,7 +390,9 @@ class AddEmploymentControllerSpec
       "the request has an authorised session and no previous response is held in cache" in {
         val sut = createSUT
         val employerName = "TEST"
-        val cache = Map(AddEmployment_NameKey -> employerName, AddEmployment_StartDateWithinSixWeeks -> YesValue)
+        val cache = Map(
+          AddEmployment_NameKey                 -> employerName,
+          AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
         when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -410,8 +410,8 @@ class AddEmploymentControllerSpec
         val employerName = "TEST"
         val cache = Map(
           AddEmployment_NameKey                  -> employerName,
-          AddEmployment_StartDateWithinSixWeeks  -> YesValue,
-          AddEmployment_PayrollNumberQuestionKey -> NoValue,
+          AddEmployment_StartDateWithinSixWeeks  -> FormValuesConstants.YesValue,
+          AddEmployment_PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
           AddEmployment_PayrollNumberKey         -> "should be ignored"
         )
         when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
@@ -431,8 +431,8 @@ class AddEmploymentControllerSpec
         val employerName = "TEST"
         val cache = Map(
           AddEmployment_NameKey                  -> employerName,
-          AddEmployment_StartDateWithinSixWeeks  -> YesValue,
-          AddEmployment_PayrollNumberQuestionKey -> YesValue,
+          AddEmployment_StartDateWithinSixWeeks  -> FormValuesConstants.YesValue,
+          AddEmployment_PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
           AddEmployment_PayrollNumberKey         -> "should be displayed"
         )
         when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
@@ -456,7 +456,7 @@ class AddEmploymentControllerSpec
         val sut = createSUT
         val payrollNo = "1234"
         val mapWithPayrollNumber = Map(
-          AddEmployment_PayrollNumberQuestionKey -> YesValue,
+          AddEmployment_PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
           AddEmployment_PayrollNumberKey         -> payrollNo
         )
         when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any()))
@@ -465,7 +465,9 @@ class AddEmploymentControllerSpec
           sut.submitEmploymentPayrollNumber()(
             RequestBuilder
               .buildFakeRequestWithAuth("POST")
-              .withFormUrlEncodedBody(PayrollNumberChoice -> YesValue, PayrollNumberEntry -> payrollNo)),
+              .withFormUrlEncodedBody(
+                PayrollNumberChoice -> FormValuesConstants.YesValue,
+                PayrollNumberEntry  -> payrollNo)),
           5 seconds
         )
 
@@ -478,15 +480,14 @@ class AddEmploymentControllerSpec
         val sut = createSUT
         val payrollNo = "1234"
         val mapWithPayrollNumber = Map(
-          AddEmployment_PayrollNumberQuestionKey -> YesValue,
+          AddEmployment_PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
           AddEmployment_PayrollNumberKey         -> payrollNo
         )
         when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any()))
           .thenReturn(Future.successful(mapWithPayrollNumber))
-        val result = sut.submitEmploymentPayrollNumber()(
-          RequestBuilder
-            .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(PayrollNumberChoice -> YesValue, PayrollNumberEntry -> payrollNo))
+        val result = sut.submitEmploymentPayrollNumber()(RequestBuilder
+          .buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(PayrollNumberChoice -> FormValuesConstants.YesValue, PayrollNumberEntry -> payrollNo))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController
           .addTelephoneNumber()
@@ -499,7 +500,7 @@ class AddEmploymentControllerSpec
         val sut = createSUT
         val payrollNo = Messages("tai.addEmployment.employmentPayrollNumber.notKnown")
         val mapWithPayrollNumber = Map(
-          AddEmployment_PayrollNumberQuestionKey -> NoValue,
+          AddEmployment_PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
           AddEmployment_PayrollNumberKey         -> payrollNo
         )
 
@@ -510,7 +511,7 @@ class AddEmploymentControllerSpec
           sut.submitEmploymentPayrollNumber()(
             RequestBuilder
               .buildFakeRequestWithAuth("POST")
-              .withFormUrlEncodedBody(PayrollNumberChoice -> NoValue, PayrollNumberEntry -> "")),
+              .withFormUrlEncodedBody(PayrollNumberChoice -> FormValuesConstants.NoValue, PayrollNumberEntry -> "")),
           5 seconds
         )
 
@@ -523,7 +524,7 @@ class AddEmploymentControllerSpec
         val sut = createSUT
         val payrollNo = Messages("tai.addEmployment.employmentPayrollNumber.notKnown")
         val mapWithPayrollNumber = Map(
-          AddEmployment_PayrollNumberQuestionKey -> NoValue,
+          AddEmployment_PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
           AddEmployment_PayrollNumberKey         -> payrollNo
         )
 
@@ -533,7 +534,7 @@ class AddEmploymentControllerSpec
         val result = sut.submitEmploymentPayrollNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(PayrollNumberChoice -> NoValue, PayrollNumberEntry -> ""))
+            .withFormUrlEncodedBody(PayrollNumberChoice -> FormValuesConstants.NoValue, PayrollNumberEntry -> ""))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController
@@ -546,13 +547,15 @@ class AddEmploymentControllerSpec
       "there is a form validation error" in {
         val sut = createSUT
         val employerName = "TEST"
-        val cache = Map(AddEmployment_NameKey -> employerName, AddEmployment_StartDateWithinSixWeeks -> YesValue)
+        val cache = Map(
+          AddEmployment_NameKey                 -> employerName,
+          AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
         when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.submitEmploymentPayrollNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(PayrollNumberChoice -> YesValue, PayrollNumberEntry -> ""))
+            .withFormUrlEncodedBody(PayrollNumberChoice -> FormValuesConstants.YesValue, PayrollNumberEntry -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -579,7 +582,7 @@ class AddEmploymentControllerSpec
       "the request has an authorised session and a previous 'no' response is held in cache" in {
         val sut = createSUT
         when(addEmploymentJourneyCacheService.optionalValues(any())(any()))
-          .thenReturn(Future.successful(Seq(Some(NoValue), Some("should be ignored"))))
+          .thenReturn(Future.successful(Seq(Some(FormValuesConstants.NoValue), Some("should be ignored"))))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -592,7 +595,7 @@ class AddEmploymentControllerSpec
       "the request has an authorised session and a previous 'yes' response is held in cache" in {
         val sut = createSUT
         when(addEmploymentJourneyCacheService.optionalValues(any())(any()))
-          .thenReturn(Future.successful(Seq(Some(YesValue), Some("should be displayed"))))
+          .thenReturn(Future.successful(Seq(Some(FormValuesConstants.YesValue), Some("should be displayed"))))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -611,13 +614,17 @@ class AddEmploymentControllerSpec
         val sut = createSUT
 
         val expectedCache =
-          Map(AddEmployment_TelephoneQuestionKey -> YesValue, AddEmployment_TelephoneNumberKey -> "12345678")
+          Map(
+            AddEmployment_TelephoneQuestionKey -> FormValuesConstants.YesValue,
+            AddEmployment_TelephoneNumberKey   -> "12345678")
         when(addEmploymentJourneyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(expectedCache))
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> "12345678"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController
@@ -628,13 +635,15 @@ class AddEmploymentControllerSpec
         val sut = createSUT
 
         val expectedCacheWithErasingNumber =
-          Map(AddEmployment_TelephoneQuestionKey -> NoValue, AddEmployment_TelephoneNumberKey -> "")
+          Map(AddEmployment_TelephoneQuestionKey -> FormValuesConstants.NoValue, AddEmployment_TelephoneNumberKey -> "")
         when(addEmploymentJourneyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> NoValue, YesNoTextEntry -> "this value must not be cached"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.NoValue,
+              FormValuesConstants.YesNoTextEntry -> "this value must not be cached"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController
@@ -650,7 +659,9 @@ class AddEmploymentControllerSpec
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> ""))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -662,7 +673,9 @@ class AddEmploymentControllerSpec
         val tooFewCharsResult = sut.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> "1234"))
         status(tooFewCharsResult) mustBe BAD_REQUEST
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
@@ -670,7 +683,9 @@ class AddEmploymentControllerSpec
         val tooManyCharsResult = sut.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))

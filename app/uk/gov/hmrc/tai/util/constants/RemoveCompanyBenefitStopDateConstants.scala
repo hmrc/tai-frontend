@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.tai.util.constants
 
-trait RemoveCompanyBenefitStopDateConstants {
-  val StopDateChoice = "stopDateChoice"
-  val BeforeTaxYearEnd = "beforeTaxYearEnd"
-  val OnOrAfterTaxYearEnd = "onOrAfterTaxYearEnd"
+object RemoveCompanyBenefitStopDateConstants {
+  val StopDateChoice: String = "stopDateChoice"
+  val BeforeTaxYearEnd: String = "beforeTaxYearEnd"
+  val OnOrAfterTaxYearEnd: String = "onOrAfterTaxYearEnd"
 }

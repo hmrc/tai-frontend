@@ -16,6 +16,6 @@
 
 package uk.gov.hmrc.tai.util.constants
 
-trait EmploymentDecisionConstants {
-  val EmploymentDecision = "employmentDecision"
+object EmploymentDecisionConstants {
+  val EmploymentDecision: String = "employmentDecision"
 }

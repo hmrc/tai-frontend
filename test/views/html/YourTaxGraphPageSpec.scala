@@ -19,11 +19,11 @@ package views.html
 import builders.RequestBuilder
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.constants.TaxRegionConstants
+import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, ComplexTaxView, SimpleTaxView}
 import utils.BaseSpec
 
-class YourTaxGraphPageSpec extends BaseSpec with TaxRegionConstants {
+class YourTaxGraphPageSpec extends BaseSpec {
 
   implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 

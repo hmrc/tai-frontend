@@ -24,11 +24,11 @@ import uk.gov.voa.play.form.ConditionalMappings._
 
 case class YesNoTextEntryForm(yesNoChoice: Option[String], yesNoTextEntry: Option[String])
 
-object YesNoTextEntryForm extends FormValuesConstants {
+object YesNoTextEntryForm {
 
   private def yesNoChoiceValidation(emptySelectionMsg: String) = Constraint[Option[String]]("") {
-    case Some(txt) if txt == YesValue || txt == NoValue => Valid
-    case _                                              => Invalid(emptySelectionMsg)
+    case Some(txt) if txt == FormValuesConstants.YesValue || txt == FormValuesConstants.NoValue => Valid
+    case _                                                                                      => Invalid(emptySelectionMsg)
   }
 
   def form(
@@ -36,10 +36,10 @@ object YesNoTextEntryForm extends FormValuesConstants {
     emptyTextFieldMsg: String = "",
     additionalTextConstraint: Option[Constraint[String]] = None): Form[YesNoTextEntryForm] = Form[YesNoTextEntryForm](
     mapping(
-      YesNoChoice -> optional(text).verifying(yesNoChoiceValidation(emptySelectionMsg)),
-      YesNoTextEntry -> mandatoryIfEqual(
-        YesNoChoice,
-        YesValue,
+      FormValuesConstants.YesNoChoice -> optional(text).verifying(yesNoChoiceValidation(emptySelectionMsg)),
+      FormValuesConstants.YesNoTextEntry -> mandatoryIfEqual(
+        FormValuesConstants.YesNoChoice,
+        FormValuesConstants.YesValue,
         text
           .verifying(
             emptyTextFieldMsg,
@@ -47,7 +47,8 @@ object YesNoTextEntryForm extends FormValuesConstants {
           )
           .verifying(additionalTextConstraint.getOrElse(Constraint[String] { _: String =>
             Valid
-          })))
+          }))
+      )
     )(YesNoTextEntryForm.apply)(YesNoTextEntryForm.unapply)
   )
 

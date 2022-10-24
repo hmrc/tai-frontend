@@ -16,22 +16,22 @@
 
 package uk.gov.hmrc.tai.util.constants
 
-trait BandTypesConstants {
-  val UkBands = "uk.bandtype"
-  val ScottishBands = "scottish.bandtype"
-  val TaxFreeAllowanceBand = "pa"
-  val StarterSavingsRate = "SR"
-  val PersonalSavingsRate = "PSR"
-  val SavingsBasicRate = "LSR"
-  val SavingsHigherRate = "HSR1"
-  val SavingsAdditionalRate = "HSR2"
-  val DividendZeroRate = "SDR"
-  val DividendBasicRate = "LDR"
-  val DividendHigherRate = "HDR1"
-  val DividendAdditionalRate = "HDR2"
-  val ZeroBand = "ZeroBand"
-  val NonZeroBand = "NonZeroBand"
-  val TaxGraph = "taxGraph"
-  val TaxFree = "TaxFree"
-  val BasicRate = "B"
+object BandTypesConstants {
+  val UkBands: String = "uk.bandtype" //not used
+  val ScottishBands: String = "scottish.bandtype" //not used
+  val TaxFreeAllowanceBand: String = "pa"
+  val StarterSavingsRate: String = "SR"
+  val PersonalSavingsRate: String = "PSR"
+  val SavingsBasicRate: String = "LSR" //not used
+  val SavingsHigherRate: String = "HSR1"
+  val SavingsAdditionalRate: String = "HSR2"
+  val DividendZeroRate: String = "SDR"
+  val DividendBasicRate: String = "LDR" //not used
+  val DividendHigherRate: String = "HDR1"
+  val DividendAdditionalRate: String = "HDR2" //not used
+  val ZeroBand: String = "ZeroBand"
+  val NonZeroBand: String = "NonZeroBand"
+  val TaxGraph: String = "taxGraph"
+  val TaxFree: String = "TaxFree"
+  val BasicRate: String = "B" //not used
 }

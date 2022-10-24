@@ -18,10 +18,10 @@ package controllers
 
 import builders.{RequestBuilder, UserBuilder}
 import controllers.actions.FakeValidatePerson
-
-import java.time.LocalDate
+import controllers.auth.AuthenticatedRequest
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
@@ -33,17 +33,17 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
-import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.util.constants.BandTypesConstants
+import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import utils.BaseSpec
 import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIncomeView, SimpleEstimatedIncomeTaxView, ZeroTaxEstimatedIncomeTaxView}
 import views.html.includes.link
-import controllers.auth.{AuthedUser, AuthenticatedRequest}
-import play.api.mvc.Request
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
-class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants with TaxRegionConstants {
+class EstimatedIncomeTaxControllerSpec extends BaseSpec {
 
   implicit val request: Request[_] = FakeRequest()
   implicit val fakeAuthenticatedRequest = AuthenticatedRequest(request, authedUser, "Firstname Surname")
@@ -96,11 +96,11 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
           None)
 
         val viewModelBands = List(
-          Band("TaxFree", 24.04, 11500, 0, ZeroBand),
-          Band("Band", 75.95, 36335, 7834, NonZeroBand)
+          Band("TaxFree", 24.04, 11500, 0, BandTypesConstants.ZeroBand),
+          Band("Band", 75.95, 36335, 7834, BandTypesConstants.NonZeroBand)
         )
         val viewModelBandedGraph = BandedGraph(
-          TaxGraph,
+          BandTypesConstants.TaxGraph,
           viewModelBands,
           0,
           150000,
@@ -214,8 +214,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
         )
 
         val viewModelBands = List(
-          Band(TaxFree, 78.78, 13000, 0, ZeroBand),
-          Band("Band", 21.21, 3500, 700, NonZeroBand)
+          Band(BandTypesConstants.TaxFree, 78.78, 13000, 0, BandTypesConstants.ZeroBand),
+          Band("Band", 21.21, 3500, 700, BandTypesConstants.NonZeroBand)
         )
         val viewModelBandedGraph = BandedGraph(
           "taxGraph",
@@ -315,7 +315,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
         )
 
         val viewModelBands = List(
-          Band(TaxFree, 78.26, 11500, 0, "pa")
+          Band(BandTypesConstants.TaxFree, 78.26, 11500, 0, "pa")
         )
         val viewModelBandedGraph =
           BandedGraph("taxGraph", viewModelBands, 0, 11500, 11500, 78.26, 11500, 78.26, 0, None, None)

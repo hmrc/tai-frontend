@@ -24,11 +24,11 @@ import uk.gov.hmrc.tai.util.constants.IrregularPayConstants
 
 case class IrregularPayFormData(irregularPayDecision: Option[String])
 
-object IrregularPayForm extends IrregularPayConstants {
+object IrregularPayForm {
   def createForm(implicit messages: Messages): Form[IrregularPayFormData] =
     Form[IrregularPayFormData](
       mapping(
-        IrregularPayDecision -> optional(text).verifying(irregularPayDecisionValidation)
+        IrregularPayConstants.IrregularPayDecision -> optional(text).verifying(irregularPayDecisionValidation)
       )(IrregularPayFormData.apply)(IrregularPayFormData.unapply)
     )
 

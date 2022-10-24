@@ -48,7 +48,7 @@ case class DetailedIncomeTaxEstimateViewModel(
   taxOnIncomeTypeDescription: String
 ) extends ViewModelHelper
 
-object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with IncomeTaxEstimateHelper {
+object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
 
   def apply(
     totalTax: TotalTax,
@@ -317,19 +317,21 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
 
   def containsHRS1orHRS2(taxBands: Seq[TaxBand]): Boolean = {
     val bandTypes = taxBands.map(_.bandType)
-    bandTypes.contains(SavingsHigherRate) || bandTypes.contains(SavingsAdditionalRate)
+    bandTypes.contains(BandTypesConstants.SavingsHigherRate) || bandTypes.contains(
+      BandTypesConstants.SavingsAdditionalRate)
   }
 
   def taxFreeSavingsIncome(taxBands: Seq[TaxBand]): BigDecimal =
     taxBands
-      .filter(band => band.bandType == PersonalSavingsRate || band.bandType == StarterSavingsRate)
+      .filter(band =>
+        band.bandType == BandTypesConstants.PersonalSavingsRate || band.bandType == BandTypesConstants.StarterSavingsRate)
       .map(_.income)
       .sum
 
   def taxFreeDividendAllowance(incomeCategories: Seq[IncomeCategory]): BigDecimal = {
     val taxBands = incomeCategories.flatMap(_.taxBands)
 
-    taxBands.find(_.bandType == DividendZeroRate).flatMap(_.upperBand).getOrElse(BigDecimal(0))
+    taxBands.find(_.bandType == BandTypesConstants.DividendZeroRate).flatMap(_.upperBand).getOrElse(BigDecimal(0))
 
   }
 }

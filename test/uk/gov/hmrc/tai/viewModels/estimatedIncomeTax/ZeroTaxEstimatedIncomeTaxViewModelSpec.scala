@@ -21,11 +21,12 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import utils.BaseSpec
 
 import scala.language.postfixOps
 
-class ZeroTaxEstimatedIncomeTaxViewModelSpec extends BaseSpec with TaxRegionConstants with BandTypesConstants {
+class ZeroTaxEstimatedIncomeTaxViewModelSpec extends BaseSpec {
 
   "ZeroTaxEstimatedIncomeTaxViewModel" must {
     "return a valid view model" in {
@@ -37,8 +38,8 @@ class ZeroTaxEstimatedIncomeTaxViewModelSpec extends BaseSpec with TaxRegionCons
       )
 
       val bandedGraph = BandedGraph(
-        TaxGraph,
-        List(Band(TaxFree, 78.26, 11500, 0, "pa")),
+        BandTypesConstants.TaxGraph,
+        List(Band(BandTypesConstants.TaxFree, 78.26, 11500, 0, "pa")),
         0,
         11500,
         11500,

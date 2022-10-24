@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.util.constants
 
-trait AddEmploymentPayrollNumberConstants {
-  val PayrollNumberChoice = "payrollNumberChoice"
-  val PayrollNumberEntry = "payrollNumberEntry"
+object AddEmploymentPayrollNumberConstants {
+  val PayrollNumberChoice: String = "payrollNumberChoice"
+  val PayrollNumberEntry: String = "payrollNumberEntry"
 }

@@ -19,13 +19,11 @@ package uk.gov.hmrc.tai.forms.employments
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.constants.AddEmploymentFirstPayChoiceConstants
+import uk.gov.hmrc.tai.util.constants.AddEmploymentFirstPayChoiceConstants.FirstPayChoice
 
-object AddEmploymentFirstPayForm extends AddEmploymentFirstPayChoiceConstants {
+object AddEmploymentFirstPayForm {
 
   def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
-    single(
-      FirstPayChoice ->
-        optional(text).verifying(Messages("tai.error.chooseOneOption"), { _.isDefined }))
+    single(FirstPayChoice -> optional(text).verifying(Messages("tai.error.chooseOneOption"), _.isDefined))
   )
 }

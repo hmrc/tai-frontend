@@ -20,11 +20,10 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.forms.PayslipForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 
 case class PaySlipAmountViewModel(payslipForm: Form[PayslipForm], payPeriodTitle: String, employer: IncomeSource)
 
-object PaySlipAmountViewModel extends EditIncomePayPeriodConstants with DynamicPayPeriodTitle {
+object PaySlipAmountViewModel extends DynamicPayPeriodTitle {
 
   def apply(
     payslipForm: Form[PayslipForm],

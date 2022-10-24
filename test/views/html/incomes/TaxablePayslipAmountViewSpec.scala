@@ -20,28 +20,28 @@ import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.TaxablePayslipForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmountViewModel
 
-class TaxablePayslipAmountViewSpec extends TaiViewSpec with EditIncomePayPeriodConstants {
+class TaxablePayslipAmountViewSpec extends TaiViewSpec {
 
   private val employerName = "Employer"
   private val employer = IncomeSource(id = 1, employerName)
   private val taxablePayslipViewModel = createViewModel()
 
-  def createViewModel(form: Form[TaxablePayslipForm] = TaxablePayslipForm.createForm(None, Some(MONTHLY), None)) =
-    TaxablePaySlipAmountViewModel(form, Some(MONTHLY), None, employer)
+  def createViewModel(form: Form[TaxablePayslipForm] = TaxablePayslipForm.createForm(None, Some(Monthly), None)) =
+    TaxablePaySlipAmountViewModel(form, Some(Monthly), None, employer)
 
   private val template = inject[TaxablePayslipAmountView]
 
   override def view: Html = template(taxablePayslipViewModel)
 
   "Taxable Pay slip amount view" should {
-    behave like pageWithTitle(messages("tai.taxablePayslip.title.month", MONTHLY))
+    behave like pageWithTitle(messages("tai.taxablePayslip.title.month", Monthly))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.howToUpdate.preHeading", employerName),
-      messages("tai.taxablePayslip.title.month", MONTHLY))
+      messages("tai.taxablePayslip.title.month", Monthly))
 
     behave like pageWithBackLinkWithUrl(
       controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url)

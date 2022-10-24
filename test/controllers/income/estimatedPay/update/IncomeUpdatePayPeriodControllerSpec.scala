@@ -29,14 +29,14 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants.Monthly
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
 import views.html.incomes.PayPeriodView
 
 import scala.concurrent.Future
 
-class IncomeUpdatePayPeriodControllerSpec
-    extends BaseSpec with JourneyCacheConstants with EditIncomePayPeriodConstants {
+class IncomeUpdatePayPeriodControllerSpec extends BaseSpec with JourneyCacheConstants {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
@@ -61,7 +61,7 @@ class IncomeUpdatePayPeriodControllerSpec
     object PayPeriodPageHarness {
       sealed class PayPeriodPageHarness() {
 
-        when(journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(MONTHLY), None)))
+        when(journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(Monthly), None)))
         def payPeriodPage(): Future[Result] =
           new TestIncomeUpdatePayPeriodController()
             .payPeriodPage()(RequestBuilder.buildFakeGetRequestWithAuth())

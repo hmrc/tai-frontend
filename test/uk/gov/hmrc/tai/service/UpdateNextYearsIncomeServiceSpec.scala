@@ -156,7 +156,7 @@ class UpdateNextYearsIncomeServiceSpec
   "setNewAmount" must {
     "caches the amount with the employment id key" in {
 
-      val key = s"${UpdateNextYearsIncomeConstants.NEW_AMOUNT}-$employmentId"
+      val key = s"${UpdateNextYearsIncomeConstants.NewAmount}-$employmentId"
       val amount = convertCurrencyToInt(Some(employmentAmount.toString)).toString
       val expected = Map(key -> amount)
 
@@ -205,9 +205,9 @@ class UpdateNextYearsIncomeServiceSpec
 
       service.submit(employmentId, nino).futureValue mustBe TaiSuccessResponse
 
-      verify(successfulJourneyCacheService, times(1)).cache(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true"))
+      verify(successfulJourneyCacheService, times(1)).cache(Map(UpdateNextYearsIncomeConstants.Successful -> "true"))
       verify(successfulJourneyCacheService, times(1))
-        .cache(Map(s"${UpdateNextYearsIncomeConstants.SUCCESSFUL}-$employmentId" -> "true"))
+        .cache(Map(s"${UpdateNextYearsIncomeConstants.Successful}-$employmentId" -> "true"))
     }
 
     "return a TaiCacheError if there is a cache error" in new SubmitSetup {
@@ -227,7 +227,7 @@ class UpdateNextYearsIncomeServiceSpec
       val service = new UpdateNextYearsIncomeServiceTest
 
       when(successfulJourneyCacheService.currentCache(any()))
-        .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true")))
+        .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.Successful -> "true")))
 
       service.isEstimatedPayJourneyComplete.futureValue mustBe true
     }
@@ -262,14 +262,14 @@ class UpdateNextYearsIncomeServiceSpec
 
   private def expectedMap(name: String, id: Int, isPension: Boolean, amount: Int): Map[String, String] =
     Map(
-      UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME -> name,
-      UpdateNextYearsIncomeConstants.EMPLOYMENT_ID   -> id.toString,
-      UpdateNextYearsIncomeConstants.IS_PENSION      -> isPension.toString,
-      UpdateNextYearsIncomeConstants.CURRENT_AMOUNT  -> amount.toString
+      UpdateNextYearsIncomeConstants.EmploymentName -> name,
+      UpdateNextYearsIncomeConstants.EmploymentId   -> id.toString,
+      UpdateNextYearsIncomeConstants.IsPension      -> isPension.toString,
+      UpdateNextYearsIncomeConstants.CurrentAmount  -> amount.toString
     )
 
   private def fullMap(name: String, id: Int, isPension: Boolean, amount: Int): Map[String, String] =
-    expectedMap(name, id, isPension, amount) ++ Map(UpdateNextYearsIncomeConstants.NEW_AMOUNT -> amount.toString)
+    expectedMap(name, id, isPension, amount) ++ Map(UpdateNextYearsIncomeConstants.NewAmount -> amount.toString)
 
   private val employmentName = "employmentName"
   private val employmentId = 1
@@ -303,10 +303,10 @@ class UpdateNextYearsIncomeServiceSpec
       .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
     when(successfulJourneyCacheService.cache(any())(any()))
-      .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true")))
+      .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.Successful -> "true")))
 
     when(successfulJourneyCacheService.cache(any())(any()))
-      .thenReturn(Future.successful(Map(s"${UpdateNextYearsIncomeConstants.SUCCESSFUL}-$employmentId" -> "true")))
+      .thenReturn(Future.successful(Map(s"${UpdateNextYearsIncomeConstants.Successful}-$employmentId" -> "true")))
 
     when(
       taxAccountService.updateEstimatedIncome(

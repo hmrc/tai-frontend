@@ -51,7 +51,7 @@ class TrackingService @Inject()(
       val filteredJournies = successfulJournies.keySet.filterNot(
         key =>
           key.contains(TrackSuccessfulJourney_EstimatedPayKey) || key.contains(
-            UpdateNextYearsIncomeConstants.SUCCESSFUL)
+            UpdateNextYearsIncomeConstants.Successful)
             || key.contains(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey)
       )
 

@@ -17,6 +17,7 @@
 @import includes.cancelLink
 @import play.api.mvc.Call
 @import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
+@import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 @import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
@@ -80,14 +81,14 @@
                     RadioItem(
                         content = Text(messages("tai.label.yes")),
                         value = Some("Yes"),
-                        checked = yesNoForm.data.get(YesNoTextEntryForm.YesNoChoice).exists(_ == "Yes"),
+                        checked = yesNoForm.data.get(FormValuesConstants.YesNoChoice).exists(_ == "Yes"),
                         conditionalHtml = Some(
                         govukInput(Input(
                                 id = "yesNoTextEntry",
                                 name = "yesNoTextEntry",
                                 inputmode = Some("numeric"),
                                 hint = Some(Hint(content = Text(Messages("tai.canWeContactByPhone.telephoneNumber.hint")))),
-                                value = yesNoForm.data.get(YesNoTextEntryForm.YesNoTextEntry),
+                                value = yesNoForm.data.get(FormValuesConstants.YesNoTextEntry),
                                 label = Label(
                                     classes = "govuk-label--s",
                                     content = Text(Messages("tai.phoneNumber")),
@@ -100,10 +101,10 @@
                         RadioItem(
                             content = Text(messages("tai.label.no")),
                             value = Some("No"),
-                            checked = yesNoForm.data.get(YesNoTextEntryForm.YesNoChoice).exists(_ == "No")
+                            checked = yesNoForm.data.get(FormValuesConstants.YesNoChoice).exists(_ == "No")
                     )
                 )
-            ).withFormField(yesNoForm(YesNoTextEntryForm.YesNoChoice)))
+            ).withFormField(yesNoForm(FormValuesConstants.YesNoChoice)))
 
             @govukButton(Button(content = Text(messages("tai.continue"))))
         }

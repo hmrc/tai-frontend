@@ -16,20 +16,18 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
-import controllers.FakeTaiPlayApplication
-import java.time.LocalDate
-import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
-import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.util.constants.BandTypesConstants
+import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import utils.BaseSpec
 
+import java.time.LocalDate
 import scala.language.postfixOps
 
-class ComplexEstimatedIncomeTaxViewModelSpec extends BaseSpec with TaxRegionConstants with BandTypesConstants {
+class ComplexEstimatedIncomeTaxViewModelSpec extends BaseSpec {
 
   "ComplexEstimatedIncomeTaxViewModel" must {
     "return a valid view model" in {
@@ -46,8 +44,10 @@ class ComplexEstimatedIncomeTaxViewModelSpec extends BaseSpec with TaxRegionCons
       )
 
       val bandedGraph = BandedGraph(
-        TaxGraph,
-        List(Band(TaxFree, 69.69, 11500, 0, ZeroBand), Band("Band", 30.30, 5000, 700, NonZeroBand)),
+        BandTypesConstants.TaxGraph,
+        List(
+          Band(BandTypesConstants.TaxFree, 69.69, 11500, 0, BandTypesConstants.ZeroBand),
+          Band("Band", 30.30, 5000, 700, BandTypesConstants.NonZeroBand)),
         0,
         16500,
         16500,

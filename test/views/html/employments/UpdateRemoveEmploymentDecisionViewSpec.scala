@@ -19,16 +19,16 @@ package views.html.employments
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.UpdateRemoveEmploymentForm
-import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class UpdateRemoveEmploymentDecisionViewSpec extends TaiViewSpec with FormValuesConstants {
+class UpdateRemoveEmploymentDecisionViewSpec extends TaiViewSpec {
   val employmentName = "Employment Name"
   val empId = 1
   val updateRemoveEmploymentForm: Form[Option[String]] =
     UpdateRemoveEmploymentForm
       .form("Some employer")
-      .bind(Map(UpdateRemoveEmploymentForm.EmploymentDecision -> YesValue))
+      .bind(Map(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.YesValue))
 
   private val template = inject[UpdateRemoveEmploymentDecisionView]
 
@@ -53,8 +53,8 @@ class UpdateRemoveEmploymentDecisionViewSpec extends TaiViewSpec with FormValues
     }
 
     behave like pageWithYesNoRadioButton(
-      UpdateRemoveEmploymentForm.EmploymentDecision,
-      UpdateRemoveEmploymentForm.EmploymentDecision + "-2",
+      EmploymentDecisionConstants.EmploymentDecision,
+      EmploymentDecisionConstants.EmploymentDecision + "-2",
       messages("tai.employment.decision.radio1"),
       messages("tai.employment.decision.radio2")
     )

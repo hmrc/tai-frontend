@@ -20,16 +20,17 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.util.constants.AddEmploymentPayrollNumberConstants._
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.voa.play.form.ConditionalMappings._
-import uk.gov.hmrc.tai.util.constants.{AddEmploymentPayrollNumberConstants, FormValuesConstants}
 
 case class AddEmploymentPayrollNumberForm(payrollNumberChoice: Option[String], payrollNumberEntry: Option[String])
 
-object AddEmploymentPayrollNumberForm extends AddEmploymentPayrollNumberConstants with FormValuesConstants {
+object AddEmploymentPayrollNumberForm {
 
   private def yesNoChoiceValidation(implicit messages: Messages) = Constraint[Option[String]]("") {
-    case Some(txt) if txt == YesValue || txt == NoValue => Valid
-    case _                                              => Invalid(Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
+    case Some(txt) if txt == FormValuesConstants.YesValue || txt == FormValuesConstants.NoValue => Valid
+    case _                                                                                      => Invalid(Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
   }
 
   def form(implicit messages: Messages): Form[AddEmploymentPayrollNumberForm] = Form[AddEmploymentPayrollNumberForm](
@@ -37,7 +38,7 @@ object AddEmploymentPayrollNumberForm extends AddEmploymentPayrollNumberConstant
       PayrollNumberChoice -> optional(text).verifying(yesNoChoiceValidation),
       PayrollNumberEntry -> mandatoryIfEqual(
         PayrollNumberChoice,
-        YesValue,
+        FormValuesConstants.YesValue,
         text.verifying(Messages("tai.addEmployment.employmentPayrollNumber.error.blank"), _.nonEmpty))
     )(AddEmploymentPayrollNumberForm.apply)(AddEmploymentPayrollNumberForm.unapply)
   )

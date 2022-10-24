@@ -23,15 +23,16 @@ import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.RemoveCompanyBenefitStopDateConstants
 
-object RemoveCompanyBenefitStopDateForm extends RemoveCompanyBenefitStopDateConstants {
+object RemoveCompanyBenefitStopDateForm {
 
   def form(implicit messages: Messages): Form[Option[String]] = {
     val taxYearStart = Dates.formatDate(TaxYear().start)
     Form[Option[String]](
       single(
-        StopDateChoice -> optional(text).verifying(Messages("tai.benefits.ended.stopDate.radio.error", taxYearStart), {
-          _.isDefined
-        }))
+        RemoveCompanyBenefitStopDateConstants.StopDateChoice -> optional(text)
+          .verifying(Messages("tai.benefits.ended.stopDate.radio.error", taxYearStart), {
+            _.isDefined
+          }))
     )
   }
 }

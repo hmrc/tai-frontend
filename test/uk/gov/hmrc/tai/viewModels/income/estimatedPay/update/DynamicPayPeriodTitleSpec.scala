@@ -16,31 +16,31 @@
 
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
-import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
 import utils.BaseSpec
 
-class DynamicPayPeriodTitleSpec extends BaseSpec with EditIncomePayPeriodConstants {
+class DynamicPayPeriodTitleSpec extends BaseSpec {
 
   "DynamicPayPeriodTitle" must {
 
     "show gross pay messages" when {
 
       "gross pay period is monthly" in {
-        GrossPayPeriodTitle.title(Some(MONTHLY), None) mustBe messagesApi("tai.payslip.title.month")
+        GrossPayPeriodTitle.title(Some(Monthly), None) mustBe messagesApi("tai.payslip.title.month")
       }
 
       "gross pay period is weekly" in {
-        GrossPayPeriodTitle.title(Some(WEEKLY), None) mustBe messagesApi("tai.payslip.title.week")
+        GrossPayPeriodTitle.title(Some(Weekly), None) mustBe messagesApi("tai.payslip.title.week")
       }
 
       "gross pay period is fortnightly" in {
-        GrossPayPeriodTitle.title(Some(FORTNIGHTLY), None) mustBe messagesApi("tai.payslip.title.2week")
+        GrossPayPeriodTitle.title(Some(Fortnightly), None) mustBe messagesApi("tai.payslip.title.2week")
       }
 
       "gross pay period is a number of days" in {
         val numberOfDays = "123"
         GrossPayPeriodTitle
-          .title(Some(OTHER), Some(numberOfDays)) mustBe messagesApi("tai.payslip.title.days", numberOfDays)
+          .title(Some(Other), Some(numberOfDays)) mustBe messagesApi("tai.payslip.title.days", numberOfDays)
       }
 
     }
@@ -48,20 +48,20 @@ class DynamicPayPeriodTitleSpec extends BaseSpec with EditIncomePayPeriodConstan
     "Display taxable pay messages" when {
 
       "taxable pay period is monthly" in {
-        TaxablePayPeriod.errorMessage(Some(MONTHLY), None) mustBe messagesApi("tai.taxablePayslip.title.month")
+        TaxablePayPeriod.errorMessage(Some(Monthly), None) mustBe messagesApi("tai.taxablePayslip.title.month")
       }
 
       "taxable pay period is weekly" in {
-        TaxablePayPeriod.errorMessage(Some(WEEKLY), None) mustBe messagesApi("tai.taxablePayslip.title.week")
+        TaxablePayPeriod.errorMessage(Some(Weekly), None) mustBe messagesApi("tai.taxablePayslip.title.week")
       }
 
       "taxable pay period is fortnightly" in {
-        TaxablePayPeriod.errorMessage(Some(FORTNIGHTLY), None) mustBe messagesApi("tai.taxablePayslip.title.2week")
+        TaxablePayPeriod.errorMessage(Some(Fortnightly), None) mustBe messagesApi("tai.taxablePayslip.title.2week")
       }
 
       "taxable pay period is a number of days" in {
         val numberOfDays = "123"
-        TaxablePayPeriod.errorMessage(Some(OTHER), Some(numberOfDays)) mustBe messagesApi(
+        TaxablePayPeriod.errorMessage(Some(Other), Some(numberOfDays)) mustBe messagesApi(
           "tai.taxablePayslip.title.days",
           numberOfDays)
       }

@@ -21,10 +21,10 @@ import play.api.data.Forms._
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.constants.IncorrectPensionDecisionConstants
 
-object UpdateRemovePensionForm extends IncorrectPensionDecisionConstants {
+object UpdateRemovePensionForm {
   def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
     single(
-      IncorrectPensionDecision ->
+      IncorrectPensionDecisionConstants.IncorrectPensionDecision ->
         optional(text).verifying(error = Messages("tai.error.chooseOneOption"), constraint = _.nonEmpty))
   )
 }
