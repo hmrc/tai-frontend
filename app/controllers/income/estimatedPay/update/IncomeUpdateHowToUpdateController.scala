@@ -118,7 +118,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
 
         }
       case (false, false, _) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
-      case _                 => Future.successful(Redirect(controllers.routes.IncomeController.pensionIncome()))
+      case _                 => Future.successful(Redirect(controllers.routes.IncomeController.pensionIncome(id)))
     }
 
   def handleChooseHowToUpdate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
