@@ -72,7 +72,7 @@ class IncomeUpdateCalculatorController @Inject()(
       if (estimatedPayCompletion) {
         Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(id))
       } else {
-        Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage())
+        Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(id))
       }
     }).recover {
       case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
@@ -120,12 +120,11 @@ class IncomeUpdateCalculatorController @Inject()(
       journeyCacheService
         .mandatoryJourneyValues(
           UpdateIncome_NameKey,
-          UpdateIncome_IdKey,
           s"$UpdateIncome_ConfirmedNewAmountKey-$empId",
           UpdateIncome_IncomeTypeKey)
         .getOrFail
-        .flatMap { mandatoryJourneyValues =>
-          val incomeName :: incomeId :: newAmount :: incomeType :: Nil = mandatoryJourneyValues.toList
+        .map { mandatoryJourneyValues =>
+          val incomeName :: newAmount :: incomeType = mandatoryJourneyValues.toList
 
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
             formWithErrors => {
@@ -135,15 +134,14 @@ class IncomeUpdateCalculatorController @Inject()(
                 DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
               }
 
-              Future.successful(BadRequest(duplicateSubmissionWarning(formWithErrors, vm, incomeId.toInt)))
+              BadRequest(duplicateSubmissionWarning(formWithErrors, vm, empId))
             },
             success => {
               success.yesNoChoice match {
                 case Some(YesValue) =>
-                  Future.successful(Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage()))
+                  Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(empId))
                 case Some(NoValue) =>
-                  Future.successful(
-                    Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(incomeId.toInt)))
+                  Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
               }
             }
           )

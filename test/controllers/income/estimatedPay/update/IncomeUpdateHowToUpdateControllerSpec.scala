@@ -149,7 +149,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
         .howToUpdatePage()
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.IncomeController.pensionIncome().url)
+      redirectLocation(result) mustBe Some(controllers.routes.IncomeController.pensionIncome(1).url)
     }
 
     "cache the employer details" in {
@@ -233,7 +233,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
 
         whenReady(result) { r =>
           r.header.status mustBe SEE_OTHER
-          r.header.headers.get(LOCATION) mustBe Some(controllers.routes.IncomeController.pensionIncome().url)
+          r.header.headers.get(LOCATION) mustBe Some(controllers.routes.IncomeController.pensionIncome(1).url)
         }
       }
 

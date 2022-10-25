@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.tai.util
 
+import play.api.mvc.{Call, Result}
+import play.api.mvc.Results.Redirect
+
 import scala.concurrent.{ExecutionContext, Future}
 
 object FutureOps {
@@ -25,6 +28,11 @@ object FutureOps {
     def getOrFail(implicit ec: ExecutionContext): Future[A] = f.flatMap {
       case Right(a)  => Future.successful(a)
       case Left(err) => Future.failed(new RuntimeException(err))
+    }
+
+    def getOrRedirect(call: Call)(implicit ec: ExecutionContext): Future[Either[Result, A]] = f.map {
+      case Right(a)  => Right(a)
+      case Left(err) => Left(Redirect(call))
     }
   }
 }

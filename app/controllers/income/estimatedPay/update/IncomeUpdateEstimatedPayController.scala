@@ -21,9 +21,10 @@ import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
+import play.api.Logger
+
 import java.time.LocalDate
 import play.api.mvc._
-
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
@@ -58,35 +59,33 @@ class IncomeUpdateEstimatedPayController @Inject()(
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
-  def estimatedPayLandingPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
+  private val logger = Logger(this.getClass)
 
-    for {
-      taxAccountSummary <- taxAccountService.taxAccountSummary(user.nino, TaxYear())
-      mandatoryJourneyValues <- journeyCacheService
-                                 .mandatoryJourneyValues(
-                                   UpdateIncome_NameKey,
-                                   UpdateIncome_IdKey,
-                                   UpdateIncome_IncomeTypeKey)
-    } yield {
-      (taxAccountSummary, mandatoryJourneyValues) match {
-        case (
-            TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
-            Right(mandatoryJourneyValues: Seq[String])) =>
-          val totalEstimatedIncome = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
-          val incomeName :: incomeId :: incomeType :: Nil = mandatoryJourneyValues.toList
-          Ok(
-            estimatedPayLandingPage(
-              incomeName,
-              incomeId.toInt,
-              totalEstimatedIncome,
-              incomeType == TaiConstants.IncomeTypePension,
-              appConfig
-            ))
-        case (response: TaiFailureResponse, _) => errorPagesHandler.internalServerError(response.message)
-        case (_, Left(message))                => errorPagesHandler.internalServerError(message)
+  def estimatedPayLandingPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+
+      journeyCacheService.mandatoryJourneyValues(UpdateIncome_NameKey, UpdateIncome_IncomeTypeKey).flatMap {
+        case Left(errorMessage) =>
+          logger.warn(errorMessage)
+          Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+        case Right(journeyValues) =>
+          taxAccountService.taxAccountSummary(user.nino, TaxYear()).map {
+            case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
+              val totalEstimatedIncome = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
+              val incomeName = journeyValues.head
+              val incomeType = journeyValues.last
+              Ok(
+                estimatedPayLandingPage(
+                  incomeName,
+                  empId,
+                  totalEstimatedIncome,
+                  incomeType == TaiConstants.IncomeTypePension,
+                  appConfig
+                ))
+            case response: TaiFailureResponse => errorPagesHandler.internalServerError(response.message)
+          }
       }
-    }
   }
 
   private def isCachedAmountSameAsEnteredAmount(
