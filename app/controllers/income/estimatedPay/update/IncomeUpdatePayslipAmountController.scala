@@ -104,7 +104,6 @@ class IncomeUpdatePayslipAmountController @Inject()(
         )
     }).flatten
 
-
   }
 
   def taxablePayslipAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
