@@ -39,6 +39,7 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{EditIncomePayPeriodConstants, _}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionEmploymentViewModel, DuplicateSubmissionPensionViewModel}
 import utils.BaseSpec
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
@@ -189,10 +190,9 @@ class IncomeUpdateCalculatorControllerSpec
 
   "submitDuplicateSubmissionWarning" must {
     object SubmitDuplicateSubmissionWarningHarness {
-      sealed class SubmitDuplicateSubmissionWarningHarness() {
+      sealed class SubmitDuplicateSubmissionWarningHarness(employmentType: String) {
         when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
-          .thenReturn(Future.successful(
-            Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))))
+          .thenReturn(Future.successful(Right(Seq(employer.name, "123456", employmentType))))
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
           .thenReturn(Future.successful(Right(employer.id)))
@@ -204,12 +204,13 @@ class IncomeUpdateCalculatorControllerSpec
             .submitDuplicateSubmissionWarning(employerId)(request)
       }
 
-      def setup(): SubmitDuplicateSubmissionWarningHarness = new SubmitDuplicateSubmissionWarningHarness()
+      def setup(employmentType: String): SubmitDuplicateSubmissionWarningHarness =
+        new SubmitDuplicateSubmissionWarningHarness(employmentType)
     }
 
     "redirect to the estimatedPayLandingPage url when yes is selected" in {
       val result = SubmitDuplicateSubmissionWarningHarness
-        .setup()
+        .setup(TaiConstants.IncomeTypeEmployment)
         .submitDuplicateSubmissionWarning(RequestBuilder
           .buildFakePostRequestWithAuth(YesNoChoice -> YesValue))
 
@@ -222,13 +223,44 @@ class IncomeUpdateCalculatorControllerSpec
 
     "redirect to the IncomeSourceSummaryPage url when no is selected" in {
       val result = SubmitDuplicateSubmissionWarningHarness
-        .setup()
+        .setup(TaiConstants.IncomeTypeEmployment)
         .submitDuplicateSubmissionWarning(RequestBuilder
           .buildFakePostRequestWithAuth(YesNoChoice -> NoValue))
 
       status(result) mustBe SEE_OTHER
 
       redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url
+    }
+    "use pension vm" when {
+      "income type is pension" in {
+
+        val result = SubmitDuplicateSubmissionWarningHarness
+          .setup(TaiConstants.IncomeTypePension)
+          .submitDuplicateSubmissionWarning(RequestBuilder
+            .buildFakePostRequestWithAuth())
+
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc must haveHeadingWithText(messages("tai.incomes.warning.pension.heading", employer.name))
+
+      }
+    }
+
+    "use employment vm" when {
+      "income type is employment" in {
+
+        val result = SubmitDuplicateSubmissionWarningHarness
+          .setup(TaiConstants.IncomeTypeEmployment)
+          .submitDuplicateSubmissionWarning(RequestBuilder
+            .buildFakePostRequestWithAuth())
+
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc must haveHeadingWithText(messages("tai.incomes.warning.employment.heading", employer.name))
+
+      }
     }
   }
 
