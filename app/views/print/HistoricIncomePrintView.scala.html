@@ -29,84 +29,93 @@
 
 @import controllers.auth.AuthenticatedRequest
 @this(loginStatus: LoginStatus)
-@(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel, appConfig: ApplicationConfig
-)(implicit request: AuthenticatedRequest[_], messages: Messages)
+@(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel, appConfig: ApplicationConfig)(
+    implicit request: AuthenticatedRequest[_], messages: Messages)
 
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading"), appConfig){
 
-<div class="print-wrapper">
-    <p><strong>@request.fullName</strong></p>
+    <div class="print-wrapper">
+        <p><strong>@request.fullName</strong></p>
 
-    <div class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse(""))</h2></div>
-
-    @historicIncomeCalculationViewModel.realTimeStatus match {
-    case Available if  historicIncomeCalculationViewModel.payments.nonEmpty => {
-    <p><strong>@Messages("tai.income.calculation.summary.previous",Dates.formatDate(historicIncomeCalculationViewModel.payments.head.date),Dates.formatDate(historicIncomeCalculationViewModel.payments.last.date))</strong></p>
-    <div class="section soft--top">
-        @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.nonEmpty) {
-        @historicIncomeCalculationViewModel.employerName.map { name =>
-        <p>@Messages("tai.income.calculation.eyu.previous",name)</p>
-        }
-        } else {
-        @historicIncomeCalculationViewModel.employerName.map { name =>
-        <p>@Messages("tai.income.calculation.previous", name)</p>
-        }
-        }
-    </div>
-    <div class="section soft--top soft--bottom">
-        <table id="taxable-income-table" class="print-table-section print-table">
-            <thead>
-            <tr>
-                <th id="print-date-column">@Messages("tai.income.calculation.incomeTable.dateHeader")</th>
-                <th id="print-taxable-income-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.incomeHeader")</th>
-                <th id="print-income-tax-paid-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.taxPaidHeader")</th>
-                <th id="print-ni-paid-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.nationalInsuranceHeader")</th>
-            </tr>
-            </thead>
-            <tbody>
-            @for(payment <- historicIncomeCalculationViewModel.payments){
-            <tr class="print-pension-contributions-data">
-                <td>@Dates.formatDateAbbrMonth(payment.date)</td>
-                <td class="print-text--right">£ @{f"${payment.amount}%,.2f"}</td>
-                <td class="print-text--right">£ @{f"${payment.taxAmount}%,.2f"}</td>
-                <td class="print-text--right">£ @{f"${payment.nationalInsuranceAmount}%,.2f"}</td>
-            </tr>
-            }
-            </tbody>
-            <tfoot>
-            <tr class="print-table__row--bold">
-                <td>@Messages("tai.taxFree.total")</td>
-                <td class="print-text--right">£ @{f"${historicIncomeCalculationViewModel.payments.last.amountYearToDate}%,.2f"}</td>
-                <td class="print-text--right">£ @{f"${historicIncomeCalculationViewModel.payments.last.taxAmountYearToDate}%,.2f"}</td>
-                <td class="print-text--right">£ @{f"${historicIncomeCalculationViewModel.payments.last.nationalInsuranceAmountYearToDate}%,.2f"}</td>
-
-            </tr>
-            </tfoot>
-        </table>
-        <div id="eyu-messages">
-            <div class="eyu-multi-messages-print">
-                @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size == 1) {
-                <p>
-                    @Messages("tai.income.calculation.eyu.summary.single", historicIncomeCalculationViewModel.employerName.getOrElse("")) </p>
-                <p id="eyu-single-message-print">@historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages(0)</p>
-                }
-                @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size > 1) {
-                <p>@Messages("tai.income.calculation.eyu.summary.multi", historicIncomeCalculationViewModel.employerName.getOrElse(""))</p>
-                <ul id="eyu-multi-messages-bullets" class="bullets">
-                    @for(eyuMessage <- historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages){
-                    <li>@eyuMessage</li>
-                    }
-                </ul>
-                }
-            </div>
+        <div class="section soft--top">
+            <h2>@Messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse(""))</h2>
         </div>
-    </div>
-    }
 
-    case _ => {
-    <p>@Messages("tai.income.calculation.noRtiDataPreviousYear" ,Dates.formatDate(TaxYear(historicIncomeCalculationViewModel.taxYear.year).end))</p>
-    }
-    }
-</div>
+        @historicIncomeCalculationViewModel.realTimeStatus match {
+            case Available if historicIncomeCalculationViewModel.payments.nonEmpty => {
+                <p><strong>
+                    @Messages(
+                        "tai.income.calculation.summary.previous",
+                        Dates.formatDate(historicIncomeCalculationViewModel.payments.head.date),
+                        Dates.formatDate(historicIncomeCalculationViewModel.payments.last.date)
+                    )
+                </strong></p>
+                <div class="section soft--top">
+                    @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.nonEmpty) {
+                        @historicIncomeCalculationViewModel.employerName.map { name =>
+                            <p>@Messages("tai.income.calculation.eyu.previous",name)</p>
+                        }
+                    } else {
+                        @historicIncomeCalculationViewModel.employerName.map { name =>
+                            <p>@Messages("tai.income.calculation.previous", name)</p>
+                        }
+                    }
+                </div>
+                <div class="section soft--top soft--bottom">
+                    <table id="taxable-income-table" class="print-table-section print-table">
+                        <thead>
+                            <tr>
+                                <th id="print-date-column">@Messages("tai.income.calculation.incomeTable.dateHeader")</th>
+                                <th id="print-taxable-income-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.incomeHeader")</th>
+                                <th id="print-income-tax-paid-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.taxPaidHeader")</th>
+                                <th id="print-ni-paid-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.nationalInsuranceHeader")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for(payment <- historicIncomeCalculationViewModel.payments){
+                                <tr class="print-pension-contributions-data">
+                                    <td>@Dates.formatDateAbbrMonth(payment.date)</td>
+                                    <td class="print-text--right">£ @{f"${payment.amount}%,.2f"}</td>
+                                    <td class="print-text--right">£ @{f"${payment.taxAmount}%,.2f"}</td>
+                                    <td class="print-text--right">£ @{f"${payment.nationalInsuranceAmount}%,.2f"}</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="print-table__row--bold">
+                                <td>@Messages("tai.taxFree.total")</td>
+                                <td class="print-text--right">£ @{f"${historicIncomeCalculationViewModel.payments.last.amountYearToDate}%,.2f"}</td>
+                                <td class="print-text--right">£ @{f"${historicIncomeCalculationViewModel.payments.last.taxAmountYearToDate}%,.2f"}</td>
+                                <td class="print-text--right">£ @{f"${historicIncomeCalculationViewModel.payments.last.nationalInsuranceAmountYearToDate}%,.2f"}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div id="eyu-messages">
+                        <div class="eyu-multi-messages-print">
+                            @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size == 1) {
+                                <p>
+                                    @Messages("tai.income.calculation.eyu.summary.single", historicIncomeCalculationViewModel.employerName.getOrElse(""))
+                                </p>
+                                <p id="eyu-single-message-print">
+                                    @historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages(0)
+                                </p>
+                            }
+                            @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size > 1) {
+                                <p>@Messages("tai.income.calculation.eyu.summary.multi", historicIncomeCalculationViewModel.employerName.getOrElse(""))</p>
+                                <ul id="eyu-multi-messages-bullets" class="bullets">
+                                    @for(eyuMessage <- historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages){
+                                        <li>@eyuMessage</li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            case _ => {
+                <p>@Messages("tai.income.calculation.noRtiDataPreviousYear" ,Dates.formatDate(TaxYear(historicIncomeCalculationViewModel.taxYear.year).end))</p>
+            }
+        }
+    </div>
 
 }

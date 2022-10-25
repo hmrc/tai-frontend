@@ -15,15 +15,16 @@
  *@
 
 @import scala.concurrent.ExecutionContext
+@import includes.ptaHeader
 
 @this(mainTemplate: MainTemplate)
 
-@(employmentId: Int, employerName: String)(implicit request: Request[_], messages: Messages,
-user: controllers.auth.AuthedUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
-
-@import includes.ptaHeader
-
+@(employmentId: Int, employerName: String)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext)
 
 @header = @{
     ptaHeader(
@@ -41,17 +42,23 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
     pageHeader = Some(header),
     employerName = Some(employerName)
 ){
-<div>
-    <h2 class="heading-medium flush--top">@messages("tai.unableToCalculate.nextSteps")</h2>
-    <p>@messages("tai.unableToCalculate.cantCalc")</p>
-    <h3 class="heading-small">@messages("tai.unableToCalculate.enterOwnFigures")</h3>
-    <p>@Html(messages("tai.unableToCalculate.enterOwnFigures.text", includes.link(url=routes.IncomeController.viewIncomeForEdit.toString,copy=messages("tai.unableToCalculate.enterOwnFigures.link"))))</p>
-    <h3 class="heading-small">@messages("tai.unableToCalculate.contactHmrc")</h3>
-    <p>@messages("tai.unableToCalculate.noNeedToContact")</p>
-    <ul class="list list-bullet">
-        <li>@messages("tai.unableToCalculate.telephone")</li>
-        <li>@messages("tai.unableToCalculate.textphone")</li>
-        <li>@messages("tai.unableToCalculate.outsideUk")</li>
-    </ul>
-</div>
+
+    <div>
+        <h2 class="heading-medium flush--top">@messages("tai.unableToCalculate.nextSteps")</h2>
+        <p>@messages("tai.unableToCalculate.cantCalc")</p>
+        <h3 class="heading-small">@messages("tai.unableToCalculate.enterOwnFigures")</h3>
+        <p>
+            @Html(messages(
+                "tai.unableToCalculate.enterOwnFigures.text",
+                includes.link(url=routes.IncomeController.viewIncomeForEdit.toString, copy=messages("tai.unableToCalculate.enterOwnFigures.link"))
+            ))
+        </p>
+        <h3 class="heading-small">@messages("tai.unableToCalculate.contactHmrc")</h3>
+        <p>@messages("tai.unableToCalculate.noNeedToContact")</p>
+        <ul class="list list-bullet">
+            <li>@messages("tai.unableToCalculate.telephone")</li>
+            <li>@messages("tai.unableToCalculate.textphone")</li>
+            <li>@messages("tai.unableToCalculate.outsideUk")</li>
+        </ul>
+    </div>
 }

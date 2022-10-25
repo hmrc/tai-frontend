@@ -14,12 +14,11 @@
  * limitations under the License.
  *@
 
-@(
-        legend: String,
-        jsHidden: Boolean = false,
-        bold: Boolean = false,
-        hint: String = "",
-        legendHidden: Boolean = false
+@(legend: String,
+    jsHidden: Boolean = false,
+    bold: Boolean = false,
+    hint: String = "",
+    legendHidden: Boolean = false
 )(implicit m: Messages)
 
 <legend class="form-label flush--bottom @if(bold){heading-medium}@if(legendHidden){ visuallyhidden}">@legend</legend>

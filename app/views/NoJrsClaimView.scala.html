@@ -21,10 +21,8 @@
 
 @(appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer)
 
-
-
 @main_without_nav(
-title=messages("check.jrs.claims.no.claim.title")
+    title=messages("check.jrs.claims.no.claim.title")
 ){
     <div class="grid-row">
         <div class="grid grid-2-3">
@@ -32,9 +30,9 @@ title=messages("check.jrs.claims.no.claim.title")
                 <h1 class="heading-xlarge">@messages("check.jrs.claims.no.claim.title")</h1>
                 <p>@messages("check.jrs.claims.no.claim.check.later")</p>
 
-                <p><a id="account-home-page" href="@appConfig.taiHomePageUrl">
-                        @messages("check.jrs.claims.no.claim.link")
-                    </a>
+                <a id="account-home-page" href="@appConfig.taiHomePageUrl">
+                    @messages("check.jrs.claims.no.claim.link")
+                </a>
             </div>
         </div>
     </div>

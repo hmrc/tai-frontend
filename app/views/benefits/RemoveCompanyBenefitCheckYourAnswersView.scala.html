@@ -24,14 +24,20 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF)
 
-@(viewModel: RemoveCompanyBenefitCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
+@(viewModel: RemoveCompanyBenefitCheckYourAnswersViewModel)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext)
 
 @header = @{
-  ptaHeader(
-    displayBackLink = false,
-    showGdsVersion = true,
-    mainHeadingText = Messages("tai.checkYourAnswers.title"),
-    preHeadingText = Messages("tai.benefits.ended.journey.preHeader"))
+    ptaHeader(
+        displayBackLink = false,
+        showGdsVersion = true,
+        mainHeadingText = Messages("tai.checkYourAnswers.title"),
+        preHeadingText = Messages("tai.benefits.ended.journey.preHeader")
+    )
 }
 
 @main(
@@ -43,31 +49,27 @@
     backLinkUrl = Some(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url)
 ){
 
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        @header
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+        </div>
     </div>
-</div>
 
-<div class="govuk-grid-row">
+    <div class="govuk-grid-row">
 
-    <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-two-thirds">
             @checkYourAnswers(
                 title = Some(viewModel.tableHeader),
                 confirmationLines = viewModel.journeyConfirmationLines
             )
 
+            <p class="govuk-body">@Messages("tai.checkYourAnswers.confirmText")</p>
 
-    <p class="govuk-body">@Messages("tai.checkYourAnswers.confirmText")</p>
+            @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitYourAnswers()) {
+                @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
+            }
 
-    @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitYourAnswers()) {
-      @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
-    }
-
-    @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url))
+            @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url))
+        </div>
     </div>
-</div>
 }
-
-
-

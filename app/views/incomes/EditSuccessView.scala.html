@@ -19,36 +19,40 @@
 
 @this(main: MainTempleteNew, govukPanel: GovukPanel, govukButton: GovukButton)
 
-
-@(employerName: String, employerId: Int)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-ec: scala.concurrent.ExecutionContext)
+@(employerName: String, employerId: Int)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @content={
         @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt2"))
         @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt3"))
 }
+
 @main(
     title = messages("tai.incomes.updated.check.title"),
     authedUser = Some(user),
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkContent = None,
 ){
-    <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        @govukPanel(Panel(
-            title = Text(messages("tai.incomes.updated.check.heading")),
-            content = HtmlContent(content)
-        ))
 
-        <p class="govuk-body">@messages("tai.incomes.updated.check.text")</p>
-        <p class="govuk-body">@messages("tai.incomes.seeChanges.text", employerName)</p>
-        <p>
-        @govukButton(Button(
-            href = Some(routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString),
-            content = Text(messages("tai.incomes.updated.check.button"))
-        ))
-        </p>
-    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @govukPanel(Panel(
+                title = Text(messages("tai.incomes.updated.check.heading")),
+                content = HtmlContent(content)
+            ))
+
+            <p class="govuk-body">@messages("tai.incomes.updated.check.text")</p>
+            <p class="govuk-body">@messages("tai.incomes.seeChanges.text", employerName)</p>
+            <p>
+                @govukButton(Button(
+                    href = Some(routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString),
+                    content = Text(messages("tai.incomes.updated.check.button"))
+                ))
+            </p>
+        </div>
     </div>
 }

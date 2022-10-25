@@ -29,8 +29,12 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukDetails : GovukDetails, govukErrorSummary: GovukErrorSummary)
 
-@(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
-
+@(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(
+    implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext)
 
 @totalValueField = @{companyBenefitTotalValueForm("totalValue")}
 
@@ -41,10 +45,13 @@
         <li id="totalValueEnter">@Messages("tai.remove.company.benefit.total.value.enter")</li>
     </ul>
 
-
     @govukDetails(Details(
         summary = Text(Messages("tai.remove.company.benefit.total.value.whatHappens.link")),
-        content = Text(Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.getYear.toString,TaxYear().end.getYear.toString, Dates.formatDate(TaxYear().end)))
+        content = Text(Messages(
+            "tai.remove.company.benefit.total.value.whatHappens.desc",
+            TaxYear().start.getYear.toString,TaxYear().end.getYear.toString,
+            Dates.formatDate(TaxYear().end))
+        )
     ))
 
     <div id="valueOfBenefit">
@@ -77,7 +84,7 @@
                     label = HmrcPageHeadingLabel(
                         content = Text(Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName)),
                         caption = HmrcSectionCaption(Text(Messages("tai.benefits.ended.journey.preHeader")))
-                        ),
+                    ),
                     hint = Some(
                         Hint(content = HtmlContent(hint))
                     ),
@@ -94,5 +101,4 @@
             @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
         </div>
     </div>
-
 }

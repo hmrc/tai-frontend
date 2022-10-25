@@ -21,55 +21,54 @@
 
 @this(mainTemplate: MainTempleteNew)
 
-@(noCYIncomeTaxErrorViewModel: uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
-)(implicit request: Request[_],
-messages: Messages,
-user: controllers.auth.AuthedUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-ec: scala.concurrent.ExecutionContext)
+@(noCYIncomeTaxErrorViewModel: uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext
+)
 
 @mainTemplate(
-title = messages("tai.noCYIncomeError.title"),
-authedUser = Some(user),
-backLinkUrl = Some(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url),
-backLinkContent = Some(messages("tai.returnToChooseTaxYear")),
-backLinkId="backLinkId"
-
+    title = messages("tai.noCYIncomeError.title"),
+    authedUser = Some(user),
+    backLinkUrl = Some(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url),
+    backLinkContent = Some(messages("tai.returnToChooseTaxYear")),
+    backLinkId="backLinkId"
 ) {
 
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
 
-        <span class="govuk-caption-xl break-word hide-for-print">
-            <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading")</span>
-            @messages("tai.noCYIncomeError.sub-heading")
-        </span>
+            <span class="govuk-caption-xl break-word hide-for-print">
+                <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading")</span>
+                @messages("tai.noCYIncomeError.sub-heading")
+            </span>
 
-        <h1 class="govuk-heading-xl heading-xlarge heading-mobile-responsive xbreak-word">
-            @messages("tai.noCYIncomeError.heading")</h1>
+            <h1 class="govuk-heading-xl heading-xlarge heading-mobile-responsive xbreak-word">
+                @messages("tai.noCYIncomeError.heading")
+            </h1>
 
+            <p class="govuk-body" id="no-income-info">
+                @noCYIncomeTaxErrorViewModel.endDate match {
+                    case Some(date) => {
+                        @messages("tai.noCYIncomeError.body.with.employment", date)
+                    }
+                    case _ => {
+                        @messages("tai.noCYIncomeError.body.missing.employment")
+                    }
+                }
+            </p>
 
-        <p class="govuk-body" id="no-income-info">
-            @noCYIncomeTaxErrorViewModel.endDate match {
-            case Some(date) => {
-            @messages("tai.noCYIncomeError.body.with.employment", date)
-            }
-            case _ => {
-            @messages("tai.noCYIncomeError.body.missing.employment")
-            }
-            }
-        </p>
-
-        <p class="govuk-body" id="missing-info-Iform">
-            @Html(messages(
-            "tai.noCYIncomeError.missingInfo",
-            includes.link(
-            url = routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url,
-            copy = messages("tai.missingInfo.link.message")
-            )
-            ))
-        </p>
+            <p class="govuk-body" id="missing-info-Iform">
+                @Html(messages(
+                    "tai.noCYIncomeError.missingInfo",
+                    includes.link(
+                        url = routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url,
+                        copy = messages("tai.missingInfo.link.message")
+                    )
+                ))
+            </p>
+        </div>
     </div>
-</div>
-
 }

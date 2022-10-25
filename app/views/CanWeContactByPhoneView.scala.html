@@ -28,13 +28,12 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
 
-@(      incomingAuthedUser: Option[controllers.auth.AuthedUser],
-        viewModel: CanWeContactByPhoneViewModel,
-        yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_],
-        messages: Messages,
-        templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-        ec: ExecutionContext)
-
+@(incomingAuthedUser: Option[controllers.auth.AuthedUser],
+    viewModel: CanWeContactByPhoneViewModel,
+    yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext)
 
 @hint = {
     <div>
@@ -51,47 +50,47 @@
     backLinkUrl = Some(viewModel.backUrl),
     formForErrorSummary = Some(yesNoForm),
 ) {
-<div class = "govuk-grid-row">
-    <div class = "govuk-grid-column-two-thirds">
-        @if(yesNoForm.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary(errorList = yesNoForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-        }
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @if(yesNoForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = yesNoForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
 
-        @form(action = Call("POST", viewModel.continueUrl)) {
+            @form(action = Call("POST", viewModel.continueUrl)) {
 
-            @govukRadios(Radios(
-                fieldset =  Some(
-                    Fieldset(
-                        legend = Some(
-                        HmrcPageHeadingLegend(
-                            content = Text(viewModel.mainHeading),
-                            caption = HmrcSectionCaption(Text(viewModel.preHeading)))
-                    )
-                    )
-                ),
-                hint = Some(Hint(content = HtmlContent(hint))),
-                errorMessage = yesNoForm.errors.filter(_.key == "yesNoChoice").asTextErrorMessages.headOption,
-                idPrefix = Some("yesNoChoice"),
-                name = "yesNoChoice",
-                items = Seq(
-                    RadioItem(
-                        content = Text(messages("tai.label.yes")),
-                        value = Some("Yes"),
-                        checked = yesNoForm.data.get(YesNoTextEntryForm.YesNoChoice).exists(_ == "Yes"),
-                        conditionalHtml = Some(
-                        govukInput(Input(
-                                id = "yesNoTextEntry",
-                                name = "yesNoTextEntry",
-                                inputmode = Some("numeric"),
-                                hint = Some(Hint(content = Text(Messages("tai.canWeContactByPhone.telephoneNumber.hint")))),
-                                value = yesNoForm.data.get(YesNoTextEntryForm.YesNoTextEntry),
-                                label = Label(
-                                    classes = "govuk-label--s",
-                                    content = Text(Messages("tai.phoneNumber")),
-
-                                ),
-                                pattern = Some("[0-9]*"),
-                                errorMessage = yesNoForm.errors.filter(_.key == "yesNoTextEntry").asTextErrorMessages.headOption
+                @govukRadios(Radios(
+                    fieldset = Some(
+                        Fieldset(
+                            legend = Some(
+                                HmrcPageHeadingLegend(
+                                    content = Text(viewModel.mainHeading),
+                                    caption = HmrcSectionCaption(Text(viewModel.preHeading))
+                                )
+                            )
+                        )
+                    ),
+                    hint = Some(Hint(content = HtmlContent(hint))),
+                    errorMessage = yesNoForm.errors.filter(_.key == "yesNoChoice").asTextErrorMessages.headOption,
+                    idPrefix = Some("yesNoChoice"),
+                    name = "yesNoChoice",
+                    items = Seq(
+                        RadioItem(
+                            content = Text(messages("tai.label.yes")),
+                            value = Some("Yes"),
+                            checked = yesNoForm.data.get(YesNoTextEntryForm.YesNoChoice).exists(_ == "Yes"),
+                            conditionalHtml = Some(
+                                govukInput(Input(
+                                    id = "yesNoTextEntry",
+                                    name = "yesNoTextEntry",
+                                    inputmode = Some("numeric"),
+                                    hint = Some(Hint(content = Text(Messages("tai.canWeContactByPhone.telephoneNumber.hint")))),
+                                    value = yesNoForm.data.get(YesNoTextEntryForm.YesNoTextEntry),
+                                    label = Label(
+                                        classes = "govuk-label--s",
+                                        content = Text(Messages("tai.phoneNumber")),
+                                    ),
+                                    pattern = Some("[0-9]*"),
+                                    errorMessage = yesNoForm.errors.filter(_.key == "yesNoTextEntry").asTextErrorMessages.headOption
                                 ))
                             )
                         ),
@@ -99,21 +98,16 @@
                             content = Text(messages("tai.label.no")),
                             value = Some("No"),
                             checked = yesNoForm.data.get(YesNoTextEntryForm.YesNoChoice).exists(_ == "No")
+                        )
                     )
-                )
-            ).withFormField(yesNoForm(YesNoTextEntryForm.YesNoChoice)))
+                ).withFormField(yesNoForm(YesNoTextEntryForm.YesNoChoice)))
 
-            @govukButton(Button(content = Text(messages("tai.continue"))))
-        }
+                @govukButton(Button(content = Text(messages("tai.continue"))))
+            }
 
-        <div class="govuk-link govuk-body-m">
-            @cancelLink(Call("GET", viewModel.cancelUrl))
+            <div class="govuk-link govuk-body-m">
+                @cancelLink(Call("GET", viewModel.cancelUrl))
+            </div>
         </div>
     </div>
-</div>
 }
-
-
-
-
-

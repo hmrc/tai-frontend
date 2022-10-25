@@ -28,8 +28,12 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(yesNoForm: Form[YesNoForm], employer: IncomeSource, backUrl: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
+@(yesNoForm: Form[YesNoForm], employer: IncomeSource, backUrl: String)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext)
 
 @main(
     title = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
@@ -39,7 +43,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(backUrl),
     formForErrorSummary = Some(yesNoForm)
-
 ) {
 
     <div class = "govuk-grid-row">
@@ -50,14 +53,14 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 
             @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
                 @govukRadios(Radios(
-                    fieldset =  Some(
+                    fieldset = Some(
                         Fieldset(
                             legend = Some(
                                 HmrcPageHeadingLegend(
                                     content = Text(Messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)),
                                     caption = HmrcSectionCaption(Text(Messages("tai.bonusPayments.preHeading", employer.name))),
                                     classes = "govuk-fieldset__legend--xl carry-over"
-                                   )
+                                )
                             )
                         )
                     ),

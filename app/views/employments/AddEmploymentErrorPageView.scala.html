@@ -19,21 +19,27 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
-
+@(employerName: String)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
         mainHeadingText = Messages("tai.addEmployment.employmentErrorPage.title"),
-        preHeadingText = Messages("add.missing.employment"))}
-
+        preHeadingText = Messages("add.missing.employment")
+    )
+}
 
 @mainTemplate(
   title = Messages("tai.addEmployment.employmentErrorPage.title"),
   authedUser = Some(user),
   pageHeader = Some(header),
-  articleClasses = None) {
+  articleClasses = None
+) {
 
     <div class="subsection">
         <p>@Messages("tai.addEmployment.employmentErrorPage.para1", employerName)</p>
@@ -46,5 +52,4 @@
         url = routes.TaxAccountSummaryController.onPageLoad.url.toString,
         isButton=true
     )
-
 }

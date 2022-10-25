@@ -28,7 +28,12 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(stopDateForm: Form[Option[String]],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(stopDateForm: Form[Option[String]],benefitType:String, empName:String)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @startOfCurrentTaxYear = @{Dates.formatDate(TaxYear().start)}
 @endOfCurrentTaxYear = @{Dates.formatDate(TaxYear().end)}
@@ -52,46 +57,43 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
 
-        @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
-            @if(stopDateForm.errors.nonEmpty) {
-                @govukErrorSummary(ErrorSummary(errorList = stopDateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-            }
+            @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
+                @if(stopDateForm.errors.nonEmpty) {
+                    @govukErrorSummary(ErrorSummary(errorList = stopDateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+                }
 
-            @govukRadios(Radios(
-                fieldset =  Some(
-                    Fieldset(
-                        legend = Some(
-                        HmrcPageHeadingLegend(
-                            content = Text(Messages("tai.benefits.ended.stopDate.heading", benefitType, empName)),
-                            caption = HmrcSectionCaption(Text(Messages("tai.benefits.ended.journey.preHeader"))))
+                @govukRadios(Radios(
+                    fieldset =  Some(
+                        Fieldset(
+                            legend = Some(
+                                HmrcPageHeadingLegend(
+                                    content = Text(Messages("tai.benefits.ended.stopDate.heading", benefitType, empName)),
+                                    caption = HmrcSectionCaption(Text(Messages("tai.benefits.ended.journey.preHeader")))
+                                )
+                            )
+                        )
+                    ),
+                    hint = None,
+                    errorMessage = stopDateForm.errors.filter(_.key == RemoveCompanyBenefitStopDateForm.StopDateChoice).asTextErrorMessages.headOption,
+                    idPrefix = Some(RemoveCompanyBenefitStopDateForm.StopDateChoice),
+                    name = RemoveCompanyBenefitStopDateForm.StopDateChoice,
+                    items = Seq(
+                        RadioItem(
+                            content = Text(messages("tai.benefits.ended.stopDate.radio.beforeTaxYearEnd",startOfCurrentTaxYear)),
+                            value = Some(RemoveCompanyBenefitStopDateForm.BeforeTaxYearEnd),
+                            checked = stopDateForm.data.get(RemoveCompanyBenefitStopDateForm.StopDateChoice).contains(RemoveCompanyBenefitStopDateForm.BeforeTaxYearEnd),
+                            conditionalHtml = Some(conditionalRadio)
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.benefits.ended.stopDate.radio.onOrAfterTaxYearEnd",startOfCurrentTaxYear)),
+                            value = Some(RemoveCompanyBenefitStopDateForm.OnOrAfterTaxYearEnd),
+                            checked = stopDateForm.data.get(RemoveCompanyBenefitStopDateForm.StopDateChoice).contains(RemoveCompanyBenefitStopDateForm.OnOrAfterTaxYearEnd)
                         )
                     )
-                ),
-                hint = None,
-                errorMessage = stopDateForm.errors.filter(_.key == RemoveCompanyBenefitStopDateForm.StopDateChoice).asTextErrorMessages.headOption,
-                idPrefix = Some(RemoveCompanyBenefitStopDateForm.StopDateChoice),
-                name = RemoveCompanyBenefitStopDateForm.StopDateChoice,
-                items = Seq(
-                    RadioItem(
-                        content = Text(messages("tai.benefits.ended.stopDate.radio.beforeTaxYearEnd",startOfCurrentTaxYear)),
-                        value = Some(RemoveCompanyBenefitStopDateForm.BeforeTaxYearEnd),
-                        checked = stopDateForm.data.get(RemoveCompanyBenefitStopDateForm.StopDateChoice).contains(RemoveCompanyBenefitStopDateForm.BeforeTaxYearEnd),
-                        conditionalHtml = Some(conditionalRadio)
-                    ),
-                    RadioItem(
-                        content = Text(messages("tai.benefits.ended.stopDate.radio.onOrAfterTaxYearEnd",startOfCurrentTaxYear)),
-                        value = Some(RemoveCompanyBenefitStopDateForm.OnOrAfterTaxYearEnd),
-                        checked = stopDateForm.data.get(RemoveCompanyBenefitStopDateForm.StopDateChoice).contains(RemoveCompanyBenefitStopDateForm.OnOrAfterTaxYearEnd)
-                    )
-                )
-            ).withFormField(stopDateForm(RemoveCompanyBenefitStopDateForm.StopDateChoice)))
-
-            @govukButton(Button(content = Text(messages("tai.continue"))))
-
-        }
-
-        @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
-
+                ).withFormField(stopDateForm(RemoveCompanyBenefitStopDateForm.StopDateChoice)))
+                @govukButton(Button(content = Text(messages("tai.continue"))))
+            }
+            @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
         </div>
     </div>
 }

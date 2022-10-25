@@ -31,11 +31,13 @@
 @import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-
 @this(main: MainTempleteNew, govukDetails : GovukDetails)
 
-@(appConfig: ApplicationConfig, person: Person, incomeTaxYears: List[IncomeTaxYear])(implicit request: AuthenticatedRequest[_],
-messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(appConfig: ApplicationConfig, person: Person, incomeTaxYears: List[IncomeTaxYear])(
+    implicit request: AuthenticatedRequest[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @detailsContent = {
     <p>
@@ -48,12 +50,9 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     </p>
 }
 
-
 @printHeader = @{
     printBanner(preHeadingText = request.fullName)
 }
-
-
 
 @main(
     title = messages("tai.incomeTax.history.pageTitle"),
@@ -64,42 +63,40 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     pagePrintable = true
 ){
 
-  @printHeader
+    @printHeader
 
     <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl heading-mobile-responsive break-word hide-for-print">@Messages("tai.incomeTax.history.title")</h1>
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl heading-mobile-responsive break-word hide-for-print">@Messages("tai.incomeTax.history.title")</h1>
 
-        @govukDetails(Details(
-            summary = Text(messages("tai.incomeTax.history.details.summary", person.name)),
-            content = HtmlContent(detailsContent),
-            classes = "hide-for-print",
-        ))
+            @govukDetails(Details(
+                summary = Text(messages("tai.incomeTax.history.details.summary", person.name)),
+                content = HtmlContent(detailsContent),
+                classes = "hide-for-print",
+            ))
 
-        @govukDetails(Details(
-            summary = Text(messages("tai.incomeTax.history.details.summary", person.name)),
-            content = HtmlContent(detailsContent),
-            classes = "only-visible-on-print",
-            attributes = Map("aria-hidden" -> "true"),
-            open = true,
-        ))
+            @govukDetails(Details(
+                summary = Text(messages("tai.incomeTax.history.details.summary", person.name)),
+                content = HtmlContent(detailsContent),
+                classes = "only-visible-on-print",
+                attributes = Map("aria-hidden" -> "true"),
+                open = true,
+            ))
 
+        </div>
     </div>
-</div>
 
-@for(incomeTaxYear <- incomeTaxYears) {
-    <h2 class="govuk-heading-m govuk-!-margin-top-0" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
+    @for(incomeTaxYear <- incomeTaxYears) {
+        <h2 class="govuk-heading-m govuk-!-margin-top-0" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
 
-@{
-    if (incomeTaxYear.incomeTaxHistory.isEmpty){
-<div class="govuk-inset-text">
-    <p>{messages("tai.incomeTax.history.noTaxHistory")}</p>
-</div>
-
+        @{if (incomeTaxYear.incomeTaxHistory.isEmpty){
+            <div class="govuk-inset-text">
+                <p>{messages("tai.incomeTax.history.noTaxHistory")}</p>
+            </div>
         }
     }
 
-@for(summary <- incomeTaxYear.incomeTaxHistory) {
+    @for(summary <- incomeTaxYear.incomeTaxHistory) {
         <div class="employment-card-single-u">
             <div class="employer-name govuk-body carry-over">@summary.employerName</div>
             <ul class="govuk-list govuk-!-font-size-16 .ul-incomeTaxHistory">
@@ -141,10 +138,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
     }
 
-
     <div class="print-link-container hide-for-print">
         <a id="print-link-btn" href="javascript:window.print()" class="govuk-link govuk-body-s gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
     </div>
-
 
 }

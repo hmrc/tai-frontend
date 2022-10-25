@@ -15,28 +15,27 @@
  *@
 
 @(
-        field: Field,
-        fieldErrorsEnabled: Boolean = true,
-        labelText: String = "",
-        labelClass: String = "",
-        hintText: String = "",
-        hintClass: String = "form-hint",
-        bold: Boolean = false,
-        classes: Seq[String] = Seq.empty,
-        panel: Boolean = false,
-        jsHidden: Boolean = false,
-        labelHidden: Boolean = false,
-        parentDateAttr: String = "",
-        attrType: String = "",
-        attrMin: String = "",
-        attrMax: String = "",
-        attrPattern: String = "",
-        attrDescribedBy: String = "",
-        data: String = "",
-        isCurrency: Boolean = false,
-        notCompareInput: Boolean = true,
-        preHeadingText: Option[String] = None
-
+    field: Field,
+    fieldErrorsEnabled: Boolean = true,
+    labelText: String = "",
+    labelClass: String = "",
+    hintText: String = "",
+    hintClass: String = "form-hint",
+    bold: Boolean = false,
+    classes: Seq[String] = Seq.empty,
+    panel: Boolean = false,
+    jsHidden: Boolean = false,
+    labelHidden: Boolean = false,
+    parentDateAttr: String = "",
+    attrType: String = "",
+    attrMin: String = "",
+    attrMax: String = "",
+    attrPattern: String = "",
+    attrDescribedBy: String = "",
+    data: String = "",
+    isCurrency: Boolean = false,
+    notCompareInput: Boolean = true,
+    preHeadingText: Option[String] = None
 )(implicit messages: Messages)
 
 <div class="form-group @if(fieldErrorsEnabled && field.hasErrors && notCompareInput) {form-group-error}  @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {data-reveal="@data"}>
@@ -48,10 +47,10 @@
     <label for="@field.id" @if(labelClass != ""){class="@labelClass"} @if(preHeadingText.isDefined){id="headingInLabel"}>
         @if(labelText.nonEmpty) {
             <span class="@if(labelHidden){visually-hidden}else{form-label @if(bold){form-label-bold}}">
-            @labelText
-            @if(isCurrency){
-                <span class="visually-hidden">@messages("tai.inPounds")</span>
-            }
+                @labelText
+                @if(isCurrency){
+                    <span class="visually-hidden">@messages("tai.inPounds")</span>
+                }
             </span>
 
             @if(preHeadingText.isDefined){<span class="heading-secondary break-word"><span class="visuallyhidden">@Messages("tai.ptaHeader.accessible.preHeading")</span>@preHeadingText.getOrElse("")</span>}
@@ -88,22 +87,22 @@
 
 @formInput = {
     <input name="@field.name"
-       class=@getInputClasses(fieldErrorsEnabled && field.hasErrors, attrType == "number")
-       value="@field.value" id="@field.id"
+        class=@getInputClasses(fieldErrorsEnabled && field.hasErrors, attrType == "number")
+        value="@field.value" id="@field.id"
 
-       @if(fieldErrorsEnabled && field.hasErrors || attrDescribedBy) {aria-describedby="@if(attrDescribedBy){@attrDescribedBy}@if(fieldErrorsEnabled && field.hasErrors && attrDescribedBy){ }@if(fieldErrorsEnabled && field.hasErrors){error-message-@{field.id}-input}"}
+        @if(fieldErrorsEnabled && field.hasErrors || attrDescribedBy) {aria-describedby="@if(attrDescribedBy){@attrDescribedBy}@if(fieldErrorsEnabled && field.hasErrors && attrDescribedBy){ }@if(fieldErrorsEnabled && field.hasErrors){error-message-@{field.id}-input}"}
 
-       @if(attrType.nonEmpty) {
+        @if(attrType.nonEmpty) {
             type="@attrType"
             @if(attrType == "number"){
                 step="1"
             }
-       } else {
+        } else {
             type="text"
-       }
-       @if(attrMin.nonEmpty) { min="@attrMin" }
-       @if(attrMax.nonEmpty) { max="@attrMax" }
-       @if(attrPattern.nonEmpty) { pattern="@attrPattern" }
+        }
+        @if(attrMin.nonEmpty) { min="@attrMin" }
+        @if(attrMax.nonEmpty) { max="@attrMax" }
+        @if(attrPattern.nonEmpty) { pattern="@attrPattern" }
     />
 }
 

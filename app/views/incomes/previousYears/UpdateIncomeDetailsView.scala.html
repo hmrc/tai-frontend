@@ -31,7 +31,12 @@
 
 @this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukCharacterCount: GovukCharacterCount, govukErrorSummary: GovukErrorSummary)
 
-@(viewModel: UpdateHistoricIncomeDetailsViewModel, updateIncomeDetailsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(viewModel: UpdateHistoricIncomeDetailsViewModel, updateIncomeDetailsForm: Form[String])(
+    implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(
     title = Messages("tai.income.previousYears.details.title", viewModel.formattedTaxYear),
@@ -41,37 +46,34 @@
     backLinkUrl = Some(controllers.routes.PayeControllerHistoric.payePage(viewModel.givenTaxYear).url),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     formForErrorSummary = Some(updateIncomeDetailsForm)
-
 ) {
 
-<div class = "govuk-grid-row">
-    <div class = "govuk-grid-column-two-thirds">
-        @if(updateIncomeDetailsForm.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary(errorList = updateIncomeDetailsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-        }
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @if(updateIncomeDetailsForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = updateIncomeDetailsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
 
-        @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDetails(), args=(Symbol("class"), "subsection")) {
-            @govukCharacterCount(CharacterCount(
-                id = "employmentDetails",
-                name = "employmentDetails",
-                label = HmrcPageHeadingLabel(
-                    content = Text(Messages("tai.income.previousYears.details.heading", viewModel.formattedTaxYear)),
-                    caption = HmrcSectionCaption(Text(Messages("tai.income.previousYears.details.preHeading")))
-                ),
-                value = updateIncomeDetailsForm.data.get("employmentDetails"),
-                maxLength = Some(UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit),
-                hint = Some(Hint(
-                  content = Text(Messages("tai.income.previousYears.details.textarea.text", UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit))
-                )),
-                errorMessage = updateIncomeDetailsForm.errors.asTextErrorMessages.headOption
-            ))
+            @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDetails(), args=(Symbol("class"), "subsection")) {
+                @govukCharacterCount(CharacterCount(
+                    id = "employmentDetails",
+                    name = "employmentDetails",
+                    label = HmrcPageHeadingLabel(
+                        content = Text(Messages("tai.income.previousYears.details.heading", viewModel.formattedTaxYear)),
+                        caption = HmrcSectionCaption(Text(Messages("tai.income.previousYears.details.preHeading")))
+                    ),
+                    value = updateIncomeDetailsForm.data.get("employmentDetails"),
+                    maxLength = Some(UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit),
+                    hint = Some(Hint(
+                      content = Text(Messages("tai.income.previousYears.details.textarea.text", UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit))
+                    )),
+                    errorMessage = updateIncomeDetailsForm.errors.asTextErrorMessages.headOption
+                ))
 
-            @submit()
-        }
+                @submit()
+            }
 
-        @cancelLink(controllers.routes.PayeControllerHistoric.payePage(viewModel.givenTaxYear))
+            @cancelLink(controllers.routes.PayeControllerHistoric.payePage(viewModel.givenTaxYear))
+        </div>
     </div>
-</div>
-
 }
-

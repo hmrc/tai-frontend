@@ -18,9 +18,12 @@
 
 @this(mainTemplate: MainTempleteNew)
 
-@(employerName: String, employerId: Int)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-ec: scala.concurrent.ExecutionContext)
+@(employerName: String, employerId: Int)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(
     title = messages("tai.incomes.updated.check.title", employerName),
@@ -28,33 +31,26 @@ ec: scala.concurrent.ExecutionContext)
     backLinkContent = None
 ){
 
-
-
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-panel govuk-panel--confirmation govuk-!-margin-bottom-8">
+                <h1 class="govuk-panel__title " id="pensionSuccessConfirmationTitle">
+                    @htmlNonBroken(messages("tai.incomes.updated.check.heading"))
+                    @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt2"))
+                    @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt3"))
+                </h1>
+            </div>
 
-        <div class="govuk-panel govuk-panel--confirmation govuk-!-margin-bottom-8">
-            <h1 class="govuk-panel__title " id="pensionSuccessConfirmationTitle">
-                @htmlNonBroken(messages("tai.incomes.updated.check.heading"))
-                @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt2"))
-                @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt3"))
-            </h1>
+            <p class="govuk-body">@messages("tai.incomes.updated.check.text")</p>
+            <p class="govuk-body">@messages("tai.incomes.updated.pension.seeChanges.text", employerName)</p>
+            <p class="govuk-body">
+                @includes.link(
+                    copy=messages("tai.incomes.updated.check.button"),
+                    url = routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString,
+                    isButton=true,
+                    linkClasses=Seq("govuk-button", "govuk-!-margin-top-4")
+                )
+            </p>
         </div>
-
-
-
-        <p class="govuk-body">@messages("tai.incomes.updated.check.text")</p>
-        <p class="govuk-body">@messages("tai.incomes.updated.pension.seeChanges.text", employerName)</p>
-        <p class="govuk-body">
-            @includes.link(
-            copy=messages("tai.incomes.updated.check.button"),
-            url = routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString,
-            isButton=true,
-            linkClasses=Seq("govuk-button", "govuk-!-margin-top-4")
-            )
-        </p>
-
-</div>
-
     </div>
 }

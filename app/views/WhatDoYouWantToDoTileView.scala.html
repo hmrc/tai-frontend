@@ -56,68 +56,68 @@
 
     <div class="govuk-grid-row">
 
-            <div class="inner-block">
-                <div class="flex-container govuk-grid-row">
+        <div class="inner-block">
+            <div class="flex-container govuk-grid-row">
                 @if(model.showTaxCodeChangeTile()){
-                  @card(
+                    @card(
                     url = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
                     id = "hasTaxCodeChanged",
                     heading = messages("check.tax.hasChanged.header"),
                     bodyContent = Some(messages("check.tax.hasChanged.action"))
-                      )
-                    }
-                </div>
-
-                <div class="flex-container govuk-grid-row">
-                    @card(
-                        url = Some(s"/check-income-tax/historic-paye/${TaxYear().prev.year.toString}"),
-                        id = "earlierTaxYear",
-                        heading = messages("earlier"),
-                        bodyContent = Some(messages("check.tax.previous.years"))
                     )
-
-                    @card(
-                        url = Some("/check-income-tax/income-summary"),
-                        id = "currentTaxYear",
-                        heading = messages("current.tax.year"),
-                        bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
-                    )
-
-                    @if(model.isCyPlusOneEnabled) {
-                        @card(
-                            url = Some("/check-income-tax/income-tax-comparison"),
-                            id = "nextTaxYear",
-                            heading = messages("next.year"),
-                            bodyContent = Some(messages("check.estimated.income",TaxYearRangeUtil.futureTaxYearRange(yearsFromNow=1)))
-                        )
-                    }
-
-                    @card(
-                        url = Some(appConfig.taxReliefExpenseClaimLink),
-                        id = "claimRelief",
-                        heading = messages("claim.tax.relief.wfh"),
-                        bodyContent = None
-                    )
-
-                   @if(appConfig.incomeTaxHistoryEnabled) {
-                        @card(
-                            url = Some(s"/check-income-tax/income-tax-history"),
-                            id = "incomeTaxHistory",
-                            heading = messages("income.tax.history"),
-                            bodyContent = Some(messages("income.tax.history.content"))
-                        )
-                    }
-
-                    @if(model.showJrsTile){
-                        @card(
-                            url = Some("/check-income-tax/jrs-claims"),
-                            id = "jrsClaims",
-                            heading = messages("check.jrs.claims")
-                        )
-                    }
-
-                </div>
+                }
             </div>
+
+            <div class="flex-container govuk-grid-row">
+                @card(
+                    url = Some(s"/check-income-tax/historic-paye/${TaxYear().prev.year.toString}"),
+                    id = "earlierTaxYear",
+                    heading = messages("earlier"),
+                    bodyContent = Some(messages("check.tax.previous.years"))
+                )
+
+                @card(
+                    url = Some("/check-income-tax/income-summary"),
+                    id = "currentTaxYear",
+                    heading = messages("current.tax.year"),
+                    bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
+                )
+
+                @if(model.isCyPlusOneEnabled) {
+                    @card(
+                        url = Some("/check-income-tax/income-tax-comparison"),
+                        id = "nextTaxYear",
+                        heading = messages("next.year"),
+                        bodyContent = Some(messages("check.estimated.income",TaxYearRangeUtil.futureTaxYearRange(yearsFromNow=1)))
+                    )
+                }
+
+                @card(
+                    url = Some(appConfig.taxReliefExpenseClaimLink),
+                    id = "claimRelief",
+                    heading = messages("claim.tax.relief.wfh"),
+                    bodyContent = None
+                )
+
+                @if(appConfig.incomeTaxHistoryEnabled) {
+                    @card(
+                        url = Some(s"/check-income-tax/income-tax-history"),
+                        id = "incomeTaxHistory",
+                        heading = messages("income.tax.history"),
+                        bodyContent = Some(messages("income.tax.history.content"))
+                    )
+                }
+
+                @if(model.showJrsTile){
+                    @card(
+                        url = Some("/check-income-tax/jrs-claims"),
+                        id = "jrsClaims",
+                        heading = messages("check.jrs.claims")
+                    )
+                }
+
+            </div>
+        </div>
 
     </div>
 }

@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-
 @(items: Seq[uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryCategoryViewModel], taxCodeChange: Boolean = false)(implicit m: Messages)
 
 @oneOrMoreLinksPresent = @{
@@ -22,17 +21,18 @@
 }
 
 @for((item, itemIdx) <- items zip (Stream from 1);
-      isAllowanceOrTotalItem = item.caption == Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption == Messages("tai.taxFreeAmount.table.totals.caption") ) {
+      isAllowanceOrTotalItem = item.caption == Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption == Messages("tai.taxFreeAmount.table.totals.caption")
+) {
 
     @if(item.rows.nonEmpty) {
 
-            <div id="summaryTable@{itemIdx.toString}" class="govuk-!-margin-top-6 tai-tax-summary-table @if(itemIdx == 1){subsection--wide flush--bottom}">
+        <div id="summaryTable@{itemIdx.toString}" class="govuk-!-margin-top-6 tai-tax-summary-table @if(itemIdx == 1){subsection--wide flush--bottom}">
 
-                @if(!isAllowanceOrTotalItem){
+            @if(!isAllowanceOrTotalItem){
                 <h3 class="heading-small govuk-heading-s section--narrow flush" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
-                }
+            }
 
-                @if(item.rows.length>1) {
+            @if(item.rows.length>1) {
                 <dl id="summaryTable@{itemIdx.toString}Body" class="govuk-summary-list govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection} else {flush}">
 
                     @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
@@ -56,14 +56,14 @@
 
                             @if(!taxCodeChange) {
                                 @if(row.link.isDisplayed ) {
-                                <dd id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell" class="govuk-summary-list__value cya-change">
-                                    @includes.link(
-                                        id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
-                                        url = row.link.href,
-                                        copy=Messages("tai.updateOrRemove"),
-                                        altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value)
-                                    )
-                                </dd>
+                                    <dd id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell" class="govuk-summary-list__value cya-change">
+                                        @includes.link(
+                                            id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
+                                            url = row.link.href,
+                                            copy=Messages("tai.updateOrRemove"),
+                                            altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value)
+                                        )
+                                    </dd>
                                 } else @{if(oneOrMoreLinksPresent) {
                                     <dd class="govuk-summary-list__value cya-change" aria-hidden="true"></dd>
                                 }}
@@ -71,7 +71,7 @@
                         </div>
                     }
                 </dl>
-                } else {@if(item.rows.length == 1) {
+            } else {@if(item.rows.length == 1) {
 
                 <dl id="summaryTable@{itemIdx.toString}Body" class="govuk-summary-list govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection heading-small} else {flush}">
                     <div id="summaryTable@{itemIdx.toString}Row1" class="govuk-summary-list__row">
@@ -92,32 +92,29 @@
 
                         <dd id="summaryTable@{itemIdx.toString}Row1ValueCell" class=" govuk-summary-list__value cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
                             @if(isAllowanceOrTotalItem){
-                            <span class="govuk-visually-hidden visuallyhidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix")</span>
+                                <span class="govuk-visually-hidden visuallyhidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix")</span>
                             }
                             @item.rows(0).value
                         </dd>
 
-                    @if(!taxCodeChange) {
-                        @if(item.rows(0).link.isDisplayed) {
-                        <dd id="summaryTable@{itemIdx.toString}Row1ChangeLinkCell" class="govuk-summary-list__value cya-change">
-                            @includes.link(
-                            id = Some(s"summaryTable${itemIdx.toString}Row1ChangeLink"),
-                            url = item.rows(0).link.href,
-                            copy=Messages("tai.updateOrRemove"),
-                            altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows(0).link.value)
-                            )
-                        </dd>
-                        } else @{if(oneOrMoreLinksPresent) {
-                        <dd class="govuk-summary-list__value cya-change" aria-hidden="true"></dd>
-                        }}
-                    }
+                        @if(!taxCodeChange) {
+                            @if(item.rows(0).link.isDisplayed) {
+                                <dd id="summaryTable@{itemIdx.toString}Row1ChangeLinkCell" class="govuk-summary-list__value cya-change">
+                                    @includes.link(
+                                        id = Some(s"summaryTable${itemIdx.toString}Row1ChangeLink"),
+                                        url = item.rows(0).link.href,
+                                        copy=Messages("tai.updateOrRemove"),
+                                        altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows(0).link.value)
+                                    )
+                                </dd>
+                            } else @{if(oneOrMoreLinksPresent) {
+                                <dd class="govuk-summary-list__value cya-change" aria-hidden="true"></dd>
+                            }}
+                        }
 
-                   </div>
+                    </div>
                 </dl>
-
-                }}
-
-            </div>
-
+            }}
+        </div>
     }
 }

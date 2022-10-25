@@ -23,26 +23,30 @@
         <h2 class="heading-section  govuk-heading-m">@Messages("tai.taxCode.sideBar.heading")</h2>
         <div class="inner-block">
             <ul class="link-list govuk-list govuk-list--spaced">
-                <li>@link(
-                id=Some("taxCodesSideLink"),
-                url=routes.YourTaxCodeController.taxCodes.url,
-                copy=Messages("check.your.tax.codes"),
-                linkClasses=Seq("link-list__item"))
+                <li>
+                    @link(
+                        id=Some("taxCodesSideLink"),
+                        url=routes.YourTaxCodeController.taxCodes.url,
+                        copy=Messages("check.your.tax.codes"),
+                        linkClasses=Seq("link-list__item")
+                    )
                 </li>
 
                 <li>
-                @link(
-                id=Some("taxFreeAmountSideLink"),
-                url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                copy=Messages("check.your.tax.free.amount"),
-                linkClasses=Seq("link-list__item"))
+                    @link(
+                        id=Some("taxFreeAmountSideLink"),
+                        url=routes.TaxFreeAmountController.taxFreeAmount.url,
+                        copy=Messages("check.your.tax.free.amount"),
+                        linkClasses=Seq("link-list__item")
+                    )
                 </li>
                 <li>
-                @link(
-                id=Some("taxSummarySideLink"),
-                url=routes.TaxAccountSummaryController.onPageLoad.url,
-                copy=Messages("return.to.your.income.tax.summary"),
-                linkClasses=Seq("link-list__item"))
+                    @link(
+                        id=Some("taxSummarySideLink"),
+                        url=routes.TaxAccountSummaryController.onPageLoad.url,
+                        copy=Messages("return.to.your.income.tax.summary"),
+                        linkClasses=Seq("link-list__item")
+                    )
                 </li>
             </ul>
         </div>

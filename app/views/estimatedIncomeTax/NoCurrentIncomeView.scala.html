@@ -28,11 +28,10 @@
 @this(mainTemplate: MainTempleteNew, loginStatus: LoginStatus)
 
 @()(implicit request: Request[_],
-messages: Messages,
-user: controllers.auth.AuthedUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-
-ec: ExecutionContext)
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext)
 
 
 @taxYearRangeString = @{
@@ -58,10 +57,10 @@ ec: ExecutionContext)
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
 ){
-<div class = "govuk-grid-row">
-    <div class = "govuk-grid-column-two-thirds">
-        @header
-        <p class="govuk-body" id="no-increase-tax">@Messages("tai.no.increasesTax")</p>
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @header
+            <p class="govuk-body" id="no-increase-tax">@Messages("tai.no.increasesTax")</p>
+        </div>
     </div>
-</div>
 }

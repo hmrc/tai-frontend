@@ -15,39 +15,34 @@
  *@
 
 @(url: Option[String] = None,
-  cardClass: String = "card",
-  id: String,
-  gaAction: Option[String] = None,
-  heading: String,
-  headingTag: String = "h3",
-  bodyContent: Option[String] = None,
-  cardActionUrl: Option[String] = None,
-  cardActionText: Option[String] = None
+    cardClass: String = "card",
+    id: String,
+    gaAction: Option[String] = None,
+    heading: String,
+    headingTag: String = "h3",
+    bodyContent: Option[String] = None,
+    cardActionUrl: Option[String] = None,
+    cardActionText: Option[String] = None
 )
 
 <div class="@cardClass" id="@id">
 
-  <div class="card-body cardSize @if(url){active}">
-    <@headingTag class="govuk-heading-s card-heading">
-      @if(url){
-        <a class="card-link" href="@url">
-          @heading
-        </a>
-      } else {
-        @heading
-      }
-    </@headingTag>
-    <p> @bodyContent</p>
-  </div>
-
-  @if(cardActionUrl && cardActionText) {
-    <div class="card-action">
-        <a href="@cardActionUrl">@cardActionText</a>
+    <div class="card-body cardSize @if(url){active}">
+        <@headingTag class="govuk-heading-s card-heading">
+            @if(url){
+                <a class="card-link" href="@url">
+                    @heading
+                </a>
+            } else {
+                @heading
+            }
+        </@headingTag>
+        <p> @bodyContent</p>
     </div>
-  }
+
+    @if(cardActionUrl && cardActionText) {
+        <div class="card-action">
+            <a href="@cardActionUrl">@cardActionText</a>
+        </div>
+    }
 </div>
-
-
-
-
-

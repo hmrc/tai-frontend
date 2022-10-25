@@ -20,6 +20,8 @@
 @()(implicit messages: Messages)
 
 <h2 class="heading-section govuk-heading-m">
- @Messages("tai.estimatedIncome.whyEstimate.link")
+    @Messages("tai.estimatedIncome.whyEstimate.link")
 </h2>
-<p class="govuk-body" id="whyEstimateDesc">@Messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYear().end))</p>
+<p class="govuk-body" id="whyEstimateDesc">
+    @Messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYear().end))
+</p>

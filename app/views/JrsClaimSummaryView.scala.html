@@ -30,7 +30,6 @@
 
 @employerMessageKey = @{viewModel.employerMessageKey}
 
-
 @main(
     title = messages("check.jrs.claims.title"),
     pageTitle = Some(Messages("tai.service.navTitle")),
@@ -38,14 +37,11 @@
     backLinkContent = Some(Messages("check.jrs.back.link")),
 ){
 
-
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <div class="govuk-!-display-inline-block">
 
-
                 <h1 class="govuk-heading-xl">@messages("check.jrs.claims.title")</h1>
-
 
                 <h2 class="govuk-heading-m heading-section govuk-!-margin-top-8">@messages("check.jrs.from", YearAndMonth.formattedDate(firstClaimDate(appConfig), languageUtils.getCurrentLang))</h2>
 
@@ -57,10 +53,8 @@
                                 <li>@claims.formatYearAndMonth(languageUtils.getCurrentLang)</li>
                             }
                         </ul>
-
                     } else {
                         <p class="govuk-body">@messages("check.jrs.employer.made.single.claims.for.you", employers.name, employers.claims.head.formatYearAndMonth(languageUtils.getCurrentLang))</p>
-
                     }
                 }
 
@@ -88,10 +82,10 @@
                     <li>
                         @messages("check.jrs.claiming.on.your.behalf")
                     </li>
-                     <li>
+                    <li>
                         @messages("check.jrs.asking.to.work.whilst.on.furlough")
                     </li>
-                     <li>
+                    <li>
                         @messages("check.jrs.making.backdated.claim")
                     </li>
                 </ul>

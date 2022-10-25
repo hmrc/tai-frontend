@@ -24,8 +24,12 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(viewModel: PaySlipAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
-        templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(viewModel: PaySlipAmountViewModel)(
+    implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @hint = {
     <p>@messages("tai.payslip.p1")</p>
@@ -40,7 +44,6 @@
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url),
     formForErrorSummary = Some(viewModel.payslipForm)
-
 ) {
 
     <div class="govuk-grid-row">
@@ -72,7 +75,7 @@
                 @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
             }
 
-        @cancelLink(Call("GET", controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
+            @cancelLink(Call("GET", controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
         </div>
     </div>
 }

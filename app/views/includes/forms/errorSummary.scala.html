@@ -28,16 +28,16 @@
     tabindex="-1">
     <h2 id="error-summary-heading" class="heading-medium error-summary-heading">@heading</h2>
     <ul class="error-summary-list">
-    @if(form.hasErrors) {
-        @form.errors.map { error =>
-            <li @dataJourney.map(page => Html(s"""data-journey="${page}:error:${error.key}""""))>
-                <a href="#@error.key"
-                    id="@{error.key}-error-summary"
-                    data-focuses="@error.key">
-                    @Messages(error.message, error.args: _*)
-                </a>
-            </li>
+        @if(form.hasErrors) {
+            @form.errors.map { error =>
+                <li @dataJourney.map(page => Html(s"""data-journey="${page}:error:${error.key}""""))>
+                    <a href="#@error.key"
+                        id="@{error.key}-error-summary"
+                        data-focuses="@error.key">
+                        @Messages(error.message, error.args: _*)
+                    </a>
+                </li>
+            }
         }
-    }
     </ul>
 </div>

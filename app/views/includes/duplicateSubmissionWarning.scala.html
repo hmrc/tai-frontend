@@ -26,15 +26,25 @@
 
 @this(form: FormWithCSRF)
 
-
-@(duplicateSubmissionWarningForm: Form[YesNoForm], preHeading: String, heading: String, yesChoiceText: String, noChoiceText: String, actionRoute: Call, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(duplicateSubmissionWarningForm: Form[YesNoForm],
+    preHeading: String,
+    heading: String,
+    yesChoiceText: String,
+    noChoiceText: String,
+    actionRoute: Call,
+    govukRadios: GovukRadios,
+    govukErrorSummary: GovukErrorSummary
+)(implicit request: Request[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @hint = {
-<div>
-    <p>@messages("tai.employment.warning.text1")</p>
-    <p>@messages("tai.employment.warning.text2")</p>
-    <p>@messages("tai.employment.warning.text3")</p>
-</div>
+    <div>
+        <p>@messages("tai.employment.warning.text1")</p>
+        <p>@messages("tai.employment.warning.text2")</p>
+        <p>@messages("tai.employment.warning.text3")</p>
+    </div>
 }
 
 @if(duplicateSubmissionWarningForm.errors.nonEmpty) {
@@ -49,7 +59,8 @@
                     HmrcPageHeadingLegend(
                         content = Text(heading),
                         caption = HmrcSectionCaption(Text(preHeading)),
-                        classes = "govuk-fieldset__legend--xl carry-over")
+                        classes = "govuk-fieldset__legend--xl carry-over"
+                    )
                 )
             )
         ),
@@ -68,10 +79,9 @@
                 value = Some(YesNoForm.NoValue),
                 checked = duplicateSubmissionWarningForm.data.get(YesNoForm.YesNoChoice).exists(_ == "No")
             )
-        ),    classes = "carry-over"
+        ),
+        classes = "carry-over"
     ).withFormField(duplicateSubmissionWarningForm(YesNoForm.YesNoChoice)))
-
-
 
     @submit(buttonMessageKey = Some(messages("tai.submit")))
 }

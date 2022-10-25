@@ -30,13 +30,13 @@
 
 @(viewModel:uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-
 @header = @{
     ptaHeader(
         mainHeadingText = viewModel.pageTitle,
         preHeadingText = Messages("tai.iya.tax.you.owe.preHeading"),
         displayBackLink = false,
-        showGdsVersion = true)
+        showGdsVersion = true
+    )
 }
 
 @main(
@@ -45,7 +45,6 @@
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad.url),
     backLinkContent = Some(Messages("tai.back-link.upper"))
-
 ){
 
     <div class="govuk-grid-row">
@@ -72,14 +71,21 @@
                             Messages("tai.iya.paidTooLittle.cy.text3",
                                 MoneyPounds(viewModel.iyaTaxCodeChangeAmount, 0).quantity,
                                 s"${Dates.formatDate(TaxYear().end)}",
-                                MoneyPounds(viewModel.iyaCYAmount, 2).quantity)) </p>
+                                MoneyPounds(viewModel.iyaCYAmount, 2).quantity)
+                            )
+                        </p>
 
                         <p class="govuk-body">@Messages("tai.iya.paidTooLittle.cy.text4")</p>
 
-                        <p class="govuk-body">@Html(
-                            Messages("tai.iya.paidTooLittle.get.help",
-                                includes.link(url=routes.HelpController.helpPage.toString,copy=Messages("tai.iya.paidTooLittle.get.help.linkText"),
-                                    id=Some("getHelpLink")))) </p>
+                        <p class="govuk-body">
+                            @Html(
+                                Messages("tai.iya.paidTooLittle.get.help", includes.link(
+                                    url=routes.HelpController.helpPage.toString,
+                                    copy=Messages("tai.iya.paidTooLittle.get.help.linkText"),
+                                    id=Some("getHelpLink")
+                                ))
+                            )
+                        </p>
 
                         <h2 class="govuk-heading-m">@Messages("tai.iya.what.next.heading")</h2>
 
@@ -87,10 +93,8 @@
 
                         <p class="govuk-body">@Messages("tai.iya.what.next.text2")</p>
 
-
                     </div>
                 }
-
 
                 @if(viewModel.iyaCYAmount == 0 && viewModel.iyaCYPlusOneAmount > 0) {
                     <div class="section soft--top">
@@ -109,10 +113,12 @@
 
                         <p  class="govuk-body">@messages("tai.iya.cyPlusOne.taxCodeMayBeChanged.description")</p>
 
-                        <p  class="govuk-body">@Html(
-                            Messages("tai.iya.paidTooLittle.get.help",
-                                includes.link(url = routes.HelpController.helpPage.toString, copy = Messages("tai.iya.paidTooLittle.get.help.linkText"),
-                                    id = Some("getHelpLink"))))
+                        <p  class="govuk-body">
+                            @Html(
+                                Messages(
+                                    "tai.iya.paidTooLittle.get.help", includes.link(url = routes.HelpController.helpPage.toString, copy = Messages("tai.iya.paidTooLittle.get.help.linkText"), id = Some("getHelpLink"))
+                                )
+                            )
                         </p>
                     </div>
                 }

@@ -26,8 +26,12 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
 
-@(payrollNumberForm: Form[AddEmploymentPayrollNumberForm], payrollNumberViewModel: PayrollNumberViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
-
+@(payrollNumberForm: Form[AddEmploymentPayrollNumberForm], payrollNumberViewModel: PayrollNumberViewModel)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
@@ -35,16 +39,17 @@
         mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName),
         preHeadingText = Messages("add.missing.employment"),
         showGdsVersion = true
-    )}
+    )
+}
 
 @hint = {
-<p class="govuk-body">@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
-<ul id="payroll-number-info" class="govuk-list govuk-list--bullet">
-    <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet1")</li>
-    <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet2")</li>
-    <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet3")</li>
-    <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet4")</li>
-</ul>
+    <p class="govuk-body">@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
+    <ul id="payroll-number-info" class="govuk-list govuk-list--bullet">
+        <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet1")</li>
+        <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet2")</li>
+        <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet3")</li>
+        <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet4")</li>
+    </ul>
 }
 
 @main(
@@ -62,13 +67,14 @@
             }
             @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber()) {
                 @govukRadios(Radios(
-                    fieldset =  Some(
+                    fieldset = Some(
                         Fieldset(
                             legend = Some(
                                 HmrcPageHeadingLegend(
                                     content = Text(Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName)),
                                     classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
-                                    caption = HmrcSectionCaption(Text(messages("add.missing.employment"))))
+                                    caption = HmrcSectionCaption(Text(messages("add.missing.employment")))
+                                )
                             )
                         )
                     ),

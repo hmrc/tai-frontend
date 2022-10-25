@@ -26,12 +26,14 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-
-
 @this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
-
+@(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(
+    implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @hint = {
     <p class="govuk-body">@viewModel.paragraphOne</p>
@@ -46,8 +48,8 @@
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkId = "backLink",
     formForErrorSummary = Some(duplicateSubmissionWarningForm)
-
 ) {
+
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
             @if(duplicateSubmissionWarningForm.errors.nonEmpty) {
@@ -59,10 +61,11 @@
                     fieldset =  Some(
                         Fieldset(
                             legend = Some(
-                            HmrcPageHeadingLegend(
-                                content = Text(viewModel.heading),
-                                caption = HmrcSectionCaption(Text(messages("tai.incomes.warning.preHeading"))))
-                        )
+                                HmrcPageHeadingLegend(
+                                    content = Text(viewModel.heading),
+                                    caption = HmrcSectionCaption(Text(messages("tai.incomes.warning.preHeading")))
+                                )
+                            )
                         )
                     ),
                     hint = Some(Hint(content = HtmlContent(hint))),

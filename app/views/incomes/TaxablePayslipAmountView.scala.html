@@ -23,8 +23,12 @@
 
 @this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary, govukButton: GovukButton)
 
-@(viewModel: TaxablePaySlipAmountViewModel)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(viewModel: TaxablePaySlipAmountViewModel)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
@@ -33,53 +37,52 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url),
     formForErrorSummary = Some(viewModel.form)
-
 ){
 
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
 
+            @if(viewModel.form.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = viewModel.form.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
 
-        @if(viewModel.form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary(errorList = viewModel.form.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-        }
+            <span class="govuk-caption-xl carry-over">
+                <span class="visuallyhidden govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>
+                @Messages("tai.howToUpdate.preHeading", viewModel.employer.name)
+            </span>
 
-        <span class="govuk-caption-xl carry-over">
-            <span class="visuallyhidden govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>
-        @Messages("tai.howToUpdate.preHeading", viewModel.employer.name)</span>
+            <h1 class="govuk-heading-xl">@Messages(viewModel.title),</h1>
 
-        <h1 class="govuk-heading-xl">@Messages(viewModel.title),</h1>
-
-        <p class="govuk-body">@messages("tai.taxablePayslip.taxablePay.explanation")</p>
-        <p class="govuk-body">@messages("tai.taxablePayslip.shownOnPayslip")</p>
+            <p class="govuk-body">@messages("tai.taxablePayslip.taxablePay.explanation")</p>
+            <p class="govuk-body">@messages("tai.taxablePayslip.shownOnPayslip")</p>
 
             @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handleTaxablePayslipAmount){
 
-            <div class="govuk-form-group">
-                <div class="govuk-input__wrapper">
-                    @govukInput(Input(
-                    id = "taxablePay",
-                    name = "taxablePay",
-                    classes = "govuk-input--width-5",
-                    spellcheck = Some(false),
-                    prefix = Some(PrefixOrSuffix(
-                    content = Text("£")
-                    )),
-                    label = Label(
-                    isPageHeading = true,
-                    classes = "govuk-visually-hidden",
-                    content = Text(Messages(viewModel.title))
-                    )
-                    ).withFormField(viewModel.form("taxablePay")))
+                <div class="govuk-form-group">
+                    <div class="govuk-input__wrapper">
+                        @govukInput(Input(
+                            id = "taxablePay",
+                            name = "taxablePay",
+                            classes = "govuk-input--width-5",
+                            spellcheck = Some(false),
+                            prefix = Some(PrefixOrSuffix(
+                                content = Text("£")
+                            )),
+                            label = Label(
+                                isPageHeading = true,
+                                classes = "govuk-visually-hidden",
+                                content = Text(Messages(viewModel.title))
+                            )
+                        ).withFormField(viewModel.form("taxablePay")))
+                    </div>
                 </div>
-            </div>
 
-            @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
+                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
 
             }
 
-        @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
+            @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
 
+        </div>
     </div>
-</div>
 }

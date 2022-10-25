@@ -23,7 +23,6 @@
 
 @(incomeSourceViewModel: IncomeSourceComparisonViewModel)(implicit messages: Messages)
 
-
 @incomeSummaryHeading = @{
     (incomeSourceViewModel.employmentIncomeSourceDetail.size > 0, incomeSourceViewModel.pensionIncomeSourceDetail.size > 0) match {
         case (true, true) => messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions")
@@ -35,18 +34,18 @@
 
 @if(incomeSourceViewModel.employmentIncomeSourceDetail.size > 0 || incomeSourceViewModel.pensionIncomeSourceDetail.size > 0) {
 
-    <h2 id="incomeSummaryHeading" class="govuk-heading-l">@{
-        incomeSummaryHeading
-    }</h2>
+    <h2 id="incomeSummaryHeading" class="govuk-heading-l">
+        @{incomeSummaryHeading}
+    </h2>
 
     <p>
-    @messages("tai.incomeTaxComparison.incomeTax.fromEmployer.description")
+        @messages("tai.incomeTaxComparison.incomeTax.fromEmployer.description")
     </p>
 
     <table class="govuk-table table--font-reset flush--bottom responsive" id="incomeSummaryComparisonTable" role="table">
-        <caption class="govuk-visually-hidden">@{
-            incomeSummaryHeading
-        }</caption>
+        <caption class="govuk-visually-hidden">
+            @{incomeSummaryHeading}
+        </caption>
         <thead id="incomeSummeryComparisonTableHeader" class="govuk-table__head">
             <tr role="row" class="govuk-table__row">
                 <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">@messages("tai.incomeTaxComparison.taxCodes.table.employer.or.pension")</th>
@@ -58,7 +57,9 @@
                     @Html(messages("tai.NextTaxYear"))
                     @Html(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start)))
                 </th>
-                <th scope="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter col">@messages("tai.incomeTaxComparison.taxCodes.table.actions")</th>
+                <th scope="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter col">
+                    @messages("tai.incomeTaxComparison.taxCodes.table.actions")
+                </th>
             </tr>
         </thead>
         <tbody class="govuk-table__body">
@@ -68,7 +69,7 @@
                 <tr class="govuk-table__row">
                     <td role="cell" class="govuk-table__cell table-title">
                         <span class="table-heading employerName" aria-hidden="true">
-                        @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
+                            @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
                         </span>
                         <span class="carry-over">@employmentIncomeSourceDetail.name</span>
                     </td>
@@ -78,9 +79,7 @@
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
                         </span>
-                        <span id="amount-cy-@{
-                            count
-                        }">@employmentIncomeSourceDetail.amountCY</span>
+                        <span id="amount-cy-@{count}">@employmentIncomeSourceDetail.amountCY</span>
                     </td>
 
                     <td role="cell" class="govuk-table__cell govuk-table__cell--numeric">
@@ -88,9 +87,7 @@
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
                         </span>
-                        <span id="amount-cy-plus-one-@{
-                            count
-                        }">@employmentIncomeSourceDetail.amountCYPlusOne</span>
+                        <span id="amount-cy-plus-one-@{count}">@employmentIncomeSourceDetail.amountCYPlusOne</span>
                     </td>
                     @if(employmentIncomeSourceDetail.isLive) {
                         <td class="govuk-table__cell govuk-table__cell">
@@ -103,9 +100,7 @@
                         </td>
                     } else {
                         <td class="govuk-table__cell govuk-table__cell">
-                            <span id="estimated-income-link-@{
-                                employmentIncomeSourceDetail.empId
-                            }"/>
+                            <span id="estimated-income-link-@{employmentIncomeSourceDetail.empId}"/>
                         </td>
                     }
 
@@ -117,7 +112,7 @@
                 <tr class="govuk-table__row">
                     <td role="cell" class="govuk-table__cell table-title">
                         <span class="table-heading employerName" aria-hidden="true">
-                        @messages("tai.incomeTaxComparison.taxCodes.table.pensionsReaderText")
+                            @messages("tai.incomeTaxComparison.taxCodes.table.pensionsReaderText")
                         </span>
                         <span class="carry-over">@pensionIncomeSourceDetail.name</span>
                     </td>
@@ -126,9 +121,7 @@
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
                         </span>
-                        <span id="pension-amount-cy-@{
-                            count
-                        }">@pensionIncomeSourceDetail.amountCY</span>
+                        <span id="pension-amount-cy-@{count}">@pensionIncomeSourceDetail.amountCY</span>
                     </td>
 
                     <td role="cell" class="govuk-table__cell govuk-table__cell--numeric">
@@ -136,24 +129,20 @@
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
                         </span>
-                        <span id="pension-amount-cy-plus-one-@{
-                            count
-                        }">@pensionIncomeSourceDetail.amountCYPlusOne</span>
+                        <span id="pension-amount-cy-plus-one-@{count}">@pensionIncomeSourceDetail.amountCYPlusOne</span>
                     </td>
                     @if(pensionIncomeSourceDetail.isLive) {
                         <td class="govuk-table__cell govuk-table__cell--numeric">
-                        @includes.link(
-                            id = Some(s"estimated-income-link-${pensionIncomeSourceDetail.empId}"),
-                            url = controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(pensionIncomeSourceDetail.empId).url,
-                            copy = messages("tai.incomeTaxComparison.incomeTax.updateEstimated"),
-                            visuallyHiddenText = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)}")
-                        )
+                            @includes.link(
+                                id = Some(s"estimated-income-link-${pensionIncomeSourceDetail.empId}"),
+                                url = controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(pensionIncomeSourceDetail.empId).url,
+                                copy = messages("tai.incomeTaxComparison.incomeTax.updateEstimated"),
+                                visuallyHiddenText = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)}")
+                            )
                         </td>
                     } else {
                         <td class="govuk-table__cell govuk-table__cell--numeric">
-                            <span id="estimated-income-link-@{
-                                pensionIncomeSourceDetail.empId
-                            }"/>
+                            <span id="estimated-income-link-@{pensionIncomeSourceDetail.empId}"/>
                         </td>
                     }
                 </tr>

@@ -21,42 +21,41 @@
 @()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @mainTemplate(
-title=Messages("tai.noPrimary.heading"),
-backLinkContent = None
-
+    title=Messages("tai.noPrimary.heading"),
+    backLinkContent = None
 ){
 
-<div class="govuk-grid-column-two-thirds">
-    <div class="govuk-grid-row grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-row grid-row">
 
-        <div class="section">
-            <h1 class="govuk-heading-xl heading-mobile-responsive xbreak-word">@Messages("tai.noPrimary.heading")</h1>
-            <div class="grid grid-2-3">
-                <p class="govuk-body" id="paraOne">@Messages("tai.noPrimary.para1")</p>
-                <ul class="govuk-list govuk-list--bullet" id="reason">
-                    <li>@Messages("tai.noPrimary.reasonItem1")</li>
-                    <li>@Messages("tai.noPrimary.reasonItem2")</li>
-                </ul>
-                <p class="govuk-body" id="paraTwo">@Messages("tai.noPrimary.para2")</p>
+            <div class="section">
+                <h1 class="govuk-heading-xl heading-mobile-responsive xbreak-word">@Messages("tai.noPrimary.heading")</h1>
+                <div class="grid grid-2-3">
+                    <p class="govuk-body" id="paraOne">@Messages("tai.noPrimary.para1")</p>
+                    <ul class="govuk-list govuk-list--bullet" id="reason">
+                        <li>@Messages("tai.noPrimary.reasonItem1")</li>
+                        <li>@Messages("tai.noPrimary.reasonItem2")</li>
+                    </ul>
+                    <p class="govuk-body" id="paraTwo">@Messages("tai.noPrimary.para2")</p>
 
-                <p class="govuk-body" id="paraThree">@Messages("tai.noPrimary.para3")</p>
-                <ul class="govuk-list govuk-list--bullet" id="notPaying">
-                    <li>@Messages("tai.noPrimary.notPayingItem1")</li>
-                    <li>@Messages("tai.noPrimary.notPayingItem2")</li>
-                </ul>
-                <p class="govuk-body" id="paraFour">@Html(
-                    Messages(
-                    "tai.noPrimary.para4",
-                    includes.link(
-                    url="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees/",
-                    copy=Messages("tai.noPrimary.contact")
-                    )
-                    )
-                    )
-                </p>
+                    <p class="govuk-body" id="paraThree">@Messages("tai.noPrimary.para3")</p>
+                    <ul class="govuk-list govuk-list--bullet" id="notPaying">
+                        <li>@Messages("tai.noPrimary.notPayingItem1")</li>
+                        <li>@Messages("tai.noPrimary.notPayingItem2")</li>
+                    </ul>
+                    <p class="govuk-body" id="paraFour">
+                        @Html(
+                            Messages(
+                                "tai.noPrimary.para4",
+                                includes.link(
+                                    url="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees/",
+                                    copy=Messages("tai.noPrimary.contact")
+                                )
+                            )
+                        )
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 }
-

@@ -24,8 +24,12 @@
 
 @this(mainTemplate: MainTempleteNew)
 
-@(viewModel: DetailedIncomeTaxEstimateViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
-
+@(viewModel: DetailedIncomeTaxEstimateViewModel)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext)
 
 @taxYearRangeString = @{
     viewModel.currentTaxYearRangeHtmlNonBreak
@@ -33,11 +37,11 @@
 
 @header = @{
     ptaHeader(
-    displayBackLink = false,
-    mainHeadingText = Messages("tai.estimatedIncome.detailedEstimate.heading"),
-    preHeadingText = taxYearRangeString,
-    preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading"),
-    showGdsVersion = true
+        displayBackLink = false,
+        mainHeadingText = Messages("tai.estimatedIncome.detailedEstimate.heading"),
+        preHeadingText = taxYearRangeString,
+        preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading"),
+        showGdsVersion = true
     )
 }
 
@@ -48,153 +52,165 @@
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkId = "backLink"
 ){
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        @header
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+        </div>
     </div>
-</div>
 
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <h2 class="govuk-heading-m flush--bottom">
-            @Messages("tai.incomeTax.totalIncomeTaxEstimate")
-            <span id="total-income-tax-estimate"
-                  class="govuk-!-display-block govuk-heading-xl section faded-text-dark flush section--narrow">
-                                            @pounds(viewModel.incomeTaxEstimate)
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h2 class="govuk-heading-m flush--bottom">
+                @Messages("tai.incomeTax.totalIncomeTaxEstimate")
+                <span id="total-income-tax-estimate" class="govuk-!-display-block govuk-heading-xl section faded-text-dark flush section--narrow">
+                    @pounds(viewModel.incomeTaxEstimate)
                 </span>
-        </h2>
-
-        @viewModel.selfAssessmentAndPayeText.map(paragraphText =>
-        <p class="govuk-body">{paragraphText}</p>
-        )
-
-
-        <div class="soft--top">
-            <h2 class="govuk-heading-m heading-section govuk-!-padding-top-3">
-                @viewModel.taxOnIncomeTypeHeading
             </h2>
-            <p id="taxOnEmploymentIncomeDesc" class="govuk-body">
-                @Html(viewModel.taxOnIncomeTypeDescription)
-            </p>
 
-            @taxBandTable(
-            tableClass = "employmentIncomeTaxDetails",
-            taxBands = viewModel.nonSavings,
-            taxRegion = viewModel.taxRegion)
-        </div>
+            @viewModel.selfAssessmentAndPayeText.map(paragraphText =>
+                <p class="govuk-body">{paragraphText}</p>
+            )
 
-        @if(viewModel.dividends.nonEmpty){
-        <div class="section soft--top">
-            <h2 id="tax-on-dividend-income-text" class="govuk-heading-m heading-section govuk-!-padding-top-3">
-                @Messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading")</h2>
-            <p id="tax-on-dividend-income-desc" class="govuk-body">
-                @Messages("tai.estimatedIncome.dividend.para.desc",
-                MoneyPounds(viewModel.totalDividendIncome, 0).quantity,
-                MoneyPounds(viewModel.taxFreeDividendAllowance, 0).quantity)
-            </p>
-            @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.dividends, taxRegion =
-            viewModel.taxRegion)
-        </div>
-        }
+            <div class="soft--top">
+                <h2 class="govuk-heading-m heading-section govuk-!-padding-top-3">
+                    @viewModel.taxOnIncomeTypeHeading
+                </h2>
+                <p id="taxOnEmploymentIncomeDesc" class="govuk-body">
+                    @Html(viewModel.taxOnIncomeTypeDescription)
+                </p>
 
-        @if(viewModel.savings.nonEmpty){
-        <div class="section soft--top">
-            <h2 id="tax-on-savings-text" class="govuk-heading-m heading-section govuk-!-padding-top-3">
-                @Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>
+                @taxBandTable(
+                    tableClass = "employmentIncomeTaxDetails",
+                    taxBands = viewModel.nonSavings,
+                    taxRegion = viewModel.taxRegion
+                )
+            </div>
 
-            <p id="income-from-savings" class="govuk-body">
-                @Messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate",
-                withPoundPrefix(MoneyPounds(viewModel.savings.map(_.income).sum,0)))
-            </p>
-            @if(DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(viewModel.savings)) {
-            <p id="higher-rate-para" class="govuk-body">
-                @Messages("tai.estimatedIncome.savings.desc.higherRate",
-                DetailedIncomeTaxEstimateViewModel.taxFreeSavingsIncome(viewModel.savings))
-            </p>
+            @if(viewModel.dividends.nonEmpty){
+                <div class="section soft--top">
+                    <h2 id="tax-on-dividend-income-text" class="govuk-heading-m heading-section govuk-!-padding-top-3">
+                        @Messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading")
+                    </h2>
+                    <p id="tax-on-dividend-income-desc" class="govuk-body">
+                        @Messages(
+                            "tai.estimatedIncome.dividend.para.desc",
+                            MoneyPounds(viewModel.totalDividendIncome, 0).quantity,
+                            MoneyPounds(viewModel.taxFreeDividendAllowance, 0).quantity
+                        )
+                    </p>
+                    @taxBandTable(
+                        tableClass = "employmentIncomeTaxDetails",
+                        taxBands = viewModel.dividends,
+                        taxRegion = viewModel.taxRegion
+                    )
+                </div>
             }
-            @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion =
-            viewModel.taxRegion)
 
-        </div>
-        }
+            @if(viewModel.savings.nonEmpty){
+                <div class="section soft--top">
+                    <h2 id="tax-on-savings-text" class="govuk-heading-m heading-section govuk-!-padding-top-3">
+                        @Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")
+                    </h2>
 
-        @if(viewModel.additionalTaxTable.nonEmpty){
-        <div>
-            <h3 id="additionalTaxTable-heading" class="govuk-heading-m heading-section govuk-!-padding-top-3">
-                @Messages("tai.estimatedIncome.additionalTax.title")</h3>
-            <p id="additionalTaxTable-desc" class="govuk-body">@Messages("tai.estimatedIncome.additionalTax.desc")</p>
-            <table id="additionalTaxTable" class="govuk-table">
-                <caption class="govuk-table__caption govuk-table__caption--m">@Messages("tai.estimatedIncome.additionalTax.table.caption")</caption>
-                <thead class="govuk-table__head">
-                <tr class="govuk-table__row">
-                    @if(viewModel.additionalTaxTable.size>1) {
-                    <th class="govuk-table__header" colspan="2">@Messages("tax.adjustments")</th>
-                    } else {
-                    <th class="govuk-table__header" colspan="2">@Messages("tax.adjustment")</th>
+                    <p id="income-from-savings" class="govuk-body">
+                        @Messages(
+                            "tai.estimatedIncome.savings.desc.totalIncomeEstimate",
+                            withPoundPrefix(MoneyPounds(viewModel.savings.map(_.income).sum,0))
+                        )
+                    </p>
+                    @if(DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(viewModel.savings)) {
+                        <p id="higher-rate-para" class="govuk-body">
+                            @Messages(
+                                "tai.estimatedIncome.savings.desc.higherRate",
+                                DetailedIncomeTaxEstimateViewModel.taxFreeSavingsIncome(viewModel.savings)
+                            )
+                        </p>
                     }
+                    @taxBandTable(
+                        tableClass = "employmentIncomeTaxDetails",
+                        taxBands = viewModel.savings.toList,
+                        taxRegion = viewModel.taxRegion
+                    )
+                </div>
+            }
 
-                </tr>
-                </thead>
-                @for(additionalTaxRow <- viewModel.additionalTaxTable){
-                <tr class="govuk-table__row">
-                    <td class="govuk-table__cell">
-                        @additionalTaxRow.label.value
-                        @additionalTaxRow.label.link.map { link =>
-                        <br/>
-                        @includes.link(
-                        id=Some(link.id),
-                        copy=link.value,
-                        url = link.href,
-                        linkClasses = Seq("link-list__item"))
+            @if(viewModel.additionalTaxTable.nonEmpty){
+                <div>
+                    <h3 id="additionalTaxTable-heading" class="govuk-heading-m heading-section govuk-!-padding-top-3">
+                        @Messages("tai.estimatedIncome.additionalTax.title")
+                    </h3>
+                    <p id="additionalTaxTable-desc" class="govuk-body">@Messages("tai.estimatedIncome.additionalTax.desc")</p>
+                    <table id="additionalTaxTable" class="govuk-table">
+                        <caption class="govuk-table__caption govuk-table__caption--m">@Messages("tai.estimatedIncome.additionalTax.table.caption")</caption>
+                        <thead class="govuk-table__head">
+                            <tr class="govuk-table__row">
+                                @if(viewModel.additionalTaxTable.size>1) {
+                                    <th class="govuk-table__header" colspan="2">@Messages("tax.adjustments")</th>
+                                } else {
+                                    <th class="govuk-table__header" colspan="2">@Messages("tax.adjustment")</th>
+                                }
+                            </tr>
+                        </thead>
+                        @for(additionalTaxRow <- viewModel.additionalTaxTable){
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell">
+                                    @additionalTaxRow.label.value
+                                    @additionalTaxRow.label.link.map { link =>
+                                        <br/>
+                                        @includes.link(
+                                            id=Some(link.id),
+                                            copy=link.value,
+                                            url = link.href,
+                                            linkClasses = Seq("link-list__item")
+                                        )
+                                    }
+                                </td>
+                                <td class="govuk-table__cell">@withPoundPrefix(MoneyPounds(additionalTaxRow.amount, 2))</td>
+                            </tr>
                         }
+                    </table>
+                </div>
+            }
 
-                    </td>
-                    <td class="govuk-table__cell">@withPoundPrefix(MoneyPounds(additionalTaxRow.amount, 2))</td>
-                </tr>
-                }
-            </table>
+            @if(viewModel.reductionTaxTable.nonEmpty){
+                <div class="section soft--top soft--bottom">
+                    <h3 id="taxPaidElsewhereTable-heading" class="govuk-heading-m heading-section govuk-!-padding-top-3">
+                        @Messages("tai.estimatedIncome.reductionsTax.title")
+                    </h3>
+                    <p id="taxPaidElsewhereTable-desc" class="govuk-body">
+                        @Messages("tai.estimatedIncome.reductionsTax.desc")
+                    </p>
+                    <table id="taxPaidElsewhereTable" class="govuk-table">
+                        <caption class="govuk-table__caption govuk-table__caption--m">@Messages("tai.estimatedIncome.reductionsTax.desc")</caption>
+                        <thead class="govuk-table__head">
+                            <tr class="govuk-table__row">
+                                @if(viewModel.reductionTaxTable.size>1) {
+                                    <th colspan="2" class="govuk-table__header">@Messages("tax.adjustments")</th>
+                                } else {
+                                    <th colspan="2" class="govuk-table__header">@Messages("tax.adjustment")</th>
+                                }
+                            </tr>
+                        </thead>
+                        @for(taxPaidElsewhere <- viewModel.reductionTaxTable){
+                            <tr class="govuk-table__row" >
+                                <td class="govuk-table__cell flush--bottom">
+                                    @includes.details_summary(taxPaidElsewhere.title, summaryClass=Some("govuk-details__summary")){
+                                        <p class="govuk-details__text"> @Html(taxPaidElsewhere.description) </p>
+                                    }
+                                </td>
+                                <td class="govuk-table__cell govuk-table__cell--numeric  table__cell--top-align-nowrap">
+                                    @{
+                                        "-" + withPoundPrefix(MoneyPounds(taxPaidElsewhere.amount, 2))
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            }
         </div>
-        }
 
-        @if(viewModel.reductionTaxTable.nonEmpty){
-        <div class="section soft--top soft--bottom">
-            <h3 id="taxPaidElsewhereTable-heading" class="govuk-heading-m heading-section govuk-!-padding-top-3">
-                @Messages("tai.estimatedIncome.reductionsTax.title")</h3>
-            <p id="taxPaidElsewhereTable-desc" class="govuk-body">
-                @Messages("tai.estimatedIncome.reductionsTax.desc")</p>
-            <table id="taxPaidElsewhereTable" class="govuk-table">
-                <caption class="govuk-table__caption govuk-table__caption--m">@Messages("tai.estimatedIncome.reductionsTax.desc")</caption>
-                <thead class="govuk-table__head">
-                <tr class="govuk-table__row">
-                    @if(viewModel.reductionTaxTable.size>1) {
-                    <th colspan="2" class="govuk-table__header">@Messages("tax.adjustments")</th>
-                    } else {
-                    <th colspan="2" class="govuk-table__header">@Messages("tax.adjustment")</th>
-                    }
-                </tr>
-                </thead>
-                @for(taxPaidElsewhere <- viewModel.reductionTaxTable){
-                <tr class="govuk-table__row" >
-                    <td class="govuk-table__cell flush--bottom">
-                        @includes.details_summary(taxPaidElsewhere.title, summaryClass=Some("govuk-details__summary")){
-                        <p class="govuk-details__text"> @Html(taxPaidElsewhere.description) </p>
-                        }
-                    </td>
-                    <td class="govuk-table__cell govuk-table__cell--numeric  table__cell--top-align-nowrap">
+        @navigationLinks()
 
-                        @{
-                        "-" + withPoundPrefix(MoneyPounds(taxPaidElsewhere.amount, 2))
-                        }
-
-                    </td>
-                </tr>
-                }
-            </table>
-        </div>
-        }
     </div>
-
-    @navigationLinks()
-
-</div>
 }

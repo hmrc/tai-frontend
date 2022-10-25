@@ -26,8 +26,11 @@
 
 @this(main: MainTempleteNew)
 
-
-@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
+@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(
+    implicit request: AuthenticatedRequest[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext)
 
 @backLinkToChooseTaxYear = {
     <p class="flush--bottom">
@@ -54,9 +57,9 @@
         mainHeadingText = headingText,
         preHeadingText = incomeTaxComparisonViewModel.username,
         preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"),
-        showGdsVersion = true),
+        showGdsVersion = true
+    ),
 }
-
 
 @main(title = headingText,
     pageTitle = Some(Messages("tai.service.navTitle")),
@@ -64,7 +67,8 @@
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
     backLinkContent = Some(Messages("your.paye.income.tax.overview")),
     pagePrintable = true,
-    pagePrintName = Some("future-pay-as-you-earn-summary")) {
+    pagePrintName = Some("future-pay-as-you-earn-summary")
+) {
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -101,14 +105,12 @@
             <div class="govuk-body hide-for-print" id="whatHappensNext">
                 <h2 class="govuk-heading-l" id="whatHappensNextHeading">@messages("tai.incomeTaxComparison.whatHappensNext.subHeading")</h2>
 
-
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text")</p>
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text",s"${Dates.formatDate(TaxYear().next.start)}")</p>
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text")</p>
 
                 <h3 class="govuk-heading-m">@messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading")</h3>
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description",s"${Dates.formatDate(TaxYear().next.start)}")</p>
-
 
                 <ul class="list list-bullet margin-bottom-large">
                     <li>
@@ -142,9 +144,10 @@
 
             <p class="flush--top govuk-body">
                 @link(
-                id=Some("returnToPAYEIncomeOverviewLink"),
-                url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-                copy=messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
+                    id=Some("returnToPAYEIncomeOverviewLink"),
+                    url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+                    copy=messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link")
+                )
             </p>
 
             <div class="print-this">

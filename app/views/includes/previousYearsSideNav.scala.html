@@ -19,7 +19,6 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import controllers.routes
 
-
 @(selectedYear: TaxYear, noOfPreviousYearsToShow: Int)(implicit messages: Messages)
 
 <div class="side-navigation side-navigation--right">
@@ -28,16 +27,17 @@
     <nav id="previousYearsSideNav">
         <ul class = "govuk-list">
             @for(year <- (TaxYear().prev.year) to (TaxYear().year - noOfPreviousYearsToShow) by -1) {
-            @if(selectedYear.year != year){
-            <li class = "govuk-link govuk-link--no-visited-state">
-                <p id="@{year}NavItem" >
-                    @includes.link(
-                        url=routes.PayeControllerHistoric.payePage(TaxYear(year)).toString,
-                        copy=TaxPeriodLabelService.taxPeriodLabel(year)
-                    )
-                </p>
-            </li>
-            }}
+                @if(selectedYear.year != year){
+                    <li class = "govuk-link govuk-link--no-visited-state">
+                        <p id="@{year}NavItem" >
+                            @includes.link(
+                                url=routes.PayeControllerHistoric.payePage(TaxYear(year)).toString,
+                                copy=TaxPeriodLabelService.taxPeriodLabel(year)
+                            )
+                        </p>
+                    </li>
+                }
+            }
         </ul>
 
     </nav>

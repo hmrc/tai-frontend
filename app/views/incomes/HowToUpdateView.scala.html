@@ -23,8 +23,12 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(howToUpdateForm: Form[uk.gov.hmrc.tai.forms.HowToUpdateForm], id: Int, employerName: String)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(howToUpdateForm: Form[uk.gov.hmrc.tai.forms.HowToUpdateForm], id: Int, employerName: String)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
@@ -34,8 +38,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage().url),
     formForErrorSummary = Some(howToUpdateForm)
-
 ){
+
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
             @if(howToUpdateForm.errors.nonEmpty) {
@@ -46,11 +50,12 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
                     fieldset =  Some(
                         Fieldset(
                             legend = Some(
-                            HmrcPageHeadingLegend(
-                                content = Text(Messages("tai.howToUpdate.heading", employerName)),
-                                caption = HmrcSectionCaption(Text(Messages("tai.howToUpdate.preHeading", employerName))),
-                                classes = "govuk-fieldset__legend--xl carry-over")
-                        )
+                                HmrcPageHeadingLegend(
+                                    content = Text(Messages("tai.howToUpdate.heading", employerName)),
+                                    caption = HmrcSectionCaption(Text(Messages("tai.howToUpdate.preHeading", employerName))),
+                                    classes = "govuk-fieldset__legend--xl carry-over"
+                                )
+                            )
                         )
                     ),
                     hint = None,
