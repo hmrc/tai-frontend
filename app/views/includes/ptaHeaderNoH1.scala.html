@@ -17,45 +17,42 @@
 @import includes.forms.errorSummary
 
 @(formForErrorSummary: Option[Form[_]] = None,
-displayBackLink: Boolean = false,
-mainHeadingText: String,
-preHeadingText: String,
-headerWidthClasses: Option[String] = Some("column-two-thirds"),
-preHeadingAccessibleAnnouncement: String = "",
-customBackLinkContent: Option[Html] = None,
-additionalTopLinkContent: Option[Html] = None
+    displayBackLink: Boolean = false,
+    mainHeadingText: String,
+    preHeadingText: String,
+    headerWidthClasses: Option[String] = Some("column-two-thirds"),
+    preHeadingAccessibleAnnouncement: String = "",
+    customBackLinkContent: Option[Html] = None,
+    additionalTopLinkContent: Option[Html] = None
 )(implicit m: Messages)
 
 @preHeadingHidden = @{
-if(preHeadingAccessibleAnnouncement=="") Messages("tai.ptaHeader.accessible.preHeading") else preHeadingAccessibleAnnouncement
+    if(preHeadingAccessibleAnnouncement=="") Messages("tai.ptaHeader.accessible.preHeading") else preHeadingAccessibleAnnouncement
 }
 
 @if(displayBackLink) {
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            @customBackLinkContent.getOrElse(backLink())
+        </div>
 
-<div class="grid-row">
-    <div class="column-two-thirds">
-        @customBackLinkContent.getOrElse(backLink())
+        @if(additionalTopLinkContent.isDefined){
+            <div class="column-one-third text--right">
+                @additionalTopLinkContent.get
+            </div>
+        }
     </div>
-
-    @if(additionalTopLinkContent.isDefined){
-    <div class="column-one-third text--right">
-        @additionalTopLinkContent.get
-    </div>
-    }
-
-</div>
 }
+
 <div class="grid-row">
     <div class="@headerWidthClasses.getOrElse("")">
 
     @if(formForErrorSummary.isDefined) {
-    @errorSummary(Messages("tai.income.error.form.summary"), formForErrorSummary.get, Seq("flush--bottom"))
+        @errorSummary(Messages("tai.income.error.form.summary"), formForErrorSummary.get, Seq("flush--bottom"))
     }
 
     <header aria-hidden="true" class="page-heading soft--top visuallyhidden">
         <p class="heading-secondary break-word"><span class="visuallyhidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
-      </header>
+    </header>
 
 </div>
-</div>
-

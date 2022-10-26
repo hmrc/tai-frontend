@@ -14,6 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *@
+
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukLayout
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukBackLink
 @import uk.gov.hmrc.govukfrontend.views.html.components.TwoThirdsMainContent
@@ -41,54 +42,51 @@
 @import controllers.auth.AuthenticatedRequest
 
 @this(
-        govukTemplate: GovukTemplate,
-        govukLayout: GovukLayout,
-        govukFooter: GovukFooter,
-        hmrcAccountMenu: HmrcAccountMenu,
-        hmrcHeader: HmrcHeader,
-        hmrcStandardHeader: HmrcStandardHeader,
-        hmrcStandardFooter: HmrcStandardFooter,
-        hmrcHead: HmrcHead,
-        hmrcLanguageSelectHelper: HmrcLanguageSelectHelper,
-        hmrcScripts: HmrcScripts,
-        govukBackLink: GovukBackLink,
-        defaultMainContent: TwoThirdsMainContent,
-        fixedWidthPageLayout: FixedWidthPageLayout,
-        twoThirdsMainContent: TwoThirdsMainContent,
-        twoThirdsOneThirdMainContent: TwoThirdsOneThirdMainContent,
-        hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
-        govukPhaseBanner: GovukPhaseBanner,
-        link: Link,
-        appConfig: ApplicationConfig,
-        hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-        hmrcReportTechnicalIssue: HmrcReportTechnicalIssue,
-        banner: attorneyBanner
+    govukTemplate: GovukTemplate,
+    govukLayout: GovukLayout,
+    govukFooter: GovukFooter,
+    hmrcAccountMenu: HmrcAccountMenu,
+    hmrcHeader: HmrcHeader,
+    hmrcStandardHeader: HmrcStandardHeader,
+    hmrcStandardFooter: HmrcStandardFooter,
+    hmrcHead: HmrcHead,
+    hmrcLanguageSelectHelper: HmrcLanguageSelectHelper,
+    hmrcScripts: HmrcScripts,
+    govukBackLink: GovukBackLink,
+    defaultMainContent: TwoThirdsMainContent,
+    fixedWidthPageLayout: FixedWidthPageLayout,
+    twoThirdsMainContent: TwoThirdsMainContent,
+    twoThirdsOneThirdMainContent: TwoThirdsOneThirdMainContent,
+    hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
+    govukPhaseBanner: GovukPhaseBanner,
+    link: Link,
+    appConfig: ApplicationConfig,
+    hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
+    hmrcReportTechnicalIssue: HmrcReportTechnicalIssue,
+    banner: attorneyBanner
 )(implicit accountMenuConfig: AccountMenuConfig)
 
-
 @(
-        title: String,
-        authedUser: Option[controllers.auth.AuthedUser] = None,
-        serviceName: Option[String] = None,
-        pageTitle: Option[String] = None,
-        isWelshTranslationAvailable: Boolean = false,
-        signOutUrl: Option[String] = None,
-        serviceUrl: Option[String] = None,
-        backLinkUrl: Option[String] = Some("javascript:history.go(-1)"),
-        backLinkContent: Option[String],
-        backLinkId: String = "backLinkId",
-        disableSessionExpired: Boolean = false,
-        additionalScriptsBlock: Option[Html] = None,
-        beforeContentBlock: Option[Html] = None,
-        pagePrintable: Boolean = false,
-        pagePrintName: Option[String] = None,
-        showPtaAccountNav: Boolean = true,
-        formForErrorSummary: Option[Form[_]] = None,
-        nonce: Option[String] = None,
-        showUrBannerOverride: Boolean = false
-)(content: Html)(implicit request: Request[_],
-        messages: Messages)
-
+    title: String,
+    authedUser: Option[controllers.auth.AuthedUser] = None,
+    serviceName: Option[String] = None,
+    pageTitle: Option[String] = None,
+    isWelshTranslationAvailable: Boolean = false,
+    signOutUrl: Option[String] = None,
+    serviceUrl: Option[String] = None,
+    backLinkUrl: Option[String] = Some("javascript:history.go(-1)"),
+    backLinkContent: Option[String],
+    backLinkId: String = "backLinkId",
+    disableSessionExpired: Boolean = false,
+    additionalScriptsBlock: Option[Html] = None,
+    beforeContentBlock: Option[Html] = None,
+    pagePrintable: Boolean = false,
+    pagePrintName: Option[String] = None,
+    showPtaAccountNav: Boolean = true,
+    formForErrorSummary: Option[Form[_]] = None,
+    nonce: Option[String] = None,
+    showUrBannerOverride: Boolean = false
+)(content: Html)(implicit request: Request[_], messages: Messages)
 
 @isUserResearchBannerHidden = @{request.cookies.exists((x: Cookie) => x.name == "mdtpurr")}
 
@@ -111,16 +109,15 @@
     } yield banner(helper)
 }
 
-
 @additionalHeadBlock = {
     <meta name="format-detection" content="telephone=no"/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tai.css")'/>
-@if(!disableSessionExpired) {
-    @hmrcTimeoutDialogHelper(
-        signOutUrl = routes.ServiceController.serviceSignout().url,
-        keepAliveUrl = Some("/keep-alive")
-    )
-}
+    @if(!disableSessionExpired) {
+        @hmrcTimeoutDialogHelper(
+            signOutUrl = routes.ServiceController.serviceSignout().url,
+            keepAliveUrl = Some("/keep-alive")
+        )
+    }
 }
 
 @urBanner = {
@@ -130,128 +127,121 @@
                 <div class="hmrc-user-research-banner__title govuk-!-font-weight-bold">
                     @{Messages("tai.urbanner.title")}
                 </div>
-                    <a class="govuk-link hmrc-user-research-banner__link" rel="noopener noreferrer" href="@appConfig.urBannerLink" target="_blank">
-                            @{Messages("tai.urbanner.text")}
-                    </a>
+                <a class="govuk-link hmrc-user-research-banner__link" rel="noopener noreferrer" href="@appConfig.urBannerLink" target="_blank">
+                    @{Messages("tai.urbanner.text")}
+                </a>
             </div>
             <button class="govuk-link hmrc-user-research-banner__close">
-            @messages("tai.urbanner.reject")
+                @messages("tai.urbanner.reject")
             </button>
         </div>
     </div>
 }
 
 @headerBlock = {
-@hmrcHeader(Header(
-    homepageUrl = "http://www.gov.uk",
-    serviceName = pageTitle,
-    serviceUrl = "",
-    language = En,
-    assetsPath = uk.gov.hmrc.hmrcfrontend.controllers.routes.Assets.at("govuk/images").url,
-    displayHmrcBanner = false,
-    inputLanguageToggle = Some(LanguageToggle((En, switchToLanguage(En.code).url), (Cy, switchToLanguage(Cy.code).url)))
-))
+    @hmrcHeader(Header(
+        homepageUrl = "http://www.gov.uk",
+        serviceName = pageTitle,
+        serviceUrl = "",
+        language = En,
+        assetsPath = uk.gov.hmrc.hmrcfrontend.controllers.routes.Assets.at("govuk/images").url,
+        displayHmrcBanner = false,
+        inputLanguageToggle = Some(LanguageToggle((En, switchToLanguage(En.code).url), (Cy, switchToLanguage(Cy.code).url)))
+    ))
 
-@if(!isUserResearchBannerHidden && (appConfig.urBannerEnabled || showUrBannerOverride)) {
-    @urBanner
+    @if(!isUserResearchBannerHidden && (appConfig.urBannerEnabled || showUrBannerOverride)) {
+        @urBanner
+    }
 }
-}
-
 
 @beforeContent = {
+    @if(showPtaAccountNav) {
+        @if(isGG && isSa) {
+            @hmrcAccountMenu(AccountMenu(
+                businessTaxAccount = Some(BusinessTaxAccount()),
+                language = if(messages.lang.code == "cy") Cy else En,
+                signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+            ).withUrlsFromConfig())
+        } else {
+            @hmrcAccountMenu(AccountMenu(
+                language = if(messages.lang.code == "cy") Cy else En,
+                signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+            ).withUrlsFromConfig())
+        }
+    }
 
-@if(showPtaAccountNav) {
-    @if(isGG && isSa) {
-        @hmrcAccountMenu(AccountMenu(
-            businessTaxAccount = Some(BusinessTaxAccount()),
-            language = if(messages.lang.code == "cy") Cy else En,
-            signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
-        ).withUrlsFromConfig())
-
+    @if(beforeContentBlock.isDefined) {
+        @beforeContentBlock
     } else {
-        @hmrcAccountMenu(AccountMenu(
-            language = if(messages.lang.code == "cy") Cy else En,
-            signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
-        ).withUrlsFromConfig())
-    }
-}
-
-@if(beforeContentBlock.isDefined) {
-    @beforeContentBlock
-} else {
-    @if(isWelshTranslationAvailable) {
-        @hmrcLanguageSelectHelper()
-    }
-
-    @attorneyBanner
-
-@if(backLinkContent){
-    @backLinkUrl.map(url =>
-        govukBackLink(BackLink(classes = "js-visible-back",
-        attributes = Map("id" -> backLinkId), href = url, content = Text(backLinkContent.get)))
-    )
+        @if(isWelshTranslationAvailable) {
+            @hmrcLanguageSelectHelper()
+        }
+        @attorneyBanner
+        @if(backLinkContent){
+            @backLinkUrl.map(url =>
+                govukBackLink(BackLink(
+                    classes = "js-visible-back",
+                    attributes = Map("id" -> backLinkId),
+                    href = url,
+                    content = Text(backLinkContent.get)
+                ))
+            )
         }
     }
 }
 
-
 @contentBlock = {
-@content
+    @content
     <div class="govuk-grid-row govuk-!-margin-top-9">
         <div class="govuk-grid-column-one-half govuk-!-margin-bottom-5">
-        @hmrcReportTechnicalIssueHelper()
+            @hmrcReportTechnicalIssueHelper()
         </div>
     </div>
 
-
-@govukPhaseBanner(PhaseBanner(
-    tag = Some(Tag(
-        content = Text("beta")
-    )),
-    content = HtmlContent(messages("betaBanner.message",
-        link(link = appConfig.betaFeedbackUnauthenticatedUrl,
-            messageKey = "betaBanner.linkText",
-            inParagraph = true)))
-))
+    @govukPhaseBanner(PhaseBanner(
+        tag = Some(Tag(content = Text("beta"))),
+        content = HtmlContent(messages(
+            "betaBanner.message",
+            link(link = appConfig.betaFeedbackUnauthenticatedUrl,
+                messageKey = "betaBanner.linkText",
+                inParagraph = true
+            )
+        ))
+    ))
 }
-
 
 @fullPageTitle = @{
     val prefix =
         if(formForErrorSummary.exists(_.errors.nonEmpty)) {
-            s"${Messages("tai.page.title.error")} "
+            s"${Messages("tai.page.title.error")}"
         } else {
             ""
         }
     s"$prefix$title - ${Messages("tai.currentYearSummary.heading")} - GOV.UK"
 }
 
-
 @accessibilityStatementUrl = @{
     (appConfig.accessibilityStatementUrl(request.uri))
 }
 
-
 @mainContentDefault = {
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full-width govuk-!-margin-left-3 govuk-!-margin-right-3">
-        @contentBlock
+            @contentBlock
         </div>
     </div>
 }
-
 
 @footerBlock = @{
     Some(hmrcStandardFooter(accessibilityStatementUrl = Some(accessibilityStatementUrl.toString())))
 }
 
 @footerDefault = {
-@footerBlock.getOrElse("")
+    @footerBlock.getOrElse("")
 }
 
-
 @addPrintableClass = @{
-    if(pagePrintable) {
+    if (pagePrintable) {
         "printable-page " + pagePrintName.getOrElse("")
     } else ""
 }
@@ -259,7 +249,6 @@
 @additionalScriptsBlock = {
     <script src='@controllers.routes.AssetsController.versioned("javascripts/newcard.js")'></script>
 }
-
 
 @govukTemplate(
     htmlLang = Some("en"),
@@ -273,5 +262,3 @@
     footerBlock = footerDefault,
     cspNonce = None,
 )(mainContentDefault)
-
-

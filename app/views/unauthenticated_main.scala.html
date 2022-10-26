@@ -19,12 +19,12 @@
 @import uk.gov.hmrc.play.views.html.layouts._
 
 @this(
-        appConfig: ApplicationConfig,
-        langUtils: LanguageUtils,
-        trackingConsentSnippet: TrackingConsentSnippet,
-        article: Article,
-        sidebar: Sidebar,
-        attorneyBanner: AttorneyBanner
+    appConfig: ApplicationConfig,
+    langUtils: LanguageUtils,
+    trackingConsentSnippet: TrackingConsentSnippet,
+    article: Article,
+    sidebar: Sidebar,
+    attorneyBanner: AttorneyBanner
 )
 
 @(title: String,
@@ -43,15 +43,11 @@
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
 }
 
-
-
 @sidebarSection = @{
     sidebarLinks.map { sidebarLinksValue =>
         sidebar(sidebarLinksValue, sidebarClass)
     }
 }
-
-
 
 @isWelshEnabled = @{
     appConfig.welshLanguageEnabled
@@ -89,7 +85,7 @@
 @extraTemplateArguments = @{
     if(appConfig.accessibilityStatementToggle) {
         mustacheMap ++ Map[String,Any](
-     "accessibilityFooterUrl" -> accessibilityFooterUrl)
+            "accessibilityFooterUrl" -> accessibilityFooterUrl)
     } else mustacheMap
 }
 

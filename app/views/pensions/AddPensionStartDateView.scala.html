@@ -22,11 +22,14 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-
 @this(main: MainTempleteNew, form: FormWithCSRF,  govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(dateForm: Form[LocalDate], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-ec: scala.concurrent.ExecutionContext)
+@(dateForm: Form[LocalDate], pensionProviderName: String)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @hint = {
     <p class="govuk-!-font-weight-bold govuk-!-display-block carry-over ">@messages("tai.addPensionProvider.startDateForm.label", pensionProviderName)</p>
@@ -41,7 +44,6 @@ ec: scala.concurrent.ExecutionContext)
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay.url),
     formForErrorSummary = Some(dateForm)
-
 )  {
 
     <div class = "govuk-grid-row">
@@ -76,14 +78,14 @@ ec: scala.concurrent.ExecutionContext)
                         )
                     ),
                     fieldset = Some(Fieldset(
-                      legend = Some(HmrcPageHeadingLegend(
-                        content = Text(Messages("tai.addPensionProvider.startDateForm.title",pensionProviderName)),
-                        caption = HmrcSectionCaption(Text(Messages("add.missing.pension"))),
-                        classes = "govuk-fieldset__legend--xl carry-over"
-                      ))
+                        legend = Some(HmrcPageHeadingLegend(
+                            content = Text(Messages("tai.addPensionProvider.startDateForm.title",pensionProviderName)),
+                            caption = HmrcSectionCaption(Text(Messages("add.missing.pension"))),
+                            classes = "govuk-fieldset__legend--xl carry-over"
+                        ))
                     )),
                     errorMessage = dateForm.errors.asTextErrorMessages.headOption,
-                  ))
+                ))
 
                 @submit()
             }
@@ -91,5 +93,4 @@ ec: scala.concurrent.ExecutionContext)
             @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
         </div>
     </div>
-
 }

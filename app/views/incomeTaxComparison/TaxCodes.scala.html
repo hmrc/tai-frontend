@@ -27,32 +27,36 @@
 @if(model.hasScottishTaxCodeNextYear) {
     <p class="notice text">
         <i class="icon icon-information"><span class="govuk-visually-hidden">@messages("tai.information")</span></i>
-        <strong id="scottishTaxCodeInfo" class="bold-small">@Html(messages("tai.incomeTaxComparison.taxCodes.scottishInfo",
-            includes.link(url = appConfig.scottishRateIncomeTaxUrl, copy=Messages("tai.taxCode.scottishIncomeText.link"), externalLink = true)))</strong>
+        <strong id="scottishTaxCodeInfo" class="bold-small">
+            @Html(messages(
+                "tai.incomeTaxComparison.taxCodes.scottishInfo",
+                includes.link(url = appConfig.scottishRateIncomeTaxUrl, copy=Messages("tai.taxCode.scottishIncomeText.link"), externalLink = true)
+            ))
+        </strong>
     </p>
 }
 
 <table class="govuk-table table--font-reset flush--bottom responsive" id="taxCodeComparisonTable" role="table">
     <caption class="govuk-visually-hidden">@messages("tai.incomeTaxComparison.taxCodes.subHeading")</caption>
     <thead id="taxCodeComparisonTableHeader">
-    <tr role="row" class="govuk-table__row">
-        <th scope="col" class="govuk-table__header govuk-!-width-one-half">@messages("tai.incomeTaxComparison.taxCodes.table.employer.or.pension")</th>
-        <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter taxCodeComparisonTableHeaderCol1">
-            @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
-            @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
-        </th>
-        <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter taxCodeComparisonTableHeaderCol1">
-            @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
-            @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
-        </th>
-    </tr>
+        <tr role="row" class="govuk-table__row">
+            <th scope="col" class="govuk-table__header govuk-!-width-one-half">@messages("tai.incomeTaxComparison.taxCodes.table.employer.or.pension")</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter taxCodeComparisonTableHeaderCol1">
+                @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
+                @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
+            </th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter taxCodeComparisonTableHeaderCol1">
+                @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
+                @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
+            </th>
+        </tr>
     </thead>
     <tbody class="govuk-table__body taxCodeComparisonTableBody">
         @for(taxCodeDetail <- model.employmentTaxCodes) {
             <tr role="row" class="govuk-table__row">
                 <td role="cell" class="govuk-table__cell table-title">
                     <span class="table-heading employerName" aria-hidden="true">
-                    @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
+                        @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
                     </span>
                     <span class="carry-over">@taxCodeDetail.name</span>
                 </td>
@@ -63,7 +67,7 @@
             <tr role="row" class="govuk-table__row">
                 <td role="cell" class="govuk-table__cell table-title">
                     <span class="table-heading employerName" aria-hidden="true">
-                    @messages("tai.incomeTaxComparison.taxCodes.table.pensionsReaderText")
+                        @messages("tai.incomeTaxComparison.taxCodes.table.pensionsReaderText")
                     </span>
                     <span class="carry-over">@taxCodeDetail.name</span>
 
@@ -80,7 +84,6 @@
             @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
             @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
         </span>
-
         @taxCodeDetail.taxCodes.head
     </td>
 

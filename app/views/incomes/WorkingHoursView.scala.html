@@ -37,7 +37,12 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
-@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName: String)(
+    implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeaderNoH1(
@@ -48,7 +53,6 @@
     )
 }
 
-
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.workingHours.title"),
@@ -57,8 +61,8 @@
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).url),
     formForErrorSummary = Some(workingHoursForm)
-
 ){
+
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
 
@@ -95,13 +99,11 @@
                             checked = workingHoursForm.data.get("workingHours").contains("irregularHours")
                         )
                     ),
-                ).withFormField(workingHoursForm("workingHours"))
-                )
+                ).withFormField(workingHoursForm("workingHours")))
 
                 @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
             }
             @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
-
 
         </div>
     </div>

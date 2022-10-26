@@ -30,11 +30,16 @@
 
 @this(mainTemplate: MainTempleteNew, form: FormWithCSRF,  govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(dateForm: Form[LocalDate], viewmodel: EmploymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser,  ec: ExecutionContext)
-
+@(dateForm: Form[LocalDate], viewmodel: EmploymentViewModel)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    ec: ExecutionContext)
 
 @hint = {
-        <span id="date-you-left-hint" class="govuk-!-font-weight-bold govuk-!-display-block carry-over" >@Messages("tai.endEmployment.endDateForm.label" , viewmodel.employerName)</span>
+        <span id="date-you-left-hint" class="govuk-!-font-weight-bold govuk-!-display-block carry-over" >
+            @Messages("tai.endEmployment.endDateForm.label" , viewmodel.employerName)
+        </span>
         <span id="date-example-hint">@Messages("tai.label.date.example")</span>
 }
 
@@ -50,55 +55,53 @@
 
     @form(action = controllers.employments.routes.EndEmploymentController.handleEndEmploymentPage(viewmodel.empId)) {
 
-
         <div class = "govuk-grid-row">
             <div class = "govuk-grid-column-two-thirds">
 
-        @if(dateForm.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary(errorList = dateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-        }
+                @if(dateForm.errors.nonEmpty) {
+                    @govukErrorSummary(ErrorSummary(errorList = dateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+                }
 
-
-        @govukDateInput(DateInput(
-            id = "tellUsAboutEmploymentForm",
-            namePrefix = Some("tellUsAboutEmploymentForm"),
-            hint = Some(Hint(content = HtmlContent(hint))),
-            items = Seq(
-                InputItem(
-                    name= "day",
-                    label = Some(messages("tai.label.day")),
-                    classes = s"govuk-input--width-2 ${if(dateForm.hasErrors)  " govuk-input--error" else "" }",
-                    value =  dateForm("tellUsAboutEmploymentForm-day").value
-                ),
-                InputItem(
-                    name = "month",
-                    label = Some(messages("tai.label.month")),
-                    classes = s"govuk-input--width-2 ${if(dateForm.hasErrors ) " govuk-input--error" else "" }",
-                    value =  dateForm("tellUsAboutEmploymentForm-month").value
-                ),
-                InputItem(
-                    name = "year",
-                    label = Some(messages("tai.label.year")),
-                    classes = s"govuk-input--width-4 ${if(dateForm.hasErrors) " govuk-input--error" else "" }",
-                    value =  dateForm("tellUsAboutEmploymentForm-year").value
-                )
-            ),
-            errorMessage = dateForm.errors.asTextErrorMessages.headOption,
-            fieldset =  Some(Fieldset(
-                legend = Some(HmrcPageHeadingLegend(
-                    content = Text(messages("tai.endEmployment.endDateForm.title",  viewmodel.employerName)),
-                    caption = HmrcSectionCaption(Text(messages("tai.endEmployment.preHeadingText"))),
-                    classes = "govuk-fieldset__legend--xl carry-over")
-                )))),
-        )
-        @govukButton(Button(content = Text(messages("tai.continue"))))
-            </div></div>
-
+                @govukDateInput(DateInput(
+                    id = "tellUsAboutEmploymentForm",
+                    namePrefix = Some("tellUsAboutEmploymentForm"),
+                    hint = Some(Hint(content = HtmlContent(hint))),
+                    items = Seq(
+                        InputItem(
+                            name= "day",
+                            label = Some(messages("tai.label.day")),
+                            classes = s"govuk-input--width-2 ${if(dateForm.hasErrors)  " govuk-input--error" else "" }",
+                            value =  dateForm("tellUsAboutEmploymentForm-day").value
+                        ),
+                        InputItem(
+                            name = "month",
+                            label = Some(messages("tai.label.month")),
+                            classes = s"govuk-input--width-2 ${if(dateForm.hasErrors ) " govuk-input--error" else "" }",
+                            value =  dateForm("tellUsAboutEmploymentForm-month").value
+                        ),
+                        InputItem(
+                            name = "year",
+                            label = Some(messages("tai.label.year")),
+                            classes = s"govuk-input--width-4 ${if(dateForm.hasErrors) " govuk-input--error" else "" }",
+                            value =  dateForm("tellUsAboutEmploymentForm-year").value
+                        )
+                    ),
+                    errorMessage = dateForm.errors.asTextErrorMessages.headOption,
+                    fieldset =  Some(Fieldset(
+                        legend = Some(HmrcPageHeadingLegend(
+                            content = Text(messages("tai.endEmployment.endDateForm.title",  viewmodel.employerName)),
+                            caption = HmrcSectionCaption(Text(messages("tai.endEmployment.preHeadingText"))),
+                            classes = "govuk-fieldset__legend--xl carry-over"
+                        ))
+                    ))
+                ))
+                @govukButton(Button(content = Text(messages("tai.continue"))))
+            </div>
+        </div>
     }
 
     <div class="govuk-link govuk-body-m">
-    @cancelLink(controllers.employments.routes.EndEmploymentController.cancel(viewmodel.empId))
+        @cancelLink(controllers.employments.routes.EndEmploymentController.cancel(viewmodel.empId))
     </div>
-
 
 }

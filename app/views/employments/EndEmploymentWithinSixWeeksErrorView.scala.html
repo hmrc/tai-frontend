@@ -22,15 +22,20 @@
 
 @this(mainTemplate: MainTempleteNew)
 
-@(model: WithinSixWeeksViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
-
+@(model: WithinSixWeeksViewModel)(
+    implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext)
 
 @header = @{
     ptaHeader(
         displayBackLink = false,
         mainHeadingText = Messages("tai.endEmploymentWithinSixWeeksError.heading", model.earliestUpdateDateInHtml),
         preHeadingText = Messages("tai.endEmployment.preHeadingText"),
-        showGdsVersion = true)
+        showGdsVersion = true
+    )
 }
 
 @mainTemplate(
@@ -43,25 +48,23 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             @header
-    <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.employerAndPayDate", model.employerName, model.latestPayDateInHtml)</p>
-    <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.whatTheEmployerShouldDo", model.earliestUpdateDateInHtml)</p>
-    <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.checkWithEmployer", model.employerName)</p>
-    <ul class="govuk-list govuk-list--bullet">
-        <li>@messages("tai.endEmploymentWithinSixWeeksError.sendDetailsToHMRC")</li>
-        <li>@messages("tai.endEmploymentWithinSixWeeksError.askForP45")</li>
-    </ul>
-    <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.wait6Weeks", model.earliestUpdateDateInHtml)
+            <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.employerAndPayDate", model.employerName, model.latestPayDateInHtml)</p>
+            <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.whatTheEmployerShouldDo", model.earliestUpdateDateInHtml)</p>
+            <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.checkWithEmployer", model.employerName)</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>@messages("tai.endEmploymentWithinSixWeeksError.sendDetailsToHMRC")</li>
+                <li>@messages("tai.endEmploymentWithinSixWeeksError.askForP45")</li>
+            </ul>
+            <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.wait6Weeks", model.earliestUpdateDateInHtml)
 
-    <div class="subsection">
-        @includes.link(
-            id=Some("returnToYourSummary"),
-            copy=Messages("return.to.your.income.tax.summary"),
-            url = routes.TaxAccountSummaryController.onPageLoad.url,
-            linkClasses=Seq("govuk-button","govuk-!-margin-top-4")
-        )
-    </div>
-
-
-    </div>
+            <div class="subsection">
+                @includes.link(
+                    id=Some("returnToYourSummary"),
+                    copy=Messages("return.to.your.income.tax.summary"),
+                    url = routes.TaxAccountSummaryController.onPageLoad.url,
+                    linkClasses=Seq("govuk-button","govuk-!-margin-top-4")
+                )
+            </div>
+        </div>
     </div>
 }

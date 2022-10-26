@@ -23,11 +23,11 @@
 
 @this(main: MainTempleteNew)
 
-@(viewModel: ConfirmAmountEnteredViewModel
-)(implicit request: Request[_],
-  messages: Messages,
-  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-  ec: scala.concurrent.ExecutionContext)
+@(viewModel: ConfirmAmountEnteredViewModel)(
+    implicit request: Request[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
@@ -45,6 +45,7 @@
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(viewModel.backUrl)
 ){
+
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             @header

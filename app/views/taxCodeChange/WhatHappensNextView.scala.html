@@ -25,14 +25,14 @@
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
     ec: ExecutionContext)
 
-
 @header = @{
     ptaHeader(
         formForErrorSummary = None,
         displayBackLink = false,
         showGdsVersion = true,
         mainHeadingText = Messages("taxCode.change.whatHappensNext.title"),
-        preHeadingText = Messages("taxCode.change.journey.preHeading"))
+        preHeadingText = Messages("taxCode.change.journey.preHeading")
+    )
 }
 
 @main(
@@ -43,34 +43,40 @@
     backLinkId = "backLink",
 ){
 
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        @header
-    </div>
-    <div class="govuk-grid-column-two-thirds">
-                <h2 id="lede-message" class="govuk-caption-l">
-                    @Messages("taxCode.change.whatHappensNext.paragragh1")
-                </h2>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+        </div>
+        <div class="govuk-grid-column-two-thirds">
+            <h2 id="lede-message" class="govuk-caption-l">
+                @Messages("taxCode.change.whatHappensNext.paragragh1")
+            </h2>
 
-                <p id="check-income-tax-estimate" class="govuk-body govuk-!-margin-top-4" >
-                    @Html(Messages("taxCode.change.whatHappensNext.paragragh2",
+            <p id="check-income-tax-estimate" class="govuk-body govuk-!-margin-top-4" >
+                @Html(Messages(
+                    "taxCode.change.whatHappensNext.paragragh2",
                     includes.link(
-                    id=Some("income-tax-estimate-link"),
-                    url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
-                    copy=Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link"))))
-                 </p>
+                        id=Some("income-tax-estimate-link"),
+                        url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+                        copy=Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")
+                    )
+                ))
+            </p>
 
-                <h3 class="govuk-heading-m">
-                    @Messages("taxCode.change.whatHappensNext.wrongInformation.text")
-                </h3>
+            <h3 class="govuk-heading-m">
+                @Messages("taxCode.change.whatHappensNext.wrongInformation.text")
+            </h3>
 
-                <p id="update-current-income-or-benefits" class="govuk-body">
-                    @Html(Messages("taxCode.change.whatHappensNext.paragragh3",
+            <p id="update-current-income-or-benefits" class="govuk-body">
+                @Html(Messages(
+                    "taxCode.change.whatHappensNext.paragragh3",
                     includes.link(
-                    id=Some("update-current-income-or-benefits-link"),
-                    url=routes.TaxAccountSummaryController.onPageLoad.url.toString,
-                    copy=Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link"))))
-                </p>
+                        id=Some("update-current-income-or-benefits-link"),
+                        url=routes.TaxAccountSummaryController.onPageLoad.url.toString,
+                        copy=Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")
+                    )
+                ))
+            </p>
+        </div>
     </div>
-</div>
 }

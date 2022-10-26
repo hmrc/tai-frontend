@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *@
+
 @import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefix
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
+
 @(
     title: String,
     visuallyHiddenTitle: Option[String]=None,
     summaryClass: Option[String]=None,
     panelClass: Option[String]=Some("panel-indent")
 )(body: Html)
+
 <details class="govuk-details hide-for-print " data-module="govuk-details">
     <summary @if(summaryClass.isDefined){class='@summaryClass'}>
         @if(visuallyHiddenTitle) {
@@ -37,14 +40,14 @@
 
 <details  aria-hidden="true" class="govuk-details only-visible-on-print" data-module="govuk-details" open>
     <summary @if(summaryClass.isDefined){class='@summaryClass'}>
-    @if(visuallyHiddenTitle) {
-        <span class="govuk-details__summary-text"  aria-hidden="true">@title</span>
-        <span class="visuallyhidden govuk-visually-hidden">@visuallyHiddenTitle</span>
-    } else {
-        @title
-    }
+        @if(visuallyHiddenTitle) {
+            <span class="govuk-details__summary-text"  aria-hidden="true">@title</span>
+            <span class="visuallyhidden govuk-visually-hidden">@visuallyHiddenTitle</span>
+        } else {
+            @title
+        }
     </summary>
     <div @if(panelClass.isDefined){class='@panelClass'}>
-    @body
+        @body
     </div>
 </details>

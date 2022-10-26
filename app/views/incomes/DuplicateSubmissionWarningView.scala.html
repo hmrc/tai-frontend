@@ -39,8 +39,12 @@
 
 @this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
-@(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: scala.concurrent.ExecutionContext)
-
+@(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(
+    implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
@@ -58,8 +62,7 @@
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkId = "backLink",
     formForErrorSummary = Some(duplicateSubmissionWarningForm)
-
-    ) {
+) {
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -69,55 +72,44 @@
             }
 
             @header
-    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitDuplicateSubmissionWarning(empId)) {
-    <div class="form-group">
+            @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitDuplicateSubmissionWarning(empId)) {
+                <div class="form-group">
 
-        <p class="govuk-body">@viewModel.paragraphOne</p>
-        <p class="govuk-body">@messages("tai.incomes.warning.text2")</p>
-        <div class="govuk-details__text govuk-!-margin-bottom-4  ">
-            <p class="govuk-body">@messages("tai.incomes.warning.text3")</p>
+                    <p class="govuk-body">@viewModel.paragraphOne</p>
+                    <p class="govuk-body">@messages("tai.incomes.warning.text2")</p>
+                    <div class="govuk-details__text govuk-!-margin-bottom-4  ">
+                        <p class="govuk-body">@messages("tai.incomes.warning.text3")</p>
+                    </div>
+
+                    @govukRadios(Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                content = Text(messages("tai.employment.warning.legend")),
+                                classes = "govuk-fieldset__legend--l",
+                                isPageHeading = true
+                            ))
+                        )),
+                        idPrefix = Some(YesNoForm.YesNoChoice),
+                        name = YesNoForm.YesNoChoice,
+                        errorMessage = duplicateSubmissionWarningForm.errors.asTextErrorMessages.headOption,
+                        items = Seq(
+                            RadioItem(
+                                content = Text(viewModel.optionOne),
+                                value = Some(YesNoForm.YesValue),
+                                attributes = Map("data-journey-val" -> "Yes"),
+                            ),
+                            RadioItem(
+                                content = Text(viewModel.optionTwo),
+                                value = Some(viewModel.optionTwo),
+                                attributes = Map("data-journey-val" -> "No"),
+                            ),
+                        )
+                    ))
+                </div>
+
+                @govukButton(Button(content = Text(messages("tai.submit"))))
+                @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(empId))
+            }
         </div>
-
-        @govukRadios(Radios(
-            fieldset = Some(Fieldset(
-                legend = Some(Legend(
-                    content = Text(messages("tai.employment.warning.legend")),
-                    classes = "govuk-fieldset__legend--l",
-                    isPageHeading = true
-                ))
-            )),
-            idPrefix = Some(YesNoForm.YesNoChoice),
-            name = YesNoForm.YesNoChoice,
-            errorMessage = duplicateSubmissionWarningForm.errors.asTextErrorMessages.headOption,
-            items = Seq(
-                RadioItem(
-                    content = Text(viewModel.optionOne),
-                    value = Some(YesNoForm.YesValue),
-                    attributes = Map("data-journey-val" -> "Yes"),
-                ),
-                RadioItem(
-                    content = Text(viewModel.optionTwo),
-                    value = Some(viewModel.optionTwo),
-                    attributes = Map("data-journey-val" -> "No"),
-                ),
-            )
-        ))
-
-
-
     </div>
-
-    @govukButton(Button(content = Text(messages("tai.submit"))))
-
-    @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(empId))
-
-
-    </div>
-
-    </div>
-
-
-}
-
-
 }

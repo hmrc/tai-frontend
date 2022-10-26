@@ -26,29 +26,30 @@
 @import uk.gov.hmrc.play.views.html.layouts._
 
 @this(
-        webChatClient: WebChatClient,
-        appConfig: ApplicationConfig,
-        langUtils: LanguageUtils,
-        trackingConsentSnippet: TrackingConsentSnippet,
-        article: Article,
-        sidebar: Sidebar,
-        attorney_banner: AttorneyBanner
+    webChatClient: WebChatClient,
+    appConfig: ApplicationConfig,
+    langUtils: LanguageUtils,
+    trackingConsentSnippet: TrackingConsentSnippet,
+    article: Article,
+    sidebar: Sidebar,
+    attorney_banner: AttorneyBanner
 )
 
 @(title: String,
-  sidebarLinks: Option[Html] = None,
-  sidebarClass: Option[String] = None,
-  articleClasses: Option[String] = Some("full-width"),
-  authedUser: Option[controllers.auth.AuthedUser] = None,
-  employerName: Option[String] = None,
-  includeGridWrapper: Boolean = false,
-  optimizelyAudience: Option[String] = None,
-  pageHeader: Option[Html] = None,
-  script: Option[Html] = None
-)(mainContent: Html
-)(implicit request: Request[_],
-  messages: Messages,
-  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer)
+    sidebarLinks: Option[Html] = None,
+    sidebarClass: Option[String] = None,
+    articleClasses: Option[String] = Some("full-width"),
+    authedUser: Option[controllers.auth.AuthedUser] = None,
+    employerName: Option[String] = None,
+    includeGridWrapper: Boolean = false,
+    optimizelyAudience: Option[String] = None,
+    pageHeader: Option[Html] = None,
+    script: Option[Html] = None
+)(mainContent: Html)(
+    implicit request: Request[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer
+)
 
 @serviceSuffix = @{
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
@@ -79,11 +80,11 @@
 @signOutUrl = @{""}
 
 @trustedHelperBanner = {
-  @{
-    authedUser.map(_.trustedHelper.map{ helper =>
-      attorney_banner(Some(helper.principalName), helper.returnLinkUrl, AttorneyRegime.standAlone)
-    })
-  }
+    @{
+        authedUser.map(_.trustedHelper.map{ helper =>
+            attorney_banner(Some(helper.principalName), helper.returnLinkUrl, AttorneyRegime.standAlone)
+        })
+    }
 }
 
 @mainContentHeader = {
@@ -96,8 +97,6 @@
     }
 }
 
-
-
 @sessionId = @{ request.session.get("sessionId") }
 
 @headInlineScript = {
@@ -107,10 +106,8 @@
 @inlineScript = {
     @{webChatClient.loadWebChatContainer("HMRC_Anchored_1")}
     @{webChatClient.loadRequiredElements()}
-
     @script
 }
-
 
 @isWelshEnabled = @{
     appConfig.welshLanguageEnabled
@@ -158,11 +155,9 @@
     )
 }
 
-
 @extraTemplateArguments = @{
     if(appConfig.accessibilityStatementToggle) {
-        mustacheMap ++ Map[String,Any](
-     "accessibilityFooterUrl" -> accessibilityFooterUrl)
+        mustacheMap ++ Map[String,Any]("accessibilityFooterUrl" -> accessibilityFooterUrl)
     } else mustacheMap
 }
 

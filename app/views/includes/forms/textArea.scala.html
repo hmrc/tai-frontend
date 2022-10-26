@@ -14,19 +14,18 @@
  * limitations under the License.
  *@
 
-@(
-        field: Field,
-        fieldErrorsEnabled: Boolean = true,
-        labelText: String = "",
-        hintText: String = "",
-        bold: Boolean = false,
-        classes: Seq[String] = Seq.empty,
-        panel: Boolean = false,
-        jsHidden: Boolean = false,
-        labelHidden: Boolean = false,
-        maxlength: String = "",
-        hintClass: String = "",
-        rows: String = "7"
+@(field: Field,
+    fieldErrorsEnabled: Boolean = true,
+    labelText: String = "",
+    hintText: String = "",
+    bold: Boolean = false,
+    classes: Seq[String] = Seq.empty,
+    panel: Boolean = false,
+    jsHidden: Boolean = false,
+    labelHidden: Boolean = false,
+    maxlength: String = "",
+    hintClass: String = "",
+    rows: String = "7"
 )(implicit m: Messages)
 
 <div class="form-group @if(field.hasErrors){form-group-error} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}">

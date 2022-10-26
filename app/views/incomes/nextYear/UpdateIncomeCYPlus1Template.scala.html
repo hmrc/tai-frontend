@@ -28,14 +28,13 @@
   heading: String,
   showCancel: Boolean = true,
   cancelText : Option[String] = None
-
-
 )(content: Html
 )(implicit request: Request[_],
   user: controllers.auth.AuthedUser,
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   ec: scala.concurrent.ExecutionContext)
+
 @header = @{
     ptaHeader(
         formForErrorSummary = form,
@@ -55,15 +54,16 @@
     backLinkId = "backLink",
     formForErrorSummary = form
 ){
-<div class = "govuk-grid-row">
-    <div class = "govuk-grid-column-two-thirds">
-        @header
 
-        @content
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @header
 
-        @if(showCancel){
-            @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url), linkText = cancelText)
-        }
+            @content
+
+            @if(showCancel){
+                @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url), linkText = cancelText)
+            }
+        </div>
     </div>
-</div>
 }

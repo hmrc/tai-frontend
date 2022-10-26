@@ -21,26 +21,23 @@
 
 @(tableClass: String, taxBands: List[TaxBand], taxRegion: String)(implicit messages: Messages)
 
-
-
 <table class="govuk-table @{tableClass}">
     <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header taxBand">@Messages("tai.incomeTaxBand")</th>
-        <th scope="col" class="govuk-table__header govuk-table__header--numeric numeric taxAmount">@Messages("tai.amount")</th>
-        <th scope="col" class="govuk-table__header govuk-table__header--numeric numeric taxRate">@Messages("tai.taxRate")</th>
-        <th scope="col" class="govuk-table__header govuk-table__header--numeric numeric tax">@Messages("tai.tax")</th>
-    </tr>
+        <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header taxBand">@Messages("tai.incomeTaxBand")</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric numeric taxAmount">@Messages("tai.amount")</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric numeric taxRate">@Messages("tai.taxRate")</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric numeric tax">@Messages("tai.tax")</th>
+        </tr>
     </thead>
     <tbody class="govuk-table__body">
-
-    @for((taxBand, count) <- taxBands.sortBy(_.rate).zipWithIndex){
-    <tr class="govuk-table__row">
-        <td class="govuk-table__cell bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric numeric income@{count}">@withPoundPrefix(MoneyPounds(taxBand.income,0))</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric numeric taxRate@{count}">@taxBand.rate%</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric numeric tax@{count}">@withPoundPrefix(MoneyPounds(taxBand.tax,0))</td>
-    </tr>
-    }
+        @for((taxBand, count) <- taxBands.sortBy(_.rate).zipWithIndex){
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric numeric income@{count}">@withPoundPrefix(MoneyPounds(taxBand.income,0))</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric numeric taxRate@{count}">@taxBand.rate%</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric numeric tax@{count}">@withPoundPrefix(MoneyPounds(taxBand.tax,0))</td>
+            </tr>
+        }
     </tbody>
 </table>

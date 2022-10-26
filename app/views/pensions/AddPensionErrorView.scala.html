@@ -18,8 +18,12 @@
 
 @this(mainTemplate: MainTempleteNew)
 
-@(pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
-
+@(pensionProviderName: String)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
@@ -27,8 +31,8 @@
         mainHeadingText = Messages("tai.addPensionProvider.errorPage.title"),
         preHeadingText = Messages("add.missing.pension"),
         showGdsVersion = true
-    )}
-
+    )
+}
 
 @mainTemplate(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
@@ -42,24 +46,22 @@
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
 
-    @header
+            @header
 
-    <div class="subsection flush--top">
-        <p class="govuk-body">@Messages("tai.addPensionProvider.errorPage.para1", pensionProviderName)</p>
-        <p class="govuk-body">@Messages("tai.addPensionProvider.errorPage.para2")</p>
-    </div>
+            <div class="subsection flush--top">
+                <p class="govuk-body">@Messages("tai.addPensionProvider.errorPage.para1", pensionProviderName)</p>
+                <p class="govuk-body">@Messages("tai.addPensionProvider.errorPage.para2")</p>
+            </div>
 
-    <div class="subsection">
-        @includes.link(
-            id=Some("returnToYourIncomeDetails"),
-            copy=Messages("return.to.your.income.tax.summary"),
-            url = routes.TaxAccountSummaryController.onPageLoad.url,
-            linkClasses=Seq("govuk-button")
-        )
-    </div>
-
+            <div class="subsection">
+                @includes.link(
+                    id=Some("returnToYourIncomeDetails"),
+                    copy=Messages("return.to.your.income.tax.summary"),
+                    url = routes.TaxAccountSummaryController.onPageLoad.url,
+                    linkClasses=Seq("govuk-button")
+                )
+            </div>
 
         </div>
     </div>
-
 }

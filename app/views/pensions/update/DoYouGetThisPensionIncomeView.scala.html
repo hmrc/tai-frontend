@@ -28,8 +28,12 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
-@(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-ec: scala.concurrent.ExecutionContext)
+@(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(
@@ -83,8 +87,7 @@ ec: scala.concurrent.ExecutionContext)
                             checked = updateOrRemoveForm.data.get(UpdateRemovePensionForm.IncorrectPensionDecision).contains("No"),
                         )
                     ),
-                ).withFormField(updateOrRemoveForm(UpdateRemovePensionForm.IncorrectPensionDecision))
-                )
+                ).withFormField(updateOrRemoveForm(UpdateRemovePensionForm.IncorrectPensionDecision)))
 
                 @govukButton(Button(content = Text(messages("tai.continue"))))
                 @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(model.id))

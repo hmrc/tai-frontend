@@ -52,13 +52,15 @@
         messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange)
     }
 }
+
 @backLinkToTaxAccountSummary= {
     <p class="flush--bottom">
-    @link(
-        id=Some("taxableIncomeLink"),
-        url=routes.TaxAccountSummaryController.onPageLoad.url,
-        copy=Messages("return.to.your.income.tax.summary"),
-        linkClasses=Seq("link-back"))
+        @link(
+            id=Some("taxableIncomeLink"),
+            url=routes.TaxAccountSummaryController.onPageLoad.url,
+            copy=Messages("return.to.your.income.tax.summary"),
+            linkClasses=Seq("link-back")
+        )
     </p>
 }
 
@@ -69,7 +71,8 @@
         mainHeadingText = mainHeading,
         customBackLinkContent = Some(backLinkToTaxAccountSummary),
         preHeadingText = model.displayName,
-        showGdsVersion = true)
+        showGdsVersion = true
+    )
 }
 
 @main(
@@ -80,218 +83,217 @@
     backLinkContent = Some(Messages("return.to.your.income.tax.summary")),
     backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad.url),
     backLinkId = "taxableIncomeLink"
-
 ) {
 
-@if(model.estimatedPayJourneyCompleted){
+    @if(model.estimatedPayJourneyCompleted){
 
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title"
-             data-module="govuk-notification-banner">
-            <div class="govuk-notification-banner__header">
-                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-                    @messages("checkProgress.important")
-                </h2>
-            </div>
-            <div class="govuk-notification-banner__content">
-                <h3 class="govuk-notification-banner__heading">
-                    @messages("tai.whatDoYouWantToDo.iformPanel.p1")
-                </h3>
-                <p>@messages("tai.estimatedIncome.confirmation.banner.heading")</p>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                    <div class="govuk-notification-banner__header">
+                        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                            @messages("checkProgress.important")
+                        </h2>
+                    </div>
+                    <div class="govuk-notification-banner__content">
+                        <h3 class="govuk-notification-banner__heading">
+                            @messages("tai.whatDoYouWantToDo.iformPanel.p1")
+                        </h3>
+                        <p>@messages("tai.estimatedIncome.confirmation.banner.heading")</p>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-}
-
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        @header
-    </div>
-</div>
-
-
-    <div class="govuk-grid-row">
-<div class="govuk-grid-column-two-thirds govuk-body">
-    @if(model.rtiAvailable) {
-        @if(model.isPension) {
-            <p>
-            @link(
-                id = Some("updatePension"),
-                url = controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url,
-                copy = messages("tai.pension.income.details.updateLinkText", model.empOrPensionName))
-            </p>
-        } else {
-            <p>
-            @link(
-                id = Some("updateEmployer"),
-                url = controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url,
-                copy = messages("tai.employment.income.details.updateLinkText", model.empOrPensionName),
-                linkClasses = Seq("carry-over"))
-            </p>
-        }
-    } else {
-        @if(model.isPension) {
-            <span>@messages("tai.rti.down.updatePension")</span>
-        } else {
-            <span>@messages("tai.rti.down.updateEmployment")</span>
-        }
     }
 
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
-                <h2 class="govuk-heading-m flush">@messages("tai.income.details.estimatedTaxableIncome")</h2>
-                <p class="govuk-body break-word">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>
-
-            @if(model.isUpdateInProgress){
-            <p class="govuk-inset-text govuk-!-font-size-16">
-                @messages("tai.income.details.updateInProgress")
-            </p>
-            } else {
-                <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@pounds(model.estimatedTaxableIncome)</span>
-                <span class="govuk-visually-hidden">@Html(messages("tai.income.details.yourEstimatedTaxableIncome.with.amount", pounds(model.estimatedTaxableIncome)))</span>
-            }
-
-                <p>
-                    @link(
-                        id=Some("updateIncome"),
-                        url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
-                        copy=messages("tai.income.details.updateTaxableIncome.full"))
-                </p>
+        <div class="govuk-grid-column-two-thirds">
+            @header
         </div>
+    </div>
 
-        <div class="govuk-grid-column-one-half">
-            <h2 class="govuk-heading-m flush">@messages("tai.income.details.incomeReceivedToDate")</h2>
-
-                @if(model.rtiAvailable) {
-                        <p class="govuk-body break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
-                        <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@pounds(model.incomeReceivedToDate)</span>
-                        <span class="govuk-visually-hidden">@Html(messages("tai.income.details.incomeReceivedToDate.screenReader", pounds(model.incomeReceivedToDate)))</span>
-
-                         <p>
-                             @link(
-                                id=Some("viewIncomeReceivedToDate"),
-                                url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
-                                copy=messages("tai.income.details.checkPaymentsReceived.with.employer", model.empOrPensionName),
-                                 linkClasses=Seq("carry-over"))
-                        </p>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds govuk-body">
+            @if(model.rtiAvailable) {
+                @if(model.isPension) {
+                    <p>
+                    @link(
+                        id = Some("updatePension"),
+                        url = controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url,
+                        copy = messages("tai.pension.income.details.updateLinkText", model.empOrPensionName))
+                    </p>
                 } else {
-                    <span>@messages("tai.rti.down")</span>
-                }
-
-        </div>
-    </div>
-
-    <div class="govuk-!-padding-bottom-7"></div>
-
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
-            <h2 class="govuk-heading-m flush--top">@messages("tai.taxCode")</h2>
-            <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.taxCode</span>
-            <span class="govuk-visually-hidden">@messages("tai.income.details.yourTaxCode", model.taxCode)</span>
-            <p>
-                @link(
-                    id=Some("understandTaxCode"),
-                    url=routes.YourTaxCodeController.taxCode(model.empId).url,
-                    copy=messages("tai.income.details.taxCode.linkText"))
-            </p>
-        </div>
-
-        <div class="govuk-grid-column-one-half">
-            <h3 class="govuk-heading-m flush--top">@messages("tai.income.details.ERN")</h3>
-            <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
-                @{model.taxDistrctNumber}/@{model.payeNumber}
-            </p>
-        </div>
-    </div>
-
-    <div class="govuk-!-padding-bottom-7"></div>
-
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
-            @if(model.isPension){
-            <h2 class="govuk-heading-m flush--top">@messages("tai.pensionNumber")</h2>
-            <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.pensionOrPayrollNumber</p>
-            <p class="govuk-visually-hidden">@messages("tai.pension.income.details.pensionNumber.screenReader", model.pensionOrPayrollNumber)</p>
-            } else {
-            <h2 class="govuk-heading-m flush--top">@messages("tai.payRollNumber")</h2>
-            <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.pensionOrPayrollNumber</p>
-            <p class="govuk-visually-hidden">@messages("tai.employment.income.details.payrollNumber.screenReader", model.pensionOrPayrollNumber)</p>
-            }
-        </div>
-    </div>
-
-    @if(!model.isPension){
-    <div class="govuk-!-padding-bottom-7"></div>
-    <div class="govuk-grid-row">
-        <div id="companyBenefitsSection" class="govuk-!-padding-left-3">
-            <h2 id="companyBenefitsHeading" class="govuk-heading-m carry-over">@Messages("tai.income.details.companyuBenefitsHeading", model.empOrPensionName)</h2>
-            @if(model.benefits.size > 0) {
-                <table id="companyBenefitList" class="govuk-table responsive-table-fix">
-                    <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
-                        <td class="govuk-visually-hidden" aria-hidden="true"  colspan="3">unused</td>
-                        </tr>
-                    </thead>
-                    <tbody class="govuk-table__body">
-                        @for((benefit, idx) <- model.benefits zip (Stream from 1)) {
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell  xgovuk-!-width-one-half ">
-                                <div id="companyBenefitTerm@idx" class="govuk-!-margin-right-0 govuk-!-padding-right-0" >
-                                    <span class="govuk-visually-hidden">@messages("tai.income.details.benefit.name.announce") </span>
-                                    @benefit.name
-                                </div>
-                            </td>
-                            <td class="govuk-table__cell govuk-table__cell--numeric" >
-                                <div id="companyBenefitDescription@idx" class="govuk-!-margin-right-0 govuk-!-padding-right-0" >
-                                    <span class="govuk-visually-hidden">@Html(messages("tai.income.details.benefit.amount.announce", withPoundPrefixAndSign(MoneyPounds(benefit.amount, 0))))</span>
-                                    <span aria-hidden="true">@pounds(benefit.amount)</span>
-                                </div>
-                            </td>
-                            <td class="govuk-table__cell govuk-table__cell--numeric custom-td-format">
-                                <div id="companyBenefitChangeLinkDescription@idx">
-                                @link(
-                                    id = Some("changeCompanyBenefitLink" + idx.toString),
-                                    url = benefit.changeUrl,
-                                    copy=Messages("tai.updateOrRemove"),
-                                    altCopy=Some(Messages("tai.updateOrRemove") + " " + benefit.name.toLowerCase),
-                                    linkClasses = Nil
-                                )</div>
-                            </td>
-                        </tr>
-                        }
-                    </tbody>
-                </table>
-            } else {
-                <p id="noCompanyBenefitsMessage" class="govuk-body carry-over">@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
-            }
-
-            <p class="icon icon-plus-no-rpt">
-                @link(
-                    id=Some("addMissingCompanyBenefitLink"),
-                    url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url,
-                    copy=Messages("add.missing.company.benefit"))
-            </p>
-
-            @if(model.displayAddCompanyCarLink) {
-                <p class="icon icon-plus-no-rpt">
+                    <p>
                     @link(
-                        id=Some("addMissingCompanyCarLink"),
-                        url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyCarsIform).url,
-                        copy=Messages("tai.income.details.addMissingCompanyCar"))
-                </p>
+                        id = Some("updateEmployer"),
+                        url = controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url,
+                        copy = messages("tai.employment.income.details.updateLinkText", model.empOrPensionName),
+                        linkClasses = Seq("carry-over"))
+                    </p>
+                }
+            } else {
+                @if(model.isPension) {
+                    <span>@messages("tai.rti.down.updatePension")</span>
+                } else {
+                    <span>@messages("tai.rti.down.updateEmployment")</span>
+                }
             }
 
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-half">
+                    <h2 class="govuk-heading-m flush">@messages("tai.income.details.estimatedTaxableIncome")</h2>
+                    <p class="govuk-body break-word">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>
+
+                    @if(model.isUpdateInProgress){
+                        <p class="govuk-inset-text govuk-!-font-size-16">
+                            @messages("tai.income.details.updateInProgress")
+                        </p>
+                    } else {
+                        <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@pounds(model.estimatedTaxableIncome)</span>
+                        <span class="govuk-visually-hidden">@Html(messages("tai.income.details.yourEstimatedTaxableIncome.with.amount", pounds(model.estimatedTaxableIncome)))</span>
+                    }
+
+                    <p>
+                        @link(
+                            id=Some("updateIncome"),
+                            url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
+                            copy=messages("tai.income.details.updateTaxableIncome.full")
+                        )
+                    </p>
+                </div>
+
+                <div class="govuk-grid-column-one-half">
+                    <h2 class="govuk-heading-m flush">@messages("tai.income.details.incomeReceivedToDate")</h2>
+
+                        @if(model.rtiAvailable) {
+                            <p class="govuk-body break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
+                            <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@pounds(model.incomeReceivedToDate)</span>
+                            <span class="govuk-visually-hidden">@Html(messages("tai.income.details.incomeReceivedToDate.screenReader", pounds(model.incomeReceivedToDate)))</span>
+
+                             <p>
+                                 @link(
+                                    id=Some("viewIncomeReceivedToDate"),
+                                    url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
+                                    copy=messages("tai.income.details.checkPaymentsReceived.with.employer", model.empOrPensionName),
+                                     linkClasses=Seq("carry-over")
+                                 )
+                            </p>
+                        } else {
+                            <span>@messages("tai.rti.down")</span>
+                        }
+
+                </div>
+            </div>
+
+            <div class="govuk-!-padding-bottom-7"></div>
+
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-half">
+                    <h2 class="govuk-heading-m flush--top">@messages("tai.taxCode")</h2>
+                    <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.taxCode</span>
+                    <span class="govuk-visually-hidden">@messages("tai.income.details.yourTaxCode", model.taxCode)</span>
+                    <p>
+                        @link(
+                            id=Some("understandTaxCode"),
+                            url=routes.YourTaxCodeController.taxCode(model.empId).url,
+                            copy=messages("tai.income.details.taxCode.linkText")
+                        )
+                    </p>
+                </div>
+
+                <div class="govuk-grid-column-one-half">
+                    <h3 class="govuk-heading-m flush--top">@messages("tai.income.details.ERN")</h3>
+                    <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+                        @{model.taxDistrctNumber}/@{model.payeNumber}
+                    </p>
+                </div>
+            </div>
+
+            <div class="govuk-!-padding-bottom-7"></div>
+
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-half">
+                    @if(model.isPension){
+                        <h2 class="govuk-heading-m flush--top">@messages("tai.pensionNumber")</h2>
+                        <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.pensionOrPayrollNumber</p>
+                        <p class="govuk-visually-hidden">@messages("tai.pension.income.details.pensionNumber.screenReader", model.pensionOrPayrollNumber)</p>
+                    } else {
+                        <h2 class="govuk-heading-m flush--top">@messages("tai.payRollNumber")</h2>
+                        <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.pensionOrPayrollNumber</p>
+                        <p class="govuk-visually-hidden">@messages("tai.employment.income.details.payrollNumber.screenReader", model.pensionOrPayrollNumber)</p>
+                    }
+                </div>
+            </div>
+
+            @if(!model.isPension){
+                <div class="govuk-!-padding-bottom-7"></div>
+                <div class="govuk-grid-row">
+                    <div id="companyBenefitsSection" class="govuk-!-padding-left-3">
+                        <h2 id="companyBenefitsHeading" class="govuk-heading-m carry-over">@Messages("tai.income.details.companyuBenefitsHeading", model.empOrPensionName)</h2>
+                        @if(model.benefits.size > 0) {
+                            <table id="companyBenefitList" class="govuk-table responsive-table-fix">
+                                <thead class="govuk-table__head">
+                                    <tr class="govuk-table__row">
+                                        <td class="govuk-visually-hidden" aria-hidden="true"  colspan="3">unused</td>
+                                    </tr>
+                                </thead>
+                                <tbody class="govuk-table__body">
+                                    @for((benefit, idx) <- model.benefits zip (Stream from 1)) {
+                                        <tr class="govuk-table__row">
+                                            <td class="govuk-table__cell  xgovuk-!-width-one-half ">
+                                                <div id="companyBenefitTerm@idx" class="govuk-!-margin-right-0 govuk-!-padding-right-0" >
+                                                    <span class="govuk-visually-hidden">@messages("tai.income.details.benefit.name.announce") </span>
+                                                    @benefit.name
+                                                </div>
+                                            </td>
+                                            <td class="govuk-table__cell govuk-table__cell--numeric" >
+                                                <div id="companyBenefitDescription@idx" class="govuk-!-margin-right-0 govuk-!-padding-right-0" >
+                                                    <span class="govuk-visually-hidden">@Html(messages("tai.income.details.benefit.amount.announce", withPoundPrefixAndSign(MoneyPounds(benefit.amount, 0))))</span>
+                                                    <span aria-hidden="true">@pounds(benefit.amount)</span>
+                                                </div>
+                                            </td>
+                                            <td class="govuk-table__cell govuk-table__cell--numeric custom-td-format">
+                                                <div id="companyBenefitChangeLinkDescription@idx">
+                                                    @link(
+                                                        id = Some("changeCompanyBenefitLink" + idx.toString),
+                                                        url = benefit.changeUrl,
+                                                        copy=Messages("tai.updateOrRemove"),
+                                                        altCopy=Some(Messages("tai.updateOrRemove") + " " + benefit.name.toLowerCase),
+                                                        linkClasses = Nil
+                                                    )
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        } else {
+                            <p id="noCompanyBenefitsMessage" class="govuk-body carry-over">@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
+                        }
+
+                        <p class="icon icon-plus-no-rpt">
+                            @link(
+                                id=Some("addMissingCompanyBenefitLink"),
+                                url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url,
+                                copy=Messages("add.missing.company.benefit")
+                            )
+                        </p>
+
+                        @if(model.displayAddCompanyCarLink) {
+                            <p class="icon icon-plus-no-rpt">
+                                @link(
+                                    id=Some("addMissingCompanyCarLink"),
+                                    url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyCarsIform).url,
+                                    copy=Messages("tai.income.details.addMissingCompanyCar")
+                                )
+                            </p>
+                        }
+                    </div>
+                </div>
+            }
         </div>
     </div>
-    }
-
-
-</div>
-
+    <div class="print-this">
+        <a class="print-this__link" href="javascript:window.print()">@Messages("tai.label.print")</a>
     </div>
-<div class="print-this">
-    <a class="print-this__link" href="javascript:window.print()">@Messages("tai.label.print")</a>
-</div>
 }

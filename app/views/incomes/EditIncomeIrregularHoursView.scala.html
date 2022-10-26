@@ -27,12 +27,10 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF,  govukErrorSummary: GovukErrorSummary, govukInput : GovukInput, govukButton: GovukButton)
 
-@(incomeUpdateForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm],
-  viewModel: EditIncomeIrregularHoursViewModel)(
+@(incomeUpdateForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm], viewModel: EditIncomeIrregularHoursViewModel)(
     implicit request: Request[_],
     messages: Messages,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-
     ec: scala.concurrent.ExecutionContext)
 
 @header = @{

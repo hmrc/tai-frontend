@@ -23,7 +23,12 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(nameForm: Form[String])(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @main(
     title = Messages("tai.addPensionProvider.addNameForm.title"),
@@ -33,30 +38,29 @@
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url),
     formForErrorSummary = Some(nameForm)
-
 ) {
 
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
-        @if(nameForm.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary(errorList = nameForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-        }
+            @if(nameForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = nameForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
 
-        @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionProviderName(), args=(Symbol("class"), "subsection")) {
-            @govukInput(Input(
-                id = "pensionProviderName",
-                name = "pensionProviderName",
-                label = HmrcPageHeadingLabel(
-                    content = Text(Messages("tai.addPensionProvider.addNameForm.title")),
-                    caption = HmrcSectionCaption(Text(Messages("add.missing.pension")))
-                ),
-                errorMessage = nameForm.errors.asTextErrorMessages.headOption
-            ).withFormField(nameForm("pensionProviderName")))
+            @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionProviderName(), args=(Symbol("class"), "subsection")) {
+                @govukInput(Input(
+                    id = "pensionProviderName",
+                    name = "pensionProviderName",
+                    label = HmrcPageHeadingLabel(
+                        content = Text(Messages("tai.addPensionProvider.addNameForm.title")),
+                        caption = HmrcSectionCaption(Text(Messages("add.missing.pension")))
+                    ),
+                    errorMessage = nameForm.errors.asTextErrorMessages.headOption
+                ).withFormField(nameForm("pensionProviderName")))
 
-            @submit()
-        }
+                @submit()
+            }
 
-          @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
+            @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
         </div>
     </div>
 }

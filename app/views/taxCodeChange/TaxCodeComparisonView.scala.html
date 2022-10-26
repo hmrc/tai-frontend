@@ -26,14 +26,12 @@
 
 @this(mainTemplate: MainTempleteNew)
 
-
 @(taxCodeChangeViewModel: TaxCodeChangeViewModel,appConfig: ApplicationConfig)(
     implicit request: Request[_],
     user: controllers.auth.AuthedUser,
     messages: Messages,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
     ec:  scala.concurrent.ExecutionContext)
-
 
 @header = @{
     ptaHeader(
@@ -54,46 +52,33 @@
     pagePrintable = true
 ) {
 
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
 
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        @header
+            <div>
+                <div>
+                    @displayTaxCodeReasons(taxCodeChangeViewModel.taxCodeChangeReasons)
+                </div>
+                <div class="tax-code-change margin-bottom-xlarge">
+                    @taxCodePairs(taxCodeChangeViewModel.pairs)
+                </div>
+                <div class="govuk-!-margin-bottom-5">
+                    @includes.link(
+                        id=Some("check-your-tax-button"),
+                        url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
+                        copy=messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton"),
+                        linkClasses=Seq("govuk-button")
+                    )
+                </div>
+            </div>
 
-
-    <div>
-        <div>
-            @displayTaxCodeReasons(taxCodeChangeViewModel.taxCodeChangeReasons)
+            <div class="print-this">
+                <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
+            </div>
         </div>
-        <div class="tax-code-change margin-bottom-xlarge">
-            @taxCodePairs(taxCodeChangeViewModel.pairs)
-        </div>
-        <div class="govuk-!-margin-bottom-5">
-            @includes.link(
-            id=Some("check-your-tax-button"),
-            url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
-            copy=messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton"),
-            linkClasses=Seq("govuk-button"))
-        </div>
-
-
-
-     </div>
-
-
-        <div class="print-this">
-            <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
-        </div>
-
     </div>
-
-
-
-
-</div>
-
-
 }
-
 
 @taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord], identifier: String) = {
     @{taxCodeRecord match {
@@ -104,22 +89,21 @@
 
 @displayTaxCodeReasons(taxCodeReasons: Seq[String]) = {
     @if(taxCodeChangeViewModel.isAGenericReason) {
-            <p class="tax-code-reason small govuk-body">
+        <p class="tax-code-reason small govuk-body">
             @messages("taxCode.change.yourTaxCodeChanged.paragraph")
-            </p>
-
+        </p>
     } else {
-            <h2 class="govuk-heading-l"> @messages("taxCode.change.yourTaxCodeChanged.h2")</h2>
-            <p aria-hidden="true" class="govuk-body">@messages("tai.taxCodeComparison.title")</p>
+        <h2 class="govuk-heading-l"> @messages("taxCode.change.yourTaxCodeChanged.h2")</h2>
+        <p aria-hidden="true" class="govuk-body">@messages("tai.taxCodeComparison.title")</p>
 
         <div class ="tax-code-change">
             <span class="govuk-visually-hidden">@messages("tai.taxCodeComparison.title")</span>
             <ul class="govuk-list govuk-list--bullet" id="taxCodeReasons">
-            @for((reason) <- taxCodeReasons) {
-                <li class="tax-code-reason govuk-!-margin-left-9">
-                @reason
-                </li>
-            }
+                @for((reason) <- taxCodeReasons) {
+                    <li class="tax-code-reason govuk-!-margin-left-9">
+                        @reason
+                    </li>
+                }
             </ul>
         </div>
     }

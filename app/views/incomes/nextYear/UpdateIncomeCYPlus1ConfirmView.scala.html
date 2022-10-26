@@ -22,14 +22,13 @@
 
 @this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template)
 
-@(viewModel: ConfirmAmountEnteredViewModel
-)(implicit request: Request[_],
-  messages: Messages,
-  user: controllers.auth.AuthedUser,
-  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-  ec: scala.concurrent.ExecutionContext
+@(viewModel: ConfirmAmountEnteredViewModel)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext
 )
-
 
 @updateIncomeCYPlus1Template(
     employerName = viewModel.employerName,

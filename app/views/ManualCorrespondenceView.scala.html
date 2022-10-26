@@ -21,20 +21,19 @@
 
 @(contactUrl: String)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
-    @header = @{
-        ptaHeader(
-            mainHeadingText = messages("mci.title"),
-            preHeadingText = "",
-            showGdsVersion = true
-        )
-    }
+@header = @{
+    ptaHeader(
+        mainHeadingText = messages("mci.title"),
+        preHeadingText = "",
+        showGdsVersion = true
+    )
+}
 
 @mainTemplate(
     title = messages("mci.title"),
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkContent = None,
     showPtaAccountNav = false
-
 ) {
 
     <div class="govuk-grid-row">
@@ -43,16 +42,10 @@
             <p class="govuk-body">@messages("mci.p1")</p>
 
             <p class="govuk-body">
-                @messages("mci.p2") <a href="@contactUrl">
-            @messages("mci.link.text")</a>.
+                @messages("mci.p2")
+                <a href="@contactUrl">@messages("mci.link.text")</a>.
             </p>
         </div>
     </div>
 
-
-
-
-    }
-
-
-
+}

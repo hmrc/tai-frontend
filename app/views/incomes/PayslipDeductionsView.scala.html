@@ -25,9 +25,12 @@
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], employer: IncomeSource)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
-
+@(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], employer: IncomeSource)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
@@ -37,8 +40,8 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage.url),
     formForErrorSummary = Some(payslipDeductionsForm)
-
 ){
+
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
             @if(payslipDeductionsForm.errors.nonEmpty) {
@@ -47,14 +50,15 @@ messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.
 
             @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipDeductions){
                 @govukRadios(Radios(
-                    fieldset =  Some(
+                    fieldset = Some(
                         Fieldset(
                             legend = Some(
                                 HmrcPageHeadingLegend(
                                     content = Text(messages("tai.payslipDeductions.heading")),
                                     caption = HmrcSectionCaption(Text(messages("tai.payslipDeductions.preHeading", employer.name))),
-                                    classes = "govuk-fieldset__legend--xl carry-over")
-                        )
+                                    classes = "govuk-fieldset__legend--xl carry-over"
+                                )
+                            )
                         )
                     ),
                     hint = Some(Hint(content = Text(messages("tai.payslipDeductions.tellUs")))),

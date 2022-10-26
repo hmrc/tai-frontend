@@ -27,35 +27,36 @@
     pageTitle = Some(messages("tai.service.navTitle")),
     backLinkContent = None
 ){
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-        <header class="page-header">
-            <h1 class="govuk-heading-xl">@Html(s"${messages("tai.deceased.heading.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.part2"))}") </h1>
-        </header>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <header class="page-header">
+                <h1 class="govuk-heading-xl">@Html(s"${messages("tai.deceased.heading.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.part2"))}") </h1>
+            </header>
+        </div>
+        <div class="govuk-grid-column-two-thirds">
+
+            <h2 class="govuk-heading-l">@messages("tai.deceased.question")</h2>
+            <p class="govuk-body">@messages("tai.deceased.callHmrc.paragraph")</p>
+
+            <h3 class="govuk-heading-s govuk-!-font-weight-regular govuk-body govuk-!-margin-0">@messages("tai.deceased.telephone.title")</h3>
+            <p class="govuk-body govuk-!-font-weight-bold govuk-body govuk-!-margin-0">@messages("tai.deceased.telephone.number")</p>
+            <p class="govuk-body govuk-body">@messages("tai.deceased.telephone.advice")</p>
+
+            <h3 class="govuk-heading-s govuk-!-font-weight-regular govuk-body govuk-!-margin-0">@messages("tai.deceased.textphone.title")</h3>
+            <p class="govuk-body govuk-!-font-weight-bold">@messages("tai.deceased.textphone.number")</p>
+
+            <h3 id="outsideUk" class="govuk-heading-s govuk-!-font-weight-regular govuk-body govuk-!-margin-0">@messages("tai.deceased.outsideUK.title")
+                <span class="govuk-visually-hidden">@messages("tai.deceased.telephone")</span>
+            </h3>
+
+            <p class="govuk-body govuk-!-font-weight-bold">@messages("tai.deceased.outsideUK.number")</p>
+
+            <h3 id="openingTimes" class="govuk-visually-hidden">@messages("tai.deceased.opening.times")</h3>
+            <p class="govuk-body govuk-!-margin-0">@messages("tai.deceased.openingTimes.mondayToFriday")</p>
+            <p class="govuk-body govuk-!-padding-bottom-2">@messages("tai.deceased.openingTimes.saturday")</p>
+            <p class="govuk-body govuk-!-margin-0">@messages("tai.deceased.daysClosed")</p>
+        </div>
     </div>
-    <div class="govuk-grid-column-two-thirds">
-
-        <h2 class="govuk-heading-l">@messages("tai.deceased.question")</h2>
-        <p class="govuk-body">@messages("tai.deceased.callHmrc.paragraph")</p>
-
-        <h3 class="govuk-heading-s govuk-!-font-weight-regular govuk-body govuk-!-margin-0">@messages("tai.deceased.telephone.title")</h3>
-        <p class="govuk-body govuk-!-font-weight-bold govuk-body govuk-!-margin-0">@messages("tai.deceased.telephone.number")</p>
-        <p class="govuk-body govuk-body">@messages("tai.deceased.telephone.advice")</p>
-
-        <h3 class="govuk-heading-s govuk-!-font-weight-regular govuk-body govuk-!-margin-0">@messages("tai.deceased.textphone.title")</h3>
-        <p class="govuk-body govuk-!-font-weight-bold">@messages("tai.deceased.textphone.number")</p>
-
-        <h3 id="outsideUk" class="govuk-heading-s govuk-!-font-weight-regular govuk-body govuk-!-margin-0">@messages("tai.deceased.outsideUK.title")
-            <span class="govuk-visually-hidden">@messages("tai.deceased.telephone")</span>
-        </h3>
-
-        <p class="govuk-body govuk-!-font-weight-bold">@messages("tai.deceased.outsideUK.number")</p>
-
-        <h3 id="openingTimes" class="govuk-visually-hidden">@messages("tai.deceased.opening.times")</h3>
-        <p class="govuk-body govuk-!-margin-0">@messages("tai.deceased.openingTimes.mondayToFriday")</p>
-        <p class="govuk-body govuk-!-padding-bottom-2">@messages("tai.deceased.openingTimes.saturday")</p>
-        <p class="govuk-body govuk-!-margin-0">@messages("tai.deceased.daysClosed")</p>
-    </div>
-</div>
 
  }

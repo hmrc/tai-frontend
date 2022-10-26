@@ -16,7 +16,6 @@
 
 @(url: Call, linkText: Option[String] = None)(implicit messages: Messages)
 
-
 @cancelText = @{if(linkText.isDefined) linkText else Some(messages("tai.cancel"))}
 
 <div class="subsection">
@@ -25,5 +24,5 @@
         url=url.toString,
         copy=cancelText.getOrElse(""),
         linkClasses=Seq("govuk-link govuk-body")
-        )}
+    )}
 </div>

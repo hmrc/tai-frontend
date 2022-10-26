@@ -24,14 +24,13 @@
 
 @(taxCodeViewModel: TaxCodeViewModelPreviousYears)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-
 @header = @{
     ptaHeader(
-    displayBackLink = false,
-    mainHeadingText = taxCodeViewModel.mainHeading,
-    preHeadingText = taxCodeViewModel.preHeader,
-    showGdsVersion = true,
-    maybeUserName = taxCodeViewModel.maybeUserName
+        displayBackLink = false,
+        mainHeadingText = taxCodeViewModel.mainHeading,
+        preHeadingText = taxCodeViewModel.preHeader,
+        showGdsVersion = true,
+        maybeUserName = taxCodeViewModel.maybeUserName
     )
 }
 
@@ -55,27 +54,26 @@
 
                 @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
 
-                <div class="section govuk-!-margin-bottom-9">
+                    <div class="section govuk-!-margin-bottom-9">
 
                         <h2 class="govuk-!-margin-top-5 govuk-heading-m" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
 
-                    <ul id="taxCodeList@{listIdx.toString}" class="govuk-!-padding-0 govuk- tai-description-list flush">
+                        <ul id="taxCodeList@{listIdx.toString}" class="govuk-!-padding-0 govuk- tai-description-list flush">
+                            @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
+                                <li>
+                                    <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
+                                        <span class="govuk-visually-hidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
+                                        <span aria-hidden="true">@taxCodeTerm</span>
+                                    </div>
+                                    <div class="fixed-small" id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
+                                        <span class="govuk-visually-hidden">@messages("tai.taxCode.definition.announce") </span>
+                                        <span class="govuk-body">@Html(taxCodeList.descriptionItems(taxCodeTerm)) </span>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
 
-                        @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
-                        <li>
-                            <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
-                                <span class="govuk-visually-hidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
-                                <span aria-hidden="true">@taxCodeTerm</span>
-                            </div>
-                            <div class="fixed-small" id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
-                                <span class="govuk-visually-hidden">@messages("tai.taxCode.definition.announce") </span>
-                                <span class="govuk-body">@Html(taxCodeList.descriptionItems(taxCodeTerm)) </span>
-                            </div>
-                        </li>
-                        }
-                    </ul>
-
-                </div>
+                    </div>
                 }
 
             </div>
@@ -85,7 +83,4 @@
         </div>
 
     </div>
-
-
-
 }

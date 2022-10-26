@@ -29,21 +29,21 @@
     backLinkContent = None,
 ) {
 
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        @govukPanel(Panel(
-            title = Text(messages("tai.income.previousYears.confirmation.heading"))
-        ))
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @govukPanel(Panel(
+                title = Text(messages("tai.income.previousYears.confirmation.heading"))
+            ))
 
-        @confirmation_summary()
+            @confirmation_summary()
 
-        @includes.link(
-          id=Some("returnToSummary"),
-          copy=Messages("tai.income.previousYears.confirmation.back"),
-          url = controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev).url,
-          linkClasses=Seq("govuk-button")
-        )
+            @includes.link(
+              id=Some("returnToSummary"),
+              copy=Messages("tai.income.previousYears.confirmation.back"),
+              url = controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev).url,
+              linkClasses=Seq("govuk-button")
+            )
+        </div>
     </div>
-</div>
 
 }

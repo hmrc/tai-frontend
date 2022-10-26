@@ -26,29 +26,29 @@
 @()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @main(
-title = Messages("tai.income.previousYears.confirmation.heading"),
-pageTitle = Some(Messages("tai.service.navTitle")),
-authedUser = Some(user),
-backLinkContent = None,
+    title = Messages("tai.income.previousYears.confirmation.heading"),
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    authedUser = Some(user),
+    backLinkContent = None,
 ) {
 
-<div class="govuk-grid-row">
+    <div class="govuk-grid-row">
 
-    <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-two-thirds">
 
-        @confirmationSuccessBanner()
+            @confirmationSuccessBanner()
 
-        @confirmation_summary("tai.confirmation.paraTwo")
+            @confirmation_summary("tai.confirmation.paraTwo")
 
-        @includes.link(
-        id=Some("returnToSummary"),
-        copy=Messages("return.to.your.income.tax.summary"),
-        url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
-        isButton=true,
-        linkClasses=Seq("govuk-button", "govuk-!-margin-top-4")
-        )
+            @includes.link(
+                id=Some("returnToSummary"),
+                copy=Messages("return.to.your.income.tax.summary"),
+                url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
+                isButton=true,
+                linkClasses=Seq("govuk-button", "govuk-!-margin-top-4")
+            )
+
+        </div>
 
     </div>
-
-</div>
 }

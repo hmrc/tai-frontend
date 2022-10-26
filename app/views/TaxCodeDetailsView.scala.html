@@ -25,7 +25,6 @@
 
 @(taxCodeViewModel: TaxCodeViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-
 @header = @{
     ptaHeader(
     displayBackLink = false,
@@ -53,9 +52,6 @@
                 <span>@taxCodeViewModel.ledeMessage</span>
             </p>
 
-
-
-
             <div class="govuk-!-padding-bottom-3">
                 @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
                     <h2 class="govuk-heading-m under-line break-word-only" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
@@ -82,7 +78,8 @@
                         @link(
                             id = Some("employmentDetails"),
                             url = routes.IncomeSourceSummaryController.onPageLoad(empId).url,
-                            copy = taxCodeViewModel.incomeDetailsMessage)</p>
+                            copy = taxCodeViewModel.incomeDetailsMessage)
+                    </p>
                 </div>
             }
         </div>

@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-
 @import uk.gov.hmrc.play.views.html.layouts._
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
@@ -27,9 +26,12 @@
 
 @this(main: MainTempleteNew, loginStatus: LoginStatus)
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
-request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
-
+@(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleEstimatedIncomeTaxViewModel, iFormLinks: Html)(
+    implicit request: AuthenticatedRequest[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext)
 
 @taxYearRangeString = @{
     viewModel.currentTaxYearRangeHtmlNonBreak
@@ -106,11 +108,9 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
             </div>
         </div>
 
-    <div class="hide-for-print">
-        @navigationLinks()
+        <div class="hide-for-print">
+            @navigationLinks()
+        </div>
+
     </div>
-
-
-    </div>
-
 }

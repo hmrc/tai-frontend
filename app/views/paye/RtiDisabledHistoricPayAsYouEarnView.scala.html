@@ -25,9 +25,11 @@
 
 @this(mainTemplate: MainTempleteNew)
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
-messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
-
+@(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, appConfig: ApplicationConfig)(
+    implicit request: AuthenticatedRequest[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @employmentPairsList = @{viewModel.employments.sliding(2, 2).toList}
 @pensionPairsList = @{viewModel.pensions.sliding(2, 2).toList}
@@ -37,7 +39,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
         mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
         preHeadingText = messages("tai.paye.lastTaxYear.preHeading"),
         displayBackLink = false,
-        showGdsVersion = true)
+        showGdsVersion = true
+    )
 }
 
 @mainTemplate(
@@ -48,73 +51,73 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     backLinkId = "returnToChooseTaxYearLink"
 ){
 
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        @header
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @header
+        </div>
     </div>
-</div>
 
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <div class="inner-block" id="lastTaxYear">
-            @if(!viewModel.hasEmploymentsOrPensions) {
-                <div class="flush--bottom soft--bottom" id="rtiDown">
-                    <p id="rtiDownMessage" class="govuk-body">@messages("tai.rti_down_message")</p>
-                    <p id="rtiDownContact" class="govuk-body">@messages("tai.rti_down_message_contact")</p>
-                </div>
-            } else {
-                <div id="lastTaxYearIncome">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <div class="inner-block" id="lastTaxYear">
+                @if(!viewModel.hasEmploymentsOrPensions) {
+                    <div class="flush--bottom soft--bottom" id="rtiDown">
+                        <p id="rtiDownMessage" class="govuk-body">@messages("tai.rti_down_message")</p>
+                        <p id="rtiDownContact" class="govuk-body">@messages("tai.rti_down_message_contact")</p>
+                    </div>
+                } else {
+                    <div id="lastTaxYearIncome">
 
-                    @if(employmentPairsList.nonEmpty) {
-                        <h2 id="lastYearEmploymentHeading" class="govuk-heading-m heading-section">
-                            @messages("tai.paye.incomeEmployment.heading")
-                        </h2>
+                        @if(employmentPairsList.nonEmpty) {
+                            <h2 id="lastYearEmploymentHeading" class="govuk-heading-m heading-section">
+                                @messages("tai.paye.incomeEmployment.heading")
+                            </h2>
 
-                        @incomeList(employmentPairsList, "employment")
-                    }
+                            @incomeList(employmentPairsList, "employment")
+                        }
 
-                    @if(pensionPairsList.nonEmpty) {
-                        <h2 id="lastYearPensionHeading" class="govuk-heading-m heading-section">
-                            @messages("tai.paye.incomePension.heading")
-                        </h2>
+                        @if(pensionPairsList.nonEmpty) {
+                            <h2 id="lastYearPensionHeading" class="govuk-heading-m heading-section">
+                                @messages("tai.paye.incomePension.heading")
+                            </h2>
 
-                        @incomeList(pensionPairsList, "pension")
-                    }
-                </div>
-            }
+                            @incomeList(pensionPairsList, "pension")
+                        }
+                    </div>
+                }
 
-            <h3 class="govuk-heading-m heading-section">@messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
-            <p class="govuk-body">
-                @messages("tai.paye.lastTaxYear.incorrectInformation.text")
-                @link(
-                    url=controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(viewModel.taxYear).url,
-                    copy=messages("tai.paye.lastTaxYear.incorrectInformation.link"),
-                    id=Some("updateEmployment")
-                )
-            </p>
-
-            @if(viewModel.p800ServiceIsAvailable) {
+                <h3 class="govuk-heading-m heading-section">@messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
                 <p class="govuk-body">
-                    @messages("tai.paye.lastTaxYear.checkIncomeTax.text")
+                    @messages("tai.paye.lastTaxYear.incorrectInformation.text")
                     @link(
-                        url=appConfig.taxYouPaidStatus.toString,
-                        copy=messages("tai.paye.lastTaxYear.checkIncomeTax.link"),
-                        id=Some("p800Link")
+                        url=controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(viewModel.taxYear).url,
+                        copy=messages("tai.paye.lastTaxYear.incorrectInformation.link"),
+                        id=Some("updateEmployment")
                     )
-                    @messages("tai.paye.lastTaxYear.checkIncomeTax.for", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year))
                 </p>
-            }
-        </div>
 
-    </div>
-    @if(appConfig.numberOfPreviousYearsToShow > 1) {
-        <div class="govuk-grid-column-one-third">
-            <div class="inner-block">
-                @includes.previousYearsSideNav(viewModel.taxYear, appConfig.numberOfPreviousYearsToShow)
+                @if(viewModel.p800ServiceIsAvailable) {
+                    <p class="govuk-body">
+                        @messages("tai.paye.lastTaxYear.checkIncomeTax.text")
+                        @link(
+                            url=appConfig.taxYouPaidStatus.toString,
+                            copy=messages("tai.paye.lastTaxYear.checkIncomeTax.link"),
+                            id=Some("p800Link")
+                        )
+                        @messages("tai.paye.lastTaxYear.checkIncomeTax.for", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year))
+                    </p>
+                }
             </div>
+
         </div>
-    }
-</div>
+        @if(appConfig.numberOfPreviousYearsToShow > 1) {
+            <div class="govuk-grid-column-one-third">
+                <div class="inner-block">
+                    @includes.previousYearsSideNav(viewModel.taxYear, appConfig.numberOfPreviousYearsToShow)
+                </div>
+            </div>
+        }
+    </div>
 
 }
 
@@ -141,18 +144,17 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
                     <p class="govuk-body">
                         @employment.payrollNumber.map{ payrollNumber =>
-                                @if(employment.isPension) {
-                                    @textForScreenReader(
-                                        s"${messages("tai.pensionNumber")}: ${payrollNumber}",
-                                        messages("tai.pension.income.details.pensionNumber.screenReader", payrollNumber)
-                                    )
-                                } else {
-                                    @textForScreenReader(
-                                        messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber),
-                                        messages("tai.employment.income.details.payrollNumber.screenReader", payrollNumber)
-                                    )
-                                }
-
+                            @if(employment.isPension) {
+                                @textForScreenReader(
+                                    s"${messages("tai.pensionNumber")}: ${payrollNumber}",
+                                    messages("tai.pension.income.details.pensionNumber.screenReader", payrollNumber)
+                                )
+                            } else {
+                                @textForScreenReader(
+                                    messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber),
+                                    messages("tai.employment.income.details.payrollNumber.screenReader", payrollNumber)
+                                )
+                            }
                         }
                     </p>
                 </div>

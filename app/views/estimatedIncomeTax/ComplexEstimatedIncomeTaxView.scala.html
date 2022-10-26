@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-
 @import uk.gov.hmrc.play.views.html.layouts._
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
@@ -28,14 +27,15 @@
 
 @this(main: MainTempleteNew, loginStatus: LoginStatus)
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ComplexEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
-request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
-
+@(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ComplexEstimatedIncomeTaxViewModel, iFormLinks: Html)(
+    implicit request: AuthenticatedRequest[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext)
 
 @taxYearRangeString = @{
     viewModel.currentTaxYearRangeHtmlNonBreak
-
-
 }
 
 @header = @{
@@ -46,7 +46,7 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
         preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading"),
         showGdsVersion = true,
         maybeUserName=Some(request.fullName)
-)
+    )
 }
 
 @main(
@@ -55,13 +55,13 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
     backLinkContent= Some(Messages("tai.back-link.upper")),
     backLinkId = "backLink",
     authedUser = Some(user),
-    pagePrintable=true){
+    pagePrintable=true
+){
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             @header
         </div>
-
     </div>
 
     <div class="govuk-grid-row">
@@ -74,7 +74,7 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
                                 @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
                             </h2>
                             <p id="total-estimated-income" class=" govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
-                            @pounds(viewModel.incomeEstimate)
+                                @pounds(viewModel.incomeEstimate)
                             </p>
                         </div>
                         <div class="govuk-grid-column-one-half">
@@ -82,7 +82,7 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
                                 @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
                             </h2>
                             <p id="income-tax-estimate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
-                            @pounds(viewModel.incomeTaxEstimate)
+                                @pounds(viewModel.incomeTaxEstimate)
                             </p>
                         </div>
                     </div>
@@ -116,5 +116,4 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
             @navigationLinks()
         </div>
     </div>
-
 }

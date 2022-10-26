@@ -30,11 +30,14 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-
 @this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukCharacterCount : GovukCharacterCount, govukErrorSummary: GovukErrorSummary)
 
-@(name: String, id:Int, whatDoYouWantToTellUsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
-
+@(name: String, id:Int, whatDoYouWantToTellUsForm: Form[String])(
+    implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(
     title = Messages("tai.updatePension.whatDoYouWantToTellUs.pagetitle"),
@@ -46,32 +49,32 @@
     formForErrorSummary = Some(whatDoYouWantToTellUsForm)
 ) {
 
-<div class = "govuk-grid-row">
-    <div class = "govuk-grid-column-two-thirds">
-        @if(whatDoYouWantToTellUsForm.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary(errorList = whatDoYouWantToTellUsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-        }
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @if(whatDoYouWantToTellUsForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = whatDoYouWantToTellUsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
 
-        @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitWhatDoYouWantToTellUs(), args=(Symbol("class"), "subsection")) {
-            @govukCharacterCount(CharacterCount(
-                id = "pensionDetails",
-                name = "pensionDetails",
-                label = HmrcPageHeadingLabel(
-                    content = Text(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", name)),
-                    caption = HmrcSectionCaption(Text(Messages("tai.updatePension.preHeading")))
-                ),
-                value = whatDoYouWantToTellUsForm.data.get("pensionDetails"),
-                maxLength = Some(WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit),
-                hint = Some(Hint(
-                  content = Text(Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.text", WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit))
-                )),
-                errorMessage = whatDoYouWantToTellUsForm.errors.asTextErrorMessages.headOption
-              ))
+            @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitWhatDoYouWantToTellUs(), args=(Symbol("class"), "subsection")) {
+                @govukCharacterCount(CharacterCount(
+                    id = "pensionDetails",
+                    name = "pensionDetails",
+                    label = HmrcPageHeadingLabel(
+                        content = Text(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", name)),
+                        caption = HmrcSectionCaption(Text(Messages("tai.updatePension.preHeading")))
+                    ),
+                    value = whatDoYouWantToTellUsForm.data.get("pensionDetails"),
+                    maxLength = Some(WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit),
+                    hint = Some(Hint(
+                      content = Text(Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.text", WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit))
+                    )),
+                    errorMessage = whatDoYouWantToTellUsForm.errors.asTextErrorMessages.headOption
+                ))
 
-            @submit()
-        }
+                @submit()
+            }
 
-        @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(id))
+            @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(id))
+        </div>
     </div>
-</div>
 }

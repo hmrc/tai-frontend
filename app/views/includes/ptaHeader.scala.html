@@ -20,16 +20,16 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @(formForErrorSummary: Option[Form[_]] = None,
-  displayBackLink: Boolean = false,
-  mainHeadingText: String,
-  preHeadingText: String,
-  maybeUserName: Option[String] = None,
-  headerWidthClasses: Option[String] = Some("column-two-thirds"),
-  preHeadingAccessibleAnnouncement: String = "",
-  customBackLinkContent: Option[Html] = None,
-  additionalTopLinkContent: Option[Html] = None,
-  showGdsVersion: Boolean = false,
-  govukErrorSummary: Option[GovukErrorSummary] = None
+    displayBackLink: Boolean = false,
+    mainHeadingText: String,
+    preHeadingText: String,
+    maybeUserName: Option[String] = None,
+    headerWidthClasses: Option[String] = Some("column-two-thirds"),
+    preHeadingAccessibleAnnouncement: String = "",
+    customBackLinkContent: Option[Html] = None,
+    additionalTopLinkContent: Option[Html] = None,
+    showGdsVersion: Boolean = false,
+    govukErrorSummary: Option[GovukErrorSummary] = None
 )(implicit m: Messages)
 
 @preHeadingHidden = @{
@@ -49,9 +49,9 @@
         </div>
 
         @if(additionalTopLinkContent.isDefined){
-        <div class="column-one-third text--right">
-            @additionalTopLinkContent.get
-        </div>
+            <div class="column-one-third text--right">
+                @additionalTopLinkContent.get
+            </div>
         }
 
     </div>
@@ -59,24 +59,26 @@
 
 @printHeader
 
-
 @if(showGdsVersion) {
     @if(formForErrorSummary.exists(_.errors.nonEmpty) && govukErrorSummary.isDefined) {
         @govukErrorSummary.get(ErrorSummary(errorList = formForErrorSummary.get.errors.asTextErrorLinks, title = Text(Messages("tai.income.error.form.summary"))))
     }
     <span class="govuk-caption-xl carry-over"><span class="govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)</span>
     <h1 class="govuk-heading-xl heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
-}else {
+} else {
     <div class="grid-row">
         <div class="@headerWidthClasses.getOrElse("")">
             @if(formForErrorSummary.isDefined) {
                 @errorSummary(Messages("tai.income.error.form.summary"), formForErrorSummary.get, Seq("flush--bottom"))
             }
-        <header class="page-heading soft--top">
-            <h1 class="govuk-heading-xl heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
-            <h1 class="govuk-heading-xl heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
-            <p class="heading-secondary break-word hide-for-print govuk-visually-hidden"><span class="visuallyhidden govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)</p>
-        </header>
+            <header class="page-heading soft--top">
+                <h1 class="govuk-heading-xl heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
+                <h1 class="govuk-heading-xl heading-xlarge heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
+                <p class="heading-secondary break-word hide-for-print govuk-visually-hidden">
+                    <span class="visuallyhidden govuk-visually-hidden">@preHeadingHidden </span>
+                    @Html(preHeadingText)
+                </p>
+            </header>
         </div>
     </div>
 }

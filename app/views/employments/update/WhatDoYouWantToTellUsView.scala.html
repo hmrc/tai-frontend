@@ -27,20 +27,14 @@
 @this(main: MainTempleteNew,
       form: FormWithCSRF,
       govukButton: GovukButton,
-      govukCharacterCount: GovukCharacterCount
-    )
+      govukCharacterCount: GovukCharacterCount)
 
-
-@(
-    viewmodel: EmploymentViewModel,
-    updateEmploymentDetailsForm: Form[String]
-)( implicit request: Request[_],
+@(viewmodel: EmploymentViewModel, updateEmploymentDetailsForm: Form[String])(
+    implicit request: Request[_],
     user: controllers.auth.AuthedUser,
     messages: Messages,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-    ec: ExecutionContext
-)
-
+    ec: ExecutionContext)
 
 @header = @{
     ptaHeader(
@@ -60,39 +54,34 @@
     formForErrorSummary = Some(updateEmploymentDetailsForm),
 ) {
 
-
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
-    @form(action = controllers.employments.routes.UpdateEmploymentController.submitUpdateEmploymentDetails(viewmodel.empId), args=(Symbol("class"), "subsection")) {
+            @form( action = controllers.employments.routes.UpdateEmploymentController.submitUpdateEmploymentDetails(viewmodel.empId),
+                args=(Symbol("class"), "subsection")) {
 
-    @govukCharacterCount(uk.gov.hmrc.govukfrontend.views.html.components.CharacterCount(
-        id = "employmentDetails",
-        name = "employmentDetails",
-        maxLength = Some(UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit),
-        value = updateEmploymentDetailsForm.data.get("employmentDetails"),
-                label = (
-                    HmrcPageHeadingLabel(
-                        content = Text(Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", viewmodel.employerName)),
-                        caption = HmrcSectionCaption(Text(messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"))),
-                        classes = "govuk-label--xl carry-over"
-                    )
-                ),
+                @govukCharacterCount(uk.gov.hmrc.govukfrontend.views.html.components.CharacterCount(
+                    id = "employmentDetails",
+                    name = "employmentDetails",
+                    maxLength = Some(UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit),
+                    value = updateEmploymentDetailsForm.data.get("employmentDetails"),
+                    label = (
+                        HmrcPageHeadingLabel(
+                            content = Text(Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", viewmodel.employerName)),
+                            caption = HmrcSectionCaption(Text(messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"))),
+                            classes = "govuk-label--xl carry-over"
+                        )
+                    ),
+                    hint = Some(Hint(
+                      content = Text(Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.text", UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit))
+                    )),
+                ))
 
-        hint = Some(Hint(
-          content = Text(Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.text", UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit))
-        )),
-      ))
-
-    @govukButton(Button(content = Text(messages("tai.continue"))))
-
-    }
-
+                @govukButton(Button(content = Text(messages("tai.continue"))))
+            }
 
             <div class="govuk-link govuk-body-m">
-@cancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(viewmodel.empId))
+                @cancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(viewmodel.empId))
             </div>
-
-        </div></div>
+        </div>
+    </div>
 }
-
-

@@ -23,7 +23,6 @@
 
 @(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: AuthenticatedRequest[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-
 @header = @{
     ptaHeader(
         formForErrorSummary = None,
@@ -31,8 +30,8 @@
         mainHeadingText = Messages("taxCode.change.yourTaxFreeAmount.title"),
         preHeadingText = Messages("taxCode.change.journey.preHeading"),
         showGdsVersion = true,
-        maybeUserName = Some(request.fullName))
-
+        maybeUserName = Some(request.fullName)
+    )
 }
 
 @mainTemplate(
@@ -41,44 +40,42 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     pagePrintable = true
-    ) {
+) {
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-        @header
+            @header
         </div>
     </div>
 
     <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-two-thirds">
 
-        <div class="grid-row">
-            <h2 class="govuk-caption-l">@Messages("taxCode.change.yourTaxFreeAmount.desc")</h2>
-        </div>
+            <div class="grid-row">
+                <h2 class="govuk-caption-l">@Messages("taxCode.change.yourTaxFreeAmount.desc")</h2>
+            </div>
 
+            <div id="yourTaxFreeAmount" class="govuk-!-margin-top-7">
+                    <h3 class="govuk-heading-m">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h3>
+                    <div class="margin-bottom-large">
+                        @taxFreeAmountSummaryComparison(currentTaxFreeAmount, taxCodeChange = true)
+                    </div>
+            </div>
 
-        <div id="yourTaxFreeAmount" class="govuk-!-margin-top-7">
-                <h3 class="govuk-heading-m">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h3>
-                <div class="margin-bottom-large">
-                @taxFreeAmountSummaryComparison(currentTaxFreeAmount, taxCodeChange = true)
+            <div class="grid-row">
+                <div class="form-group">
+                    @includes.link(
+                        id = Some("seeWhatHappensNext"),
+                        copy = Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link"),
+                        url = routes.TaxCodeChangeController.whatHappensNext.url,
+                        linkClasses = Seq("govuk-button")
+                    )
                 </div>
-
-        </div>
-
-        <div class="grid-row">
-            <div class="form-group">
-            @includes.link(
-                id = Some("seeWhatHappensNext"),
-                copy = Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link"),
-                url = routes.TaxCodeChangeController.whatHappensNext.url,
-                linkClasses = Seq("govuk-button")
-            )
+            </div>
+            <div class="print-this">
+                <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
             </div>
         </div>
-        <div class="print-this">
-            <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
-        </div>
-    </div>
 
     </div>
 }

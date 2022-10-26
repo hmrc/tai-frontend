@@ -18,9 +18,7 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.link
 
-@(incomeSources: Seq[IncomeSourceViewModel],
-  typeLabel: String,
-  accessibleAmountPrefix: String)(implicit messages: Messages)
+@(incomeSources: Seq[IncomeSourceViewModel], typeLabel: String, accessibleAmountPrefix: String)(implicit messages: Messages)
 
 @pairsList = @{incomeSources.sliding(2, 2).toList}
 
@@ -29,51 +27,51 @@
     <div class="govuk-grid-row grid-row">
 
         @for((incomeSource, idx) <- pair zip (Stream from pidx)) {
-        <div id="@typeLabel@idx" class="subsection flush--top @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-column-one-half}">
+            <div id="@typeLabel@idx" class="subsection flush--top @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-column-one-half}">
 
-            <h3 id="@{typeLabel}@{idx}Heading" class="govuk-heading-l heading-large flush break-word-only">@incomeSource.name</h3>
+                <h3 id="@{typeLabel}@{idx}Heading" class="govuk-heading-l heading-large flush break-word-only">@incomeSource.name</h3>
 
-            <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark flush--top ">
-                <span class="govuk-visually-hidden ">@accessibleAmountPrefix </span>
-                <span class="faded-text-dark flush--top">@incomeSource.amount</span>
-            </p>
+                <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark flush--top ">
+                    <span class="govuk-visually-hidden ">@accessibleAmountPrefix </span>
+                    <span class="faded-text-dark flush--top">@incomeSource.amount</span>
+                </p>
 
-            <p class="govuk-body flush--top">
-                @if(incomeSource.displayTaxCode) {
-                    @incomeSource.taxCodeUrl.map { taxCodeUrl =>
-                        @link(
-                            id = Some(s"${typeLabel}${idx}TaxCodeLink"),
-                            url = taxCodeUrl.url,
-                            copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode),
-                            linkClasses = Seq("display-tax-code-for-print"))
+                <p class="govuk-body flush--top">
+                    @if(incomeSource.displayTaxCode) {
+                        @incomeSource.taxCodeUrl.map { taxCodeUrl =>
+                            @link(
+                                id = Some(s"${typeLabel}${idx}TaxCodeLink"),
+                                url = taxCodeUrl.url,
+                                copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode),
+                                linkClasses = Seq("display-tax-code-for-print")
+                            )
+                        }
                     }
-                }
-                @if(incomeSource.displayPayrollNumber && typeLabel=="employment"){
-                    <span id="@{typeLabel}@{idx}PayeNumber" class="carry-over govuk-!-display-block display-block ">@messages("tai.income.details.ERN"):@incomeSource.taxDistrictNumber/@incomeSource.payeNumber</span>
-                }
+                    @if(incomeSource.displayPayrollNumber && typeLabel=="employment"){
+                        <span id="@{typeLabel}@{idx}PayeNumber" class="carry-over govuk-!-display-block display-block ">@messages("tai.income.details.ERN"):@incomeSource.taxDistrictNumber/@incomeSource.payeNumber</span>
+                    }
 
-                @if(incomeSource.displayPayrollNumber && typeLabel == "pension"){
-                <span id="@{typeLabel}@{idx}PensionNumber" class="carry-over govuk-!-display-block display-block ">@Messages("tai.incomeTaxSummary.pensionNumber.prefix", incomeSource.payrollNumber)</span>
+                    @if(incomeSource.displayPayrollNumber && typeLabel == "pension"){
+                    <span id="@{typeLabel}@{idx}PensionNumber" class="carry-over govuk-!-display-block display-block ">@Messages("tai.incomeTaxSummary.pensionNumber.prefix", incomeSource.payrollNumber)</span>
+                    }
+
+                    @if(incomeSource.displayEndDate){
+                        <span id="@{typeLabel}@{idx}EndDate" class="govuk-!-display-block display-block">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</span>
+                    }
+
+                </p>
+
+                @if(incomeSource.displayDetailsLink){
+                    <p class="govuk-body flush--top">
+                        @link(
+                            id=Some(s"${typeLabel}${idx}DetailsLink"),
+                            url=incomeSource.detailsLinkUrl,
+                            copy=incomeSource.detailsLinkLabel,
+                            altCopy=Some(Messages("tai.updateOrRemove.fromOtherSources", incomeSource.name))
+                        )
+                    </p>
                 }
-
-                @if(incomeSource.displayEndDate){
-                    <span id="@{typeLabel}@{idx}EndDate" class="govuk-!-display-block display-block">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</span>
-                }
-
-            </p>
-
-            @if(incomeSource.displayDetailsLink){
-            <p class="govuk-body flush--top">
-                @link(
-                    id=Some(s"${typeLabel}${idx}DetailsLink"),
-                    url=incomeSource.detailsLinkUrl,
-                    copy=incomeSource.detailsLinkLabel,
-                    altCopy=Some(Messages("tai.updateOrRemove.fromOtherSources", incomeSource.name))
-                )
-            </p>
-            }
-        </div>
+            </div>
         }
-
     </div>
 }

@@ -22,12 +22,10 @@
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import includes.cancelLink
 
-
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(main: MainTempleteNew, form: FormWithCSRF,  govukErrorSummary: GovukErrorSummary, govukInput : GovukInput)
-
 
 @(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm],
     hasMultipleIncomes: Boolean,
@@ -41,7 +39,6 @@
     ec: scala.concurrent.ExecutionContext
 )
 
-
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(income),
@@ -52,7 +49,6 @@
     )
 }
 
-
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRange),
@@ -61,9 +57,7 @@
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(employmentId).url),
     formForErrorSummary = Some(income)
-
 )  {
-
 
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
@@ -79,60 +73,58 @@
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
 
-    <div>
-        <p class="govuk-body">@messages("tai.incomes.edit.average.hours", TaxYearRangeUtil.currentTaxYearRange)</p>
-    </div>
-        <div class="govuk-details__text">
-            <h2 class="govuk-heading-s ">@messages("tai.incomes.edit.what.should.you.include")</h2>
-            <p class="govuk-body">@messages("tai.incomes.edit.what.should.you.include.payments")</p>
-            <h2 class="govuk-heading-s heading-small">@messages("tai.incomes.edit.what.should.you.deduct")</h2>
-            <p class="govuk-body" >@messages("tai.incomes.edit.what.should.you.deduct.payments")</p>
-    </div>
-
-    <div class = "govuk-!-margin-top-8">
-        <h2 class="govuk-heading-m" >@messages("tai.incomes.edit.incomeTax.update.heading", income("name").value.getOrElse(""))</h2>
-        <p class="govuk-body">@messages("tai.incomes.monetaryAmount.format.valid")</p>
-
-        @form(action = controllers.routes.IncomeController.editRegularIncome(employmentId)){
-        <input type="hidden" name="payToDate" value="@payToDate">
-        <div class="form-field-group @if(income.hasErrors) {govuk-form-group govuk-form-group--error}">
-
-            @income.errors(income("newAmount").name).map{ error =>
-                <p id="tellUsAboutEmploymentForm-error" class="govuk-error-message">
-                @messages(error.message)
-                </p>
-            }
-
-
-            @compareValueInputNew(
-                govukInput,
-                previousLabel = messages("tai.incomes.amount.current"),
-                newLabel = messages("tai.incomes.amount.new"),
-                previousFieldName = income("oldAmount").name,
-                previousFieldValue = income("oldAmount").value.getOrElse("0"),
-                newField = income("newAmount")
-            )
-
-
-                <input type="hidden" id="name" name='@income("name").name' value='@income("name").value' />
-                <input type="hidden" id="worksNumber" name='@income("worksNumber").name' value='@income("worksNumber").value' />
-                <input type="hidden" id="jobTitle" name='@income("jobTitle").name' value='@income("jobTitle").value' />
-                <input type="hidden" id="startDate" name='@income("startDate").name' value='@income("startDate").value' />
-                <input type="hidden" id="endDate" name='@income("endDate").name' value='@income("endDate").value' />
-                <input type="hidden" id="description" name='@income("description").name' value='@income("description").value' />
-                <input type="hidden" id="employmentId" name='@income("employmentId").name' value='@income("employmentId").value' />
-                <input type="hidden" id="hasMultipleIncomes" name='@income("hasMultipleIncomes").name' value='@income("hasMultipleIncomes").value' />
+            <div>
+                <p class="govuk-body">@messages("tai.incomes.edit.average.hours", TaxYearRangeUtil.currentTaxYearRange)</p>
+            </div>
+            <div class="govuk-details__text">
+                <h2 class="govuk-heading-s ">@messages("tai.incomes.edit.what.should.you.include")</h2>
+                <p class="govuk-body">@messages("tai.incomes.edit.what.should.you.include.payments")</p>
+                <h2 class="govuk-heading-s heading-small">@messages("tai.incomes.edit.what.should.you.deduct")</h2>
+                <p class="govuk-body" >@messages("tai.incomes.edit.what.should.you.deduct.payments")</p>
             </div>
 
-            <div class="form-field-groupX">
-                <input type="submit" class="govuk-button" value='@messages("tai.continue")'/>
-            </div>
+            <div class = "govuk-!-margin-top-8">
+                <h2 class="govuk-heading-m">@messages("tai.incomes.edit.incomeTax.update.heading", income("name").value.getOrElse(""))</h2>
+                <p class="govuk-body">@messages("tai.incomes.monetaryAmount.format.valid")</p>
 
-            <div class="govuk-link govuk-body-m">
-            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url))
+                @form(action = controllers.routes.IncomeController.editRegularIncome(employmentId)){
+                    <input type="hidden" name="payToDate" value="@payToDate">
+                    <div class="form-field-group @if(income.hasErrors) {govuk-form-group govuk-form-group--error}">
+
+                        @income.errors(income("newAmount").name).map{ error =>
+                            <p id="tellUsAboutEmploymentForm-error" class="govuk-error-message">
+                                @messages(error.message)
+                            </p>
+                        }
+
+                        @compareValueInputNew(
+                            govukInput,
+                            previousLabel = messages("tai.incomes.amount.current"),
+                            newLabel = messages("tai.incomes.amount.new"),
+                            previousFieldName = income("oldAmount").name,
+                            previousFieldValue = income("oldAmount").value.getOrElse("0"),
+                            newField = income("newAmount")
+                        )
+
+                        <input type="hidden" id="name" name='@income("name").name' value='@income("name").value' />
+                        <input type="hidden" id="worksNumber" name='@income("worksNumber").name' value='@income("worksNumber").value' />
+                        <input type="hidden" id="jobTitle" name='@income("jobTitle").name' value='@income("jobTitle").value' />
+                        <input type="hidden" id="startDate" name='@income("startDate").name' value='@income("startDate").value' />
+                        <input type="hidden" id="endDate" name='@income("endDate").name' value='@income("endDate").value' />
+                        <input type="hidden" id="description" name='@income("description").name' value='@income("description").value' />
+                        <input type="hidden" id="employmentId" name='@income("employmentId").name' value='@income("employmentId").value' />
+                        <input type="hidden" id="hasMultipleIncomes" name='@income("hasMultipleIncomes").name' value='@income("hasMultipleIncomes").value' />
+                    </div>
+
+                    <div class="form-field-groupX">
+                        <input type="submit" class="govuk-button" value='@messages("tai.continue")'/>
+                    </div>
+
+                    <div class="govuk-link govuk-body-m">
+                        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url))
+                    </div>
+                }
             </div>
-        }
+        </div>
     </div>
-
-        </div></div>
 }

@@ -17,13 +17,13 @@
 @import views.html.helper._
 
 @(
-        form: Form[_],
-        fieldPrefix: String = "",
-        labelText: String = "",
-        hintText: String = "",
-        jsHidden: Boolean = false,
-        legendHidden: Boolean = false,
-        legendBold: Boolean = false
+    form: Form[_],
+    fieldPrefix: String = "",
+    labelText: String = "",
+    hintText: String = "",
+    jsHidden: Boolean = false,
+    legendHidden: Boolean = false,
+    legendBold: Boolean = false
 )(implicit m: Messages)
 
 <div class="form-group @if(form.hasErrors){form-group-error}">
@@ -39,7 +39,6 @@
         }
 
         <div class="form-date">
-
 
             <div class="form-group form-group-day">
                 <label class="form-label" for="@{fieldPrefix}_day">@Messages("tai.label.day")</label>

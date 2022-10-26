@@ -24,7 +24,12 @@
 
 @this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(firstPayForm: Form[Option[String]], employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(firstPayForm: Form[Option[String]], employerName: String)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(
     title = Messages("tai.addEmployment.employmentFirstPay.title", employerName),
@@ -36,46 +41,47 @@
     formForErrorSummary = Some(firstPayForm)
 ) {
 
-<div class = "govuk-grid-row">
-    <div class = "govuk-grid-column-two-thirds">
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
 
-        @if(firstPayForm.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary(errorList = firstPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-        }
+            @if(firstPayForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList = firstPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
 
-        @form(action = controllers.employments.routes.AddEmploymentController.submitFirstPay(), Symbol("data-dynamic-form") -> "true") {
-            @govukRadios(Radios(
-                fieldset =  Some(
-                    Fieldset(
-                        legend = Some(
-                            HmrcPageHeadingLegend(
-                                content = Text(Messages("tai.addEmployment.employmentFirstPay.title", employerName)),
-                                caption = HmrcSectionCaption(Text(Messages("add.missing.employment"))))
+            @form(action = controllers.employments.routes.AddEmploymentController.submitFirstPay(), Symbol("data-dynamic-form") -> "true") {
+                @govukRadios(Radios(
+                    fieldset =  Some(
+                        Fieldset(
+                            legend = Some(
+                                HmrcPageHeadingLegend(
+                                    content = Text(Messages("tai.addEmployment.employmentFirstPay.title", employerName)),
+                                    caption = HmrcSectionCaption(Text(Messages("add.missing.employment")))
+                                )
+                            )
+                        )
+                    ),
+                    errorMessage = firstPayForm.errors.filter(_.key == AddEmploymentFirstPayForm.FirstPayChoice).asTextErrorMessages.headOption,
+                    idPrefix = Some("firstPayChoice"),
+                    name = "firstPayChoice",
+                    classes = "govuk-radios--inline",
+                    items = Seq(
+                        RadioItem(
+                            content = Text(messages("tai.label.yes")),
+                            value = Some("Yes"),
+                            checked = firstPayForm.data.get(AddEmploymentFirstPayForm.FirstPayChoice).exists(_ == "Yes"),
+                        ),
+                        RadioItem(
+                            content = Text(messages("tai.label.no")),
+                            value = Some("No"),
+                            checked = firstPayForm.data.get(AddEmploymentFirstPayForm.FirstPayChoice).exists(_ == "No")
                         )
                     )
-                ),
-                errorMessage = firstPayForm.errors.filter(_.key == AddEmploymentFirstPayForm.FirstPayChoice).asTextErrorMessages.headOption,
-                idPrefix = Some("firstPayChoice"),
-                name = "firstPayChoice",
-                classes = "govuk-radios--inline",
-                items = Seq(
-                    RadioItem(
-                        content = Text(messages("tai.label.yes")),
-                        value = Some("Yes"),
-                        checked = firstPayForm.data.get(AddEmploymentFirstPayForm.FirstPayChoice).exists(_ == "Yes"),
-                    ),
-                    RadioItem(
-                        content = Text(messages("tai.label.no")),
-                        value = Some("No"),
-                        checked = firstPayForm.data.get(AddEmploymentFirstPayForm.FirstPayChoice).exists(_ == "No")
-                    )
-                )
-            ).withFormField(firstPayForm(AddEmploymentFirstPayForm.FirstPayChoice)))
+                ).withFormField(firstPayForm(AddEmploymentFirstPayForm.FirstPayChoice)))
 
-            @submit()
-        }
+                @submit()
+            }
 
-        @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
+            @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
+        </div>
     </div>
-</div>
 }
