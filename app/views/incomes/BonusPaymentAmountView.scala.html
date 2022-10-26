@@ -32,7 +32,6 @@
 @(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages,
         user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
-
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(bonusOvertimeAmountForm),
@@ -67,7 +66,7 @@
             }
 
             <div class="section flush--bottom soft--top">
-            @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusOvertimeAmount) {
+            @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusOvertimeAmount(employer.id)) {
 
 
                 @govukInput(Input(

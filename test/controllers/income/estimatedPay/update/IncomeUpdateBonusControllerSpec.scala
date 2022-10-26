@@ -162,7 +162,7 @@ class IncomeUpdateBonusControllerSpec
 
         def handleBonusPayments(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateBonusController()
-            .handleBonusPayments()(request)
+            .handleBonusPayments(employer.id)(request)
       }
 
       def setup(): HandleBonusPaymentsHarness =
@@ -190,7 +190,9 @@ class IncomeUpdateBonusControllerSpec
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
+          controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
+            .checkYourAnswersPage(employer.id)
+            .url)
       }
     }
 
@@ -233,7 +235,7 @@ class IncomeUpdateBonusControllerSpec
         when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
-        val result = controller.handleBonusPayments(fakeRequest)
+        val result = controller.handleBonusPayments(employer.id)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
@@ -310,7 +312,7 @@ class IncomeUpdateBonusControllerSpec
 
         def handleBonusOvertimeAmount(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdateBonusController()
-            .handleBonusOvertimeAmount()(request)
+            .handleBonusOvertimeAmount(employer.id)(request)
       }
 
       def setup(): HandleBonusOvertimeAmountHarness =
@@ -325,7 +327,9 @@ class IncomeUpdateBonusControllerSpec
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
-        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
+        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
+          .checkYourAnswersPage(employer.id)
+          .url)
     }
 
     "redirect the user to bonusPaymentAmount page" when {
@@ -359,7 +363,7 @@ class IncomeUpdateBonusControllerSpec
         when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
           .thenReturn(Future.successful(Left("")))
 
-        val result = controller.handleBonusOvertimeAmount(fakeRequest)
+        val result = controller.handleBonusOvertimeAmount(employer.id)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)

@@ -73,13 +73,13 @@ object ConfirmAmountEnteredViewModel {
 
   }
 
-  def apply(empName: String, currentAmount: Int, estIncome: Int, backUrl: String)(
+  def apply(empName: String, currentAmount: Int, estIncome: Int, backUrl: String, empId: Int)(
     implicit messages: Messages): ConfirmAmountEnteredViewModel =
     ConfirmAmountEnteredViewModel(
       yearRange = TaxYearRangeUtil.currentTaxYearRange,
       employerName = empName,
       mainText = Some(messages("tai.incomes.confirm.save.message")),
-      onConfirm = controllers.routes.IncomeController.updateEstimatedIncome().url,
+      onConfirm = controllers.routes.IncomeController.updateEstimatedIncome(empId).url,
       onCancel = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
       estimatedIncome = estIncome,
       backUrl = backUrl

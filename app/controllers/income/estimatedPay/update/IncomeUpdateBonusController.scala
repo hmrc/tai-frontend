@@ -59,37 +59,38 @@ class IncomeUpdateBonusController @Inject()(
     }
   }
 
-  def handleBonusPayments: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
+  def handleBonusPayments(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
 
-    BonusPaymentsForm.createForm
-      .bindFromRequest()
-      .fold(
-        formWithErrors => {
-          for {
-            incomeSourceEither <- IncomeSource.create(journeyCacheService)
-            backUrl            <- bonusPaymentBackUrl
-          } yield {
-            incomeSourceEither match {
-              case Right(incomeSource) => BadRequest(bonusPayments(formWithErrors, incomeSource, backUrl))
-              case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      BonusPaymentsForm.createForm
+        .bindFromRequest()
+        .fold(
+          formWithErrors => {
+            for {
+              incomeSourceEither <- IncomeSource.create(journeyCacheService)
+              backUrl            <- bonusPaymentBackUrl
+            } yield {
+              incomeSourceEither match {
+                case Right(incomeSource) => BadRequest(bonusPayments(formWithErrors, incomeSource, backUrl))
+                case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+              }
+            }
+          },
+          formData => {
+            val bonusPaymentsAnswer = formData.yesNoChoice.fold(ifEmpty = Map.empty[String, String]) { bonusPayments =>
+              Map(UpdateIncome_BonusPaymentsKey -> bonusPayments)
+            }
+
+            journeyCache(UpdateIncome_BonusPaymentsKey, bonusPaymentsAnswer) map { _ =>
+              if (formData.yesNoChoice.contains(YesValue)) {
+                Redirect(routes.IncomeUpdateBonusController.bonusOvertimeAmountPage())
+              } else {
+                Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId))
+              }
             }
           }
-        },
-        formData => {
-          val bonusPaymentsAnswer = formData.yesNoChoice.fold(ifEmpty = Map.empty[String, String]) { bonusPayments =>
-            Map(UpdateIncome_BonusPaymentsKey -> bonusPayments)
-          }
-
-          journeyCache(UpdateIncome_BonusPaymentsKey, bonusPaymentsAnswer) map { _ =>
-            if (formData.yesNoChoice.contains(YesValue)) {
-              Redirect(routes.IncomeUpdateBonusController.bonusOvertimeAmountPage())
-            } else {
-              Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage())
-            }
-          }
-        }
-      )
+        )
   }
 
   def bonusOvertimeAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -108,35 +109,36 @@ class IncomeUpdateBonusController @Inject()(
     }
   }
 
-  def handleBonusOvertimeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
+  def handleBonusOvertimeAmount(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
 
-    BonusOvertimeAmountForm
-      .createForm()
-      .bindFromRequest()
-      .fold(
-        formWithErrors => {
-          for {
-            incomeSourceEither <- IncomeSource.create(journeyCacheService)
-          } yield {
-            incomeSourceEither match {
-              case Right(incomeSource) =>
-                BadRequest(bonusPaymentAmount(formWithErrors, incomeSource))
-              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      BonusOvertimeAmountForm
+        .createForm()
+        .bindFromRequest()
+        .fold(
+          formWithErrors => {
+            for {
+              incomeSourceEither <- IncomeSource.create(journeyCacheService)
+            } yield {
+              incomeSourceEither match {
+                case Right(incomeSource) =>
+                  BadRequest(bonusPaymentAmount(formWithErrors, incomeSource))
+                case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+              }
+            }
+          },
+          formData => {
+            formData.amount match {
+              case Some(amount) =>
+                journeyCache(UpdateIncome_BonusOvertimeAmountKey, Map(UpdateIncome_BonusOvertimeAmountKey -> amount)) map {
+                  _ =>
+                    Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId))
+                }
+              case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId)))
             }
           }
-        },
-        formData => {
-          formData.amount match {
-            case Some(amount) =>
-              journeyCache(UpdateIncome_BonusOvertimeAmountKey, Map(UpdateIncome_BonusOvertimeAmountKey -> amount)) map {
-                _ =>
-                  Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage())
-              }
-            case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage()))
-          }
-        }
-      )
+        )
   }
 
   private def bonusPaymentBackUrl(implicit hc: HeaderCarrier) =

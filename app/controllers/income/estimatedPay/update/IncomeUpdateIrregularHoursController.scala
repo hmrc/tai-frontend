@@ -19,6 +19,7 @@ package controllers.income.estimatedPay.update
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
+import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiUnauthorisedResponse}
@@ -55,6 +56,8 @@ class IncomeUpdateIrregularHoursController @Inject()(
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants {
+
+  private val logger = Logger(this.getClass)
 
   private val taxCodeIncomeInfoToCache = (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
     val defaultCaching = Map[String, String](
@@ -97,35 +100,38 @@ class IncomeUpdateIrregularHoursController @Inject()(
         .collectedJourneyValues(
           Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_PayToDateKey),
           Seq(s"$UpdateIncome_ConfirmedNewAmountKey-$employmentId"))
-        .getOrFail
 
-      (for {
-        (mandatoryCache, optionalCache) <- collectedValues
-      } yield {
-        val name :: newIrregularPay :: paymentToDate :: Nil = mandatoryCache.toList
-        val confirmedNewAmount = optionalCache.head
+      collectedValues
+        .map {
+          case Left(errorMessage) =>
+            logger.warn(errorMessage)
+            Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId))
+          case Right((mandatoryCache, optionalCache)) =>
+            val name :: newIrregularPay :: paymentToDate :: Nil = mandatoryCache.toList
+            val confirmedNewAmount = optionalCache.head
 
-        if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
-          Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(employmentId))
-        } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
-          Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
-        } else {
-          val vm =
-            ConfirmAmountEnteredViewModel(
-              employmentId,
-              name,
-              paymentToDate.toInt,
-              newIrregularPay.toInt,
-              IrregularPay,
-              controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController
-                .editIncomeIrregularHours(employmentId)
-                .url
-            )
-          Ok(confirmAmountEntered(vm))
+            if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
+              Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(employmentId))
+            } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
+              Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
+            } else {
+              val vm =
+                ConfirmAmountEnteredViewModel(
+                  employmentId,
+                  name,
+                  paymentToDate.toInt,
+                  newIrregularPay.toInt,
+                  IrregularPay,
+                  controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController
+                    .editIncomeIrregularHours(employmentId)
+                    .url
+                )
+              Ok(confirmAmountEntered(vm))
+            }
         }
-      }).recover {
-        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-      }
+        .recover {
+          case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+        }
   }
 
   def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
