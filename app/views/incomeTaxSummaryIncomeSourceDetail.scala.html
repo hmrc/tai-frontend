@@ -38,6 +38,8 @@
                 <span class="faded-text-dark flush--top">@incomeSource.amount</span>
             </p>
 
+
+            <div aria-hidden="true" style="display: none;" id="taxCodeList1"></div>
             <p class="govuk-body flush--top">
                 @if(incomeSource.displayTaxCode) {
                     @incomeSource.taxCodeUrl.map { taxCodeUrl =>
@@ -48,6 +50,7 @@
                             linkClasses = Seq("display-tax-code-for-print"))
                     }
                 }
+                
                 @if(incomeSource.displayPayrollNumber && typeLabel=="employment"){
                     <span id="@{typeLabel}@{idx}PayeNumber" class="carry-over govuk-!-display-block display-block ">@messages("tai.income.details.ERN"):@incomeSource.taxDistrictNumber/@incomeSource.payeNumber</span>
                 }
