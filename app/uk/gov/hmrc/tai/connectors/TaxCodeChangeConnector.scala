@@ -33,7 +33,7 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-  def baseTaxAccountUrl(nino: String) = s"$serviceUrl/tai/$nino/tax-account/"
+  def baseTaxAccountUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/"
 
   def taxCodeChangeUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change"
 

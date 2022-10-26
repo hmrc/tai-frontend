@@ -18,10 +18,11 @@ package uk.gov.hmrc.tai.forms.constaints
 
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
+import scala.util.matching.Regex
 
 object TelephoneNumberConstraint {
 
-  val telephoneRegex = """^(\(?\+?[0-9]*\)?)?[0-9_\- \(\)]*$""".r
+  val telephoneRegex: Regex = """^(\(?\+?[0-9]*\)?)?[0-9_\- \(\)]*$""".r
 
   def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) =>

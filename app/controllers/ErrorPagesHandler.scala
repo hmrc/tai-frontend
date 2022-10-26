@@ -33,6 +33,7 @@ import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
+import play.twirl.api.HtmlFormat
 
 class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, errorNoPrimary: ErrorNoPrimary)(
   implicit val templateRenderer: TemplateRenderer,
@@ -40,7 +41,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
 ) extends Logging {
   type RecoveryLocation = Class[_]
 
-  def error4xxPageWithLink(pageTitle: String)(implicit request: Request[_], messages: Messages) =
+  def error4xxPageWithLink(pageTitle: String)(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable =
     errorTemplateNoauth(
       pageTitle,
       messages("tai.errorMessage.heading"),
@@ -56,7 +57,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
         ))
     )
 
-  def badRequestPageWrongVersion(implicit request: Request[_], messages: Messages) =
+  def badRequestPageWrongVersion(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable =
     errorTemplateNoauth(
       messages("global.error.badRequest400.title"),
       messages("tai.errorMessage.heading"),
@@ -64,7 +65,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
       List.empty
     )
 
-  def error4xxFromNps(pageTitle: String)(implicit request: Request[_], messages: Messages) =
+  def error4xxFromNps(pageTitle: String)(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable =
     errorTemplateNoauth(
       pageTitle,
       messages("tai.errorMessage.heading.nps"),
@@ -72,7 +73,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
       List(messages("tai.errorMessage.frontend400.message2.nps"))
     )
 
-  def error5xx(pageBody: String)(implicit request: Request[_], messages: Messages) =
+  def error5xx(pageBody: String)(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable =
     errorTemplateNoauth(
       messages("global.error.InternalServerError500.title"),
       messages("tai.technical.error.heading"),

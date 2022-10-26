@@ -35,7 +35,7 @@ class PensionProviderConnector @Inject()(httpHandler: HttpHandler, servicesConfi
       (response.json \ "data").asOpt[String]
     }
 
-  def addPensionProviderServiceUrl(nino: Nino) = s"$serviceUrl/tai/$nino/pensionProvider"
+  def addPensionProviderServiceUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/pensionProvider"
 
   def incorrectPensionProvider(nino: Nino, id: Int, pensionProvider: IncorrectPensionProvider)(
     implicit hc: HeaderCarrier): Future[Option[String]] =
@@ -44,5 +44,6 @@ class PensionProviderConnector @Inject()(httpHandler: HttpHandler, servicesConfi
         (response.json \ "data").asOpt[String]
     }
 
-  def incorrectPensionProviderServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/pensionProvider/$id/reason"
+  def incorrectPensionProviderServiceUrl(nino: Nino, id: Int): String =
+    s"$serviceUrl/tai/$nino/pensionProvider/$id/reason"
 }

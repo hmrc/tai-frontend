@@ -48,7 +48,7 @@ class ServiceController @Inject()(
     Future.successful(Redirect(applicationConfig.basGatewayFrontendSignOutUrl))
   }
 
-  def mciErrorPage() = authenticate.async { implicit request =>
+  def mciErrorPage(): Action[AnyContent] = authenticate.async { implicit request =>
     val contactUrl = request2Messages.lang.code match {
       case "cy" => applicationConfig.contactHelplineWelshUrl
       case _    => applicationConfig.contactHelplineUrl

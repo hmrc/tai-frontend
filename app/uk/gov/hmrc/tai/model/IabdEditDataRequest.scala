@@ -23,6 +23,7 @@ import play.api.libs.json.JodaReads._
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import play.api.i18n.Messages
+import play.api.libs.json.OFormat
 
 case class EmploymentAmount(
   name: String,
@@ -38,7 +39,7 @@ case class EmploymentAmount(
   isOccupationalPension: Boolean = false)
 
 object EmploymentAmount {
-  implicit val formats = Json.format[EmploymentAmount]
+  implicit val formats: OFormat[EmploymentAmount] = Json.format[EmploymentAmount]
   def apply(taxCodeIncome: TaxCodeIncome, employment: Employment)(implicit messages: Messages): EmploymentAmount = {
     val description = taxCodeIncome.componentType match {
       case EmploymentIncome if employment.employmentStatus == Live =>

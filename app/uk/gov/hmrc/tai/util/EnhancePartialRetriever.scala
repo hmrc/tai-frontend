@@ -22,6 +22,7 @@ import HtmlPartial._
 import uk.gov.hmrc.http.HttpGet
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 /*
  * This is a PartialRetriever with a HeaderCarrierForPartialsConverter to forward request headers on
@@ -30,6 +31,6 @@ trait EnhancedPartialRetriever extends HeaderCarrierForPartialsConverter {
 
   val http: HttpGet
 
-  def loadPartial(url: String)(implicit request: RequestHeader, ec: ExecutionContext) =
+  def loadPartial(url: String)(implicit request: RequestHeader, ec: ExecutionContext): Future[HtmlPartial] =
     http.GET[HtmlPartial](url) recover connectionExceptionsAsHtmlPartialFailure
 }

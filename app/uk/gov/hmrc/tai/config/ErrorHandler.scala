@@ -38,7 +38,7 @@ class ErrorHandler @Inject()(
     extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(
-    implicit request: Request[_]) = errorTemplateNoauth(pageTitle, heading, message, List.empty)
+    implicit request: Request[_]): Html = errorTemplateNoauth(pageTitle, heading, message, List.empty)
 
   def badRequestErrorTemplate(
     pageTitle: String,

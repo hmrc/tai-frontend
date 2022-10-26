@@ -26,7 +26,7 @@ import scala.util.Try
 
 case class EmploymentEndDateForm(employerName: String) {
 
-  def form(implicit messages: Messages) = {
+  def form(implicit messages: Messages): Form[LocalDate] = {
 
     implicit val dateFormatter = new Formatter[LocalDate] {
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {

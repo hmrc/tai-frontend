@@ -41,9 +41,11 @@ case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxCo
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
   def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
 
-  lazy val comparisonItemsByYear = items.sortBy(_.year)
+  lazy val comparisonItemsByYear: Seq[EstimatedIncomeTaxComparisonItem] = items.sortBy(_.year)
 
-  lazy val changeInTaxAmount = comparisonItemsByYear(1).estimatedIncomeTax - comparisonItemsByYear.head.estimatedIncomeTax
+
+  lazy val changeInTaxAmount: BigDecimal = comparisonItemsByYear(1).estimatedIncomeTax - comparisonItemsByYear.head.estimatedIncomeTax
+
 }
 
 case class EstimatedIncomeTaxComparisonItem(year: TaxYear, estimatedIncomeTax: BigDecimal)

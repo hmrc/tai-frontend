@@ -50,14 +50,14 @@ trait HasMetrics {
   val localMetrics = new LocalMetrics
 
   class LocalMetrics {
-    def startTimer(metric: Metric) = registry.timer(s"$metric-timer").time()
-    def stopTimer(context: Timer.Context) = context.stop()
+    def startTimer(metric: Metric): Timer.Context = registry.timer(s"$metric-timer").time()
+    def stopTimer(context: Timer.Context): Long = context.stop()
     def incrementSuccessCounter(metric: Metric): Unit = registry.counter(s"$metric-success-counter").inc()
     def incrementFailedCounter(metric: Metric): Unit = registry.counter(s"$metric-failed-counter").inc()
   }
 
   class MetricsTimer(metric: Metric) {
-    val timer = localMetrics.startTimer(metric)
+    val timer: Timer.Context = localMetrics.startTimer(metric)
     val timerRunning = new AtomicBoolean(true)
 
     def completeWithSuccess(): Unit =

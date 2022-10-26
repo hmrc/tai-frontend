@@ -18,17 +18,18 @@ package uk.gov.hmrc.tai.model
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import play.api.libs.json.OFormat
 
 final case class JrsClaims(employers: List[Employers]) {
 
   val hasMultipleEmployments: Boolean = employers.size > 1
-  val employerMessageKey = if (hasMultipleEmployments) "employers" else "employer"
+  val employerMessageKey: String = if (hasMultipleEmployments) "employers" else "employer"
 
 }
 
 object JrsClaims {
 
-  implicit val formats = Json.format[JrsClaims]
+  implicit val formats: OFormat[JrsClaims] = Json.format[JrsClaims]
 
   def apply(appConfig: ApplicationConfig, jrsClaimsData: JrsClaims): Option[JrsClaims] =
     if (jrsClaimsData.employers.nonEmpty)

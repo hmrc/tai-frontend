@@ -20,6 +20,7 @@ import java.time.LocalDate
 import play.api.libs.json.Json
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
+import play.api.libs.json.OFormat
 
 case class PayDetails(
   paymentFrequency: String,
@@ -30,5 +31,5 @@ case class PayDetails(
   startDate: Option[LocalDate] = None)
 
 object PayDetails {
-  implicit val formats = Json.format[PayDetails]
+  implicit val formats: OFormat[PayDetails] = Json.format[PayDetails]
 }

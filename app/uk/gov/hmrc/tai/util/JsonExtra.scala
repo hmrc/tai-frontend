@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.util
 import play.api.libs.json._
 
 object JsonExtra {
-  def mapFormat[K, V](keyLabel: String, valueLabel: String)(implicit kf: Format[K], vf: Format[V]) =
+  def mapFormat[K, V](keyLabel: String, valueLabel: String)(implicit kf: Format[K], vf: Format[V]): Format[Map[K, V]] =
     new Format[Map[K, V]] {
       def writes(m: Map[K, V]): JsValue =
         JsArray(

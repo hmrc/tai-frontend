@@ -29,7 +29,7 @@ class LocalTemplateRenderer @Inject()(http: DefaultHttpClient, servicesConfig: S
   implicit ec: ExecutionContext)
     extends TemplateRenderer {
 
-  override lazy val templateServiceBaseUrl = servicesConfig.baseUrl("frontend-template-provider")
+  override lazy val templateServiceBaseUrl: String = servicesConfig.baseUrl("frontend-template-provider")
   override val refreshAfter: Duration = 10 minutes
 
   private implicit val hc = HeaderCarrier()

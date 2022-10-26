@@ -29,7 +29,7 @@ case object Week1Month1BasisOfOperation extends BasisOfOperation
 case object OtherBasisOfOperation extends BasisOfOperation
 
 object BasisOfOperation {
-  implicit val formatBasisOperation = new Format[BasisOfOperation] {
+  implicit val formatBasisOperation: Format[BasisOfOperation] = new Format[BasisOfOperation] {
     override def reads(json: JsValue): JsSuccess[BasisOfOperation] = json.as[String] match {
       case "Week1Month1BasisOperation" => JsSuccess(Week1Month1BasisOfOperation)
       case "Week 1 Month 1"            => JsSuccess(Week1Month1BasisOfOperation)

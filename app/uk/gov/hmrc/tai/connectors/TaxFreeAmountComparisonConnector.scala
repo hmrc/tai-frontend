@@ -34,7 +34,7 @@ class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler, s
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-  def taxFreeAmountComparisonUrl(nino: String) = s"$serviceUrl/tai/$nino/tax-account/tax-free-amount-comparison"
+  def taxFreeAmountComparisonUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/tax-free-amount-comparison"
 
   def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApiV2(taxFreeAmountComparisonUrl(nino.nino)) map (

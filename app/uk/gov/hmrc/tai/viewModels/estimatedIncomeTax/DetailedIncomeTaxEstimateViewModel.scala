@@ -315,12 +315,12 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
     )
   }
 
-  def containsHRS1orHRS2(taxBands: Seq[TaxBand]) = {
+  def containsHRS1orHRS2(taxBands: Seq[TaxBand]): Boolean = {
     val bandTypes = taxBands.map(_.bandType)
     bandTypes.contains(SavingsHigherRate) || bandTypes.contains(SavingsAdditionalRate)
   }
 
-  def taxFreeSavingsIncome(taxBands: Seq[TaxBand]) =
+  def taxFreeSavingsIncome(taxBands: Seq[TaxBand]): BigDecimal =
     taxBands
       .filter(band => band.bandType == PersonalSavingsRate || band.bandType == StarterSavingsRate)
       .map(_.income)

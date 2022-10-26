@@ -17,9 +17,10 @@
 package uk.gov.hmrc.tai.model.domain
 
 import play.api.libs.json.Json
+import play.api.libs.json.OFormat
 
 case class UpdateTaxCodeIncomeRequest(amount: Int)
 
 object UpdateTaxCodeIncomeRequest {
-  implicit val formats = Json.format[UpdateTaxCodeIncomeRequest]
+  implicit val formats: OFormat[UpdateTaxCodeIncomeRequest] = Json.format[UpdateTaxCodeIncomeRequest]
 }

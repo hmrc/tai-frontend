@@ -29,7 +29,8 @@ class PreviousYearsIncomeConnector @Inject()(httpHandler: HttpHandler, servicesC
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-  def previousYearsIncomeServiceUrl(nino: Nino, year: Int) = s"$serviceUrl/tai/$nino/employments/years/$year/update"
+  def previousYearsIncomeServiceUrl(nino: Nino, year: Int): String =
+    s"$serviceUrl/tai/$nino/employments/years/$year/update"
 
   def incorrectIncome(nino: Nino, year: Int, incorrectIncome: IncorrectIncome)(
     implicit hc: HeaderCarrier): Future[Option[String]] =

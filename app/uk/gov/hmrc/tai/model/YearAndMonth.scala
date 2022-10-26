@@ -33,9 +33,9 @@ final case class YearAndMonth(yearAndMonth: YearMonth) {
 
 object YearAndMonth {
 
-  val dateFormatter = DateTimeFormatter.ofPattern("MMMM yyyy")
+  val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MMMM yyyy")
 
-  val MonthNamesInWelsh = Map(
+  val MonthNamesInWelsh: Map[Int, String] = Map(
     1  -> "Ionawr",
     2  -> "Chwefror",
     3  -> "Mawrth",
@@ -52,7 +52,7 @@ object YearAndMonth {
 
   def apply(yearAndMonth: String): YearAndMonth = YearAndMonth(YearMonth.parse(yearAndMonth))
 
-  implicit val yearMonthFormat = new Format[YearMonth] {
+  implicit val yearMonthFormat: Format[YearMonth] = new Format[YearMonth] {
     override def writes(o: YearMonth): JsValue = JsString(o.toString())
 
     override def reads(json: JsValue): JsResult[YearMonth] = json match {
@@ -65,7 +65,7 @@ object YearAndMonth {
     }
   }
 
-  implicit val formats = Json.format[YearAndMonth]
+  implicit val formats: OFormat[YearAndMonth] = Json.format[YearAndMonth]
 
   def sortYearAndMonth(yearAndMonthList: List[YearAndMonth], appConfig: ApplicationConfig): List[YearAndMonth] = {
 

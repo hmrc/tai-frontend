@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.model.domain
 import java.time.LocalDate
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.DateHelper
+import play.api.libs.json.OFormat
 
 case class TaxCodeChange(previous: List[TaxCodeRecord], current: List[TaxCodeRecord]) {
 
@@ -33,5 +34,5 @@ case class TaxCodeChange(previous: List[TaxCodeRecord], current: List[TaxCodeRec
 }
 
 object TaxCodeChange {
-  implicit val format = Json.format[TaxCodeChange]
+  implicit val format: OFormat[TaxCodeChange] = Json.format[TaxCodeChange]
 }

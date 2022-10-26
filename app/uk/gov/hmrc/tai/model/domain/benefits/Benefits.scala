@@ -21,11 +21,12 @@ import play.api.libs.json.{Format, JsSuccess, JsValue, Json}
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
 import uk.gov.hmrc.tai.model.domain._
+import play.api.libs.json.OFormat
 
 case class GenericBenefit(benefitType: BenefitComponentType, employmentId: Option[Int], amount: BigDecimal)
 
 object GenericBenefit {
-  implicit val format = new Format[GenericBenefit] {
+  implicit val format: Format[GenericBenefit] = new Format[GenericBenefit] {
     override def reads(json: JsValue): JsSuccess[GenericBenefit] = {
       val benefitTypeKey = (json \ "benefitType").as[String]
       val employmentId = (json \ "employmentId").asOpt[Int]
@@ -74,13 +75,13 @@ object GenericBenefit {
 case class Benefits(companyCarBenefits: Seq[CompanyCarBenefit], otherBenefits: Seq[GenericBenefit])
 
 object Benefits {
-  implicit val formats = Json.format[Benefits]
+  implicit val formats: OFormat[Benefits] = Json.format[Benefits]
 }
 
 case class WithdrawCarAndFuel(version: Int, carWithdrawDate: LocalDate, fuelWithdrawDate: Option[LocalDate])
 
 object WithdrawCarAndFuel {
-  implicit val formats = Json.format[WithdrawCarAndFuel]
+  implicit val formats: OFormat[WithdrawCarAndFuel] = Json.format[WithdrawCarAndFuel]
 }
 
 case class EndedCompanyBenefit(

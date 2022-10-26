@@ -33,6 +33,7 @@ import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.EmploymentAmount
 import uk.gov.hmrc.tai.util.{DateHelper, FormHelper}
+import play.api.libs.json.OFormat
 
 case class EditIncomeForm(
   name: String,
@@ -66,12 +67,12 @@ case class EditIncomeForm(
 }
 
 object EditIncomeForm {
-  implicit val formats = Json.format[EditIncomeForm]
+  implicit val formats: OFormat[EditIncomeForm] = Json.format[EditIncomeForm]
 
   def create(
     preFillData: EmploymentAmount,
     hasMultipleIncomes: Boolean = false,
-    taxablePayYTD: BigDecimal = BigDecimal(0))(implicit messages: Messages) = {
+    taxablePayYTD: BigDecimal = BigDecimal(0))(implicit messages: Messages): Form[EditIncomeForm] = {
 
     val newAmount = if (preFillData.oldAmount != preFillData.newAmount) {
       Some(preFillData.newAmount.toString)
@@ -116,7 +117,7 @@ object EditIncomeForm {
     employerName: String,
     taxablePayYTD: BigDecimal = BigDecimal(0),
     payDate: Option[LocalDate] = None,
-    errMessage: Option[String] = None)(implicit request: Request[_], messages: Messages) =
+    errMessage: Option[String] = None)(implicit request: Request[_], messages: Messages): Form[EditIncomeForm] =
     createForm(employerName, taxablePayYTD, payDate, errMessage).bindFromRequest
 
   private def createForm(

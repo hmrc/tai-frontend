@@ -26,11 +26,12 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 
 import java.time.format.DateTimeFormatter
+import play.api.libs.json.OFormat
 
 case class AmountComparatorForm(income: Option[String])
 
 object AmountComparatorForm {
-  implicit val formats = Json.format[AmountComparatorForm]
+  implicit val formats: OFormat[AmountComparatorForm] = Json.format[AmountComparatorForm]
 
   def createForm(latestPayDate: Option[String] = None, taxablePayYTD: Option[BigDecimal] = None)(
     implicit messages: Messages): Form[AmountComparatorForm] = {
