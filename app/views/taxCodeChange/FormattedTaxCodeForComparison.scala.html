@@ -15,7 +15,7 @@
  *@
 
 @import includes.ptaHeader
-@import includes.details_summary
+@import includes.detailsSummary
 @import controllers.routes
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
@@ -49,7 +49,7 @@
 @taxCodeRecordExplanation(taxCodeRecord: TaxCodeRecord, identifier: String) = {
     @defining(TaxCodeChangeViewModel.getTaxCodeExplanations(taxCodeRecord, scottishTaxRateBands, identifier, appConfig)) { taxCodeDescription =>
         <div class="tax-code-change__explanation">
-            @includes.details_summary(
+            @includes.detailsSummary(
                 taxCodeDescription.heading,
                 visuallyHiddenTitle = Some(Messages(
                     "taxCode.change.yourTaxCodeChanged.understand",
