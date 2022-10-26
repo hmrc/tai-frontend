@@ -24,6 +24,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import play.api.Logging
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource.UpdateIncome_DeleteJourneyKey
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -122,4 +123,7 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
 
   def flushWithEmpId(empId: Int)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     journeyCacheConnector.flushWithEmpId(journeyName, empId)
+
+  def delete()(implicit hc: HeaderCarrier): Future[TaiResponse] =
+    journeyCacheConnector.delete(UpdateIncome_DeleteJourneyKey)
 }
