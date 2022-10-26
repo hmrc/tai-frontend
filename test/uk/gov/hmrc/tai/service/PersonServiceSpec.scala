@@ -38,7 +38,7 @@ class PersonServiceSpec extends BaseSpec {
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload(person)))
 
         val result = Await.result(sut.personDetails(nino), testTimeout)
-        result mustBe (person)
+        result mustBe person
       }
     }
     "throw a runtime exception" when {

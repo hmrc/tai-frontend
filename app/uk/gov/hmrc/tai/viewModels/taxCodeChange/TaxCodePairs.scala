@@ -62,7 +62,7 @@ object TaxCodePairs {
             innerCreateAllPairs(List.empty, tail, acc ++ List(TaxCodePair(None, Some(head))))
           case (head :: tail, Nil) =>
             innerCreateAllPairs(tail, List.empty, acc ++ List(TaxCodePair(Some(head), None)))
-          case (pHead :: pTail, curr) => {
+          case (pHead :: pTail, curr) =>
             curr
               .find(isMatchingPair(_, pHead))
               .fold(innerCreateAllPairs(pTail, curr, acc ++ List(TaxCodePair(Some(pHead), None)))) { matching =>
@@ -71,7 +71,6 @@ object TaxCodePairs {
                   innerCreateAllPairs(pTail, rest, acc ++ List(TaxCodePair(Some(pHead), Some(matching))))
                 }
               }
-          }
         }
 
       innerCreateAllPairs(previous, current, List.empty)

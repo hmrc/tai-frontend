@@ -272,7 +272,7 @@ class UpdateIncomeDetailsControllerSpec
     "display check your answers containing populated values from the journey cache" in {
       val SUT = createSUT
       when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
-        Future.successful((Right(Seq[String]("2016", "whatYouToldUs", "Yes"), Seq[Option[String]](Some("123456789")))))
+        Future.successful(Right(Seq[String]("2016", "whatYouToldUs", "Yes"), Seq[Option[String]](Some("123456789"))))
       )
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK

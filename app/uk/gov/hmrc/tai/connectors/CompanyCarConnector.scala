@@ -42,10 +42,9 @@ class CompanyCarConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
     httpHandler.getFromApiV2(companyCarEmploymentUrl(nino, empId)) map (
       json => Some((json \ "data").as[CompanyCarBenefit])
     ) recover {
-      case e: NotFoundException => {
+      case e: NotFoundException =>
         logger.warn(s"Couldn't retrieve company car benefits for nino: $nino employmentId:$empId")
         None
-      }
     }
 
   def withdrawCompanyCarAndFuel(
@@ -61,10 +60,9 @@ class CompanyCarConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
     httpHandler.getFromApiV2(companyCarUrl(nino)) map (
       json => (json \ "data" \ "companyCarBenefits").as[Seq[CompanyCarBenefit]]
     ) recover {
-      case NonFatal(_) => {
+      case NonFatal(_) =>
         logger.warn(s"Couldn't retrieve company car benefits for nino: $nino")
         Seq.empty[CompanyCarBenefit]
-      }
     }
 
 }

@@ -126,6 +126,6 @@ object StopOnFirstFail {
     }
   }
 
-  def constraint[T](message: String, validator: (T) => Boolean): Constraint[T] =
+  def constraint[T](message: String, validator: T => Boolean): Constraint[T] =
     Constraint((data: T) => if (validator(data)) Valid else Invalid(Seq(ValidationError(message))))
 }

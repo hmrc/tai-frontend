@@ -179,7 +179,7 @@ class EmploymentServiceSpec extends BaseSpec {
         when(employmentsConnector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any()))
           .thenReturn(Future.successful(None))
 
-        val rte = the[RuntimeException] thrownBy (Await.result(sut.addEmployment(nino, model), 5.seconds))
+        val rte = the[RuntimeException] thrownBy Await.result(sut.addEmployment(nino, model), 5.seconds)
         rte.getMessage mustBe s"No envelope id was generated when adding the new employment for ${nino.nino}"
       }
     }

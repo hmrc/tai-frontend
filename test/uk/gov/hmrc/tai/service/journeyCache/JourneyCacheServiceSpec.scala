@@ -91,19 +91,19 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       when(
         journeyCacheConnector
           .mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(any()))
-        .thenReturn((failed))
+        .thenReturn(failed)
       when(
         journeyCacheConnector.mandatoryJourneyValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(
           any()))
-        .thenReturn((failed))
+        .thenReturn(failed)
       when(
         journeyCacheConnector
           .mandatoryJourneyValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(any()))
-        .thenReturn((failed))
+        .thenReturn(failed)
       when(
         journeyCacheConnector
           .mandatoryJourneyValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(any()))
-        .thenReturn((failed))
+        .thenReturn(failed)
       val thrown1 = the[RuntimeException] thrownBy Await.result(sut.mandatoryJourneyValue("stringKey"), 5 seconds)
       val thrown2 = the[RuntimeException] thrownBy Await.result(sut.mandatoryJourneyValueAsInt("intKey"), 5 seconds)
       val thrown3 = the[RuntimeException] thrownBy Await.result(sut.mandatoryValueAsBoolean("boolKey"), 5 seconds)

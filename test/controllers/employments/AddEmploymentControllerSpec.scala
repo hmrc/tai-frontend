@@ -685,7 +685,7 @@ class AddEmploymentControllerSpec
         when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
-              (Seq[String]("emp-name", "2017-06-15", "emp-ref-1234", "Yes")),
+              Seq[String]("emp-name", "2017-06-15", "emp-ref-1234", "Yes"),
               Seq[Option[String]](Some("123456789"))
             ))
         )
@@ -705,7 +705,7 @@ class AddEmploymentControllerSpec
         addEmploymentJourneyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
-        Future.successful((Left("An error has occurred")))
+        Future.successful(Left("An error has occurred"))
       )
 
       val result = sut.addEmploymentCheckYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))

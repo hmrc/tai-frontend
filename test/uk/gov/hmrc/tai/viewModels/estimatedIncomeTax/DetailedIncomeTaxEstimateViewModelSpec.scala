@@ -174,7 +174,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
         val model =
           DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
-        model.dividends must contain theSameElementsAs (taxBands)
+        model.dividends must contain theSameElementsAs taxBands
 
       }
     }

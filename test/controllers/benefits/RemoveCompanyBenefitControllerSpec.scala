@@ -170,10 +170,10 @@ class RemoveCompanyBenefitControllerSpec
 
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
-            (Right(
+            Right(
               Seq(employmentName, benefitName, referer),
               Seq[Option[String]](None)
-            )))
+            ))
         )
 
         val result = SUT.totalValueOfBenefit()(fakeRequest)
@@ -191,10 +191,10 @@ class RemoveCompanyBenefitControllerSpec
 
       when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
         Future.successful(
-          (Right(
+          Right(
             Seq(employmentName, benefitName, referer),
             Seq[Option[String]](valueOfBenefit)
-          )))
+          ))
       )
 
       implicit val request: FakeRequest[AnyContent] = fakeRequest
@@ -472,7 +472,7 @@ class RemoveCompanyBenefitControllerSpec
           any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
         Future.successful(
           Right(
-            (Seq[String]("AwesomeType", "TestCompany", BeforeTaxYearEnd, "Yes", "Url")),
+            Seq[String]("AwesomeType", "TestCompany", BeforeTaxYearEnd, "Yes", "Url"),
             Seq[Option[String]](Some("10000"), Some("123456789"))
           ))
       )
