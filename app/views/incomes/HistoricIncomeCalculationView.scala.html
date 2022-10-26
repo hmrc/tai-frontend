@@ -132,7 +132,7 @@
                                                 historicIncomeCalculationViewModel.employerName.getOrElse("")
                                             )
                                         </p>
-                                        <p class="govuk-body">@historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages(0)</p>
+                                        <p class="govuk-body">@historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.head</p>
                                     }
                                     @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size > 1) {
                                         <p class="govuk-body">

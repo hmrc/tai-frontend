@@ -97,7 +97,7 @@
                                     @Messages("tai.income.calculation.eyu.summary.single", historicIncomeCalculationViewModel.employerName.getOrElse(""))
                                 </p>
                                 <p id="eyu-single-message-print">
-                                    @historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages(0)
+                                    @historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.head
                                 </p>
                             }
                             @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size > 1) {

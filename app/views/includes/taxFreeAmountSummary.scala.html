@@ -98,13 +98,13 @@
                         </dd>
 
                         @if(!taxCodeChange) {
-                            @if(item.rows(0).link.isDisplayed) {
+                            @if(item.rows.head.link.isDisplayed) {
                                 <dd id="summaryTable@{itemIdx.toString}Row1ChangeLinkCell" class="govuk-summary-list__value cya-change">
                                     @includes.link(
                                         id = Some(s"summaryTable${itemIdx.toString}Row1ChangeLink"),
-                                        url = item.rows(0).link.href,
+                                        url = item.rows.head.link.href,
                                         copy=Messages("tai.updateOrRemove"),
-                                        altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows(0).link.value)
+                                        altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows.head.link.value)
                                     )
                                 </dd>
                             } else @{if(oneOrMoreLinksPresent) {
