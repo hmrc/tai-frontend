@@ -17,8 +17,11 @@
 package uk.gov.hmrc.tai.model
 
 import play.api.libs.json._
+import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.util.constants.TaiConstants.LondonEuropeTimezone
 
 import java.time.{LocalDate, ZoneId}
+import javax.inject.Inject
 
 case class TaxYear(year: Int) extends Ordered[TaxYear] {
   require(year.toString.length == 4, "Invalid year")
@@ -43,7 +46,7 @@ case class TaxYear(year: Int) extends Ordered[TaxYear] {
 }
 
 object TaxYear {
-  def apply(from: LocalDate = LocalDate.now(ZoneId.of("Europe/London"))): TaxYear = {
+  def apply(from: LocalDate = LocalDate.now(ZoneId.of(LondonEuropeTimezone))): TaxYear = {
     val naiveYear = TaxYear(from.getYear)
     if (from isBefore naiveYear.start) {
       naiveYear.prev
