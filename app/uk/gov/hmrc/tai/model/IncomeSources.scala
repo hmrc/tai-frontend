@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.model
 
 import uk.gov.hmrc.tai.model.domain.{TaxedIncome, TemporarilyUnavailable}
 
-final case class IncomesSources(
+final case class IncomeSources(
   livePensionIncomeSources: Seq[TaxedIncome],
   liveEmploymentIncomeSources: Seq[TaxedIncome],
   ceasedEmploymentIncomeSources: Seq[TaxedIncome]) {

@@ -20,38 +20,8 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
-import uk.gov.hmrc.tai.model.domain.{PersonalAllowanceAgedPAA, PersonalAllowanceElderlyPAE, PersonalAllowancePA}
 import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaiConstants}
-import uk.gov.hmrc.tai.viewModels.TaxSummaryLabel
-
-import scala.math.BigDecimal
-
-sealed trait TaxViewType
-case object ZeroTaxView extends TaxViewType
-case object SimpleTaxView extends TaxViewType
-case object ComplexTaxView extends TaxViewType
-case object NoIncomeTaxView extends TaxViewType
-
-case class Band(
-  colour: String,
-  barPercentage: BigDecimal = 0,
-  income: BigDecimal = 0,
-  tax: BigDecimal = 0,
-  bandType: String
-)
-
-case class Swatch(barPercentage: BigDecimal = 0, taxAmount: BigDecimal = 0)
-
-case class AdditionalTaxDetailRow(
-  label: TaxSummaryLabel,
-  amount: BigDecimal
-)
-
-case class ReductionTaxRow(
-  description: String,
-  amount: BigDecimal,
-  title: String
-)
+import uk.gov.hmrc.tai.model.domain.{PersonalAllowanceAgedPAA, PersonalAllowanceElderlyPAE, PersonalAllowancePA}
 
 case class BandedGraph(
   id: String,
@@ -66,7 +36,6 @@ case class BandedGraph(
   nextBandMessage: Option[String],
   swatch: Option[Swatch]
 )
-
 object BandedGraph extends BandTypesConstants {
 
   def apply(

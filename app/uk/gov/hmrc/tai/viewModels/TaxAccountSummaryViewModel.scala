@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
+import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service.TimeToProcess
@@ -46,7 +46,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     taxAccountSummary: TaxAccountSummary,
     isAnyFormInProgress: TimeToProcess,
     nonTaxCodeIncome: NonTaxCodeIncome,
-    incomesSources: IncomesSources,
+    incomesSources: IncomeSources,
     nonMatchingCeasedEmployments: Seq[Employment])(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
     val header = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRange)

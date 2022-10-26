@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
-case class RemoveCompanyBenefitCheckYourAnswersViewModel(
+case class RemoveCompanyBenefitsCheckYourAnswersViewModel(
   tableHeader: String,
   stopDate: String,
   valueOfBenefit: Option[String],
@@ -83,7 +83,7 @@ case class RemoveCompanyBenefitCheckYourAnswersViewModel(
 
 }
 
-object RemoveCompanyBenefitCheckYourAnswersViewModel extends ViewModelHelper {
+object RemoveCompanyBenefitsCheckYourAnswersViewModel extends ViewModelHelper {
 
   def apply(
     benefitType: String,
@@ -91,9 +91,9 @@ object RemoveCompanyBenefitCheckYourAnswersViewModel extends ViewModelHelper {
     stopDate: String,
     valueOfBenefit: Option[String],
     contactByPhone: String,
-    phoneNumber: Option[String])(implicit messages: Messages): RemoveCompanyBenefitCheckYourAnswersViewModel = {
+    phoneNumber: Option[String])(implicit messages: Messages): RemoveCompanyBenefitsCheckYourAnswersViewModel = {
     val tableHeader = Messages("tai.benefits.ended.tableHeader", employerName, benefitType)
-    new RemoveCompanyBenefitCheckYourAnswersViewModel(
+    new RemoveCompanyBenefitsCheckYourAnswersViewModel(
       tableHeader,
       stopDate,
       valueOfBenefit,

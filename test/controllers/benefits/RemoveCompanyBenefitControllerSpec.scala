@@ -39,7 +39,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
+import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitsCheckYourAnswersViewModel}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.benefits.{RemoveBenefitTotalValueView, RemoveCompanyBenefitCheckYourAnswersView, RemoveCompanyBenefitConfirmationView, RemoveCompanyBenefitStopDateView}
@@ -483,7 +483,7 @@ class RemoveCompanyBenefitControllerSpec
 
       val stopDate =
         Messages("tai.remove.company.benefit.beforeTaxYearEnd", Dates.formatDate(TaxYear().start))
-      val expectedViewModel = RemoveCompanyBenefitCheckYourAnswersViewModel(
+      val expectedViewModel = RemoveCompanyBenefitsCheckYourAnswersViewModel(
         "AwesomeType",
         "TestCompany",
         stopDate,
