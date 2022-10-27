@@ -59,17 +59,6 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
     }
   }
 
-  @deprecated("Use mandatoryJourneyValueAs", "0.576.0")
-  def mandatoryValueAs[T](journeyName: String, key: String, convert: String => T)(
-    implicit hc: HeaderCarrier): Future[T] = {
-    val url = s"${cacheUrl(journeyName)}/values/$key"
-    httpHandler.getFromApiV2(url).map(value => convert(value.as[String])) recover {
-      case e: HttpException if e.responseCode == NO_CONTENT =>
-        throw new RuntimeException(
-          s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
-    }
-  }
-
   def cache(journeyName: String, data: Map[String, String])(implicit hc: HeaderCarrier): Future[Map[String, String]] =
     httpHandler
       .postToApi(
