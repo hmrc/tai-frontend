@@ -23,12 +23,12 @@ import controllers.routes
 class AddEmploymentErrorPageViewSpec extends TaiViewSpec {
   "Display error page when employment cannot be added" must {
     behave like pageWithTitle(messages("tai.addEmployment.employmentErrorPage.title"))
-    behave like pageWithCombinedHeader(
+    behave like pageWithCombinedHeaderNewTemplate(
       messages("add.missing.employment"),
       messages("tai.addEmployment.employmentErrorPage.title"))
 
     "have link" in {
-      doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad().url)
+      doc must haveLinkWithUrlWithID("backLink", routes.TaxAccountSummaryController.onPageLoad().url)
     }
 
     "have paragraph" in {
