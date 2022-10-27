@@ -54,7 +54,7 @@ class RemoveCompanyBenefitController @Inject()(
   removeCompanyBenefitCheckYourAnswers: RemoveCompanyBenefitCheckYourAnswersView,
   removeCompanyBenefitStopDate: RemoveCompanyBenefitStopDateView,
   removeBenefitTotalValue: RemoveBenefitTotalValueView,
-  can_we_contact_by_phone: CanWeContactByPhoneView,
+  canWeContactByPhone: CanWeContactByPhoneView,
   removeCompanyBenefitConfirmation: RemoveCompanyBenefitConfirmationView,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with JourneyCacheConstants {
@@ -154,7 +154,7 @@ class RemoveCompanyBenefitController @Inject()(
             currentCache.get(EndCompanyBenefit_TelephoneNumberKey))
         )
 
-      Ok(can_we_contact_by_phone(Some(user), telephoneNumberViewModel, form))
+      Ok(canWeContactByPhone(Some(user), telephoneNumberViewModel, form))
     }
   }
 
@@ -170,7 +170,7 @@ class RemoveCompanyBenefitController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
-            BadRequest(can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors))
+            BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel, formWithErrors))
           }
         },
         form => {

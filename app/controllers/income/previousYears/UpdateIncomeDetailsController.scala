@@ -44,7 +44,7 @@ class UpdateIncomeDetailsController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  can_we_contact_by_phone: CanWeContactByPhoneView,
+  canWeContactByPhone: CanWeContactByPhoneView,
   CheckYourAnswers: CheckYourAnswersView,
   UpdateIncomeDetailsDecision: UpdateIncomeDetailsDecisionView,
   UpdateIncomeDetails: UpdateIncomeDetailsView,
@@ -118,7 +118,7 @@ class UpdateIncomeDetailsController @Inject()(
 
     journeyCacheService.currentCache map { currentCache =>
       Ok(
-        can_we_contact_by_phone(
+        canWeContactByPhone(
           Some(user),
           telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
           YesNoTextEntryForm.form()))
@@ -138,7 +138,7 @@ class UpdateIncomeDetailsController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             BadRequest(
-              can_we_contact_by_phone(
+              canWeContactByPhone(
                 Some(user),
                 telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
                 formWithErrors))

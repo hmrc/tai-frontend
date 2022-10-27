@@ -50,7 +50,7 @@ class AddPensionProviderController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  can_we_contact_by_phone: CanWeContactByPhoneView, //TODO remove once backLink issue is resolved
+  canWeContactByPhone: CanWeContactByPhoneView, //TODO remove once backLink issue is resolved
   addPensionConfirmationView: AddPensionConfirmationView,
   addPensionCheckYourAnswersView: AddPensionCheckYourAnswersView,
   addPensionNumber: AddPensionNumberView,
@@ -248,7 +248,7 @@ class AddPensionProviderController @Inject()(
       val user = Some(request.taiUser)
 
       Ok(
-        can_we_contact_by_phone(
+        canWeContactByPhone(
           user,
           contactPhonePensionProvider,
           YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq.head, telephoneNo))))
@@ -265,7 +265,7 @@ class AddPensionProviderController @Inject()(
       .fold(
         formWithErrors => {
           val user = Some(request.taiUser)
-          Future.successful(BadRequest(can_we_contact_by_phone(user, contactPhonePensionProvider, formWithErrors)))
+          Future.successful(BadRequest(canWeContactByPhone(user, contactPhonePensionProvider, formWithErrors)))
         },
         form => {
           val mandatoryData = Map(

@@ -55,11 +55,11 @@ class EndEmploymentController @Inject()(
   validatePerson: ValidatePerson,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
-  update_remove_employment_decision: UpdateRemoveEmploymentDecisionView,
+  updateRemoveEmploymentDecision: UpdateRemoveEmploymentDecisionView,
   endEmploymentWithinSixWeeksError: EndEmploymentWithinSixWeeksErrorView,
   endEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentErrorView,
   endEmploymentView: EndEmploymentView,
-  can_we_contact_by_phone: CanWeContactByPhoneView,
+  canWeContactByPhone: CanWeContactByPhoneView,
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
   confirmation: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
@@ -89,7 +89,7 @@ class EndEmploymentController @Inject()(
       journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map {
         case Right(mandatoryValues) =>
           Ok(
-            update_remove_employment_decision(
+            updateRemoveEmploymentDecision(
               UpdateRemoveEmploymentForm.form(mandatoryValues(0)),
               mandatoryValues(0),
               mandatoryValues(1).toInt))
@@ -142,7 +142,7 @@ class EndEmploymentController @Inject()(
               formWithErrors => {
                 Future(
                   BadRequest(
-                    update_remove_employment_decision(
+                    updateRemoveEmploymentDecision(
                       formWithErrors,
                       mandatoryJourneyValues(0),
                       mandatoryJourneyValues(1).toInt)))
@@ -296,7 +296,7 @@ class EndEmploymentController @Inject()(
       employmentId match {
         case Right(mandatoryEmploymentId) =>
           Ok(
-            can_we_contact_by_phone(
+            canWeContactByPhone(
               Some(user),
               telephoneNumberViewModel(mandatoryEmploymentId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
@@ -319,7 +319,7 @@ class EndEmploymentController @Inject()(
         formWithErrors => {
           journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey) map {
             case Right(employmentId) =>
-              BadRequest(can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
+              BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
           }
         },
         form => {
