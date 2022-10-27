@@ -14,16 +14,20 @@
  * limitations under the License.
  *@
 
-@import includes.confirmation_summary
+@import includes.confirmationSummary
 @import uk.gov.hmrc.tai.model.TaxYear
 @import scala.concurrent.ExecutionContext
 
-@import includes.confirmation_summary
+@import includes.confirmationSummary
 @import views.html.includes.confirmationSuccessBanner
 
 @this(main: MainTempleteNew)
 
-@()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
+@()(implicit request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    ec: ExecutionContext)
 
 @main(
     title = Messages("tai.income.previousYears.confirmation.heading"),
@@ -38,7 +42,7 @@
 
             @confirmationSuccessBanner()
 
-            @confirmation_summary("tai.confirmation.paraTwo")
+            @confirmationSummary("tai.confirmation.paraTwo")
 
             @includes.link(
                 id=Some("returnToSummary"),

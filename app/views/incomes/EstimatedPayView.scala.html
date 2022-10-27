@@ -52,7 +52,7 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage.url)
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage(viewModel.employer.id).url)
 ){
 
     <div class="govuk-grid-row">
@@ -71,9 +71,8 @@
                 <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold" id="payBeforeTax">@MonetaryUtil.withPoundPrefixAndSign(grossAnnualPay)</p>
                 <p class="govuk-body">@messages("tai.estimatedPay.basicPayExplanation")</p>
 
-
                 @if(viewModel.isGrossPayApportioned){
-                    @includes.details_summary(messages("tai.estimatedPay.whyLower.title")) {
+                    @includes.detailsSummary(messages("tai.estimatedPay.whyLower.title")) {
                         @Html(messages(
                             "tai.estimatedPay.whyLower.message",
                             Dates.formatDate(viewModel.incomeStartDate.get),
@@ -91,7 +90,7 @@
                 <p class="govuk-body">@messages("tai.estimatedPay.yourTaxablePay.text")</p>
 
                 @if(viewModel.isGrossPayEqualsNetPay){
-                    @includes.details_summary(messages("tai.estimatedPay.whySame.title"), summaryClass=Some("govuk-details__summary")){
+                    @includes.detailsSummary(messages("tai.estimatedPay.whySame.title"), summaryClass=Some("govuk-details__summary")){
                         @messages("tai.estimatedPay.whySame.text")
                     }
                 }

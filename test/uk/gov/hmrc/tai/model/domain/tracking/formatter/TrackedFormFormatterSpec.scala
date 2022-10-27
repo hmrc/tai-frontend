@@ -169,9 +169,9 @@ class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters {
                          ]}]}"""
 
         val trackingFormSequence = Json.parse(json).as[Seq[TrackedForm]](trackedFormSeqReads)
-        trackingFormSequence mustBe (Seq(
+        trackingFormSequence mustBe Seq(
           TrackedForm("R39_EN", "TES1", TrackedFormReceived),
-          TrackedForm("R38_EN", "TES2", TrackedFormAcquired)))
+          TrackedForm("R38_EN", "TES2", TrackedFormAcquired))
 
       }
 
@@ -187,7 +187,7 @@ class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters {
                         ]}]}"""
 
         val trackingFormSequence = Json.parse(json).as[Seq[TrackedForm]](trackedFormSeqReads)
-        trackingFormSequence mustBe (Seq(TrackedForm("R39_EN", "TES1", TrackedFormReceived)))
+        trackingFormSequence mustBe Seq(TrackedForm("R39_EN", "TES1", TrackedFormReceived))
       }
     }
   }

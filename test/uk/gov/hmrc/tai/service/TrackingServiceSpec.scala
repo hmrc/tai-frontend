@@ -50,7 +50,7 @@ class TrackingServiceSpec extends BaseSpec with JourneyCacheConstants {
       }
 
       Seq("TES1", "TES7") foreach {
-        case (tes) =>
+        case tes =>
           s"$tes should take three weeks to process" in {
             when(trackingConnector.getUserTracking(any())(any()))
               .thenReturn(Future.successful(Seq(TrackedForm(tes, name, TrackedFormReceived))))
@@ -60,7 +60,7 @@ class TrackingServiceSpec extends BaseSpec with JourneyCacheConstants {
       }
 
       Seq("TES2", "TES3", "TES4", "TES5", "TES6") foreach {
-        case (tes) =>
+        case tes =>
           s"$tes should take seven days to process" in {
             when(trackingConnector.getUserTracking(any())(any()))
               .thenReturn(Future.successful(Seq(TrackedForm(tes, name, TrackedFormReceived))))

@@ -403,7 +403,7 @@ class UpdateEmploymentControllerSpec
         when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
-              (Seq[String](empId.toString, "whatYouToldUs", "No")),
+              Seq[String](empId.toString, "whatYouToldUs", "No"),
               Seq[Option[String]](None)
             ))
         )

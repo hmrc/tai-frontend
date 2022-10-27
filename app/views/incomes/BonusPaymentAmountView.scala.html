@@ -65,7 +65,7 @@
             }
 
             <div class="section flush--bottom soft--top">
-                @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusOvertimeAmount) {
+                @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusOvertimeAmount(employer.id)) {
 
                     @govukInput(Input(
                         id = "amount",

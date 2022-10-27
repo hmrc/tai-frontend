@@ -48,16 +48,14 @@ class TrackingConnector @Inject()(
     if (applicationConfig.trackingEnabled) {
       withTimeout(5.seconds) {
         (httpHandler.getFromApiV2(trackingUrl(nino)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))).recover {
-          case NonFatal(x) => {
+          case NonFatal(x) =>
             logger.warn(
               s"Tracking service returned error, therefore returning an empty response. Error: ${x.getMessage}")
             Seq.empty[TrackedForm]
-          }
         }
       }.recover {
-        case FutureEarlyTimeout => {
+        case FutureEarlyTimeout =>
           Seq.empty[TrackedForm]
-        }
       }
     } else {
       Future.successful(Seq.empty[TrackedForm])

@@ -105,7 +105,7 @@ object BandedGraph extends BandTypesConstants {
     val (individualBand: List[Band], mergedBand: Option[Band], swatch: Option[Swatch]) = {
 
       (taxViewType == ZeroTaxView, taxbands.exists(_.rate == 0)) match {
-        case (true, true) => {
+        case (true, true) =>
           (
             individualBands(
               taxbands,
@@ -117,8 +117,7 @@ object BandedGraph extends BandTypesConstants {
             None,
             None
           )
-        }
-        case (false, true) => {
+        case (false, true) =>
           (
             individualBands(
               taxbands,
@@ -129,14 +128,12 @@ object BandedGraph extends BandTypesConstants {
             mergedBands(taxbands, personalAllowance, taxFreeAllowanceBandSum, totalIncome, taxViewType),
             Some(createSwatch(totalEstimatedTax, totalIncome))
           )
-        }
-        case (false, false) => {
+        case (false, false) =>
           (
             individualOtherRateBands(taxbands, None, taxFreeAllowanceBandSum, totalIncome, taxViewType),
             None,
             Some(createSwatch(totalEstimatedTax, totalIncome))
           )
-        }
       }
     }
 

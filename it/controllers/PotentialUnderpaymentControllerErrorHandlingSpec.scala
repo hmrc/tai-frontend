@@ -41,9 +41,9 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
 
     val partialsUrl = s"/engagement-platform-partials/partials/%5B%22HMRC_Fixed_1%22%2C%22HMRC_Anchored_1%22%5D"
 
-    val taxComponentsUrl = s"/tai/$generatedNino/tax-account/${taxYear}/tax-components"
+    val taxComponentsUrl = s"/tai/$generatedNino/tax-account/$taxYear/tax-components"
 
-    val taxSummaryUrl = s"/tai/$generatedNino/tax-account/${taxYear}/summary"
+    val taxSummaryUrl = s"/tai/$generatedNino/tax-account/$taxYear/summary"
 
     val personUrl = s"/tai/$generatedNino/person"
 

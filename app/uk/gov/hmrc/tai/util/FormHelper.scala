@@ -37,7 +37,7 @@ object FormHelper {
 
   def isValidCurrency(stringValue: Option[String], isWholeNumRequired: Boolean = false): Boolean =
     stringValue match {
-      case (Some(value)) =>
+      case Some(value) =>
         FormHelper.isCurrency(value, isWholeNumRequired)
       case _ => true
     }

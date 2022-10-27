@@ -263,8 +263,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual (complexEstimatedIncomeTaxView(expectedViewModel, Html("<title/>"))
-          .toString())
+        contentAsString(result) mustEqual complexEstimatedIncomeTaxView(expectedViewModel, Html("<title/>"))
+          .toString()
 
       }
 
@@ -352,8 +352,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual (zeroTaxEstimatedIncomeTaxView(expectedViewModel, Html("<title/>"))
-          .toString())
+        contentAsString(result) mustEqual zeroTaxEstimatedIncomeTaxView(expectedViewModel, Html("<title/>"))
+          .toString()
 
       }
 
@@ -389,7 +389,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec with BandTypesConstants 
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual (noCurrentIncomeView().toString())
+        contentAsString(result) mustEqual noCurrentIncomeView().toString()
       }
 
     }

@@ -396,7 +396,7 @@ class EndEmploymentControllerSpec
       "show the check your answers page" in {
         val endEmploymentTest = createEndEmploymentTest
 
-        val dataFromCache = (Right(Seq("0", LocalDate.of(2017, 2, 1).toString, "No"), Seq(Some("EXT-TEST"))))
+        val dataFromCache = Right(Seq("0", LocalDate.of(2017, 2, 1).toString, "No"), Seq(Some("EXT-TEST")))
 
         when(
           endEmploymentJourneyCacheService.collectedJourneyValues(
@@ -418,7 +418,7 @@ class EndEmploymentControllerSpec
           endEmploymentJourneyCacheService.collectedJourneyValues(
             any(classOf[scala.collection.immutable.List[String]]),
             any(classOf[scala.collection.immutable.List[String]]))(any()))
-          .thenReturn(Future.successful((Left("An error has occurred"))))
+          .thenReturn(Future.successful(Left("An error has occurred")))
 
         val result = endEmploymentTest.endEmploymentCheckYourAnswers()(fakeGetRequest)
         status(result) mustBe SEE_OTHER

@@ -48,7 +48,7 @@ class BonusPaymentsViewSpec extends TaiViewSpec with FormValuesConstants {
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
     behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
-    behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-payments")
+    behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-payments/" + employer.id)
 
     "return no errors with valid 'yes' choice" in {
       val validYesChoice = Json.obj(choice -> YesValue)

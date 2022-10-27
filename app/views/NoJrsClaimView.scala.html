@@ -17,11 +17,14 @@
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@this(main_without_nav: main_without_nav)
+@this(mainWithoutNav: mainWithoutNav)
 
-@(appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer)
+@(appConfig: ApplicationConfig)(
+    implicit request: Request[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer)
 
-@main_without_nav(
+@mainWithoutNav(
     title=messages("check.jrs.claims.no.claim.title")
 ){
     <div class="grid-row">

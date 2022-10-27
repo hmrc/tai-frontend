@@ -18,11 +18,11 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.renderer.TemplateRenderer
 
-@this(unauthenticated_main: unauthenticated_main)
+@this(unauthenticatedMain: unauthenticatedMain)
 
 @(appConfig: ApplicationConfig)(implicit request:Request[_], messages: Messages, templateRenderer: TemplateRenderer)
 
-@unauthenticated_main(
+@unauthenticatedMain(
     title = messages("session_expired.title")
 ) {
 

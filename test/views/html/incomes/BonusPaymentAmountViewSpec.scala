@@ -44,7 +44,7 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(
       messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
-    behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-overtime-amount")
+    behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-overtime-amount/" + employer.id)
 
     "contain a paragraph with static text" in {
       doc must haveParagraphWithText(messages("tai.bonusPaymentsAmount.hint"))

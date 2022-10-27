@@ -101,7 +101,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
         val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
 
-        result mustBe (true)
+        result mustBe true
       }
 
     }
@@ -114,7 +114,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
         val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
 
-        result mustBe (false)
+        result mustBe false
       }
 
       "connector returns no jrs claim data" in {
@@ -123,7 +123,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
         val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
 
-        result mustBe (false)
+        result mustBe false
       }
 
       "jrs claim feature toggle is disabled" in {
@@ -132,7 +132,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
         val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
 
-        result mustBe (false)
+        result mustBe false
       }
     }
   }

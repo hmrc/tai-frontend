@@ -67,7 +67,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
   "Confirm income Annual Amount view" should {
 
     "display the correct confirm and send button" in {
-      val vm = ConfirmAmountEnteredViewModel(employerName, currentAmount, estimatedAmount, "backUrl")
+      val vm = ConfirmAmountEnteredViewModel(employerName, currentAmount, estimatedAmount, "backUrl", employmentId)
       val annualPayView: Html = confirmAmountEntered(vm)
 
       doc(annualPayView) must haveLinkElement(

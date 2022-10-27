@@ -54,23 +54,19 @@ class JrsConnector @Inject()(httpClient: HttpClient, val metrics: Metrics, appli
           case Right(response) if response.status == NO_CONTENT => Some(JrsClaims(List.empty))
           case Right(_)                                         => None
           case Left(error) if error.statusCode == NOT_FOUND     => None
-          case Left(error) if error.statusCode == FORBIDDEN => {
+          case Left(error) if error.statusCode == FORBIDDEN =>
             logger.warn(error.message)
             None
-          }
-          case Left(error) if error.statusCode >= INTERNAL_SERVER_ERROR => {
+          case Left(error) if error.statusCode >= INTERNAL_SERVER_ERROR =>
             logger.error(error.message)
             None
-          }
-          case Left(error) => {
+          case Left(error) =>
             logger.error(error.message, error)
             None
-          }
         } recover {
-          case exception: HttpException => {
+          case exception: HttpException =>
             logger.error(exception.message)
             None
-          }
         }
       }
     }

@@ -94,7 +94,7 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
           TaxCodeChangeViewModel
             .getTaxCodeExplanations(previousTaxCodeRecord1, Map[String, BigDecimal](), "current", appConfig)
 
-        result mustEqual (expected)
+        result mustEqual expected
       }
 
       "basisOfOperation is emergency" in {
@@ -111,7 +111,7 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
           TaxCodeChangeViewModel
             .getTaxCodeExplanations(fullYearTaxCode, Map[String, BigDecimal](), "current", appConfig)
 
-        result mustEqual (expected)
+        result mustEqual expected
       }
 
       "Using a scottish tax rate band" in {
@@ -137,7 +137,7 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
         val result =
           TaxCodeChangeViewModel.getTaxCodeExplanations(scottishTaxCode, scottishTaxRateBands, "current", appConfig)
 
-        result mustEqual (expected)
+        result mustEqual expected
       }
     }
   }

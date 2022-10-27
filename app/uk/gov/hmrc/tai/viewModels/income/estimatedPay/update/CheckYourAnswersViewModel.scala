@@ -120,13 +120,12 @@ case class CheckYourAnswersViewModel(
     val zeroDecimalPlaces = 0
 
     (answer, isMonetaryValue) match {
-      case (Some(answer), true) => {
+      case (Some(answer), true) =>
         Some(
           CheckYourAnswersConfirmationLine(
             message,
             withPoundPrefixAndSign(MoneyPounds(BigDecimal(wholePoundsOnlyFormatting(answer)), zeroDecimalPlaces)),
             changeUrl))
-      }
       case (Some(answer), false) => Some(CheckYourAnswersConfirmationLine(message, answer, changeUrl))
       case _                     => None
     }
