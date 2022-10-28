@@ -344,7 +344,7 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       val sut = createSut
       when(journeyCacheConnector.flushWithEmpId(Matchers.eq(sut.journeyName), Matchers.eq(1))(any()))
         .thenReturn(Future.successful(Done))
-      Await.result(sut.flushWithEmpId(1), 5 seconds) mustBe Done
+      Await.result(sut.flushWithEmpId(1), 5.seconds) mustBe Done
     }
   }
 
