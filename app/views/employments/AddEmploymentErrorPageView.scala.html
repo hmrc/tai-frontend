@@ -47,6 +47,12 @@
         <p class="govuk-body">@Messages("tai.addEmployment.employmentErrorPage.para1", employerName)</p>
         <p class="govuk-body">@Messages("tai.addEmployment.employmentErrorPage.para2")</p>
 
+        @includes.link(
+        id=Some("returnToYourIncomeDetails"),
+        copy=Messages("return.to.your.income.tax.summary"),
+        url = routes.TaxAccountSummaryController.onPageLoad.url.toString,
+        linkClasses=Seq("govuk-button")
+        )
 
     </div>
 </div>
