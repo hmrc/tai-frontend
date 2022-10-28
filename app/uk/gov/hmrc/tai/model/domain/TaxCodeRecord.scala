@@ -21,6 +21,7 @@ import play.api.libs.json.Json
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
 import uk.gov.hmrc.tai.model.domain.income.BasisOfOperation
+import play.api.libs.json.OFormat
 
 case class TaxCodeRecord(
   taxCode: String,
@@ -33,5 +34,5 @@ case class TaxCodeRecord(
   primary: Boolean)
 
 object TaxCodeRecord {
-  implicit val format = Json.format[TaxCodeRecord]
+  implicit val format: OFormat[TaxCodeRecord] = Json.format[TaxCodeRecord]
 }

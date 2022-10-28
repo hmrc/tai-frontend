@@ -18,6 +18,8 @@ package uk.gov.hmrc.tai.util.constants
 
 trait JourneyCacheConstants {
 
+//TODO use objects instead of traits
+
   val AddEmployment_JourneyKey = "add-employment"
   val AddEmployment_NameKey = "employmentName"
   val AddEmployment_StartDateKey = "employmentStartDate"

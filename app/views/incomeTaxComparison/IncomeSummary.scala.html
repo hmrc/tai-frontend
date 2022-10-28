@@ -48,7 +48,7 @@
             incomeSummaryHeading
         }</caption>
         <thead id="incomeSummeryComparisonTableHeader" class="govuk-table__head">
-            <tr role="row" class="govuk-table__row">
+            <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">@messages("tai.incomeTaxComparison.taxCodes.table.employer.or.pension")</th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter taxCodeComparisonTableHeaderCol1">
                     @Html(messages("tai.CurrentTaxYear"))
@@ -58,7 +58,7 @@
                     @Html(messages("tai.NextTaxYear"))
                     @Html(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start)))
                 </th>
-                <th scope="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter col">@messages("tai.incomeTaxComparison.taxCodes.table.actions")</th>
+                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter col">@messages("tai.incomeTaxComparison.taxCodes.table.actions")</th>
             </tr>
         </thead>
         <tbody class="govuk-table__body">
@@ -66,14 +66,14 @@
             @for((employmentIncomeSourceDetail, count) <- incomeSourceViewModel.employmentIncomeSourceDetail.zipWithIndex) {
 
                 <tr class="govuk-table__row">
-                    <td role="cell" class="govuk-table__cell table-title">
+                    <td class="govuk-table__cell table-title">
                         <span class="table-heading employerName" aria-hidden="true">
                         @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
                         </span>
                         <span class="carry-over">@employmentIncomeSourceDetail.name</span>
                     </td>
 
-                    <td role="cell" class="govuk-table__cell govuk-table__cell--numeric">
+                    <td class="govuk-table__cell govuk-table__cell--numeric">
                         <span class="table-heading" aria-hidden="true">
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
@@ -83,7 +83,7 @@
                         }">@employmentIncomeSourceDetail.amountCY</span>
                     </td>
 
-                    <td role="cell" class="govuk-table__cell govuk-table__cell--numeric">
+                    <td class="govuk-table__cell govuk-table__cell--numeric">
                         <span class="table-heading" aria-hidden="true">
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
@@ -115,13 +115,13 @@
             @for((pensionIncomeSourceDetail, count) <- incomeSourceViewModel.pensionIncomeSourceDetail.zipWithIndex) {
 
                 <tr class="govuk-table__row">
-                    <td role="cell" class="govuk-table__cell table-title">
+                    <td class="govuk-table__cell table-title">
                         <span class="table-heading employerName" aria-hidden="true">
                         @messages("tai.incomeTaxComparison.taxCodes.table.pensionsReaderText")
                         </span>
                         <span class="carry-over">@pensionIncomeSourceDetail.name</span>
                     </td>
-                    <td role="cell" class="govuk-table__cell govuk-table__cell--numeric">
+                    <td class="govuk-table__cell govuk-table__cell--numeric">
                         <span class="table-heading" aria-hidden="true">
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
@@ -131,7 +131,7 @@
                         }">@pensionIncomeSourceDetail.amountCY</span>
                     </td>
 
-                    <td role="cell" class="govuk-table__cell govuk-table__cell--numeric">
+                    <td class="govuk-table__cell govuk-table__cell--numeric">
                         <span class="table-heading" aria-hidden="true">
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))

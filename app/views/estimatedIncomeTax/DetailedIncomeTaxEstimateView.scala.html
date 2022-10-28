@@ -176,7 +176,7 @@
                 @for(taxPaidElsewhere <- viewModel.reductionTaxTable){
                 <tr class="govuk-table__row" >
                     <td class="govuk-table__cell flush--bottom">
-                        @includes.details_summary(taxPaidElsewhere.title, summaryClass=Some("govuk-details__summary")){
+                        @includes.detailsSummary(taxPaidElsewhere.title, summaryClass=Some("govuk-details__summary")){
                         <p class="govuk-details__text"> @Html(taxPaidElsewhere.description) </p>
                         }
                     </td>

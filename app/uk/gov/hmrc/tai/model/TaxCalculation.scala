@@ -17,9 +17,10 @@
 package uk.gov.hmrc.tai.model
 
 import play.api.libs.json.Json
+import play.api.libs.json.OFormat
 
 object TaxCalculation {
-  implicit val formats = Json.format[TaxCalculation]
+  implicit val formats: OFormat[TaxCalculation] = Json.format[TaxCalculation]
 }
 
 case class TaxCalculation(

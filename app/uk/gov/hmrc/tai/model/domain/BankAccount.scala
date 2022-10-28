@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.model.domain
 
 import play.api.libs.json.Json
+import play.api.libs.json.OFormat
 
 case class BankAccount(
   id: Int,
@@ -30,5 +31,5 @@ case class BankAccount(
 }
 
 object BankAccount {
-  implicit val Format = Json.format[BankAccount]
+  implicit val Format: OFormat[BankAccount] = Json.format[BankAccount]
 }

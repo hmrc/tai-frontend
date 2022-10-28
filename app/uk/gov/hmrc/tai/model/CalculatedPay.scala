@@ -20,6 +20,7 @@ import java.time.LocalDate
 import play.api.libs.json.Json
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
+import play.api.libs.json.OFormat
 
 case class CalculatedPay(
   grossAnnualPay: Option[BigDecimal],
@@ -29,5 +30,5 @@ case class CalculatedPay(
 )
 
 object CalculatedPay {
-  implicit val formats = Json.format[CalculatedPay]
+  implicit val formats: OFormat[CalculatedPay] = Json.format[CalculatedPay]
 }

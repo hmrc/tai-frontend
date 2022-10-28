@@ -17,9 +17,10 @@
 package uk.gov.hmrc.tai.model.domain
 
 import play.api.libs.json.Json
+import play.api.libs.json.OFormat
 
 case class SavingsInvestments(untaxedInterest: UntaxedInterest)
 
 object SavingsInvestments {
-  implicit val savingsInvestmentsFormat = Json.format[SavingsInvestments]
+  implicit val savingsInvestmentsFormat: OFormat[SavingsInvestments] = Json.format[SavingsInvestments]
 }

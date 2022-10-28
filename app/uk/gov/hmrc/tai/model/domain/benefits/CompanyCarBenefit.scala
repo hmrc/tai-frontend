@@ -20,6 +20,7 @@ import java.time.LocalDate
 import play.api.libs.json.Json
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
+import play.api.libs.json.OFormat
 
 case class CompanyCar(
   carSeqNo: Int,
@@ -30,7 +31,7 @@ case class CompanyCar(
   dateWithdrawn: Option[LocalDate])
 
 object CompanyCar {
-  implicit val formats = Json.format[CompanyCar]
+  implicit val formats: OFormat[CompanyCar] = Json.format[CompanyCar]
 }
 
 case class CompanyCarBenefit(
@@ -40,5 +41,5 @@ case class CompanyCarBenefit(
   version: Option[Int] = None)
 
 object CompanyCarBenefit {
-  implicit val formats = Json.format[CompanyCarBenefit]
+  implicit val formats: OFormat[CompanyCarBenefit] = Json.format[CompanyCarBenefit]
 }

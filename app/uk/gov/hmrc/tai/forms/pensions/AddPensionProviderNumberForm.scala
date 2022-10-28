@@ -32,7 +32,7 @@ object AddPensionProviderNumberForm extends AddPensionNumberConstants with FormV
     case _                                              => Invalid(Messages("tai.addPensionProvider.pensionNumber.error.selectOption"))
   }
 
-  def form(implicit messages: Messages) = Form[AddPensionProviderNumberForm](
+  def form(implicit messages: Messages): Form[AddPensionProviderNumberForm] = Form[AddPensionProviderNumberForm](
     mapping(
       PayrollNumberChoice -> optional(text).verifying(yesNoChoiceValidation),
       PayrollNumberEntry -> mandatoryIfEqual(

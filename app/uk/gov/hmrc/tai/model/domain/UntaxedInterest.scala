@@ -17,9 +17,10 @@
 package uk.gov.hmrc.tai.model.domain
 
 import play.api.libs.json.Json
+import play.api.libs.json.OFormat
 
 case class UntaxedInterest(amount: BigDecimal, bankAccounts: Seq[BankAccount])
 
 object UntaxedInterest {
-  implicit val formats = Json.format[UntaxedInterest]
+  implicit val formats: OFormat[UntaxedInterest] = Json.format[UntaxedInterest]
 }

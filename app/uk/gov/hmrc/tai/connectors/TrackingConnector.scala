@@ -42,7 +42,7 @@ class TrackingConnector @Inject()(
 
   private val IdType = "nino"
 
-  def trackingUrl(id: String) = s"$serviceUrl/tracking-data/user/$IdType/$id"
+  def trackingUrl(id: String): String = s"$serviceUrl/tracking-data/user/$IdType/$id"
 
   def getUserTracking(nino: String)(implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] =
     if (applicationConfig.trackingEnabled) {

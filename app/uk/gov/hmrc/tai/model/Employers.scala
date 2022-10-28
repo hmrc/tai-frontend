@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.model
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import play.api.libs.json.OFormat
 
 final case class Employers(name: String, employerReference: String, claims: List[YearAndMonth]) {
 
@@ -27,7 +28,7 @@ final case class Employers(name: String, employerReference: String, claims: List
 
 object Employers {
 
-  implicit val formats = Json.format[Employers]
+  implicit val formats: OFormat[Employers] = Json.format[Employers]
 
   def sortEmployerslist(appConfig: ApplicationConfig, employers: List[Employers]): List[Employers] = {
 

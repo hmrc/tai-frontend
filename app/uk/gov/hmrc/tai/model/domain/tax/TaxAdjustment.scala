@@ -47,7 +47,7 @@ case object GiftAidPayments extends TaxReliefComponent
 case object GiftAidPaymentsRelief extends TaxReliefComponent
 
 object TaxAdjustmentType {
-  implicit val formatTaxAdjustmentType = new Format[TaxAdjustmentType] {
+  implicit val formatTaxAdjustmentType: Format[TaxAdjustmentType] = new Format[TaxAdjustmentType] {
     override def writes(taxAdjustmentType: TaxAdjustmentType): JsValue = ???
 
     override def reads(json: JsValue): JsResult[TaxAdjustmentType] =

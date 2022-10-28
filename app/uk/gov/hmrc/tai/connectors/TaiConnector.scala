@@ -27,11 +27,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TaiConnector @Inject()(http: DefaultHttpClient, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext) {
 
-  val serviceUrl = servicesConfig.baseUrl("tai")
+  val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-  def url(path: String) = s"$serviceUrl$path"
+  def url(path: String): String = s"$serviceUrl$path"
 
-  def responseTo[T](uri: String)(response: HttpResponse)(implicit rds: Reads[T]) = response.json.as[T]
+  def responseTo[T](uri: String)(response: HttpResponse)(implicit rds: Reads[T]): T = response.json.as[T]
 
   val STATUS_OK = 200
   val STATUS_EMAIL_RESPONSE = 201

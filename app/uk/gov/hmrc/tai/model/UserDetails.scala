@@ -18,10 +18,11 @@ package uk.gov.hmrc.tai.model
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.constants.TaiConstants
+import play.api.libs.json.OFormat
 
 case class UserDetails(authProviderType: String) {
   def hasGgAuthProvider: Boolean = authProviderType == TaiConstants.AuthProviderGG
 }
 object UserDetails {
-  implicit val formats = Json.format[UserDetails]
+  implicit val formats: OFormat[UserDetails] = Json.format[UserDetails]
 }

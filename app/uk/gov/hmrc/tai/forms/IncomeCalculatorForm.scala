@@ -25,11 +25,12 @@ import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, EditIncomePayPeriodConstants}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePayPeriod
+import play.api.libs.json.OFormat
 
 case class HowToUpdateForm(howToUpdate: Option[String])
 
 object HowToUpdateForm {
-  implicit val formats = Json.format[HowToUpdateForm]
+  implicit val formats: OFormat[HowToUpdateForm] = Json.format[HowToUpdateForm]
 
   def createForm()(implicit messages: Messages): Form[HowToUpdateForm] = {
 
@@ -49,7 +50,7 @@ object HowToUpdateForm {
 case class HoursWorkedForm(workingHours: Option[String])
 
 object HoursWorkedForm extends EditIncomeIrregularPayConstants {
-  implicit val formats = Json.format[HoursWorkedForm]
+  implicit val formats: OFormat[HoursWorkedForm] = Json.format[HoursWorkedForm]
 
   def createForm()(implicit messages: Messages): Form[HoursWorkedForm] = {
 
@@ -70,7 +71,7 @@ object HoursWorkedForm extends EditIncomeIrregularPayConstants {
 case class PayPeriodForm(payPeriod: Option[String], otherInDays: Option[String] = None) {}
 
 object PayPeriodForm extends EditIncomePayPeriodConstants {
-  implicit val formats = Json.format[PayPeriodForm]
+  implicit val formats: OFormat[PayPeriodForm] = Json.format[PayPeriodForm]
 
   def createForm(howOftenError: Option[String], payPeriod: Option[String] = None)(
     implicit messages: Messages): Form[PayPeriodForm] = {
@@ -111,7 +112,7 @@ object PayPeriodForm extends EditIncomePayPeriodConstants {
 case class PayslipForm(totalSalary: Option[String] = None)
 
 object PayslipForm {
-  implicit val formats = Json.format[PayslipForm]
+  implicit val formats: OFormat[PayslipForm] = Json.format[PayslipForm]
 
   def createForm(errorText: String)(implicit messages: Messages): Form[PayslipForm] =
     Form[PayslipForm](
@@ -126,7 +127,7 @@ object PayslipForm {
 case class PayslipDeductionsForm(payslipDeductions: Option[String])
 
 object PayslipDeductionsForm {
-  implicit val formats = Json.format[PayslipDeductionsForm]
+  implicit val formats: OFormat[PayslipDeductionsForm] = Json.format[PayslipDeductionsForm]
 
   def createForm()(implicit messages: Messages): Form[PayslipDeductionsForm] = {
 
@@ -145,7 +146,7 @@ object PayslipDeductionsForm {
 case class TaxablePayslipForm(taxablePay: Option[String] = None)
 
 object TaxablePayslipForm {
-  implicit val formats = Json.format[TaxablePayslipForm]
+  implicit val formats: OFormat[TaxablePayslipForm] = Json.format[TaxablePayslipForm]
 
   def createForm(
     netSalary: Option[String] = None,
@@ -180,7 +181,7 @@ object BonusPaymentsForm {
 case class BonusOvertimeAmountForm(amount: Option[String] = None)
 
 object BonusOvertimeAmountForm {
-  implicit val formats = Json.format[BonusOvertimeAmountForm]
+  implicit val formats: OFormat[BonusOvertimeAmountForm] = Json.format[BonusOvertimeAmountForm]
 
   def createForm(nonEmptyMessage: Option[String] = None, notAnAmountMessage: Option[String] = None)(
     implicit messages: Messages): Form[BonusOvertimeAmountForm] =

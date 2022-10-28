@@ -30,7 +30,7 @@ class EmploymentsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: S
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-  def employmentUrl(nino: Nino, id: String) = s"$serviceUrl/tai/$nino/employments/$id"
+  def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     httpHandler.getFromApiV2(employmentServiceUrl(nino, year)) map { json =>
@@ -74,14 +74,14 @@ class EmploymentsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: S
         (response.json \ "data").asOpt[String]
     }
 
-  def endEmploymentServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/employments/$id/end-date"
+  def endEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/end-date"
 
-  def addEmploymentServiceUrl(nino: Nino) = s"$serviceUrl/tai/$nino/employments"
+  def addEmploymentServiceUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/employments"
 
-  def employmentServiceUrl(nino: Nino, year: TaxYear) = s"$serviceUrl/tai/$nino/employments/years/${year.year}"
+  def employmentServiceUrl(nino: Nino, year: TaxYear): String = s"$serviceUrl/tai/$nino/employments/years/${year.year}"
 
-  def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear) =
+  def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear): String =
     s"$serviceUrl/tai/$nino/employments/year/${year.year}/status/ceased"
 
-  def incorrectEmploymentServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/employments/$id/reason"
+  def incorrectEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/reason"
 }

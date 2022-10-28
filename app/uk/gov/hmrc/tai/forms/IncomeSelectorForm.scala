@@ -25,10 +25,10 @@ import play.api.data.Forms._
 case class IncomeSelectorForm(incomeId: Int)
 
 object IncomeSelectorForm {
-  def create(preFillData: IncomeSelectorForm) =
+  def create(preFillData: IncomeSelectorForm): Form[IncomeSelectorForm] =
     createForm.fill(preFillData)
 
-  def incomeSelectorForm = Form[IncomeSelectorForm](
+  def incomeSelectorForm: Form[IncomeSelectorForm] = Form[IncomeSelectorForm](
     mapping(
       "incomeId" -> number()
     )(IncomeSelectorForm.apply)(IncomeSelectorForm.unapply)

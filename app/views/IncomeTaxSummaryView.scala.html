@@ -82,7 +82,7 @@
 
                 <h2 id="incomeFromEmploymentHeading" class="govuk-heading-m under-line">@Messages("tai.incomeTaxSummary.employment.section.heading")</h2>
 
-                @incomeTaxSummary_incomeSourceDetail(viewModel.employments, "employment", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
+                @incomeTaxSummaryIncomeSourceDetail(viewModel.employments, "employment", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
 
             </div>
             }
@@ -92,7 +92,7 @@
 
                 <h2 id="incomeFromPensionHeading" class="govuk-heading-m heading-section">@Messages("tai.incomeTaxSummary.pension.section.heading")</h2>
 
-                @incomeTaxSummary_incomeSourceDetail(viewModel.pensions, "pension", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
+                @incomeTaxSummaryIncomeSourceDetail(viewModel.pensions, "pension", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
 
             </div>
             }
@@ -102,7 +102,7 @@
 
                 <h2 id="otherIncomeSourcesHeading" class="govuk-heading-m heading-section">@Messages("tai.incomeTaxSummary.otherIncomeSources.heading")</h2>
 
-                @incomeTaxSummary_incomeSourceDetail(viewModel.otherIncomeSources, "otherIncomeSources", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
+                @incomeTaxSummaryIncomeSourceDetail(viewModel.otherIncomeSources, "otherIncomeSources", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
 
             </div>
             }
@@ -113,7 +113,7 @@
                 <h2 id="endedIncomeHeading" class="govuk-heading-m heading-section">@Messages("tai.incomeTaxSummary.ceased.section.heading", viewModel.lastTaxYearEnd)</h2>
 
                 @if(viewModel.rtiAvailable) {
-                    @incomeTaxSummary_incomeSourceDetail(viewModel.ceasedEmployments, "income", Messages("tai.incomeTaxSummary.ceasedIncomeAmount.prefix"))
+                    @incomeTaxSummaryIncomeSourceDetail(viewModel.ceasedEmployments, "income", Messages("tai.incomeTaxSummary.ceasedIncomeAmount.prefix"))
                 } else {
                     <p>@messages("tai.rti.down.ceasedEmployments")</p>
                 }
@@ -128,7 +128,7 @@
                 <div aria-hidden="true">
                     <p class="govuk-body flush--top">
                         @link(
-                        id=Some("totalEstimatedIncomeLink"),
+                        id=Some("totalEstimatedIncomeLinkPrint"),
                         url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
                         copy=Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")
                         )

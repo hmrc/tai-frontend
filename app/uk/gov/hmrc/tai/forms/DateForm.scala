@@ -27,7 +27,7 @@ import scala.util.Try
 
 case class DateForm(validations: Seq[(LocalDate => Boolean, String)], blankDateMessage: String) extends FormValidator {
 
-  def form(implicit messages: Messages) = {
+  def form(implicit messages: Messages): Form[LocalDate] = {
     implicit val dateFormatter = new Formatter[LocalDate] {
 
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {

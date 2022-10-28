@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.model.domain.BenefitComponentType
 
 object BenefitComponentTypeBinder {
 
-  implicit def benefitComponentTypeBinder = new PathBindable[BenefitComponentType] {
+  implicit def benefitComponentTypeBinder: PathBindable[BenefitComponentType] = new PathBindable[BenefitComponentType] {
 
     override def bind(key: String, value: String): Either[String, BenefitComponentType] =
       BenefitComponentType(value) map {

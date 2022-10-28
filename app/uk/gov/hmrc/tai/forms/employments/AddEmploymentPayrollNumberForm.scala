@@ -32,7 +32,7 @@ object AddEmploymentPayrollNumberForm extends AddEmploymentPayrollNumberConstant
     case _                                              => Invalid(Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
   }
 
-  def form(implicit messages: Messages) = Form[AddEmploymentPayrollNumberForm](
+  def form(implicit messages: Messages): Form[AddEmploymentPayrollNumberForm] = Form[AddEmploymentPayrollNumberForm](
     mapping(
       PayrollNumberChoice -> optional(text).verifying(yesNoChoiceValidation),
       PayrollNumberEntry -> mandatoryIfEqual(
