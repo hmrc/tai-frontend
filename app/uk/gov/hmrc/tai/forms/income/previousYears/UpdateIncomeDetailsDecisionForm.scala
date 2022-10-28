@@ -21,11 +21,11 @@ import play.api.data.Forms._
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.constants.UpdateHistoricIncomeChoiceConstants
 
-object UpdateIncomeDetailsDecisionForm extends UpdateHistoricIncomeChoiceConstants {
+object UpdateIncomeDetailsDecisionForm {
 
   def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
     single(
-      UpdateIncomeChoice ->
+      UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice ->
         optional(text).verifying(Messages("tai.income.previousYears.decision.error"), { _.isDefined }))
   )
 }

@@ -21,6 +21,7 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
 
 case class CheckYourAnswersViewModel(
   paymentFrequency: String,
@@ -38,7 +39,7 @@ case class CheckYourAnswersViewModel(
     val isMonetaryValue = true
 
     val paymentFrequencyAnswer = paymentFrequency match {
-      case OTHER => messages("tai.payPeriod.dayPeriod", payPeriodInDays.getOrElse("0"))
+      case Other => messages("tai.payPeriod.dayPeriod", payPeriodInDays.getOrElse("0"))
       case _     => messages(s"tai.payPeriod.$paymentFrequency")
     }
 
@@ -49,10 +50,10 @@ case class CheckYourAnswersViewModel(
     )
 
     val grossPayMessages = Map(
-      MONTHLY     -> "tai.estimatedPay.update.checkYourAnswers.grossPay.month",
-      WEEKLY      -> "tai.estimatedPay.update.checkYourAnswers.grossPay.week",
-      FORTNIGHTLY -> "tai.estimatedPay.update.checkYourAnswers.grossPay.2week",
-      OTHER       -> "tai.estimatedPay.update.checkYourAnswers.grossPay.days"
+      Monthly     -> "tai.estimatedPay.update.checkYourAnswers.grossPay.month",
+      Weekly      -> "tai.estimatedPay.update.checkYourAnswers.grossPay.week",
+      Fortnightly -> "tai.estimatedPay.update.checkYourAnswers.grossPay.2week",
+      Other       -> "tai.estimatedPay.update.checkYourAnswers.grossPay.days"
     )
 
     val totalPayConfirmationLine = createCheckYourAnswerConfirmationLine(
@@ -69,10 +70,10 @@ case class CheckYourAnswersViewModel(
     )
 
     val taxablePayMessages = Map(
-      MONTHLY     -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.month",
-      WEEKLY      -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.week",
-      FORTNIGHTLY -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.2week",
-      OTHER       -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.days"
+      Monthly     -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.month",
+      Weekly      -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.week",
+      Fortnightly -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.2week",
+      Other       -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.days"
     )
 
     val taxablePayConfirmationLine = createCheckYourAnswerConfirmationLine(

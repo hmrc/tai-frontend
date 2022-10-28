@@ -16,6 +16,6 @@
 
 package uk.gov.hmrc.tai.util.constants
 
-trait IncorrectPensionDecisionConstants {
+object IncorrectPensionDecisionConstants {
   val IncorrectPensionDecision = "incorrectPensionDecision"
 }

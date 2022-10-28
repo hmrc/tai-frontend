@@ -19,13 +19,15 @@ package uk.gov.hmrc.tai.viewModels.pensions
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
 
-class PensionNumberViewModelSpec extends BaseSpec with JourneyCacheConstants with FormValuesConstants {
+class PensionNumberViewModelSpec extends BaseSpec with JourneyCacheConstants {
 
   "Pension number view model" must {
     "create an instance of view model" when {
 
       "employment name and firstPayChoice is yes" in {
-        val cacheMap = Map(AddPensionProvider_NameKey -> "Aaa", AddPensionProvider_StartDateWithinSixWeeks -> YesValue)
+        val cacheMap = Map(
+          AddPensionProvider_NameKey                 -> "Aaa",
+          AddPensionProvider_StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
         val result = PensionNumberViewModel(cacheMap)
         result mustBe PensionNumberViewModel("Aaa", true)
 

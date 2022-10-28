@@ -38,7 +38,7 @@ class IncomeUpdateWorkingHoursController @Inject()(
   workingHoursView: WorkingHoursView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants {
+    extends TaiBaseController(mcc) with JourneyCacheConstants {
 
   def workingHoursPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
@@ -83,8 +83,9 @@ class IncomeUpdateWorkingHoursController @Inject()(
             id match {
               case Right(id) =>
                 formData.workingHours match {
-                  case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage())
-                  case Some(IRREGULAR_HOURS) =>
+                  case Some(EditIncomeIrregularPayConstants.RegularHours) =>
+                    Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage())
+                  case Some(EditIncomeIrregularPayConstants.IrregularHours) =>
                     Redirect(routes.IncomeUpdateIrregularHoursController.editIncomeIrregularHours(id))
                 }
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())

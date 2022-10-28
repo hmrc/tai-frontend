@@ -42,9 +42,9 @@ case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxCo
   def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
 
   lazy val comparisonItemsByYear: Seq[EstimatedIncomeTaxComparisonItem] = items.sortBy(_.year)
-  
-  lazy val changeInTaxAmount: BigDecimal = comparisonItemsByYear(1).estimatedIncomeTax - comparisonItemsByYear.head.estimatedIncomeTax
 
+  lazy val changeInTaxAmount
+    : BigDecimal = comparisonItemsByYear(1).estimatedIncomeTax - comparisonItemsByYear.head.estimatedIncomeTax
 
 }
 

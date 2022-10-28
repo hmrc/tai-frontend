@@ -20,11 +20,11 @@ import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.PayslipForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.PaySlipAmountViewModel
 
-class PayslipAmountViewSpec extends TaiViewSpec with EditIncomePayPeriodConstants {
+class PayslipAmountViewSpec extends TaiViewSpec {
 
   val employer = IncomeSource(id = 1, name = "Employer")
 
@@ -38,7 +38,7 @@ class PayslipAmountViewSpec extends TaiViewSpec with EditIncomePayPeriodConstant
       Some(messages("tai.ptaHeader.accessible.preHeading")))
   }
 
-  val payslipViewModel = PaySlipAmountViewModel(PayslipForm.createForm("errText"), Some(MONTHLY), None, employer)
+  val payslipViewModel = PaySlipAmountViewModel(PayslipForm.createForm("errText"), Some(Monthly), None, employer)
 
   private def payslipAmount = inject[PayslipAmountView]
   override def view: Html = payslipAmount(payslipViewModel)

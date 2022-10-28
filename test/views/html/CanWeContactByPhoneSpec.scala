@@ -25,7 +25,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
+class CanWeContactByPhoneSpec extends TaiViewSpec {
   private val template = inject[CanWeContactByPhoneView]
   override def view: Html = template(Some(authedUser), viewModel, form)
 
@@ -40,7 +40,7 @@ class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
 
     behave like pageWithBackLinkNew
     behave like pageWithContinueButtonFormNew("continueUrl")
-    behave like pageWithYesNoRadioButton(YesNoTextEntryForm.YesNoChoice, YesNoTextEntryForm.YesNoChoice + "-2")
+    behave like pageWithYesNoRadioButton(FormValuesConstants.YesNoChoice, FormValuesConstants.YesNoChoice + "-2")
     behave like pageWithCancelLink(Call("GET", "cancelUrl"))
 
     "display an input field for text entry" in {
@@ -59,7 +59,9 @@ class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
     "display an error notification" when {
       "the supplied form has errors" in {
         val formWithErrors: Form[YesNoTextEntryForm] =
-          YesNoTextEntryForm.form("answer yes or no", "provide text").withError(YesNoChoice, "answer yes or no")
+          YesNoTextEntryForm
+            .form("answer yes or no", "provide text")
+            .withError(FormValuesConstants.YesNoChoice, "answer yes or no")
 
         def sut = template(Some(authedUser), viewModel, formWithErrors)
 
@@ -73,7 +75,7 @@ class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
     .form("enter yes or no", "enter a text value")
     .bind(
       Map(
-        YesNoChoice -> NoValue
+        FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue
       ))
 
   private val viewModel =

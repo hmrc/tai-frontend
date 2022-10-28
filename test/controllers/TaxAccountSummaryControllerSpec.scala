@@ -39,8 +39,7 @@ import views.html.IncomeTaxSummaryView
 
 import scala.concurrent.Future
 
-class TaxAccountSummaryControllerSpec
-    extends BaseSpec with AuditConstants with BeforeAndAfterEach with TaxAccountSummaryTestData {
+class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach with TaxAccountSummaryTestData {
 
   override def beforeEach: Unit =
     Mockito.reset(auditService)
@@ -91,7 +90,7 @@ class TaxAccountSummaryControllerSpec
 
       when(
         auditService.createAndSendAuditEvent(
-          Matchers.eq(TaxAccountSummary_UserEntersSummaryPage),
+          Matchers.eq(AuditConstants.TaxAccountSummaryUserEntersSummaryPage),
           Matchers.eq(Map("nino" -> nino.nino)))(any(), any()))
         .thenReturn(Future.successful(Success))
 
@@ -99,7 +98,7 @@ class TaxAccountSummaryControllerSpec
       status(result) mustBe OK
       verify(auditService, times(1))
         .createAndSendAuditEvent(
-          Matchers.eq(TaxAccountSummary_UserEntersSummaryPage),
+          Matchers.eq(AuditConstants.TaxAccountSummaryUserEntersSummaryPage),
           Matchers.eq(Map("nino" -> nino.nino)))(Matchers.any(), Matchers.any())
     }
 

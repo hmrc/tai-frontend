@@ -59,7 +59,7 @@ class UpdateIncomeNextYearController @Inject()(
   sameEstimatedPay: SameEstimatedPayView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with FormValuesConstants with I18nSupport with Logging {
+    extends TaiBaseController(mcc) with I18nSupport with Logging {
 
   def onPageLoad(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -123,9 +123,9 @@ class UpdateIncomeNextYearController @Inject()(
           },
           success => {
             success.yesNoChoice match {
-              case Some(YesValue) =>
+              case Some(FormValuesConstants.YesValue) =>
                 Future.successful(Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url))
-              case Some(NoValue) =>
+              case Some(FormValuesConstants.NoValue) =>
                 Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad().url))
             }
           }

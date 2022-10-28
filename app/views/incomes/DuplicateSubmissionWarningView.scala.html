@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.tai.forms.YesNoForm
+@import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 @import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 
@@ -86,13 +87,13 @@
                     isPageHeading = true
                 ))
             )),
-            idPrefix = Some(YesNoForm.YesNoChoice),
-            name = YesNoForm.YesNoChoice,
+            idPrefix = Some(FormValuesConstants.YesNoChoice),
+            name = FormValuesConstants.YesNoChoice,
             errorMessage = duplicateSubmissionWarningForm.errors.asTextErrorMessages.headOption,
             items = Seq(
                 RadioItem(
                     content = Text(viewModel.optionOne),
-                    value = Some(YesNoForm.YesValue),
+                    value = Some(FormValuesConstants.YesValue),
                     attributes = Map("data-journey-val" -> "Yes"),
                 ),
                 RadioItem(

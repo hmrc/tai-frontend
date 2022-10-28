@@ -20,7 +20,6 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import mocks.MockTemplateRenderer
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
@@ -37,19 +36,21 @@ import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment, Telephone}
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
+import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.{DecisionChoice, NoIDontGetThisBenefit, YesIGetThisBenefit}
+import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import utils.BaseSpec
 import views.html.benefits.UpdateOrRemoveCompanyBenefitDecisionView
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 class CompanyBenefitControllerSpec
-    extends BaseSpec with FormValuesConstants with UpdateOrRemoveCompanyBenefitDecisionConstants
-    with JourneyCacheConstants with JsoupMatchers with BeforeAndAfterEach with ControllerViewTestHelper {
+    extends BaseSpec with JourneyCacheConstants with JsoupMatchers with BeforeAndAfterEach
+    with ControllerViewTestHelper {
 
   override def beforeEach: Unit =
     Mockito.reset(journeyCacheService)

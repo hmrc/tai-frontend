@@ -46,8 +46,7 @@ import views.html.incomes.nextYear._
 
 import scala.concurrent.Future
 
-class UpdateIncomeNextYearControllerSpec
-    extends BaseSpec with FormValuesConstants with ControllerViewTestHelper with BeforeAndAfterEach {
+class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTestHelper with BeforeAndAfterEach {
 
   private val updateIncomeCYPlus1ConfirmView = inject[UpdateIncomeCYPlus1ConfirmView]
   private val updateIncomeCYPlus1SuccessView = inject[UpdateIncomeCYPlus1SuccessView]
@@ -135,7 +134,7 @@ class UpdateIncomeNextYearControllerSpec
       val result = testController.submitDuplicateWarning(employmentID)(
         RequestBuilder
           .buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody(YesNoChoice -> YesValue))
+          .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue))
 
       status(result) mustBe SEE_OTHER
 
@@ -148,7 +147,7 @@ class UpdateIncomeNextYearControllerSpec
       val result = testController.submitDuplicateWarning(employmentID)(
         RequestBuilder
           .buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody(YesNoChoice -> NoValue))
+          .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue))
 
       status(result) mustBe SEE_OTHER
 

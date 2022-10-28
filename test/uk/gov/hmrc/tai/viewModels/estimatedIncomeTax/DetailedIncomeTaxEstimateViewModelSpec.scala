@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.viewModels.{HelpLink, TaxSummaryLabel}
 import utils.BaseSpec
 import views.html.includes.link
 
-class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesConstants with ScalaCheckPropertyChecks {
+class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
   "DetailedIncomeTaxEstimateViewModel" when {
 
@@ -63,7 +63,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
 
           val taxBand = Seq(
             TaxBand(
-              bandType = DividendZeroRate,
+              bandType = BandTypesConstants.DividendZeroRate,
               code = "",
               income = 100,
               tax = 0,
@@ -71,7 +71,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
               upperBand = Some(5000),
               rate = 20),
             TaxBand(
-              bandType = PersonalSavingsRate,
+              bandType = BandTypesConstants.PersonalSavingsRate,
               code = "",
               income = 100,
               tax = 0,
@@ -79,7 +79,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
               upperBand = Some(5000),
               rate = 20),
             TaxBand(
-              bandType = StarterSavingsRate,
+              bandType = BandTypesConstants.StarterSavingsRate,
               code = "",
               income = 100,
               tax = 0,
@@ -105,7 +105,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
 
           val taxBand = Seq(
             TaxBand(
-              bandType = PersonalSavingsRate,
+              bandType = BandTypesConstants.PersonalSavingsRate,
               code = "",
               income = 100,
               tax = 0,
@@ -113,7 +113,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
               upperBand = Some(5000),
               rate = 20),
             TaxBand(
-              bandType = StarterSavingsRate,
+              bandType = BandTypesConstants.StarterSavingsRate,
               code = "",
               income = 100,
               tax = 0,
@@ -135,7 +135,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
 
         val taxBands = Seq(
           TaxBand(
-            bandType = DividendZeroRate,
+            bandType = BandTypesConstants.DividendZeroRate,
             code = "",
             income = 100,
             tax = 0,
@@ -143,7 +143,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
             upperBand = Some(5000),
             rate = 0),
           TaxBand(
-            bandType = DividendBasicRate,
+            bandType = BandTypesConstants.DividendBasicRate,
             code = "",
             income = 100,
             tax = 0,
@@ -151,7 +151,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
             upperBand = Some(5000),
             rate = 10),
           TaxBand(
-            bandType = DividendHigherRate,
+            bandType = BandTypesConstants.DividendHigherRate,
             code = "",
             income = 100,
             tax = 0,
@@ -159,7 +159,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
             upperBand = Some(5000),
             rate = 20),
           TaxBand(
-            bandType = DividendAdditionalRate,
+            bandType = BandTypesConstants.DividendAdditionalRate,
             code = "",
             income = 100,
             tax = 0,
@@ -185,9 +185,9 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
 
         val nonHigherTaxBandGen: Gen[TaxBand] = for {
           bandType <- Gen.oneOf(
-                       StarterSavingsRate,
-                       PersonalSavingsRate,
-                       SavingsBasicRate
+                       BandTypesConstants.StarterSavingsRate,
+                       BandTypesConstants.PersonalSavingsRate,
+                       BandTypesConstants.SavingsBasicRate
                      )
           code      <- arbitrary[String]
           income    <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
@@ -199,8 +199,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
 
         val higherTaxBandGen: Gen[TaxBand] = for {
           bandType <- Gen.oneOf(
-                       SavingsHigherRate,
-                       SavingsAdditionalRate
+                       BandTypesConstants.SavingsHigherRate,
+                       BandTypesConstants.SavingsAdditionalRate
                      )
           code      <- arbitrary[String]
           income    <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
@@ -431,7 +431,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with BandTypesCons
       val model =
         DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
-      model.nonSavings mustEqual Seq(TaxBand(TaxFreeAllowanceBand, "", 0, 0, Some(0), None, 0)) ++ taxBand
+      model.nonSavings mustEqual Seq(TaxBand(BandTypesConstants.TaxFreeAllowanceBand, "", 0, 0, Some(0), None, 0)) ++ taxBand
       model.savings mustEqual taxBand ++ taxBand ++ taxBand
       model.dividends mustEqual taxBand ++ taxBand
     }

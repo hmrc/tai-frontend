@@ -20,8 +20,6 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import mocks.MockTemplateRenderer
-
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => eqTo}
@@ -37,18 +35,17 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-import uk.gov.hmrc.tai.util.constants.{EditIncomePayPeriodConstants, _}
+import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissionEmploymentViewModel, DuplicateSubmissionPensionViewModel}
 import utils.BaseSpec
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class IncomeUpdateCalculatorControllerSpec
-    extends BaseSpec with JsoupMatchers with JourneyCacheConstants with EditIncomeIrregularPayConstants
-    with FormValuesConstants with ControllerViewTestHelper with EditIncomePayPeriodConstants with ScalaFutures {
+    extends BaseSpec with JsoupMatchers with JourneyCacheConstants with ControllerViewTestHelper with ScalaFutures {
 
   val employerId = 1
   val employer: IncomeSource = IncomeSource(id = employerId, name = "sample employer")
@@ -212,7 +209,7 @@ class IncomeUpdateCalculatorControllerSpec
       val result = SubmitDuplicateSubmissionWarningHarness
         .setup(TaiConstants.IncomeTypeEmployment)
         .submitDuplicateSubmissionWarning(RequestBuilder
-          .buildFakePostRequestWithAuth(YesNoChoice -> YesValue))
+          .buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue))
 
       status(result) mustBe SEE_OTHER
 
@@ -225,7 +222,7 @@ class IncomeUpdateCalculatorControllerSpec
       val result = SubmitDuplicateSubmissionWarningHarness
         .setup(TaiConstants.IncomeTypeEmployment)
         .submitDuplicateSubmissionWarning(RequestBuilder
-          .buildFakePostRequestWithAuth(YesNoChoice -> NoValue))
+          .buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue))
 
       status(result) mustBe SEE_OTHER
 

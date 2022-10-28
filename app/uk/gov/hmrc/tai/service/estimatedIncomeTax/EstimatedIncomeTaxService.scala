@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
 import scala.math.BigDecimal
 
-object EstimatedIncomeTaxService extends TaxRegionConstants with BandTypesConstants {
+object EstimatedIncomeTaxService {
 
   def taxViewType(
     codingComponents: Seq[CodingComponent],
@@ -153,12 +153,12 @@ object EstimatedIncomeTaxService extends TaxRegionConstants with BandTypesConsta
     codingComponents.find(_.componentType == OutstandingDebt).map(_.amount)
 
   def createPABand(taxFreeAllowance: BigDecimal): TaxBand =
-    TaxBand(TaxFreeAllowanceBand, "", taxFreeAllowance, 0, Some(0), None, 0)
+    TaxBand(BandTypesConstants.TaxFreeAllowanceBand, "", taxFreeAllowance, 0, Some(0), None, 0)
 
   def retrieveTaxBands(taxBands: List[TaxBand]): List[TaxBand] = {
-    val mergedPsaBands = mergeAllowanceTaxBands(taxBands, PersonalSavingsRate)
-    val mergedSrBands = mergeAllowanceTaxBands(mergedPsaBands, StarterSavingsRate)
-    val bands = mergeAllowanceTaxBands(mergedSrBands, TaxFreeAllowanceBand)
+    val mergedPsaBands = mergeAllowanceTaxBands(taxBands, BandTypesConstants.PersonalSavingsRate)
+    val mergedSrBands = mergeAllowanceTaxBands(mergedPsaBands, BandTypesConstants.StarterSavingsRate)
+    val bands = mergeAllowanceTaxBands(mergedSrBands, BandTypesConstants.TaxFreeAllowanceBand)
     bands.filter(_.income > 0).sortBy(_.rate)
   }
 
@@ -180,5 +180,6 @@ object EstimatedIncomeTaxService extends TaxRegionConstants with BandTypesConsta
   }
 
   def findTaxRegion(taxCodeIncomes: Seq[TaxCodeIncome]): String =
-    if (taxCodeIncomes.exists(_.taxCode.startsWith("S"))) ScottishTaxRegion else UkTaxRegion
+    if (taxCodeIncomes.exists(_.taxCode.startsWith("S"))) TaxRegionConstants.ScottishTaxRegion
+    else TaxRegionConstants.UkTaxRegion
 }

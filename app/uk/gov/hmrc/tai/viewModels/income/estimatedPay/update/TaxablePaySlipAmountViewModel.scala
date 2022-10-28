@@ -20,12 +20,12 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.forms.TaxablePayslipForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.PaySlipAmountViewModel._
 
 case class TaxablePaySlipAmountViewModel(form: Form[TaxablePayslipForm], title: String, employer: IncomeSource)
 
-object TaxablePaySlipAmountViewModel extends EditIncomePayPeriodConstants {
+object TaxablePaySlipAmountViewModel {
 
   def apply(
     taxablePayslipForm: Form[TaxablePayslipForm],
@@ -34,10 +34,10 @@ object TaxablePaySlipAmountViewModel extends EditIncomePayPeriodConstants {
     employer: IncomeSource)(implicit message: Messages): TaxablePaySlipAmountViewModel = {
 
     val messages = Map(
-      MONTHLY     -> "tai.taxablePayslip.title.month",
-      WEEKLY      -> "tai.taxablePayslip.title.week",
-      FORTNIGHTLY -> "tai.taxablePayslip.title.2week",
-      OTHER       -> "tai.taxablePayslip.title.days"
+      Monthly     -> "tai.taxablePayslip.title.month",
+      Weekly      -> "tai.taxablePayslip.title.week",
+      Fortnightly -> "tai.taxablePayslip.title.2week",
+      Other       -> "tai.taxablePayslip.title.days"
     )
 
     val title = dynamicTitle(payPeriod, payPeriodInDays, messages)

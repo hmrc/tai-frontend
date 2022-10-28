@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.tai.forms.YesNoForm
+@import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 @import includes.{cancelLink, ptaHeader}
 @import includes.forms.inputRadioGroupStyling
 @import includes.forms.submit
@@ -67,21 +68,21 @@
                     ),
                     hint = Some(Hint(content = HtmlContent(hint))),
                     errorMessage = duplicateSubmissionWarningForm.errors.asTextErrorMessages.headOption,
-                    idPrefix = Some(YesNoForm.YesNoChoice),
-                    name = YesNoForm.YesNoChoice,
+                    idPrefix = Some(FormValuesConstants.YesNoChoice),
+                    name = FormValuesConstants.YesNoChoice,
                     items = Seq(
                         RadioItem(
                             content = Text(viewModel.optionOne),
                             value = Some("Yes"),
-                            checked = duplicateSubmissionWarningForm.data.get(YesNoForm.YesNoChoice).exists(_ == "Yes")
+                            checked = duplicateSubmissionWarningForm.data.get(FormValuesConstants.YesNoChoice).exists(_ == "Yes")
                         ),
                             RadioItem(
                                 content = Text(viewModel.optionTwo),
                                 value = Some("No"),
-                                checked = duplicateSubmissionWarningForm.data.get(YesNoForm.YesNoChoice).exists(_ == "No")
+                                checked = duplicateSubmissionWarningForm.data.get(FormValuesConstants.YesNoChoice).exists(_ == "No")
                         )
                     )
-                ).withFormField(duplicateSubmissionWarningForm(YesNoForm.YesNoChoice)))
+                ).withFormField(duplicateSubmissionWarningForm(FormValuesConstants.YesNoChoice)))
 
                 @submit(buttonMessageKey = Some(messages("tai.submit")))
 

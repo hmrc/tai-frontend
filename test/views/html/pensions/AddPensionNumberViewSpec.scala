@@ -22,10 +22,11 @@ import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderNumberForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.AddPensionNumberConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.pensions.PensionNumberViewModel
 
-class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
+class AddPensionNumberViewSpec extends TaiViewSpec {
 
   private val addPensionNumber = inject[AddPensionNumberView]
   override def view: Html = addPensionNumber(pensionNumberForm, pensionNumberViewModel)
@@ -40,8 +41,8 @@ class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/pension-number")
     behave like pageWithYesNoRadioButton(
-      AddPensionProviderNumberForm.PayrollNumberChoice + "-yes",
-      AddPensionProviderNumberForm.PayrollNumberChoice + "-no")
+      AddPensionNumberConstants.PayrollNumberChoice + "-yes",
+      AddPensionNumberConstants.PayrollNumberChoice + "-no")
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "have gone back to firstPayChoice page" in {
@@ -60,7 +61,7 @@ class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
         val expectedErrorMessage = messages("tai.error.message") + " " + messages(
           "tai.addPensionProvider.pensionNumber.error.selectOption")
         val formWithErrors: Form[AddPensionProviderNumberForm] = AddPensionProviderNumberForm.form
-          .withError(AddPensionProviderNumberForm.PayrollNumberChoice, noPayrollNumberChooseError)
+          .withError(AddPensionNumberConstants.PayrollNumberChoice, noPayrollNumberChooseError)
         def view: Html = addPensionNumber(formWithErrors, pensionNumberViewModel)
 
         val errorMessage = doc(view).select(".govuk-error-message").text
@@ -72,7 +73,7 @@ class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
         val expectedErrorMessage = messages("tai.error.message") + " " + messages(
           "tai.addPensionProvider.pensionNumber.error.blank")
         val formWithErrors: Form[AddPensionProviderNumberForm] = AddPensionProviderNumberForm.form
-          .withError(AddPensionProviderNumberForm.PayrollNumberEntry, noPayrollNumberChooseError)
+          .withError(AddPensionNumberConstants.PayrollNumberEntry, noPayrollNumberChooseError)
         def view: Html = addPensionNumber(formWithErrors, pensionNumberViewModel)
 
         val errorMessage = doc(view).select(".govuk-error-message").text
@@ -83,7 +84,7 @@ class AddPensionNumberViewSpec extends TaiViewSpec with FormValuesConstants {
 
   private val pensionNumberForm: Form[AddPensionProviderNumberForm] = AddPensionProviderNumberForm.form.bind(
     Map(
-      AddPensionProviderNumberForm.PayrollNumberChoice -> NoValue
+      AddPensionNumberConstants.PayrollNumberChoice -> FormValuesConstants.NoValue
     ))
 
   private lazy val pensionProviderName = "Aviva"

@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.tai.forms.benefit
 
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
+import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants
+import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.{NoIDontGetThisBenefit, YesIGetThisBenefit}
 import utils.BaseSpec
 
-class UpdateOrRemoveCompanyBenefitDecisionFormSpec
-    extends BaseSpec with FormValuesConstants with UpdateOrRemoveCompanyBenefitDecisionConstants {
+class UpdateOrRemoveCompanyBenefitDecisionFormSpec extends BaseSpec {
 
-  val choice = UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice
+  val choice = UpdateOrRemoveCompanyBenefitDecisionConstants.DecisionChoice
   private val form = UpdateOrRemoveCompanyBenefitDecisionForm.form
 
   "UpdateOrRemoveCompanyBenefitDecisionFormSpec" must {

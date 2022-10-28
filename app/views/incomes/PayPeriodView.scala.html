@@ -21,6 +21,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 @import uk.gov.hmrc.tai.forms.PayPeriodForm
+@import uk.gov.hmrc.tai.util.constants.PayPeriodConstants
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
@@ -56,34 +57,34 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.Ex
                         )
                     ),
                     hint = None,
-                    errorMessage = payPeriodForm.errors.filter(_.key == PayPeriodForm.PAY_PERIOD_KEY).asTextErrorMessages.headOption,
-                    idPrefix = Some(PayPeriodForm.PAY_PERIOD_KEY),
-                    name = PayPeriodForm.PAY_PERIOD_KEY,
+                    errorMessage = payPeriodForm.errors.filter(_.key == PayPeriodConstants.PayPeriodKey).asTextErrorMessages.headOption,
+                    idPrefix = Some(PayPeriodConstants.PayPeriodKey),
+                    name = PayPeriodConstants.PayPeriodKey,
                     items = Seq(
                         RadioItem(
                             content = Text(messages("tai.payPeriod.monthly")),
-                            value = Some(PayPeriodForm.MONTHLY),
-                            checked = payPeriodForm.data.get(PayPeriodForm.PAY_PERIOD_KEY).exists(_ == PayPeriodForm.MONTHLY)
+                            value = Some(PayPeriodConstants.Monthly),
+                            checked = payPeriodForm.data.get(PayPeriodConstants.PayPeriodKey).exists(_ == PayPeriodConstants.Monthly)
                         ),
                         RadioItem(
                             content = Text(messages("tai.payPeriod.weekly")),
-                            value = Some(PayPeriodForm.WEEKLY),
-                            checked = payPeriodForm.data.get(PayPeriodForm.PAY_PERIOD_KEY).exists(_ == PayPeriodForm.WEEKLY)
+                            value = Some(PayPeriodConstants.Weekly),
+                            checked = payPeriodForm.data.get(PayPeriodConstants.PayPeriodKey).exists(_ == PayPeriodConstants.Weekly)
                         ),
                         RadioItem(
                             content = Text(messages("tai.payPeriod.fortnightly")),
-                            value = Some(PayPeriodForm.FORTNIGHTLY),
-                            checked = payPeriodForm.data.get(PayPeriodForm.PAY_PERIOD_KEY).exists(_ == PayPeriodForm.FORTNIGHTLY)
+                            value = Some(PayPeriodConstants.Fortnightly),
+                            checked = payPeriodForm.data.get(PayPeriodConstants.PayPeriodKey).exists(_ == PayPeriodConstants.Fortnightly)
                         ),
                         RadioItem(
                             content = Text(messages("tai.payPeriod.other")),
-                            value = Some(PayPeriodForm.OTHER),
-                            checked = payPeriodForm.data.get(PayPeriodForm.PAY_PERIOD_KEY).exists(_ == PayPeriodForm.OTHER),
+                            value = Some(PayPeriodConstants.Other),
+                            checked = payPeriodForm.data.get(PayPeriodConstants.PayPeriodKey).exists(_ == PayPeriodConstants.Other),
                             conditionalHtml = Some(
                             govukInput(Input(
                                 id = "otherInDays",
                                 name = "otherInDays",
-                                value = payPeriodForm.data.get(PayPeriodForm.OTHER),
+                                value = payPeriodForm.data.get(PayPeriodConstants.Other),
                                 label = Label(
                                     classes = "govuk-label--s",
                                     content = Text(messages("tai.payPeriod.howOften")),
@@ -93,7 +94,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.Ex
                             )
                         ),
                     )
-                ).withFormField(payPeriodForm(PayPeriodForm.PAY_PERIOD_KEY)))
+                ).withFormField(payPeriodForm(PayPeriodConstants.PayPeriodKey)))
 
                 @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
             }

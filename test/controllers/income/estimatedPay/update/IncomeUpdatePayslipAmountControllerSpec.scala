@@ -31,6 +31,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants.Monthly
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
 import utils.BaseSpec
@@ -39,7 +40,7 @@ import views.html.incomes.{PayslipAmountView, PayslipDeductionsView, TaxablePays
 import scala.concurrent.Future
 
 class IncomeUpdatePayslipAmountControllerSpec
-    extends BaseSpec with EditIncomePayPeriodConstants with ControllerViewTestHelper with JourneyCacheConstants {
+    extends BaseSpec with ControllerViewTestHelper with JourneyCacheConstants {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
@@ -88,7 +89,7 @@ class IncomeUpdatePayslipAmountControllerSpec
       "journey cache returns employment name, id and payPeriod" in {
 
         val cachedAmount = None
-        val payPeriod = Some(MONTHLY)
+        val payPeriod = Some(Monthly)
 
         val result = PayslipAmountPageHarness
           .setup(payPeriod, cachedAmount)
@@ -102,7 +103,7 @@ class IncomeUpdatePayslipAmountControllerSpec
 
       "journey cache returns a prepopulated pay slip amount" in {
         val cachedAmount = Some("998787")
-        val payPeriod = Some(MONTHLY)
+        val payPeriod = Some(Monthly)
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
@@ -150,7 +151,7 @@ class IncomeUpdatePayslipAmountControllerSpec
       sealed class HandlePayslipAmountHarness(salary: String) {
 
         when(journeyCacheService.optionalValues(any())(any()))
-          .thenReturn(Future.successful(Seq(Some(MONTHLY), None)))
+          .thenReturn(Future.successful(Seq(Some(Monthly), None)))
 
         when(
           journeyCacheService.cache(Matchers.eq[Map[String, String]](Map(UpdateIncome_TotalSalaryKey -> salary)))(
@@ -223,7 +224,7 @@ class IncomeUpdatePayslipAmountControllerSpec
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         val cachedAmount = Some("9888787")
-        val payPeriod = Some(MONTHLY)
+        val payPeriod = Some(Monthly)
 
         val result = TaxablePayslipAmountPageHarness
           .setup(payPeriod, cachedAmount)
@@ -263,13 +264,13 @@ class IncomeUpdatePayslipAmountControllerSpec
       sealed class HandleTaxablePayslipAmountPageHarness() {
 
         when(journeyCacheService.optionalValues(any())(any()))
-          .thenReturn(Future.successful(Seq(Some(MONTHLY), None, Some("4000"))))
+          .thenReturn(Future.successful(Seq(Some(Monthly), None, Some("4000"))))
 
         when(journeyCacheService.cache(eqTo[Map[String, String]](Map(UpdateIncome_TaxablePayKey -> "3000")))(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(Future.successful(
-          Right(Seq[String](employer.id.toString, employer.name), Seq[Option[String]](Some(MONTHLY), None))))
+          Right(Seq[String](employer.id.toString, employer.name), Seq[Option[String]](Some(Monthly), None))))
 
         def handleTaxablePayslipAmount(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdatePayslipAmountController()

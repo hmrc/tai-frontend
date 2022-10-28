@@ -27,15 +27,13 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
-import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class TaxAccountSummaryServiceSpec
-    extends BaseSpec with AuditConstants with BeforeAndAfterEach with TaxAccountSummaryTestData {
+class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with TaxAccountSummaryTestData {
 
   override def beforeEach: Unit = {
     Mockito.reset(taxAccountService)

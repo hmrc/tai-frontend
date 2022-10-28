@@ -18,10 +18,10 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import uk.gov.hmrc.tai.forms.TaxablePayslipForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
 import utils.BaseSpec
 
-class TaxablePaySlipAmountViewModelSpec extends BaseSpec with EditIncomePayPeriodConstants {
+class TaxablePaySlipAmountViewModelSpec extends BaseSpec {
 
   val errorMessage = messagesApi("tai.taxablePayslip.error.form.incomes.radioButton.mandatory")
 
@@ -29,7 +29,7 @@ class TaxablePaySlipAmountViewModelSpec extends BaseSpec with EditIncomePayPerio
 
   "TaxablePaySlipAmountViewModel" must {
     "have a monthly title for a monthly pay period" in {
-      val payPeriod = Some(MONTHLY)
+      val payPeriod = Some(Monthly)
       val form = TaxablePayslipForm.createForm(None, payPeriod, None)
       val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, None, employer)
 
@@ -37,7 +37,7 @@ class TaxablePaySlipAmountViewModelSpec extends BaseSpec with EditIncomePayPerio
     }
 
     "have a weekly title for a weekly pay period" in {
-      val payPeriod = Some(WEEKLY)
+      val payPeriod = Some(Weekly)
       val form = TaxablePayslipForm.createForm(None, payPeriod, None)
       val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, None, employer)
 
@@ -45,7 +45,7 @@ class TaxablePaySlipAmountViewModelSpec extends BaseSpec with EditIncomePayPerio
     }
 
     "have a X-day title for a X-pay period" in {
-      val payPeriod = Some(OTHER)
+      val payPeriod = Some(Other)
       val days = Some("123")
       val form = TaxablePayslipForm.createForm(None, payPeriod, days)
       val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, days, employer)
@@ -64,7 +64,7 @@ class TaxablePaySlipAmountViewModelSpec extends BaseSpec with EditIncomePayPerio
 
     "throw an exception if there is no pay period in days defined" in {
       val exception = intercept[RuntimeException] {
-        val payPeriod = Some(OTHER)
+        val payPeriod = Some(Other)
         val form = TaxablePayslipForm.createForm(None, payPeriod, None)
         TaxablePaySlipAmountViewModel(form, payPeriod, None, employer)
       }

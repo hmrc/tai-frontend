@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.util.constants
 
-trait EditIncomeIrregularPayConstants {
-  val REGULAR_HOURS = "regularHours"
-  val IRREGULAR_HOURS = "irregularHours"
+object EditIncomeIrregularPayConstants {
+  val RegularHours: String = "regularHours"
+  val IrregularHours: String = "irregularHours"
 }

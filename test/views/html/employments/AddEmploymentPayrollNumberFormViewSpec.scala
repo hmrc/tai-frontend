@@ -16,17 +16,16 @@
 
 package views.html.employments
 
-import controllers.routes
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm
-import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.{AddEmploymentPayrollNumberConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 
-class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValuesConstants {
+class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec {
 
   private val add_employment_payroll_number_form = inject[AddEmploymentPayrollNumberFormView]
 
@@ -42,8 +41,8 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
     behave like pageWithBackLinkNew
     behave like pageWithContinueButtonFormNew("/check-income-tax/add-employment/employment-payroll-number")
     behave like pageWithYesNoRadioButton(
-      AddEmploymentPayrollNumberForm.PayrollNumberChoice,
-      AddEmploymentPayrollNumberForm.PayrollNumberChoice + "-2")
+      AddEmploymentPayrollNumberConstants.PayrollNumberChoice,
+      AddEmploymentPayrollNumberConstants.PayrollNumberChoice + "-2")
     behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 
     "have gone back to firstPayChoice page" in {
@@ -66,7 +65,7 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
         val expectedErrorMessage = messages("tai.error.message") + " " + messages(
           "tai.addEmployment.employmentPayrollNumber.error.selectOption")
         val formWithErrors: Form[AddEmploymentPayrollNumberForm] = AddEmploymentPayrollNumberForm.form
-          .withError(AddEmploymentPayrollNumberForm.PayrollNumberChoice, noPayrollNumberChooseError)
+          .withError(AddEmploymentPayrollNumberConstants.PayrollNumberChoice, noPayrollNumberChooseError)
         val view = add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
 
         val errorMessage = doc(view).select(".govuk-error-message").text
@@ -78,7 +77,7 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
         val expectedErrorMessage = messages("tai.error.message") + " " + messages(
           "tai.addEmployment.employmentPayrollNumber.error.blank")
         val formWithErrors: Form[AddEmploymentPayrollNumberForm] = AddEmploymentPayrollNumberForm.form
-          .withError(AddEmploymentPayrollNumberForm.PayrollNumberEntry, noPayrollNumberChooseError)
+          .withError(AddEmploymentPayrollNumberConstants.PayrollNumberEntry, noPayrollNumberChooseError)
         val view = add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
 
         val errorMessage = doc(view).select(".govuk-error-message").text
@@ -89,7 +88,7 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec with FormValues
 
   private val employmentPayrollForm: Form[AddEmploymentPayrollNumberForm] = AddEmploymentPayrollNumberForm.form.bind(
     Map(
-      AddEmploymentPayrollNumberForm.PayrollNumberChoice -> NoValue
+      AddEmploymentPayrollNumberConstants.PayrollNumberChoice -> FormValuesConstants.NoValue
     ))
 
   private lazy val employerName = "Employer"

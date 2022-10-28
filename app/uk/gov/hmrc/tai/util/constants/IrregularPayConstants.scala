@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.util.constants
 
-trait IrregularPayConstants {
+object IrregularPayConstants {
   val IrregularPayDecision = "irregularPayDecision"
   val ContactEmployer = "contactEmployer"
   val UpdateDetails = "updateDetails"

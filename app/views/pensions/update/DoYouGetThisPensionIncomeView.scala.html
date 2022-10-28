@@ -17,6 +17,7 @@
 @import includes.{backLink, cancelLink}
 @import includes.forms.submit
 @import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
+@import uk.gov.hmrc.tai.util.constants.IncorrectPensionDecisionConstants
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import includes.forms.inputRadioGroupStyling
@@ -67,7 +68,7 @@ ec: scala.concurrent.ExecutionContext)
                         )
                     ),
                     hint = None,
-                    errorMessage = updateOrRemoveForm.errors.filter(_.key == UpdateRemovePensionForm.IncorrectPensionDecision).asTextErrorMessages.headOption,
+                    errorMessage = updateOrRemoveForm.errors.filter(_.key == IncorrectPensionDecisionConstants.IncorrectPensionDecision).asTextErrorMessages.headOption,
                     idPrefix = Some("incorrectPensionDecision"),
                     name = "incorrectPensionDecision",
                     classes = "govuk-radios--inline",
@@ -75,15 +76,15 @@ ec: scala.concurrent.ExecutionContext)
                         RadioItem(
                             content = Text(Messages("tai.label.yes")),
                             value = Some("Yes"),
-                            checked = updateOrRemoveForm.data.get(UpdateRemovePensionForm.IncorrectPensionDecision).contains("Yes"),
+                            checked = updateOrRemoveForm.data.get(IncorrectPensionDecisionConstants.IncorrectPensionDecision).contains("Yes"),
                         ),
                         RadioItem(
                             content = Text(Messages("tai.label.no")),
                             value = Some("No"),
-                            checked = updateOrRemoveForm.data.get(UpdateRemovePensionForm.IncorrectPensionDecision).contains("No"),
+                            checked = updateOrRemoveForm.data.get(IncorrectPensionDecisionConstants.IncorrectPensionDecision).contains("No"),
                         )
                     ),
-                ).withFormField(updateOrRemoveForm(UpdateRemovePensionForm.IncorrectPensionDecision))
+                ).withFormField(updateOrRemoveForm(IncorrectPensionDecisionConstants.IncorrectPensionDecision))
                 )
 
                 @govukButton(Button(content = Text(messages("tai.continue"))))

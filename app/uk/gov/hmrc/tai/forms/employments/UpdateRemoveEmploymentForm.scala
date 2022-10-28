@@ -21,10 +21,10 @@ import play.api.data.Forms._
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.constants.EmploymentDecisionConstants
 
-object UpdateRemoveEmploymentForm extends EmploymentDecisionConstants {
+object UpdateRemoveEmploymentForm {
   def form(employerName: String)(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
     single(
-      EmploymentDecision ->
+      EmploymentDecisionConstants.EmploymentDecision ->
         optional(text)
           .verifying(error = Messages("tai.employment.decision.error.empty", employerName), constraint = _.nonEmpty))
   )

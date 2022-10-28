@@ -21,6 +21,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 @import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderFirstPayForm
+@import uk.gov.hmrc.tai.util.constants.AddPensionFirstPayChoiceConstants
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
@@ -63,15 +64,15 @@ ec: scala.concurrent.ExecutionContext)
                     RadioItem(
                         content = Text(messages("tai.label.yes")),
                         value = Some("Yes"),
-                        checked = firstPayForm.data.get(AddPensionProviderFirstPayForm.FirstPayChoice).exists(_ == "No")
+                        checked = firstPayForm.data.get(AddPensionFirstPayChoiceConstants.FirstPayChoice).exists(_ == "No")
                     ),
                     RadioItem(
                         content = Text(messages("tai.label.no")),
                         value = Some("No"),
-                        checked = firstPayForm.data.get(AddPensionProviderFirstPayForm.FirstPayChoice).exists(_ == "No")
+                        checked = firstPayForm.data.get(AddPensionFirstPayChoiceConstants.FirstPayChoice).exists(_ == "No")
                     )
                 )
-                ).withFormField(firstPayForm(AddPensionProviderFirstPayForm.FirstPayChoice))
+                ).withFormField(firstPayForm(AddPensionFirstPayChoiceConstants.FirstPayChoice))
             )
 
             @submit()

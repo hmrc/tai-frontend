@@ -17,6 +17,7 @@
 @import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm
+@import uk.gov.hmrc.tai.util.constants.AddEmploymentPayrollNumberConstants
 @import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
@@ -80,12 +81,12 @@
                         RadioItem(
                             content = Text(messages("tai.label.yes")),
                             value = Some("Yes"),
-                            checked = payrollNumberForm.data.get(AddEmploymentPayrollNumberForm.PayrollNumberChoice).exists(_ == "Yes"),
+                            checked = payrollNumberForm.data.get(AddEmploymentPayrollNumberConstants.PayrollNumberChoice).exists(_ == "Yes"),
                             conditionalHtml = Some(
                                 govukInput(Input(
                                     id = "payrollNumberEntry",
                                     name = "payrollNumberEntry",
-                                    value = payrollNumberForm.data.get(AddEmploymentPayrollNumberForm.PayrollNumberEntry),
+                                    value = payrollNumberForm.data.get(AddEmploymentPayrollNumberConstants.PayrollNumberEntry),
                                     label = Label(
                                         classes = "govuk-label--s",
                                         content = Text(messages("tai.addEmployment.employmentPayrollNumber.label")),
@@ -97,10 +98,10 @@
                         RadioItem(
                             content = Text(messages("tai.label.no")),
                             value = Some("No"),
-                            checked = payrollNumberForm.data.get(AddEmploymentPayrollNumberForm.PayrollNumberChoice).exists(_ == "No")
+                            checked = payrollNumberForm.data.get(AddEmploymentPayrollNumberConstants.PayrollNumberChoice).exists(_ == "No")
                         )
                     )
-                ).withFormField(payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice)))
+                ).withFormField(payrollNumberForm(AddEmploymentPayrollNumberConstants.PayrollNumberChoice)))
 
                 @govukButton(Button(content = Text(messages("tai.continue"))))
             }

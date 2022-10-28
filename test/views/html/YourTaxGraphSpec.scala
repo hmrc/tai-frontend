@@ -17,11 +17,11 @@
 package views.html
 
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.constants.TaxRegionConstants
+import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, SimpleTaxView}
 
-class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
+class YourTaxGraphSpec extends TaiViewSpec {
 
   "Your tax graph" should {
 
