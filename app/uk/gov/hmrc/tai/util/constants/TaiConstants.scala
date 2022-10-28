@@ -112,4 +112,6 @@ object TaiConstants {
   val HigherRateBandIncome = 150000
 
   val updateIncomeConfirmedAmountKey = "updateIncomeConfirmedAmountKey"
+
+  val LondonEuropeTimezone = "Europe/London"
 }
