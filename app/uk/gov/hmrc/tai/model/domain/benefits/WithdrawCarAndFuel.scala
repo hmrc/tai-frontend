@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain.tax
+package uk.gov.hmrc.tai.model.domain.benefits
 
-import play.api.libs.json._
+import play.api.libs.json.{Json, OFormat}
 
-case class TotalTax(
-  amount: BigDecimal,
-  incomeCategories: Seq[IncomeCategory],
-  reliefsGivingBackTax: Option[TaxAdjustment],
-  otherTaxDue: Option[TaxAdjustment],
-  alreadyTaxedAtSource: Option[TaxAdjustment],
-  taxOnOtherIncome: Option[BigDecimal] = None,
-  taxReliefComponent: Option[TaxAdjustment] = None)
+import java.time.LocalDate
 
-object TotalTax {
-  implicit val formats: OFormat[TotalTax] = Json.format[TotalTax]
+case class WithdrawCarAndFuel(version: Int, carWithdrawDate: LocalDate, fuelWithdrawDate: Option[LocalDate])
+
+object WithdrawCarAndFuel {
+  implicit val formats: OFormat[WithdrawCarAndFuel] = Json.format[WithdrawCarAndFuel]
 }

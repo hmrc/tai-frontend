@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain.tax
+package uk.gov.hmrc.tai.viewModels
 
-import play.api.libs.json._
-
-case class TotalTax(
-  amount: BigDecimal,
-  incomeCategories: Seq[IncomeCategory],
-  reliefsGivingBackTax: Option[TaxAdjustment],
-  otherTaxDue: Option[TaxAdjustment],
-  alreadyTaxedAtSource: Option[TaxAdjustment],
-  taxOnOtherIncome: Option[BigDecimal] = None,
-  taxReliefComponent: Option[TaxAdjustment] = None)
-
-object TotalTax {
-  implicit val formats: OFormat[TotalTax] = Json.format[TotalTax]
-}
+case class CompanyBenefitViewModel(name: String, amount: BigDecimal, changeUrl: String)

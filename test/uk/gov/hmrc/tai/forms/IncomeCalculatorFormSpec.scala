@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.forms
 
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages}
+import uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm
 import utils.BaseSpec
 
 class IncomeCalculatorFormSpec extends BaseSpec {

@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain.tax
+package uk.gov.hmrc.tai.model.activity
 
-import play.api.libs.json._
+import play.api.libs.json.{Json, OFormat}
 
-case class TotalTax(
-  amount: BigDecimal,
-  incomeCategories: Seq[IncomeCategory],
-  reliefsGivingBackTax: Option[TaxAdjustment],
-  otherTaxDue: Option[TaxAdjustment],
-  alreadyTaxedAtSource: Option[TaxAdjustment],
-  taxOnOtherIncome: Option[BigDecimal] = None,
-  taxReliefComponent: Option[TaxAdjustment] = None)
+import java.time.LocalDateTime
 
-object TotalTax {
-  implicit val formats: OFormat[TotalTax] = Json.format[TotalTax]
+// This is what the activity-logger returns
+case class LogActivityEntry(
+  applicationName: String,
+  eventTime: LocalDateTime,
+  eventType: String,
+  eventDescription: String,
+  principal: PersonDetails,
+  attorney: PersonDetails)
+
+object LogActivityEntry {
+  implicit val formats: OFormat[LogActivityEntry] = Json.format[LogActivityEntry]
 }

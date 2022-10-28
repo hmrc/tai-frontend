@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain.tax
+package uk.gov.hmrc.tai.model.activity
 
-import play.api.libs.json._
+import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.domain.TaxIds
 
-case class TotalTax(
-  amount: BigDecimal,
-  incomeCategories: Seq[IncomeCategory],
-  reliefsGivingBackTax: Option[TaxAdjustment],
-  otherTaxDue: Option[TaxAdjustment],
-  alreadyTaxedAtSource: Option[TaxAdjustment],
-  taxOnOtherIncome: Option[BigDecimal] = None,
-  taxReliefComponent: Option[TaxAdjustment] = None)
+case class PersonDetails(taxIds: TaxIds, name: String)
 
-object TotalTax {
-  implicit val formats: OFormat[TotalTax] = Json.format[TotalTax]
+object PersonDetails {
+  implicit val taxIdsFormat: Format[TaxIds] = TaxIds.format(TaxIds.defaultSerialisableIds: _*)
+  implicit val formats: Format[PersonDetails] = Json.format[PersonDetails]
 }

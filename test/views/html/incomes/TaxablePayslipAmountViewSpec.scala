@@ -18,7 +18,7 @@ package views.html.incomes
 
 import play.api.data.Form
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.TaxablePayslipForm
+import uk.gov.hmrc.tai.forms.income.incomeCalculator.TaxablePayslipForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec

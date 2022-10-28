@@ -28,6 +28,9 @@ import uk.gov.hmrc.play.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@ImplementedBy(classOf[ValidatePersonImpl])
+trait ValidatePerson extends ActionRefiner[InternalAuthenticatedRequest, AuthenticatedRequest]
+
 @Singleton
 class ValidatePersonImpl @Inject()(personService: PersonService)(implicit ec: ExecutionContext) extends ValidatePerson {
 
@@ -48,6 +51,3 @@ class ValidatePersonImpl @Inject()(personService: PersonService)(implicit ec: Ex
   }
   override protected def executionContext: ExecutionContext = ec
 }
-
-@ImplementedBy(classOf[ValidatePersonImpl])
-trait ValidatePerson extends ActionRefiner[InternalAuthenticatedRequest, AuthenticatedRequest]

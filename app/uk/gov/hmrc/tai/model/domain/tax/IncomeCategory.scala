@@ -16,17 +16,15 @@
 
 package uk.gov.hmrc.tai.model.domain.tax
 
-import play.api.libs.json._
+import play.api.libs.json.{Json, OFormat}
 
-case class TotalTax(
-  amount: BigDecimal,
-  incomeCategories: Seq[IncomeCategory],
-  reliefsGivingBackTax: Option[TaxAdjustment],
-  otherTaxDue: Option[TaxAdjustment],
-  alreadyTaxedAtSource: Option[TaxAdjustment],
-  taxOnOtherIncome: Option[BigDecimal] = None,
-  taxReliefComponent: Option[TaxAdjustment] = None)
+case class IncomeCategory(
+  incomeCategoryType: IncomeCategoryType,
+  totalTax: BigDecimal,
+  totalTaxableIncome: BigDecimal,
+  totalIncome: BigDecimal,
+  taxBands: Seq[TaxBand])
 
-object TotalTax {
-  implicit val formats: OFormat[TotalTax] = Json.format[TotalTax]
+object IncomeCategory {
+  implicit val formats: OFormat[IncomeCategory] = Json.format[IncomeCategory]
 }

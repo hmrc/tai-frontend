@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain.tax
+package uk.gov.hmrc.tai.forms.income.incomeCalculator
 
-import play.api.libs.json._
+import play.api.data.Form
+import play.api.i18n.Messages
+import uk.gov.hmrc.tai.forms.YesNoForm
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-case class TotalTax(
-  amount: BigDecimal,
-  incomeCategories: Seq[IncomeCategory],
-  reliefsGivingBackTax: Option[TaxAdjustment],
-  otherTaxDue: Option[TaxAdjustment],
-  alreadyTaxedAtSource: Option[TaxAdjustment],
-  taxOnOtherIncome: Option[BigDecimal] = None,
-  taxReliefComponent: Option[TaxAdjustment] = None)
-
-object TotalTax {
-  implicit val formats: OFormat[TotalTax] = Json.format[TotalTax]
+object BonusPaymentsForm {
+  def createForm(implicit messages: Messages): Form[YesNoForm] =
+    YesNoForm.form(
+      messages(
+        "tai.bonusPayments.error.form.incomes.radioButton.mandatory",
+        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
 }

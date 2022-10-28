@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
-import uk.gov.hmrc.tai.forms.TaxablePayslipForm
+import uk.gov.hmrc.tai.forms.income.incomeCalculator.TaxablePayslipForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 import utils.BaseSpec

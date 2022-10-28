@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain.tax
+package uk.gov.hmrc.tai.model.domain.benefits
 
-import play.api.libs.json._
+import play.api.libs.json.{Format, Json}
 
-case class TotalTax(
-  amount: BigDecimal,
-  incomeCategories: Seq[IncomeCategory],
-  reliefsGivingBackTax: Option[TaxAdjustment],
-  otherTaxDue: Option[TaxAdjustment],
-  alreadyTaxedAtSource: Option[TaxAdjustment],
-  taxOnOtherIncome: Option[BigDecimal] = None,
-  taxReliefComponent: Option[TaxAdjustment] = None)
+case class EndedCompanyBenefit(
+  benefitType: String,
+  stopDate: String,
+  valueOfBenefit: Option[String],
+  contactByPhone: String,
+  phoneNumber: Option[String])
 
-object TotalTax {
-  implicit val formats: OFormat[TotalTax] = Json.format[TotalTax]
+object EndedCompanyBenefit {
+  implicit val formats: Format[EndedCompanyBenefit] = Json.format[EndedCompanyBenefit]
 }

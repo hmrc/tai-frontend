@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain.tax
+package uk.gov.hmrc.tai.forms.formValidator
 
-import play.api.libs.json._
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
-case class TotalTax(
-  amount: BigDecimal,
-  incomeCategories: Seq[IncomeCategory],
-  reliefsGivingBackTax: Option[TaxAdjustment],
-  otherTaxDue: Option[TaxAdjustment],
-  alreadyTaxedAtSource: Option[TaxAdjustment],
-  taxOnOtherIncome: Option[BigDecimal] = None,
-  taxReliefComponent: Option[TaxAdjustment] = None)
+object StopOnFirstFail {
+  def apply[T](constraints: Constraint[T]*): Constraint[T] = Constraint { field: T =>
+    constraints.toList dropWhile (_(field) == Valid) match {
+      case Nil             => Valid
+      case constraint :: _ => constraint(field)
+    }
+  }
 
-object TotalTax {
-  implicit val formats: OFormat[TotalTax] = Json.format[TotalTax]
+  def constraint[T](message: String, validator: T => Boolean): Constraint[T] =
+    Constraint((data: T) => if (validator(data)) Valid else Invalid(Seq(ValidationError(message))))
 }
