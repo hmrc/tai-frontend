@@ -32,7 +32,7 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-  def cacheUrl(journeyName: String) = s"$serviceUrl/tai/journey-cache/$journeyName"
+  def cacheUrl(journeyName: String): String = s"$serviceUrl/tai/journey-cache/$journeyName"
 
   def currentCache(journeyName: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
     httpHandler.getFromApiV2(cacheUrl(journeyName)).map(_.as[Map[String, String]]) recover {

@@ -29,14 +29,14 @@ case class TaxYear(year: Int) extends Ordered[TaxYear] {
 
   def start: LocalDate = LocalDate.of(year, TAX_MONTH_APRIL, START_DATE)
   def end: LocalDate = LocalDate.of(year + ONE, TAX_MONTH_APRIL, END_DATE)
-  def next = TaxYear(year + ONE)
+  def next: TaxYear = TaxYear(year + ONE)
   private def next(add: Int) = TaxYear(year + add)
-  def prev = TaxYear(year - ONE)
+  def prev: TaxYear = TaxYear(year - ONE)
   def startPrev: LocalDate = LocalDate.of(prev.year, TAX_MONTH_APRIL, START_DATE)
   def endPrev: LocalDate = LocalDate.of(prev.year + ONE, TAX_MONTH_APRIL, END_DATE)
-  def compare(that: TaxYear) = this.year compare that.year
-  def twoDigitRange = s"${start.getYear % 100}-${end.getYear % 100}"
-  def fourDigitRange = s"${start.getYear}-${end.getYear}"
+  def compare(that: TaxYear): Int = this.year compare that.year
+  def twoDigitRange: String = s"${start.getYear % 100}-${end.getYear % 100}"
+  def fourDigitRange: String = s"${start.getYear}-${end.getYear}"
   def within(currentDate: LocalDate): Boolean =
     (currentDate.isEqual(start) || currentDate.isAfter(start)) &&
       (currentDate.isBefore(end) || currentDate.isEqual(end))
@@ -91,7 +91,7 @@ object TaxYear {
     }
   }
 
-  implicit val formatTaxYear = new Format[TaxYear] {
+  implicit val formatTaxYear: Format[TaxYear] = new Format[TaxYear] {
     override def reads(j: JsValue): JsResult[TaxYear] = j match {
       case JsNumber(n) => JsSuccess(TaxYear(n.toInt))
       case x           => JsError(s"Expected JsNumber, found $x")

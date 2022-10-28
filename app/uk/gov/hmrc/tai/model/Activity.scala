@@ -21,6 +21,7 @@ import play.api.libs.json.{Format, Json}
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
 import uk.gov.hmrc.domain.TaxIds
+import play.api.libs.json.OFormat
 
 // This is what we send to activity-logger
 case class Activity(
@@ -31,8 +32,8 @@ case class Activity(
   principalTaxIds: TaxIds)
 
 object Activity {
-  implicit val taxIdsFormat = TaxIds.format(TaxIds.defaultSerialisableIds: _*)
-  implicit val formats = Json.format[Activity]
+  implicit val taxIdsFormat: Format[TaxIds] = TaxIds.format(TaxIds.defaultSerialisableIds: _*)
+  implicit val formats: OFormat[Activity] = Json.format[Activity]
 }
 
 // This is what the activity-logger returns
@@ -45,7 +46,7 @@ case class LogActivityEntry(
   attorney: PersonDetails)
 
 object LogActivityEntry {
-  implicit val formats = Json.format[LogActivityEntry]
+  implicit val formats: OFormat[LogActivityEntry] = Json.format[LogActivityEntry]
 }
 
 case class LogActivityResponse(
@@ -55,12 +56,12 @@ case class LogActivityResponse(
   activityList: Seq[LogActivityEntry])
 
 object LogActivityResponse {
-  implicit val formats = Json.format[LogActivityResponse]
+  implicit val formats: OFormat[LogActivityResponse] = Json.format[LogActivityResponse]
 }
 
 case class PersonDetails(taxIds: TaxIds, name: String)
 
 object PersonDetails {
-  implicit val taxIdsFormat = TaxIds.format(TaxIds.defaultSerialisableIds: _*)
+  implicit val taxIdsFormat: Format[TaxIds] = TaxIds.format(TaxIds.defaultSerialisableIds: _*)
   implicit val formats: Format[PersonDetails] = Json.format[PersonDetails]
 }

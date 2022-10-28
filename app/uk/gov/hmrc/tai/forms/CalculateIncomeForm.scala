@@ -26,6 +26,7 @@ import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
 import play.api.mvc.Request
 import uk.gov.hmrc.tai.model.EmploymentAmount
+import play.api.libs.json.OFormat
 
 case class CalculateIncomeForm(
   name: String,
@@ -34,9 +35,9 @@ case class CalculateIncomeForm(
   paymentDate: Option[LocalDate] = None)
 
 object CalculateIncomeForm {
-  implicit val formats = Json.format[CalculateIncomeForm]
+  implicit val formats: OFormat[CalculateIncomeForm] = Json.format[CalculateIncomeForm]
 
-  def create(preFillData: EmploymentAmount) = {
+  def create(preFillData: EmploymentAmount): Form[CalculateIncomeForm] = {
 
     val calculateIncomeForm = new CalculateIncomeForm(name = preFillData.name, employmentId = preFillData.employmentId)
     CalculateIncomeForm.createForm.fill(calculateIncomeForm)

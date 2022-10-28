@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 
 object TaxYearObjectBinder {
 
-  implicit def taxYearObjectBinder = new PathBindable[TaxYear] {
+  implicit def taxYearObjectBinder: PathBindable[TaxYear] = new PathBindable[TaxYear] {
 
     override def bind(key: String, value: String): Either[String, TaxYear] =
       try {

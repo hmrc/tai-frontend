@@ -325,7 +325,7 @@ object BandedGraph extends BandTypesConstants {
       case true => Messages("tai.taxCalc.nextTaxBand", MoneyPounds(amount, 0).quantity)
     }
 
-  def personalAllowanceAmount(codingComponents: Seq[CodingComponent]) =
+  def personalAllowanceAmount(codingComponents: Seq[CodingComponent]): Option[BigDecimal] =
     codingComponents
       .find { component =>
         component.componentType match {

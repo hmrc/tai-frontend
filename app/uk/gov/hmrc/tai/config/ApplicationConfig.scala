@@ -32,60 +32,60 @@ class ApplicationConfig @Inject()(
   def decorateUrlForLocalDev(key: String): String =
     runModeConfiguration.getOptional[String](s"external-url.$key").getOrElse("")
 
-  lazy val dfsDigitalFormsFrontend = servicesConfig.baseUrl("dfs-digital-forms-frontend")
+  lazy val dfsDigitalFormsFrontend: String = servicesConfig.baseUrl("dfs-digital-forms-frontend")
 
-  lazy val incomeTaxFormPartialLinkUrl =
+  lazy val incomeTaxFormPartialLinkUrl: String =
     s"$dfsDigitalFormsFrontend/digital-forms/forms/personal-tax/income-tax/catalogue"
 
   lazy val jrsClaimsFromDate: String = servicesConfig.getString("tai.jrs.claims.from.date")
 
-  lazy val incomeFromEmploymentPensionLinkUrl =
+  lazy val incomeFromEmploymentPensionLinkUrl: String =
     s"$dfsFrontendHost/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
-  lazy val companyBenefitsLinkUrl =
+  lazy val companyBenefitsLinkUrl: String =
     s"$dfsFrontendHost/digital-forms/form/tell-us-about-company-benefits/draft/guide"
-  lazy val taxableStateBenefitLinkUrl =
+  lazy val taxableStateBenefitLinkUrl: String =
     s"$dfsFrontendHost/digital-forms/form/tell-us-about-your-taxable-state-benefit/draft/guide"
-  lazy val otherIncomeLinkUrl =
+  lazy val otherIncomeLinkUrl: String =
     s"$dfsFrontendHost/digital-forms/form/tell-us-about-other-income/draft/guide"
-  lazy val investmentIncomeLinkUrl =
+  lazy val investmentIncomeLinkUrl: String =
     s"$dfsFrontendHost/digital-forms/form/tell-us-about-investment-income/draft/guide"
-  lazy val taxFreeAllowanceLinkUrl =
+  lazy val taxFreeAllowanceLinkUrl: String =
     s"$dfsFrontendHost/digital-forms/form/check-income-tax-tell-us-your-tax-free-allowance/draft/guide"
 
   lazy val accessibilityBaseUrl: String = servicesConfig.getString(s"accessibility-statement.baseUrl")
   lazy private val accessibilityRedirectUrl: String = servicesConfig.getString(s"accessibility-statement.redirectUrl")
-  def accessibilityStatementUrl(referrer: String) =
+  def accessibilityStatementUrl(referrer: String): String =
     s"$accessibilityBaseUrl/accessibility-statement$accessibilityRedirectUrl?referrerUrl=${SafeRedirectUrl(
       accessibilityBaseUrl + referrer).encodedUrl}"
 
-  lazy val reportAProblemPartialUrl =
+  lazy val reportAProblemPartialUrl: String =
     s"${servicesConfig.baseUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
   lazy val betaFeedbackUnauthenticatedUrl =
     "https://www.tax.service.gov.uk/contact/beta-feedback-unauthenticated?service=TES"
 
   lazy val urBannerEnabled: Boolean = getOptional[String]("feature.ur-banner.enabled").getOrElse("true").toBoolean
   lazy val urBannerLink: String = getOptional[String]("ur-banner.url").getOrElse("")
-  lazy val checkUpdateProgressLinkUrl = s"$trackFrontendHost/track"
-  lazy val pertaxServiceUrl = s"$pertaxFrontendHost/personal-account"
+  lazy val checkUpdateProgressLinkUrl: String = s"$trackFrontendHost/track"
+  lazy val pertaxServiceUrl: String = s"$pertaxFrontendHost/personal-account"
   lazy val pertaxServiceUpliftFailedUrl: String = s"$pertaxFrontendHost/personal-account/identity-check-failed"
-  lazy val feedbackSurveyUrl = s"$feedbackHost/feedback/TES"
-  lazy val cocarFrontendUrl = s"$cocarFrontendHost/paye/company-car/details"
-  lazy val marriageServiceHistoryUrl = s"$tamcFrontendHost/marriage-allowance-application/history"
-  lazy val medBenefitServiceUrl = s"$benefitsFrontendHost/paye/benefits/medical-benefit"
+  lazy val feedbackSurveyUrl: String = s"$feedbackHost/feedback/TES"
+  lazy val cocarFrontendUrl: String = s"$cocarFrontendHost/paye/company-car/details"
+  lazy val marriageServiceHistoryUrl: String = s"$tamcFrontendHost/marriage-allowance-application/history"
+  lazy val medBenefitServiceUrl: String = s"$benefitsFrontendHost/paye/benefits/medical-benefit"
 
-  lazy val ivUpliftprefix = decorateUrlForLocalDev("identity-verification.prefix")
-  lazy val sa16UpliftUrl = s"$identityVerificationHost/$ivUpliftprefix/uplift"
+  lazy val ivUpliftprefix: String = decorateUrlForLocalDev("identity-verification.prefix")
+  lazy val sa16UpliftUrl: String = s"$identityVerificationHost/$ivUpliftprefix/uplift"
 
   lazy val taiHomePageUrl: String = s"$taiRootUri/check-income-tax/what-do-you-want-to-do"
-  lazy val taxYouPaidStatus = s"$taxCalcFrontendHost/tax-you-paid/status"
-  lazy val hardshipHelpUrl =
+  lazy val taxYouPaidStatus: String = s"$taxCalcFrontendHost/tax-you-paid/status"
+  lazy val hardshipHelpUrl: String =
     s"$dfsFrontendHost/digital-forms/form/tell-us-how-you-want-to-pay-estimated-tax/draft/guide"
   private lazy val contactHost = getOptional[String](s"microservice.services.contact-frontend.host").getOrElse("")
   private lazy val contactPort = getOptional[String](s"microservice.services.contact-frontend.port").getOrElse("")
   private lazy val contactProtocol =
     getOptional[String](s"microservice.services.contact-frontend.protocol").getOrElse("")
 
-  lazy val assetsPath =
+  lazy val assetsPath: String =
     s"${getOptional[String](s"assets.url").getOrElse("")}${getOptional[String](s"assets.version").getOrElse("")}/"
   lazy val scottishRateIncomeTaxUrl: String = "https://www.gov.uk/scottish-rate-income-tax"
   lazy val welshRateIncomeTaxUrl: String = "https://www.gov.uk/welsh-income-tax"
@@ -98,13 +98,13 @@ class ApplicationConfig @Inject()(
   lazy val frontendTemplatePath: String =
     getOptional[String]("microservice.services.frontend-template-provider.path").getOrElse("/template/mustache")
 
-  lazy val basGatewayFrontendSignOutUrl =
+  lazy val basGatewayFrontendSignOutUrl: String =
     s"$basGatewayHost/bas-gateway/sign-out-without-state?continue=$feedbackSurveyUrl"
 
-  lazy val taxReliefExpenseClaimLink =
+  lazy val taxReliefExpenseClaimLink: String =
     taxReliefExpenseClaimHost + "/claim-tax-relief-expenses/only-claiming-working-from-home-tax-relief"
 
-  lazy val basGatewayFrontendSignInUrl = s"$basGatewayHost/bas-gateway/sign-in"
+  lazy val basGatewayFrontendSignInUrl: String = s"$basGatewayHost/bas-gateway/sign-in"
 
   lazy val citizenAuthFrontendSignOutUrl: String = citizenAuthHost + "/ida/signout"
 
@@ -117,7 +117,7 @@ class ApplicationConfig @Inject()(
   lazy val basGatewayHost: String = decorateUrlForLocalDev("bas-gateway-frontend.host")
   lazy val feedbackHost: String = decorateUrlForLocalDev("feedback-survey-frontend.host")
   lazy val unauthorisedSignOutUrl: String = decorateUrlForLocalDev("company-auth.unauthorised-url")
-  lazy val dfsFrontendHost = decorateUrlForLocalDev(s"dfs-digital-forms-frontend.host")
+  lazy val dfsFrontendHost: String = decorateUrlForLocalDev(s"dfs-digital-forms-frontend.host")
   lazy val taiRootUri: String = decorateUrlForLocalDev("tai-frontend.host")
   lazy val pertaxFrontendHost: String = decorateUrlForLocalDev("pertax-frontend.host")
   lazy val cocarFrontendHost: String = decorateUrlForLocalDev("cocar-frontend.host")

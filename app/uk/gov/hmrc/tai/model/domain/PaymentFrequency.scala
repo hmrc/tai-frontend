@@ -39,7 +39,7 @@ case object OneOff extends PaymentFrequency
 case object Irregular extends PaymentFrequency
 
 object PaymentFrequency {
-  implicit val paymentFrequencyFormat = new Format[PaymentFrequency] {
+  implicit val paymentFrequencyFormat: Format[PaymentFrequency] = new Format[PaymentFrequency] {
     override def reads(json: JsValue): JsResult[PaymentFrequency] = json.as[String] match {
       case "Weekly"      => JsSuccess(Weekly)
       case "FortNightly" => JsSuccess(FortNightly)

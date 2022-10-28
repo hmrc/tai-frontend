@@ -21,9 +21,9 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 
 trait TaxAccountFilter {
 
-  def isEmployment(taxCodeIncome: TaxCodeIncome) =
+  def isEmployment(taxCodeIncome: TaxCodeIncome): Boolean =
     taxCodeIncome.componentType == EmploymentIncome
 
-  def isPension(taxCodeIncome: TaxCodeIncome) =
+  def isPension(taxCodeIncome: TaxCodeIncome): Boolean =
     taxCodeIncome.componentType == PensionIncome
 }

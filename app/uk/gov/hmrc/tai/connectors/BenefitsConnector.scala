@@ -32,7 +32,7 @@ class BenefitsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Serv
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
   def benefitsUrl(nino: String, taxYear: Int): String = s"$serviceUrl/tai/$nino/tax-account/$taxYear/benefits"
-  def endedCompanyBenefitUrl(nino: String, employmentId: Int) =
+  def endedCompanyBenefitUrl(nino: String, employmentId: Int): String =
     s"$serviceUrl/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
 
   def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] =

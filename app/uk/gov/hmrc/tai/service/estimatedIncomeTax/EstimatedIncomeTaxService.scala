@@ -112,7 +112,7 @@ object EstimatedIncomeTaxService extends TaxRegionConstants with BandTypesConsta
     pensionPayments.isDefined
   }
 
-  def savingsBands(totalTax: TotalTax) =
+  def savingsBands(totalTax: TotalTax): Seq[TaxBand] =
     totalTax.incomeCategories
       .filter { category =>
         category.incomeCategoryType == UntaxedInterestIncomeCategory ||
@@ -138,21 +138,21 @@ object EstimatedIncomeTaxService extends TaxRegionConstants with BandTypesConsta
       .map(_.totalIncome)
       .sum
 
-  def taxAdjustmentComp(taxAdjustment: Option[TaxAdjustment], adjustmentType: TaxAdjustmentType) =
+  def taxAdjustmentComp(taxAdjustment: Option[TaxAdjustment], adjustmentType: TaxAdjustmentType): Option[BigDecimal] =
     taxAdjustment
       .flatMap(_.taxAdjustmentComponents.find(_.taxAdjustmentType == adjustmentType))
       .map(_.taxAdjustmentAmount)
 
-  def underPaymentFromPreviousYear(codingComponents: Seq[CodingComponent]) =
+  def underPaymentFromPreviousYear(codingComponents: Seq[CodingComponent]): Option[BigDecimal] =
     codingComponents.find(_.componentType == UnderPaymentFromPreviousYear).flatMap(_.inputAmount)
 
-  def inYearAdjustment(codingComponents: Seq[CodingComponent]) =
+  def inYearAdjustment(codingComponents: Seq[CodingComponent]): Option[BigDecimal] =
     codingComponents.find(_.componentType == EstimatedTaxYouOweThisYear).flatMap(_.inputAmount)
 
-  def outstandingDebt(codingComponents: Seq[CodingComponent]) =
+  def outstandingDebt(codingComponents: Seq[CodingComponent]): Option[BigDecimal] =
     codingComponents.find(_.componentType == OutstandingDebt).map(_.amount)
 
-  def createPABand(taxFreeAllowance: BigDecimal) =
+  def createPABand(taxFreeAllowance: BigDecimal): TaxBand =
     TaxBand(TaxFreeAllowanceBand, "", taxFreeAllowance, 0, Some(0), None, 0)
 
   def retrieveTaxBands(taxBands: List[TaxBand]): List[TaxBand] = {

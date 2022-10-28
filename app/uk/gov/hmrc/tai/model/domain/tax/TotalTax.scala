@@ -28,7 +28,7 @@ case class TaxBand(
   rate: BigDecimal)
 
 object TaxBand {
-  implicit val formats = Json.format[TaxBand]
+  implicit val formats: OFormat[TaxBand] = Json.format[TaxBand]
 }
 
 sealed trait IncomeCategoryType
@@ -40,7 +40,7 @@ case object ForeignInterestIncomeCategory extends IncomeCategoryType
 case object ForeignDividendsIncomeCategory extends IncomeCategoryType
 
 object IncomeCategoryType {
-  implicit val incomeCategoryTypeFormats = new Format[IncomeCategoryType] {
+  implicit val incomeCategoryTypeFormats: Format[IncomeCategoryType] = new Format[IncomeCategoryType] {
     override def reads(json: JsValue): JsResult[IncomeCategoryType] =
       json.as[String] match {
         case "NonSavingsIncomeCategory"       => JsSuccess(NonSavingsIncomeCategory)
@@ -64,7 +64,7 @@ case class IncomeCategory(
   taxBands: Seq[TaxBand])
 
 object IncomeCategory {
-  implicit val formats = Json.format[IncomeCategory]
+  implicit val formats: OFormat[IncomeCategory] = Json.format[IncomeCategory]
 }
 
 case class TotalTax(
@@ -77,5 +77,5 @@ case class TotalTax(
   taxReliefComponent: Option[TaxAdjustment] = None)
 
 object TotalTax {
-  implicit val formats = Json.format[TotalTax]
+  implicit val formats: OFormat[TotalTax] = Json.format[TotalTax]
 }

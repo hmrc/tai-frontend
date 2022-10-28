@@ -76,7 +76,7 @@ object TaiConstants {
   val Failure = "failure"
 
   val NinoLength = 9
-  val NinoWithoutSuffixLength = NinoLength - 1
+  val NinoWithoutSuffixLength: Int = NinoLength - 1
   val TaxAmountFactor = 10
   val EmergencyTaxCode = "X"
 

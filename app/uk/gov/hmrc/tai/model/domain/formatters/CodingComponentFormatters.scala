@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.model.domain.income._
 
 trait CodingComponentFormatters {
 
-  val taxComponentTypeReads = new Reads[TaxComponentType] {
+  val taxComponentTypeReads: Reads[TaxComponentType] = new Reads[TaxComponentType] {
     override def reads(json: JsValue): JsResult[TaxComponentType] = {
       val taxComponentType = json.as[String]
       val component = taxComponentTypeMap(taxComponentType)
@@ -34,7 +34,7 @@ trait CodingComponentFormatters {
     }
   }
 
-  val codingComponentReads = new Reads[CodingComponent] {
+  val codingComponentReads: Reads[CodingComponent] = new Reads[CodingComponent] {
     override def reads(json: JsValue): JsResult[CodingComponent] = {
       val componentType = (json \ "componentType").as[TaxComponentType](taxComponentTypeReads)
       val employmentId = (json \ "employmentId").asOpt[Int]
@@ -153,7 +153,7 @@ trait CodingComponentFormatters {
     "OtherIncome"                                          -> OtherIncome
   )
 
-  val taxCodeIncomeSourceReads = new Reads[TaxCodeIncome] {
+  val taxCodeIncomeSourceReads: Reads[TaxCodeIncome] = new Reads[TaxCodeIncome] {
     override def reads(json: JsValue): JsResult[TaxCodeIncome] = {
       val componentType = (json \ "componentType").as[TaxComponentType](taxComponentTypeReads)
       val employmentId = (json \ "employmentId").asOpt[Int]

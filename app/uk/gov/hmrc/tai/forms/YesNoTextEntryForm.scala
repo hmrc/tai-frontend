@@ -34,7 +34,7 @@ object YesNoTextEntryForm extends FormValuesConstants {
   def form(
     emptySelectionMsg: String = "",
     emptyTextFieldMsg: String = "",
-    additionalTextConstraint: Option[Constraint[String]] = None) = Form[YesNoTextEntryForm](
+    additionalTextConstraint: Option[Constraint[String]] = None): Form[YesNoTextEntryForm] = Form[YesNoTextEntryForm](
     mapping(
       YesNoChoice -> optional(text).verifying(yesNoChoiceValidation(emptySelectionMsg)),
       YesNoTextEntry -> mandatoryIfEqual(

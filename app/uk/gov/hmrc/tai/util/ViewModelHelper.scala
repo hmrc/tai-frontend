@@ -48,11 +48,11 @@ trait ViewModelHelper {
   def dynamicDateRangeHtmlNonBreak(from: LocalDate, to: LocalDate)(implicit messages: Messages): String =
     TaxYearRangeUtil.dynamicDateRange(from, to)
 
-  def htmlNonBroken(string: String) = HtmlFormatter.htmlNonBroken(string)
+  def htmlNonBroken(string: String): String = HtmlFormatter.htmlNonBroken(string)
 
   def isTrue(str: String): Boolean = Try(str.toBoolean).getOrElse(false)
 
-  def urlEncode(u: String) = URLEncoder.encode(u, "UTF-8")
+  def urlEncode(u: String): String = URLEncoder.encode(u, "UTF-8")
 }
 
 object ViewModelHelper extends ViewModelHelper
