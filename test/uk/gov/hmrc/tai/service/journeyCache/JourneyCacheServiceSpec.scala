@@ -348,6 +348,15 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
     }
   }
 
+  "delete in the service" must {
+    "remove the cache" in {
+      val sut = createSut
+      when(journeyCacheConnector.delete(Matchers.eq("delete-update-income"))(any()))
+        .thenReturn(Future.successful(TaiSuccessResponse))
+      Await.result(sut.delete(), 5 seconds) mustBe TaiSuccessResponse
+    }
+  }
+
   val testCache = Map(
     "key1" -> "val1",
     "key2" -> "val2",

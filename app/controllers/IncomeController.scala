@@ -45,7 +45,6 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
-
 @Singleton
 class IncomeController @Inject()(
   @Named("Update Income") journeyCacheService: JourneyCacheService,
