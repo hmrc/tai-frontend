@@ -165,7 +165,6 @@ POST        /update-income/bonus-overtime-amount/:empId                         
 ## Regular Income URIs
 GET         /update-income/cancel/:id                                                  controllers.IncomeController.cancel(id: Int)
 GET         /update-income/select-taxable-pay                                          controllers.IncomeController.viewIncomeForEdit
-GET         /test-only/update-income/delete/:id                                        controllers.IncomeController.delete(id: Int)
 
 GET         /update-income/edit-taxable-pay/:empId                                     controllers.IncomeController.regularIncome(empId: Int)
 POST        /update-income/edit-taxable-pay/:empId                                     controllers.IncomeController.editRegularIncome(empId: Int)

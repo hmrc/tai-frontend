@@ -933,20 +933,6 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
       }
     }
 
-    "delete" must {
-      "delete the journey cache and redirect the user to the income details page" in {
-        val testController = createTestIncomeController()
-
-        when(journeyCacheService.delete()(any())).thenReturn(Future.successful(TaiSuccessResponse))
-
-        val result = testController.delete(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
-
-        verify(journeyCacheService, times(1)).delete()(any())
-      }
-    }
   }
 
   def employmentWithAccounts(accounts: List[AnnualAccount]) =
