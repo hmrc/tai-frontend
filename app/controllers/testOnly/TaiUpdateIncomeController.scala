@@ -33,7 +33,7 @@ class TaiUpdateIncomeController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  implicit val templateRenderer: TemplateRenderer,
+  implicit val templateRenderer: TemplateRenderer
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

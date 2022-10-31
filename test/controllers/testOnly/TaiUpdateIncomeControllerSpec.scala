@@ -24,64 +24,50 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.concurrent.ScalaFutures
+import play.api.http.Status.SEE_OTHER
 import play.api.i18n.I18nSupport
-import play.api.test.Helpers.{redirectLocation, status, _}
+import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
-import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import utils.BaseSpec
 
 import scala.concurrent.Future
 
 class TaiUpdateIncomeControllerSpec
-    extends BaseSpec with JourneyCacheConstants with I18nSupport with BeforeAndAfterEach {
+    extends BaseSpec with JourneyCacheConstants with I18nSupport with BeforeAndAfterEach with ScalaFutures {
 
-  val incomeService: IncomeService = mock[IncomeService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   override def beforeEach: Unit =
-    Mockito.reset(incomeService, journeyCacheService)
+    Mockito.reset(journeyCacheService)
 
-  val payToDate = "100"
-  val employerId = 1
+  val employerId = 14
   val employerName = "Employer Name"
-
-  val cachedData = Future.successful(Right(Seq(employerId.toString, payToDate)))
-  val cachedUpdateIncomeNewAmountKey: Future[Either[String, String]] = Future.successful(Right("700"))
-  val emptyCache = Future.successful(Left("empty cache"))
-
   val cacheKey = s"$UpdateIncome_ConfirmedNewAmountKey-$employerId"
-  private def createTaiUpdateIncomeController() = new TestTaiUpdateIncomeController()
+
+  private def sut = new TaiUpdateIncomeController(
+    journeyCacheService,
+    FakeAuthAction,
+    FakeValidatePerson,
+    mcc,
+    templateRenderer
+  )
 
   "TaiUpdateIncomeController" must {
+
     "delete the journey cache to facilitate the next test run" in {
 
-      val taiUpdateIncomeController = createTaiUpdateIncomeController()
       when(journeyCacheService.delete()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
-      val result = taiUpdateIncomeController.delete(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
+      val result = sut.delete(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      result.futureValue
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
-
       verify(journeyCacheService, times(1)).delete()(any())
 
     }
-  }
-
-  private class TestTaiUpdateIncomeController()
-      extends TaiUpdateIncomeController(
-        journeyCacheService,
-        FakeAuthAction,
-        FakeValidatePerson,
-        mcc,
-        templateRenderer
-      ) {
-    when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
-    when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
   }
 
 }
