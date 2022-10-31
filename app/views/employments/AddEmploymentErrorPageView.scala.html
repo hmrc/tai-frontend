@@ -17,34 +17,44 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF)
+@this(mainTemplate: MainTempleteNew, form: FormWithCSRF)
 
 @(employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         mainHeadingText = Messages("tai.addEmployment.employmentErrorPage.title"),
-        preHeadingText = Messages("add.missing.employment"))}
+        preHeadingText = Messages("add.missing.employment"),
+        showGdsVersion = true
+    )
+}
 
 
 @mainTemplate(
-  title = Messages("tai.addEmployment.employmentErrorPage.title"),
-  authedUser = Some(user),
-  pageHeader = Some(header),
-  articleClasses = None) {
+    title = Messages("tai.addEmployment.employmentErrorPage.title"),
+    authedUser = Some(user),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "backLink",
+    backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad.url.toString)
+) {
 
-    <div class="subsection">
-        <p>@Messages("tai.addEmployment.employmentErrorPage.para1", employerName)</p>
-        <p>@Messages("tai.addEmployment.employmentErrorPage.para2")</p>
-    </div>
+<div class = "govuk-grid-row">
+    <div class = "govuk-grid-column-two-thirds">
+        @header
 
-    @includes.link(
+        <p class="govuk-body">@Messages("tai.addEmployment.employmentErrorPage.para1", employerName)</p>
+        <p class="govuk-body">@Messages("tai.addEmployment.employmentErrorPage.para2")</p>
+
+        @includes.link(
         id=Some("returnToYourIncomeDetails"),
         copy=Messages("return.to.your.income.tax.summary"),
         url = routes.TaxAccountSummaryController.onPageLoad.url.toString,
-        isButton=true
-    )
+        linkClasses=Seq("govuk-button")
+        )
+
+    </div>
+</div>
 
 }
