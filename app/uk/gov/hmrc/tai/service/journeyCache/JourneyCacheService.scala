@@ -17,15 +17,14 @@
 package uk.gov.hmrc.tai.service.journeyCache
 
 import akka.Done
-
-import javax.inject.Inject
-import java.time.LocalDate
+import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
-import play.api.Logging
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource.UpdateIncome_DeleteJourneyKey
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -121,7 +120,7 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
   def flush()(implicit hc: HeaderCarrier): Future[Done] =
     journeyCacheConnector.flush(journeyName)
 
-  def flushWithEmpId(empId: Int)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def flushWithEmpId(empId: Int)(implicit hc: HeaderCarrier): Future[Done] =
     journeyCacheConnector.flushWithEmpId(journeyName, empId)
 
   def delete()(implicit hc: HeaderCarrier): Future[TaiResponse] =
