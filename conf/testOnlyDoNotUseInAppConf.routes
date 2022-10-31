@@ -12,5 +12,6 @@
 # Add all the application routes to the prod.routes file
 # microservice specific routes
 
+GET         /check-income-tax/test-only/update-income/delete/:id                                        controllers.testOnly.TaiUpdateIncomeController.delete(id: Int)
 
 ->         /                          prod.Routes

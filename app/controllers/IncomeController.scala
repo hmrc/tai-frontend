@@ -420,10 +420,4 @@ class IncomeController @Inject()(
 
   }
 
-  def delete(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    journeyCacheService.delete() map { _ =>
-      Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
-    }
-  }
-
 }
