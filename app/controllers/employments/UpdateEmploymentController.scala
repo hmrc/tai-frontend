@@ -50,7 +50,7 @@ class UpdateEmploymentController @Inject()(
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   whatDoYouWantToTellUs: WhatDoYouWantToTellUsView,
-  can_we_contact_by_phone: CanWeContactByPhoneView,
+  canWeContactByPhone: CanWeContactByPhoneView,
   updateEmploymentCheckYourAnswers: UpdateEmploymentCheckYourAnswersView,
   confirmationView: ConfirmationView,
   @Named("Update Employment") journeyCacheService: JourneyCacheService,
@@ -129,7 +129,7 @@ class UpdateEmploymentController @Inject()(
       employmentId match {
         case Right(empId) =>
           Ok(
-            can_we_contact_by_phone(
+            canWeContactByPhone(
               Some(user),
               telephoneNumberViewModel(empId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
@@ -151,7 +151,7 @@ class UpdateEmploymentController @Inject()(
           journeyCacheService.currentCache map { currentCache =>
             implicit val user: AuthedUser = request.taiUser
             BadRequest(
-              can_we_contact_by_phone(
+              canWeContactByPhone(
                 Some(user),
                 telephoneNumberViewModel(currentCache(UpdateEmployment_EmploymentIdKey).toInt),
                 formWithErrors))
