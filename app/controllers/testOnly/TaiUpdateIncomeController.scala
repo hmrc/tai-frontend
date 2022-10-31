@@ -20,11 +20,9 @@ import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -37,7 +35,7 @@ class TaiUpdateIncomeController @Inject()(
   mcc: MessagesControllerComponents,
   implicit val templateRenderer: TemplateRenderer,
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with Logging {
+    extends TaiBaseController(mcc) {
 
   def delete(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.delete() map { _ =>

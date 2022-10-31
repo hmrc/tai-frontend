@@ -39,12 +39,8 @@ class TaiUpdateIncomeControllerSpec
     extends BaseSpec with JourneyCacheConstants with I18nSupport with BeforeAndAfterEach {
 
   val incomeService: IncomeService = mock[IncomeService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val personService: PersonService = mock[PersonService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
-    mock[EstimatedPayJourneyCompletionService]
 
   override def beforeEach: Unit =
     Mockito.reset(incomeService, journeyCacheService)
