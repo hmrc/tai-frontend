@@ -226,7 +226,7 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
 
         def incomeMessagesView = template(model)
 
-        doc(incomeMessagesView) must haveHeadingH3WithText(model.incomeCalculationEstimateMessage.get)
+        doc(incomeMessagesView) must haveHeadingH2WithText(model.incomeCalculationEstimateMessage.get)
       }
 
       "employment is ceased" in {
