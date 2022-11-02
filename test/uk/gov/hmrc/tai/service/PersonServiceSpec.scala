@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.service
 import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
 import utils.BaseSpec
 
@@ -35,17 +35,17 @@ class PersonServiceSpec extends BaseSpec {
         val sut = createSut
         val person = fakePerson(nino)
         when(personConnector.person(Matchers.eq(nino))(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(person)))
+          .thenReturn(Future.successful(person))
 
         val result = Await.result(sut.personDetails(nino), testTimeout)
         result mustBe person
       }
     }
     "throw a runtime exception" when {
-      "copnnector did not return successfully" in {
+      "connector did not return successfully" in {
         val sut = createSut
         when(personConnector.person(Matchers.eq(nino))(any()))
-          .thenReturn(Future.successful(TaiNotFoundResponse("downstream not found")))
+          .thenReturn(Future.failed(new NotFoundException("downstream not found")))
 
         val thrown = the[RuntimeException] thrownBy Await.result(sut.personDetails(nino), testTimeout)
         thrown.getMessage must include("Failed to retrieve person details for nino")
