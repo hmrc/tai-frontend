@@ -16,13 +16,11 @@
 
 package controllers
 
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -34,6 +32,7 @@ import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 import views.html.incomeTaxComparison.MainView
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
@@ -55,30 +54,27 @@ class IncomeTaxComparisonController @Inject()(
     val nino = request.taiUser.nino
     val currentTaxYear = TaxYear()
     val nextTaxYear = currentTaxYear.next
-    val taxSummaryCYFuture = taxAccountService.taxAccountSummary(nino, currentTaxYear)
-    val taxSummaryCYPlusOneFuture = taxAccountService.taxAccountSummary(nino, nextTaxYear)
-    val taxCodeIncomesCYFuture = taxAccountService.taxCodeIncomes(nino, currentTaxYear)
-    val taxCodeIncomesCYPlusOneFuture = taxAccountService.taxCodeIncomes(nino, nextTaxYear)
-    val taxComponentsCYFuture = codingComponentService.taxFreeAmountComponents(nino, currentTaxYear)
-    val taxComponentsCYPlusOneFuture = codingComponentService.taxFreeAmountComponents(nino, nextTaxYear)
-    val employmentsCYFuture = employmentService.employments(nino, currentTaxYear)
 
-    (for {
-      taxSummaryCY                  <- taxSummaryCYFuture
-      taxSummaryCyPlusOne           <- taxSummaryCYPlusOneFuture
-      taxCodeIncomesForCy           <- taxCodeIncomesCYFuture
-      taxCodeIncomesForCyPlusOne    <- taxCodeIncomesCYPlusOneFuture
-      codingComponentsCY            <- taxComponentsCYFuture
-      codingComponentsCYPlusOne     <- taxComponentsCYPlusOneFuture
-      employmentsCY                 <- employmentsCYFuture
-      isEstimatedPayJourneyComplete <- updateNextYearsIncomeService.isEstimatedPayJourneyComplete
-    } yield {
-      (taxSummaryCY, taxSummaryCyPlusOne, taxCodeIncomesForCy, taxCodeIncomesForCyPlusOne) match {
+    (
+      taxAccountService.taxAccountSummary(nino, currentTaxYear),
+      taxAccountService.taxAccountSummary(nino, nextTaxYear),
+      taxAccountService.taxCodeIncomes(nino, currentTaxYear),
+      taxAccountService.taxCodeIncomes(nino, nextTaxYear),
+      codingComponentService.taxFreeAmountComponents(nino, currentTaxYear),
+      codingComponentService.taxFreeAmountComponents(nino, nextTaxYear),
+      employmentService.employments(nino, currentTaxYear),
+      updateNextYearsIncomeService.isEstimatedPayJourneyComplete
+    ).mapN {
         case (
             TaiSuccessResponseWithPayload(taxAccountSummaryCY: TaxAccountSummary),
             TaiSuccessResponseWithPayload(taxAccountSummaryCYPlusOne: TaxAccountSummary),
             TaiSuccessResponseWithPayload(taxCodeIncomesCY: Seq[TaxCodeIncome]),
-            TaiSuccessResponseWithPayload(taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome])) =>
+            TaiSuccessResponseWithPayload(taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome]),
+            codingComponentsCY,
+            codingComponentsCYPlusOne,
+            employmentsCY,
+            isEstimatedPayJourneyComplete
+            ) =>
           val estimatedIncomeTaxComparisonViewModel = {
             val cyEstimatedTax = EstimatedIncomeTaxComparisonItem(currentTaxYear, taxAccountSummaryCY.totalEstimatedTax)
             val cyPlusOneEstimatedTax =
@@ -116,11 +112,13 @@ class IncomeTaxComparisonController @Inject()(
           )
 
           Ok(mainView(model, applicationConfig))
-        case _ => throw new RuntimeException("Not able to fetch income tax comparision details")
+        case _ =>
+          throw new RuntimeException("Not able to fetch income tax comparision details")
+
       }
-    }) recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError("IncomeTaxComparisonController exception", Some(e))
-    }
+      .recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError("IncomeTaxComparisonController exception", Some(e))
+      }
   }
 
 }
