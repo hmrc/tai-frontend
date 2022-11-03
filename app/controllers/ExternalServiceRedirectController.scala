@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+import cats.implicits._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.service.{AuditService, SessionService}
@@ -35,16 +36,12 @@ class ExternalServiceRedirectController @Inject()(
 
   def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
-      {
-
-        (for {
-          redirectUri <- auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName)
-          _           <- sessionService.invalidateCache()
-        } yield {
-          Redirect(redirectUri)
-        }) recover {
-          case _ => errorPagesHandler.internalServerError("Unable to audit and redirect")
-        }
+      (
+        auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName),
+        sessionService.invalidateCache()).mapN {
+        case (redirectUri, _) => Redirect(redirectUri)
+      } recover {
+        case _ => errorPagesHandler.internalServerError("Unable to audit and redirect")
       }
     }
 
