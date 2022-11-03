@@ -16,6 +16,7 @@
 
 package views.html.incomeTaxHistory
 
+import org.jsoup.Jsoup
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
@@ -41,6 +42,13 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
           s" ${person.nino}"
       )
       doc must haveListItemWithText("End date " + messages("tai.incomeTax.history.endDate.notApplicable"))
+    }
+
+    "display a details card with no address" when {
+      "the user does not have a registered address" in {
+        val doc = Jsoup.parse(viewWithNoAddress.toString())
+        doc mustNot haveSpanWithText(messages("tai.incomeTax.history.details.address"))
+      }
     }
 
     "display print button" should {
@@ -169,7 +177,10 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
   )
 
   val person = fakePerson(nino)
+  val personWithNoAddress = fakePerson(nino)
 
   override def view: Html =
     incomeTaxHistoryView(appConfig, person, incomeTaxYears)
+  def viewWithNoAddress: Html = incomeTaxHistoryView(appConfig, personWithNoAddress, incomeTaxYears)
+
 }
