@@ -19,7 +19,8 @@ package controllers
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-
+import cats._
+import cats.implicits._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -63,37 +64,39 @@ class IncomeSourceSummaryController @Inject()(
     val cacheUpdatedIncomeAmountFuture =
       journeyCacheService.currentValueAsInt(s"$updateIncomeConfirmedAmountKey-$empId")
 
-    (for {
-      taxCodeIncomeDetails     <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-      employmentDetails        <- employmentService.employment(nino, empId)
-      benefitsDetails          <- benefitsService.benefits(nino, TaxYear().year)
-      estimatedPayCompletion   <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
-      cacheUpdatedIncomeAmount <- cacheUpdatedIncomeAmountFuture
-    } yield {
-      (taxCodeIncomeDetails, employmentDetails) match {
-        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-          val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
+    (
+      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      employmentService.employment(nino, empId),
+      benefitsService.benefits(nino, TaxYear().year),
+      estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString),
+      cacheUpdatedIncomeAmountFuture).mapN {
+      case (
+        TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+        Some(employment),
+        benefitsDetails,
+        estimatedPayCompletion,
+        cacheUpdatedIncomeAmount) =>
+        val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
 
-          val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
-            empId,
-            request.fullName,
-            taxCodeIncomes,
-            employment,
-            benefitsDetails,
-            estimatedPayCompletion,
-            rtiAvailable,
-            applicationConfig,
-            cacheUpdatedIncomeAmount
-          )
+        val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
+          empId,
+          request.fullName,
+          taxCodeIncomes,
+          employment,
+          benefitsDetails,
+          estimatedPayCompletion,
+          rtiAvailable,
+          applicationConfig,
+          cacheUpdatedIncomeAmount
+        )
 
-          if (!incomeDetailsViewModel.isUpdateInProgress) {
-            journeyCacheService.flushWithEmpId(empId)
-          }
+        if (!incomeDetailsViewModel.isUpdateInProgress) {
+          journeyCacheService.flushWithEmpId(empId)
+        }
 
-          Ok(incomeSourceSummary(incomeDetailsViewModel))
-        case _ => errorPagesHandler.internalServerError("Error while fetching income summary details")
-      }
-    }) recover {
+        Ok(incomeSourceSummary(incomeDetailsViewModel))
+      case _ => errorPagesHandler.internalServerError("Error while fetching income summary details")
+    } recover {
       case NonFatal(e) => errorPagesHandler.internalServerError("IncomeSourceSummaryController exception", Some(e))
     }
   }
