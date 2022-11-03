@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.util.constants
 
-trait JourneyCacheConstants {
+trait JourneyCacheConstants { //TODO separate each journey cache into its own object
 
 //TODO use objects instead of traits
 
@@ -93,6 +93,7 @@ trait JourneyCacheConstants {
   val UpdatePreviousYearsIncome_TelephoneNumberKey = "updateIncomeTelephoneNumber"
 
   val UpdateIncome_JourneyKey = "update-income"
+  val UpdateIncome_DeleteJourneyKey = "delete-update-income"
   val UpdateIncome_NameKey = "updateIncomeEmploymentName"
   val UpdateIncome_IdKey = "updateIncomeEmploymentIdKey"
   val UpdateIncome_PayToDateKey = "updateIncomePayToDateKey"

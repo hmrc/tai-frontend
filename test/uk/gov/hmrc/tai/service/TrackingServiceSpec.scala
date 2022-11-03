@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.service
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.prop.TableDrivenPropertyChecks._
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TrackingConnector
 import uk.gov.hmrc.tai.model.domain.tracking._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -158,7 +157,7 @@ class TrackingServiceSpec extends BaseSpec with JourneyCacheConstants {
         val controller = sut
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
         when(successfulJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true")))
+          .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.Successful -> "true")))
 
         val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess

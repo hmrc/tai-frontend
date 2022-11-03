@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-class BonusPaymentsViewSpec extends TaiViewSpec with FormValuesConstants {
+class BonusPaymentsViewSpec extends TaiViewSpec {
 
   val employer = IncomeSource(id = 1, name = "Employer")
 
@@ -34,7 +34,7 @@ class BonusPaymentsViewSpec extends TaiViewSpec with FormValuesConstants {
     "tai.bonusPayments.error.form.incomes.radioButton.mandatory",
     TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
   val bonusPaymentsForm = BonusPaymentsForm.createForm
-  val choice = YesNoForm.YesNoChoice
+  val choice = FormValuesConstants.YesNoChoice
 
   private val bonusPayments = inject[BonusPaymentsView]
 
@@ -52,19 +52,19 @@ class BonusPaymentsViewSpec extends TaiViewSpec with FormValuesConstants {
     behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-payments/" + employer.id)
 
     "return no errors with valid 'yes' choice" in {
-      val validYesChoice = Json.obj(choice -> YesValue)
+      val validYesChoice = Json.obj(choice -> FormValuesConstants.YesValue)
       val validatedForm = bonusPaymentsForm.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value.get mustBe YesNoForm(Some(YesValue))
+      validatedForm.value.get mustBe YesNoForm(Some(FormValuesConstants.YesValue))
     }
 
     "return no errors with valid 'no' choice" in {
-      val validNoChoice = Json.obj(choice -> NoValue)
+      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue)
       val validatedForm = bonusPaymentsForm.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value.get mustBe YesNoForm(Some(NoValue))
+      validatedForm.value.get mustBe YesNoForm(Some(FormValuesConstants.NoValue))
     }
 
     "display an error for invalid choice" in {

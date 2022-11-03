@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext
 class UnauthorisedController @Inject()(
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
-  error_template_noauth: ErrorTemplateNoauth,
+  errorTemplateNoAuth: ErrorTemplateNoauth,
   implicit val ec: ExecutionContext,
   implicit val templateRenderer: TemplateRenderer)
     extends TaiBaseController(mcc) {
@@ -75,7 +75,7 @@ class UnauthorisedController @Inject()(
   }
 
   private def unauthorisedView()(implicit request: Request[_]) =
-    error_template_noauth(
+    errorTemplateNoAuth(
       Messages("tai.unauthorised.heading"),
       Messages("tai.unauthorised.heading"),
       Messages("tai.unauthorised.message"),

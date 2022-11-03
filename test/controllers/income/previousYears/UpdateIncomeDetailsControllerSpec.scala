@@ -40,9 +40,7 @@ import views.html.incomes.previousYears.{CheckYourAnswersView, UpdateIncomeDetai
 
 import scala.concurrent.Future
 
-class UpdateIncomeDetailsControllerSpec
-    extends BaseSpec with FormValuesConstants with UpdateHistoricIncomeChoiceConstants with JourneyCacheConstants
-    with BeforeAndAfterEach {
+class UpdateIncomeDetailsControllerSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(journeyCacheService, trackingjourneyCacheService)
@@ -66,7 +64,10 @@ class UpdateIncomeDetailsControllerSpec
       "the form has the value Yes in UpdateIncomeDecision" in {
         val SUT = createSUT
         val request =
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(UpdateIncomeChoice -> YesValue)
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(
+              UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> FormValuesConstants.YesValue)
         val result = SUT.submitDecision()(request)
 
         status(result) mustBe SEE_OTHER
@@ -78,7 +79,10 @@ class UpdateIncomeDetailsControllerSpec
       "the form has the value No in UpdateIncomeDecision" in {
         val SUT = createSUT
         val request =
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(UpdateIncomeChoice -> NoValue)
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(
+              UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> FormValuesConstants.NoValue)
         val result = SUT.submitDecision()(request)
 
         status(result) mustBe SEE_OTHER
@@ -91,7 +95,9 @@ class UpdateIncomeDetailsControllerSpec
       "the form submission is invalid" in {
         val sut = createSUT
         val result = sut.submitDecision()(
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(UpdateIncomeChoice -> ""))
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> ""))
         status(result) mustBe BAD_REQUEST
       }
     }
@@ -193,14 +199,16 @@ class UpdateIncomeDetailsControllerSpec
       "the request has an authorised session, and a telephone number has been provided" in {
         val sut = createSUT
         val expectedCache = Map(
-          UpdatePreviousYearsIncome_TelephoneQuestionKey -> YesValue,
+          UpdatePreviousYearsIncome_TelephoneQuestionKey -> FormValuesConstants.YesValue,
           UpdatePreviousYearsIncome_TelephoneNumberKey   -> "12345678")
         when(journeyCacheService.cache(mockEq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
 
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> "12345678"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController
@@ -212,7 +220,7 @@ class UpdateIncomeDetailsControllerSpec
         val sut = createSUT
 
         val expectedCacheWithErasingNumber = Map(
-          UpdatePreviousYearsIncome_TelephoneQuestionKey -> NoValue,
+          UpdatePreviousYearsIncome_TelephoneQuestionKey -> FormValuesConstants.NoValue,
           UpdatePreviousYearsIncome_TelephoneNumberKey   -> "")
         when(journeyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
@@ -220,7 +228,9 @@ class UpdateIncomeDetailsControllerSpec
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> NoValue, YesNoTextEntry -> "this value must not be cached"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.NoValue,
+              FormValuesConstants.YesNoTextEntry -> "this value must not be cached"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController
@@ -238,7 +248,9 @@ class UpdateIncomeDetailsControllerSpec
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> ""))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -252,7 +264,9 @@ class UpdateIncomeDetailsControllerSpec
         val tooFewCharsResult = sut.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> "1234"))
         status(tooFewCharsResult) mustBe BAD_REQUEST
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
@@ -260,7 +274,9 @@ class UpdateIncomeDetailsControllerSpec
         val tooManyCharsResult = sut.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))

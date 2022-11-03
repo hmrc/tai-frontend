@@ -60,8 +60,7 @@ class IncomeUpdateCalculatorController @Inject()(
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with EditIncomeIrregularPayConstants
-    with UpdatedEstimatedPayJourneyCache with FormValuesConstants {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
 
   val logger = Logger(this.getClass)
 
@@ -144,9 +143,9 @@ class IncomeUpdateCalculatorController @Inject()(
             },
             success => {
               success.yesNoChoice match {
-                case Some(YesValue) =>
+                case Some(FormValuesConstants.YesValue) =>
                   Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(empId))
-                case Some(NoValue) =>
+                case Some(FormValuesConstants.NoValue) =>
                   Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
               }
             }

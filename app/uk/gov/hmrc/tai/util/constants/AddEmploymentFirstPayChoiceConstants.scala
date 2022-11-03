@@ -16,6 +16,6 @@
 
 package uk.gov.hmrc.tai.util.constants
 
-trait AddEmploymentFirstPayChoiceConstants {
+object AddEmploymentFirstPayChoiceConstants {
   val FirstPayChoice: String = "firstPayChoice"
 }

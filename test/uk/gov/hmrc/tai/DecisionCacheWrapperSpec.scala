@@ -24,14 +24,14 @@ import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.tai.model.domain.Telephone
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.YesIGetThisBenefit
 import utils.BaseSpec
 
 import scala.concurrent.Future
 
 class DecisionCacheWrapperSpec
-    extends BaseSpec with BeforeAndAfterEach with JourneyCacheConstants
-    with UpdateOrRemoveCompanyBenefitDecisionConstants with ScalaFutures with Results {
+    extends BaseSpec with BeforeAndAfterEach with JourneyCacheConstants with ScalaFutures with Results {
 
   val journeyCacheService = mock[JourneyCacheService]
   val wrapper = new DecisionCacheWrapper(journeyCacheService)

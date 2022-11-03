@@ -46,7 +46,6 @@ import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
-import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 
 class EndEmploymentController @Inject()(
@@ -56,19 +55,18 @@ class EndEmploymentController @Inject()(
   validatePerson: ValidatePerson,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
-  update_remove_employment_decision: UpdateRemoveEmploymentDecisionView,
+  updateRemoveEmploymentDecision: UpdateRemoveEmploymentDecisionView,
   endEmploymentWithinSixWeeksError: EndEmploymentWithinSixWeeksErrorView,
   endEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentErrorView,
   endEmploymentView: EndEmploymentView,
-  can_we_contact_by_phone: CanWeContactByPhoneView,
+  canWeContactByPhone: CanWeContactByPhoneView,
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
   confirmation: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   @Named("End Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with IrregularPayConstants
-    with AuditConstants with EmptyCacheRedirect {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>
@@ -91,7 +89,7 @@ class EndEmploymentController @Inject()(
       journeyCacheService.mandatoryJourneyValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map {
         case Right(mandatoryValues) =>
           Ok(
-            update_remove_employment_decision(
+            updateRemoveEmploymentDecision(
               UpdateRemoveEmploymentForm.form(mandatoryValues(0)),
               mandatoryValues(0),
               mandatoryValues(1).toInt))
@@ -144,12 +142,12 @@ class EndEmploymentController @Inject()(
               formWithErrors => {
                 Future(
                   BadRequest(
-                    update_remove_employment_decision(
+                    updateRemoveEmploymentDecision(
                       formWithErrors,
                       mandatoryJourneyValues(0),
                       mandatoryJourneyValues(1).toInt)))
               }, {
-                case Some(YesValue) =>
+                case Some(FormValuesConstants.YesValue) =>
                   Future(Redirect(controllers.employments.routes.UpdateEmploymentController
                     .updateEmploymentDetails(mandatoryJourneyValues(1).toInt)))
                 case _ =>
@@ -169,11 +167,15 @@ class EndEmploymentController @Inject()(
                         val errorPageCache = Map(EndEmployment_LatestPaymentDateKey -> latestPaymentDate.get.toString)
                         journeyCacheService.cache(errorPageCache) map { _ =>
                           auditService
-                            .createAndSendAuditEvent(EndEmployment_WithinSixWeeksError, Map("nino" -> nino.nino))
+                            .createAndSendAuditEvent(
+                              AuditConstants.EndEmploymentWithinSixWeeksError,
+                              Map("nino" -> nino.nino))
                           Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
                         }
                       } else if (hasIrregularPayment) {
-                        auditService.createAndSendAuditEvent(EndEmployment_IrregularPayment, Map("nino" -> nino.nino))
+                        auditService.createAndSendAuditEvent(
+                          AuditConstants.EndEmploymentIrregularPayment,
+                          Map("nino" -> nino.nino))
                         Future(Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError()))
                       } else {
                         Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
@@ -224,7 +226,7 @@ class EndEmploymentController @Inject()(
             },
             formData => {
               formData.irregularPayDecision match {
-                case Some(ContactEmployer) =>
+                case Some(IrregularPayConstants.ContactEmployer) =>
                   Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
                 case _ =>
                   Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
@@ -294,7 +296,7 @@ class EndEmploymentController @Inject()(
       employmentId match {
         case Right(mandatoryEmploymentId) =>
           Ok(
-            can_we_contact_by_phone(
+            canWeContactByPhone(
               Some(user),
               telephoneNumberViewModel(mandatoryEmploymentId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
@@ -317,15 +319,15 @@ class EndEmploymentController @Inject()(
         formWithErrors => {
           journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey) map {
             case Right(employmentId) =>
-              BadRequest(can_we_contact_by_phone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
+              BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
           }
         },
         form => {
           val mandatoryData = Map(
             EndEmployment_TelephoneQuestionKey -> Messages(
-              s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
+              s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"))
           val dataForCache = form.yesNoChoice match {
-            case Some(YesValue) =>
+            case Some(FormValuesConstants.YesValue) =>
               mandatoryData ++ Map(EndEmployment_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
             case _ => mandatoryData ++ Map(EndEmployment_TelephoneNumberKey -> "")
           }
@@ -410,10 +412,10 @@ class EndEmploymentController @Inject()(
             },
             success => {
               success.yesNoChoice match {
-                case Some(YesValue) =>
+                case Some(FormValuesConstants.YesValue) =>
                   Future.successful(
                     Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()))
-                case Some(NoValue) =>
+                case Some(FormValuesConstants.NoValue) =>
                   Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
               }
             }

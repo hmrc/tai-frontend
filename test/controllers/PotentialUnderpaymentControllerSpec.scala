@@ -37,8 +37,7 @@ import views.html.PotentialUnderpaymentView
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class PotentialUnderpaymentControllerSpec
-    extends BaseSpec with AuditConstants with I18nSupport with BeforeAndAfterEach {
+class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(auditService)
@@ -85,7 +84,7 @@ class PotentialUnderpaymentControllerSpec
       Await
         .result(sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap)), 5 seconds)
       verify(auditService, times(1))
-        .createAndSendAuditEvent(Matchers.eq(PotentialUnderpayment_InYearAdjustment), any())(any(), any())
+        .createAndSendAuditEvent(Matchers.eq(AuditConstants.PotentialUnderpaymentInYearAdjustment), any())(any(), any())
     }
     "return the service unavailable error page in response to an internal error" in {
       val sut = new SUT()

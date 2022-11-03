@@ -20,11 +20,12 @@ import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.IncorrectPensionDecisionConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 import views.html.pensions.update.DoYouGetThisPensionIncomeView
 
-class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec with FormValuesConstants {
+class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec {
 
   private val doYouGetThisPensionIncome = inject[DoYouGetThisPensionIncomeView]
 
@@ -38,8 +39,8 @@ class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec with FormValuesConst
     )
 
     behave like pageWithYesNoRadioButton(
-      UpdateRemovePensionForm.IncorrectPensionDecision,
-      UpdateRemovePensionForm.IncorrectPensionDecision + "-2",
+      IncorrectPensionDecisionConstants.IncorrectPensionDecision,
+      IncorrectPensionDecisionConstants.IncorrectPensionDecision + "-2",
       messages("tai.label.yes"),
       messages("tai.label.no")
     )
@@ -50,7 +51,7 @@ class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec with FormValuesConst
     "show error" when {
       "form contains error" in {
         val pensionUpdateRemoveFormWithError =
-          UpdateRemovePensionForm.form.bind(Map(UpdateRemovePensionForm.IncorrectPensionDecision -> ""))
+          UpdateRemovePensionForm.form.bind(Map(IncorrectPensionDecisionConstants.IncorrectPensionDecision -> ""))
         val viewWithError: Html = doYouGetThisPensionIncome(model, pensionUpdateRemoveFormWithError)
 
         val errorDoc = doc(viewWithError)
@@ -64,7 +65,8 @@ class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec with FormValuesConst
   }
 
   private lazy val pensionUpdateRemoveForm =
-    UpdateRemovePensionForm.form.bind(Map(UpdateRemovePensionForm.IncorrectPensionDecision -> YesValue))
+    UpdateRemovePensionForm.form.bind(
+      Map(IncorrectPensionDecisionConstants.IncorrectPensionDecision -> FormValuesConstants.YesValue))
   private lazy val model = PensionProviderViewModel(1, "Test Pension")
   override def view: Html = doYouGetThisPensionIncome(model, pensionUpdateRemoveForm)
 }

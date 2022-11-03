@@ -18,31 +18,31 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.PayslipForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
 import utils.BaseSpec
 
-class PaySlipAmountViewModelSpec extends BaseSpec with EditIncomePayPeriodConstants {
+class PaySlipAmountViewModelSpec extends BaseSpec {
 
   val form = PayslipForm.createForm("tai.payslip.error.form.totalPay.input.mandatory")
   val employer = IncomeSource(id = 1, name = "employer name")
 
   "PaySlipAmountViewModel" must {
     "have a monthly title for a monthly pay period" in {
-      val payPeriod = Some(MONTHLY)
+      val payPeriod = Some(Monthly)
       val viewModel = PaySlipAmountViewModel(form, payPeriod, None, employer)
 
       viewModel.payPeriodTitle mustBe messagesApi("tai.payslip.title.month")
     }
 
     "have a weekly title for a weekly pay period" in {
-      val payPeriod = Some(WEEKLY)
+      val payPeriod = Some(Weekly)
       val viewModel = PaySlipAmountViewModel(form, payPeriod, None, employer)
 
       viewModel.payPeriodTitle mustBe messagesApi("tai.payslip.title.week")
     }
 
     "have a X-day title for a X-pay period" in {
-      val payPeriod = Some(OTHER)
+      val payPeriod = Some(Other)
       val days = Some("123")
       val viewModel = PaySlipAmountViewModel(form, payPeriod, days, employer)
 
@@ -60,7 +60,7 @@ class PaySlipAmountViewModelSpec extends BaseSpec with EditIncomePayPeriodConsta
 
     "throw an exception if there is no pay period in days defined" in {
       val exception = intercept[RuntimeException] {
-        val payPeriod = Some(OTHER)
+        val payPeriod = Some(Other)
         val payPeriodInDays = None
         PaySlipAmountViewModel(form, payPeriod, payPeriodInDays, employer)
       }

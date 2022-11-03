@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import includes.forms.submit
 @import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsDecisionForm
+@import uk.gov.hmrc.tai.util.constants.UpdateHistoricIncomeChoiceConstants
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
@@ -75,15 +76,15 @@
                 RadioItem(
                     content = Text(messages("tai.income.previousYears.decision.radio.yes")),
                     value = Some("Yes"),
-                    checked = decisionForm.data.get(UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice).exists(_ == "Yes"),
+                    checked = decisionForm.data.get(UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice).exists(_ == "Yes"),
                 ),
                 RadioItem(
                     content = Text(messages("tai.income.previousYears.decision.radio.no")),
                     value = Some("No"),
-                    checked = decisionForm.data.get(UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice).exists(_ == "No")
+                    checked = decisionForm.data.get(UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice).exists(_ == "No")
                 )
             )
-        ).withFormField(decisionForm(UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice)))
+        ).withFormField(decisionForm(UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice)))
 
         @submit()
     }

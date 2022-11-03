@@ -932,6 +932,7 @@ class IncomeControllerSpec extends BaseSpec with JourneyCacheConstants with I18n
         doc.title() must include(messagesApi("tai.updateEmployment.incomeSame.title", ""))
       }
     }
+
   }
 
   def employmentWithAccounts(accounts: List[AnnualAccount]) =

@@ -21,6 +21,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import com.ibm.icu.text.SimpleDateFormat
 import com.ibm.icu.util.{TimeZone, ULocale}
+import uk.gov.hmrc.tai.util.constants.TaiConstants.LondonEuropeTimezone
 
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -60,7 +61,7 @@ object TaxYearRangeUtil {
     val validLang: Boolean = ULocale.getAvailableLocales.contains(uLocale)
     val locale: ULocale = if (validLang) uLocale else ULocale.getDefault
     val sdf = new SimpleDateFormat(pattern, locale)
-    sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"))
+    sdf.setTimeZone(TimeZone.getTimeZone(LondonEuropeTimezone))
     sdf
   }
 

@@ -36,12 +36,12 @@ class UpdateNextYearsIncomeService @Inject()(
   taxAccountService: TaxAccountService)(implicit ec: ExecutionContext) {
 
   def isEstimatedPayJourneyCompleteForEmployer(id: Int)(implicit hc: HeaderCarrier): Future[Boolean] = {
-    val key = s"${UpdateNextYearsIncomeConstants.SUCCESSFUL}-$id"
+    val key = s"${UpdateNextYearsIncomeConstants.Successful}-$id"
     successfulJourneyCacheService.currentCache map (_.get(key).isDefined)
   }
 
   def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier): Future[Boolean] =
-    successfulJourneyCacheService.currentCache map (_.get(UpdateNextYearsIncomeConstants.SUCCESSFUL).isDefined)
+    successfulJourneyCacheService.currentCache map (_.get(UpdateNextYearsIncomeConstants.Successful).isDefined)
 
   private def setup(employmentId: Int, nino: Nino)(
     implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] = {
@@ -68,7 +68,7 @@ class UpdateNextYearsIncomeService @Inject()(
     }
 
   def amountKey(employmentId: Int): String =
-    s"${UpdateNextYearsIncomeConstants.NEW_AMOUNT}-$employmentId"
+    s"${UpdateNextYearsIncomeConstants.NewAmount}-$employmentId"
 
   def setNewAmount(newValue: String, employmentId: Int, nino: Nino)(
     implicit hc: HeaderCarrier): Future[Map[String, String]] =
@@ -82,9 +82,9 @@ class UpdateNextYearsIncomeService @Inject()(
       getNewAmount(employmentId).flatMap {
         case Right(newAmount) =>
           successfulJourneyCacheService
-            .cache(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true"))
+            .cache(Map(UpdateNextYearsIncomeConstants.Successful -> "true"))
             .flatMap { _ =>
-              val successfulEmploymentKey = s"${UpdateNextYearsIncomeConstants.SUCCESSFUL}-$employmentId"
+              val successfulEmploymentKey = s"${UpdateNextYearsIncomeConstants.Successful}-$employmentId"
               successfulJourneyCacheService
                 .cache(Map(successfulEmploymentKey -> "true"))
                 .flatMap(_ => taxAccountService.updateEstimatedIncome(nino, newAmount, TaxYear().next, employmentId))

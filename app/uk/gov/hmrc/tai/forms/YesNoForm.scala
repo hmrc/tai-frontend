@@ -23,16 +23,16 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 
 case class YesNoForm(yesNoChoice: Option[String])
 
-object YesNoForm extends FormValuesConstants {
+object YesNoForm {
 
   private def yesNoChoiceValidation(emptySelectionMsg: String) = Constraint[Option[String]]("") {
-    case Some(txt) if txt == YesValue || txt == NoValue => Valid
-    case _                                              => Invalid(emptySelectionMsg)
+    case Some(txt) if txt == FormValuesConstants.YesValue || txt == FormValuesConstants.NoValue => Valid
+    case _                                                                                      => Invalid(emptySelectionMsg)
   }
 
   def form(emptySelectionMsg: String = ""): Form[YesNoForm] = Form[YesNoForm](
     mapping(
-      YesNoChoice -> optional(text).verifying(yesNoChoiceValidation(emptySelectionMsg))
+      FormValuesConstants.YesNoChoice -> optional(text).verifying(yesNoChoiceValidation(emptySelectionMsg))
     )(YesNoForm.apply)(YesNoForm.unapply)
   )
 

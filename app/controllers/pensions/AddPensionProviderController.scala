@@ -50,7 +50,7 @@ class AddPensionProviderController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  can_we_contact_by_phone: CanWeContactByPhoneView, //TODO remove once backLink issue is resolved
+  canWeContactByPhone: CanWeContactByPhoneView, //TODO remove once backLink issue is resolved
   addPensionConfirmationView: AddPensionConfirmationView,
   addPensionCheckYourAnswersView: AddPensionCheckYourAnswersView,
   addPensionNumber: AddPensionNumberView,
@@ -62,8 +62,7 @@ class AddPensionProviderController @Inject()(
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with AuditConstants with FormValuesConstants
-    with EmptyCacheRedirect {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with EmptyCacheRedirect {
 
   private def contactPhonePensionProvider(implicit messages: Messages): CanWeContactByPhoneViewModel =
     CanWeContactByPhoneViewModel(
@@ -132,7 +131,7 @@ class AddPensionProviderController @Inject()(
         yesNo => {
           journeyCacheService.cache(AddPensionProvider_FirstPaymentKey, yesNo.getOrElse("")) map { _ =>
             yesNo match {
-              case Some(YesValue) =>
+              case Some(FormValuesConstants.YesValue) =>
                 journeyCacheService.cache("", "")
                 Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
               case _ => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
@@ -146,7 +145,9 @@ class AddPensionProviderController @Inject()(
     journeyCacheService.mandatoryJourneyValue(AddPensionProvider_NameKey) map {
       case Right(pensionProviderName) =>
         auditService
-          .createAndSendAuditEvent(AddPension_CantAddPensionProvider, Map("nino" -> request.taiUser.nino.toString()))
+          .createAndSendAuditEvent(
+            AuditConstants.AddPensionCantAddPensionProvider,
+            Map("nino" -> request.taiUser.nino.toString()))
         implicit val user: AuthedUser = request.taiUser
 
         Ok(addPensionErrorView(pensionProviderName))
@@ -201,8 +202,8 @@ class AddPensionProviderController @Inject()(
       val viewModel = PensionNumberViewModel(cache)
 
       val payrollNo = cache.get(AddPensionProvider_PayrollNumberChoice) match {
-        case Some(YesValue) => cache.get(AddPensionProvider_PayrollNumberKey)
-        case _              => None
+        case Some(FormValuesConstants.YesValue) => cache.get(AddPensionProvider_PayrollNumberKey)
+        case _                                  => None
       }
 
       Ok(
@@ -241,13 +242,13 @@ class AddPensionProviderController @Inject()(
     journeyCacheService
       .optionalValues(AddPensionProvider_TelephoneQuestionKey, AddPensionProvider_TelephoneNumberKey) map { seq =>
       val telephoneNo = seq.head match {
-        case Some(YesValue) => seq(1)
-        case _              => None
+        case Some(FormValuesConstants.YesValue) => seq(1)
+        case _                                  => None
       }
       val user = Some(request.taiUser)
 
       Ok(
-        can_we_contact_by_phone(
+        canWeContactByPhone(
           user,
           contactPhonePensionProvider,
           YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq.head, telephoneNo))))
@@ -264,14 +265,14 @@ class AddPensionProviderController @Inject()(
       .fold(
         formWithErrors => {
           val user = Some(request.taiUser)
-          Future.successful(BadRequest(can_we_contact_by_phone(user, contactPhonePensionProvider, formWithErrors)))
+          Future.successful(BadRequest(canWeContactByPhone(user, contactPhonePensionProvider, formWithErrors)))
         },
         form => {
           val mandatoryData = Map(
             AddPensionProvider_TelephoneQuestionKey -> Messages(
-              s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
+              s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"))
           val dataForCache = form.yesNoChoice match {
-            case Some(yn) if yn == YesValue =>
+            case Some(yn) if yn == FormValuesConstants.YesValue =>
               mandatoryData ++ Map(AddPensionProvider_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
             case _ => mandatoryData ++ Map(AddPensionProvider_TelephoneNumberKey -> "")
           }

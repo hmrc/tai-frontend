@@ -16,6 +16,6 @@
 
 package uk.gov.hmrc.tai.util.constants
 
-trait UpdateHistoricIncomeChoiceConstants {
-  val UpdateIncomeChoice = "updateIncomeChoice"
+object UpdateHistoricIncomeChoiceConstants {
+  val UpdateIncomeChoice: String = "updateIncomeChoice"
 }

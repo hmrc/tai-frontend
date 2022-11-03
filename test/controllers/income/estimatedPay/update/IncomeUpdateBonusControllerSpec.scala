@@ -38,8 +38,7 @@ import views.html.incomes.{BonusPaymentAmountView, BonusPaymentsView}
 
 import scala.concurrent.Future
 
-class IncomeUpdateBonusControllerSpec
-    extends BaseSpec with JourneyCacheConstants with ControllerViewTestHelper with FormValuesConstants {
+class IncomeUpdateBonusControllerSpec extends BaseSpec with JourneyCacheConstants with ControllerViewTestHelper {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
@@ -175,7 +174,8 @@ class IncomeUpdateBonusControllerSpec
 
         val result = HandleBonusPaymentsHarness
           .setup()
-          .handleBonusPayments(RequestBuilder.buildFakePostRequestWithAuth(YesNoChoice -> YesValue))
+          .handleBonusPayments(RequestBuilder.buildFakePostRequestWithAuth(
+            FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
@@ -187,7 +187,8 @@ class IncomeUpdateBonusControllerSpec
       "user selected no" in {
         val result = HandleBonusPaymentsHarness
           .setup()
-          .handleBonusPayments(RequestBuilder.buildFakePostRequestWithAuth(YesNoChoice -> NoValue))
+          .handleBonusPayments(
+            RequestBuilder.buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(

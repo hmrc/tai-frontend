@@ -36,7 +36,8 @@ case class BandedGraph(
   nextBandMessage: Option[String],
   swatch: Option[Swatch]
 )
-object BandedGraph extends BandTypesConstants {
+
+object BandedGraph {
 
   def apply(
     codingComponents: Seq[CodingComponent],
@@ -49,7 +50,7 @@ object BandedGraph extends BandTypesConstants {
     val personalAllowance = personalAllowanceAmount(codingComponents)
 
     taxBands match {
-      case Nil => BandedGraph(TaxGraph, List.empty[Band], 0, 0, 0, 0, 0, 0, 0, None, None)
+      case Nil => BandedGraph(BandTypesConstants.TaxGraph, List.empty[Band], 0, 0, 0, 0, 0, 0, 0, None, None)
       case taxbands =>
         createGraph(
           taxbands,
@@ -118,7 +119,7 @@ object BandedGraph extends BandTypesConstants {
     val zeroRateBands = individualBand.filter(_.tax == BigDecimal(0))
 
     BandedGraph(
-      TaxGraph,
+      BandTypesConstants.TaxGraph,
       allBands,
       0,
       nextBand = nextHigherBand,
@@ -142,7 +143,7 @@ object BandedGraph extends BandTypesConstants {
     for (taxBand <- taxBands.filter(_.rate == 0))
       yield
         Band(
-          TaxFree,
+          BandTypesConstants.TaxFree,
           calcBarPercentage(
             taxBand.income,
             taxBands,
@@ -277,16 +278,22 @@ object BandedGraph extends BandTypesConstants {
 
   def mergeZeroBands(bands: List[Band]): List[Band] =
     if (bands.size > 0) {
-      List(Band(TaxFree, bands.map(_.barPercentage).sum, bands.map(_.income).sum, 0, ZeroBand))
+      List(
+        Band(
+          BandTypesConstants.TaxFree,
+          bands.map(_.barPercentage).sum,
+          bands.map(_.income).sum,
+          0,
+          BandTypesConstants.ZeroBand))
     } else {
       bands
     }
 
   private def getBandValues(nonZeroBands: List[TaxBand])(implicit messages: Messages) =
     if (nonZeroBands.size > 1) {
-      (NonZeroBand, nonZeroBands.map(_.income).sum)
+      (BandTypesConstants.NonZeroBand, nonZeroBands.map(_.income).sum)
     } else {
-      nonZeroBands.map(otherBand => (NonZeroBand, otherBand.income)).head
+      nonZeroBands.map(otherBand => (BandTypesConstants.NonZeroBand, otherBand.income)).head
     }
 
   private def createNextBandMessage(amount: BigDecimal)(implicit messages: Messages): Option[String] =

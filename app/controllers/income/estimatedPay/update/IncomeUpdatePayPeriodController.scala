@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants
 import views.html.incomes.PayPeriodView
 
 import scala.concurrent.ExecutionContext
@@ -74,7 +75,7 @@ class IncomeUpdatePayPeriodController @Inject()(
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
             val isDaysError = formWithErrors.errors.exists { error =>
-              error.key == PayPeriodForm.OTHER_IN_DAYS_KEY
+              error.key == PayPeriodConstants.OtherInDaysKey
             }
             incomeSourceEither match {
               case Right(incomeSource) =>

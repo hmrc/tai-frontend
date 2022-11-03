@@ -20,9 +20,10 @@ import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.AddEmploymentFirstPayForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.AddEmploymentFirstPayChoiceConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec with FormValuesConstants {
+class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec {
 
   "Add first pay form page" must {
     behave like pageWithTitle(messages("tai.addEmployment.employmentFirstPay.title", employerName))
@@ -34,8 +35,8 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec with FormValuesConst
     behave like haveBackLinkWithUrl(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url)
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-first-pay")
     behave like pageWithYesNoRadioButton(
-      AddEmploymentFirstPayForm.FirstPayChoice,
-      AddEmploymentFirstPayForm.FirstPayChoice + "-2")
+      AddEmploymentFirstPayChoiceConstants.FirstPayChoice,
+      AddEmploymentFirstPayChoiceConstants.FirstPayChoice + "-2")
     behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 
     "have an error message with the form inputs" when {
@@ -43,7 +44,8 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec with FormValuesConst
         val noPayrollNumberChooseError = messages("tai.error.chooseOneOption")
         val expectedErrorMessage = messages("tai.error.message") + " " + messages("tai.error.chooseOneOption")
         val formWithErrors: Form[Option[String]] =
-          AddEmploymentFirstPayForm.form.withError(AddEmploymentFirstPayForm.FirstPayChoice, noPayrollNumberChooseError)
+          AddEmploymentFirstPayForm.form
+            .withError(AddEmploymentFirstPayChoiceConstants.FirstPayChoice, noPayrollNumberChooseError)
         def view: Html = template(formWithErrors, employerName)
 
         val errorMessage = doc(view).select(".govuk-error-message").text
@@ -56,7 +58,7 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec with FormValuesConst
 
   private val employmentFirstPayForm: Form[Option[String]] = AddEmploymentFirstPayForm.form.bind(
     Map(
-      AddEmploymentFirstPayForm.FirstPayChoice -> YesValue
+      AddEmploymentFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.YesValue
     ))
   private val template = inject[AddEmploymentFirstPayFormView]
 

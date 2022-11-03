@@ -16,28 +16,28 @@
 
 package uk.gov.hmrc.tai.forms.pensions
 
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.libs.json.Json
-import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.{AddPensionFirstPayChoiceConstants, FormValuesConstants}
 import utils.BaseSpec
 
-class AddPensionProviderFirstPayFormSpec extends BaseSpec with FormValuesConstants {
+class AddPensionProviderFirstPayFormSpec extends BaseSpec {
 
   "AddPensionProviderFirstPayForm" must {
     "return no errors with valid 'yes' choice" in {
-      val validYesChoice = Json.obj(choice -> YesValue)
+      val validYesChoice = Json.obj(choice -> FormValuesConstants.YesValue)
       val validatedForm = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value.get mustBe Some(YesValue)
+      validatedForm.value.get mustBe Some(FormValuesConstants.YesValue)
     }
 
     "return no errors with valid 'no' choice and no payroll number" in {
-      val validNoChoice = Json.obj(choice -> NoValue)
+      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue)
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value.get mustBe Some(NoValue)
+      validatedForm.value.get mustBe Some(FormValuesConstants.NoValue)
     }
 
     "return an error for invalid choice" in {
@@ -49,7 +49,7 @@ class AddPensionProviderFirstPayFormSpec extends BaseSpec with FormValuesConstan
     }
   }
 
-  val choice = AddPensionProviderFirstPayForm.FirstPayChoice
+  val choice = AddPensionFirstPayChoiceConstants.FirstPayChoice
 
   private val form = AddPensionProviderFirstPayForm.form
 

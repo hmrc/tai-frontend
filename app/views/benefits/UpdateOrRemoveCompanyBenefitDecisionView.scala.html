@@ -21,6 +21,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 @import includes.cancelLink
 @import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
+@import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants
 @import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
 @this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
@@ -55,22 +56,22 @@
                     )
                 ),
                 hint = None,
-                errorMessage = viewModel.decisionForm.errors.filter(_.key == UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice).asTextErrorMessages.headOption,
-                idPrefix = Some(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice),
-                name = UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice,
+                errorMessage = viewModel.decisionForm.errors.filter(_.key == UpdateOrRemoveCompanyBenefitDecisionConstants.DecisionChoice).asTextErrorMessages.headOption,
+                idPrefix = Some(UpdateOrRemoveCompanyBenefitDecisionConstants.DecisionChoice),
+                name = UpdateOrRemoveCompanyBenefitDecisionConstants.DecisionChoice,
                 items = Seq(
                     RadioItem(
                         content = Text(messages("tai.benefits.updateOrRemove.decision.radio.yes")),
-                        value = Some(UpdateOrRemoveCompanyBenefitDecisionForm.YesIGetThisBenefit),
-                        checked = viewModel.decisionForm.data.get(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice).contains(UpdateOrRemoveCompanyBenefitDecisionForm.YesIGetThisBenefit)
+                        value = Some(UpdateOrRemoveCompanyBenefitDecisionConstants.YesIGetThisBenefit),
+                        checked = viewModel.decisionForm.data.get(UpdateOrRemoveCompanyBenefitDecisionConstants.DecisionChoice).contains(UpdateOrRemoveCompanyBenefitDecisionConstants.YesIGetThisBenefit)
                     ),
                     RadioItem(
                         content = Text(messages("tai.benefits.updateOrRemove.decision.radio.no")),
-                        value = Some(UpdateOrRemoveCompanyBenefitDecisionForm.NoIDontGetThisBenefit),
-                        checked = viewModel.decisionForm.data.get(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice).contains(UpdateOrRemoveCompanyBenefitDecisionForm.NoIDontGetThisBenefit)
+                        value = Some(UpdateOrRemoveCompanyBenefitDecisionConstants.NoIDontGetThisBenefit),
+                        checked = viewModel.decisionForm.data.get(UpdateOrRemoveCompanyBenefitDecisionConstants.DecisionChoice).contains(UpdateOrRemoveCompanyBenefitDecisionConstants.NoIDontGetThisBenefit)
                     )
                 )
-            ).withFormField(viewModel.decisionForm(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice)))
+            ).withFormField(viewModel.decisionForm(UpdateOrRemoveCompanyBenefitDecisionConstants.DecisionChoice)))
 
 
         @govukButton(Button(content = Text(messages("tai.continue"))))

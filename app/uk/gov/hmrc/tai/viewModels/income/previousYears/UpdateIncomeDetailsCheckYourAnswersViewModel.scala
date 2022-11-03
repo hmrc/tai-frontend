@@ -27,8 +27,7 @@ case class UpdateIncomeDetailsCheckYourAnswersViewModel(
   tableHeader: String,
   whatYouToldUs: String,
   contactByPhone: String,
-  phoneNumber: Option[String])
-    extends FormValuesConstants {
+  phoneNumber: Option[String]) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
@@ -50,7 +49,7 @@ case class UpdateIncomeDetailsCheckYourAnswersViewModel(
       controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber().url
     )
 
-    if (contactByPhone == YesValue) {
+    if (contactByPhone == FormValuesConstants.YesValue) {
       Seq(whatYouToldUsLine, contactByPhoneLine, phoneNumberLine)
     } else {
       Seq(whatYouToldUsLine, contactByPhoneLine)

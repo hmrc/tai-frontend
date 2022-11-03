@@ -19,13 +19,12 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import utils.BaseSpec
 
-class CheckYourAnswersViewModelSpec
-    extends BaseSpec with ViewModelHelper with ScalaCheckPropertyChecks with EditIncomePayPeriodConstants {
+class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with ScalaCheckPropertyChecks {
 
   "Update income estimate check your answers view model" must {
     "return all journey lines" when {
@@ -111,14 +110,14 @@ class CheckYourAnswersViewModelSpec
       "payment frequency is Weekly" in {
         val confirmationLine = createPaymentFrequencyConfirmationLine(messagesApi("tai.payPeriod.weekly"))
 
-        val viewModel = createViewModel(paymentFrequency = WEEKLY)
+        val viewModel = createViewModel(paymentFrequency = Weekly)
         viewModel.journeyConfirmationLines must contain(confirmationLine)
       }
 
       "payment frequency is fortnightly" in {
         val confirmationLine = createPaymentFrequencyConfirmationLine(messagesApi("tai.payPeriod.fortnightly"))
 
-        val viewModel = createViewModel(paymentFrequency = FORTNIGHTLY)
+        val viewModel = createViewModel(paymentFrequency = Fortnightly)
         viewModel.journeyConfirmationLines must contain(confirmationLine)
       }
 
@@ -129,7 +128,7 @@ class CheckYourAnswersViewModelSpec
         val confirmationLine =
           createPaymentFrequencyConfirmationLine(messagesApi("tai.payPeriod.dayPeriod", payPeriodInDays))
 
-        val viewModel = createViewModel(payPeriodInDays = Some(payPeriodInDays), paymentFrequency = OTHER)
+        val viewModel = createViewModel(payPeriodInDays = Some(payPeriodInDays), paymentFrequency = Other)
         viewModel.journeyConfirmationLines must contain(confirmationLine)
       }
 
@@ -175,7 +174,7 @@ class CheckYourAnswersViewModelSpec
     controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url
   )
 
-  def createPaymentFrequencyConfirmationLine(answer: String = MONTHLY.capitalize) =
+  def createPaymentFrequencyConfirmationLine(answer: String = Monthly.capitalize) =
     CheckYourAnswersConfirmationLine(
       messagesApi("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"),
       answer,
@@ -186,7 +185,7 @@ class CheckYourAnswersViewModelSpec
     totalBonusOrOvertime: Option[String] = None,
     taxablePay: Option[String] = None,
     payPeriodInDays: Option[String] = None,
-    paymentFrequency: String = MONTHLY): CheckYourAnswersViewModel =
+    paymentFrequency: String = Monthly): CheckYourAnswersViewModel =
     CheckYourAnswersViewModel(
       paymentFrequency,
       payPeriodInDays,

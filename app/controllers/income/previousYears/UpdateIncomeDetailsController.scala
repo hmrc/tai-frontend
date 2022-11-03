@@ -44,7 +44,7 @@ class UpdateIncomeDetailsController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  can_we_contact_by_phone: CanWeContactByPhoneView,
+  canWeContactByPhone: CanWeContactByPhoneView,
   CheckYourAnswers: CheckYourAnswersView,
   UpdateIncomeDetailsDecision: UpdateIncomeDetailsDecisionView,
   UpdateIncomeDetails: UpdateIncomeDetailsView,
@@ -52,7 +52,7 @@ class UpdateIncomeDetailsController @Inject()(
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants {
+    extends TaiBaseController(mcc) with JourneyCacheConstants {
 
   def telephoneNumberViewModel(taxYear: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel =
     CanWeContactByPhoneViewModel(
@@ -77,7 +77,7 @@ class UpdateIncomeDetailsController @Inject()(
       formWithErrors => {
         Future.successful(BadRequest(UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev)))
       }, {
-        case Some(NoValue) =>
+        case Some(FormValuesConstants.NoValue) =>
           Future.successful(Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.details()))
         case _ => Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
       }
@@ -118,7 +118,7 @@ class UpdateIncomeDetailsController @Inject()(
 
     journeyCacheService.currentCache map { currentCache =>
       Ok(
-        can_we_contact_by_phone(
+        canWeContactByPhone(
           Some(user),
           telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
           YesNoTextEntryForm.form()))
@@ -138,16 +138,17 @@ class UpdateIncomeDetailsController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             BadRequest(
-              can_we_contact_by_phone(
+              canWeContactByPhone(
                 Some(user),
                 telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt),
                 formWithErrors))
           }
         },
         form => {
-          val mandatoryData = Map(UpdatePreviousYearsIncome_TelephoneQuestionKey -> form.yesNoChoice.getOrElse(NoValue))
+          val mandatoryData = Map(
+            UpdatePreviousYearsIncome_TelephoneQuestionKey -> form.yesNoChoice.getOrElse(FormValuesConstants.NoValue))
           val dataForCache = form.yesNoChoice match {
-            case Some(YesValue) =>
+            case Some(FormValuesConstants.YesValue) =>
               mandatoryData ++ Map(UpdatePreviousYearsIncome_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
             case _ => mandatoryData ++ Map(UpdatePreviousYearsIncome_TelephoneNumberKey -> "")
           }

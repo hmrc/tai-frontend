@@ -26,7 +26,7 @@ import utils.BaseSpec
 import scala.collection.immutable.Seq
 import scala.language.postfixOps
 
-class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with BandTypesConstants {
+class EstimatedIncomeViewModelSpec extends BaseSpec {
 
   "Banded Graph" must {
 
@@ -59,7 +59,9 @@ class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with
         TaxBand("B", "", income = 16000, tax = 5000, lowerBand = Some(11000), upperBand = Some(28800), rate = 20)
       )
 
-      val bands = List(Band("TaxFree", 16.66, 3200, 0, ZeroBand), Band("Band", 83.33, 16000, 5000, NonZeroBand))
+      val bands = List(
+        Band("TaxFree", 16.66, 3200, 0, BandTypesConstants.ZeroBand),
+        Band("Band", 83.33, 16000, 5000, BandTypesConstants.NonZeroBand))
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 12800))
 
@@ -87,8 +89,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with
       )
 
       val bands = List(
-        Band("TaxFree", 6.25, 3000, 0, ZeroBand),
-        Band("Band", 93.75, 45000, 15000, NonZeroBand)
+        Band("TaxFree", 6.25, 3000, 0, BandTypesConstants.ZeroBand),
+        Band("Band", 93.75, 45000, 15000, BandTypesConstants.NonZeroBand)
       )
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 102000))
@@ -117,8 +119,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with
       )
 
       val bands = List(
-        Band("TaxFree", 2.5, 5000, 0, ZeroBand),
-        Band("Band", 97.5, 195000, 65250, NonZeroBand)
+        Band("TaxFree", 2.5, 5000, 0, BandTypesConstants.ZeroBand),
+        Band("Band", 97.5, 195000, 65250, BandTypesConstants.NonZeroBand)
       )
 
       val dataF = BandedGraph(Seq.empty[CodingComponent], taxBand, 5000, 65250, taxViewType = ComplexTaxView)
@@ -237,8 +239,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with
       )
 
       val bands = List(
-        Band("TaxFree", 34.78, 8000, 0, ZeroBand),
-        Band("Band", 65.21, 15000, 3000, NonZeroBand)
+        Band("TaxFree", 34.78, 8000, 0, BandTypesConstants.ZeroBand),
+        Band("Band", 65.21, 15000, 3000, BandTypesConstants.NonZeroBand)
       )
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 13000))
@@ -272,8 +274,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with
       )
 
       val bands = List(
-        Band("TaxFree", 50, 20000, 0, ZeroBand),
-        Band("Band", 50, 20000, 6000, NonZeroBand)
+        Band("TaxFree", 50, 20000, 0, BandTypesConstants.ZeroBand),
+        Band("Band", 50, 20000, 6000, BandTypesConstants.NonZeroBand)
       )
 
       val dataF = BandedGraph(
@@ -304,8 +306,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with
       )
 
       val bands = List(
-        Band("TaxFree", 48.27, 14000, 0, ZeroBand),
-        Band("Band", 51.72, 15000, 2000, NonZeroBand)
+        Band("TaxFree", 48.27, 14000, 0, BandTypesConstants.ZeroBand),
+        Band("Band", 51.72, 15000, 2000, BandTypesConstants.NonZeroBand)
       )
 
       val dataF = BandedGraph(
@@ -373,8 +375,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with
       )
 
       val bands = List(
-        Band("TaxFree", 50.00, 20000, 0, ZeroBand),
-        Band("Band", 50.00, 20000, 3750, NonZeroBand)
+        Band("TaxFree", 50.00, 20000, 0, BandTypesConstants.ZeroBand),
+        Band("Band", 50.00, 20000, 3750, BandTypesConstants.NonZeroBand)
       )
 
       val dataF = BandedGraph(
@@ -408,8 +410,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with
       )
 
       val bands = List(
-        Band("TaxFree", 33.32, 20000, 0, ZeroBand),
-        Band("Band", 66.66, 40000, 6750, NonZeroBand)
+        Band("TaxFree", 33.32, 20000, 0, BandTypesConstants.ZeroBand),
+        Band("Band", 66.66, 40000, 6750, BandTypesConstants.NonZeroBand)
       )
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 50000))
@@ -446,8 +448,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with
       )
 
       val bands = List(
-        Band("TaxFree", 16.66, 20000, 0, ZeroBand),
-        Band("Band", 83.33, 100000, 9750, NonZeroBand)
+        Band("TaxFree", 16.66, 20000, 0, BandTypesConstants.ZeroBand),
+        Band("Band", 83.33, 100000, 9750, BandTypesConstants.NonZeroBand)
       )
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 90000))
@@ -504,7 +506,7 @@ class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with
       )
 
       val dataF = BandedGraph.mergedBands(taxBand, totalTaxBandIncome = 6500, taxViewType = SimpleTaxView)
-      dataF.get mustBe Band("Band", 100, 6500, 100, NonZeroBand)
+      dataF.get mustBe Band("Band", 100, 6500, 100, BandTypesConstants.NonZeroBand)
     }
 
     "return only one merged tax band for other than zero% rate band" in {
@@ -516,7 +518,7 @@ class EstimatedIncomeViewModelSpec extends BaseSpec with TaxRegionConstants with
       )
 
       val dataF = BandedGraph.mergedBands(taxBand, totalTaxBandIncome = 6500, taxViewType = SimpleTaxView)
-      dataF.get mustBe Band("Band", 100, 6500, 100, NonZeroBand)
+      dataF.get mustBe Band("Band", 100, 6500, 100, BandTypesConstants.NonZeroBand)
     }
   }
 

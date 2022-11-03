@@ -40,9 +40,7 @@ import views.html.pensions.update.{ConfirmationView, DoYouGetThisPensionIncomeVi
 
 import scala.concurrent.Future
 
-class UpdatePensionProviderControllerSpec
-    extends BaseSpec with JourneyCacheConstants with FormValuesConstants with IncorrectPensionDecisionConstants
-    with BeforeAndAfterEach {
+class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(journeyCacheService)
@@ -93,7 +91,7 @@ class UpdatePensionProviderControllerSpec
           .thenReturn(Future.successful(Right(Seq(pensionId, pensionName))))
 
         val result = createController.handleDoYouGetThisPension()(
-          fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecision -> ""))
+          fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecisionConstants.IncorrectPensionDecision -> ""))
 
         status(result) mustBe BAD_REQUEST
       }
@@ -106,7 +104,8 @@ class UpdatePensionProviderControllerSpec
           .thenReturn(Future.successful(Right(Seq(pensionId, pensionName))))
 
         val result = createController.handleDoYouGetThisPension()(
-          fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecision -> NoValue))
+          fakePostRequest.withFormUrlEncodedBody(
+            IncorrectPensionDecisionConstants.IncorrectPensionDecision -> FormValuesConstants.NoValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe appConfig.incomeFromEmploymentPensionLinkUrl
@@ -122,7 +121,8 @@ class UpdatePensionProviderControllerSpec
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = createController.handleDoYouGetThisPension()(
-          fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecision -> YesValue))
+          fakePostRequest.withFormUrlEncodedBody(
+            IncorrectPensionDecisionConstants.IncorrectPensionDecision -> FormValuesConstants.YesValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
@@ -265,12 +265,14 @@ class UpdatePensionProviderControllerSpec
       "the request has an authorised session, and a telephone number has been provided" in {
 
         val expectedCache = Map(
-          UpdatePensionProvider_TelephoneQuestionKey -> YesValue,
+          UpdatePensionProvider_TelephoneQuestionKey -> FormValuesConstants.YesValue,
           UpdatePensionProvider_TelephoneNumberKey   -> "12345678")
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(expectedCache))
 
         val result = createController.submitTelephoneNumber()(
-          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
+          fakePostRequest.withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+            FormValuesConstants.YesNoTextEntry -> "12345678"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
@@ -282,13 +284,17 @@ class UpdatePensionProviderControllerSpec
     "the request has an authorised session, and telephone number contact has not been approved" in {
 
       val expectedCacheWithErasingNumber =
-        Map(UpdatePensionProvider_TelephoneQuestionKey -> NoValue, UpdatePensionProvider_TelephoneNumberKey -> "")
+        Map(
+          UpdatePensionProvider_TelephoneQuestionKey -> FormValuesConstants.NoValue,
+          UpdatePensionProvider_TelephoneNumberKey   -> "")
       when(journeyCacheService.cache(any())(any()))
         .thenReturn(Future.successful(expectedCacheWithErasingNumber))
 
       val result = createController.submitTelephoneNumber()(
         fakePostRequest
-          .withFormUrlEncodedBody(YesNoChoice -> NoValue, YesNoTextEntry -> "this value must not be cached"))
+          .withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> FormValuesConstants.NoValue,
+            FormValuesConstants.YesNoTextEntry -> "this value must not be cached"))
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
@@ -303,7 +309,9 @@ class UpdatePensionProviderControllerSpec
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = createController.submitTelephoneNumber()(
-          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> ""))
+          fakePostRequest.withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+            FormValuesConstants.YesNoTextEntry -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -317,14 +325,18 @@ class UpdatePensionProviderControllerSpec
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val tooFewCharsResult = controller.submitTelephoneNumber()(
-          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
+          fakePostRequest.withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+            FormValuesConstants.YesNoTextEntry -> "1234"))
         status(tooFewCharsResult) mustBe BAD_REQUEST
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
         val tooManyCharsResult = controller.submitTelephoneNumber()(
           fakePostRequest
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
@@ -542,7 +554,7 @@ class UpdatePensionProviderControllerSpec
         journeyCacheCall
 
         val result = createController.submitDuplicateSubmissionWarning(
-          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue))
+          fakePostRequest.withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
@@ -557,7 +569,7 @@ class UpdatePensionProviderControllerSpec
         journeyCacheCall
 
         val result = createController.submitDuplicateSubmissionWarning(
-          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> NoValue))
+          fakePostRequest.withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController
@@ -573,7 +585,8 @@ class UpdatePensionProviderControllerSpec
           .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
 
         val result =
-          createController.submitDuplicateSubmissionWarning(fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> ""))
+          createController.submitDuplicateSubmissionWarning(
+            fakePostRequest.withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> ""))
 
         status(result) mustBe BAD_REQUEST
       }

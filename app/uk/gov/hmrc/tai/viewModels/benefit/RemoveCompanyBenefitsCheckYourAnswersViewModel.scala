@@ -27,8 +27,7 @@ case class RemoveCompanyBenefitsCheckYourAnswersViewModel(
   stopDate: String,
   valueOfBenefit: Option[String],
   contactByPhone: String,
-  phoneNumber: Option[String])
-    extends FormValuesConstants {
+  phoneNumber: Option[String]) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
@@ -52,7 +51,7 @@ case class RemoveCompanyBenefitsCheckYourAnswersViewModel(
 
     val contactByPhoneLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.contactByPhone"),
-      if (contactByPhone == YesValue)
+      if (contactByPhone == FormValuesConstants.YesValue)
         Messages("tai.checkYourAnswers.contactByPhone.Yes")
       else
         Messages("tai.checkYourAnswers.contactByPhone.No"),
@@ -65,7 +64,7 @@ case class RemoveCompanyBenefitsCheckYourAnswersViewModel(
       controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
     )
 
-    if (contactByPhone == YesValue) {
+    if (contactByPhone == FormValuesConstants.YesValue) {
       if (valueOfBenefit.isEmpty) {
         Seq(whatYouToldUsLine, stopDateLine, contactByPhoneLine, phoneNumberLine)
       } else {

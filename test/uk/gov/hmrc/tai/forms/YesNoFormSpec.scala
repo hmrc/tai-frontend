@@ -21,27 +21,27 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import utils.BaseSpec
 
-class YesNoFormSpec extends BaseSpec with FormValuesConstants {
+class YesNoFormSpec extends BaseSpec {
 
   "YesNoFormSpec" must {
     "return no errors with valid 'yes' " in {
-      val validYesChoice = Json.obj(YesNoChoice -> YesValue)
+      val validYesChoice = Json.obj(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
       val validatedForm = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value mustBe Some(YesNoForm(Some(YesValue)))
+      validatedForm.value mustBe Some(YesNoForm(Some(FormValuesConstants.YesValue)))
     }
 
     "return no errors with valid 'no' choice" in {
-      val validNoChoice = Json.obj(YesNoChoice -> NoValue)
+      val validNoChoice = Json.obj(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value mustBe Some(YesNoForm(Some(NoValue)))
+      validatedForm.value mustBe Some(YesNoForm(Some(FormValuesConstants.NoValue)))
     }
 
     "return an error for an empty yes/no choice" in {
-      val invalidChoice = Json.obj(YesNoChoice -> "")
+      val invalidChoice = Json.obj(FormValuesConstants.YesNoChoice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(errorMessage)

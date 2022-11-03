@@ -23,12 +23,13 @@ import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.{tax, _}
 import uk.gov.hmrc.tai.model.domain.tax.{DoubleTaxationRelief, MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import utils.BaseSpec
 
 import scala.collection.immutable.Seq
 
-class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants with TaxRegionConstants {
+class EstimatedIncomeTaxServiceSpec extends BaseSpec {
 
   "hasNonCodedIncome" must {
     "return true when NonCodedIncome exists" in {
@@ -424,7 +425,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
     "return true when there are savings present in totalTax" in {
       val taxBands = Seq(
         TaxBand(
-          bandType = DividendZeroRate,
+          bandType = BandTypesConstants.DividendZeroRate,
           code = "",
           income = 100,
           tax = 0,
@@ -432,7 +433,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
           upperBand = Some(5000),
           rate = 0),
         TaxBand(
-          bandType = DividendBasicRate,
+          bandType = BandTypesConstants.DividendBasicRate,
           code = "",
           income = 100,
           tax = 0,
@@ -440,7 +441,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
           upperBand = Some(5000),
           rate = 10),
         TaxBand(
-          bandType = DividendHigherRate,
+          bandType = BandTypesConstants.DividendHigherRate,
           code = "",
           income = 100,
           tax = 0,
@@ -448,7 +449,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
           upperBand = Some(5000),
           rate = 20),
         TaxBand(
-          bandType = DividendAdditionalRate,
+          bandType = BandTypesConstants.DividendAdditionalRate,
           code = "",
           income = 100,
           tax = 0,
@@ -470,7 +471,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
     "return false when there are no savings present in totalTax" in {
       val taxBands = Seq(
         TaxBand(
-          bandType = DividendZeroRate,
+          bandType = BandTypesConstants.DividendZeroRate,
           code = "",
           income = 100,
           tax = 0,
@@ -478,7 +479,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
           upperBand = Some(5000),
           rate = 0),
         TaxBand(
-          bandType = DividendBasicRate,
+          bandType = BandTypesConstants.DividendBasicRate,
           code = "",
           income = 100,
           tax = 0,
@@ -486,7 +487,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
           upperBand = Some(5000),
           rate = 10),
         TaxBand(
-          bandType = DividendHigherRate,
+          bandType = BandTypesConstants.DividendHigherRate,
           code = "",
           income = 100,
           tax = 0,
@@ -494,7 +495,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
           upperBand = Some(5000),
           rate = 20),
         TaxBand(
-          bandType = DividendAdditionalRate,
+          bandType = BandTypesConstants.DividendAdditionalRate,
           code = "",
           income = 100,
           tax = 0,
@@ -543,7 +544,14 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec with BandTypesConstants wit
     }
 
     "createPABand must return a Personal Allowance Taxband for a given Tax Free Allowance" in {
-      EstimatedIncomeTaxService.createPABand(11500) mustBe TaxBand(TaxFreeAllowanceBand, "", 11500, 0, Some(0), None, 0)
+      EstimatedIncomeTaxService.createPABand(11500) mustBe TaxBand(
+        BandTypesConstants.TaxFreeAllowanceBand,
+        "",
+        11500,
+        0,
+        Some(0),
+        None,
+        0)
     }
 
     "findTaxRegion" must {

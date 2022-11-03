@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.constants.IrregularPayConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
-class EndEmploymentIrregularPaymentErrorViewSpec extends TaiViewSpec with IrregularPayConstants {
+class EndEmploymentIrregularPaymentErrorViewSpec extends TaiViewSpec {
 
   "Irregular pay page" must {
     behave like pageWithTitle(messages("tai.irregular.preHeadingText"))
@@ -61,12 +61,12 @@ class EndEmploymentIrregularPaymentErrorViewSpec extends TaiViewSpec with Irregu
 
   private lazy val formWithErrors: Form[IrregularPayFormData] = IrregularPayForm.createForm.bind(
     Map(
-      IrregularPayDecision -> ""
+      IrregularPayConstants.IrregularPayDecision -> ""
     ))
 
   private lazy val validForm: Form[IrregularPayFormData] = IrregularPayForm.createForm.bind(
     Map(
-      IrregularPayDecision -> ContactEmployer
+      IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer
     ))
 
   private lazy val model = EmploymentViewModel("TEST", 1)

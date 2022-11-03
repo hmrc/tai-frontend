@@ -40,11 +40,11 @@ import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesConstants {
+class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
   val employmentName = "Employment Name"
   val empId = 1
   val duplicateSubmissionWarningForm: Form[YesNoForm] = DuplicateSubmissionWarningForm.createForm
-  val choice: String = YesNoForm.YesNoChoice
+  val choice: String = FormValuesConstants.YesNoChoice
 
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.employment.warning.customGaTitle"))
@@ -56,28 +56,29 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec with FormValuesCons
     )
 
     behave like pageWithYesNoRadioButton(
-      YesNoChoice,
-      s"$YesNoChoice-2",
+      FormValuesConstants.YesNoChoice,
+      s"${FormValuesConstants.YesNoChoice}-2",
       messages("tai.employment.warning.radio1", employmentName),
-      messages("tai.employment.warning.radio2"))
+      messages("tai.employment.warning.radio2")
+    )
 
     behave like pageWithContinueButtonForm("/check-income-tax/update-remove-employment/warning")
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
 
     "return no errors with valid 'yes' choice" in {
-      val validYesChoice = Json.obj(choice -> YesValue)
+      val validYesChoice = Json.obj(choice -> FormValuesConstants.YesValue)
       val validatedForm = duplicateSubmissionWarningForm.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value.get mustBe YesNoForm(Some(YesValue))
+      validatedForm.value.get mustBe YesNoForm(Some(FormValuesConstants.YesValue))
     }
 
     "return no errors with valid 'no' choice" in {
-      val validNoChoice = Json.obj(choice -> NoValue)
+      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue)
       val validatedForm = duplicateSubmissionWarningForm.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value.get mustBe YesNoForm(Some(NoValue))
+      validatedForm.value.get mustBe YesNoForm(Some(FormValuesConstants.NoValue))
     }
 
     "display an error for invalid choice" in {

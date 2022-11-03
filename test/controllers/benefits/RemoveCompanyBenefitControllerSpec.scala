@@ -48,8 +48,8 @@ import java.time.LocalDate
 import scala.concurrent.Future
 
 class RemoveCompanyBenefitControllerSpec
-    extends BaseSpec with FormValuesConstants with JourneyCacheConstants with RemoveCompanyBenefitStopDateConstants
-    with JsoupMatchers with BeforeAndAfterEach with ControllerViewTestHelper {
+    extends BaseSpec with JourneyCacheConstants with JsoupMatchers with BeforeAndAfterEach
+    with ControllerViewTestHelper {
 
   override def beforeEach: Unit =
     Mockito.reset(removeCompanyBenefitJourneyCacheService)
@@ -78,7 +78,7 @@ class RemoveCompanyBenefitControllerSpec
         EndCompanyBenefit_EmploymentNameKey  -> "EmploymentName",
         EndCompanyBenefit_BenefitNameKey     -> "BenefitName",
         EndCompanyBenefit_RefererKey         -> "Referer",
-        EndCompanyBenefit_BenefitStopDateKey -> BeforeTaxYearEnd
+        EndCompanyBenefit_BenefitStopDateKey -> RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd
       )
 
       when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
@@ -110,7 +110,10 @@ class RemoveCompanyBenefitControllerSpec
         when(removeCompanyBenefitJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitStopDate(
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> BeforeTaxYearEnd))
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(
+              RemoveCompanyBenefitStopDateConstants.StopDateChoice -> RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd))
         status(result) mustBe SEE_OTHER
 
         val redirectUrl = redirectLocation(result).getOrElse("")
@@ -118,7 +121,11 @@ class RemoveCompanyBenefitControllerSpec
         redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
-          .cache(Matchers.eq(Map("keep" -> "me", EndCompanyBenefit_BenefitStopDateKey -> BeforeTaxYearEnd)))(any())
+          .cache(
+            Matchers.eq(
+              Map(
+                "keep"                               -> "me",
+                EndCompanyBenefit_BenefitStopDateKey -> RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd)))(any())
       }
     }
 
@@ -130,7 +137,10 @@ class RemoveCompanyBenefitControllerSpec
           .thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitStopDate(
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> OnOrAfterTaxYearEnd))
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(
+              RemoveCompanyBenefitStopDateConstants.StopDateChoice -> RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd))
         status(result) mustBe SEE_OTHER
 
         val redirectUrl = redirectLocation(result).getOrElse("")
@@ -138,7 +148,9 @@ class RemoveCompanyBenefitControllerSpec
         redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
-          .cache(Matchers.eq(EndCompanyBenefit_BenefitStopDateKey), Matchers.eq(OnOrAfterTaxYearEnd))(any())
+          .cache(
+            Matchers.eq(EndCompanyBenefit_BenefitStopDateKey),
+            Matchers.eq(RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd))(any())
       }
     }
 
@@ -149,7 +161,9 @@ class RemoveCompanyBenefitControllerSpec
         when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any()))
           .thenReturn(Future.successful(Right(Seq("EmployerA", "Expenses", "Url"))))
         val result = SUT.submitStopDate(
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> ""))
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(RemoveCompanyBenefitStopDateConstants.StopDateChoice -> ""))
 
         status(result) mustBe BAD_REQUEST
 
@@ -344,7 +358,7 @@ class RemoveCompanyBenefitControllerSpec
           EndCompanyBenefit_BenefitTypeKey       -> "amazing",
           EndCompanyBenefit_BenefitStopDateKey   -> "before6April2017",
           EndCompanyBenefit_RefererKey           -> "Test",
-          EndCompanyBenefit_TelephoneQuestionKey -> YesValue,
+          EndCompanyBenefit_TelephoneQuestionKey -> FormValuesConstants.YesValue,
           EndCompanyBenefit_TelephoneNumberKey   -> telephoneNumber
         )
 
@@ -389,13 +403,17 @@ class RemoveCompanyBenefitControllerSpec
       "the request has an authorised session, and a telephone number has been provided" in {
         val SUT = createSUT
         val expectedCache =
-          Map(EndCompanyBenefit_TelephoneQuestionKey -> YesValue, EndCompanyBenefit_TelephoneNumberKey -> "12345678")
+          Map(
+            EndCompanyBenefit_TelephoneQuestionKey -> FormValuesConstants.YesValue,
+            EndCompanyBenefit_TelephoneNumberKey   -> "12345678")
         when(removeCompanyBenefitJourneyCacheService.cache(mockEq(expectedCache))(any()))
           .thenReturn(Future.successful(expectedCache))
         val result = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> "12345678"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
@@ -406,13 +424,17 @@ class RemoveCompanyBenefitControllerSpec
       "the request has an authorised session, and telephone number contact has not been approved" in {
         val SUT = createSUT
         val expectedCacheWithErasingNumber =
-          Map(EndCompanyBenefit_TelephoneQuestionKey -> NoValue, EndCompanyBenefit_TelephoneNumberKey -> "")
+          Map(
+            EndCompanyBenefit_TelephoneQuestionKey -> FormValuesConstants.NoValue,
+            EndCompanyBenefit_TelephoneNumberKey   -> "")
         when(removeCompanyBenefitJourneyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
         val result = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> NoValue, YesNoTextEntry -> "this value must not be cached"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.NoValue,
+              FormValuesConstants.YesNoTextEntry -> "this value must not be cached"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
@@ -429,7 +451,9 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> ""))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> ""))
 
         status(result) mustBe BAD_REQUEST
         val doc = Jsoup.parse(contentAsString(result))
@@ -444,7 +468,9 @@ class RemoveCompanyBenefitControllerSpec
         val tooFewCharsResult = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> "1234"))
         status(tooFewCharsResult) mustBe BAD_REQUEST
 
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
@@ -453,7 +479,9 @@ class RemoveCompanyBenefitControllerSpec
         val tooManyCharsResult = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
 
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
@@ -472,7 +500,12 @@ class RemoveCompanyBenefitControllerSpec
           any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
         Future.successful(
           Right(
-            Seq[String]("AwesomeType", "TestCompany", BeforeTaxYearEnd, "Yes", "Url"),
+            Seq[String](
+              "AwesomeType",
+              "TestCompany",
+              RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd,
+              "Yes",
+              "Url"),
             Seq[Option[String]](Some("10000"), Some("123456789"))
           ))
       )

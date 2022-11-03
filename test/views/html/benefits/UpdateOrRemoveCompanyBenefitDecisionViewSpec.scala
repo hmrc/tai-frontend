@@ -19,7 +19,7 @@ package views.html.benefits
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
-import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice
+import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.DecisionChoice
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 

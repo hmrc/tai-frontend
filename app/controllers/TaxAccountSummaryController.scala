@@ -48,12 +48,13 @@ class TaxAccountSummaryController @Inject()(
   incomeTaxSummary: IncomeTaxSummaryView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with AuditConstants with Logging {
+    extends TaiBaseController(mcc) with Logging {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
 
-    auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> nino.toString()))
+    auditService
+      .createAndSendAuditEvent(AuditConstants.TaxAccountSummaryUserEntersSummaryPage, Map("nino" -> nino.toString()))
 
     taxAccountService
       .taxAccountSummary(nino, TaxYear())

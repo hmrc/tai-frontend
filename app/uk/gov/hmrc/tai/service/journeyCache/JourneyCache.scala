@@ -36,7 +36,7 @@ class TrackSuccessfulJourneyJourneyCacheService @Inject()(journeyCacheConnector:
 class UpdateEmploymentJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
     extends JourneyCacheService(UpdateEmployment_JourneyKey, journeyCacheConnector)
 class UpdateNextYearsIncomeJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(UpdateNextYearsIncomeConstants.JOURNEY_KEY, journeyCacheConnector)
+    extends JourneyCacheService(UpdateNextYearsIncomeConstants.JourneyKey, journeyCacheConnector)
 class UpdatePensionProviderJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
     extends JourneyCacheService(UpdatePensionProvider_JourneyKey, journeyCacheConnector)
 class UpdatePreviousYearsIncomeJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)

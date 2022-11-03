@@ -42,8 +42,7 @@ class IncomeUpdateBonusController @Inject()(
   bonusPaymentAmount: BonusPaymentAmountView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants
-    with UpdatedEstimatedPayJourneyCache {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
   def bonusPaymentsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
@@ -84,7 +83,7 @@ class IncomeUpdateBonusController @Inject()(
             }
 
             journeyCache(UpdateIncome_BonusPaymentsKey, bonusPaymentsAnswer) map { _ =>
-              if (formData.yesNoChoice.contains(YesValue)) {
+              if (formData.yesNoChoice.contains(FormValuesConstants.YesValue)) {
                 Redirect(routes.IncomeUpdateBonusController.bonusOvertimeAmountPage())
               } else {
                 Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId))

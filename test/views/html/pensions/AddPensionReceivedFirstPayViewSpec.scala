@@ -20,11 +20,11 @@ import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.AddEmploymentFirstPayForm
 import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderFirstPayForm
-import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.{AddEmploymentFirstPayChoiceConstants, AddPensionFirstPayChoiceConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import views.html.employments.AddEmploymentFirstPayFormView
 
-class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec with FormValuesConstants {
+class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec {
 
   "Add first pay form page" must {
     behave like pageWithTitle(messages("tai.addPensionProvider.firstPay.pagetitle"))
@@ -38,8 +38,8 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec with FormValuesCons
       controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url)
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/received-first-payment")
     behave like pageWithYesNoRadioButton(
-      AddPensionProviderFirstPayForm.FirstPayChoice,
-      AddPensionProviderFirstPayForm.FirstPayChoice + "-2")
+      AddPensionFirstPayChoiceConstants.FirstPayChoice,
+      AddPensionFirstPayChoiceConstants.FirstPayChoice + "-2")
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "display an error notification" when {
@@ -47,7 +47,8 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec with FormValuesCons
         val noPayrollNumberChooseError = messages("tai.error.chooseOneOption")
         val expectedErrorMessage = messages("tai.error.message") + " " + messages("tai.error.chooseOneOption")
         val formWithErrors: Form[Option[String]] =
-          AddEmploymentFirstPayForm.form.withError(AddEmploymentFirstPayForm.FirstPayChoice, noPayrollNumberChooseError)
+          AddEmploymentFirstPayForm.form
+            .withError(AddEmploymentFirstPayChoiceConstants.FirstPayChoice, noPayrollNumberChooseError)
         val add_employment_first_pay_form = inject[AddEmploymentFirstPayFormView]
         def view: Html = add_employment_first_pay_form(formWithErrors, pensionProviderName)
 
@@ -61,7 +62,7 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec with FormValuesCons
 
   private val pensionFirstPayForm: Form[Option[String]] = AddPensionProviderFirstPayForm.form.bind(
     Map(
-      AddPensionProviderFirstPayForm.FirstPayChoice -> YesValue
+      AddPensionFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.YesValue
     ))
 
   private val addPensionReceivedFirstPay = inject[AddPensionReceivedFirstPayView]

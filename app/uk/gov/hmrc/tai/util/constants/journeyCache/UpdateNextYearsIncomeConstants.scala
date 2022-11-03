@@ -18,12 +18,12 @@ package uk.gov.hmrc.tai.util.constants.journeyCache
 
 object UpdateNextYearsIncomeConstants {
 
-  val JOURNEY_KEY = "update-next-years-income"
+  val JourneyKey = "update-next-years-income"
 
-  val EMPLOYMENT_NAME = "update-next-years-employment-name"
-  val EMPLOYMENT_ID = "update-next-years-employment-id"
-  val IS_PENSION = "update-next-years-pension-indicator"
-  val CURRENT_AMOUNT = "update-next-years-current-amount"
-  val NEW_AMOUNT = "update-next-years-new-amount"
-  val SUCCESSFUL = "update-next-years-successful"
+  val EmploymentName = "update-next-years-employment-name"
+  val EmploymentId = "update-next-years-employment-id"
+  val IsPension = "update-next-years-pension-indicator"
+  val CurrentAmount = "update-next-years-current-amount"
+  val NewAmount = "update-next-years-new-amount"
+  val Successful = "update-next-years-successful"
 }

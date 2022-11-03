@@ -67,7 +67,7 @@ class UpdatePensionProviderController @Inject()(
   @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   errorPagesHandler: ErrorPagesHandler)(implicit val templateRenderer: TemplateRenderer, ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with EmptyCacheRedirect {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>
@@ -118,7 +118,7 @@ class UpdatePensionProviderController @Inject()(
 
               Future(BadRequest(doYouGetThisPensionIncome(model, formWithErrors)))
             }, {
-              case Some(YesValue) =>
+              case Some(FormValuesConstants.YesValue) =>
                 journeyCacheService
                   .cache(UpdatePensionProvider_ReceivePensionQuestionKey, Messages("tai.label.yes"))
                   .map { _ =>
@@ -212,9 +212,9 @@ class UpdatePensionProviderController @Inject()(
         form => {
           val mandatoryData = Map(
             UpdatePensionProvider_TelephoneQuestionKey -> Messages(
-              s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
+              s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"))
           val dataForCache = form.yesNoChoice match {
-            case Some(yn) if yn == YesValue =>
+            case Some(yn) if yn == FormValuesConstants.YesValue =>
               mandatoryData ++ Map(UpdatePensionProvider_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
             case _ => mandatoryData ++ Map(UpdatePensionProvider_TelephoneNumberKey -> "")
           }
@@ -349,10 +349,10 @@ class UpdatePensionProviderController @Inject()(
           },
           success => {
             success.yesNoChoice match {
-              case Some(YesValue) =>
+              case Some(FormValuesConstants.YesValue) =>
                 Future.successful(
                   Redirect(controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension()))
-              case Some(NoValue) =>
+              case Some(FormValuesConstants.NoValue) =>
                 Future.successful(
                   Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(mandatoryValues(1).toInt)))
             }

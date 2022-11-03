@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package views.html.incomes
+package uk.gov.hmrc.tai.util.constants
 
-import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-
-class CalcUnavailableViewSpec extends TaiViewSpec {
-
-  val id = 1
-  val employerName = "Employer"
-  private val calcUnavailable = inject[CalcUnavailableView]
-
-  "Calculation unavailable page" should {
-    behave like pageWithBackLink
-    behave like pageWithCombinedHeader(
-      messages("tai.unableToCalculate.preHeading", employerName),
-      messages("tai.unableToCalculate.title"))
-  }
-
-  override def view: Html = calcUnavailable(id, employerName)
+object PayPeriodConstants {
+  val Monthly: String = "monthly"
+  val Weekly: String = "weekly"
+  val Fortnightly: String = "fortnightly"
+  val Other: String = "other"
+  val OtherInDaysKey: String = "otherInDays"
+  val PayPeriodKey: String = "payPeriod"
 }

@@ -24,6 +24,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import play.api.Logging
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource.UpdateIncome_DeleteJourneyKey
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -93,17 +94,6 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
     else Left("Mandatory values missing from cache")
   }
 
-  @deprecated("Use mappedMandatory", "0.576.0")
-  private def mappedMandatoryDeprecated(cache: Map[String, String], mandatoryJourneyValues: Seq[String]): Seq[String] =
-    mandatoryJourneyValues map { key =>
-      cache.get(key) match {
-        case Some(str) if str.trim.nonEmpty => str
-        case _ =>
-          throw new RuntimeException(
-            s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
-      }
-    }
-
   private def mappedOptional(cache: Map[String, String], optionalValues: Seq[String]): Seq[Option[String]] =
     optionalValues map { key =>
       cache.get(key) match {
@@ -133,4 +123,7 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
 
   def flushWithEmpId(empId: Int)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     journeyCacheConnector.flushWithEmpId(journeyName, empId)
+
+  def delete()(implicit hc: HeaderCarrier): Future[TaiResponse] =
+    journeyCacheConnector.delete(UpdateIncome_DeleteJourneyKey)
 }

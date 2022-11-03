@@ -80,17 +80,6 @@ class IncomeTaxSpec extends TaiViewSpec {
         doc must haveTdWithText(taxYearStarts + "£100")
       }
     }
-
-    "display the comparison table column headers with correct values" ignore {
-      "a view model is supplied to the view with appropriate data" in {
-
-        doc must haveThWithText(
-          s"${messages("tai.CurrentTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column1", TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM")))}")
-
-        doc must haveThWithText(
-          s"${messages("tai.NextTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column2", TaxYear().next.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")))}")
-      }
-    }
   }
 
   private val yourPAYEIncomeTaxEstimate = "Your PAYE Income Tax estimate"

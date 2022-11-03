@@ -34,8 +34,7 @@ import utils.{BaseSpec, TaxAccountSummaryTestData}
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class TaxAccountSummaryServiceSpec
-    extends BaseSpec with AuditConstants with BeforeAndAfterEach with TaxAccountSummaryTestData {
+class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with TaxAccountSummaryTestData {
 
   override def beforeEach: Unit = {
     Mockito.reset(taxAccountService)

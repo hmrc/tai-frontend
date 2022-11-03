@@ -16,6 +16,7 @@
 
 @import includes.cancelLink
 @import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
+@import uk.gov.hmrc.tai.util.constants.RemoveCompanyBenefitStopDateConstants
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.govukfrontend.views.html.components._
@@ -68,23 +69,23 @@
                     )
                 ),
                 hint = None,
-                errorMessage = stopDateForm.errors.filter(_.key == RemoveCompanyBenefitStopDateForm.StopDateChoice).asTextErrorMessages.headOption,
-                idPrefix = Some(RemoveCompanyBenefitStopDateForm.StopDateChoice),
-                name = RemoveCompanyBenefitStopDateForm.StopDateChoice,
+                errorMessage = stopDateForm.errors.filter(_.key == RemoveCompanyBenefitStopDateConstants.StopDateChoice).asTextErrorMessages.headOption,
+                idPrefix = Some(RemoveCompanyBenefitStopDateConstants.StopDateChoice),
+                name = RemoveCompanyBenefitStopDateConstants.StopDateChoice,
                 items = Seq(
                     RadioItem(
                         content = Text(messages("tai.benefits.ended.stopDate.radio.beforeTaxYearEnd",startOfCurrentTaxYear)),
-                        value = Some(RemoveCompanyBenefitStopDateForm.BeforeTaxYearEnd),
-                        checked = stopDateForm.data.get(RemoveCompanyBenefitStopDateForm.StopDateChoice).contains(RemoveCompanyBenefitStopDateForm.BeforeTaxYearEnd),
+                        value = Some(RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd),
+                        checked = stopDateForm.data.get(RemoveCompanyBenefitStopDateConstants.StopDateChoice).contains(RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd),
                         conditionalHtml = Some(conditionalRadio)
                     ),
                     RadioItem(
                         content = Text(messages("tai.benefits.ended.stopDate.radio.onOrAfterTaxYearEnd",startOfCurrentTaxYear)),
-                        value = Some(RemoveCompanyBenefitStopDateForm.OnOrAfterTaxYearEnd),
-                        checked = stopDateForm.data.get(RemoveCompanyBenefitStopDateForm.StopDateChoice).contains(RemoveCompanyBenefitStopDateForm.OnOrAfterTaxYearEnd)
+                        value = Some(RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd),
+                        checked = stopDateForm.data.get(RemoveCompanyBenefitStopDateConstants.StopDateChoice).contains(RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd)
                     )
                 )
-            ).withFormField(stopDateForm(RemoveCompanyBenefitStopDateForm.StopDateChoice)))
+            ).withFormField(stopDateForm(RemoveCompanyBenefitStopDateConstants.StopDateChoice)))
 
             @govukButton(Button(content = Text(messages("tai.continue"))))
 

@@ -17,11 +17,11 @@
 package views.html.incomes.previousYears
 
 import play.api.data.Form
-import play.twirl.api.{Html, HtmlFormat}
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsDecisionForm
-import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
+import uk.gov.hmrc.tai.util.constants.UpdateHistoricIncomeChoiceConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
@@ -41,8 +41,8 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
     behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(taxYear))
     behave like pageWithYesNoRadioButton(
-      UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice,
-      UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice + "-2",
+      UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice,
+      UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice + "-2",
       messages("tai.income.previousYears.decision.radio.yes"),
       messages("tai.income.previousYears.decision.radio.no")
     )
@@ -78,7 +78,7 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
 
   private lazy val formWithErrors: Form[Option[String]] = UpdateIncomeDetailsDecisionForm.form.bind(
     Map(
-      UpdateIncomeChoice -> ""
+      UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> ""
     ))
 
   override def view: HtmlFormat.Appendable = UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear)

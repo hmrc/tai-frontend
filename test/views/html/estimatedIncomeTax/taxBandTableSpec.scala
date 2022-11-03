@@ -18,10 +18,11 @@ package views.html.estimatedIncomeTax
 
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
+import uk.gov.hmrc.tai.util.constants.BandTypesConstants
+import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 
-class taxBandTableSpec extends TaiViewSpec with BandTypesConstants with TaxRegionConstants {
+class taxBandTableSpec extends TaiViewSpec {
 
   "taxBandTable template" must {
     "display the given column headings" in {
@@ -71,10 +72,10 @@ class taxBandTableSpec extends TaiViewSpec with BandTypesConstants with TaxRegio
   }
 
   val taxBands = List(
-    TaxBand(DividendZeroRate, "", 11500, 0, None, None, 0),
-    TaxBand(DividendBasicRate, "", 32010, 6402, None, None, 20),
-    TaxBand(DividendHigherRate, "", 36466, 14586.4, None, None, 40),
-    TaxBand(DividendAdditionalRate, "", 40000, 15000, None, None, 50)
+    TaxBand(BandTypesConstants.DividendZeroRate, "", 11500, 0, None, None, 0),
+    TaxBand(BandTypesConstants.DividendBasicRate, "", 32010, 6402, None, None, 20),
+    TaxBand(BandTypesConstants.DividendHigherRate, "", 36466, 14586.4, None, None, 40),
+    TaxBand(BandTypesConstants.DividendAdditionalRate, "", 40000, 15000, None, None, 50)
   )
 
   override def view: Html = views.html.estimatedIncomeTax.taxBandTable("table-id", taxBands, UkTaxRegion)

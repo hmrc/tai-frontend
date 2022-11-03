@@ -52,9 +52,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class EndEmploymentControllerSpec
-    extends BaseSpec with JourneyCacheConstants with FormValuesConstants with IrregularPayConstants
-    with EmploymentDecisionConstants with BeforeAndAfterEach {
+class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(employmentService, endEmploymentJourneyCacheService)
@@ -98,7 +96,7 @@ class EndEmploymentControllerSpec
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         val request = FakeRequest("POST", "")
-          .withFormUrlEncodedBody(EmploymentDecision -> YesValue)
+          .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.YesValue)
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
@@ -127,7 +125,8 @@ class EndEmploymentControllerSpec
 
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val request = fakeGetRequest.withFormUrlEncodedBody(EmploymentDecision -> NoValue)
+        val request = fakeGetRequest.withFormUrlEncodedBody(
+          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
@@ -156,7 +155,8 @@ class EndEmploymentControllerSpec
         when(employmentService.employment(any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
 
-        val request = fakeGetRequest.withFormUrlEncodedBody(EmploymentDecision -> NoValue)
+        val request = fakeGetRequest.withFormUrlEncodedBody(
+          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
@@ -186,7 +186,8 @@ class EndEmploymentControllerSpec
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
 
-        val request = fakeGetRequest.withFormUrlEncodedBody(EmploymentDecision -> NoValue)
+        val request = fakeGetRequest.withFormUrlEncodedBody(
+          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
 
         Await.result(endEmploymentTest.handleEmploymentUpdateRemove(request), 5 seconds)
       }
@@ -197,7 +198,8 @@ class EndEmploymentControllerSpec
 
         val endEmploymentTest = createEndEmploymentTest
 
-        val request = fakeGetRequest.withFormUrlEncodedBody(EmploymentDecision -> NoValue)
+        val request = fakeGetRequest.withFormUrlEncodedBody(
+          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
 
         val payment = paymentOnDate(LocalDate.now().minusWeeks(8)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
@@ -227,7 +229,7 @@ class EndEmploymentControllerSpec
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         val request = FakeRequest("POST", "")
-          .withFormUrlEncodedBody(EmploymentDecision -> "")
+          .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> "")
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
@@ -518,11 +520,15 @@ class EndEmploymentControllerSpec
         val endEmploymentTest = createEndEmploymentTest
 
         val expectedCache =
-          Map(EndEmployment_TelephoneQuestionKey -> YesValue, EndEmployment_TelephoneNumberKey -> "12345678")
+          Map(
+            EndEmployment_TelephoneQuestionKey -> FormValuesConstants.YesValue,
+            EndEmployment_TelephoneNumberKey   -> "12345678")
         when(endEmploymentJourneyCacheService.cache(Matchers.eq(expectedCache))(any()))
           .thenReturn(Future.successful(expectedCache))
         val result = endEmploymentTest.submitTelephoneNumber()(
-          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
+          fakePostRequest.withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+            FormValuesConstants.YesNoTextEntry -> "12345678"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
@@ -534,12 +540,14 @@ class EndEmploymentControllerSpec
         val endEmploymentTest = createEndEmploymentTest
 
         val expectedCacheWithErasingNumber =
-          Map(EndEmployment_TelephoneQuestionKey -> NoValue, EndEmployment_TelephoneNumberKey -> "")
+          Map(EndEmployment_TelephoneQuestionKey -> FormValuesConstants.NoValue, EndEmployment_TelephoneNumberKey -> "")
         when(endEmploymentJourneyCacheService.cache(Matchers.eq(expectedCacheWithErasingNumber))(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
         val result = endEmploymentTest.submitTelephoneNumber()(
           fakePostRequest
-            .withFormUrlEncodedBody(YesNoChoice -> NoValue, YesNoTextEntry -> "this value must not be cached"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.NoValue,
+              FormValuesConstants.YesNoTextEntry -> "this value must not be cached"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
@@ -558,7 +566,9 @@ class EndEmploymentControllerSpec
           .thenReturn(Future.successful(Right(empId)))
 
         val result = endEmploymentTest.submitTelephoneNumber()(
-          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> ""))
+          fakePostRequest.withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+            FormValuesConstants.YesNoTextEntry -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -574,14 +584,18 @@ class EndEmploymentControllerSpec
           .thenReturn(Future.successful(Right(empId)))
 
         val tooFewCharsResult = endEmploymentTest.submitTelephoneNumber()(
-          fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
+          fakePostRequest.withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+            FormValuesConstants.YesNoTextEntry -> "1234"))
         status(tooFewCharsResult) mustBe BAD_REQUEST
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
         val tooManyCharsResult = endEmploymentTest.submitTelephoneNumber()(
           fakePostRequest
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
@@ -612,10 +626,9 @@ class EndEmploymentControllerSpec
         when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
-        val result = endEmploymentTest.handleIrregularPaymentError(
-          RequestBuilder
-            .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(IrregularPayDecision -> ContactEmployer))
+        val result = endEmploymentTest.handleIrregularPaymentError(RequestBuilder
+          .buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
@@ -631,7 +644,9 @@ class EndEmploymentControllerSpec
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         val result = endEmploymentTest.handleIrregularPaymentError(
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(IrregularPayDecision -> UpdateDetails))
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.UpdateDetails))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
@@ -710,7 +725,7 @@ class EndEmploymentControllerSpec
 
         val result = endEmploymentTest.submitDuplicateSubmissionWarning(
           fakePostRequest
-            .withFormUrlEncodedBody(YesNoChoice -> YesValue))
+            .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
@@ -729,7 +744,7 @@ class EndEmploymentControllerSpec
 
         val result = endEmploymentTest.submitDuplicateSubmissionWarning(
           fakePostRequest
-            .withFormUrlEncodedBody(YesNoChoice -> NoValue))
+            .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController
@@ -748,7 +763,7 @@ class EndEmploymentControllerSpec
 
         val result = endEmploymentTest.submitDuplicateSubmissionWarning(
           fakePostRequest
-            .withFormUrlEncodedBody(YesNoChoice -> ""))
+            .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> ""))
 
         status(result) mustBe BAD_REQUEST
       }

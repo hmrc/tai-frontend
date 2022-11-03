@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.tai.util.constants
 
-trait FormValuesConstants {
-  val YesValue = "Yes"
-  val NoValue = "No"
-  val YesNoChoice = "yesNoChoice"
-  val YesNoTextEntry = "yesNoTextEntry"
+object FormValuesConstants {
+  val YesValue: String = "Yes"
+  val NoValue: String = "No"
+  val YesNoChoice: String = "yesNoChoice"
+  val YesNoTextEntry: String = "yesNoTextEntry"
 }

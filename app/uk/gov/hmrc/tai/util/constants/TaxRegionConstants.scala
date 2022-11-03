@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.tai.util.constants
 
-trait TaxRegionConstants {
-  val UkTaxRegion = "UK"
-  val ScottishTaxRegion = "SCOTTISH"
+object TaxRegionConstants {
+  val UkTaxRegion: String = "UK"
+  val ScottishTaxRegion: String = "SCOTTISH"
 }
-
-object TaxRegionConstants extends TaxRegionConstants

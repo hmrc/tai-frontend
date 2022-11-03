@@ -54,11 +54,10 @@ class RemoveCompanyBenefitController @Inject()(
   removeCompanyBenefitCheckYourAnswers: RemoveCompanyBenefitCheckYourAnswersView,
   removeCompanyBenefitStopDate: RemoveCompanyBenefitStopDateView,
   removeBenefitTotalValue: RemoveBenefitTotalValueView,
-  can_we_contact_by_phone: CanWeContactByPhoneView,
+  canWeContactByPhone: CanWeContactByPhoneView,
   removeCompanyBenefitConfirmation: RemoveCompanyBenefitConfirmationView,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants
-    with RemoveCompanyBenefitStopDateConstants {
+    extends TaiBaseController(mcc) with JourneyCacheConstants {
 
   def stopDate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
@@ -87,16 +86,20 @@ class RemoveCompanyBenefitController @Inject()(
               removeCompanyBenefitStopDate(formWithErrors, mandatoryJourneyValues.head, mandatoryJourneyValues(1)))
           }
       }, {
-        case Some(BeforeTaxYearEnd) =>
+        case Some(RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd) =>
           for {
             current <- journeyCacheService.currentCache
             _       <- journeyCacheService.flush()
             filtered = current.filterKeys(_ != EndCompanyBenefit_BenefitValueKey)
-            _ <- journeyCacheService.cache(filtered ++ Map(EndCompanyBenefit_BenefitStopDateKey -> BeforeTaxYearEnd))
+            _ <- journeyCacheService.cache(
+                  filtered ++ Map(
+                    EndCompanyBenefit_BenefitStopDateKey -> RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd))
           } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber())
 
-        case Some(OnOrAfterTaxYearEnd) =>
-          journeyCacheService.cache(EndCompanyBenefit_BenefitStopDateKey, OnOrAfterTaxYearEnd) map { _ =>
+        case Some(RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd) =>
+          journeyCacheService.cache(
+            EndCompanyBenefit_BenefitStopDateKey,
+            RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd) map { _ =>
             Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit())
           }
       }
@@ -151,7 +154,7 @@ class RemoveCompanyBenefitController @Inject()(
             currentCache.get(EndCompanyBenefit_TelephoneNumberKey))
         )
 
-      Ok(can_we_contact_by_phone(Some(user), telephoneNumberViewModel, form))
+      Ok(canWeContactByPhone(Some(user), telephoneNumberViewModel, form))
     }
   }
 
@@ -167,14 +170,15 @@ class RemoveCompanyBenefitController @Inject()(
         formWithErrors => {
           journeyCacheService.currentCache map { currentCache =>
             val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
-            BadRequest(can_we_contact_by_phone(Some(user), telephoneNumberViewModel, formWithErrors))
+            BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel, formWithErrors))
           }
         },
         form => {
-          val mandatoryData = Map(EndCompanyBenefit_TelephoneQuestionKey -> form.yesNoChoice.getOrElse(NoValue))
+          val mandatoryData =
+            Map(EndCompanyBenefit_TelephoneQuestionKey -> form.yesNoChoice.getOrElse(FormValuesConstants.NoValue))
 
           val dataForCache = form.yesNoChoice match {
-            case Some(YesValue) =>
+            case Some(FormValuesConstants.YesValue) =>
               mandatoryData ++ Map(EndCompanyBenefit_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
             case _ => mandatoryData ++ Map(EndCompanyBenefit_TelephoneNumberKey -> "")
           }
@@ -211,8 +215,10 @@ class RemoveCompanyBenefitController @Inject()(
             val startOfTaxYear = langUtils.Dates.formatDate(TaxYear().start)
 
             mandatoryJourneyValues(2) match {
-              case OnOrAfterTaxYearEnd => Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
-              case BeforeTaxYearEnd    => Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
+              case RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd =>
+                Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
+              case RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd =>
+                Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
             }
           }
 

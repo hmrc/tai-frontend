@@ -45,7 +45,6 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
-
 @Singleton
 class IncomeController @Inject()(
   @Named("Update Income") journeyCacheService: JourneyCacheService,
@@ -65,7 +64,7 @@ class IncomeController @Inject()(
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with FormValuesConstants with Logging {
+    extends TaiBaseController(mcc) with JourneyCacheConstants with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>

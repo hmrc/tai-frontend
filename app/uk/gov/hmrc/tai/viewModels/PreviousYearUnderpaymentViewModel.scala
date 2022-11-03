@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.util.{MonetaryUtil, ViewModelHelper}
 
 final case class PreviousYearUnderpaymentViewModel(
@@ -27,7 +26,7 @@ final case class PreviousYearUnderpaymentViewModel(
   poundedAmountDue: String,
   returnLink: Html)
 
-object PreviousYearUnderpaymentViewModel extends ViewModelHelper with BandTypesConstants with ReturnLink {
+object PreviousYearUnderpaymentViewModel extends ViewModelHelper with ReturnLink {
 
   def apply(codingComponents: Seq[CodingComponent], referer: String, resourceName: String)(
     implicit messages: Messages): PreviousYearUnderpaymentViewModel = {

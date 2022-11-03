@@ -21,12 +21,11 @@ import play.api.data.Forms.{mapping, optional, text}
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm.{FORTNIGHTLY, MONTHLY, OTHER, OTHER_IN_DAYS_KEY, PAY_PERIOD_KEY, WEEKLY}
-import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
 
 case class PayPeriodForm(payPeriod: Option[String], otherInDays: Option[String] = None) {}
 
-object PayPeriodForm extends EditIncomePayPeriodConstants {
+object PayPeriodForm {
   implicit val formats: OFormat[PayPeriodForm] = Json.format[PayPeriodForm]
 
   def createForm(howOftenError: Option[String], payPeriod: Option[String] = None)(
@@ -35,7 +34,7 @@ object PayPeriodForm extends EditIncomePayPeriodConstants {
     val payPeriodValidation = Constraint[Option[String]]("Please select a period") {
       case Some(txt) =>
         txt match {
-          case OTHER | MONTHLY | WEEKLY | FORTNIGHTLY => Valid
+          case Other | Monthly | Weekly | Fortnightly => Valid
           case _                                      => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
         }
       case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
@@ -47,9 +46,9 @@ object PayPeriodForm extends EditIncomePayPeriodConstants {
       Constraint[Option[String]]("days") { days: Option[String] =>
         {
           (payPeriod, days) match {
-            case (Some(OTHER), Some(digitsOnly())) => Valid
-            case (Some(OTHER), None)               => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
-            case (Some(OTHER), _)                  => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
+            case (Some(Other), Some(digitsOnly())) => Valid
+            case (Some(Other), None)               => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
+            case (Some(Other), _)                  => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
             case _                                 => Valid
           }
         }
@@ -58,8 +57,8 @@ object PayPeriodForm extends EditIncomePayPeriodConstants {
 
     Form[PayPeriodForm](
       mapping(
-        PAY_PERIOD_KEY    -> optional(text).verifying(payPeriodValidation),
-        OTHER_IN_DAYS_KEY -> optional(text).verifying(otherInDaysValidation(payPeriod))
+        PayPeriodKey   -> optional(text).verifying(payPeriodValidation),
+        OtherInDaysKey -> optional(text).verifying(otherInDaysValidation(payPeriod))
       )(PayPeriodForm.apply)(PayPeriodForm.unapply)
     )
   }

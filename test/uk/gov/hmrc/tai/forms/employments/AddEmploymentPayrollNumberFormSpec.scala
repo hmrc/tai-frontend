@@ -16,44 +16,45 @@
 
 package uk.gov.hmrc.tai.forms.employments
 
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.libs.json.Json
-import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.{AddEmploymentPayrollNumberConstants, FormValuesConstants}
 import utils.BaseSpec
 
-class AddEmploymentPayrollNumberFormSpec extends BaseSpec with FormValuesConstants {
+class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
 
   "AddEmploymentPayrollNumberFormSpec" must {
     "return no errors with valid 'yes' choice and payroll number" in {
-      val validYesChoice = Json.obj(choice -> YesValue, payroll -> "123456")
+      val validYesChoice = Json.obj(choice -> FormValuesConstants.YesValue, payroll -> "123456")
       val validatedForm = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value mustBe Some(AddEmploymentPayrollNumberForm(Some(YesValue), Some("123456")))
+      validatedForm.value mustBe Some(
+        AddEmploymentPayrollNumberForm(Some(FormValuesConstants.YesValue), Some("123456")))
     }
 
     "return no errors with valid 'no' choice and no payroll number" in {
-      val validNoChoice = Json.obj(choice -> NoValue, payroll -> "")
+      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue, payroll -> "")
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value mustBe Some(AddEmploymentPayrollNumberForm(Some(NoValue), None))
+      validatedForm.value mustBe Some(AddEmploymentPayrollNumberForm(Some(FormValuesConstants.NoValue), None))
     }
 
     "return no errors with valid 'no' choice and payroll number as space" in {
-      val validNoChoice = Json.obj(choice -> NoValue, payroll -> " ")
+      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue, payroll -> " ")
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value mustBe Some(AddEmploymentPayrollNumberForm(Some(NoValue), None))
+      validatedForm.value mustBe Some(AddEmploymentPayrollNumberForm(Some(FormValuesConstants.NoValue), None))
     }
 
     "return no errors with valid 'no' choice and payroll number" in {
-      val validNoChoice = Json.obj(choice -> NoValue, payroll -> "123456")
+      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue, payroll -> "123456")
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
-      validatedForm.value mustBe Some(AddEmploymentPayrollNumberForm(Some(NoValue), None))
+      validatedForm.value mustBe Some(AddEmploymentPayrollNumberForm(Some(FormValuesConstants.NoValue), None))
     }
 
     "return an error for invalid choice" in {
@@ -75,7 +76,7 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec with FormValuesConstan
     }
 
     "return errors with valid 'yes' choice and no payroll number" in {
-      val invalidYesChoice = Json.obj(choice -> Some(YesValue), payroll -> "")
+      val invalidYesChoice = Json.obj(choice -> Some(FormValuesConstants.YesValue), payroll -> "")
       val invalidatedForm = form.bind(invalidYesChoice)
 
       invalidatedForm.errors.head.messages mustBe List(
@@ -85,8 +86,8 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec with FormValuesConstan
 
   }
 
-  val choice = AddEmploymentPayrollNumberForm.PayrollNumberChoice
-  val payroll = AddEmploymentPayrollNumberForm.PayrollNumberEntry
+  val choice = AddEmploymentPayrollNumberConstants.PayrollNumberChoice
+  val payroll = AddEmploymentPayrollNumberConstants.PayrollNumberEntry
 
   private val form = AddEmploymentPayrollNumberForm.form
 
