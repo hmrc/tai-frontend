@@ -37,11 +37,17 @@
 @(appConfig: ApplicationConfig, person: Person, incomeTaxYears: List[IncomeTaxYear])(implicit request: AuthenticatedRequest[_],
 messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
+@address = @{person.address.line1} @{person.address.line2} @{person.address.line3} @{person.address.postcode}
+
 @detailsContent = {
+
+@if(address.nonEmpty){
     <p>
         <span class="govuk-!-font-weight-bold">@Messages("tai.incomeTax.history.details.address")</span>
         @{person.address.line1} @{person.address.line2} @{person.address.line3} @{person.address.postcode}
     </p>
+}
+
     <p>
         <span class="govuk-!-font-weight-bold">@Messages("tai.incomeTax.history.details.nationalInsurance")</span>
         @person.nino

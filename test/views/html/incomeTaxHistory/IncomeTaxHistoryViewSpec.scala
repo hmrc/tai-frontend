@@ -177,7 +177,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
   )
 
   val person = fakePerson(nino)
-  val personWithNoAddress = fakePerson(nino)
+  val personWithNoAddress = fakePersonWithNoAddress(nino)
 
   override def view: Html =
     incomeTaxHistoryView(appConfig, person, incomeTaxYears)
