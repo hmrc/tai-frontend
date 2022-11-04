@@ -20,7 +20,7 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-
+import cats.implicits._
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -43,20 +43,17 @@ class IncomeUpdateWorkingHoursController @Inject()(
   def workingHoursPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    for {
-      incomeSourceEither <- IncomeSource.create(journeyCacheService)
-      workingHours       <- journeyCacheService.currentValue(UpdateIncome_WorkingHoursKey)
-    } yield {
-
-      incomeSourceEither match {
-        case Right(incomeSource) =>
-          Ok(
-            workingHoursView(
-              HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
-              incomeSource.id,
-              incomeSource.name))
-        case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-      }
+    (IncomeSource.create(journeyCacheService), journeyCacheService.currentValue(UpdateIncome_WorkingHoursKey)).mapN {
+      case (incomeSourceEither, workingHours) =>
+        incomeSourceEither match {
+          case Right(incomeSource) =>
+            Ok(
+              workingHoursView(
+                HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
+                incomeSource.id,
+                incomeSource.name))
+          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+        }
     }
   }
 
