@@ -20,7 +20,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-
+import cats.implicits._
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
@@ -51,19 +51,15 @@ class PotentialUnderpaymentController @Inject()(
 
         implicit val user: AuthedUser = request.taiUser
         val nino = user.nino
-
-        val tasFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
-        val ccFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-
-        for {
-          TaiSuccessResponseWithPayload(tas: TaxAccountSummary) <- tasFuture
-          ccs                                                   <- ccFuture
-        } yield {
-          auditService.createAndSendAuditEvent(
-            AuditConstants.PotentialUnderpaymentInYearAdjustment,
-            Map("nino" -> nino.toString()))
-          val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
-          Ok(potentialUnderpayment(vm))
+        (
+          taxAccountService.taxAccountSummary(nino, TaxYear()),
+          codingComponentService.taxFreeAmountComponents(nino, TaxYear())).mapN {
+          case (TaiSuccessResponseWithPayload(tas: TaxAccountSummary), ccs) =>
+            auditService.createAndSendAuditEvent(
+              AuditConstants.PotentialUnderpaymentInYearAdjustment,
+              Map("nino" -> nino.toString()))
+            val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
+            Ok(potentialUnderpayment(vm))
         }
       } recoverWith errorPagesHandler.handleErrorResponse("getPotentialUnderpaymentPage", request.taiUser.nino)
   }
