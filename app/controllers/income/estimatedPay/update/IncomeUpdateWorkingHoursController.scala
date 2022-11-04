@@ -44,16 +44,13 @@ class IncomeUpdateWorkingHoursController @Inject()(
     implicit val user: AuthedUser = request.taiUser
 
     (IncomeSource.create(journeyCacheService), journeyCacheService.currentValue(UpdateIncome_WorkingHoursKey)).mapN {
-      case (incomeSourceEither, workingHours) =>
-        incomeSourceEither match {
-          case Right(incomeSource) =>
-            Ok(
-              workingHoursView(
-                HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
-                incomeSource.id,
-                incomeSource.name))
-          case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-        }
+      case (Right(incomeSource), workingHours) =>
+        Ok(
+          workingHoursView(
+            HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
+            incomeSource.id,
+            incomeSource.name))
+      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
