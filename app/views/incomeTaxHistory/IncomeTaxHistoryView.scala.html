@@ -41,7 +41,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 
 @detailsContent = {
 
-@if(address.filterNot(_.isWhitespace).length != 0){
+@if(address.filterNot(_.isWhitespace).nonEmpty){
     <p>
         <span class="govuk-!-font-weight-bold">@Messages("tai.incomeTax.history.details.address")</span>
         @address
