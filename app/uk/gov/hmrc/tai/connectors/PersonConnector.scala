@@ -20,7 +20,6 @@ import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.model.domain.Person
 
 import javax.inject.Inject
@@ -33,12 +32,15 @@ class PersonConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Servic
 
   def personUrl(nino: String): String = s"$serviceUrl/tai/$nino/person"
 
-  def person(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.getFromApiV2(personUrl(nino.nino)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[Person])
-    ) recover {
-      case e: Exception =>
-        logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
-        TaiNotFoundResponse(e.getMessage)
-    }
+  def person(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] =
+    httpHandler
+      .getFromApiV2(personUrl(nino.nino))
+      .map { json =>
+        (json \ "data").as[Person]
+      }
+      .recoverWith {
+        case e: Exception =>
+          logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
+          Future.failed(e)
+      }
 }
