@@ -21,7 +21,7 @@
 @import includes.taxFreeAmountSummary
 @import includes.link
 
-@this(main: MainTempleteNew)
+@this(main: MainTemplate)
 
 @(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig, userName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 

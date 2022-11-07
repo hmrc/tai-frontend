@@ -17,7 +17,7 @@
 @import includes.confirmationSummary
 @import views.html.includes.confirmationSuccessBanner
 
-@this(main: MainTempleteNew)
+@this(main: MainTemplate)
 
 @()(implicit request: Request[_], authedUser: Option[controllers.auth.AuthedUser] = None, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
