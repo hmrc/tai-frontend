@@ -18,9 +18,11 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import cats.implicits._
+import play.api.Logger
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
@@ -45,6 +47,8 @@ class PotentialUnderpaymentController @Inject()(
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral {
 
+  private val logger = Logger(this.getClass)
+
   def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       {
@@ -61,6 +65,8 @@ class PotentialUnderpaymentController @Inject()(
             val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
             Ok(potentialUnderpayment(vm))
         }
-      } recoverWith errorPagesHandler.handleErrorResponse("getPotentialUnderpaymentPage", request.taiUser.nino)
+      } recover {
+        case e: Exception => errorPagesHandler.internalServerError(e.getMessage, Some(e))
+      }
   }
 }
