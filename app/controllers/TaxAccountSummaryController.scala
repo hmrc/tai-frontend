@@ -82,11 +82,11 @@ class TaxAccountSummaryController @Inject()(
 //                taxCodeIncomes.filter(_.employmentId.contains(id))
 //              }
 
-            val taxCodeViewModel =
-              //TODO
-              TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands, None, appConfig)
+            val x = taxCodeIncomes.groupBy(_.taxCode).mapValues {
+              TaxCodeViewModel(_, scottishTaxRateBands, None, appConfig)
+            }
 
-            Ok(incomeTaxSummary(vm, taxCodeViewModel, appConfig))
+            Ok(incomeTaxSummary(vm, x, appConfig))
           }
         case TaiTaxAccountFailureResponse(message) =>
           throw new RuntimeException(s"Failed to fetch tax account summary details with exception: $message")
