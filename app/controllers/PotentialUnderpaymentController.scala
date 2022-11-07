@@ -46,9 +46,7 @@ class PotentialUnderpaymentController @Inject()(
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral {
-
-  private val logger = Logger(this.getClass)
-
+  
   def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       {
