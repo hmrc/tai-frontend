@@ -51,10 +51,8 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec with JourneyCacheCons
         journeyCacheService,
         MockTemplateRenderer
       ) {
-    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(Right(employer.id)))
-    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(Right(employer.name)))
+    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
   "payPeriodPage" must {
@@ -90,9 +88,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec with JourneyCacheCons
 
         val controller = new TestIncomeUpdatePayPeriodController
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
-          .thenReturn(Future.successful(Left("empty cache")))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.payPeriodPage(fakeRequest)
@@ -148,9 +144,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec with JourneyCacheCons
       "IncomeSource.create returns a left" in {
         val controller = new TestIncomeUpdatePayPeriodController
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-          .thenReturn(Future.successful(Left("")))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Left("")))
 
         val result = controller.handlePayPeriod(RequestBuilder.buildFakePostRequestWithAuth("payPeriod" -> "nonsense"))

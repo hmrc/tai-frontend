@@ -64,10 +64,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
-    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(Right(employer.id)))
-    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(Right(employer.name)))
+    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
   "estimatedPayLandingPage" must {
@@ -120,9 +118,10 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
 
     }
     "return to /income-details when nothing is present in the cache" in {
+      val result = estimatedPayLandingPage()
+
       when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(Future.successful(Left("empty cache")))
 
-      val result = estimatedPayLandingPage()
       redirectLocation(result) mustBe Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url)
     }
   }
@@ -210,9 +209,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
 
         val controller = new TestIncomeUpdateEstimatedPayController
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
-          .thenReturn(Future.successful(Left("empty cache")))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
