@@ -203,6 +203,8 @@
         </div>
     </div>
 
+@views.html.timeoutDialog(appConfig.sessionTimeoutInSeconds, appConfig.sessionCountdownInSeconds, messages)
+
 
 @govukPhaseBanner(PhaseBanner(
     tag = Some(Tag(
