@@ -181,6 +181,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   override def view: Html =
     incomeTaxHistoryView(appConfig, person, incomeTaxYears)
-  def viewWithNoAddress: Html = incomeTaxHistoryView(appConfig, personWithNoAddress, incomeTaxYears)
+
+  val viewWithNoAddress: Html = incomeTaxHistoryView(appConfig, personWithNoAddress, incomeTaxYears)
 
 }
