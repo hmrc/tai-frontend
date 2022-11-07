@@ -57,8 +57,6 @@
             @header
         </div>
 
-    <h2 aria-hidden="true" class="govuk-visually-hidden">ignored</h2>
-
         <div class="govuk-grid-column-two-thirds">
             <div class="subsection">
                     @model.employmentStatus match {
@@ -154,7 +152,7 @@
                 }
                 case _ => {
                         @if(model.incomeCalculationEstimateMessage.isDefined){
-                            <h3 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h3>
+                            <h2 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h2>
                         }
                         @if(model.hasPayrolledBenefit){
                             <div>
@@ -175,7 +173,7 @@
                             </p>
                         }
                         @if(model.incomeCalculationEstimateMessage.isDefined){
-                            <h3 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h3>
+                            <h2 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h2>
                         }
                 }
             }
