@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.link
 
-@(incomeSources: Seq[IncomeSourceViewModel],
+@(viewModel: TaxAccountSummaryViewModel, incomeSources: Seq[IncomeSourceViewModel],
   typeLabel: String,
   accessibleAmountPrefix: String)(implicit messages: Messages)
 
@@ -39,7 +39,7 @@
             </p>
 
 
-            <div aria-hidden="true" style="display: none;" id="taxCodeList1"></div>
+
             <p class="govuk-body flush--top">
                 @if(incomeSource.displayTaxCode) {
                     @incomeSource.taxCodeUrl.map { taxCodeUrl =>
@@ -53,7 +53,10 @@
                 
                 @if(incomeSource.displayPayrollNumber && typeLabel=="employment"){
                     <span id="@{typeLabel}@{idx}PayeNumber" class="carry-over govuk-!-display-block display-block ">@messages("tai.income.details.ERN"):@incomeSource.taxDistrictNumber/@incomeSource.payeNumber</span>
+
                 }
+
+
 
                 @if(incomeSource.displayPayrollNumber && typeLabel == "pension"){
                 <span id="@{typeLabel}@{idx}PensionNumber" class="carry-over govuk-!-display-block display-block ">@Messages("tai.incomeTaxSummary.pensionNumber.prefix", incomeSource.payrollNumber)</span>
@@ -62,8 +65,6 @@
                 @if(incomeSource.displayEndDate){
                     <span id="@{typeLabel}@{idx}EndDate" class="govuk-!-display-block display-block">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</span>
                 }
-
-            </p>
 
             @if(incomeSource.displayDetailsLink){
             <p class="govuk-body flush--top">
@@ -75,6 +76,7 @@
                 )
             </p>
             }
+            </p>
         </div>
         }
 

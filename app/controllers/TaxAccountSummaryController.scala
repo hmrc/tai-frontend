@@ -18,8 +18,11 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
+import uk.gov.hmrc.tai.model.TaxYear
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.UnauthorizedException
 
@@ -52,6 +55,7 @@ class TaxAccountSummaryController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
+    val year = TaxYear()
 
     auditService
       .createAndSendAuditEvent(AuditConstants.TaxAccountSummaryUserEntersSummaryPage, Map("nino" -> nino.toString()))
@@ -66,8 +70,23 @@ class TaxAccountSummaryController @Inject()(
               message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
           Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
         case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
-          taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
-            Ok(incomeTaxSummary(vm, appConfig))
+          for {
+            TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService
+                                                                                  .taxCodeIncomes(nino, year)
+            scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
+            vm                   <- taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary)
+          } yield {
+            //TODO
+//            val filteredTaxCodes =
+//              employmentId.fold(taxCodeIncomes) { id =>
+//                taxCodeIncomes.filter(_.employmentId.contains(id))
+//              }
+
+            val taxCodeViewModel =
+              //TODO
+              TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands, None, appConfig)
+
+            Ok(incomeTaxSummary(vm, taxCodeViewModel, appConfig))
           }
         case TaiTaxAccountFailureResponse(message) =>
           throw new RuntimeException(s"Failed to fetch tax account summary details with exception: $message")
@@ -81,4 +100,5 @@ class TaxAccountSummaryController @Inject()(
         case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage, Some(e))
       }
   }
+
 }
