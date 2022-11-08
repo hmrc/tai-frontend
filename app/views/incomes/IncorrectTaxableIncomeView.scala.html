@@ -22,7 +22,7 @@
 @import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 @import uk.gov.hmrc.tai.util.DateHelper
 
-@this(mainTemplate: MainTempleteNew, loginStatus: LoginStatus)
+@this(mainTemplate: MainTemplate, loginStatus: LoginStatus)
 
 @( payYTD: BigDecimal = 0, payDate: java.time.LocalDate, id: Int, employerId: Int)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)

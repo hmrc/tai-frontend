@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(mainTemplate: MainTempleteNew, duplicateSubmissionWarning: includes.duplicateSubmissionWarning, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)
+@this(mainTemplate: MainTemplate, duplicateSubmissionWarning: includes.duplicateSubmissionWarning, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)
 
 @(duplicateSubmissionWarningForm: Form[YesNoForm], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 

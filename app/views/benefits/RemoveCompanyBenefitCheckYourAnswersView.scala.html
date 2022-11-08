@@ -22,7 +22,7 @@
 @import includes._
 @import includes.forms._
 
-@this(main: MainTempleteNew, form: FormWithCSRF)
+@this(main: MainTemplate, form: FormWithCSRF)
 
 @(viewModel: RemoveCompanyBenefitCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 

@@ -28,7 +28,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@this(mainTemplate: MainTempleteNew, form: FormWithCSRF,  govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF,  govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(dateForm: Form[LocalDate], viewmodel: EmploymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser,  ec: ExecutionContext)
 

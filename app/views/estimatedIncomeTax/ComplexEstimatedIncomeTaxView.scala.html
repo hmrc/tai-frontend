@@ -26,7 +26,7 @@
 @import views.html.estimatedIncomeTax.navigationLinks
 @import controllers.auth.AuthenticatedRequest
 
-@this(main: MainTempleteNew, loginStatus: LoginStatus)
+@this(main: MainTemplate, loginStatus: LoginStatus)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ComplexEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
 request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)

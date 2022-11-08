@@ -29,7 +29,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukCharacterCount: GovukCharacterCount, govukErrorSummary: GovukErrorSummary)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF, govukCharacterCount: GovukCharacterCount, govukErrorSummary: GovukErrorSummary)
 
 @(viewModel: UpdateHistoricIncomeDetailsViewModel, updateIncomeDetailsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
