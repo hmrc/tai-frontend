@@ -99,10 +99,15 @@ class EndEmploymentController @Inject()(
 
   private def redirectToWarningOrDecisionPage(
     journeyCacheFuture: Future[Map[String, String]],
-    successfulJourneyCacheFuture: Future[Option[String]])(implicit hc: HeaderCarrier): Future[Result] =
-    (journeyCacheFuture, successfulJourneyCacheFuture).mapN {
-      case (_, Some(_)) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning())
-      case _            => Redirect(routes.EndEmploymentController.employmentUpdateRemoveDecision())
+    successfullJourneyCacheFuture: Future[Option[String]])(implicit hc: HeaderCarrier): Future[Result] =
+    for {
+      _                      <- journeyCacheFuture
+      successfulJourneyCache <- successfullJourneyCacheFuture
+    } yield {
+      successfulJourneyCache match {
+        case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning())
+        case _       => Redirect(routes.EndEmploymentController.employmentUpdateRemoveDecision())
+      }
     }
 
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
