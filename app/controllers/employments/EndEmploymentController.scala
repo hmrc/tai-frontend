@@ -282,21 +282,16 @@ class EndEmploymentController @Inject()(
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    for {
-      employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey)
-      telephoneCache <- journeyCacheService
-                         .optionalValues(EndEmployment_TelephoneQuestionKey, EndEmployment_TelephoneNumberKey)
-    } yield {
-
-      employmentId match {
-        case Right(mandatoryEmploymentId) =>
-          Ok(
-            canWeContactByPhone(
-              Some(user),
-              telephoneNumberViewModel(mandatoryEmploymentId),
-              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
-        case Left(_) => Redirect(taxAccountSummaryRedirect)
-      }
+    (
+      journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey),
+      journeyCacheService.optionalValues(EndEmployment_TelephoneQuestionKey, EndEmployment_TelephoneNumberKey)).mapN {
+      case (Right(mandatoryEmploymentId), telephoneCache) =>
+        Ok(
+          canWeContactByPhone(
+            Some(user),
+            telephoneNumberViewModel(mandatoryEmploymentId),
+            YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
+      case _ => Redirect(taxAccountSummaryRedirect)
     }
   }
 
