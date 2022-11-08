@@ -36,12 +36,15 @@ class ExternalServiceRedirectController @Inject()(
 
   def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
-      (
-        auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName),
-        sessionService.invalidateCache()).mapN {
-        case (redirectUri, _) => Redirect(redirectUri)
-      } recover {
-        case _ => errorPagesHandler.internalServerError("Unable to audit and redirect")
+      {
+        (for {
+          _           <- sessionService.invalidateCache()
+          redirectUri <- auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName)
+        } yield {
+          Redirect(redirectUri)
+        }) recover {
+          case _ => errorPagesHandler.internalServerError("Unable to audit and redirect")
+        }
       }
     }
 
