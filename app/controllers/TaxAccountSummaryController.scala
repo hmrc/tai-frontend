@@ -19,13 +19,13 @@ package controllers
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import uk.gov.hmrc.tai.model.TaxYear
+
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
+import uk.gov.hmrc.tai.viewModels.{TaxAccountSummaryViewModel, TaxCodeViewModel, TaxCodeViewModelPreviousYears}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.UnauthorizedException
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
@@ -82,11 +82,11 @@ class TaxAccountSummaryController @Inject()(
 //                taxCodeIncomes.filter(_.employmentId.contains(id))
 //              }
 
-            val x = taxCodeIncomes.groupBy(_.taxCode).mapValues {
+            val taxCodeIncomesByTaxCode = taxCodeIncomes.groupBy(_.taxCode).mapValues {
               TaxCodeViewModel(_, scottishTaxRateBands, None, appConfig)
             }
 
-            Ok(incomeTaxSummary(vm, x, appConfig))
+            Ok(incomeTaxSummary(vm, taxCodeIncomesByTaxCode, appConfig))
           }
         case TaiTaxAccountFailureResponse(message) =>
           throw new RuntimeException(s"Failed to fetch tax account summary details with exception: $message")
