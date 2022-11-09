@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-
+import cats.implicits._
 import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -46,16 +46,15 @@ class IncomeUpdateBonusController @Inject()(
   def bonusPaymentsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    for {
-      incomeSourceEither <- IncomeSource.create(journeyCacheService)
-      bonusPayment       <- journeyCacheService.currentValue(UpdateIncome_BonusPaymentsKey)
-      backUrl            <- bonusPaymentBackUrl
-    } yield {
-      val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
-      incomeSourceEither match {
-        case Right(incomeSource) => Ok(bonusPayments(form, incomeSource, backUrl))
-        case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-      }
+    (
+      IncomeSource.create(journeyCacheService),
+      journeyCacheService.currentValue(UpdateIncome_BonusPaymentsKey),
+      bonusPaymentBackUrl).mapN {
+      case (Right(incomeSource), bonusPayment, backUrl) =>
+        val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
+        Ok(bonusPayments(form, incomeSource, backUrl))
+      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+
     }
   }
 
@@ -67,14 +66,10 @@ class IncomeUpdateBonusController @Inject()(
         .bindFromRequest()
         .fold(
           formWithErrors => {
-            for {
-              incomeSourceEither <- IncomeSource.create(journeyCacheService)
-              backUrl            <- bonusPaymentBackUrl
-            } yield {
-              incomeSourceEither match {
-                case Right(incomeSource) => BadRequest(bonusPayments(formWithErrors, incomeSource, backUrl))
-                case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-              }
+            (IncomeSource.create(journeyCacheService), bonusPaymentBackUrl).mapN {
+              case (Right(incomeSource), backUrl) =>
+                BadRequest(bonusPayments(formWithErrors, incomeSource, backUrl))
+              case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
           },
           formData => {
@@ -95,18 +90,13 @@ class IncomeUpdateBonusController @Inject()(
 
   def bonusOvertimeAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-
-    for {
-      incomeSourceEither  <- IncomeSource.create(journeyCacheService)
-      bonusOvertimeAmount <- journeyCacheService.currentValue(UpdateIncome_BonusOvertimeAmountKey)
-    } yield {
-      val form = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
-      incomeSourceEither match {
-        case Right(incomeSource) => Ok(bonusPaymentAmount(form, incomeSource))
-        case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    (IncomeSource.create(journeyCacheService), journeyCacheService.currentValue(UpdateIncome_BonusOvertimeAmountKey))
+      .mapN {
+        case (Right(incomeSource), bonusOvertimeAmount) =>
+          val form = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
+          Ok(bonusPaymentAmount(form, incomeSource))
+        case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
-
-    }
   }
 
   def handleBonusOvertimeAmount(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
