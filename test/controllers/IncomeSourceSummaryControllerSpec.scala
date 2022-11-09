@@ -16,6 +16,7 @@
 
 package controllers
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
@@ -26,7 +27,7 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
@@ -125,8 +126,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
           .thenReturn(Future.successful(true))
         when(journeyCacheService.currentValueAsInt(Matchers.eq(cacheKeyEmployment))(any())) thenReturn Future
           .successful(Some(1111))
-        when(journeyCacheService.flushWithEmpId(Matchers.eq(employmentId))(any())) thenReturn Future.successful(
-          TaiSuccessResponse)
+        when(journeyCacheService.flushWithEmpId(Matchers.eq(employmentId))(any())) thenReturn Future.successful(Done)
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

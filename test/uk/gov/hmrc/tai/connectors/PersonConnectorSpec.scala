@@ -19,9 +19,8 @@ package uk.gov.hmrc.tai.connectors
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import play.api.libs.json.Json
+import play.api.libs.json.{JsResultException, Json}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.Person
 import utils.BaseSpec
 
@@ -32,31 +31,31 @@ class PersonConnectorSpec extends BaseSpec {
 
   "person method" must {
 
-    "return a Person model instance, wrapped in a TaiSuccessResponse" when {
+    "return a Person model instance" when {
       "the http call returns successfully" in {
         when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
           .thenReturn(Future.successful(apiResponse(person)))
-        val result = Await.result(sut.person(nino), 5 seconds)
-        result mustBe TaiSuccessResponseWithPayload(person)
+
+        val result = Await.result(sut.person(nino), 5.seconds)
+        result mustBe person
       }
     }
 
-    "return a TaiNotFoundResponse" when {
+    "return a Failed Future" when {
       "the http call returns a not found exception" in {
         when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
           .thenReturn(Future.failed(new NotFoundException("downstream not found")))
-        val result = Await.result(sut.person(nino), 5 seconds)
-        result mustBe TaiNotFoundResponse("downstream not found")
+        assertThrows[NotFoundException] {
+          Await.result(sut.person(nino), 5.seconds)
+        }
       }
 
       "the http call returns invalid json" in {
         val invalidJson = Json.obj("data" -> Json.obj("notEven" -> "close"))
         when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
           .thenReturn(Future.successful(invalidJson))
-        val result = Await.result(sut.person(nino), 5 seconds)
-        result match {
-          case TaiNotFoundResponse(msg) => msg must include("JsResultException")
-          case _                        => fail("A TaiNotFoundResponse was expected!")
+        assertThrows[JsResultException] {
+          Await.result(sut.person(nino), 5.seconds)
         }
       }
     }

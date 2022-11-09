@@ -49,6 +49,12 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
         appConfig)
     }
 
+    descriptionListViewModels.foreach { descriptionListViewModels =>
+      descriptionListViewModels.descriptionItems.foreach {
+        case (key, value) => println(key + " -> ", value)
+      }
+    }
+
     val size = descriptionListViewModels.size
     val title = taxCodesTitle(size, TaxYear())
     val introMessage = ledeMessage(size)

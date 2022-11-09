@@ -19,6 +19,7 @@ package controllers
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest}
 import javax.inject.Inject
+import cats.implicits._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -58,25 +59,22 @@ class PayeControllerHistoric @Inject()(
     if (taxYear >= TaxYear()) {
       Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
     } else {
-      val employmentsFuture = employmentService.employments(nino, taxYear)
-      val hasTaxCodeRecordsFuture = taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear)
-
-      for {
-        employments                          <- employmentsFuture
-        hasTaxCodeRecordsInYearPerEmployment <- hasTaxCodeRecordsFuture
-      } yield {
-        implicit val user: AuthedUser = request.taiUser
-        if (isRtiUnavailable(employments)) {
-          Ok(
-            RtiDisabledHistoricPayAsYouEarnView(
-              HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-              config))
-        } else {
-          Ok(
-            historicPayAsYouEarnView(
-              HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-              config))
-        }
+      (
+        employmentService.employments(nino, taxYear),
+        taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear)).mapN {
+        case (employments, hasTaxCodeRecordsInYearPerEmployment) =>
+          implicit val user: AuthedUser = request.taiUser
+          if (isRtiUnavailable(employments)) {
+            Ok(
+              RtiDisabledHistoricPayAsYouEarnView(
+                HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
+                config))
+          } else {
+            Ok(
+              historicPayAsYouEarnView(
+                HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
+                config))
+          }
       }
     }
   } recoverWith hodStatusRedirect

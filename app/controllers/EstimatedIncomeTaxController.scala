@@ -16,12 +16,11 @@
 
 package controllers
 
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
@@ -33,6 +32,7 @@ import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, T
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIncomeView, SimpleEstimatedIncomeTaxView, ZeroTaxEstimatedIncomeTaxView}
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class EstimatedIncomeTaxController @Inject()(
@@ -53,50 +53,51 @@ class EstimatedIncomeTaxController @Inject()(
   def estimatedIncomeTax(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
 
-    for {
-      taxSummary       <- taxAccountService.taxAccountSummary(nino, TaxYear())
-      codingComponents <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-      totalTax         <- taxAccountService.totalTax(nino, TaxYear())
-      nonTaxCode       <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
-      taxCodeIncomes   <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-      iFormLinks       <- partialService.getIncomeTaxPartial
-    } yield {
-      (taxSummary, totalTax, nonTaxCode, taxCodeIncomes) match {
-        case (
-            TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
-            TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax),
-            TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
-            TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
-          implicit val user: AuthedUser = request.taiUser
+    (
+      taxAccountService.taxAccountSummary(nino, TaxYear()),
+      taxAccountService.totalTax(nino, TaxYear()),
+      taxAccountService.nonTaxCodeIncomes(nino, TaxYear()),
+      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      codingComponentService.taxFreeAmountComponents(nino, TaxYear()),
+      partialService.getIncomeTaxPartial
+    ).mapN {
+      case (
+          TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
+          TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax),
+          TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
+          TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+          codingComponents,
+          iFormLinks
+          ) =>
+        implicit val user: AuthedUser = request.taiUser
 
-          val taxBands = totalTaxDetails.incomeCategories.flatMap(_.taxBands).toList
-          val taxViewType = EstimatedIncomeTaxService.taxViewType(
-            codingComponents,
-            totalTaxDetails,
-            nonTaxCodeIncome,
-            taxAccountSummary.totalEstimatedIncome,
-            taxAccountSummary.taxFreeAllowance,
-            taxAccountSummary.totalEstimatedTax,
-            taxCodeIncomes.nonEmpty
-          )
-          taxViewType match {
-            case NoIncomeTaxView => Ok(noCurrentIncome())
-            case ComplexTaxView =>
-              val model =
-                ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
-              Ok(complexEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
-            case SimpleTaxView =>
-              val model =
-                SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
-              Ok(simpleEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
-            case ZeroTaxView =>
-              val model =
-                ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
-              Ok(zeroTaxEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
-          }
-        case _ =>
-          errorPagesHandler.internalServerError("Failed to get estimated income tax")
-      }
+        val taxBands = totalTaxDetails.incomeCategories.flatMap(_.taxBands).toList
+        val taxViewType = EstimatedIncomeTaxService.taxViewType(
+          codingComponents,
+          totalTaxDetails,
+          nonTaxCodeIncome,
+          taxAccountSummary.totalEstimatedIncome,
+          taxAccountSummary.taxFreeAllowance,
+          taxAccountSummary.totalEstimatedTax,
+          taxCodeIncomes.nonEmpty
+        )
+        taxViewType match {
+          case NoIncomeTaxView => Ok(noCurrentIncome())
+          case ComplexTaxView =>
+            val model =
+              ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
+            Ok(complexEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+          case SimpleTaxView =>
+            val model =
+              SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
+            Ok(simpleEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+          case ZeroTaxView =>
+            val model =
+              ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
+            Ok(zeroTaxEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+        }
+      case _ =>
+        errorPagesHandler.internalServerError("Failed to get estimated income tax")
     }
   }
 }

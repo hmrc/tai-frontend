@@ -22,6 +22,12 @@
   .card {
     margin:12px;
     height:100px;
+    margin-bottom: 100px;
+    border-bottom: 0;
+  }
+
+  .card-body {
+    border-bottom: 1px solid $panel-colour;
   }
 }
 
@@ -76,8 +82,7 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
   }
 
   .card-body {
-    border-bottom: 1px solid $panel-colour;
-    padding: 12px;
+      padding: 12px;
 
     *:last-child {
       margin-bottom: 0;
