@@ -134,35 +134,33 @@ class IncomeUpdatePayslipAmountController @Inject()(
     (
       IncomeSource.create(journeyCacheService),
       journeyCacheService
-        .optionalValues(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TotalSalaryKey))
-      .mapN {
-        case (incomeSourceEither, payPeriod :: payPeriodInDays :: totalSalary :: _) =>
-          TaxablePayslipForm
-            .createForm(FormHelper.stripNumber(totalSalary), payPeriod, payPeriodInDays)
-            .bindFromRequest()
-            .fold(
-              formWithErrors => {
-                incomeSourceEither match {
-                  case Right(incomeSource) =>
-                    val viewModel =
-                      TaxablePaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, incomeSource)
-                    Future.successful(BadRequest(taxablePayslipAmount(viewModel)))
-                  case Left(_) =>
-                    Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
-                }
-              },
-              formData => {
-                formData.taxablePay match {
-                  case Some(taxablePay) =>
-                    journeyCache(UpdateIncome_TaxablePayKey, Map(UpdateIncome_TaxablePayKey -> taxablePay)) map { _ =>
-                      Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage())
-                    }
-                  case _ => Future.successful(Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage()))
-                }
+        .optionalValues(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TotalSalaryKey)).mapN {
+      case (incomeSourceEither, payPeriod :: payPeriodInDays :: totalSalary :: _) =>
+        TaxablePayslipForm
+          .createForm(FormHelper.stripNumber(totalSalary), payPeriod, payPeriodInDays)
+          .bindFromRequest()
+          .fold(
+            formWithErrors => {
+              incomeSourceEither match {
+                case Right(incomeSource) =>
+                  val viewModel =
+                    TaxablePaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, incomeSource)
+                  Future.successful(BadRequest(taxablePayslipAmount(viewModel)))
+                case Left(_) =>
+                  Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
               }
-            )
-      }
-      .flatMap(identity)
+            },
+            formData => {
+              formData.taxablePay match {
+                case Some(taxablePay) =>
+                  journeyCache(UpdateIncome_TaxablePayKey, Map(UpdateIncome_TaxablePayKey -> taxablePay)) map { _ =>
+                    Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage())
+                  }
+                case _ => Future.successful(Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage()))
+              }
+            }
+          )
+    }.flatten
   }
 
   def payslipDeductionsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -184,8 +182,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
       .createForm()
       .bindFromRequest()
       .fold(
-        formWithErrors => {
-
+        formWithErrors =>
           for {
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
@@ -193,9 +190,8 @@ class IncomeUpdatePayslipAmountController @Inject()(
               case Right(incomeSource) => BadRequest(payslipDeductionsView(formWithErrors, incomeSource))
               case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             }
-          }
         },
-        formData => {
+        formData =>
           formData.payslipDeductions match {
             case Some(payslipDeductions) if payslipDeductions == "Yes" =>
               journeyCache(
@@ -211,7 +207,6 @@ class IncomeUpdatePayslipAmountController @Inject()(
               }
 
             case _ => Future.successful(Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage()))
-          }
         }
       )
   }
