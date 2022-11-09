@@ -59,10 +59,8 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with JourneyCacheConstant
         journeyCacheService,
         MockTemplateRenderer
       ) {
-    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(Right(employer.id)))
-    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(Right(employer.name)))
+    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
     when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TaxablePayKey))(any()))
       .thenReturn(Future.successful(maybeTaxablePayKey))
   }
@@ -132,9 +130,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with JourneyCacheConstant
 
         val controller = new TestIncomeUpdateBonusController
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
-          .thenReturn(Future.successful(Left("empty cache")))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.bonusPaymentsPage(fakeRequest)
@@ -231,9 +227,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with JourneyCacheConstant
 
         val controller = new TestIncomeUpdateBonusController
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
-          .thenReturn(Future.successful(Left("empty cache")))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.handleBonusPayments(employer.id)(fakeRequest)
@@ -287,9 +281,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with JourneyCacheConstant
 
         val controller = new TestIncomeUpdateBonusController
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
-          .thenReturn(Future.successful(Left("empty cache")))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.bonusOvertimeAmountPage(fakeRequest)
@@ -359,9 +351,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with JourneyCacheConstant
 
         val controller = new TestIncomeUpdateBonusController
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-          .thenReturn(Future.successful(Left("")))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Left("")))
 
         val result = controller.handleBonusOvertimeAmount(employer.id)(fakeRequest)

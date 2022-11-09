@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.tai.model.domain.income
 
+import cats.data.EitherT
+import cats.implicits._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
-import uk.gov.hmrc.tai.util.EitherOpsObject._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -29,15 +30,9 @@ object IncomeSource extends JourneyCacheConstants {
 
   def create(journeyCacheService: JourneyCacheService)(
     implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[Either[String, IncomeSource]] = {
-    val idFuture: Future[Either[String, Int]] = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
-    val nameFuture: Future[Either[String, String]] = journeyCacheService.mandatoryJourneyValue(UpdateIncome_NameKey)
-
-    for {
-      id   <- idFuture
-      name <- nameFuture
-    } yield {
-      id.zip(name).right.map { case (a, b) => IncomeSource(a, b) }
-    }
-  }
+    ec: ExecutionContext): Future[Either[String, IncomeSource]] =
+    EitherT(journeyCacheService.mandatoryJourneyValues(UpdateIncome_IdKey, UpdateIncome_NameKey)).map { seq =>
+      val id :: name :: _ = seq.toList
+      IncomeSource(id.toInt, name)
+    }.value
 }

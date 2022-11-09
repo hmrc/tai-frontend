@@ -77,10 +77,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
-    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(Right(employer.id)))
-    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(Right(employer.name)))
+    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
   def BuildEmploymentAmount(isLive: Boolean = false, isOccupationPension: Boolean = true): EmploymentAmount =
@@ -391,9 +389,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
       "IncomeSource.create returns a left" in {
         val controller = new TestIncomeUpdateHowToUpdateController
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-          .thenReturn(Future.successful(Left("")))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Left("")))
 
         val result = controller.handleChooseHowToUpdate(RequestBuilder.buildFakePostRequestWithAuth())

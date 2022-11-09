@@ -61,10 +61,8 @@ class IncomeUpdatePayslipAmountControllerSpec
         journeyCacheService,
         MockTemplateRenderer
       ) {
-    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(Right(employer.id)))
-    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(Right(employer.name)))
+    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
   "payslipAmountPage" must {
@@ -312,9 +310,7 @@ class IncomeUpdatePayslipAmountControllerSpec
       "IncomeSource.create returns a left" in {
         val controller = new TestIncomeUpdatePayslipAmountController
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-          .thenReturn(Future.successful(Left("")))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Left("")))
 
         val result = controller.handleTaxablePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth())

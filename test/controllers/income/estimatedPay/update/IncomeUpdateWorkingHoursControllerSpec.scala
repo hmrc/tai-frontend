@@ -50,10 +50,8 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec with JourneyCacheC
         journeyCacheService,
         MockTemplateRenderer
       ) {
-    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(Right(employer.id)))
-    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(Right(employer.name)))
+    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
   "workingHoursPage" must {
@@ -92,9 +90,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec with JourneyCacheC
 
         val controller = new TestIncomeUpdateWorkingHoursController
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.any())(any()))
-          .thenReturn(Future.successful(Left("empty cache")))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.any())(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.workingHoursPage(fakeRequest)
@@ -173,9 +169,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec with JourneyCacheC
 
       val controller = new TestIncomeUpdateWorkingHoursController()
 
-      when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-        .thenReturn(Future.successful(Left("")))
-      when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+      when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
         .thenReturn(Future.successful(Left("")))
 
       val result = controller.handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth())
