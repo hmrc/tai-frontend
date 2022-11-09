@@ -128,27 +128,3 @@ class ApplicationConfig @Inject()(
   lazy val trackFrontendHost: String = decorateUrlForLocalDev("tracking-frontend.host")
   lazy val jrsClaimsServiceUrl: String = servicesConfig.baseUrl("coronavirus-jrs-published-employees")
 }
-
-trait FeatureTogglesConfig { self: ApplicationConfig =>
-  val cyPlusOneEnabled: Boolean = getOptional[Boolean]("tai.cyPlusOne.enabled").getOrElse(false)
-  val jrsClaimsEnabled: Boolean = getOptional[Boolean]("tai.jrsClaims.enabled").getOrElse(false)
-  val welshLanguageEnabled: Boolean = getOptional[Boolean]("tai.feature.welshLanguage.enabled").getOrElse(false)
-  val companyCarForceRedirectEnabled: Boolean =
-    getOptional[Boolean]("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
-  val cyPlus1EstimatedPayEnabled: Boolean = getOptional[Boolean]("tai.cyPlusOne.enabled").getOrElse(false)
-  lazy val accessibilityStatementToggle: Boolean =
-    getOptional[Boolean]("accessibility-statement.toggle").getOrElse(false)
-  lazy val isTaiCy3Enabled: Boolean = getOptional[Boolean]("tai.cy3.enabled").getOrElse(false)
-  val trackingEnabled: Boolean = getOptional[Boolean]("tai.tracking.enabled").getOrElse(false)
-
-  lazy val incomeTaxHistoryEnabled: Boolean = getOptional[Boolean]("tai.incomeTaxHistory.enabled").getOrElse(true)
-
-  val numberOfPreviousYearsToShow: Int = 5 // Always 5 in all configs
-}
-
-trait AuthConfigProperties { self: ApplicationConfig =>
-  val postSignInRedirectUrl: Option[String] = getOptional[String]("microservice.login-callback.url")
-
-  val taxPlatformTaiRootUri: String =
-    getOptional[String]("microservice.taxPlatformTaiRootUri").getOrElse("http://noConfigTaiRootUri")
-}

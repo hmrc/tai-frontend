@@ -27,7 +27,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, NotLive}
-import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
+import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -66,7 +66,7 @@ class TaxAccountSummaryService @Inject()(
             taxAccountSummary,
             isAnyFormInProgress,
             nonTaxCodeIncome,
-            IncomesSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
+            IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
             nonMatchingCeasedEmployments
           )
         case (_, _, _, _, TaiUnauthorisedResponse(message)) => throw new UnauthorizedException(message)

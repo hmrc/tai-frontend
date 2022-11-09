@@ -17,7 +17,7 @@
 package views.html.incomes
 
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.HowToUpdateForm
+import uk.gov.hmrc.tai.forms.income.incomeCalculator.HowToUpdateForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class HowToUpdateViewSpec extends TaiViewSpec {

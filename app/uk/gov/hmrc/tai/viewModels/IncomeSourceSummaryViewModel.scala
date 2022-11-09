@@ -129,5 +129,3 @@ object IncomeSourceSummaryViewModel {
   }
 
 }
-
-case class CompanyBenefitViewModel(name: String, amount: BigDecimal, changeUrl: String)

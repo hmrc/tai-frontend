@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.forms.PayslipForm
+import uk.gov.hmrc.tai.forms.income.incomeCalculator.PayslipForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 
 case class PaySlipAmountViewModel(payslipForm: Form[PayslipForm], payPeriodTitle: String, employer: IncomeSource)

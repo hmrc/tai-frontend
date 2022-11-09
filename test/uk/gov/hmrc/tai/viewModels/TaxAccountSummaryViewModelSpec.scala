@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
+import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.service.ThreeWeeks
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
@@ -387,8 +387,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
     displayDetailsLink = true
   )
 
-  val noIncomesSources = IncomesSources(Seq(), Seq(), Seq())
+  val noIncomesSources = IncomeSources(Seq(), Seq(), Seq())
   val incomeSources =
-    IncomesSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources)
+    IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources)
 
 }

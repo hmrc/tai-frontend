@@ -19,7 +19,7 @@ package views.html.incomes
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.twirl.api.{Html, HtmlFormat}
-import uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm
+import uk.gov.hmrc.tai.forms.income.incomeCalculator.BonusOvertimeAmountForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec

@@ -19,7 +19,7 @@ package views.html.benefits
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.benefit.RemoveCompanyBenefitCheckYourAnswersViewModel
+import uk.gov.hmrc.tai.viewModels.benefit.RemoveCompanyBenefitsCheckYourAnswersViewModel
 
 class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
 
@@ -86,7 +86,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
   }
 
   def viewModel =
-    RemoveCompanyBenefitCheckYourAnswersViewModel(
+    RemoveCompanyBenefitsCheckYourAnswersViewModel(
       "Awesome benefit from TestCompany",
       "Hello",
       "Before 6 April",

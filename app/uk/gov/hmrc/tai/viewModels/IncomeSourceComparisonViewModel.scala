@@ -19,10 +19,9 @@ package uk.gov.hmrc.tai.viewModels
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.filters.TaxAccountFilter
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.domain.income.{Live, NotLive, TaxCodeIncome, TaxCodeIncomeSourceStatus}
+import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.ViewModelHelper
-import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 case class IncomeSourceComparisonViewModel(
   employmentIncomeSourceDetail: Seq[IncomeSourceComparisonDetail],
@@ -123,12 +122,3 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
     }
   }
 }
-
-case class IncomeSourceComparisonDetail(
-  empId: Int,
-  name: String,
-  amountCY: String,
-  amountCYPlusOne: String,
-  isLive: Boolean)
-
-case class IncomeSourceDetail(name: String, empId: Int, amount: String, taxYearStatus: String, isLive: Boolean)

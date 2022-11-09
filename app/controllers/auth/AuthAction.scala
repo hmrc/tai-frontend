@@ -23,47 +23,18 @@ import play.api.Logging
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.v2.{Retrievals, TrustedHelper}
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name, ~}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class AuthedUser(
-  validNino: String,
-  utr: Option[String],
-  providerType: Option[String],
-  confidenceLevel: ConfidenceLevel,
-  trustedHelper: Option[TrustedHelper]) {
-  def nino: Nino = Nino(validNino)
-}
-
-object AuthedUser {
-  def apply(
-    nino: Option[String],
-    saUtr: Option[String],
-    providerType: Option[String],
-    confidenceLevel: ConfidenceLevel): AuthedUser = {
-    val validNino = nino.getOrElse("")
-    AuthedUser(validNino, saUtr, providerType, confidenceLevel, None)
-  }
-
-  def apply(
-    trustedHelper: TrustedHelper,
-    saUtr: Option[String],
-    providerType: Option[String],
-    confidenceLevel: ConfidenceLevel): AuthedUser =
-    AuthedUser(
-      trustedHelper.principalNino,
-      saUtr,
-      providerType,
-      confidenceLevel,
-      Some(trustedHelper)
-    )
-}
+@ImplementedBy(classOf[AuthActionImpl])
+trait AuthAction
+    extends ActionBuilder[InternalAuthenticatedRequest, AnyContent]
+    with ActionFunction[Request, InternalAuthenticatedRequest]
 
 @Singleton
 class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: MessagesControllerComponents)(
@@ -133,8 +104,3 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
   override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
   override protected def executionContext: ExecutionContext = ec
 }
-
-@ImplementedBy(classOf[AuthActionImpl])
-trait AuthAction
-    extends ActionBuilder[InternalAuthenticatedRequest, AnyContent]
-    with ActionFunction[Request, InternalAuthenticatedRequest]

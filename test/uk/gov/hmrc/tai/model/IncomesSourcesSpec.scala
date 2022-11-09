@@ -91,7 +91,7 @@ class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
     forAll(rtiAvailableIncomeSource, rtiAvailableIncomeSource, rtiAvailableIncomeSource) {
       (pensionIncome, employmentIncome, ceasedIncome) =>
         val incomeSources =
-          IncomesSources(pensionIncome, employmentIncome, ceasedIncome)
+          IncomeSources(pensionIncome, employmentIncome, ceasedIncome)
 
         incomeSources.isRtiAvailable mustBe true
     }
@@ -102,7 +102,7 @@ class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
       (pensionIncome, employmentIncome, ceasedIncome) =>
         whenever(pensionIncome.nonEmpty) {
           val incomeSources =
-            IncomesSources(pensionIncome, employmentIncome, ceasedIncome)
+            IncomeSources(pensionIncome, employmentIncome, ceasedIncome)
 
           incomeSources.isRtiAvailable mustBe false
         }
@@ -114,7 +114,7 @@ class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
       (pensionIncome, employmentIncome, ceasedIncome) =>
         whenever(employmentIncome.nonEmpty) {
           val incomeSources =
-            IncomesSources(pensionIncome, employmentIncome, ceasedIncome)
+            IncomeSources(pensionIncome, employmentIncome, ceasedIncome)
 
           incomeSources.isRtiAvailable mustBe false
         }
@@ -126,7 +126,7 @@ class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
       (pensionIncome, employmentIncome, ceasedIncome) =>
         whenever(ceasedIncome.nonEmpty) {
           val incomeSources =
-            IncomesSources(pensionIncome, employmentIncome, ceasedIncome)
+            IncomeSources(pensionIncome, employmentIncome, ceasedIncome)
 
           incomeSources.isRtiAvailable mustBe false
         }
@@ -138,7 +138,7 @@ class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
       (pensionIncome, employmentIncome, ceasedIncome) =>
         whenever(pensionIncome.nonEmpty && employmentIncome.nonEmpty && ceasedIncome.nonEmpty) {
           val incomeSources =
-            IncomesSources(pensionIncome, employmentIncome, ceasedIncome)
+            IncomeSources(pensionIncome, employmentIncome, ceasedIncome)
 
           incomeSources.isRtiAvailable mustBe false
         }
