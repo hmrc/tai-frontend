@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.{Inject, Named}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-
+import cats.implicits._
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm
@@ -46,18 +46,16 @@ class IncomeUpdatePayPeriodController @Inject()(
   def payPeriodPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    for {
-      incomeSourceEither <- IncomeSource.create(journeyCacheService)
-      payPeriod :: payPeriodInDays :: _ <- journeyCacheService
-                                            .optionalValues(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
-
-    } yield {
-      val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
-      incomeSourceEither match {
-        case Right(incomeSource) => Ok(payPeriodView(form, incomeSource.id, incomeSource.name))
-        case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-      }
+    (
+      IncomeSource.create(journeyCacheService),
+      journeyCacheService
+        .optionalValues(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)).mapN {
+      case (Right(incomeSource), payPeriod :: payPeriodInDays :: _) =>
+        val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
+        Ok(payPeriodView(form, incomeSource.id, incomeSource.name))
+      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
+
   }
 
   def handlePayPeriod: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
