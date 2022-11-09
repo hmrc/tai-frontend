@@ -187,7 +187,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
 
     "show the hypothetical banner" in {
 
-      doc(viewWithLess) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.taxCodes.banner"))
+      doc(viewWithLess) must haveParagraphWithText(messages("tai.incomeTaxComparison.taxCodes.banner"))
     }
 
     "display print button link with javascript print function " in {
