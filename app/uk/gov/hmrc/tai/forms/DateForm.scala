@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.forms
 
 import uk.gov.hmrc.tai.forms.formValidator.FormValidator
 import java.time.LocalDate
+import cats.implicits._
 import play.api.data.Forms.of
 import play.api.data.format.Formatter
 import play.api.data.{FieldMapping, Form, FormError}
@@ -44,11 +45,13 @@ case class DateForm(validations: Seq[(LocalDate => Boolean, String)], blankDateM
 
         if (errors.isEmpty) {
           val inputDate: Option[LocalDate] = Try(
-            for {
-              day   <- data.get(DateFormDay).map(Integer.parseInt)
-              month <- data.get(DateFormMonth).map(Integer.parseInt)
-              year  <- data.get(DateFormYear).map(Integer.parseInt)
-            } yield LocalDate.of(year, month, day)
+            (
+              data.get(DateFormDay).map(Integer.parseInt),
+              data.get(DateFormMonth).map(Integer.parseInt),
+              data.get(DateFormYear).map(Integer.parseInt)).mapN {
+              case (day, month, year) =>
+                LocalDate.of(year, month, day)
+            }
           ).getOrElse(None)
 
           inputDate match {
