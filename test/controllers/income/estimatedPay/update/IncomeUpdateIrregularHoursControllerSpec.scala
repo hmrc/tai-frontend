@@ -36,7 +36,7 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
+import uk.gov.hmrc.tai.util.constants.TaiConstants.MonthAndYear
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
 import views.html.incomes.{ConfirmAmountEnteredView, EditIncomeIrregularHoursView, EditSuccessView}
@@ -143,7 +143,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         val cacheMap = Map(
           UpdateIncome_NameKey      -> "name",
           UpdateIncome_PayToDateKey -> "123",
-          UpdateIncome_DateKey      -> LocalDate.now().format(DateTimeFormatter.ofPattern(MONTH_AND_YEAR))
+          UpdateIncome_DateKey      -> LocalDate.now().format(DateTimeFormatter.ofPattern(MonthAndYear))
         )
 
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
@@ -193,7 +193,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
           messages(
             "tai.irregular.error.error.incorrectTaxableIncome",
             123,
-            LocalDate.now().format(DateTimeFormatter.ofPattern(MONTH_AND_YEAR)),
+            LocalDate.now().format(DateTimeFormatter.ofPattern(MonthAndYear)),
             "name"))
       }
 

@@ -51,18 +51,18 @@ object PotentialUnderpaymentViewModel extends ViewModelHelper with ReturnLink {
         case (cy, ny) if cy > 0 && ny <= 0 =>
           Some(
             Map(
-              valueOfIycdcPayment       -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(),
-              iycdcReconciliationStatus -> currentYear))
+              ValueOfIycdcPayment       -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(),
+              IycdcReconciliationStatus -> CurrentYear))
         case (cy, ny) if cy == 0 && ny > 0 =>
           Some(
             Map(
-              valueOfIycdcPayment       -> taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne.toString(),
-              iycdcReconciliationStatus -> nextYear))
+              ValueOfIycdcPayment       -> taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne.toString(),
+              IycdcReconciliationStatus -> NextYear))
         case (cy, ny) if cy > 0 && ny > 0 =>
           Some(
             Map(
-              valueOfIycdcPayment       -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(),
-              iycdcReconciliationStatus -> currentAndNextYear))
+              ValueOfIycdcPayment       -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(),
+              IycdcReconciliationStatus -> CurrentAndNextYear))
         case _ => None
       }
 

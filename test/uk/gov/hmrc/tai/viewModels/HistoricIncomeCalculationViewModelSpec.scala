@@ -22,7 +22,7 @@ import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.constants.TaiConstants.EYU_DATE_FORMAT
+import uk.gov.hmrc.tai.util.constants.TaiConstants.EyuDateFormat
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
@@ -94,7 +94,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         sut(employments = List(sampleEmployment)).endOfTaxYearUpdateMessages mustBe Seq(
           Messages(
             "tai.income.calculation.eyu.single.nationalInsurance",
-            date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
             "10.0 less"))
       }
     }
@@ -220,7 +220,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         sut mustBe Seq(
           Messages(
             "tai.income.calculation.eyu.single.taxPaid",
-            date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
             "100.0 more"))
       }
 
@@ -231,7 +231,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         sut mustBe Seq(
           Messages(
             "tai.income.calculation.eyu.single.nationalInsurance",
-            date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
             "100.0 more"))
       }
 
@@ -242,7 +242,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         sut mustBe Seq(
           Messages(
             "tai.income.calculation.eyu.single.taxableincome",
-            date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
             "100.0 less"))
       }
 
@@ -263,11 +263,11 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         sut mustBe Seq(
           Messages(
             "tai.income.calculation.eyu.multi.nationalInsurance",
-            date1.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            date1.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
             "10.0 less"),
           Messages(
             "tai.income.calculation.eyu.multi.taxPaid",
-            date2.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            date2.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
             "100.0 more")
         )
       }
@@ -283,11 +283,11 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         sut mustBe Seq(
           Messages(
             "tai.income.calculation.eyu.multi.nationalInsurance",
-            date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
             "10.0 less"),
           Messages(
             "tai.income.calculation.eyu.multi.taxableincome",
-            date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)),
+            date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
             "100.0 more")
         )
       }

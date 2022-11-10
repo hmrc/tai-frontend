@@ -20,7 +20,7 @@ import java.time.LocalDate
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.constants.TaiConstants.EYU_DATE_FORMAT
+import uk.gov.hmrc.tai.util.constants.TaiConstants.EyuDateFormat
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import java.time.format.DateTimeFormatter
@@ -85,7 +85,7 @@ object HistoricIncomeCalculationViewModel {
         case (NationalInsuranceAdjustment, size) if size > 1 => "tai.income.calculation.eyu.multi.nationalInsurance"
       }
 
-      Messages(messageKey, date.format(DateTimeFormatter.ofPattern(EYU_DATE_FORMAT)), lessOrMore(adjustment.amount))
+      Messages(messageKey, date.format(DateTimeFormatter.ofPattern(EyuDateFormat)), lessOrMore(adjustment.amount))
     }
   }
 

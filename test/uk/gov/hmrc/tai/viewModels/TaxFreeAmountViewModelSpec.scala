@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategor
 import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
+import uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign
 import utils.BaseSpec
 
 import java.time.format.DateTimeFormatter

@@ -18,41 +18,41 @@ package uk.gov.hmrc.tai.util.constants
 
 object TaiConstants {
 
-  val SERVICE_IDENTIFIER = "TES"
+  val ServiceIdentifier = "TES"
 
-  val incomeTaxPage = 1
-  val incomePage = 2
-  val taxFreeAmountPage = 3
-  val taxCodePage = 4
-  val maxCompareTaxCodes = 4
-  val maxTaxCodes = 4
-  val maxVisibleTaxCodes = 3
-  val nextTaxYearDetails = 1
-  val currentTaxYearDetails = 2
-  val lastTaxYearDetails = 3
-  val claimATaxRefund = 4
+  val IncomeTaxPage = 1
+  val IncomePage = 2
+  val TaxFreeAmountPage = 3
+  val TaxCodePage = 4
+  val MaxCompareTaxCodes = 4
+  val MaxTaxCodes = 4
+  val MaxVisibleTaxCodes = 3
+  val NextTaxYearDetails = 1
+  val CurrentTaxYearDetails = 2
+  val LastTaxYearDetails = 3
+  val ClaimATaxRefund = 4
 
-  val notApplicable = "Not applicable"
+  val NotApplicable = "Not applicable"
 
-  val IABD_TYPE_UKDIVIDENDS = 76
+  val IabdTypeUKDividends = 76
   val DividendZeroBandType = "SDR"
 
-  val MCI_GATEKEEPER_TYPE = 6
-  val MCI_GATEKEEPER_ID = 6
-  val MCI_GATEKEEPER_DESCR = "Manual Correspondence Indicator"
+  val MciGatekeeperType = 6
+  val MciGatekeeperID = 6
+  val MciGatekeeperDescr = "Manual Correspondence Indicator"
 
-  val defaultPrimaryPay = 15000
-  val defaultSecondaryPay = 5000
+  val DefaultPrimaryPay = 15000
+  val DefaultSecondaryPay = 5000
 
-  val TOTAL_TAX_DELTA = "TotalTaxDelta"
-  val TAXABLE_PAY_DELTA = "TaxablePayDelta"
-  val EMPEE_CONTRIBNS_DELTA = "EmpeeContribnsDelta"
-  val EYU_DATE_FORMAT = "dd/MM/yyyy"
-  val TAX_DATE_WORD_MONTH_FORMAT = "d MMMM yyyy"
-  val MONTH_AND_YEAR = "MMMM yyyy"
+  val TotalTaxDelta = "TotalTaxDelta"
+  val TaxablePayDelta = "TaxablePayDelta"
+  val EmpeeContribnsDelta = "EmpeeContribnsDelta"
+  val EyuDateFormat = "dd/MM/yyyy"
+  val TaxDateWordMonthFormat = "d MMMM yyyy"
+  val MonthAndYear = "MMMM yyyy"
 
-  val CEASED_MINUS_ONE = "CY-1"
-  val CEASED_MINUS_TWO = "CY-2"
+  val CeasedMinusOne = "CY-1"
+  val CeasedMinusTwo = "CY-2"
   val CeasedMinusThree = "CY-3"
 
   val EmploymentLive = 1
@@ -104,14 +104,14 @@ object TaiConstants {
   val EmergencyTaxCodeSuffix = "X"
   val ScottishTaxCodePrefix = "S"
 
-  val encodedMinusSign = "\u2212"
+  val EncodedMinusSign = "\u2212"
 
   val CurrentTaxYear = "currentTaxYear"
   val CurrentTaxYearPlusOne = "currentTaxYearPlusOne"
 
   val HigherRateBandIncome = 150000
 
-  val updateIncomeConfirmedAmountKey = "updateIncomeConfirmedAmountKey"
+  val UpdateIncomeConfirmedAmountKey = "updateIncomeConfirmedAmountKey"
 
   val LondonEuropeTimezone = "Europe/London"
 }

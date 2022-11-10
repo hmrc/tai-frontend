@@ -23,7 +23,7 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 import uk.gov.hmrc.tai.util.FormHelper
-import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
+import uk.gov.hmrc.tai.util.constants.TaiConstants.MonthAndYear
 
 import java.time.format.DateTimeFormatter
 import play.api.libs.json.OFormat
@@ -36,7 +36,7 @@ object AmountComparatorForm {
   def createForm(latestPayDate: Option[String] = None, taxablePayYTD: Option[BigDecimal] = None)(
     implicit messages: Messages): Form[AmountComparatorForm] = {
 
-    val fallbackDate = LocalDate.now().format(DateTimeFormatter.ofPattern(MONTH_AND_YEAR))
+    val fallbackDate = LocalDate.now().format(DateTimeFormatter.ofPattern(MonthAndYear))
 
     val latestPaymentDate = latestPayDate.fold(fallbackDate)(identity)
 

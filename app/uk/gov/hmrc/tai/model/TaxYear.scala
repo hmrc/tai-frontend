@@ -25,18 +25,18 @@ import javax.inject.Inject
 
 case class TaxYear(year: Int) extends Ordered[TaxYear] {
   require(year.toString.length == 4, "Invalid year")
-  val TAX_MONTH_APRIL = 4
-  val START_DATE = 6
-  val END_DATE = 5
-  val ONE = 1
+  val TaxMonthApril = 4
+  val StartDate = 6
+  val EndDate = 5
+  val One = 1
 
-  def start: LocalDate = LocalDate.of(year, TAX_MONTH_APRIL, START_DATE)
-  def end: LocalDate = LocalDate.of(year + ONE, TAX_MONTH_APRIL, END_DATE)
-  def next: TaxYear = TaxYear(year + ONE)
+  def start: LocalDate = LocalDate.of(year, TaxMonthApril, StartDate)
+  def end: LocalDate = LocalDate.of(year + One, TaxMonthApril, EndDate)
+  def next: TaxYear = TaxYear(year + One)
   private def next(add: Int) = TaxYear(year + add)
-  def prev: TaxYear = TaxYear(year - ONE)
-  def startPrev: LocalDate = LocalDate.of(prev.year, TAX_MONTH_APRIL, START_DATE)
-  def endPrev: LocalDate = LocalDate.of(prev.year + ONE, TAX_MONTH_APRIL, END_DATE)
+  def prev: TaxYear = TaxYear(year - One)
+  def startPrev: LocalDate = LocalDate.of(prev.year, TaxMonthApril, StartDate)
+  def endPrev: LocalDate = LocalDate.of(prev.year + One, TaxMonthApril, EndDate)
   def compare(that: TaxYear): Int = this.year compare that.year
   def twoDigitRange: String = s"${start.getYear % 100}-${end.getYear % 100}"
   def fourDigitRange: String = s"${start.getYear}-${end.getYear}"
@@ -58,18 +58,18 @@ object TaxYear {
 
     object Year {
       val SimpleYear = "([12][0-9])?([0-9]{2})".r
-      val NINETEENTH_CENTURY = 1900
-      val TWENTIETH_CENTURY = 2000
-      val CENTURY = 100
-      val CUT_OFF_YEAR = 70
+      val NineteenthCentury = 1900
+      val TwentiethCentury = 2000
+      val Century = 100
+      val CutOffYear = 70
 
       def unapply(in: String): Option[Int] = in match {
         case SimpleYear(cenStr, yearStr) =>
           val year = yearStr.toInt
           val century = Option(cenStr).filter(_.nonEmpty) match {
-            case None if year > CUT_OFF_YEAR => NINETEENTH_CENTURY
-            case None                        => TWENTIETH_CENTURY
-            case Some(x)                     => x.toInt * CENTURY
+            case None if year > CutOffYear => NineteenthCentury
+            case None                        => TwentiethCentury
+            case Some(x)                     => x.toInt * Century
           }
           Some(century + year)
         case _ => None

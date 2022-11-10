@@ -21,7 +21,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, PotentiallyCeased}
 import uk.gov.hmrc.tai.model.domain.{JobSeekerAllowanceIncome, OtherIncome, PensionIncome, TaxedIncome}
-import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
+import uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 
 class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData {

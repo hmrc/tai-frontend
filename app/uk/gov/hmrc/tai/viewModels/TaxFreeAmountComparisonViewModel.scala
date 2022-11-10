@@ -34,15 +34,15 @@ case class TaxFreeAmountComparisonViewModel(
   def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
   val hasAdditions: Boolean = additions.additions.nonEmpty
   val hasDeductions: Boolean = deductions.deductions.nonEmpty
-  private val PERSONAL_ALLOWANCE_CY = 0
-  private val PERSONAL_ALLOWANCE_CY_PLUS_ONE = 1
+  private val PersonalAllowanceCy = 0
+  private val PersonalAllowanceCyPlusOne = 1
   val hasPersonalAllowanceIncrease: Boolean =
-    personalAllowance.values(PERSONAL_ALLOWANCE_CY_PLUS_ONE) > personalAllowance.values(PERSONAL_ALLOWANCE_CY)
+    personalAllowance.values(PersonalAllowanceCyPlusOne) > personalAllowance.values(PersonalAllowanceCy)
 
   def personalAllowanceIncreaseInfo(implicit messages: Messages): Option[String] =
     if (hasPersonalAllowanceIncrease) {
       val personallAllowanceCYPlusOneAmount =
-        MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(personalAllowance.values(PERSONAL_ALLOWANCE_CY_PLUS_ONE), 0))
+        MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(personalAllowance.values(PersonalAllowanceCyPlusOne), 0))
       Some(
         messages(
           "tai.incomeTaxComparison.taxFreeAmount.PA.information1",
