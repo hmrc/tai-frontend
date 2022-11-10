@@ -89,7 +89,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
           )
           val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
 
-          sut.annualTaxFreeAmount mustBe s"$encodedMinusSign£1,200"
+          sut.annualTaxFreeAmount mustBe s"$EncodedMinusSign£1,200"
         }
       }
 
@@ -235,7 +235,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
           sut mustBe TaxFreeAmountViewModel(
             expectedHeader,
             expectedTitle,
-            s"$encodedMinusSign£6,200",
+            s"$EncodedMinusSign£6,200",
             TaxFreeAmountSummaryViewModel(Seq(
               emptyPersonalAllowanceItem,
               emptyAdditionsItem,
@@ -274,7 +274,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
                   )
                 )
               ),
-              totalsItem(s"$encodedMinusSign£6,200")
+              totalsItem(s"$EncodedMinusSign£6,200")
             ))
           )
         }
@@ -331,7 +331,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
               Seq(
                 TaxFreeAmountSummaryRowViewModel(
                   Messages("tai.taxFreeAmount.table.totals.label"),
-                  s"$encodedMinusSign£1,988",
+                  s"$EncodedMinusSign£1,988",
                   ChangeLinkViewModel(isDisplayed = false)
                 ))
             )

@@ -68,8 +68,8 @@ object TaxYear {
           val year = yearStr.toInt
           val century = Option(cenStr).filter(_.nonEmpty) match {
             case None if year > CutOffYear => NineteenthCentury
-            case None                        => TwentiethCentury
-            case Some(x)                     => x.toInt * Century
+            case None                      => TwentiethCentury
+            case Some(x)                   => x.toInt * Century
           }
           Some(century + year)
         case _ => None

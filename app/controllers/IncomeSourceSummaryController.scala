@@ -71,11 +71,11 @@ class IncomeSourceSummaryController @Inject()(
       estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString),
       cacheUpdatedIncomeAmountFuture).mapN {
       case (
-        TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
-        Some(employment),
-        benefitsDetails,
-        estimatedPayCompletion,
-        cacheUpdatedIncomeAmount) =>
+          TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+          Some(employment),
+          benefitsDetails,
+          estimatedPayCompletion,
+          cacheUpdatedIncomeAmount) =>
         val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
 
         val incomeDetailsViewModel = IncomeSourceSummaryViewModel(

@@ -62,8 +62,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             nonTaxCodeIncome,
             noIncomesSources,
             Seq())
-          sut.taxFreeAmount mustBe s"$encodedMinusSign£12,345"
-          sut.estimatedIncomeTaxAmount mustBe s"$encodedMinusSign£54,321"
+          sut.taxFreeAmount mustBe s"$EncodedMinusSign£12,345"
+          sut.estimatedIncomeTaxAmount mustBe s"$EncodedMinusSign£54,321"
         }
       }
 
