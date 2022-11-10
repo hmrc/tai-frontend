@@ -45,48 +45,47 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
 
         <p class="govuk-body flush--top">
             @if(incomeSource.displayTaxCode) {
+                @incomeSource.taxCodeUrl.map { taxCodeUrl =>
+                    @link(
+                    id = Some(s"${typeLabel}${idx}TaxCodeLink"),
+                    url = taxCodeUrl.url,
+                    copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode),
+                    linkClasses = Seq("display-tax-code-for-print"))
+            <div aria-hidden="true" style="display: none;" id="taxCodeList1">
+                <details class="govuk-details" data-module="govuk-details">
+                    <summary class="govuk-details__summary">
+                                <span class="govuk-details__summary-text">
+                                  @Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode)
+                                </span>
+                    </summary>
+                    <div class="govuk-details__text">
 
-            @incomeSource.taxCodeUrl.map { taxCodeUrl =>
-            @link(
-            id = Some(s"${typeLabel}${idx}TaxCodeLink"),
-            url = taxCodeUrl.url,
-            copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode),
-            linkClasses = Seq("display-tax-code-for-print"))
-        <div aria-hidden="true" style="display: none;" id="taxCodeList1">
-            <details class="govuk-details" data-module="govuk-details">
-                <summary class="govuk-details__summary">
-                            <span class="govuk-details__summary-text">
-                              @Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode)
-                            </span>
-                </summary>
-                <div class="govuk-details__text">
-
-                    <div class="govuk-!-padding-bottom-3">
-                        @for((taxCodeList, listIdx) <-
-                        taxCodeViewModel.get(incomeSource.taxCode).map(_.taxCodeDetails).getOrElse(Seq.empty[DescriptionListViewModel])
-                        zip (Stream from 1)) {
-                        <div id="taxCodeList@{listIdx.toString}">
-                            @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
-                            <div class="govuk-grid-row under-line custom-align">
-                                <div class="govuk-grid-column-one-quarter "
-                                     id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
-                                    <span class="govuk-visually-hidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
-                                    <p aria-hidden="true"
-                                       class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@taxCodeTerm</p>
+                        <div class="govuk-!-padding-bottom-3">
+                            @for((taxCodeList, listIdx) <-
+                            taxCodeViewModel.get(incomeSource.taxCode).map(_.taxCodeDetails).getOrElse(Seq.empty[DescriptionListViewModel])
+                            zip (Stream from 1)) {
+                            <div id="taxCodeList@{listIdx.toString}">
+                                @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
+                                <div class="govuk-grid-row under-line custom-align">
+                                    <div class="govuk-grid-column-one-quarter"
+                                         id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
+                                        <span class="govuk-visually-hidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
+                                        <p aria-hidden="true"
+                                           class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@taxCodeTerm</p>
+                                    </div>
+                                    <div class="govuk-grid-column-three-quarters  fixed-small"
+                                         id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
+                                        <p class="govuk-body-s print">@Html(taxCodeList.descriptionItems(taxCodeTerm))</p>
+                                    </div>
                                 </div>
-                                <div class="govuk-grid-column-three-quarters  fixed-small"
-                                     id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
-                                    <p class="govuk-body-s print">@Html(taxCodeList.descriptionItems(taxCodeTerm))</p>
-                                </div>
+                                }
                             </div>
                             }
                         </div>
-                        }
                     </div>
-                </div>
-            </details>
-        </div>
-        }
+                </details>
+            </div>
+          }
         }
         @if(incomeSource.displayPayrollNumber && typeLabel=="employment"){
         <span id="@{typeLabel}@{idx}PayeNumber" class="carry-over govuk-!-display-block display-block  govuk-body">@messages("tai.income.details.ERN"):@incomeSource.taxDistrictNumber/@incomeSource.payeNumber</span>

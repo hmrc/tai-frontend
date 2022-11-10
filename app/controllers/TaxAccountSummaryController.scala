@@ -82,8 +82,9 @@ class TaxAccountSummaryController @Inject()(
 //                taxCodeIncomes.filter(_.employmentId.contains(id))
 //              }
 
-            val taxCodeIncomesByTaxCode = taxCodeIncomes.groupBy(_.taxCode).mapValues {
-              TaxCodeViewModel(_, scottishTaxRateBands, None, appConfig)
+            val taxCodeIncomesByTaxCode = taxCodeIncomes.groupBy(seq => (seq.taxCode, seq.employmentId)).map {
+              case ((taxCode, maybeEmpId), seq) =>
+                taxCode -> TaxCodeViewModel(seq, scottishTaxRateBands, maybeEmpId, appConfig)
             }
 
             Ok(incomeTaxSummary(vm, taxCodeIncomesByTaxCode, appConfig))
