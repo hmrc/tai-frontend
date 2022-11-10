@@ -16,6 +16,7 @@
 
 package views.html
 
+import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.service.{NoTimeToProcess, ThreeWeeks}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -83,7 +84,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "hide each of the three outline sections: 'income from employment', 'employments that have ended', and 'income from private pensions'" when {
 
       "the associated collections within the view model are empty" in {
-        val docWithoutIncomeSections = doc(template(vm, viewModel, appConfig))
+        val docWithoutIncomeSections = doc(template(noSectionsVm, viewModel, appConfig))
         docWithoutIncomeSections must not(haveDivWithId("incomeFromEmploymentSection"))
         docWithoutIncomeSections must not(haveDivWithId("incomeFromPensionSection"))
         docWithoutIncomeSections must not(haveDivWithId("endedIncomeSection"))
@@ -285,6 +286,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     }
   }
 
+  private val url: Call = controllers.routes.YourTaxCodeController.taxCode(1)
   "individual income detail sections" must {
 
     "display a title derived from the income source name" in {
@@ -302,10 +304,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         "#employment1TaxCodeLink",
         messages("tai.incomeTaxSummary.taxCode.prefix", activeEmployment.taxCode))
 
-      doc must haveElementAtPathWithAttribute(
-        "#employment1TaxCodeLink",
-        "href",
-        controllers.routes.YourTaxCodeController.taxCode(1).url)
+      doc must haveElementAtPathWithAttribute("#employment1TaxCodeLink", "href", url.url)
     }
 
     "omit a tax code when instructed" in {
@@ -523,7 +522,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       displayEndDate = false,
       "view employment details",
       "fake/active/url",
-      Some(controllers.routes.YourTaxCodeController.taxCode(1))
+      Some(url)
     )
   val endedEmployment =
     IncomeSourceViewModel(
