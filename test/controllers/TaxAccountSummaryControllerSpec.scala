@@ -26,7 +26,7 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.IncomesSources
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
@@ -61,6 +61,16 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
             nonMatchedEmployments
           ))
       )
+
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(
+        Future.successful(
+          Map.empty[String, BigDecimal]
+        ))
+
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        Future.successful(
+          TaiSuccessResponseWithPayload(Nil)
+        ))
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK

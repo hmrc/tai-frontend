@@ -76,12 +76,6 @@ class TaxAccountSummaryController @Inject()(
             scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
             vm                   <- taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary)
           } yield {
-            //TODO
-//            val filteredTaxCodes =
-//              employmentId.fold(taxCodeIncomes) { id =>
-//                taxCodeIncomes.filter(_.employmentId.contains(id))
-//              }
-
             val taxCodeIncomesByTaxCode = taxCodeIncomes.groupBy(seq => (seq.taxCode, seq.employmentId)).map {
               case ((taxCode, maybeEmpId), seq) =>
                 taxCode -> TaxCodeViewModel(seq, scottishTaxRateBands, maybeEmpId, appConfig)

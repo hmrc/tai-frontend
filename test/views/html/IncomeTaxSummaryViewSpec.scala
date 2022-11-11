@@ -16,6 +16,7 @@
 
 package views.html
 
+import org.jsoup.Jsoup
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.service.{NoTimeToProcess, ThreeWeeks}
@@ -34,6 +35,14 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       preHeaderAnnouncementText = Some("This section is the income tax summary for"),
       preHeaderText = "Firstname Surname",
       mainHeaderText = "main heading")
+
+    "contain details element with tax code information" in {
+      val view = template(vm, viewModel, appConfig)
+      val doc = Jsoup.parse(view.toString())
+
+      doc must haveElementAtPathWithText("#taxCodeTerm_1_1", messages("tai.taxCode.part.announce", "K") + " K")
+      doc must haveElementWithId("taxCodeDescription_1_1")
+    }
 
     "display iForms status message when an iForm has not been fully processed" in {
       doc must haveElementWithId("isAnyFormInProgressBanner")
@@ -59,7 +68,9 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         rtiAvailable = true,
         "0"
       )
+
       def view: Html = template(vm, viewModel, appConfig)
+
       doc(view) must not(haveElementWithId("isAnyFormInProgressBanner"))
     }
 
@@ -506,6 +517,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         messages("tai.incomeTaxSummary.addMissingIncome.section.otherLink"))
       doc must haveElementAtPathWithAttribute("#addMissingIncomeSourceSection a", "href", appConfig.otherIncomeLinkUrl)
     }
+
   }
 
   val activeEmployment =
@@ -621,7 +633,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   private val template = inject[IncomeTaxSummaryView]
 
   val employerId = 9876543
-  val taxCode = "BR"
+  val taxCode = "1150L"
   val taxCodeDescription1 =
     DescriptionListViewModel("Your tax code for employer1: BR", ListMap("K" -> messages("tai.taxCode.BR")))
 
