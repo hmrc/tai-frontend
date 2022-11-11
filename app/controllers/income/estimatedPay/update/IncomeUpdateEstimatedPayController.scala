@@ -37,7 +37,8 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefixAndSign
-import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
 import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, IncorrectTaxableIncomeView}
 
@@ -57,7 +58,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
+    extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 
   private val logger = Logger(this.getClass)
 
@@ -65,34 +66,38 @@ class IncomeUpdateEstimatedPayController @Inject()(
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 
-      journeyCacheService.mandatoryJourneyValues(UpdateIncome_NameKey, UpdateIncome_IncomeTypeKey).flatMap {
-        case Left(errorMessage) =>
-          logger.warn(errorMessage)
-          Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-        case Right(journeyValues) =>
-          taxAccountService.taxAccountSummary(user.nino, TaxYear()).map {
-            case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
-              val totalEstimatedIncome = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
-              val incomeName = journeyValues.head
-              val incomeType = journeyValues.last
-              Ok(
-                estimatedPayLandingPage(
-                  incomeName,
-                  empId,
-                  totalEstimatedIncome,
-                  incomeType == TaiConstants.IncomeTypePension,
-                  appConfig
-                ))
-            case response: TaiFailureResponse => errorPagesHandler.internalServerError(response.message)
-          }
-      }
+      journeyCacheService
+        .mandatoryJourneyValues(UpdateIncomeConstants.NameKey, UpdateIncomeConstants.IncomeTypeKey)
+        .flatMap {
+          case Left(errorMessage) =>
+            logger.warn(errorMessage)
+            Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+          case Right(journeyValues) =>
+            taxAccountService.taxAccountSummary(user.nino, TaxYear()).map {
+              case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
+                val totalEstimatedIncome =
+                  withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
+                val incomeName = journeyValues.head
+                val incomeType = journeyValues.last
+                Ok(
+                  estimatedPayLandingPage(
+                    incomeName,
+                    empId,
+                    totalEstimatedIncome,
+                    incomeType == TaiConstants.IncomeTypePension,
+                    appConfig
+                  ))
+              case response: TaiFailureResponse => errorPagesHandler.internalServerError(response.message)
+            }
+        }
   }
 
   private def isCachedAmountSameAsEnteredAmount(
     cache: Map[String, String],
     newAmount: Option[BigDecimal],
     empId: Int): Boolean =
-    FormHelper.areEqual(cache.get(s"$UpdateIncome_ConfirmedNewAmountKey-$empId"), newAmount map (_.toString()))
+    FormHelper
+      .areEqual(cache.get(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId"), newAmount map (_.toString()))
 
   def estimatedPayPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -117,11 +122,11 @@ class IncomeUpdateEstimatedPayController @Inject()(
             Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(empId)))
           case Some(newAmount) if newAmount > payYearToDate =>
             val cache = Map(
-              UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
-              UpdateIncome_NewAmountKey      -> calculatedPay.netAnnualPay.map(_.toString).getOrElse("")
+              UpdateIncomeConstants.GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
+              UpdateIncomeConstants.NewAmountKey      -> calculatedPay.netAnnualPay.map(_.toString).getOrElse("")
             )
 
-            val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
+            val isBonusPayment = cache.getOrElse(UpdateIncomeConstants.BonusPaymentsKey, "") == "Yes"
 
             journeyCache(cacheMap = cache) map { _ =>
               val viewModel = EstimatedPayViewModel(

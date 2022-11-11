@@ -36,12 +36,13 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateIncomeConstants
 import utils.BaseSpec
 import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, IncorrectTaxableIncomeView}
 
 import scala.concurrent.Future
 
-class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheConstants {
+class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
@@ -195,7 +196,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec with JourneyCacheC
       "the pay is the same" in {
 
         val result = EstimatedPayPageHarness
-          .setup(currentCache = Map(s"$UpdateIncome_ConfirmedNewAmountKey-${employer.id}" -> "100"))
+          .setup(currentCache = Map(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-${employer.id}" -> "100"))
           .estimatedPayPage(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER

@@ -36,6 +36,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
@@ -45,7 +46,7 @@ import java.time.LocalDate
 import scala.concurrent.Future
 
 class IncomeUpdateCalculatorControllerSpec
-    extends BaseSpec with JsoupMatchers with JourneyCacheConstants with ControllerViewTestHelper with ScalaFutures {
+    extends BaseSpec with JsoupMatchers with ControllerViewTestHelper with ScalaFutures {
 
   val employerId = 1
   val employer: IncomeSource = IncomeSource(id = employerId, name = "sample employer")
@@ -99,9 +100,9 @@ class IncomeUpdateCalculatorControllerSpec
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(eqTo("1"))(any()))
           .thenReturn(Future.successful(hasJourneyCompleted))
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncomeConstants.IdKey))(any()))
           .thenReturn(Future.successful(Right(employer.id)))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncomeConstants.NameKey))(any()))
           .thenReturn(Future.successful(Right(employer.name)))
 
         def onPageLoad(employerId: Int = employerId): Future[Result] =
@@ -160,9 +161,9 @@ class IncomeUpdateCalculatorControllerSpec
           .thenReturn(Future.successful(
             Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))))
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncomeConstants.IdKey))(any()))
           .thenReturn(Future.successful(Right(employer.id)))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncomeConstants.NameKey))(any()))
           .thenReturn(Future.successful(Right(employer.name)))
 
         def duplicateSubmissionWarning(): Future[Result] =
@@ -191,9 +192,9 @@ class IncomeUpdateCalculatorControllerSpec
         when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employer.name, "123456", employmentType))))
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncomeConstants.IdKey))(any()))
           .thenReturn(Future.successful(Right(employer.id)))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncomeConstants.NameKey))(any()))
           .thenReturn(Future.successful(Right(employer.name)))
 
         def submitDuplicateSubmissionWarning(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -284,9 +285,9 @@ class IncomeUpdateCalculatorControllerSpec
               Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
               Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
             )))
-          when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+          when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncomeConstants.IdKey))(any()))
             .thenReturn(Future.successful(Right(employer.id)))
-          when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+          when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncomeConstants.NameKey))(any()))
             .thenReturn(Future.successful(Right(employer.name)))
         }
 
@@ -338,11 +339,11 @@ class IncomeUpdateCalculatorControllerSpec
             .thenReturn(Future.successful(Left("empty cache")))
           when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
         } else {
-          when(journeyCacheService.currentValue(eqTo(UpdateIncome_NewAmountKey))(any()))
+          when(journeyCacheService.currentValue(eqTo(UpdateIncomeConstants.NewAmountKey))(any()))
             .thenReturn(Future.successful(currentValue))
-          when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+          when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncomeConstants.IdKey))(any()))
             .thenReturn(Future.successful(Right(employer.id)))
-          when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+          when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncomeConstants.NameKey))(any()))
             .thenReturn(Future.successful(Right(employer.name)))
         }
 

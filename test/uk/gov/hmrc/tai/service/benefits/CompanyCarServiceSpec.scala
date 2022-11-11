@@ -35,7 +35,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class CompanyCarServiceSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
+class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(carConnector)

@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import utils.BaseSpec
 
-class CheckYourAnswersViewModelSpec extends BaseSpec with JourneyCacheConstants {
+class CheckYourAnswersViewModelSpec extends BaseSpec {
 
   "companion apply method" must {
     "generate four confirmation lines when telephone contact not approved" in {

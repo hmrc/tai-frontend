@@ -36,7 +36,8 @@ import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.AddEmploymentPayrollNumberConstants._
-import uk.gov.hmrc.tai.util.constants.{AddEmploymentFirstPayChoiceConstants, AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.{AddEmploymentFirstPayChoiceConstants, AuditConstants, FormValuesConstants}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.employments._
@@ -48,7 +49,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
+class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(addEmploymentJourneyCacheService)
@@ -57,7 +58,7 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
     "show the employment name form page" when {
       "the request has an authorised session and no previously supplied employment name is present in cache" in {
         val sut = createSUT
-        when(addEmploymentJourneyCacheService.currentValue(Matchers.eq(AddEmployment_NameKey))(any()))
+        when(addEmploymentJourneyCacheService.currentValue(Matchers.eq(AddEmploymentConstants.NameKey))(any()))
           .thenReturn(Future.successful(None))
         val result = sut.addEmploymentName()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -68,7 +69,7 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
       }
       "the request has an authorised session and a previously supplied employment name is present in cache" in {
         val sut = createSUT
-        when(addEmploymentJourneyCacheService.currentValue(Matchers.eq(AddEmployment_NameKey))(any()))
+        when(addEmploymentJourneyCacheService.currentValue(Matchers.eq(AddEmploymentConstants.NameKey))(any()))
           .thenReturn(Future.successful(Some("employer one plc")))
         val result = sut.addEmploymentName()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -169,7 +170,7 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
           sut.employmentStartDateForm.EmploymentFormYear  -> "2017"
         )
         when(addEmploymentJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
+          .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
 
         val result =
           sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
@@ -190,7 +191,7 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
           sut.employmentStartDateForm.EmploymentFormYear  -> date.getYear.toString
         )
         when(addEmploymentJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
+          .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
 
         val result =
           sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
@@ -211,7 +212,7 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
           sut.employmentStartDateForm.EmploymentFormYear  -> (LocalDate.now().getYear + 1).toString
         )
         when(addEmploymentJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
+          .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
 
         val result =
           sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
@@ -229,17 +230,16 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
           sut.employmentStartDateForm.EmploymentFormYear  -> "2017"
         )
         when(addEmploymentJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
+          .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
         val result =
           sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
-        verify(addEmploymentJourneyCacheService, times(1)).cache(
-          Matchers.eq(
-            Map(
-              AddEmployment_NameKey                 -> "Test",
-              AddEmployment_StartDateKey            -> "2017-02-01",
-              AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.NoValue)))(any())
+        verify(addEmploymentJourneyCacheService, times(1)).cache(Matchers.eq(Map(
+          AddEmploymentConstants.NameKey                 -> "Test",
+          AddEmploymentConstants.StartDateKey            -> "2017-02-01",
+          AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.NoValue
+        )))(any())
       }
 
       "form is valid and start date is less than 6 weeks" in {
@@ -252,15 +252,15 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
           sut.employmentStartDateForm.EmploymentFormYear  -> date.getYear.toString
         )
         when(addEmploymentJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
+          .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
         val result =
           sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
         verify(addEmploymentJourneyCacheService, times(1)).cache(Matchers.eq(Map(
-          AddEmployment_NameKey                 -> "Test",
-          AddEmployment_StartDateKey            -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-          AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.YesValue
+          AddEmploymentConstants.NameKey                 -> "Test",
+          AddEmploymentConstants.StartDateKey            -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+          AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue
         )))(any())
       }
     }
@@ -273,8 +273,8 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val employmentName = "TEST"
         when(
           addEmploymentJourneyCacheService.collectedJourneyValues(
-            Matchers.eq(Seq(AddEmployment_NameKey)),
-            Matchers.eq(Seq(AddEmployment_ReceivedFirstPayKey)))(any()))
+            Matchers.eq(Seq(AddEmploymentConstants.NameKey)),
+            Matchers.eq(Seq(AddEmploymentConstants.ReceivedFirstPayKey)))(any()))
           .thenReturn(Future.successful(Right(Seq(employmentName), Seq(None))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -291,8 +291,8 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val employmentName = "TEST"
         when(
           addEmploymentJourneyCacheService.collectedJourneyValues(
-            Matchers.eq(Seq(AddEmployment_NameKey)),
-            Matchers.eq(Seq(AddEmployment_ReceivedFirstPayKey)))(any()))
+            Matchers.eq(Seq(AddEmploymentConstants.NameKey)),
+            Matchers.eq(Seq(AddEmploymentConstants.ReceivedFirstPayKey)))(any()))
           .thenReturn(Future.successful(Right(Seq(employmentName), Seq(Some(FormValuesConstants.YesValue)))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -312,7 +312,7 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
     "redirect user to payroll number page" when {
       "yes is selected" in {
         val sut = createSUT
-        when(addEmploymentJourneyCacheService.cache(mockEq(AddEmployment_ReceivedFirstPayKey), any())(any()))
+        when(addEmploymentJourneyCacheService.cache(mockEq(AddEmploymentConstants.ReceivedFirstPayKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.submitFirstPay()(RequestBuilder
@@ -330,7 +330,7 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
       "no is selected" in {
         val sut = createSUT
         val employmentName = "TEST-Employer"
-        when(addEmploymentJourneyCacheService.cache(mockEq(AddEmployment_ReceivedFirstPayKey), any())(any()))
+        when(addEmploymentJourneyCacheService.cache(mockEq(AddEmploymentConstants.ReceivedFirstPayKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.submitFirstPay()(
@@ -347,7 +347,7 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
       "no is selected" in {
         val sut = createSUT
         val employmentName = "TEST-Employer"
-        when(addEmploymentJourneyCacheService.mandatoryJourneyValue(Matchers.eq(AddEmployment_NameKey))(any()))
+        when(addEmploymentJourneyCacheService.mandatoryJourneyValue(Matchers.eq(AddEmploymentConstants.NameKey))(any()))
           .thenReturn(Future.successful(Right(employmentName)))
 
         Await.result(
@@ -370,7 +370,7 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val sut = createSUT
         val employmentName = "TEST-Employer"
 
-        when(addEmploymentJourneyCacheService.mandatoryJourneyValue(Matchers.eq(AddEmployment_NameKey))(any()))
+        when(addEmploymentJourneyCacheService.mandatoryJourneyValue(Matchers.eq(AddEmploymentConstants.NameKey))(any()))
           .thenReturn(Future.successful(Right(employmentName)))
 
         val result = sut.submitFirstPay()(
@@ -391,8 +391,8 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val sut = createSUT
         val employerName = "TEST"
         val cache = Map(
-          AddEmployment_NameKey                 -> employerName,
-          AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
+          AddEmploymentConstants.NameKey                 -> employerName,
+          AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
         when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -409,10 +409,10 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val sut = createSUT
         val employerName = "TEST"
         val cache = Map(
-          AddEmployment_NameKey                  -> employerName,
-          AddEmployment_StartDateWithinSixWeeks  -> FormValuesConstants.YesValue,
-          AddEmployment_PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
-          AddEmployment_PayrollNumberKey         -> "should be ignored"
+          AddEmploymentConstants.NameKey                  -> employerName,
+          AddEmploymentConstants.StartDateWithinSixWeeks  -> FormValuesConstants.YesValue,
+          AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
+          AddEmploymentConstants.PayrollNumberKey         -> "should be ignored"
         )
         when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
@@ -430,10 +430,10 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val sut = createSUT
         val employerName = "TEST"
         val cache = Map(
-          AddEmployment_NameKey                  -> employerName,
-          AddEmployment_StartDateWithinSixWeeks  -> FormValuesConstants.YesValue,
-          AddEmployment_PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
-          AddEmployment_PayrollNumberKey         -> "should be displayed"
+          AddEmploymentConstants.NameKey                  -> employerName,
+          AddEmploymentConstants.StartDateWithinSixWeeks  -> FormValuesConstants.YesValue,
+          AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
+          AddEmploymentConstants.PayrollNumberKey         -> "should be displayed"
         )
         when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
@@ -456,8 +456,8 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val sut = createSUT
         val payrollNo = "1234"
         val mapWithPayrollNumber = Map(
-          AddEmployment_PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
-          AddEmployment_PayrollNumberKey         -> payrollNo
+          AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
+          AddEmploymentConstants.PayrollNumberKey         -> payrollNo
         )
         when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any()))
           .thenReturn(Future.successful(mapWithPayrollNumber))
@@ -480,8 +480,8 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val sut = createSUT
         val payrollNo = "1234"
         val mapWithPayrollNumber = Map(
-          AddEmployment_PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
-          AddEmployment_PayrollNumberKey         -> payrollNo
+          AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
+          AddEmploymentConstants.PayrollNumberKey         -> payrollNo
         )
         when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any()))
           .thenReturn(Future.successful(mapWithPayrollNumber))
@@ -500,8 +500,8 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val sut = createSUT
         val payrollNo = Messages("tai.addEmployment.employmentPayrollNumber.notKnown")
         val mapWithPayrollNumber = Map(
-          AddEmployment_PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
-          AddEmployment_PayrollNumberKey         -> payrollNo
+          AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
+          AddEmploymentConstants.PayrollNumberKey         -> payrollNo
         )
 
         when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any()))
@@ -524,8 +524,8 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val sut = createSUT
         val payrollNo = Messages("tai.addEmployment.employmentPayrollNumber.notKnown")
         val mapWithPayrollNumber = Map(
-          AddEmployment_PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
-          AddEmployment_PayrollNumberKey         -> payrollNo
+          AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
+          AddEmploymentConstants.PayrollNumberKey         -> payrollNo
         )
 
         when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any()))
@@ -548,8 +548,8 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val sut = createSUT
         val employerName = "TEST"
         val cache = Map(
-          AddEmployment_NameKey                 -> employerName,
-          AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
+          AddEmploymentConstants.NameKey                 -> employerName,
+          AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
         when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.submitEmploymentPayrollNumber()(
@@ -615,8 +615,8 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
 
         val expectedCache =
           Map(
-            AddEmployment_TelephoneQuestionKey -> FormValuesConstants.YesValue,
-            AddEmployment_TelephoneNumberKey   -> "12345678")
+            AddEmploymentConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
+            AddEmploymentConstants.TelephoneNumberKey   -> "12345678")
         when(addEmploymentJourneyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(expectedCache))
         val result = sut.submitTelephoneNumber()(
@@ -635,7 +635,9 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val sut = createSUT
 
         val expectedCacheWithErasingNumber =
-          Map(AddEmployment_TelephoneQuestionKey -> FormValuesConstants.NoValue, AddEmployment_TelephoneNumberKey -> "")
+          Map(
+            AddEmploymentConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
+            AddEmploymentConstants.TelephoneNumberKey   -> "")
         when(addEmploymentJourneyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
         val result = sut.submitTelephoneNumber()(
@@ -750,8 +752,8 @@ class AddEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
         when(
           trackSuccessJourneyCacheService
-            .cache(Matchers.eq(TrackSuccessfulJourney_AddEmploymentKey), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_AddEmploymentKey -> "true")))
+            .cache(Matchers.eq(TrackSuccessfulJourneyConstants.AddEmploymentKey), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true")))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 

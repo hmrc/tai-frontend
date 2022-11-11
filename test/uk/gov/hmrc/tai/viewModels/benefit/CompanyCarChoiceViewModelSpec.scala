@@ -19,14 +19,16 @@ package uk.gov.hmrc.tai.viewModels.benefit
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import utils.BaseSpec
 
-class CompanyCarChoiceViewModelSpec extends BaseSpec with JourneyCacheConstants {
+class CompanyCarChoiceViewModelSpec extends BaseSpec {
 
   "Company car view model" must {
 
     "create instance of view model" when {
 
       "company car model and provider are present in the provided cache map" in {
-        val cacheMap = Map[String, String](CompanyCar_CarModelKey -> "XJ", CompanyCar_CarProviderKey -> "company name")
+        val cacheMap = Map[String, String](
+          CompanyCarConstants.CarModelKey    -> "XJ",
+          CompanyCarConstants.CarProviderKey -> "company name")
         val result = CompanyCarChoiceViewModel(cacheMap)
         result mustBe CompanyCarChoiceViewModel("XJ", "company name")
       }
@@ -34,13 +36,13 @@ class CompanyCarChoiceViewModelSpec extends BaseSpec with JourneyCacheConstants 
       "throw a runtime exception" when {
 
         "car model is absent from the provided cache map" in {
-          val cacheMap = Map[String, String](CompanyCar_CarProviderKey -> "company name")
+          val cacheMap = Map[String, String](CompanyCarConstants.CarProviderKey -> "company name")
           val ex = the[RuntimeException] thrownBy CompanyCarChoiceViewModel(cacheMap)
           ex.getMessage mustBe "No company car model found in supplied cache map"
         }
 
         "car provider is absent from the provided cache map" in {
-          val cacheMap = Map[String, String](CompanyCar_CarModelKey -> "XJ")
+          val cacheMap = Map[String, String](CompanyCarConstants.CarModelKey -> "XJ")
           val ex = the[RuntimeException] thrownBy CompanyCarChoiceViewModel(cacheMap)
           ex.getMessage mustBe "No company car provider found in supplied cache map"
         }

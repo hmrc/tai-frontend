@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.FutureOps.FutureEitherStringOps
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
 import views.html.incomes.{ConfirmAmountEnteredView, EditIncomeIrregularHoursView, EditSuccessView}
@@ -55,18 +55,20 @@ class IncomeUpdateIrregularHoursController @Inject()(
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants {
+    extends TaiBaseController(mcc) {
 
   private val logger = Logger(this.getClass)
 
   private val taxCodeIncomeInfoToCache = (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
     val defaultCaching = Map[String, String](
-      UpdateIncome_NameKey      -> taxCodeIncome.name,
-      UpdateIncome_PayToDateKey -> taxCodeIncome.amount.toString
+      UpdateIncomeConstants.NameKey      -> taxCodeIncome.name,
+      UpdateIncomeConstants.PayToDateKey -> taxCodeIncome.amount.toString
     )
 
-    payment.fold(defaultCaching)(payment =>
-      defaultCaching + (UpdateIncome_DateKey -> payment.date.format(DateTimeFormatter.ofPattern(MONTH_AND_YEAR))))
+    payment.fold(defaultCaching)(
+      payment =>
+        defaultCaching + (UpdateIncomeConstants.DateKey -> payment.date.format(
+          DateTimeFormatter.ofPattern(MONTH_AND_YEAR))))
   }
 
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -98,8 +100,12 @@ class IncomeUpdateIrregularHoursController @Inject()(
     implicit request =>
       val collectedValues = journeyCacheService
         .collectedJourneyValues(
-          Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_PayToDateKey),
-          Seq(s"$UpdateIncome_ConfirmedNewAmountKey-$employmentId"))
+          Seq(
+            UpdateIncomeConstants.NameKey,
+            UpdateIncomeConstants.IrregularAnnualPayKey,
+            UpdateIncomeConstants.PayToDateKey),
+          Seq(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employmentId")
+        )
 
       collectedValues
         .map {
@@ -137,9 +143,9 @@ class IncomeUpdateIrregularHoursController @Inject()(
   def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       journeyCacheService.currentCache flatMap { cache =>
-        val name = cache(UpdateIncome_NameKey)
-        val paymentToDate: String = cache(UpdateIncome_PayToDateKey)
-        val latestPayDate = cache.get(UpdateIncome_DateKey)
+        val name = cache(UpdateIncomeConstants.NameKey)
+        val paymentToDate: String = cache(UpdateIncomeConstants.PayToDateKey)
+        val latestPayDate = cache.get(UpdateIncomeConstants.DateKey)
 
         AmountComparatorForm
           .createForm(latestPayDate, Some(paymentToDate.toInt))
@@ -152,7 +158,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
             },
             validForm =>
               validForm.income.fold(throw new RuntimeException) { income =>
-                journeyCacheService.cache(UpdateIncome_IrregularAnnualPayKey, income) map { _ =>
+                journeyCacheService.cache(UpdateIncomeConstants.IrregularAnnualPayKey, income) map { _ =>
                   Redirect(routes.IncomeUpdateIrregularHoursController.confirmIncomeIrregularHours(employmentId))
                 }
             }
@@ -170,13 +176,16 @@ class IncomeUpdateIrregularHoursController @Inject()(
       }
 
       val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) => {
-        journeyCacheService.cache(s"$UpdateIncome_ConfirmedNewAmountKey-$employmentId", newPay) map { _ =>
+        journeyCacheService.cache(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employmentId", newPay) map { _ =>
           Ok(editSuccess(incomeName, incomeId.toInt))
         }
       }
 
       journeyCacheService
-        .mandatoryJourneyValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey)
+        .mandatoryJourneyValues(
+          UpdateIncomeConstants.NameKey,
+          UpdateIncomeConstants.IrregularAnnualPayKey,
+          UpdateIncomeConstants.IdKey)
         .getOrFail
         .flatMap { cache =>
           val incomeName :: newPay :: incomeId :: Nil = cache.toList

@@ -27,7 +27,7 @@ import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class IncomeCheckYourAnswersViewModelSpec extends BaseSpec with JourneyCacheConstants {
+class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
 
   "companion apply method" must {
     "generate four confirmation lines when telephone contact not approved" in {

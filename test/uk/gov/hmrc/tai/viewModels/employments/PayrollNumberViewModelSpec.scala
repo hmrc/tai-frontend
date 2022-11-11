@@ -19,14 +19,16 @@ package uk.gov.hmrc.tai.viewModels.employments
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 import utils.BaseSpec
 
-class PayrollNumberViewModelSpec extends BaseSpec with JourneyCacheConstants {
+class PayrollNumberViewModelSpec extends BaseSpec {
 
   "Payroll number view model" must {
     "create an instance of view model" when {
 
       "employment name and firstPayChoice is yes" in {
         val cacheMap =
-          Map(AddEmployment_NameKey -> "XJ", AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
+          Map(
+            AddEmploymentConstants.NameKey                 -> "XJ",
+            AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
         val result = PayrollNumberViewModel(cacheMap)
         result mustBe PayrollNumberViewModel(
           "XJ",
@@ -36,7 +38,7 @@ class PayrollNumberViewModelSpec extends BaseSpec with JourneyCacheConstants {
       }
 
       "employment name and firstPayChoice is no" in {
-        val cacheMap = Map(AddEmployment_NameKey -> "XJ")
+        val cacheMap = Map(AddEmploymentConstants.NameKey -> "XJ")
         val result = PayrollNumberViewModel(cacheMap)
         result mustBe PayrollNumberViewModel(
           "XJ",
@@ -44,8 +46,8 @@ class PayrollNumberViewModelSpec extends BaseSpec with JourneyCacheConstants {
           controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url)
       }
 
-      "back url changes if AddEmployment_ReceivedFirstPayKey is present" in {
-        val cacheMap = Map(AddEmployment_NameKey -> "XJ", AddEmployment_ReceivedFirstPayKey -> "asdf")
+      "back url changes if AddEmploymentConstants.ReceivedFirstPayKey is present" in {
+        val cacheMap = Map(AddEmploymentConstants.NameKey -> "XJ", AddEmploymentConstants.ReceivedFirstPayKey -> "asdf")
         val result = PayrollNumberViewModel(cacheMap)
         result mustBe PayrollNumberViewModel(
           "XJ",

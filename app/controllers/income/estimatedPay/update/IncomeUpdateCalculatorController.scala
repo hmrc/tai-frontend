@@ -36,6 +36,7 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
@@ -60,7 +61,7 @@ class IncomeUpdateCalculatorController @Inject()(
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
+    extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 
   val logger = Logger(this.getClass)
 
@@ -91,9 +92,9 @@ class IncomeUpdateCalculatorController @Inject()(
         val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
         journeyCache(
           cacheMap = Map(
-            UpdateIncome_NameKey       -> employment.name,
-            UpdateIncome_IdKey         -> id.toString,
-            UpdateIncome_IncomeTypeKey -> incomeType))
+            UpdateIncomeConstants.NameKey       -> employment.name,
+            UpdateIncomeConstants.IdKey         -> id.toString,
+            UpdateIncomeConstants.IncomeTypeKey -> incomeType))
       case _ => throw new RuntimeException("Not able to find employment")
     }
 
@@ -102,10 +103,11 @@ class IncomeUpdateCalculatorController @Inject()(
       implicit val user = request.taiUser
 
       journeyCacheService.mandatoryJourneyValues(
-        UpdateIncome_NameKey,
-        UpdateIncome_IdKey,
-        s"$UpdateIncome_ConfirmedNewAmountKey-$empId",
-        UpdateIncome_IncomeTypeKey) map {
+        UpdateIncomeConstants.NameKey,
+        UpdateIncomeConstants.IdKey,
+        s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId",
+        UpdateIncomeConstants.IncomeTypeKey
+      ) map {
         case Right(mandatoryValues) =>
           val incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil = mandatoryValues.toList
           val vm = if (incomeType == TaiConstants.IncomeTypePension) {
@@ -124,9 +126,9 @@ class IncomeUpdateCalculatorController @Inject()(
 
       journeyCacheService
         .mandatoryJourneyValues(
-          UpdateIncome_NameKey,
-          s"$UpdateIncome_ConfirmedNewAmountKey-$empId",
-          UpdateIncome_IncomeTypeKey)
+          UpdateIncomeConstants.NameKey,
+          s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId",
+          UpdateIncomeConstants.IncomeTypeKey)
         .getOrFail
         .map { mandatoryJourneyValues =>
           val incomeName :: newAmount :: incomeType :: _ = mandatoryJourneyValues.toList
@@ -160,14 +162,17 @@ class IncomeUpdateCalculatorController @Inject()(
       val collectedValues = journeyCacheService
         .collectedJourneyValues(
           Seq(
-            UpdateIncome_NameKey,
-            UpdateIncome_PayPeriodKey,
-            UpdateIncome_TotalSalaryKey,
-            UpdateIncome_PayslipDeductionsKey,
-            UpdateIncome_BonusPaymentsKey,
-            UpdateIncome_IdKey
+            UpdateIncomeConstants.NameKey,
+            UpdateIncomeConstants.PayPeriodKey,
+            UpdateIncomeConstants.TotalSalaryKey,
+            UpdateIncomeConstants.PayslipDeductionsKey,
+            UpdateIncomeConstants.BonusPaymentsKey,
+            UpdateIncomeConstants.IdKey
           ),
-          Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey, UpdateIncome_OtherInDaysKey)
+          Seq(
+            UpdateIncomeConstants.TaxablePayKey,
+            UpdateIncomeConstants.BonusOvertimeAmountKey,
+            UpdateIncomeConstants.OtherInDaysKey)
         )
 
       collectedValues.map {
@@ -213,10 +218,10 @@ class IncomeUpdateCalculatorController @Inject()(
     val nino = user.nino
 
     (for {
-      employmentName <- EitherT(journeyCacheService.mandatoryJourneyValue(UpdateIncome_NameKey))
-      id             <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
+      employmentName <- EitherT(journeyCacheService.mandatoryJourneyValue(UpdateIncomeConstants.NameKey))
+      id             <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncomeConstants.IdKey))
       income         <- EitherT.right[String](incomeService.employmentAmount(nino, id))
-      netAmount      <- EitherT.right[String](journeyCacheService.currentValue(UpdateIncome_NewAmountKey))
+      netAmount      <- EitherT.right[String](journeyCacheService.currentValue(UpdateIncomeConstants.NewAmountKey))
     } yield {
       val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
       val employmentAmount = income.copy(newAmount = convertedNetAmount)

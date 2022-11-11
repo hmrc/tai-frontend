@@ -41,7 +41,8 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
-import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants}
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.employments._
@@ -52,7 +53,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
+class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(employmentService, endEmploymentJourneyCacheService)
@@ -176,8 +177,8 @@ class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val employment = employmentWithAccounts(List(annualAccount))
 
         val dataToCache = Map(
-          endEmploymentTest.EndEmployment_LatestPaymentDateKey -> date.toString,
-          endEmploymentTest.EndEmployment_NameKey              -> "employer name")
+          endEmploymentTest.EndEmploymentConstants.LatestPaymentDateKey -> date.toString,
+          endEmploymentTest.EndEmploymentConstants.NameKey              -> "employer name")
         val employmentId = 1
 
         when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
@@ -275,7 +276,7 @@ class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
       val endEmploymentTest = createEndEmploymentTest
       val employmentId = "0"
       val dataFromCache = Right(Seq(employmentId, LocalDate.of(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST")))
-      val cacheMap = Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$employmentId" -> "true")
+      val cacheMap = Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$employmentId" -> "true")
 
       when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any()))
         .thenReturn(Future.successful(dataFromCache))
@@ -354,9 +355,10 @@ class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
     "redirect to telephone page" in {
       val endEmploymentTest = createEndEmploymentTest
       val dataToCache = Map(
-        EndEmployment_EmploymentIdKey -> "0",
-        EndEmployment_NameKey         -> employerName,
-        EndEmployment_EndDateKey      -> LocalDate.of(2017, 2, 1).toString)
+        EndEmploymentConstants.EmploymentIdKey -> "0",
+        EndEmploymentConstants.NameKey         -> employerName,
+        EndEmploymentConstants.EndDateKey      -> LocalDate.of(2017, 2, 1).toString
+      )
 
       when(endEmploymentJourneyCacheService.cache(Matchers.eq(dataToCache))(any()))
         .thenReturn(Future.successful(dataToCache))
@@ -377,7 +379,7 @@ class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
 
     "save data into journey cache" in {
       val endEmploymentTest = createEndEmploymentTest
-      val dataToCache = Map(EndEmployment_EndDateKey -> LocalDate.of(2017, 2, 1).toString)
+      val dataToCache = Map(EndEmploymentConstants.EndDateKey -> LocalDate.of(2017, 2, 1).toString)
 
       when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
 
@@ -439,8 +441,11 @@ class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
         when(
           trackSuccessJourneyCacheService
-            .cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId"), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId" -> "true")))
+            .cache(
+              Matchers.eq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"),
+              Matchers.eq("true"))(any()))
+          .thenReturn(
+            Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true")))
         when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = endEmploymentTest.confirmAndSendEndEmployment()(fakeGetRequest)
@@ -469,8 +474,8 @@ class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
       "the request has an authorised session and there is cached data" in {
         val endEmploymentTest = createEndEmploymentTest
         when(
-          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(EndEmployment_EmploymentIdKey))(
-            any())).thenReturn(Future.successful(Right(0)))
+          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(
+            Matchers.eq(EndEmploymentConstants.EmploymentIdKey))(any())).thenReturn(Future.successful(Right(0)))
         when(endEmploymentJourneyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
 
@@ -484,8 +489,8 @@ class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
       "the request has an authorised session no cached data" in {
         val endEmploymentTest = createEndEmploymentTest
         when(
-          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(EndEmployment_EmploymentIdKey))(
-            any())).thenReturn(Future.successful(Right(0)))
+          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(
+            Matchers.eq(EndEmploymentConstants.EmploymentIdKey))(any())).thenReturn(Future.successful(Right(0)))
         when(endEmploymentJourneyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(None, None)))
 
@@ -501,8 +506,9 @@ class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val endEmploymentTest = createEndEmploymentTest
 
         when(
-          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(EndEmployment_EmploymentIdKey))(
-            any())).thenReturn(Future.successful(Left("Mandatory value missing from cache")))
+          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(
+            Matchers.eq(EndEmploymentConstants.EmploymentIdKey))(any()))
+          .thenReturn(Future.successful(Left("Mandatory value missing from cache")))
         when(endEmploymentJourneyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(None, None)))
 
@@ -521,8 +527,8 @@ class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
 
         val expectedCache =
           Map(
-            EndEmployment_TelephoneQuestionKey -> FormValuesConstants.YesValue,
-            EndEmployment_TelephoneNumberKey   -> "12345678")
+            EndEmploymentConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
+            EndEmploymentConstants.TelephoneNumberKey   -> "12345678")
         when(endEmploymentJourneyCacheService.cache(Matchers.eq(expectedCache))(any()))
           .thenReturn(Future.successful(expectedCache))
         val result = endEmploymentTest.submitTelephoneNumber()(
@@ -540,7 +546,9 @@ class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
         val endEmploymentTest = createEndEmploymentTest
 
         val expectedCacheWithErasingNumber =
-          Map(EndEmployment_TelephoneQuestionKey -> FormValuesConstants.NoValue, EndEmployment_TelephoneNumberKey -> "")
+          Map(
+            EndEmploymentConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
+            EndEmploymentConstants.TelephoneNumberKey   -> "")
         when(endEmploymentJourneyCacheService.cache(Matchers.eq(expectedCacheWithErasingNumber))(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
         val result = endEmploymentTest.submitTelephoneNumber()(
@@ -658,11 +666,13 @@ class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
     "redirect to employmentUpdateRemove when there is no end employment ID cache value present" in {
       val employmentId = 1
       val endEmploymentTest = createEndEmploymentTest
-      val cacheMap = Map(EndEmployment_EmploymentIdKey -> employmentId.toString, EndEmployment_NameKey -> employerName)
+      val cacheMap = Map(
+        EndEmploymentConstants.EmploymentIdKey -> employmentId.toString,
+        EndEmploymentConstants.NameKey         -> employerName)
       when(endEmploymentJourneyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(
         trackSuccessJourneyCacheService.currentValue(
-          Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$employmentId"))(any()))
+          Matchers.eq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$employmentId"))(any()))
         .thenReturn(Future.successful(None))
 
       val result = endEmploymentTest.onPageLoad(employmentId)(fakeGetRequest)
@@ -673,11 +683,13 @@ class EndEmploymentControllerSpec extends BaseSpec with JourneyCacheConstants wi
     "redirect to warning page when there is an end employment ID cache value present" in {
       val employmentId = 1
       val endEmploymentTest = createEndEmploymentTest
-      val cacheMap = Map(EndEmployment_EmploymentIdKey -> employmentId.toString, EndEmployment_NameKey -> employerName)
+      val cacheMap = Map(
+        EndEmploymentConstants.EmploymentIdKey -> employmentId.toString,
+        EndEmploymentConstants.NameKey         -> employerName)
       when(endEmploymentJourneyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(
         trackSuccessJourneyCacheService.currentValue(
-          Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$employmentId"))(any()))
+          Matchers.eq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$employmentId"))(any()))
         .thenReturn(Future.successful(Some("true")))
 
       val result = endEmploymentTest.onPageLoad(employmentId)(fakeGetRequest)

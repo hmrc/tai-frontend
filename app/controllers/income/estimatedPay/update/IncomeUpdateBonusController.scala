@@ -30,6 +30,7 @@ import uk.gov.hmrc.tai.forms.YesNoForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import views.html.incomes._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,13 +43,13 @@ class IncomeUpdateBonusController @Inject()(
   bonusPaymentAmount: BonusPaymentAmountView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
+    extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
   def bonusPaymentsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     (
       IncomeSource.create(journeyCacheService),
-      journeyCacheService.currentValue(UpdateIncome_BonusPaymentsKey),
+      journeyCacheService.currentValue(UpdateIncomeConstants.BonusPaymentsKey),
       bonusPaymentBackUrl).mapN {
       case (Right(incomeSource), bonusPayment, backUrl) =>
         val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
@@ -74,10 +75,10 @@ class IncomeUpdateBonusController @Inject()(
           },
           formData => {
             val bonusPaymentsAnswer = formData.yesNoChoice.fold(ifEmpty = Map.empty[String, String]) { bonusPayments =>
-              Map(UpdateIncome_BonusPaymentsKey -> bonusPayments)
+              Map(UpdateIncomeConstants.BonusPaymentsKey -> bonusPayments)
             }
 
-            journeyCache(UpdateIncome_BonusPaymentsKey, bonusPaymentsAnswer) map { _ =>
+            journeyCache(UpdateIncomeConstants.BonusPaymentsKey, bonusPaymentsAnswer) map { _ =>
               if (formData.yesNoChoice.contains(FormValuesConstants.YesValue)) {
                 Redirect(routes.IncomeUpdateBonusController.bonusOvertimeAmountPage())
               } else {
@@ -90,7 +91,9 @@ class IncomeUpdateBonusController @Inject()(
 
   def bonusOvertimeAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    (IncomeSource.create(journeyCacheService), journeyCacheService.currentValue(UpdateIncome_BonusOvertimeAmountKey))
+    (
+      IncomeSource.create(journeyCacheService),
+      journeyCacheService.currentValue(UpdateIncomeConstants.BonusOvertimeAmountKey))
       .mapN {
         case (Right(incomeSource), bonusOvertimeAmount) =>
           val form = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
@@ -121,9 +124,10 @@ class IncomeUpdateBonusController @Inject()(
           formData => {
             formData.amount match {
               case Some(amount) =>
-                journeyCache(UpdateIncome_BonusOvertimeAmountKey, Map(UpdateIncome_BonusOvertimeAmountKey -> amount)) map {
-                  _ =>
-                    Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId))
+                journeyCache(
+                  UpdateIncomeConstants.BonusOvertimeAmountKey,
+                  Map(UpdateIncomeConstants.BonusOvertimeAmountKey -> amount)) map { _ =>
+                  Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId))
                 }
               case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId)))
             }
@@ -132,7 +136,7 @@ class IncomeUpdateBonusController @Inject()(
   }
 
   private def bonusPaymentBackUrl(implicit hc: HeaderCarrier) =
-    journeyCacheService.currentValue(UpdateIncome_TaxablePayKey).map {
+    journeyCacheService.currentValue(UpdateIncomeConstants.TaxablePayKey).map {
       case None =>
         controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url
       case _ =>
