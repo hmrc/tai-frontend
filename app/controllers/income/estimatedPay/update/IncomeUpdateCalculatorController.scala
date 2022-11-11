@@ -16,15 +16,12 @@
 
 package controllers.income.estimatedPay.update
 
-import cats.data.{EitherT, OptionT}
+import cats.data.EitherT
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import cats.implicits._
 import play.api.Logger
-import play.api.i18n.Messages
-
-import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -35,14 +32,14 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
+import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
-import uk.gov.hmrc.tai.util.FutureOps._
 
-import scala.Function.tupled
+import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -65,28 +62,23 @@ class IncomeUpdateCalculatorController @Inject()(
   val logger = Logger(this.getClass)
 
   def onPageLoad(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    val estimatedPayCompletionFuture = estimatedPayJourneyCompletionService.hasJourneyCompleted(id.toString)
-    val cacheEmploymentDetailsFuture =
-      cacheEmploymentDetails(id, employmentService.employment(request.taiUser.nino, id))
-
-    (for {
-      estimatedPayCompletion <- estimatedPayCompletionFuture
-      _                      <- cacheEmploymentDetailsFuture
-    } yield {
-
-      if (estimatedPayCompletion) {
-        Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(id))
-      } else {
-        Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(id))
+    (
+      estimatedPayJourneyCompletionService.hasJourneyCompleted(id.toString),
+      employmentService.employment(request.taiUser.nino, id).flatMap(cacheEmploymentDetails(id))
+    ).mapN {
+        case (true, _) =>
+          Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(id))
+        case _ =>
+          Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(id))
       }
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-    }
+      .recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      }
   }
 
-  private def cacheEmploymentDetails(id: Int, employmentFuture: Future[Option[Employment]])(
+  private def cacheEmploymentDetails(id: Int)(maybeEmployment: Option[Employment])(
     implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    employmentFuture flatMap {
+    maybeEmployment match {
       case Some(employment) =>
         val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
         journeyCache(
@@ -94,7 +86,8 @@ class IncomeUpdateCalculatorController @Inject()(
             UpdateIncome_NameKey       -> employment.name,
             UpdateIncome_IdKey         -> id.toString,
             UpdateIncome_IncomeTypeKey -> incomeType))
-      case _ => throw new RuntimeException("Not able to find employment")
+      case _ =>
+        Future.failed(new RuntimeException("Not able to find employment"))
     }
 
   def duplicateSubmissionWarningPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -212,11 +205,14 @@ class IncomeUpdateCalculatorController @Inject()(
     implicit val user = request.taiUser
     val nino = user.nino
 
+    val netAmountFuture = journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
+
     (for {
-      employmentName <- EitherT(journeyCacheService.mandatoryJourneyValue(UpdateIncome_NameKey))
-      id             <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
-      income         <- EitherT.right[String](incomeService.employmentAmount(nino, id))
-      netAmount      <- EitherT.right[String](journeyCacheService.currentValue(UpdateIncome_NewAmountKey))
+      mandatoryValues <- EitherT(journeyCacheService.mandatoryJourneyValues(UpdateIncome_NameKey, UpdateIncome_IdKey))
+      employmentName :: idStr :: _ = mandatoryValues.toList
+      id = idStr.toInt
+      income    <- EitherT.right[String](incomeService.employmentAmount(nino, id))
+      netAmount <- EitherT.right[String](netAmountFuture)
     } yield {
       val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
       val employmentAmount = income.copy(newAmount = convertedNetAmount)
@@ -234,7 +230,7 @@ class IncomeUpdateCalculatorController @Inject()(
         )
         Ok(confirmAmountEntered(vm))
       }
-    }).fold(_ => Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(1).url), identity _)
+    }).getOrElse(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(1).url))
       .recover {
         case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
       }

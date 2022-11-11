@@ -332,18 +332,13 @@ class IncomeUpdateCalculatorControllerSpec
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
 
         if (cacheEmpty) {
-          when(journeyCacheService.mandatoryJourneyValue(any())(any()))
-            .thenReturn(Future.successful(Left("empty cache")))
-          when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
+          when(journeyCacheService.mandatoryJourneyValues(any())(any()))
             .thenReturn(Future.successful(Left("empty cache")))
           when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
         } else {
           when(journeyCacheService.currentValue(eqTo(UpdateIncome_NewAmountKey))(any()))
             .thenReturn(Future.successful(currentValue))
-          when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-            .thenReturn(Future.successful(Right(employer.id)))
-          when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-            .thenReturn(Future.successful(Right(employer.name)))
+
         }
 
         def handleCalculationResult(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
