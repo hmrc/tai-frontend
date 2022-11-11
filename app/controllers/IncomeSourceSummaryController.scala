@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
-import uk.gov.hmrc.tai.util.constants.TaiConstants.updateIncomeConfirmedAmountKey
+import uk.gov.hmrc.tai.util.constants.TaiConstants.UpdateIncomeConfirmedAmountKey
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
 
@@ -62,7 +62,7 @@ class IncomeSourceSummaryController @Inject()(
     val nino = request.taiUser.nino
 
     val cacheUpdatedIncomeAmountFuture =
-      journeyCacheService.currentValueAsInt(s"$updateIncomeConfirmedAmountKey-$empId")
+      journeyCacheService.currentValueAsInt(s"$UpdateIncomeConfirmedAmountKey-$empId")
 
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),

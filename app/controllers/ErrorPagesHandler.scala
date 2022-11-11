@@ -79,7 +79,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
       messages("tai.technical.error.heading"),
       pageBody,
       List.empty)
-      
+
   def npsEmploymentAbsentResult(nino: String)(
     implicit request: Request[AnyContent],
     messages: Messages,

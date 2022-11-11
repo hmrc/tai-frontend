@@ -25,7 +25,7 @@ import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
-import play.api.test.Helpers.{status, _}
+import play.api.test.Helpers._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
@@ -36,7 +36,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-import uk.gov.hmrc.tai.util.constants.TaiConstants.updateIncomeConfirmedAmountKey
+import uk.gov.hmrc.tai.util.constants.TaiConstants.UpdateIncomeConfirmedAmountKey
 import utils.BaseSpec
 import views.html.IncomeSourceSummaryView
 
@@ -50,8 +50,8 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
 
   val employmentId = 1
   val pensionId = 2
-  val cacheKeyEmployment = s"$updateIncomeConfirmedAmountKey-$employmentId"
-  val cacheKeyPension = s"$updateIncomeConfirmedAmountKey-$pensionId"
+  val cacheKeyEmployment = s"$UpdateIncomeConfirmedAmountKey-$employmentId"
+  val cacheKeyPension = s"$UpdateIncomeConfirmedAmountKey-$pensionId"
 
   "onPageLoad" must {
     "display the income details page" when {

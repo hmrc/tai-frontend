@@ -38,24 +38,24 @@ case class WhatDoYouWantToDoViewModel(
   def gaDimensions(): Map[String, String] = {
 
     val enabledMap = taxCodeChangeDimensions ++ ListMap(
-      GoogleAnalyticsConstants.taiLandingPageCYKey  -> "true",
-      GoogleAnalyticsConstants.taiLandingPagePYKey  -> "true",
-      GoogleAnalyticsConstants.taiLandingPageCY1Key -> isCyPlusOneEnabled.toString
+      GoogleAnalyticsConstants.TaiLandingPageCYKey  -> "true",
+      GoogleAnalyticsConstants.TaiLandingPagePYKey  -> "true",
+      GoogleAnalyticsConstants.TaiLandingPageCY1Key -> isCyPlusOneEnabled.toString
     )
 
-    Map(GoogleAnalyticsConstants.taiLandingPageInformation -> MapForGoogleAnalytics.format(enabledMap))
+    Map(GoogleAnalyticsConstants.TaiLandingPageInformation -> MapForGoogleAnalytics.format(enabledMap))
   }
 
   private def taxCodeChangeDimensions: ListMap[String, String] =
     taxCodeMismatch match {
       case Some(mismatch) =>
         ListMap(
-          GoogleAnalyticsConstants.taiLandingPageTCCKey         -> hasTaxCodeChanged.toString,
-          GoogleAnalyticsConstants.taiLandingPageTCMKey         -> mismatch.mismatch.toString,
-          GoogleAnalyticsConstants.taiLandingPageConfirmedKey   -> formatSeqToString(mismatch.confirmedTaxCodes),
-          GoogleAnalyticsConstants.taiLandingPageUnconfirmedKey -> formatSeqToString(mismatch.unconfirmedTaxCodes)
+          GoogleAnalyticsConstants.TaiLandingPageTCCKey         -> hasTaxCodeChanged.toString,
+          GoogleAnalyticsConstants.TaiLandingPageTCMKey         -> mismatch.mismatch.toString,
+          GoogleAnalyticsConstants.TaiLandingPageConfirmedKey   -> formatSeqToString(mismatch.confirmedTaxCodes),
+          GoogleAnalyticsConstants.TaiLandingPageUnconfirmedKey -> formatSeqToString(mismatch.unconfirmedTaxCodes)
         )
-      case _ => ListMap(GoogleAnalyticsConstants.taiLandingPageTCCKey -> hasTaxCodeChanged.toString)
+      case _ => ListMap(GoogleAnalyticsConstants.TaiLandingPageTCCKey -> hasTaxCodeChanged.toString)
     }
 
   private def formatSeqToString(seq: Seq[String]): String =
