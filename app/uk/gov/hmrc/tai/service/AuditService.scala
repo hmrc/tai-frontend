@@ -119,7 +119,9 @@ class AuditService @Inject()(
       case StateBenefitsIform       => (appConfig.taxableStateBenefitLinkUrl, stateBenefitEvent)
       case MarriageAllowanceService => (appConfig.marriageServiceHistoryUrl, marriageAllowanceEvent)
     }
-    sendIformRedirectUriAuditEvent(nino, fetchPath(request), auditEventName).map{ _ => redirectUri}
+    sendIformRedirectUriAuditEvent(nino, fetchPath(request), auditEventName).map { _ =>
+      redirectUri
+    }
   }
 
   private def fetchPath(request: Request[AnyContent]) =
