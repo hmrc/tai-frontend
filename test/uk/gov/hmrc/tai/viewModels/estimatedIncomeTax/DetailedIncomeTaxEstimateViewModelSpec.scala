@@ -436,50 +436,6 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
       model.dividends mustEqual taxBand ++ taxBand
     }
 
-    "return empty tax bands" ignore {
-      "only zero rate bands are present with no income" in {
-        val taxBand =
-          Seq(TaxBand(bandType = "", code = "", income = 100, tax = 0, lowerBand = None, upperBand = None, rate = 0))
-        val incomeCategories = Seq(
-          IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 0, taxBand),
-          IncomeCategory(UntaxedInterestIncomeCategory, 0, 2000, 0, taxBand),
-          IncomeCategory(ForeignDividendsIncomeCategory, 0, 3000, 0, taxBand),
-          IncomeCategory(ForeignInterestIncomeCategory, 0, 4000, 0, taxBand),
-          IncomeCategory(BankInterestIncomeCategory, 0, 5000, 0, taxBand),
-          IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBand)
-        )
-        val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
-
-        val model =
-          DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
-
-        model.nonSavings mustBe Seq.empty[TaxBand]
-        model.savings mustBe Seq.empty[TaxBand]
-        model.dividends mustBe Seq.empty[TaxBand]
-      }
-
-      "income is zero" in {
-        val taxBand =
-          Seq(TaxBand(bandType = "", code = "", income = 0, tax = 0, lowerBand = None, upperBand = None, rate = 20))
-        val incomeCategories = Seq(
-          IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 0, taxBand),
-          IncomeCategory(UntaxedInterestIncomeCategory, 0, 2000, 0, taxBand),
-          IncomeCategory(ForeignDividendsIncomeCategory, 0, 3000, 0, taxBand),
-          IncomeCategory(ForeignInterestIncomeCategory, 0, 4000, 0, taxBand),
-          IncomeCategory(BankInterestIncomeCategory, 0, 5000, 0, taxBand),
-          IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBand)
-        )
-        val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
-
-        val model =
-          DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
-
-        model.nonSavings mustBe Seq.empty[TaxBand]
-        model.savings mustBe Seq.empty[TaxBand]
-        model.dividends mustBe Seq.empty[TaxBand]
-      }
-    }
-
     "additional Income Tax Self Assessment text" should {
       "be returned when Non-Coded Income is present" in {
         val nonTaxCodeIncome = NonTaxCodeIncome(None, List(OtherNonTaxCodeIncome(NonCodedIncome, None, 0, "")))

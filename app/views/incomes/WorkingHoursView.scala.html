@@ -35,9 +35,9 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(main: MainTempleteNew, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
+@this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
-@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeaderNoH1(

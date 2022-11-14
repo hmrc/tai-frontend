@@ -26,7 +26,8 @@ import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.{IncomesSources, TaxYear}
+import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
+import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 
@@ -185,7 +186,7 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
         taxAccountSummary,
         ThreeWeeks,
         nonTaxCodeIncome,
-        IncomesSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
+        IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
         nonMatchedEmployments
       )
     }

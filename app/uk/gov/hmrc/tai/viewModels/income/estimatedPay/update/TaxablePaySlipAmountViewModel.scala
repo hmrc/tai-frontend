@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.forms.TaxablePayslipForm
+import uk.gov.hmrc.tai.forms.income.incomeCalculator.TaxablePayslipForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.PaySlipAmountViewModel._

@@ -18,7 +18,7 @@ package views.html.incomes
 
 import play.api.mvc.Call
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.PayPeriodForm
+import uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class PayPeriodViewSpec extends TaiViewSpec {

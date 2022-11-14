@@ -18,55 +18,6 @@ package uk.gov.hmrc.tai.model.domain.tax
 
 import play.api.libs.json._
 
-case class TaxBand(
-  bandType: String,
-  code: String,
-  income: BigDecimal,
-  tax: BigDecimal,
-  lowerBand: Option[BigDecimal] = None,
-  upperBand: Option[BigDecimal] = None,
-  rate: BigDecimal)
-
-object TaxBand {
-  implicit val formats: OFormat[TaxBand] = Json.format[TaxBand]
-}
-
-sealed trait IncomeCategoryType
-case object NonSavingsIncomeCategory extends IncomeCategoryType
-case object UntaxedInterestIncomeCategory extends IncomeCategoryType
-case object BankInterestIncomeCategory extends IncomeCategoryType
-case object UkDividendsIncomeCategory extends IncomeCategoryType
-case object ForeignInterestIncomeCategory extends IncomeCategoryType
-case object ForeignDividendsIncomeCategory extends IncomeCategoryType
-
-object IncomeCategoryType {
-  implicit val incomeCategoryTypeFormats: Format[IncomeCategoryType] = new Format[IncomeCategoryType] {
-    override def reads(json: JsValue): JsResult[IncomeCategoryType] =
-      json.as[String] match {
-        case "NonSavingsIncomeCategory"       => JsSuccess(NonSavingsIncomeCategory)
-        case "UntaxedInterestIncomeCategory"  => JsSuccess(UntaxedInterestIncomeCategory)
-        case "BankInterestIncomeCategory"     => JsSuccess(BankInterestIncomeCategory)
-        case "UkDividendsIncomeCategory"      => JsSuccess(UkDividendsIncomeCategory)
-        case "ForeignInterestIncomeCategory"  => JsSuccess(ForeignInterestIncomeCategory)
-        case "ForeignDividendsIncomeCategory" => JsSuccess(ForeignDividendsIncomeCategory)
-        case _                                => throw new IllegalArgumentException("Invalid income category type")
-      }
-
-    override def writes(o: IncomeCategoryType): JsValue = ???
-  }
-}
-
-case class IncomeCategory(
-  incomeCategoryType: IncomeCategoryType,
-  totalTax: BigDecimal,
-  totalTaxableIncome: BigDecimal,
-  totalIncome: BigDecimal,
-  taxBands: Seq[TaxBand])
-
-object IncomeCategory {
-  implicit val formats: OFormat[IncomeCategory] = Json.format[IncomeCategory]
-}
-
 case class TotalTax(
   amount: BigDecimal,
   incomeCategories: Seq[IncomeCategory],

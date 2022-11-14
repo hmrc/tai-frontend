@@ -28,10 +28,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class DeceasedController @Inject()(
   authenticate: AuthAction,
   mcc: MessagesControllerComponents,
-  deceased_helpline: DeceasedHelplineView)(implicit val templateRenderer: TemplateRenderer, ec: ExecutionContext)
+  deceasedHelpline: DeceasedHelplineView)(implicit val templateRenderer: TemplateRenderer, ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def deceased(): Action[AnyContent] =
-    authenticate.async(implicit request => Future.successful(Ok(deceased_helpline())))
+    authenticate.async(implicit request => Future.successful(Ok(deceasedHelpline())))
 
 }

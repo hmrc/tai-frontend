@@ -99,7 +99,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends BaseSpec {
     controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
   )
 
-  def baseModel = RemoveCompanyBenefitCheckYourAnswersViewModel(
+  def baseModel = RemoveCompanyBenefitsCheckYourAnswersViewModel(
     "Awesome Benefit",
     "TestCompany",
     "Before 6 April",

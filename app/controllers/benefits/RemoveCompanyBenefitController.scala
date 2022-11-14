@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
-import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
+import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitsCheckYourAnswersViewModel}
 import views.html.CanWeContactByPhoneView
 import views.html.benefits.{RemoveBenefitTotalValueView, RemoveCompanyBenefitCheckYourAnswersView, RemoveCompanyBenefitConfirmationView, RemoveCompanyBenefitStopDateView}
 
@@ -224,7 +224,7 @@ class RemoveCompanyBenefitController @Inject()(
 
           Ok(
             removeCompanyBenefitCheckYourAnswers(
-              RemoveCompanyBenefitCheckYourAnswersViewModel(
+              RemoveCompanyBenefitsCheckYourAnswersViewModel(
                 mandatoryJourneyValues.head,
                 mandatoryJourneyValues(1),
                 stopDate,

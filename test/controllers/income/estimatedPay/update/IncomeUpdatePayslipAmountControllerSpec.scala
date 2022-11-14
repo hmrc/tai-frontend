@@ -29,6 +29,7 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.forms._
+import uk.gov.hmrc.tai.forms.income.incomeCalculator.{PayslipForm, TaxablePayslipForm}
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.PayPeriodConstants.Monthly
@@ -61,10 +62,8 @@ class IncomeUpdatePayslipAmountControllerSpec
         journeyCacheService,
         MockTemplateRenderer
       ) {
-    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-      .thenReturn(Future.successful(Right(employer.id)))
-    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
-      .thenReturn(Future.successful(Right(employer.name)))
+    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
   "payslipAmountPage" must {
@@ -312,9 +311,7 @@ class IncomeUpdatePayslipAmountControllerSpec
       "IncomeSource.create returns a left" in {
         val controller = new TestIncomeUpdatePayslipAmountController
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
-          .thenReturn(Future.successful(Left("")))
-        when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Left("")))
 
         val result = controller.handleTaxablePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth())

@@ -23,7 +23,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import play.api.test.Helpers.{contentAsString, status, _}
+import play.api.test.Helpers._
 import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
@@ -57,7 +57,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
             taxAccountSummary,
             ThreeWeeks,
             nonTaxCodeIncome,
-            IncomesSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
+            IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
             nonMatchedEmployments
           ))
       )
@@ -93,7 +93,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
             taxAccountSummary,
             ThreeWeeks,
             nonTaxCodeIncome,
-            IncomesSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
+            IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
             nonMatchedEmployments
           ))
       )
@@ -120,7 +120,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
               taxAccountSummary,
               ThreeWeeks,
               nonTaxCodeIncome,
-              IncomesSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
+              IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
               nonMatchedEmployments
             ))
         )

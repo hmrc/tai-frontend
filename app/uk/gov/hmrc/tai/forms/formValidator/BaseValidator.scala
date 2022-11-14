@@ -26,8 +26,8 @@ import uk.gov.hmrc.tai.util.{FormHelper, ViewModelHelper}
 import scala.util.{Success, Try}
 
 trait BaseValidator extends DateValidator with ViewModelHelper {
-  protected val MIN_LENGTH: Int = 0
-  protected val MAX_LENGTH: Int = 100
+  protected val MinLength: Int = 0
+  protected val MaxLength: Int = 100
 
   def nonEmptyText(requiredErrMsg: String): Constraint[Option[String]] =
     Constraint[Option[String]]("required") {
@@ -74,13 +74,13 @@ trait BaseValidator extends DateValidator with ViewModelHelper {
     validateCurrencyError: String,
     validateCurrencyLengthError: String,
     netSalary: Option[String] = None)(implicit messages: Messages): Mapping[Option[String]] = {
-    val INCOME_MAX_LENGTH = 9
+    val IncomeMaxLength = 9
 
     optional(text).verifying(
       StopOnFirstFail(
         nonEmptyText(nonEmptyError),
         validateCurrency(validateCurrencyError),
-        validateCurrencyLength(INCOME_MAX_LENGTH, validateCurrencyLengthError),
+        validateCurrencyLength(IncomeMaxLength, validateCurrencyLengthError),
         validateNetGrossSalary(netSalary)
       ))
   }
@@ -105,27 +105,15 @@ trait BaseValidator extends DateValidator with ViewModelHelper {
     validateCurrencyLengthError: String,
     validateTaxablePayYTDError: String,
     taxablePayYTD: BigDecimal): Mapping[Option[String]] = {
-    val INCOME_MAX_LENGTH = 9
+    val IncomeMaxLength = 9
     optional(text).verifying(
       StopOnFirstFail(
         nonEmptyText(nonEmptyError),
         validateCurrencyWhole(validateCurrencyError),
-        validateCurrencyLength(INCOME_MAX_LENGTH, validateCurrencyLengthError),
+        validateCurrencyLength(IncomeMaxLength, validateCurrencyLengthError),
         validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
       ))
   }
 }
 
 object BaseValidator extends BaseValidator
-
-object StopOnFirstFail {
-  def apply[T](constraints: Constraint[T]*): Constraint[T] = Constraint { field: T =>
-    constraints.toList dropWhile (_(field) == Valid) match {
-      case Nil             => Valid
-      case constraint :: _ => constraint(field)
-    }
-  }
-
-  def constraint[T](message: String, validator: T => Boolean): Constraint[T] =
-    Constraint((data: T) => if (validator(data)) Valid else Invalid(Seq(ValidationError(message))))
-}

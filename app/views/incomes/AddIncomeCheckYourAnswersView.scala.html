@@ -23,7 +23,7 @@
 @import play.api.mvc.Call
 @import scala.concurrent.ExecutionContext
 
-@this(main: MainTempleteNew, form: FormWithCSRF)
+@this(main: MainTemplate, form: FormWithCSRF)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
 

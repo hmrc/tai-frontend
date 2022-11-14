@@ -27,9 +27,9 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
 
-@this(mainTemplate: MainTempleteNew, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages,
+@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.BonusOvertimeAmountForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages,
         user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
 
 @header = @{

@@ -16,7 +16,7 @@
 
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@this(main: MainTempleteNew)
+@this(main: MainTemplate)
 
 @(incomeName: String, id: Int, totalEstimatedIncome: String, isPension: Boolean, appConfig: ApplicationConfig)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,

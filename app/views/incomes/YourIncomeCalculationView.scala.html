@@ -23,7 +23,7 @@
 
 @import includes.ptaHeader
 
-@this(main: MainTempleteNew)
+@this(main: MainTemplate)
 
 @(model: YourIncomeCalculationViewModel)(implicit request: Request[_],
     user: controllers.auth.AuthedUser,
@@ -171,9 +171,6 @@
                                 includes.link(url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).toString, copy=Messages("tai.income.calculation.updateLink.regular"))
                                 ))
                             </p>
-                        }
-                        @if(model.incomeCalculationEstimateMessage.isDefined){
-                            <h2 class="govuk-heading-s">@model.incomeCalculationEstimateMessage</h2>
                         }
                 }
             }

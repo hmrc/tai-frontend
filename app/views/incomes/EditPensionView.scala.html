@@ -23,7 +23,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(main: MainTempleteNew, form: FormWithCSRF, govukErrorSummary: GovukErrorSummary, govukInput : GovukInput)
+@this(main: MainTemplate, form: FormWithCSRF, govukErrorSummary: GovukErrorSummary, govukInput : GovukInput)
 
 @(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm], hasMultipleIncomes: Boolean, employmentId: Int, pensionToDate: String = "0")(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
