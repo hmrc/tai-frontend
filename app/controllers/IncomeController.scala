@@ -379,9 +379,9 @@ class IncomeController @Inject()(
       journeyCacheService
         .mandatoryJourneyValue(UpdateIncomeConstants.NewAmountKey)
         .flatMap {
-          case Left(errorMessage) =>
+          case Left(_) =>
             Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-          case Right(UpdateIncomeConstants.NewAmountKey) =>
+          case Right(newAmountKey) =>
             (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
               .mapN {
                 case (
@@ -395,7 +395,7 @@ class IncomeController @Inject()(
                       val vm = ConfirmAmountEnteredViewModel(
                         employment.name,
                         employmentAmount.oldAmount,
-                        UpdateIncomeConstants.NewAmountKey.toInt,
+                        newAmountKey.toInt,
                         "javascript:history.go(-1)", //TODO this is temporary
                         empId
                       )
