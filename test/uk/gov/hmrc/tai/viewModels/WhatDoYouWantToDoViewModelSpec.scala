@@ -24,7 +24,7 @@ import utils.factories.TaxCodeMismatchFactory
 class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
 
   def gaMap(result: String): Map[String, String] =
-    Map(GoogleAnalyticsConstants.taiLandingPageInformation -> result)
+    Map(GoogleAnalyticsConstants.TaiLandingPageInformation -> result)
 
   def createViewModel(
     isCyPlusOneEnabled: Boolean,

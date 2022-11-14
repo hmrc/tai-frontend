@@ -106,9 +106,9 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
         case 1 =>
           incomeSourceDetailSeq.head match {
             case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYear, isLive) =>
-              IncomeSourceComparisonDetail(id, name, amount, TaiConstants.notApplicable.toLowerCase(), isLive)
+              IncomeSourceComparisonDetail(id, name, amount, TaiConstants.NotApplicable.toLowerCase(), isLive)
             case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYearPlusOne, isLive) =>
-              IncomeSourceComparisonDetail(id, name, TaiConstants.notApplicable.toLowerCase(), amount, isLive)
+              IncomeSourceComparisonDetail(id, name, TaiConstants.NotApplicable.toLowerCase(), amount, isLive)
           }
         case 2 =>
           val sortedSeq = incomeSourceDetailSeq.sortBy(_.taxYearStatus)

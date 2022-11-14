@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.FutureOps.FutureEitherStringOps
 import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
+import uk.gov.hmrc.tai.util.constants.TaiConstants.MonthAndYear
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
 import views.html.incomes.{ConfirmAmountEnteredView, EditIncomeIrregularHoursView, EditSuccessView}
 
@@ -68,7 +68,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
     payment.fold(defaultCaching)(
       payment =>
         defaultCaching + (UpdateIncomeConstants.DateKey -> payment.date.format(
-          DateTimeFormatter.ofPattern(MONTH_AND_YEAR))))
+          DateTimeFormatter.ofPattern(MonthAndYear))))
   }
 
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {

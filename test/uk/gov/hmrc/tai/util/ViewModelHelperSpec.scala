@@ -21,7 +21,7 @@ import play.api.i18n.{Lang, Messages}
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
+import uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign
 import utils.BaseSpec
 
 import java.time.format.DateTimeFormatter
@@ -42,7 +42,7 @@ class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {
     }
     "return the string representation of the provided MoneyPounds with a pound symbol prefix and negative sign" when {
       "the value is negative" in {
-        withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"$encodedMinusSign£1,000.00"
+        withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"$EncodedMinusSign£1,000.00"
       }
     }
   }
