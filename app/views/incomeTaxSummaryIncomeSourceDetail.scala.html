@@ -54,7 +54,7 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
             @for((taxCodeList, listIdx) <-
             taxCodeViewModel.get(incomeSource.taxCode).map(_.taxCodeDetails).getOrElse(Seq.empty[DescriptionListViewModel])
             zip (Stream from 1)) {
-        <div aria-hidden="true" style="display: block;" id="taxCodeList@{listIdx.toString}">
+        <div aria-hidden="true" style="display: none;" id="taxCodeList@{listIdx.toString}">
             <details class="govuk-details" data-module="govuk-details">
                 <summary class="govuk-details__summary">
                                 <span class="govuk-details__summary-text">
