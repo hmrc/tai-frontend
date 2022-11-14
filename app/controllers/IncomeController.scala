@@ -333,11 +333,9 @@ class IncomeController @Inject()(
   private def cacheAndRedirect(income: EditIncomeForm, confirmationCallback: Call)(
     implicit hc: HeaderCarrier
   ): Future[Result] =
-    for {
-      _ <- journeyCacheService.cache(UpdateIncomeConstants.NewAmountKey, income.toEmploymentAmount().newAmount.toString)
-    } yield {
-      Redirect(confirmationCallback)
-    }
+    journeyCacheService
+      .cache(UpdateIncomeConstants.NewAmountKey, income.toEmploymentAmount().newAmount.toString)
+      .map(_ => Redirect(confirmationCallback))
 
   def editPensionIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
