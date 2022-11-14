@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.viewModels.employments
 
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 
 class PayrollNumberViewModelSpec extends BaseSpec {

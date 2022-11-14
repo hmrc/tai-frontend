@@ -28,7 +28,6 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import utils.BaseSpec
 
 import scala.concurrent.duration._
