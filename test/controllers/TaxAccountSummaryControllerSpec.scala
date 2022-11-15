@@ -27,7 +27,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
-import uk.gov.hmrc.tai.model.IncomesSources
+import uk.gov.hmrc.tai.model.IncomeSources
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service._
