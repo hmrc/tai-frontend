@@ -30,13 +30,12 @@ import play.api.i18n.I18nSupport
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class TaiUpdateIncomeControllerSpec
-    extends BaseSpec with JourneyCacheConstants with I18nSupport with BeforeAndAfterEach with ScalaFutures {
+class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfterEach with ScalaFutures {
 
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
@@ -45,7 +44,7 @@ class TaiUpdateIncomeControllerSpec
 
   val employerId = 14
   val employerName = "Employer Name"
-  val cacheKey = s"$UpdateIncome_ConfirmedNewAmountKey-$employerId"
+  val cacheKey = s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employerId"
 
   private def sut = new TaiUpdateIncomeController(
     journeyCacheService,

@@ -22,14 +22,14 @@ import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.BenefitComponentType
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
+import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.{TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import views.html.benefits.UpdateOrRemoveCompanyBenefitDecisionView
 
@@ -47,13 +47,13 @@ class CompanyBenefitController @Inject()(
   updateOrRemoveCompanyBenefitDecision: UpdateOrRemoveCompanyBenefitDecisionView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with Logging {
+    extends TaiBaseController(mcc) with Logging {
 
   def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
       val cacheValues = Map(
-        EndCompanyBenefit_EmploymentIdKey -> empId.toString,
-        EndCompanyBenefit_BenefitTypeKey  -> benefitType.toString)
+        EndCompanyBenefitConstants.EmploymentIdKey -> empId.toString,
+        EndCompanyBenefitConstants.BenefitTypeKey  -> benefitType.toString)
 
       journeyCacheService.cache(cacheValues) map { _ =>
         Redirect(controllers.benefits.routes.CompanyBenefitController.decision())
@@ -67,12 +67,12 @@ class CompanyBenefitController @Inject()(
     (for {
       currentCache <- journeyCacheService.currentCache
       employment <- employmentService
-                     .employment(user.nino, currentCache(EndCompanyBenefit_EmploymentIdKey).toInt)
+                     .employment(user.nino, currentCache(EndCompanyBenefitConstants.EmploymentIdKey).toInt)
       decision <- decisionCacheWrapper.getDecision()
     } yield {
       employment match {
         case Some(employment) =>
-          val referer = currentCache.get(EndCompanyBenefit_RefererKey) match {
+          val referer = currentCache.get(EndCompanyBenefitConstants.RefererKey) match {
             case Some(value) => value
             case None =>
               request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
@@ -82,16 +82,16 @@ class CompanyBenefitController @Inject()(
             UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
 
           val viewModel = CompanyBenefitDecisionViewModel(
-            currentCache(EndCompanyBenefit_BenefitTypeKey),
+            currentCache(EndCompanyBenefitConstants.BenefitTypeKey),
             employment.name,
             form,
             employment.sequenceNumber
           )
 
           val cache = Map(
-            EndCompanyBenefit_EmploymentNameKey -> employment.name,
-            EndCompanyBenefit_BenefitNameKey    -> viewModel.benefitName,
-            EndCompanyBenefit_RefererKey        -> referer
+            EndCompanyBenefitConstants.EmploymentNameKey -> employment.name,
+            EndCompanyBenefitConstants.BenefitNameKey    -> viewModel.benefitName,
+            EndCompanyBenefitConstants.RefererKey        -> referer
           )
 
           journeyCacheService.cache(cache).map { _ =>
@@ -125,10 +125,10 @@ class CompanyBenefitController @Inject()(
       formWithErrors => {
         journeyCacheService.currentCache.map { currentCache =>
           val viewModel = CompanyBenefitDecisionViewModel(
-            currentCache(EndCompanyBenefit_BenefitTypeKey),
-            currentCache(EndCompanyBenefit_EmploymentNameKey),
+            currentCache(EndCompanyBenefitConstants.BenefitTypeKey),
+            currentCache(EndCompanyBenefitConstants.EmploymentNameKey),
             formWithErrors,
-            currentCache(EndCompanyBenefit_EmploymentIdKey).toInt
+            currentCache(EndCompanyBenefitConstants.EmploymentIdKey).toInt
           )
           BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel))
         }

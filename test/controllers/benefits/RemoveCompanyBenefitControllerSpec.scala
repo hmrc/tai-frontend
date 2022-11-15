@@ -36,7 +36,8 @@ import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
+import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, RemoveCompanyBenefitStopDateConstants}
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitsCheckYourAnswersViewModel}
@@ -48,8 +49,7 @@ import java.time.LocalDate
 import scala.concurrent.Future
 
 class RemoveCompanyBenefitControllerSpec
-    extends BaseSpec with JourneyCacheConstants with JsoupMatchers with BeforeAndAfterEach
-    with ControllerViewTestHelper {
+    extends BaseSpec with JsoupMatchers with BeforeAndAfterEach with ControllerViewTestHelper {
 
   override def beforeEach: Unit =
     Mockito.reset(removeCompanyBenefitJourneyCacheService)
@@ -58,9 +58,9 @@ class RemoveCompanyBenefitControllerSpec
     "show 'When did you stop getting benefits from company?' page" in {
       val SUT = createSUT
       val cache = Map(
-        EndCompanyBenefit_EmploymentNameKey -> "Test",
-        EndCompanyBenefit_BenefitNameKey    -> "Test",
-        EndCompanyBenefit_RefererKey        -> "Test")
+        EndCompanyBenefitConstants.EmploymentNameKey -> "Test",
+        EndCompanyBenefitConstants.BenefitNameKey    -> "Test",
+        EndCompanyBenefitConstants.RefererKey        -> "Test")
 
       when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
@@ -72,13 +72,13 @@ class RemoveCompanyBenefitControllerSpec
       verify(removeCompanyBenefitJourneyCacheService, times(1)).currentCache(any())
     }
 
-    "show the prepopulated fields when an EndCompanyBenefit_BenefitStopDateKey has been cached" in {
+    "show the prepopulated fields when an EndCompanyBenefitConstants.BenefitStopDateKey has been cached" in {
       val SUT = createSUT
       val cache = Map(
-        EndCompanyBenefit_EmploymentNameKey  -> "EmploymentName",
-        EndCompanyBenefit_BenefitNameKey     -> "BenefitName",
-        EndCompanyBenefit_RefererKey         -> "Referer",
-        EndCompanyBenefit_BenefitStopDateKey -> RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd
+        EndCompanyBenefitConstants.EmploymentNameKey  -> "EmploymentName",
+        EndCompanyBenefitConstants.BenefitNameKey     -> "BenefitName",
+        EndCompanyBenefitConstants.RefererKey         -> "Referer",
+        EndCompanyBenefitConstants.BenefitStopDateKey -> RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd
       )
 
       when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
@@ -87,11 +87,11 @@ class RemoveCompanyBenefitControllerSpec
       val result = SUT.stopDate()(request)
 
       val expectedView = {
-        val form = RemoveCompanyBenefitStopDateForm.form.fill(cache.get(EndCompanyBenefit_BenefitStopDateKey))
+        val form = RemoveCompanyBenefitStopDateForm.form.fill(cache.get(EndCompanyBenefitConstants.BenefitStopDateKey))
         removeCompanyBenefitStopDateView(
           form,
-          cache(EndCompanyBenefit_BenefitNameKey),
-          cache(EndCompanyBenefit_EmploymentNameKey))
+          cache(EndCompanyBenefitConstants.BenefitNameKey),
+          cache(EndCompanyBenefitConstants.EmploymentNameKey))
       }
 
       result rendersTheSameViewAs expectedView
@@ -121,11 +121,10 @@ class RemoveCompanyBenefitControllerSpec
         redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
-          .cache(
-            Matchers.eq(
-              Map(
-                "keep"                               -> "me",
-                EndCompanyBenefit_BenefitStopDateKey -> RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd)))(any())
+          .cache(Matchers.eq(Map(
+            "keep"                                        -> "me",
+            EndCompanyBenefitConstants.BenefitStopDateKey -> RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd)))(
+            any())
       }
     }
 
@@ -149,7 +148,7 @@ class RemoveCompanyBenefitControllerSpec
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
           .cache(
-            Matchers.eq(EndCompanyBenefit_BenefitStopDateKey),
+            Matchers.eq(EndCompanyBenefitConstants.BenefitStopDateKey),
             Matchers.eq(RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd))(any())
       }
     }
@@ -328,11 +327,11 @@ class RemoveCompanyBenefitControllerSpec
       "navigating from 'when did you stop getting benefits' page" in {
         val SUT = createSUT
         val cache = Map(
-          EndCompanyBenefit_EmploymentIdKey    -> "1",
-          EndCompanyBenefit_EmploymentNameKey  -> employment.name,
-          EndCompanyBenefit_BenefitTypeKey     -> "amazing",
-          EndCompanyBenefit_BenefitStopDateKey -> "before6April2017",
-          EndCompanyBenefit_RefererKey         -> "Test"
+          EndCompanyBenefitConstants.EmploymentIdKey    -> "1",
+          EndCompanyBenefitConstants.EmploymentNameKey  -> employment.name,
+          EndCompanyBenefitConstants.BenefitTypeKey     -> "amazing",
+          EndCompanyBenefitConstants.BenefitStopDateKey -> "before6April2017",
+          EndCompanyBenefitConstants.RefererKey         -> "Test"
         )
         when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -353,13 +352,13 @@ class RemoveCompanyBenefitControllerSpec
         val telephoneNumber = "85256651"
 
         val cache = Map(
-          EndCompanyBenefit_EmploymentIdKey      -> "1",
-          EndCompanyBenefit_EmploymentNameKey    -> employment.name,
-          EndCompanyBenefit_BenefitTypeKey       -> "amazing",
-          EndCompanyBenefit_BenefitStopDateKey   -> "before6April2017",
-          EndCompanyBenefit_RefererKey           -> "Test",
-          EndCompanyBenefit_TelephoneQuestionKey -> FormValuesConstants.YesValue,
-          EndCompanyBenefit_TelephoneNumberKey   -> telephoneNumber
+          EndCompanyBenefitConstants.EmploymentIdKey      -> "1",
+          EndCompanyBenefitConstants.EmploymentNameKey    -> employment.name,
+          EndCompanyBenefitConstants.BenefitTypeKey       -> "amazing",
+          EndCompanyBenefitConstants.BenefitStopDateKey   -> "before6April2017",
+          EndCompanyBenefitConstants.RefererKey           -> "Test",
+          EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
+          EndCompanyBenefitConstants.TelephoneNumberKey   -> telephoneNumber
         )
 
         when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
@@ -377,12 +376,12 @@ class RemoveCompanyBenefitControllerSpec
       "navigating from 'total value of benefit' page" in {
         val SUT = createSUT
         val cache = Map(
-          EndCompanyBenefit_EmploymentIdKey    -> "1",
-          EndCompanyBenefit_EmploymentNameKey  -> employment.name,
-          EndCompanyBenefit_BenefitTypeKey     -> "amazing",
-          EndCompanyBenefit_BenefitStopDateKey -> "before6April2017",
-          EndCompanyBenefit_BenefitValueKey    -> "12345",
-          EndCompanyBenefit_RefererKey         -> "Test"
+          EndCompanyBenefitConstants.EmploymentIdKey    -> "1",
+          EndCompanyBenefitConstants.EmploymentNameKey  -> employment.name,
+          EndCompanyBenefitConstants.BenefitTypeKey     -> "amazing",
+          EndCompanyBenefitConstants.BenefitStopDateKey -> "before6April2017",
+          EndCompanyBenefitConstants.BenefitValueKey    -> "12345",
+          EndCompanyBenefitConstants.RefererKey         -> "Test"
         )
         when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -404,8 +403,8 @@ class RemoveCompanyBenefitControllerSpec
         val SUT = createSUT
         val expectedCache =
           Map(
-            EndCompanyBenefit_TelephoneQuestionKey -> FormValuesConstants.YesValue,
-            EndCompanyBenefit_TelephoneNumberKey   -> "12345678")
+            EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
+            EndCompanyBenefitConstants.TelephoneNumberKey   -> "12345678")
         when(removeCompanyBenefitJourneyCacheService.cache(mockEq(expectedCache))(any()))
           .thenReturn(Future.successful(expectedCache))
         val result = SUT.submitTelephoneNumber()(
@@ -425,8 +424,8 @@ class RemoveCompanyBenefitControllerSpec
         val SUT = createSUT
         val expectedCacheWithErasingNumber =
           Map(
-            EndCompanyBenefit_TelephoneQuestionKey -> FormValuesConstants.NoValue,
-            EndCompanyBenefit_TelephoneNumberKey   -> "")
+            EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
+            EndCompanyBenefitConstants.TelephoneNumberKey   -> "")
         when(removeCompanyBenefitJourneyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
         val result = SUT.submitTelephoneNumber()(
@@ -447,7 +446,7 @@ class RemoveCompanyBenefitControllerSpec
       "there is a form validation error (standard form validation)" in {
         val SUT = createSUT
         when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(EndCompanyBenefit_RefererKey -> "Test")))
+          .thenReturn(Future.successful(Map(EndCompanyBenefitConstants.RefererKey -> "Test")))
         val result = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
@@ -463,7 +462,7 @@ class RemoveCompanyBenefitControllerSpec
       "there is a form validation error (additional, controller specific constraint)" in {
         val SUT = createSUT
         when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(EndCompanyBenefit_RefererKey -> "Test")))
+          .thenReturn(Future.successful(Map(EndCompanyBenefitConstants.RefererKey -> "Test")))
 
         val tooFewCharsResult = SUT.submitTelephoneNumber()(
           RequestBuilder
@@ -566,8 +565,8 @@ class RemoveCompanyBenefitControllerSpec
             any())).thenReturn(Future.successful("1"))
         when(
           trackSuccessJourneyCacheService
-            .cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
+            .cache(Matchers.eq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
@@ -597,8 +596,8 @@ class RemoveCompanyBenefitControllerSpec
             any())).thenReturn(Future.successful("1"))
         when(
           trackSuccessJourneyCacheService
-            .cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
+            .cache(Matchers.eq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
@@ -627,8 +626,8 @@ class RemoveCompanyBenefitControllerSpec
             any())).thenReturn(Future.successful("1"))
         when(
           trackSuccessJourneyCacheService
-            .cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
+            .cache(Matchers.eq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
@@ -658,8 +657,8 @@ class RemoveCompanyBenefitControllerSpec
             any())).thenReturn(Future.successful("1"))
         when(
           trackSuccessJourneyCacheService
-            .cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
+            .cache(Matchers.eq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))

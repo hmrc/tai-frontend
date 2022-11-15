@@ -22,14 +22,13 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 import uk.gov.hmrc.tai.connectors.TrackingConnector
 import uk.gov.hmrc.tai.model.domain.tracking._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
-import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class TrackingServiceSpec extends BaseSpec with JourneyCacheConstants {
+class TrackingServiceSpec extends BaseSpec {
 
   private val name = "name1"
 
@@ -79,9 +78,9 @@ class TrackingServiceSpec extends BaseSpec with JourneyCacheConstants {
       }
 
       Seq(
-        Map(TrackSuccessfulJourney_AddEmploymentKey      -> "true"),
-        Map(TrackSuccessfulJourney_UpdatePensionKey      -> "true"),
-        Map(TrackSuccessfulJourney_AddPensionProviderKey -> "true")
+        Map(TrackSuccessfulJourneyConstants.AddEmploymentKey      -> "true"),
+        Map(TrackSuccessfulJourneyConstants.UpdatePensionKey      -> "true"),
+        Map(TrackSuccessfulJourneyConstants.AddPensionProviderKey -> "true")
       ) foreach {
         case entry =>
           s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
@@ -95,7 +94,7 @@ class TrackingServiceSpec extends BaseSpec with JourneyCacheConstants {
       }
 
       Seq(
-        Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")
+        Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true")
       ) foreach {
         case entry =>
           s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
@@ -113,7 +112,7 @@ class TrackingServiceSpec extends BaseSpec with JourneyCacheConstants {
         when(trackingConnector.getUserTracking(any())(any()))
           .thenReturn(Future.successful(Seq.empty[TrackedForm]))
         when(successfulJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_AddEmploymentKey -> "true")))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true")))
 
         val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe SevenDays
@@ -147,7 +146,7 @@ class TrackingServiceSpec extends BaseSpec with JourneyCacheConstants {
         val incomeId = 1
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
         when(successfulJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId" -> "true")))
+          .thenReturn(Future.successful(Map(s"${TrackSuccessfulJourneyConstants.EstimatedPayKey}-$incomeId" -> "true")))
 
         val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
@@ -167,7 +166,8 @@ class TrackingServiceSpec extends BaseSpec with JourneyCacheConstants {
         val controller = sut
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
         when(successfulJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey -> true.toString)))
+          .thenReturn(
+            Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> true.toString)))
 
         val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess

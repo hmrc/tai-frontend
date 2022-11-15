@@ -26,14 +26,14 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails, TaxYear}
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class IncomeServiceSpec extends BaseSpec with JourneyCacheConstants {
+class IncomeServiceSpec extends BaseSpec {
 
   "employmentAmount" must {
     "return employment amount" when {
@@ -151,11 +151,11 @@ class IncomeServiceSpec extends BaseSpec with JourneyCacheConstants {
         val sut = createSUT
 
         val cache = Map(
-          UpdateIncome_PayPeriodKey           -> "monthly",
-          UpdateIncome_TotalSalaryKey         -> "£100",
-          UpdateIncome_TaxablePayKey          -> "£100",
-          UpdateIncome_OtherInDaysKey         -> "10",
-          UpdateIncome_BonusOvertimeAmountKey -> "£100"
+          UpdateIncomeConstants.PayPeriodKey           -> "monthly",
+          UpdateIncomeConstants.TotalSalaryKey         -> "£100",
+          UpdateIncomeConstants.TaxablePayKey          -> "£100",
+          UpdateIncomeConstants.OtherInDaysKey         -> "10",
+          UpdateIncomeConstants.BonusOvertimeAmountKey -> "£100"
         )
 
         val payDetails = PayDetails("monthly", Some(100), Some(100), Some(10), Some(100), None)
@@ -354,14 +354,15 @@ class IncomeServiceSpec extends BaseSpec with JourneyCacheConstants {
     "return cached map data" when {
       "payment is none" in {
         val sut = createSUT
-        val expectedCached = Map(UpdateIncome_PayToDateKey -> "0")
+        val expectedCached = Map(UpdateIncomeConstants.PayToDateKey -> "0")
         sut.cachePaymentForRegularIncome(None) mustBe expectedCached
       }
 
       "payment has value" in {
         val sut = createSUT
         val payment = paymentOnDate(LocalDate.of(2017, 9, 6))
-        val expectedCached = Map(UpdateIncome_PayToDateKey -> "2000", UpdateIncome_DateKey -> payment.date.toString)
+        val expectedCached =
+          Map(UpdateIncomeConstants.PayToDateKey -> "2000", UpdateIncomeConstants.DateKey -> payment.date.toString)
         sut.cachePaymentForRegularIncome(Some(payment)) mustBe expectedCached
       }
     }

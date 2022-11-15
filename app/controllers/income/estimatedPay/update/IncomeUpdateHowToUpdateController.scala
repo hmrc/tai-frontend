@@ -30,7 +30,8 @@ import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService, TaxAccountService}
-import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import views.html.incomes.HowToUpdateView
 
 import javax.inject.{Inject, Named}
@@ -48,7 +49,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
+    extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 
   private def incomeTypeIdentifier(isPension: Boolean): String =
     if (isPension) {
@@ -64,9 +65,9 @@ class IncomeUpdateHowToUpdateController @Inject()(
         val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
         journeyCache(
           cacheMap = Map(
-            UpdateIncome_NameKey       -> employment.name,
-            UpdateIncome_IdKey         -> id.toString,
-            UpdateIncome_IncomeTypeKey -> incomeType))
+            UpdateIncomeConstants.NameKey       -> employment.name,
+            UpdateIncomeConstants.IdKey         -> id.toString,
+            UpdateIncomeConstants.IncomeTypeKey -> incomeType))
       case _ => throw new RuntimeException("Not able to find employment")
     }
 
@@ -101,7 +102,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, taxCodeIncomeDetails) match {
       case (true, false, TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
         for {
-          howToUpdate <- journeyCacheService.currentValue(UpdateIncome_HowToUpdateKey)
+          howToUpdate <- journeyCacheService.currentValue(UpdateIncomeConstants.HowToUpdateKey)
         } yield {
           val form = HowToUpdateForm.createForm().fill(HowToUpdateForm(howToUpdate))
 
@@ -140,7 +141,7 @@ class IncomeUpdateHowToUpdateController @Inject()(
           }
         },
         formData => {
-          journeyCacheService.cache(UpdateIncome_HowToUpdateKey, formData.howToUpdate.getOrElse("")).map { _ =>
+          journeyCacheService.cache(UpdateIncomeConstants.HowToUpdateKey, formData.howToUpdate.getOrElse("")).map { _ =>
             formData.howToUpdate match {
               case Some("incomeCalculator") =>
                 Redirect(routes.IncomeUpdateWorkingHoursController.workingHoursPage())

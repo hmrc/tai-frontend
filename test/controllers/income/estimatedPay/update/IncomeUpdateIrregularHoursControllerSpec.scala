@@ -36,15 +36,15 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MonthAndYear
-import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
 import views.html.incomes.{ConfirmAmountEnteredView, EditIncomeIrregularHoursView, EditSuccessView}
 
 import java.time.format.DateTimeFormatter
 import scala.concurrent.Future
 
-class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCacheConstants {
+class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
@@ -69,9 +69,9 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
-    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any()))
+    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncomeConstants.IdKey))(any()))
       .thenReturn(Future.successful(Right(employer.id)))
-    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncome_NameKey))(any()))
+    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncomeConstants.NameKey))(any()))
       .thenReturn(Future.successful(Right(employer.name)))
   }
 
@@ -141,9 +141,9 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
       sealed class HandleIncomeIrregularHoursHarness() {
 
         val cacheMap = Map(
-          UpdateIncome_NameKey      -> "name",
-          UpdateIncome_PayToDateKey -> "123",
-          UpdateIncome_DateKey      -> LocalDate.now().format(DateTimeFormatter.ofPattern(MonthAndYear))
+          UpdateIncomeConstants.NameKey      -> "name",
+          UpdateIncomeConstants.PayToDateKey -> "123",
+          UpdateIncomeConstants.DateKey      -> LocalDate.now().format(DateTimeFormatter.ofPattern(MonthAndYear))
         )
 
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
@@ -151,7 +151,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec with JourneyCach
         when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq("name", "123"))))
 
-        when(journeyCacheService.cache(eqTo(UpdateIncome_IrregularAnnualPayKey), any())(any()))
+        when(journeyCacheService.cache(eqTo(UpdateIncomeConstants.IrregularAnnualPayKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         when(journeyCacheService.currentCache(any()))

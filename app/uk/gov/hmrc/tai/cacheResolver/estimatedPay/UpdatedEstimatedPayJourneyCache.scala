@@ -18,11 +18,11 @@ package uk.gov.hmrc.tai.cacheResolver.estimatedPay
 
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait UpdatedEstimatedPayJourneyCache extends JourneyCacheConstants {
+trait UpdatedEstimatedPayJourneyCache {
 
   def journeyCache(key: String = "defaultCacheUpdate", cacheMap: Map[String, String])(
     implicit hc: HeaderCarrier,
@@ -42,10 +42,10 @@ trait UpdatedEstimatedPayJourneyCache extends JourneyCacheConstants {
       } yield updatedCache
 
     key match {
-      case UpdateIncome_PayslipDeductionsKey =>
-        yesNoAnswerResponse(Map(key -> cacheMap(key)), List(UpdateIncome_TaxablePayKey))
-      case UpdateIncome_BonusPaymentsKey =>
-        yesNoAnswerResponse(Map(key -> cacheMap(key)), List(UpdateIncome_BonusOvertimeAmountKey))
+      case UpdateIncomeConstants.PayslipDeductionsKey =>
+        yesNoAnswerResponse(Map(key -> cacheMap(key)), List(UpdateIncomeConstants.TaxablePayKey))
+      case UpdateIncomeConstants.BonusPaymentsKey =>
+        yesNoAnswerResponse(Map(key -> cacheMap(key)), List(UpdateIncomeConstants.BonusOvertimeAmountKey))
       case _ => journeyCacheService.cache(cacheMap)
     }
   }

@@ -30,12 +30,13 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.incomes.WorkingHoursView
 
 import scala.concurrent.Future
 
-class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec with JourneyCacheConstants {
+class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
@@ -59,7 +60,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec with JourneyCacheC
     object WorkingHoursPageHarness {
       sealed class WorkingHoursPageHarness() {
 
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_WorkingHoursKey))(any()))
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncomeConstants.WorkingHoursKey))(any()))
           .thenReturn(Future.successful(Option(EditIncomeIrregularPayConstants.RegularHours)))
 
         def workingHoursPage(): Future[Result] =
@@ -106,10 +107,10 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec with JourneyCacheC
     object HandleWorkingHoursHarness {
       sealed class HandleWorkingHoursHarness() {
 
-        when(journeyCacheService.cache(eqTo(UpdateIncome_WorkingHoursKey), any())(any()))
+        when(journeyCacheService.cache(eqTo(UpdateIncomeConstants.WorkingHoursKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(eqTo(UpdateIncome_IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(eqTo(UpdateIncomeConstants.IdKey))(any()))
           .thenReturn(Future.successful(Right(1)))
 
         def handleWorkingHours(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =

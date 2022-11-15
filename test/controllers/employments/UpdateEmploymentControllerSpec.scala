@@ -33,7 +33,8 @@ import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.employments.ConfirmationView
@@ -43,8 +44,7 @@ import java.time.LocalDate
 import scala.concurrent.Future
 import scala.language.postfixOps
 
-class UpdateEmploymentControllerSpec
-    extends BaseSpec with JourneyCacheConstants with BeforeAndAfter with BeforeAndAfterEach {
+class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(journeyCacheService, successfulJourneyCacheService, personService)
@@ -54,7 +54,8 @@ class UpdateEmploymentControllerSpec
       "the request has an authorised session" in {
         val sut = createSUT
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
+        val cache =
+          Map(UpdateEmploymentConstants.EmploymentIdKey -> "1", UpdateEmploymentConstants.NameKey -> employment.name)
         when(journeyCacheService.cache(Matchers.eq(cache))(any())).thenReturn(Future.successful(cache))
         when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
@@ -71,7 +72,8 @@ class UpdateEmploymentControllerSpec
       "the request has an authorised session" in {
         val sut = createSUT
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
+        val cache =
+          Map(UpdateEmploymentConstants.EmploymentIdKey -> "1", UpdateEmploymentConstants.NameKey -> employment.name)
         when(journeyCacheService.cache(Matchers.eq(cache))(any())).thenReturn(Future.successful(cache))
         when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
@@ -88,7 +90,8 @@ class UpdateEmploymentControllerSpec
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         val cacheDetails = Some("updateDetails")
         when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(cacheDetails))
-        val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
+        val cache =
+          Map(UpdateEmploymentConstants.EmploymentIdKey -> "1", UpdateEmploymentConstants.NameKey -> employment.name)
         when(journeyCacheService.cache(Matchers.eq(cache))(any())).thenReturn(Future.successful(cache))
 
         val result = sut.updateEmploymentDetails(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -163,7 +166,7 @@ class UpdateEmploymentControllerSpec
         val employmentDetailsFormData = ("employmentDetails", "")
 
         when(journeyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(AddEmployment_NameKey                         -> "Test")))
+          .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey                -> "Test")))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = sut.submitUpdateEmploymentDetails(0)(
@@ -184,7 +187,7 @@ class UpdateEmploymentControllerSpec
         val employmentDetails = Map("employmentDetails" -> "")
 
         when(journeyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(AddEmployment_NameKey                         -> "Test")))
+          .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey                -> "Test")))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = sut.submitUpdateEmploymentDetails(0)(
@@ -253,8 +256,8 @@ class UpdateEmploymentControllerSpec
         val sut = createSUT
         val expectedCache =
           Map(
-            UpdateEmployment_TelephoneQuestionKey -> FormValuesConstants.YesValue,
-            UpdateEmployment_TelephoneNumberKey   -> "12345678")
+            UpdateEmploymentConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
+            UpdateEmploymentConstants.TelephoneNumberKey   -> "12345678")
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(expectedCache))
 
         val result = sut.submitTelephoneNumber()(
@@ -275,8 +278,8 @@ class UpdateEmploymentControllerSpec
 
         val expectedCacheWithErasingNumber =
           Map(
-            UpdateEmployment_TelephoneQuestionKey -> FormValuesConstants.NoValue,
-            UpdateEmployment_TelephoneNumberKey   -> "")
+            UpdateEmploymentConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
+            UpdateEmploymentConstants.TelephoneNumberKey   -> "")
         when(journeyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
 
@@ -297,7 +300,7 @@ class UpdateEmploymentControllerSpec
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
         val sut = createSUT
-        val cache = Map(UpdateEmployment_EmploymentIdKey -> "1")
+        val cache = Map(UpdateEmploymentConstants.EmploymentIdKey -> "1")
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.submitTelephoneNumber()(
@@ -314,7 +317,7 @@ class UpdateEmploymentControllerSpec
 
       "there is a form validation error (additional, controller specific constraint)" in {
         val sut = createSUT
-        val cache = Map(UpdateEmployment_EmploymentIdKey -> "1")
+        val cache = Map(UpdateEmploymentConstants.EmploymentIdKey -> "1")
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val tooFewCharsResult = sut.submitTelephoneNumber()(
@@ -398,8 +401,11 @@ class UpdateEmploymentControllerSpec
           .thenReturn(Future.successful("1"))
         when(
           successfulJourneyCacheService
-            .cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId"), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId" -> "true")))
+            .cache(
+              Matchers.eq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"),
+              Matchers.eq("true"))(any()))
+          .thenReturn(
+            Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
@@ -424,8 +430,11 @@ class UpdateEmploymentControllerSpec
           .thenReturn(Future.successful("1"))
         when(
           successfulJourneyCacheService
-            .cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId"), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId" -> "true")))
+            .cache(
+              Matchers.eq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"),
+              Matchers.eq("true"))(any()))
+          .thenReturn(
+            Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))

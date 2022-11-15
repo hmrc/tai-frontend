@@ -31,7 +31,8 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FutureOps.FutureEitherStringOps
 import uk.gov.hmrc.tai.util.Referral
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
@@ -57,7 +58,7 @@ class UpdateEmploymentController @Inject()(
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with Referral with JourneyCacheConstants with EmptyCacheRedirect {
+    extends TaiBaseController(mcc) with Referral with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>
@@ -78,13 +79,13 @@ class UpdateEmploymentController @Inject()(
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       (for {
-        userSuppliedDetails <- journeyCacheService.currentValue(UpdateEmployment_EmploymentDetailsKey)
+        userSuppliedDetails <- journeyCacheService.currentValue(UpdateEmploymentConstants.EmploymentDetailsKey)
         employment          <- employmentService.employment(user.nino, empId)
         futureResult <- employment match {
                          case Some(emp) =>
                            val cache = Map(
-                             UpdateEmployment_EmploymentIdKey -> empId.toString,
-                             UpdateEmployment_NameKey         -> emp.name)
+                             UpdateEmploymentConstants.EmploymentIdKey -> empId.toString,
+                             UpdateEmploymentConstants.NameKey         -> emp.name)
                            journeyCacheService
                              .cache(cache)
                              .map(
@@ -108,12 +109,14 @@ class UpdateEmploymentController @Inject()(
           journeyCacheService.currentCache map { currentCache =>
             implicit val user: AuthedUser = request.taiUser
             BadRequest(
-              whatDoYouWantToTellUs(EmploymentViewModel(currentCache(UpdateEmployment_NameKey), empId), formWithErrors))
+              whatDoYouWantToTellUs(
+                EmploymentViewModel(currentCache(UpdateEmploymentConstants.NameKey), empId),
+                formWithErrors))
           }
         },
         employmentDetails => {
           journeyCacheService
-            .cache(Map(UpdateEmployment_EmploymentDetailsKey -> employmentDetails))
+            .cache(Map(UpdateEmploymentConstants.EmploymentDetailsKey -> employmentDetails))
             .map(_ => Redirect(controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber()))
         }
       )
@@ -121,9 +124,11 @@ class UpdateEmploymentController @Inject()(
 
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     for {
-      employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(EndEmployment_EmploymentIdKey)
+      employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(EndEmploymentConstants.EmploymentIdKey)
       telephoneCache <- journeyCacheService
-                         .optionalValues(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey)
+                         .optionalValues(
+                           UpdateEmploymentConstants.TelephoneQuestionKey,
+                           UpdateEmploymentConstants.TelephoneNumberKey)
     } yield {
       implicit val user: AuthedUser = request.taiUser
       employmentId match {
@@ -153,18 +158,18 @@ class UpdateEmploymentController @Inject()(
             BadRequest(
               canWeContactByPhone(
                 Some(user),
-                telephoneNumberViewModel(currentCache(UpdateEmployment_EmploymentIdKey).toInt),
+                telephoneNumberViewModel(currentCache(UpdateEmploymentConstants.EmploymentIdKey).toInt),
                 formWithErrors))
           }
         },
         form => {
           val mandatoryData = Map(
-            UpdateEmployment_TelephoneQuestionKey -> Messages(
+            UpdateEmploymentConstants.TelephoneQuestionKey -> Messages(
               s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"))
           val dataForCache = form.yesNoChoice match {
             case Some(yn) if yn == FormValuesConstants.YesValue =>
-              mandatoryData ++ Map(UpdateEmployment_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
-            case _ => mandatoryData ++ Map(UpdateEmployment_TelephoneNumberKey -> "")
+              mandatoryData ++ Map(UpdateEmploymentConstants.TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
+            case _ => mandatoryData ++ Map(UpdateEmploymentConstants.TelephoneNumberKey -> "")
           }
           journeyCacheService.cache(dataForCache) map { _ =>
             Redirect(controllers.employments.routes.UpdateEmploymentController.updateEmploymentCheckYourAnswers())
@@ -180,11 +185,12 @@ class UpdateEmploymentController @Inject()(
       journeyCacheService
         .collectedJourneyValues(
           Seq(
-            UpdateEmployment_EmploymentIdKey,
-            UpdateEmployment_NameKey,
-            UpdateEmployment_EmploymentDetailsKey,
-            UpdateEmployment_TelephoneQuestionKey),
-          Seq(UpdateEmployment_TelephoneNumberKey)
+            UpdateEmploymentConstants.EmploymentIdKey,
+            UpdateEmploymentConstants.NameKey,
+            UpdateEmploymentConstants.EmploymentDetailsKey,
+            UpdateEmploymentConstants.TelephoneQuestionKey
+          ),
+          Seq(UpdateEmploymentConstants.TelephoneNumberKey)
         )
         .map {
           case Right((mandatoryJourneyValues, optionalSeq)) =>
@@ -206,16 +212,18 @@ class UpdateEmploymentController @Inject()(
       (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService
                                                 .collectedJourneyValues(
                                                   Seq(
-                                                    UpdateEmployment_EmploymentIdKey,
-                                                    UpdateEmployment_EmploymentDetailsKey,
-                                                    UpdateEmployment_TelephoneQuestionKey),
-                                                  Seq(UpdateEmployment_TelephoneNumberKey)
+                                                    UpdateEmploymentConstants.EmploymentIdKey,
+                                                    UpdateEmploymentConstants.EmploymentDetailsKey,
+                                                    UpdateEmploymentConstants.TelephoneQuestionKey),
+                                                  Seq(UpdateEmploymentConstants.TelephoneNumberKey)
                                                 )
                                                 .getOrFail
       model = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
       _ <- employmentService.incorrectEmployment(user.nino, mandatoryCacheSeq.head.toInt, model)
       _ <- successfulJourneyCacheService
-            .cache(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-${mandatoryCacheSeq.head}", true.toString)
+            .cache(
+              s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${mandatoryCacheSeq.head}",
+              true.toString)
       _ <- journeyCacheService.flush
     } yield Redirect(controllers.employments.routes.UpdateEmploymentController.confirmation())
   }

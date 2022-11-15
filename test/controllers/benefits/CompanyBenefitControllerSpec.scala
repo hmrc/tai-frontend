@@ -37,7 +37,8 @@ import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment, Telephone}
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.{DecisionChoice, NoIDontGetThisBenefit, YesIGetThisBenefit}
-import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import utils.BaseSpec
@@ -49,8 +50,7 @@ import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 class CompanyBenefitControllerSpec
-    extends BaseSpec with JourneyCacheConstants with JsoupMatchers with BeforeAndAfterEach
-    with ControllerViewTestHelper {
+    extends BaseSpec with JsoupMatchers with BeforeAndAfterEach with ControllerViewTestHelper {
 
   override def beforeEach: Unit =
     Mockito.reset(journeyCacheService)
@@ -82,9 +82,9 @@ class CompanyBenefitControllerSpec
 
         val SUT = createSUT
         val cache = Map(
-          EndCompanyBenefit_EmploymentIdKey -> "1",
-          EndCompanyBenefit_BenefitTypeKey  -> benefitType,
-          EndCompanyBenefit_RefererKey      -> referer)
+          EndCompanyBenefitConstants.EmploymentIdKey -> "1",
+          EndCompanyBenefitConstants.BenefitTypeKey  -> benefitType,
+          EndCompanyBenefitConstants.RefererKey      -> referer)
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -99,12 +99,11 @@ class CompanyBenefitControllerSpec
 
         verify(employmentService, times(1)).employment(any(), any())(any())
         verify(journeyCacheService, times(1)).currentCache(any())
-        verify(journeyCacheService, times(1)).cache(
-          eqTo(
-            Map(
-              EndCompanyBenefit_EmploymentNameKey -> empName,
-              EndCompanyBenefit_BenefitNameKey    -> benefitType,
-              EndCompanyBenefit_RefererKey        -> referer)))(any())
+        verify(journeyCacheService, times(1)).cache(eqTo(Map(
+          EndCompanyBenefitConstants.EmploymentNameKey -> empName,
+          EndCompanyBenefitConstants.BenefitNameKey    -> benefitType,
+          EndCompanyBenefitConstants.RefererKey        -> referer
+        )))(any())
       }
 
       "prepopulate the decision selection" in {
@@ -114,10 +113,10 @@ class CompanyBenefitControllerSpec
 
         val SUT = createSUT
         val cache = Map(
-          EndCompanyBenefit_EmploymentIdKey -> "1",
-          EndCompanyBenefit_BenefitTypeKey  -> benefitType,
-          EndCompanyBenefit_RefererKey      -> referer,
-          s"$benefitType $DecisionChoice"   -> YesIGetThisBenefit
+          EndCompanyBenefitConstants.EmploymentIdKey -> "1",
+          EndCompanyBenefitConstants.BenefitTypeKey  -> benefitType,
+          EndCompanyBenefitConstants.RefererKey      -> referer,
+          s"$benefitType $DecisionChoice"            -> YesIGetThisBenefit
         )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
@@ -142,9 +141,9 @@ class CompanyBenefitControllerSpec
       "employment not found" in {
         val SUT = createSUT
         val cache = Map(
-          EndCompanyBenefit_EmploymentIdKey -> "1",
-          EndCompanyBenefit_BenefitTypeKey  -> "type",
-          EndCompanyBenefit_RefererKey      -> "referrer")
+          EndCompanyBenefitConstants.EmploymentIdKey -> "1",
+          EndCompanyBenefitConstants.BenefitTypeKey  -> "type",
+          EndCompanyBenefitConstants.RefererKey      -> "referrer")
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
@@ -160,17 +159,17 @@ class CompanyBenefitControllerSpec
 
     def ensureBenefitTypeInCache(): String = {
       val benefitType = Telephone.name
-      when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefit_BenefitTypeKey))(any()))
+      when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
         .thenReturn(Future.successful(Right(benefitType)))
       benefitType
     }
 
     def ensureBenefitTypeOutOfCache(): Unit =
-      when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefit_BenefitTypeKey))(any()))
+      when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
         .thenReturn(Future.successful(Left("")))
 
     "redirect to the 'When did you stop getting benefits from company?' page" when {
-      "the form has the value noIDontGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is cached" in {
+      "the form has the value noIDontGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is cached" in {
 
         val SUT = createSUT
         ensureBenefitTypeInCache()
@@ -190,7 +189,7 @@ class CompanyBenefitControllerSpec
     }
 
     "redirect to the appropriate IFORM update page" when {
-      "the form has the value yesIGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is cached" in {
+      "the form has the value yesIGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is cached" in {
 
         val SUT = createSUT
         ensureBenefitTypeInCache()
@@ -210,7 +209,7 @@ class CompanyBenefitControllerSpec
     }
 
     "redirect to the Tax Account Summary Page (start of journey)" when {
-      "the form has the value noIDontGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
+      "the form has the value noIDontGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is not cached" in {
         val SUT = createSUT
         ensureBenefitTypeOutOfCache()
 
@@ -225,7 +224,7 @@ class CompanyBenefitControllerSpec
 
       }
 
-      "the form has the value YesIGetThisBenefit and EndCompanyBenefit_BenefitTypeKey is not cached" in {
+      "the form has the value YesIGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is not cached" in {
         val SUT = createSUT
         ensureBenefitTypeOutOfCache()
 
@@ -261,10 +260,10 @@ class CompanyBenefitControllerSpec
       "the form submission is having blank value" in {
         val SUT = createSUT
         val cache = Map(
-          EndCompanyBenefit_EmploymentNameKey -> "Employer A",
-          EndCompanyBenefit_BenefitTypeKey    -> "Expenses",
-          EndCompanyBenefit_RefererKey        -> "/check-income-tax/income-summary",
-          EndCompanyBenefit_EmploymentIdKey   -> "1"
+          EndCompanyBenefitConstants.EmploymentNameKey -> "Employer A",
+          EndCompanyBenefitConstants.BenefitTypeKey    -> "Expenses",
+          EndCompanyBenefitConstants.RefererKey        -> "/check-income-tax/income-summary",
+          EndCompanyBenefitConstants.EmploymentIdKey   -> "1"
         )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
