@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.forms.pensions
 
 import java.time.LocalDate
+import cats.implicits._
 import play.api.data.Forms.of
 import play.api.data.format.Formatter
 import play.api.data.{FieldMapping, Form, FormError}
@@ -47,12 +48,14 @@ case class PensionAddDateForm(employerName: String) {
 
         if (errors.isEmpty) {
           val inputDate: Option[LocalDate] = Try(
-            for {
-              day   <- data.get(PensionFormDay).map(Integer.parseInt)
-              month <- data.get(PensionFormMonth).map(Integer.parseInt)
-              year  <- data.get(PensionFormYear).map(Integer.parseInt)
-            } yield LocalDate.of(year, month, day)
-          ).getOrElse(None)
+            (
+              data.get(PensionFormDay).map(Integer.parseInt),
+              data.get(PensionFormMonth).map(Integer.parseInt),
+              data.get(PensionFormYear).map(Integer.parseInt)
+            ) mapN {
+              case (day, month, year) =>
+                LocalDate.of(year, month, day)
+            }).getOrElse(None)
 
           inputDate match {
             case Some(date) if date.isAfter(LocalDate.now()) =>
