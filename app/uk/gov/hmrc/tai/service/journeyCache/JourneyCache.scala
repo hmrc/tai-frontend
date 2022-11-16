@@ -18,28 +18,28 @@ package uk.gov.hmrc.tai.service.journeyCache
 
 import javax.inject.Inject
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants._
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
 class AddEmploymentJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(AddEmployment_JourneyKey, journeyCacheConnector)
+    extends JourneyCacheService(AddEmploymentConstants.JourneyKey, journeyCacheConnector)
 class AddPensionProviderJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(AddPensionProvider_JourneyKey, journeyCacheConnector)
+    extends JourneyCacheService(AddPensionProviderConstants.JourneyKey, journeyCacheConnector)
 class CompanyCarJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(CompanyCar_JourneyKey, journeyCacheConnector)
+    extends JourneyCacheService(CompanyCarConstants.JourneyKey, journeyCacheConnector)
 class EndCompanyBenefitJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(EndCompanyBenefit_JourneyKey, journeyCacheConnector)
+    extends JourneyCacheService(EndCompanyBenefitConstants.JourneyKey, journeyCacheConnector)
 class EndEmploymentJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(EndEmployment_JourneyKey, journeyCacheConnector)
+    extends JourneyCacheService(EndEmploymentConstants.JourneyKey, journeyCacheConnector)
 class TrackSuccessfulJourneyJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(TrackSuccessfulJourney_JourneyKey, journeyCacheConnector)
+    extends JourneyCacheService(TrackSuccessfulJourneyConstants.JourneyKey, journeyCacheConnector)
 class UpdateEmploymentJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(UpdateEmployment_JourneyKey, journeyCacheConnector)
+    extends JourneyCacheService(UpdateEmploymentConstants.JourneyKey, journeyCacheConnector)
 class UpdateNextYearsIncomeJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
     extends JourneyCacheService(UpdateNextYearsIncomeConstants.JourneyKey, journeyCacheConnector)
 class UpdatePensionProviderJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(UpdatePensionProvider_JourneyKey, journeyCacheConnector)
+    extends JourneyCacheService(UpdatePensionProviderConstants.JourneyKey, journeyCacheConnector)
 class UpdatePreviousYearsIncomeJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(UpdatePreviousYearsIncome_JourneyKey, journeyCacheConnector)
+    extends JourneyCacheService(UpdatePreviousYearsIncomeConstants.JourneyKey, journeyCacheConnector)
 class UpdateIncomeJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
-    extends JourneyCacheService(UpdateIncome_JourneyKey, journeyCacheConnector)
+    extends JourneyCacheService(UpdateIncomeConstants.JourneyKey, journeyCacheConnector)

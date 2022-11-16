@@ -36,12 +36,13 @@ import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.incomes.HowToUpdateView
 
 import scala.concurrent.Future
 
-class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheConstants with ScalaFutures {
+class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
   val defaultEmployment: Employment =
@@ -138,9 +139,9 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
     "render the right response to the user" in {
 
       val cacheMap = Map(
-        UpdateIncome_NameKey       -> "company",
-        UpdateIncome_IdKey         -> "1",
-        UpdateIncome_IncomeTypeKey -> TaiConstants.IncomeTypePension)
+        UpdateIncomeConstants.NameKey       -> "company",
+        UpdateIncomeConstants.IdKey         -> "1",
+        UpdateIncomeConstants.IncomeTypeKey -> TaiConstants.IncomeTypePension)
 
       val result = HowToUpdatePageHarness
         .setup(cacheMap)
@@ -153,9 +154,9 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
     "cache the employer details" in {
 
       val cacheMap = Map(
-        UpdateIncome_NameKey       -> "company",
-        UpdateIncome_IdKey         -> "1",
-        UpdateIncome_IncomeTypeKey -> TaiConstants.IncomeTypeEmployment)
+        UpdateIncomeConstants.NameKey       -> "company",
+        UpdateIncomeConstants.IdKey         -> "1",
+        UpdateIncomeConstants.IncomeTypeKey -> TaiConstants.IncomeTypeEmployment)
 
       val result = HowToUpdatePageHarness
         .setup(cacheMap)
@@ -169,9 +170,9 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
     "employments return empty income is none" in {
 
       val cacheMap = Map(
-        UpdateIncome_NameKey       -> "company",
-        UpdateIncome_IdKey         -> "1",
-        UpdateIncome_IncomeTypeKey -> TaiConstants.IncomeTypePension)
+        UpdateIncomeConstants.NameKey       -> "company",
+        UpdateIncomeConstants.IdKey         -> "1",
+        UpdateIncomeConstants.IncomeTypeKey -> TaiConstants.IncomeTypePension)
 
       val result = HowToUpdatePageHarness
         .setup(cacheMap, None)
@@ -201,7 +202,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
 
         currentValue match {
           case Some(x) =>
-            when(journeyCacheService.currentValue(eqTo(UpdateIncome_HowToUpdateKey))(any()))
+            when(journeyCacheService.currentValue(eqTo(UpdateIncomeConstants.HowToUpdateKey))(any()))
               .thenReturn(Future.successful(Some(x)))
           case None =>
         }
@@ -249,7 +250,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
     }
 
     "redirect user for is live employment " when {
-      "editable incomes are greater than one and UpdateIncome_HowToUpdateKey has a cached value" in {
+      "editable incomes are greater than one and UpdateIncomeConstants.HowToUpdateKey has a cached value" in {
 
         val result = ProcessHowToUpdatePageHarness
           .setup(2, Some("incomeCalculator"))
@@ -262,7 +263,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
         }
       }
 
-      "editable incomes are greater than one and no cached UpdateIncome_HowToUpdateKey" in {
+      "editable incomes are greater than one and no cached UpdateIncomeConstants.HowToUpdateKey" in {
 
         val result = ProcessHowToUpdatePageHarness
           .setup(2)
@@ -275,7 +276,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
         }
       }
 
-      "editable income is singular and UpdateIncome_HowToUpdateKey has a cached value" in {
+      "editable income is singular and UpdateIncomeConstants.HowToUpdateKey has a cached value" in {
 
         val result = ProcessHowToUpdatePageHarness
           .setup(1, Some("incomeCalculator"))
@@ -288,7 +289,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
         }
       }
 
-      "editable income is singular and no cached UpdateIncome_HowToUpdateKey" in {
+      "editable income is singular and no cached UpdateIncomeConstants.HowToUpdateKey" in {
 
         val result = ProcessHowToUpdatePageHarness
           .setup(1)
@@ -301,7 +302,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
         }
       }
 
-      "editable income is none and UpdateIncome_HowToUpdateKey has a cached value" in {
+      "editable income is none and UpdateIncomeConstants.HowToUpdateKey has a cached value" in {
 
         val result = ProcessHowToUpdatePageHarness
           .setup(0, Some("incomeCalculator"))
@@ -314,7 +315,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
         assert(ex.getMessage.contains("Employment id not present"))
       }
 
-      "editable income is none and no cached UpdateIncome_HowToUpdateKey" in {
+      "editable income is none and no cached UpdateIncomeConstants.HowToUpdateKey" in {
 
         val result = ProcessHowToUpdatePageHarness
           .setup(0, Some("incomeCalculator"))
@@ -334,7 +335,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with JourneyCacheCo
 
       sealed class HandleChooseHowToUpdateHarness() {
 
-        when(journeyCacheService.cache(Matchers.eq(UpdateIncome_HowToUpdateKey), any())(any()))
+        when(journeyCacheService.cache(Matchers.eq(UpdateIncomeConstants.HowToUpdateKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         def handleChooseHowToUpdate(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =

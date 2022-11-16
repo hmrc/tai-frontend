@@ -33,14 +33,15 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, UpdateHistoricIncomeChoiceConstants}
+import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, UpdateHistoricIncomeChoiceConstants}
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.incomes.previousYears.{CheckYourAnswersView, UpdateIncomeDetailsConfirmationView, UpdateIncomeDetailsDecisionView, UpdateIncomeDetailsView}
 
 import scala.concurrent.Future
 
-class UpdateIncomeDetailsControllerSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
+class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(journeyCacheService, trackingjourneyCacheService)
@@ -108,7 +109,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with JourneyCacheConsta
       "the request has an authorised session with Tax Year" in {
         val SUT = createSUT
         val taxYear = TaxYear().prev.year.toString
-        val cache = Map(UpdatePreviousYearsIncome_TaxYearKey -> taxYear)
+        val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> taxYear)
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.details()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -164,7 +165,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with JourneyCacheConsta
         val employmentDetailsFormData = ("employmentDetails", "")
 
         when(journeyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(UpdatePreviousYearsIncome_TaxYearKey          -> "2016")))
+          .thenReturn(Future.successful(Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> "2016")))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitDetails()(
@@ -183,7 +184,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with JourneyCacheConsta
         val sut = createSUT
 
         when(journeyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(UpdatePreviousYearsIncome_TaxYearKey -> "2016")))
+          .thenReturn(Future.successful(Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> "2016")))
 
         val result = sut.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -199,8 +200,9 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with JourneyCacheConsta
       "the request has an authorised session, and a telephone number has been provided" in {
         val sut = createSUT
         val expectedCache = Map(
-          UpdatePreviousYearsIncome_TelephoneQuestionKey -> FormValuesConstants.YesValue,
-          UpdatePreviousYearsIncome_TelephoneNumberKey   -> "12345678")
+          UpdatePreviousYearsIncomeConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
+          UpdatePreviousYearsIncomeConstants.TelephoneNumberKey   -> "12345678"
+        )
         when(journeyCacheService.cache(mockEq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
 
         val result = sut.submitTelephoneNumber()(
@@ -220,8 +222,8 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with JourneyCacheConsta
         val sut = createSUT
 
         val expectedCacheWithErasingNumber = Map(
-          UpdatePreviousYearsIncome_TelephoneQuestionKey -> FormValuesConstants.NoValue,
-          UpdatePreviousYearsIncome_TelephoneNumberKey   -> "")
+          UpdatePreviousYearsIncomeConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
+          UpdatePreviousYearsIncomeConstants.TelephoneNumberKey   -> "")
         when(journeyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
 
@@ -242,7 +244,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with JourneyCacheConsta
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
         val sut = createSUT
-        val cache = Map(UpdatePreviousYearsIncome_TaxYearKey -> "2016")
+        val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> "2016")
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.submitTelephoneNumber()(
@@ -258,7 +260,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with JourneyCacheConsta
       }
       "there is a form validation error (additional, controller specific constraint)" in {
         val sut = createSUT
-        val cache = Map(UpdatePreviousYearsIncome_TaxYearKey -> "2016")
+        val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> "2016")
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val tooFewCharsResult = sut.submitTelephoneNumber()(
@@ -331,10 +333,9 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with JourneyCacheConsta
         )
         when(previousYearsIncomeService.incorrectIncome(any(), Matchers.eq(1), Matchers.eq(incorrectIncome))(any()))
           .thenReturn(Future.successful("1"))
-        when(
-          trackingjourneyCacheService
-            .cache(Matchers.eq(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey -> "true")))
+        when(trackingjourneyCacheService
+          .cache(Matchers.eq(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
@@ -359,10 +360,9 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with JourneyCacheConsta
         )
         when(previousYearsIncomeService.incorrectIncome(any(), Matchers.eq(1), Matchers.eq(incorrectEmployment))(any()))
           .thenReturn(Future.successful("1"))
-        when(
-          trackingjourneyCacheService
-            .cache(Matchers.eq(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey -> "true")))
+        when(trackingjourneyCacheService
+          .cache(Matchers.eq(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))

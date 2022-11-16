@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCach
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.PayPeriodConstants
 import views.html.incomes.PayPeriodView
 
@@ -41,7 +41,7 @@ class IncomeUpdatePayPeriodController @Inject()(
   payPeriodView: PayPeriodView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with UpdatedEstimatedPayJourneyCache {
+    extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 
   def payPeriodPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
@@ -49,7 +49,7 @@ class IncomeUpdatePayPeriodController @Inject()(
     (
       IncomeSource.create(journeyCacheService),
       journeyCacheService
-        .optionalValues(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)).mapN {
+        .optionalValues(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey)).mapN {
       case (Right(incomeSource), payPeriod :: payPeriodInDays :: _) =>
         val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
         Ok(payPeriodView(form, incomeSource.id, incomeSource.name))
@@ -86,9 +86,9 @@ class IncomeUpdatePayPeriodController @Inject()(
           val cacheMap = formData.otherInDays match {
             case Some(days) =>
               Map(
-                UpdateIncome_PayPeriodKey   -> formData.payPeriod.getOrElse(""),
-                UpdateIncome_OtherInDaysKey -> days.toString)
-            case _ => Map(UpdateIncome_PayPeriodKey -> formData.payPeriod.getOrElse(""))
+                UpdateIncomeConstants.PayPeriodKey   -> formData.payPeriod.getOrElse(""),
+                UpdateIncomeConstants.OtherInDaysKey -> days.toString)
+            case _ => Map(UpdateIncomeConstants.PayPeriodKey -> formData.payPeriod.getOrElse(""))
           }
 
           journeyCache(cacheMap = cacheMap) map { _ =>

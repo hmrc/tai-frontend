@@ -36,7 +36,7 @@ import views.html.incomes.PayPeriodView
 
 import scala.concurrent.Future
 
-class IncomeUpdatePayPeriodControllerSpec extends BaseSpec with JourneyCacheConstants {
+class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 

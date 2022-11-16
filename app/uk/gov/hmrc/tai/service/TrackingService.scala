@@ -25,7 +25,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
 sealed trait TimeToProcess
@@ -38,8 +38,7 @@ case object NoTimeToProcess extends TimeToProcess
 
 class TrackingService @Inject()(
   trackingConnector: TrackingConnector,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService)
-    extends JourneyCacheConstants {
+  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService) {
 
   def isAnyIFormInProgress(nino: String)(implicit hc: HeaderCarrier): Future[TimeToProcess] =
     (
@@ -50,12 +49,13 @@ class TrackingService @Inject()(
         val haveAnyLongProcesses = hasIncompleteTrackingForms(trackedForms, "TES[1|7]")
         val haveAnyShortProcesses = hasIncompleteTrackingForms(trackedForms, "TES[2-6]")
 
-        val filteredJournies = successfulJournies.keySet.filterNot(
-          key =>
-            key.contains(TrackSuccessfulJourney_EstimatedPayKey) || key.contains(
-              UpdateNextYearsIncomeConstants.Successful)
-              || key.contains(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey)
-        )
+
+      val filteredJournies = successfulJournies.keySet.filterNot(
+        key =>
+          key.contains(TrackSuccessfulJourneyConstants.EstimatedPayKey) || key.contains(
+            UpdateNextYearsIncomeConstants.Successful)
+            || key.contains(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey)
+      )
 
         (haveAnyShortProcesses, haveAnyLongProcesses, filteredJournies.isEmpty, isA3WeeksJourney(successfulJournies)) match {
           case (true, false, _, _) | (_, _, false, false) => SevenDays
@@ -65,7 +65,7 @@ class TrackingService @Inject()(
     }
 
   private def isA3WeeksJourney(journies: Map[String, String]): Boolean =
-    journies exists { _ == TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true" }
+    journies exists { _ == TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true" }
 
   private def hasIncompleteTrackingForms(trackedForms: Seq[TrackedForm], regex: String)(
     implicit hc: HeaderCarrier): Boolean =

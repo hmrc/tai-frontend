@@ -32,7 +32,8 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1Basi
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, IncorrectPensionDecisionConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, IncorrectPensionDecisionConstants}
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.pensions.DuplicateSubmissionWarningView
@@ -40,7 +41,7 @@ import views.html.pensions.update.{ConfirmationView, DoYouGetThisPensionIncomeVi
 
 import scala.concurrent.Future
 
-class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
+class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(journeyCacheService)
@@ -139,8 +140,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheCons
 
         when(
           journeyCacheService.collectedJourneyValues(
-            Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
-            Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any()))
+            Matchers.eq(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)),
+            Matchers.eq(Seq(UpdatePensionProviderConstants.DetailsKey))
+          )(any()))
           .thenReturn(Future.successful(Right(Seq(pensionName, pensionId), Seq(None))))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
@@ -155,8 +157,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheCons
         val optionalCache = Seq(Some("test1"))
         when(
           journeyCacheService.collectedJourneyValues(
-            Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
-            Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any()))
+            Matchers.eq(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)),
+            Matchers.eq(Seq(UpdatePensionProviderConstants.DetailsKey))
+          )(any()))
           .thenReturn(Future.successful(Right(cache, optionalCache)))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
@@ -170,8 +173,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheCons
 
         when(
           journeyCacheService.collectedJourneyValues(
-            Matchers.eq(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey)),
-            Matchers.eq(Seq(UpdatePensionProvider_DetailsKey)))(any()))
+            Matchers.eq(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)),
+            Matchers.eq(Seq(UpdatePensionProviderConstants.DetailsKey))
+          )(any()))
           .thenReturn(Future.successful(Left("Data missing from cache")))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
@@ -265,8 +269,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheCons
       "the request has an authorised session, and a telephone number has been provided" in {
 
         val expectedCache = Map(
-          UpdatePensionProvider_TelephoneQuestionKey -> FormValuesConstants.YesValue,
-          UpdatePensionProvider_TelephoneNumberKey   -> "12345678")
+          UpdatePensionProviderConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
+          UpdatePensionProviderConstants.TelephoneNumberKey   -> "12345678")
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(expectedCache))
 
         val result = createController.submitTelephoneNumber()(
@@ -285,8 +289,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheCons
 
       val expectedCacheWithErasingNumber =
         Map(
-          UpdatePensionProvider_TelephoneQuestionKey -> FormValuesConstants.NoValue,
-          UpdatePensionProvider_TelephoneNumberKey   -> "")
+          UpdatePensionProviderConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
+          UpdatePensionProviderConstants.TelephoneNumberKey   -> "")
       when(journeyCacheService.cache(any())(any()))
         .thenReturn(Future.successful(expectedCacheWithErasingNumber))
 
@@ -305,7 +309,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheCons
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
 
-        val cache = Map(UpdatePensionProvider_IdKey -> pensionId)
+        val cache = Map(UpdatePensionProviderConstants.IdKey -> pensionId)
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = createController.submitTelephoneNumber()(
@@ -321,7 +325,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheCons
       "there is a form validation error (additional, controller specific constraint)" in {
         val controller = createController
 
-        val cache = Map(UpdatePensionProvider_IdKey -> pensionId)
+        val cache = Map(UpdatePensionProviderConstants.IdKey -> pensionId)
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val tooFewCharsResult = controller.submitTelephoneNumber()(
@@ -400,8 +404,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheCons
           .thenReturn(Future.successful("envelope_id_1"))
         when(
           successfulJourneyCacheService
-            .cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId"), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId" -> "true")))
+            .cache(Matchers.eq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId"), Matchers.eq("true"))(
+              any()))
+          .thenReturn(Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = createController.submitYourAnswers()(fakePostRequest)
@@ -430,8 +435,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheCons
           .thenReturn(Future.successful("envelope_id_1"))
         when(
           successfulJourneyCacheService
-            .cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId"), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId" -> "true")))
+            .cache(Matchers.eq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId"), Matchers.eq("true"))(
+              any()))
+          .thenReturn(Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = createController.submitYourAnswers()(fakePostRequest)
@@ -459,7 +465,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheCons
 
   "redirectUpdatePension" must {
 
-    def cacheMap = Map(UpdatePensionProvider_IdKey -> pensionId, UpdatePensionProvider_NameKey -> pensionName)
+    def cacheMap =
+      Map(UpdatePensionProviderConstants.IdKey -> pensionId, UpdatePensionProviderConstants.NameKey -> pensionName)
 
     def taxAccountServiceCall =
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -472,8 +479,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheCons
 
       taxAccountServiceCall
       when(
-        successfulJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$pensionId"))(
-          any())).thenReturn(Future.successful(None))
+        successfulJourneyCacheService.currentValue(
+          Matchers.eq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$pensionId"))(any()))
+        .thenReturn(Future.successful(None))
       journeyCacheCall
 
       val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
@@ -486,8 +494,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with JourneyCacheCons
 
       taxAccountServiceCall
       when(
-        successfulJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$pensionId"))(
-          any())).thenReturn(Future.successful(Some("true")))
+        successfulJourneyCacheService.currentValue(
+          Matchers.eq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$pensionId"))(any()))
+        .thenReturn(Future.successful(Some("true")))
       journeyCacheCall
 
       val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)

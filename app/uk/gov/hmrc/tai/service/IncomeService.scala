@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.model.domain.income.Ceased
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -36,8 +36,7 @@ import scala.concurrent.Future
 class IncomeService @Inject()(
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
-  taiConnector: TaiConnector)
-    extends JourneyCacheConstants {
+  taiConnector: TaiConnector) {
 
   def employmentAmount(nino: Nino, id: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[EmploymentAmount] =
     for {
@@ -71,11 +70,11 @@ class IncomeService @Inject()(
     def isCacheAvailable(key: String): Option[BigDecimal] =
       if (cache.contains(key)) Some(BigDecimal(FormHelper.convertCurrencyToInt(cache.get(key)))) else None
 
-    val paymentFrequency = cache.getOrElse(UpdateIncome_PayPeriodKey, "")
-    val pay = FormHelper.convertCurrencyToInt(cache.get(UpdateIncome_TotalSalaryKey))
-    val taxablePay = isCacheAvailable(UpdateIncome_TaxablePayKey)
-    val days = cache.getOrElse(UpdateIncome_OtherInDaysKey, "0").toInt
-    val bonus = isCacheAvailable(UpdateIncome_BonusOvertimeAmountKey)
+    val paymentFrequency = cache.getOrElse(UpdateIncomeConstants.PayPeriodKey, "")
+    val pay = FormHelper.convertCurrencyToInt(cache.get(UpdateIncomeConstants.TotalSalaryKey))
+    val taxablePay = isCacheAvailable(UpdateIncomeConstants.TaxablePayKey)
+    val days = cache.getOrElse(UpdateIncomeConstants.OtherInDaysKey, "0").toInt
+    val bonus = isCacheAvailable(UpdateIncomeConstants.BonusOvertimeAmountKey)
 
     val payDetails = PayDetails(
       paymentFrequency = paymentFrequency,
@@ -108,9 +107,9 @@ class IncomeService @Inject()(
     latestPayment match {
       case Some(payment) =>
         Map(
-          UpdateIncome_PayToDateKey -> payment.amountYearToDate.toString,
-          UpdateIncome_DateKey      -> payment.date.toString)
-      case None => Map(UpdateIncome_PayToDateKey -> "0")
+          UpdateIncomeConstants.PayToDateKey -> payment.amountYearToDate.toString,
+          UpdateIncomeConstants.DateKey      -> payment.date.toString)
+      case None => Map(UpdateIncomeConstants.PayToDateKey -> "0")
     }
 
 }

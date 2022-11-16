@@ -24,14 +24,13 @@ import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.tai.model.domain.Telephone
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.YesIGetThisBenefit
 import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class DecisionCacheWrapperSpec
-    extends BaseSpec with BeforeAndAfterEach with JourneyCacheConstants with ScalaFutures with Results {
+class DecisionCacheWrapperSpec extends BaseSpec with BeforeAndAfterEach with ScalaFutures with Results {
 
   val journeyCacheService = mock[JourneyCacheService]
   val wrapper = new DecisionCacheWrapper(journeyCacheService)
@@ -42,7 +41,7 @@ class DecisionCacheWrapperSpec
     "return a None" when {
       "there is no cached BenefitType" in {
 
-        when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefit_BenefitTypeKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
           .thenReturn(Future.successful(Left("")))
 
         val result = wrapper.getDecision()
@@ -52,7 +51,7 @@ class DecisionCacheWrapperSpec
       }
 
       "there there is no cached Decision" in {
-        when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefit_BenefitTypeKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
           .thenReturn(Future.successful(Right(Telephone.name)))
         when(journeyCacheService.currentValue(any())(any()))
           .thenReturn(Future.successful(None))
@@ -66,7 +65,7 @@ class DecisionCacheWrapperSpec
 
     "return the cached decision" when {
       "there is a cached value for the key given" in {
-        when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefit_BenefitTypeKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
           .thenReturn(Future.successful(Right(Telephone.name)))
         when(journeyCacheService.currentValue(any())(any()))
           .thenReturn(Future.successful(Option(YesIGetThisBenefit)))
