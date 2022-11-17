@@ -59,7 +59,7 @@ class IncomeUpdateIrregularHoursController @Inject()(
 
   private val logger = Logger(this.getClass)
 
-  private val taxCodeIncomeInfoToCache = (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
+  private val taxCodeIncomeInfoToCache: (TaxCodeIncome, Option[Payment]) => Map[String, String] = (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
     val defaultCaching = Map[String, String](
       UpdateIncomeConstants.NameKey      -> taxCodeIncome.name,
       UpdateIncomeConstants.PayToDateKey -> taxCodeIncome.amount.toString
@@ -74,24 +74,21 @@ class IncomeUpdateIrregularHoursController @Inject()(
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-
       val nino = user.nino
-
-      val paymentRequest: Future[Option[Payment]] = incomeService.latestPayment(nino, employmentId)
-      val taxCodeIncomeRequest = taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
-
-      paymentRequest flatMap { payment =>
-        taxCodeIncomeRequest flatMap {
+      for {
+        paymentRequest <- incomeService.latestPayment(nino, employmentId)
+        taxCodeIncomeRequest <- taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
+      } yield {
+        taxCodeIncomeRequest match {
+          case Left(value) =>
+            logger.error(value)
+            Redirect(controllers.routes.UnauthorisedController.onPageLoad())
           case Right(Some(tci)) =>
-            (taxCodeIncomeInfoToCache.tupled andThen journeyCacheService.cache)(tci, payment) map { _ =>
+            //TODO: Not sure about this, will this be getting cached?
+            journeyCacheService.cache(taxCodeIncomeInfoToCache(tci, paymentRequest))
               val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
-
               Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
-            }
-          case Left(TaiUnauthorisedResponse(_)) =>
-            Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
-          case _ =>
-            Future.successful(errorPagesHandler.internalServerError("Failed to find tax code income for employment"))
+          case _ => errorPagesHandler.internalServerError("Failed to find tax code income for employment")
         }
       }
   }
