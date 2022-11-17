@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.service
 import javax.inject.Inject
 import java.time.LocalDate
 import play.api.i18n.Messages
+import cats.implicits._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
@@ -36,21 +37,23 @@ import scala.concurrent.Future
 class IncomeService @Inject()(
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
-  taiConnector: TaiConnector) {
+  taiConnector: TaiConnector
+) {
 
   def employmentAmount(nino: Nino, id: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[EmploymentAmount] =
-    for {
-      taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-      employmentDetails    <- employmentService.employment(nino, id)
-    } yield {
-      (taxCodeIncomeDetails, employmentDetails) match {
-        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-          taxCodeIncomes.find(_.employmentId.contains(id)) match {
-            case Some(taxCodeIncome) => EmploymentAmount(taxCodeIncome, employment)
-            case _                   => throw new RuntimeException(s"Not able to found employment with id $id")
-          }
-        case _ => throw new RuntimeException("Exception while reading employment and tax code details")
-      }
+    (
+      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      employmentService.employment(nino, id)
+    ) mapN {
+      case (taxCodeIncomeDetails, employmentDetails) =>
+        (taxCodeIncomeDetails, employmentDetails) match {
+          case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+            taxCodeIncomes.find(_.employmentId.contains(id)) match {
+              case Some(taxCodeIncome) => EmploymentAmount(taxCodeIncome, employment)
+              case _                   => throw new RuntimeException(s"Not able to found employment with id $id")
+            }
+          case _ => throw new RuntimeException("Exception while reading employment and tax code details")
+        }
     }
 
   def latestPayment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Payment]] =
@@ -65,7 +68,8 @@ class IncomeService @Inject()(
     }
 
   def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(
-    implicit hc: HeaderCarrier): Future[CalculatedPay] = {
+    implicit hc: HeaderCarrier
+  ): Future[CalculatedPay] = {
 
     def isCacheAvailable(key: String): Option[BigDecimal] =
       if (cache.contains(key)) Some(BigDecimal(FormHelper.convertCurrencyToInt(cache.get(key)))) else None
