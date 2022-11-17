@@ -155,7 +155,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             )))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
+            Right(
               Seq(taxCodeIncome)
             )))
         when(partialService.getIncomeTaxPartial(any()))
@@ -253,7 +253,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             )))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
+            Right(
               Seq(taxCodeIncome)
             )))
         when(partialService.getIncomeTaxPartial(any()))
@@ -342,7 +342,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             )))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
+            Right(
               Seq(taxCodeIncome)
             )))
         when(partialService.getIncomeTaxPartial(any()))
@@ -379,7 +379,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             )))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
+            Right(
               Seq.empty[TaxCodeIncome]
             )))
         when(partialService.getIncomeTaxPartial(any()))
@@ -413,7 +413,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             )))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
+            Right(
               Seq.empty[TaxCodeIncome]
             )))
 

@@ -57,7 +57,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       "not able to fetch comparision details" in {
         val controller = new TestController
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiNotFoundResponse("Not Found")))
+          .thenReturn(Future.successful(Left("Not Found")))
 
         val result = controller.onPageLoad()(request)
 
@@ -71,7 +71,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     "show estimated income for CY and CY+1 for single employment" in {
       val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOne)))
+        .thenReturn(Future.successful(Right(taxCodeIncomesCYPlusOne)))
 
       val result = controller.onPageLoad()(request)
       status(result) mustBe OK
@@ -84,9 +84,9 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     "show estimated income for CY and CY+1 for multiple employments" in {
       val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear()))(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesMultiple)))
-      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(
-        Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOneMultiple)))
+        .thenReturn(Future.successful(Right(taxCodeIncomesMultiple)))
+      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any()))
+        .thenReturn(Future.successful(Right(taxCodeIncomesCYPlusOneMultiple)))
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
         .thenReturn(Future.successful(Seq(employment, employment2)))
 
@@ -103,9 +103,9 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     "show estimated income for CY and CY+1 for multiple pensions" in {
       val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear()))(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesMultiple)))
-      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(
-        Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOneMultiple)))
+        .thenReturn(Future.successful(Right(taxCodeIncomesMultiple)))
+      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any()))
+        .thenReturn(Future.successful(Right(taxCodeIncomesCYPlusOneMultiple)))
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
         .thenReturn(Future.successful(Seq(employment, employment2, pension, pension2)))
 
@@ -122,7 +122,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     "show not applicable when CY and CY+1 employment id's don't match" in {
       val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOne2)))
+        .thenReturn(Future.successful(Right(taxCodeIncomesCYPlusOne2)))
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
         .thenReturn(Future.successful(Seq(employment, employment2)))
 
@@ -137,7 +137,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     "show not applicable when employment id is missing for CY+1" in {
       val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesNoEmpId)))
+        .thenReturn(Future.successful(Right(taxCodeIncomesNoEmpId)))
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
         .thenReturn(Future.successful(Seq(employment, employment2)))
 
@@ -209,7 +209,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       ) {
 
     when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-      .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+      .thenReturn(Future.successful(Right(taxCodeIncomes)))
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
       .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))

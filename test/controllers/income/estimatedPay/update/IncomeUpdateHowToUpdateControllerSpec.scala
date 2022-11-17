@@ -112,7 +112,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       sealed class HowToUpdatePageHarness(cacheMap: Map[String, String], employment: Option[Employment]) {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
+          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
 
         when(employmentService.employment(any(), any())(any()))
           .thenReturn(Future.successful(employment))
