@@ -98,9 +98,12 @@ class IncomeUpdateHowToUpdateController @Inject()(
     id: Int,
     employmentName: String,
     incomeToEdit: EmploymentAmount,
-    taxCodeIncomeDetails: TaiResponse)(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] =
-    (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, taxCodeIncomeDetails) match {
-      case (true, false, TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
+    maybeTaxCodeIncomeDetails: Either[String, Seq[TaxCodeIncome]])(
+    implicit request: Request[AnyContent],
+    user: AuthedUser): Future[Result] =
+    (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, maybeTaxCodeIncomeDetails) match {
+      //TODO: Do we need to handle error case, wasnt handled before
+      case (true, false, Right(taxCodeIncomes)) =>
         for {
           howToUpdate <- journeyCacheService.currentValue(UpdateIncomeConstants.HowToUpdateKey)
         } yield {

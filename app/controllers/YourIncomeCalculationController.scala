@@ -65,7 +65,7 @@ class YourIncomeCalculationController @Inject()(
       employmentDetails    <- employmentFuture
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
-        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+        case (Right(taxCodeIncomes), Some(employment)) =>
           val paymentDetails = paymentsService.filterDuplicates(employment)
 
           val model = YourIncomeCalculationViewModel(

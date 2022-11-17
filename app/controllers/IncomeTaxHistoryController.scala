@@ -53,7 +53,7 @@ class IncomeTaxHistoryController @Inject()(
     implicit hc: HeaderCarrier,
     messages: Messages): Future[IncomeTaxYear] =
     (
-      taxAccountService.taxCodeIncomesV2(nino, taxYear).map(_.toOption).recover { case _ => None },
+      taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover { case _ => None },
       employmentService.employments(nino, taxYear)).mapN {
       case (maybeTaxCodeIncomeDetails, employmentDetails) =>
         val maybeTaxCodesMap = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))

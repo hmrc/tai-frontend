@@ -59,24 +59,25 @@ class IncomeUpdateIrregularHoursController @Inject()(
 
   private val logger = Logger(this.getClass)
 
-  private val taxCodeIncomeInfoToCache: (TaxCodeIncome, Option[Payment]) => Map[String, String] = (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
-    val defaultCaching = Map[String, String](
-      UpdateIncomeConstants.NameKey      -> taxCodeIncome.name,
-      UpdateIncomeConstants.PayToDateKey -> taxCodeIncome.amount.toString
-    )
+  private val taxCodeIncomeInfoToCache: (TaxCodeIncome, Option[Payment]) => Map[String, String] =
+    (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
+      val defaultCaching = Map[String, String](
+        UpdateIncomeConstants.NameKey      -> taxCodeIncome.name,
+        UpdateIncomeConstants.PayToDateKey -> taxCodeIncome.amount.toString
+      )
 
-    payment.fold(defaultCaching)(
-      payment =>
-        defaultCaching + (UpdateIncomeConstants.DateKey -> payment.date.format(
-          DateTimeFormatter.ofPattern(MonthAndYear))))
-  }
+      payment.fold(defaultCaching)(
+        payment =>
+          defaultCaching + (UpdateIncomeConstants.DateKey -> payment.date.format(
+            DateTimeFormatter.ofPattern(MonthAndYear))))
+    }
 
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
       for {
-        paymentRequest <- incomeService.latestPayment(nino, employmentId)
+        paymentRequest       <- incomeService.latestPayment(nino, employmentId)
         taxCodeIncomeRequest <- taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
       } yield {
         taxCodeIncomeRequest match {
@@ -86,8 +87,8 @@ class IncomeUpdateIrregularHoursController @Inject()(
           case Right(Some(tci)) =>
             //TODO: Not sure about this, will this be getting cached?
             journeyCacheService.cache(taxCodeIncomeInfoToCache(tci, paymentRequest))
-              val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
-              Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
+            val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
+            Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
           case _ => errorPagesHandler.internalServerError("Failed to find tax code income for employment")
         }
       }

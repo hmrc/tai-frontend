@@ -141,8 +141,8 @@ class WhatDoYouWantToDoController @Inject()(
       currentTaxYearTaxCodes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
     } yield {
       currentTaxYearTaxCodes match {
-        case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => taxCodeIncomes
-        case _                                                                 => Seq.empty[TaxCodeIncome]
+        case Right(taxCodeIncomes) => taxCodeIncomes
+        case _                     => Seq.empty[TaxCodeIncome]
       }
     }
 

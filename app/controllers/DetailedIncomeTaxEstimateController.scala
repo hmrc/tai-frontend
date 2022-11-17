@@ -64,7 +64,7 @@ class DetailedIncomeTaxEstimateController @Inject()(
       (totalTax, taxCodeIncomes, taxSummary, nonTaxCode) match {
         case (
             TaiSuccessResponseWithPayload(totalTax: TotalTax),
-            TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+            Right(taxCodeIncomes),
             TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
             TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)
             ) =>

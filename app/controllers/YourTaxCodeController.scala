@@ -16,10 +16,11 @@
 
 package controllers
 
+import cats.data.EitherT
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -52,9 +53,9 @@ class YourTaxCodeController @Inject()(
       val year = TaxYear()
 
       (for {
-        TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService
-                                                                              .taxCodeIncomes(nino, year)
-        scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
+        //TODO: Is this valid
+        Right(taxCodeIncomes) <- taxAccountService.taxCodeIncomes(nino, year)
+        scottishTaxRateBands  <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
       } yield {
 
         val filteredTaxCodes =
