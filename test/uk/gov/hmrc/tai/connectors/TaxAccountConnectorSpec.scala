@@ -89,7 +89,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               aResponse.withBody(corruptJsonResponse.toString())
             ))
 
-        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe Left("TODO")
+        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[Left[String, Seq[TaxCodeIncome]]]
       }
     }
 
@@ -101,7 +101,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             .willReturn(unauthorized())
         )
 
-        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe Left("TODO")
+        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[Left[String, Seq[TaxCodeIncome]]]
       }
     }
   }

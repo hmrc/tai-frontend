@@ -137,13 +137,8 @@ class WhatDoYouWantToDoController @Inject()(
   private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(
     implicit request: Request[AnyContent]): Future[AuditResult] = {
 
-    val noOfTaxCodesF = for {
-      currentTaxYearTaxCodes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-    } yield {
-      currentTaxYearTaxCodes match {
-        case Right(taxCodeIncomes) => taxCodeIncomes
-        case _                     => Seq.empty[TaxCodeIncome]
-      }
+    val noOfTaxCodesF = taxAccountService.taxCodeIncomes(nino, TaxYear()).map { currentTaxYearTaxCodes =>
+      currentTaxYearTaxCodes.getOrElse(Seq.empty[TaxCodeIncome])
     }
 
     noOfTaxCodesF.flatMap { noOfTaxCodes =>

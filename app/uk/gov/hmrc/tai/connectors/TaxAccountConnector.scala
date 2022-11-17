@@ -79,7 +79,7 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
   def taxCodeIncomes(nino: Nino, year: TaxYear)(
     implicit hc: HeaderCarrier): Future[Either[String, Seq[TaxCodeIncome]]] =
     httpHandler.getFromApiV2(taxAccountUrl(nino.nino, year)) map (
-      json => Right(((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads))))
+      json => Right((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads)))
     ) recover {
       case e: Exception =>
         logger.warn(s"Couldn't retrieve tax code for $nino with exception:${e.getMessage}")

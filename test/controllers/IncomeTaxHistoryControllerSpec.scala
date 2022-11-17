@@ -26,15 +26,13 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.Status.OK
 import play.api.i18n.Messages
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.http.Upstream5xxResponse
-import uk.gov.hmrc.tai.connectors.responses.TaiTaxAccountFailureResponse
-import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
-import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
@@ -43,9 +41,9 @@ import scala.concurrent.Future
 class IncomeTaxHistoryControllerSpec
     extends BaseSpec with TaxAccountSummaryTestData with BeforeAndAfterEach with JsoupMatchers with ScalaFutures {
 
-  val employmentService = mock[EmploymentService]
-  val taxAccountService = mock[TaxAccountService]
-  val personService = mock[PersonService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val personService: PersonService = mock[PersonService]
 
   override def beforeEach: Unit =
     Mockito.reset(taxAccountService, employmentService, personService)
@@ -63,8 +61,8 @@ class IncomeTaxHistoryControllerSpec
         inject[ErrorPagesHandler]
       )
 
-  implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-  val taxYears = (TaxYear().year to (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
+  implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+  val taxYears: List[TaxYear] = (TaxYear().year to (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
 
   "onPageLoad" must {
     "display the income tax history page" when {
@@ -119,8 +117,7 @@ class IncomeTaxHistoryControllerSpec
 
       "tax code is empty if the tax account can't be found" in {
         for (_ <- taxYears) {
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
-            Left(TaiNotFoundResponse("not found")))
+          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left("not found"))
           when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
             Seq(pensionEmployment3, pensionEmployment4))
           when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
@@ -182,8 +179,7 @@ class IncomeTaxHistoryControllerSpec
 
         for (taxYear <- taxYears) {
 
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
-            Left(TaiTaxAccountFailureResponse("")))
+          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left(""))
           when(employmentService.employments(any(), any())(any())) thenReturn Future.failed(
             Upstream5xxResponse("", 500, 500, Map.empty))
           when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))

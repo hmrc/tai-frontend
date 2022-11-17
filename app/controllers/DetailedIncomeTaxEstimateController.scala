@@ -55,13 +55,13 @@ class DetailedIncomeTaxEstimateController @Inject()(
     val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
 
     (for {
-      totalTax         <- totalTaxFuture
-      taxCodeIncomes   <- taxCodeIncomeFuture
-      taxSummary       <- taxSummaryFuture
-      codingComponents <- codingComponentFuture
-      nonTaxCode       <- nonTaxCodeIncomeFuture
+      totalTax            <- totalTaxFuture
+      maybeTaxCodeIncomes <- taxCodeIncomeFuture
+      taxSummary          <- taxSummaryFuture
+      codingComponents    <- codingComponentFuture
+      nonTaxCode          <- nonTaxCodeIncomeFuture
     } yield {
-      (totalTax, taxCodeIncomes, taxSummary, nonTaxCode) match {
+      (totalTax, maybeTaxCodeIncomes, taxSummary, nonTaxCode) match {
         case (
             TaiSuccessResponseWithPayload(totalTax: TotalTax),
             Right(taxCodeIncomes),

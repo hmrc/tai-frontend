@@ -209,11 +209,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
 
         def processHowToUpdatePage(employmentAmount: EmploymentAmount): Future[Result] =
           new TestIncomeUpdateHowToUpdateController()
-            .processHowToUpdatePage(
-              1,
-              "name",
-              employmentAmount,
-              TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome]))(
+            .processHowToUpdatePage(1, "name", employmentAmount, Right(Seq.empty[TaxCodeIncome]))(
               RequestBuilder.buildFakeGetRequestWithAuth(),
               FakeAuthAction.user)
       }

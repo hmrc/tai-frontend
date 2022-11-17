@@ -23,7 +23,6 @@ import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HowToUpdateForm
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}

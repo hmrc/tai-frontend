@@ -38,7 +38,7 @@ class TaxAccountServiceSpec extends BaseSpec {
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
 
       val result = testService.taxCodeIncomes(nino, TaxYear())
-      Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(taxCodeIncomes)
+      Await.result(result, 5 seconds) mustBe Right(taxCodeIncomes)
     }
   }
 
@@ -75,7 +75,7 @@ class TaxAccountServiceSpec extends BaseSpec {
 
       val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 99)
 
-      Await.result(result, 5 seconds) mustBe Left(TaiTaxAccountFailureResponse("error"))
+      Await.result(result, 5 seconds) mustBe Left("error")
     }
   }
 
