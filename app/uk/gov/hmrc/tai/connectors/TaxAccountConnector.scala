@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.connectors
 
 import javax.inject.Inject
 import play.api.Logging
+import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UnauthorizedException}
@@ -96,17 +97,19 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
-  def codingComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def codingComponents(nino: Nino, year: TaxYear)(
+    implicit hc: HeaderCarrier): Future[Either[Int, Seq[CodingComponent]]] =
     httpHandler.getFromApiV2(codingComponentsUrl(nino.nino, year)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads)))
+      json => Right((json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads)))
     ) recover {
       case e: NotFoundException =>
         logger.warn(s"Coding Components - No tax account information found: ${e.getMessage}")
-        TaiNotFoundResponse(e.getMessage)
-      case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
+        Left(e.responseCode)
+      case e: UnauthorizedException =>
+        Left(e.responseCode)
       case e: Exception =>
         logger.warn(s"Couldn't retrieve coding components for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
+        Left(INTERNAL_SERVER_ERROR.intValue())
     }
 
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =

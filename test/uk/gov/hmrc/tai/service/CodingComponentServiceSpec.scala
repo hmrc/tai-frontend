@@ -40,7 +40,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       "provided with valid nino" in {
         val service = createSut
         when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(codingComponents)))
+          .thenReturn(Future.successful(Right(codingComponents)))
 
         val result = service.taxFreeAmountComponents(generateNino, currentTaxYear)
         Await.result(result, 5 seconds) mustBe codingComponents
@@ -52,7 +52,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
         val service = createSut
         val incomeType: CodingComponent = CodingComponent(BalancingCharge, None, 0, "BalancingCharge Description")
         when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(codingComponents :+ incomeType)))
+          .thenReturn(Future.successful(Right(codingComponents :+ incomeType)))
 
         val result = service.taxFreeAmountComponents(generateNino, currentTaxYear)
         Await.result(result, 5 seconds) mustBe codingComponents
@@ -63,7 +63,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       "error is TaiNotFoundResponse" in {
         val service = createSut
         when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(TaiNotFoundResponse("no coding components found")))
+          .thenReturn(Future.successful(Left(404)))
 
         val result = service.taxFreeAmountComponents(generateNino, currentTaxYear)
         Await.result(result, 5 seconds) mustBe Seq.empty
@@ -74,11 +74,11 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       "error is received from TAI" in {
         val service = createSut
         when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("could not fetch coding components")))
+          .thenReturn(Future.successful(Left(401)))
 
         val exceptionThrown = the[RuntimeException] thrownBy Await
           .result(service.taxFreeAmountComponents(generateNino, currentTaxYear), 5 seconds)
-        exceptionThrown.getMessage must include("could not fetch coding components")
+        exceptionThrown.getMessage must include("unauthorized exception")
       }
     }
 
@@ -86,7 +86,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       "error is received from TAI" in {
         val service = createSut
         when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("could not fetch coding components")))
+          .thenReturn(Future.successful(Left(500)))
 
         val exceptionThrown = the[RuntimeException] thrownBy Await
           .result(service.taxFreeAmountComponents(generateNino, currentTaxYear), 5 seconds)
@@ -96,7 +96,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       "other error is received from TAI" in {
         val service = createSut
         when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(TaiCacheError("error description")))
+          .thenReturn(Future.successful(Left(500)))
 
         val exceptionThrown = the[RuntimeException] thrownBy Await
           .result(service.taxFreeAmountComponents(generateNino, currentTaxYear), 5 seconds)

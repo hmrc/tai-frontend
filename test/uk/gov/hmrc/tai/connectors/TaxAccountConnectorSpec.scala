@@ -177,7 +177,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             ))
 
         val result = taxAccountConnector.codingComponents(nino, currentTaxYear).futureValue
-        result mustBe TaiSuccessResponseWithPayload(codingComponentSeq)
+        result mustBe Right(codingComponentSeq)
       }
     }
 
@@ -191,7 +191,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             ))
 
         val result = taxAccountConnector.codingComponents(nino, currentTaxYear).futureValue
-        result mustBe a[TaiTaxAccountFailureResponse]
+        result mustBe Left(500)
       }
     }
 
@@ -205,7 +205,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             ))
 
         val result = taxAccountConnector.codingComponents(nino, currentTaxYear).futureValue
-        result mustBe a[TaiUnauthorisedResponse]
+        result mustBe Left(401)
       }
     }
 
@@ -218,7 +218,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             ))
 
         val result = taxAccountConnector.codingComponents(nino, currentTaxYear).futureValue
-        result mustBe a[TaiNotFoundResponse]
+        result mustBe Left(404)
       }
     }
   }
