@@ -16,6 +16,7 @@
 
 package controllers.income.estimatedPay.update
 
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
@@ -76,22 +77,19 @@ class IncomeUpdateIrregularHoursController @Inject()(
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
-      for {
-        paymentRequest       <- incomeService.latestPayment(nino, employmentId)
-        taxCodeIncomeRequest <- taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
-      } yield {
-        taxCodeIncomeRequest match {
-          case Left(value) =>
-            logger.error(value)
-            Redirect(controllers.routes.UnauthorisedController.onPageLoad())
-          case Right(Some(tci)) =>
-            //TODO: Not sure about this, will this be getting cached?
-            journeyCacheService.cache(taxCodeIncomeInfoToCache(tci, paymentRequest))
+
+      (incomeService.latestPayment(nino, employmentId), taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)).mapN {
+        case (_, Left(value)) =>
+          logger.error(value)
+          Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
+        case (maybePayment, Right(Some(tci))) =>
+          journeyCacheService.cache(taxCodeIncomeInfoToCache(tci, maybePayment)).map { _ =>
             val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
             Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
-          case _ => errorPagesHandler.internalServerError("Failed to find tax code income for employment")
-        }
-      }
+          }
+        case _ =>
+          Future.successful(errorPagesHandler.internalServerError("Failed to find tax code income for employment"))
+      }.flatten
   }
 
   def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {

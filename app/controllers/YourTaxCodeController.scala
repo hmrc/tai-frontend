@@ -49,7 +49,6 @@ class YourTaxCodeController @Inject()(
       val year = TaxYear()
 
       (for {
-        //TODO: Is this valid
         Right(taxCodeIncomes) <- taxAccountService.taxCodeIncomes(nino, year)
         scottishTaxRateBands  <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
       } yield {

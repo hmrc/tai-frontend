@@ -101,7 +101,6 @@ class IncomeUpdateHowToUpdateController @Inject()(
     implicit request: Request[AnyContent],
     user: AuthedUser): Future[Result] =
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, maybeTaxCodeIncomeDetails) match {
-      //TODO: Do we need to handle error case, wasnt handled before
       case (true, false, Right(taxCodeIncomes)) =>
         for {
           howToUpdate <- journeyCacheService.currentValue(UpdateIncomeConstants.HowToUpdateKey)
