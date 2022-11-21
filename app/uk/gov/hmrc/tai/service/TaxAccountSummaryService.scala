@@ -50,34 +50,20 @@ class TaxAccountSummaryService @Inject()(
       taxAccountService.nonTaxCodeIncomes(nino, TaxYear()),
       trackingService.isAnyIFormInProgress(nino.nino)).mapN {
       case (
-          livePensionIncomeSources,
-          liveEmploymentIncomeSources,
-          ceasedEmploymentIncomeSources,
-          nonMatchingCeasedEmployments,
-          nonTaxCodeIncome,
+          TaiSuccessResponseWithPayload(livePensionIncomeSources: Seq[TaxedIncome]),
+          TaiSuccessResponseWithPayload(liveEmploymentIncomeSources: Seq[TaxedIncome]),
+          TaiSuccessResponseWithPayload(ceasedEmploymentIncomeSources: Seq[TaxedIncome]),
+          nonMatchingCeasedEmployments: Seq[Employment],
+          TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
           isAnyFormInProgress) =>
-        (
-          livePensionIncomeSources,
-          liveEmploymentIncomeSources,
-          ceasedEmploymentIncomeSources,
-          nonMatchingCeasedEmployments,
-          nonTaxCodeIncome) match {
-          case (
-              TaiSuccessResponseWithPayload(livePensionIncomeSources: Seq[TaxedIncome]),
-              TaiSuccessResponseWithPayload(liveEmploymentIncomeSources: Seq[TaxedIncome]),
-              TaiSuccessResponseWithPayload(ceasedEmploymentIncomeSources: Seq[TaxedIncome]),
-              nonMatchingCeasedEmployments: Seq[Employment],
-              TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
-            TaxAccountSummaryViewModel(
-              taxAccountSummary,
-              isAnyFormInProgress,
-              nonTaxCodeIncome,
-              IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
-              nonMatchingCeasedEmployments
-            )
-          case (_, _, _, _, TaiUnauthorisedResponse(message)) => throw new UnauthorizedException(message)
-          case _                                              => throw new RuntimeException("Failed to fetch income details")
-        }
+        TaxAccountSummaryViewModel(
+          taxAccountSummary,
+          isAnyFormInProgress,
+          nonTaxCodeIncome,
+          IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
+          nonMatchingCeasedEmployments
+        )
+      case (_, _, _, _, TaiUnauthorisedResponse(message), _) => throw new UnauthorizedException(message)
+      case _                                                 => throw new RuntimeException("Failed to fetch income details")
     }
-
 }
