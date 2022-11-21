@@ -50,23 +50,36 @@
     pagePrintable = true
 ) {
 
+
+
+<div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+    <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+            @messages("checkProgress.important")
+        </h2>
+    </div>
+    <div class="govuk-notification-banner__content">
+        <h3 class="govuk-notification-banner__heading">
+            @messages("tai.WhatDoYouWantToDo.ChangedTaxCode")
+        </h3>
+        <a href="@controllers.routes.TaxCodeChangeController.taxCodeComparison()"class="govuk-body">
+            @messages("tai.WhatDoYouWantToDo.ViewChangedTaxCode")
+        </a>
+    </div>
+</div>
+
+
     <header class="page-header">
         <h1 class="govuk-heading-xl" id="whatDoYouWantToDoTitle">@messages("your.paye.income.tax.overview")</h1>
     </header>
 
+
+
+
+
     <div class="govuk-grid-row">
 
             <div class="inner-block">
-                <div class="flex-container govuk-grid-row">
-                @if(model.showTaxCodeChangeTile()){
-                  @card(
-                    url = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
-                    id = "hasTaxCodeChanged",
-                    heading = messages("check.tax.hasChanged.header"),
-                    bodyContent = Some(messages("check.tax.hasChanged.action"))
-                      )
-                    }
-                </div>
 
                 <div class="flex-container govuk-grid-row">
                     @card(
