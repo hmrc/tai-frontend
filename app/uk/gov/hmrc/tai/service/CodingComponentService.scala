@@ -16,12 +16,10 @@
 
 package uk.gov.hmrc.tai.service
 
-import play.api.http.Status.{NOT_FOUND, UNAUTHORIZED}
-
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.connectors.{TaxAccountConnector, TaxFreeAmountComparisonConnector}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
@@ -35,13 +33,7 @@ class CodingComponentService @Inject()(
   taxFreeAmountComparisonConnector: TaxFreeAmountComparisonConnector) {
 
   def taxFreeAmountComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] =
-    taxAccountConnector.codingComponents(nino, year) map {
-      case Right(codingComponents: Seq[CodingComponent]) =>
-        filterOutZeroAmountsComponents(codingComponents)
-      case Left(NOT_FOUND)    => Seq.empty
-      case Left(UNAUTHORIZED) => throw new RuntimeException("unauthorized exception")
-      case _                  => throw new RuntimeException("could not fetch coding components")
-    }
+    taxAccountConnector.codingComponents(nino, year) map filterOutZeroAmountsComponents
 
   def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] =
     taxFreeAmountComparisonConnector.taxFreeAmountComparison(nino) map {

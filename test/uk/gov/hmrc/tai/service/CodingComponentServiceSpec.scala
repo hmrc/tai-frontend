@@ -21,8 +21,9 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.JsResultException
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.connectors.{TaxAccountConnector, TaxFreeAmountComparisonConnector}
 import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
@@ -40,7 +41,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       "provided with valid nino" in {
         val service = createSut
         when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(Right(codingComponents)))
+          .thenReturn(Future.successful(codingComponents))
 
         val result = service.taxFreeAmountComponents(generateNino, currentTaxYear)
         Await.result(result, 5 seconds) mustBe codingComponents
@@ -52,7 +53,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
         val service = createSut
         val incomeType: CodingComponent = CodingComponent(BalancingCharge, None, 0, "BalancingCharge Description")
         when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(Right(codingComponents :+ incomeType)))
+          .thenReturn(Future.successful(codingComponents :+ incomeType))
 
         val result = service.taxFreeAmountComponents(generateNino, currentTaxYear)
         Await.result(result, 5 seconds) mustBe codingComponents
@@ -60,47 +61,13 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
     }
 
     "return empty CodingComponents" when {
-      "error is TaiNotFoundResponse" in {
+      "error is NotFoundException at Connector level" in {
         val service = createSut
         when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(Left(404)))
+          .thenReturn(Future.successful(Seq.empty[CodingComponent]))
 
         val result = service.taxFreeAmountComponents(generateNino, currentTaxYear)
         Await.result(result, 5 seconds) mustBe Seq.empty
-      }
-    }
-
-    "return Tai Failure response" when {
-      "error is received from TAI" in {
-        val service = createSut
-        when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(Left(401)))
-
-        val exceptionThrown = the[RuntimeException] thrownBy Await
-          .result(service.taxFreeAmountComponents(generateNino, currentTaxYear), 5 seconds)
-        exceptionThrown.getMessage must include("unauthorized exception")
-      }
-    }
-
-    "return exception" when {
-      "error is received from TAI" in {
-        val service = createSut
-        when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(Left(500)))
-
-        val exceptionThrown = the[RuntimeException] thrownBy Await
-          .result(service.taxFreeAmountComponents(generateNino, currentTaxYear), 5 seconds)
-        exceptionThrown.getMessage must include("could not fetch coding components")
-      }
-
-      "other error is received from TAI" in {
-        val service = createSut
-        when(taxAccountConnector.codingComponents(any(), any())(any()))
-          .thenReturn(Future.successful(Left(500)))
-
-        val exceptionThrown = the[RuntimeException] thrownBy Await
-          .result(service.taxFreeAmountComponents(generateNino, currentTaxYear), 5 seconds)
-        exceptionThrown.getMessage must include("could not fetch coding components")
       }
     }
   }
