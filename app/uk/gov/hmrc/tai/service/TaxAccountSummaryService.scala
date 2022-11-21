@@ -16,19 +16,20 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.implicits._
 import com.google.inject.Inject
 import controllers.TaiBaseController
 import play.api.i18n.Messages
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, NotLive}
 import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxAccountSummaryService @Inject()(
@@ -42,36 +43,30 @@ class TaxAccountSummaryService @Inject()(
   def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(
     implicit hc: HeaderCarrier,
     messages: Messages): Future[TaxAccountSummaryViewModel] =
-    for {
-      livePensionIncomeSources      <- taxAccountService.incomeSources(nino, TaxYear(), PensionIncome, Live)
-      liveEmploymentIncomeSources   <- taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Live)
-      ceasedEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, NotLive)
-      nonMatchingCeasedEmployments  <- employmentService.ceasedEmployments(nino, TaxYear())
-      nonTaxCodeIncome              <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
-      isAnyFormInProgress           <- trackingService.isAnyIFormInProgress(nino.nino)
-    } yield {
-      (
-        livePensionIncomeSources,
-        liveEmploymentIncomeSources,
-        ceasedEmploymentIncomeSources,
-        nonMatchingCeasedEmployments,
-        nonTaxCodeIncome) match {
-        case (
-            TaiSuccessResponseWithPayload(livePensionIncomeSources: Seq[TaxedIncome]),
-            TaiSuccessResponseWithPayload(liveEmploymentIncomeSources: Seq[TaxedIncome]),
-            TaiSuccessResponseWithPayload(ceasedEmploymentIncomeSources: Seq[TaxedIncome]),
-            nonMatchingCeasedEmployments: Seq[Employment],
-            TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
-          TaxAccountSummaryViewModel(
-            taxAccountSummary,
-            isAnyFormInProgress,
-            nonTaxCodeIncome,
-            IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
-            nonMatchingCeasedEmployments
-          )
-        case (_, _, _, _, TaiUnauthorisedResponse(message)) => throw new UnauthorizedException(message)
-        case _                                              => throw new RuntimeException("Failed to fetch income details")
-      }
+    (
+      taxAccountService.incomeSources(nino, TaxYear(), PensionIncome, Live),
+      taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Live),
+      taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, NotLive),
+      employmentService.ceasedEmployments(nino, TaxYear()),
+      taxAccountService.nonTaxCodeIncomes(nino, TaxYear()),
+      trackingService.isAnyIFormInProgress(nino.nino)
+    ).mapN {
+      case (
+          livePensionIncomeSources,
+          liveEmploymentIncomeSources,
+          ceasedEmploymentIncomeSources,
+          nonMatchingCeasedEmployments,
+          TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
+          isAnyFormInProgress) =>
+        TaxAccountSummaryViewModel(
+          taxAccountSummary,
+          isAnyFormInProgress,
+          nonTaxCodeIncome,
+          IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
+          nonMatchingCeasedEmployments
+        )
+      case (_, _, _, _, TaiUnauthorisedResponse(message), _) => throw new UnauthorizedException(message)
+      case _                                                 => throw new RuntimeException("Failed to fetch income details")
     }
 
 }

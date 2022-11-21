@@ -118,7 +118,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             ))
 
         val result = taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live).futureValue
-        result mustBe TaiSuccessResponseWithPayload(Seq(incomeSource))
+        result mustBe Seq(incomeSource)
       }
     }
 
@@ -132,11 +132,11 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             ))
 
         val result = taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live).futureValue
-        result mustBe TaiSuccessResponseWithPayload(Seq.empty[TaxedIncome])
+        result mustBe Seq.empty[TaxedIncome]
       }
     }
 
-    "return a TaiTaxAccountFailureResponse" when {
+    "return a failure" when {
       "tai sends an invalid json" in {
 
         server.stubFor(
@@ -145,13 +145,13 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               aResponse.withBody(corruptJsonResponse.toString())
             ))
 
-        val result = taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live).futureValue
-        result mustBe a[TaiTaxAccountFailureResponse]
-
+        assertThrows[JsResultException] {
+          Await.result(taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live), 5.seconds)
+        }
       }
     }
 
-    "return a TaiUnauthorisedResponse" when {
+    "return an UnauthorisedException" when {
       "the http response is Unauthorized" in {
 
         server.stubFor(
@@ -160,8 +160,9 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               unauthorized()
             ))
 
-        val result = taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live).futureValue
-        result mustBe a[TaiUnauthorisedResponse]
+        assertThrows[UnauthorizedException] {
+          Await.result(taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live), 5.seconds)
+        }
       }
     }
   }

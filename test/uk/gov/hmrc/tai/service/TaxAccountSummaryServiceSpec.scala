@@ -116,12 +116,12 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
           any[HeaderCarrier])).thenReturn(
-        Future.successful(TaiTaxAccountFailureResponse("FAILURE!"))
+        Future.failed(new RuntimeException("FAILURE!"))
       )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "Failed to fetch income details"
+      caught.getMessage mustBe "FAILURE!"
     }
 
     "return a RuntimeException if incomeSources (EmploymentIncome) returned failed payload" in {
@@ -130,12 +130,12 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Live))(
           any[HeaderCarrier])).thenReturn(
-        Future.successful(TaiTaxAccountFailureResponse("FAILURE!"))
+        Future.failed(new RuntimeException("FAILURE!"))
       )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "Failed to fetch income details"
+      caught.getMessage mustBe "FAILURE!"
     }
 
     "return a RuntimeException if incomeSources (EmploymentIncome - NotLive) returned failed payload" in {
@@ -144,12 +144,12 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
           any[HeaderCarrier])).thenReturn(
-        Future.successful(TaiTaxAccountFailureResponse("FAILURE!"))
+        Future.failed(new RuntimeException("FAILURE!"))
       )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "Failed to fetch income details"
+      caught.getMessage mustBe "FAILURE!"
     }
 
     "return a RuntimeException if nonTaxCodeIncomes returned failed payload" in {
@@ -170,12 +170,12 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
           any[HeaderCarrier])).thenReturn(
-        Future.successful(TaiTaxAccountFailureResponse("FAILURE!"))
+        Future.failed(new RuntimeException("FAILURE!"))
       )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "Failed to fetch income details"
+      caught.getMessage mustBe "FAILURE!"
     }
 
     "return a ViewModel" in {
@@ -216,19 +216,19 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
     when(
       taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
         any[HeaderCarrier])).thenReturn(
-      Future.successful(TaiSuccessResponseWithPayload[Seq[TaxedIncome]](Seq.empty[TaxedIncome]))
+      Future.successful(Seq.empty[TaxedIncome])
     )
 
     when(
       taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Live))(
         any[HeaderCarrier])).thenReturn(
-      Future.successful(TaiSuccessResponseWithPayload[Seq[TaxedIncome]](Seq.empty[TaxedIncome]))
+      Future.successful(Seq.empty[TaxedIncome])
     )
 
     when(
       taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
         any[HeaderCarrier])).thenReturn(
-      Future.successful(TaiSuccessResponseWithPayload[Seq[TaxedIncome]](Seq.empty[TaxedIncome]))
+      Future.successful(Seq.empty[TaxedIncome])
     )
 
     when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
