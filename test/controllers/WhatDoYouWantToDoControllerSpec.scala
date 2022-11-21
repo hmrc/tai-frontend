@@ -148,9 +148,9 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString must include(Messages("check.tax.hasChanged.header"))
+        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode"))
 
-        doc.select(".card").size mustBe 6
+        doc.select(".card").size mustBe 5
       }
 
       "cyPlusOne is disabled and jrs claim data does not exist" in {
@@ -169,8 +169,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString must include(Messages("check.tax.hasChanged.header"))
-        doc.select(".card").size mustBe 5
+        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode"))
+        doc.select(".card").size mustBe 4
       }
 
       "there has been a tax code change and cyPlusOne is enabled and jrs claim data exist" in {
@@ -191,10 +191,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString must include(Messages("check.tax.hasChanged.header"))
+        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode"))
         doc.body().toString must include(Messages("check.jrs.claims"))
 
-        doc.select(".card").size mustBe 7
+        doc.select(".card").size mustBe 6
       }
 
       "cyPlusOne is disabled and jrs claim data exist" in {
@@ -213,10 +213,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString must include(Messages("check.tax.hasChanged.header"))
+        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode"))
         doc.body().toString must include(Messages("check.jrs.claims"))
 
-        doc.select(".card").size mustBe 6
+        doc.select(".card").size mustBe 5
       }
     }
 
