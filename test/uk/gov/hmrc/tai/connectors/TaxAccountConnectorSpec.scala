@@ -181,7 +181,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
       }
     }
 
-    "return a failed future" when {
+    "return a JsResultException" when {
       "tai sends an invalid json" in {
         server.stubFor(
           get(codingComponentsUrl)
