@@ -45,15 +45,12 @@ class IncomeService @Inject()(
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       employmentService.employment(nino, id)
     ) mapN {
-      case (taxCodeIncomeDetails, employmentDetails) =>
-        (taxCodeIncomeDetails, employmentDetails) match {
-          case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-            taxCodeIncomes.find(_.employmentId.contains(id)) match {
-              case Some(taxCodeIncome) => EmploymentAmount(taxCodeIncome, employment)
-              case _                   => throw new RuntimeException(s"Not able to found employment with id $id")
-            }
-          case _ => throw new RuntimeException("Exception while reading employment and tax code details")
+      case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+        taxCodeIncomes.find(_.employmentId.contains(id)) match {
+          case Some(taxCodeIncome) => EmploymentAmount(taxCodeIncome, employment)
+          case _                   => throw new RuntimeException(s"Not able to found employment with id $id")
         }
+      case _ => throw new RuntimeException("Exception while reading employment and tax code details")
     }
 
   def latestPayment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Payment]] =
