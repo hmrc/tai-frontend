@@ -42,7 +42,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "rti details are present" in {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+          .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -57,7 +57,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "employment details are not present" in {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+          .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -67,7 +67,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
       "tax code details are not present" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error")))
+          .thenReturn(Future.successful(Left("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -76,7 +76,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
       "tax code details for passed employment is not present" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error")))
+          .thenReturn(Future.successful(Left("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.yourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))

@@ -60,7 +60,7 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
   "renderTaxCodes" must {
     "display error when there is TaiFailure in service" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error occurred")))
+        .thenReturn(Future.successful(Left("error occurred")))
       val result = sut.renderTaxCodes(None)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -90,7 +90,7 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "display tax code page containing all tax codes" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
+        .thenReturn(Future.successful(Right(taxCodeIncomes)))
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
@@ -108,7 +108,7 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "display tax code page containing the relevant tax codes" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
+        .thenReturn(Future.successful(Right(taxCodeIncomes)))
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
@@ -158,7 +158,7 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "display error when there is TaiFailure in service" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error occurred")))
+        .thenReturn(Future.successful(Left("error occurred")))
       val result = sut.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR

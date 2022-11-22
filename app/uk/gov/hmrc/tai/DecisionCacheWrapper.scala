@@ -20,7 +20,7 @@ import play.api.Logging
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants._
 
 import javax.inject.{Inject, Named, Singleton}
@@ -28,12 +28,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DecisionCacheWrapper @Inject()(@Named("End Company Benefit") journeyCacheService: JourneyCacheService)
-    extends JourneyCacheConstants with Results with Logging {
+    extends Results with Logging {
 
   private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
   def getDecision()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
-    val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefit_BenefitTypeKey)
+    val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefitConstants.BenefitTypeKey)
     benefitType.flatMap[Option[String]] {
       case Right(bt) =>
         getBenefitDecisionKey(Some(bt)) match {
@@ -44,7 +44,7 @@ class DecisionCacheWrapper @Inject()(@Named("End Company Benefit") journeyCacheS
             Future.successful(None)
         }
       case Left(_) =>
-        logger.error(s"Unable to find $EndCompanyBenefit_BenefitTypeKey when retrieving decision")
+        logger.error(s"Unable to find ${EndCompanyBenefitConstants.BenefitTypeKey} when retrieving decision")
         Future.successful(None)
     }
   }
@@ -52,7 +52,7 @@ class DecisionCacheWrapper @Inject()(@Named("End Company Benefit") journeyCacheS
   def cacheDecision(decision: String, f: (String, Result) => Result)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext): Future[Result] = {
-    val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefit_BenefitTypeKey)
+    val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefitConstants.BenefitTypeKey)
     benefitType.flatMap[Result] {
       case Right(bt) =>
         getBenefitDecisionKey(Some(bt)) match {
@@ -65,7 +65,7 @@ class DecisionCacheWrapper @Inject()(@Named("End Company Benefit") journeyCacheS
             Future.successful(journeyStartRedirection)
         }
       case Left(_) =>
-        logger.error(s"Unable to find $EndCompanyBenefit_BenefitTypeKey when retrieving decision")
+        logger.error(s"Unable to find ${EndCompanyBenefitConstants.BenefitTypeKey} when retrieving decision")
         Future.successful(journeyStartRedirection)
     }
   }

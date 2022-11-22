@@ -23,12 +23,12 @@ import uk.gov.hmrc.tai.connectors.CompanyCarConnector
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.CarBenefit
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CompanyCarService @Inject()(carConnector: CompanyCarConnector) extends JourneyCacheConstants {
+class CompanyCarService @Inject()(carConnector: CompanyCarConnector) {
 
   def companyCarOnCodingComponents(nino: Nino, codingComponents: Seq[CodingComponent])(
     implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] =

@@ -33,12 +33,13 @@ import uk.gov.hmrc.tai.forms.income.incomeCalculator.{BonusOvertimeAmountForm, B
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.incomes.{BonusPaymentAmountView, BonusPaymentsView}
 
 import scala.concurrent.Future
 
-class IncomeUpdateBonusControllerSpec extends BaseSpec with JourneyCacheConstants with ControllerViewTestHelper {
+class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
@@ -62,14 +63,14 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with JourneyCacheConstant
       ) {
     when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
-    when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TaxablePayKey))(any()))
+    when(journeyCacheService.currentValue(Matchers.eq(UpdateIncomeConstants.TaxablePayKey))(any()))
       .thenReturn(Future.successful(maybeTaxablePayKey))
   }
 
   "bonusPaymentsPage" must {
     object BonusPaymentsPageHarness {
       sealed class BonusPaymentsPageHarness(cachedAmount: String) {
-        when(journeyCacheService.currentValue(eqTo(UpdateIncome_BonusPaymentsKey))(any()))
+        when(journeyCacheService.currentValue(eqTo(UpdateIncomeConstants.BonusPaymentsKey))(any()))
           .thenReturn(Future.successful(Some(cachedAmount)))
 
         def bonusPaymentsPage(

@@ -25,7 +25,8 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import views.html.incomes.WorkingHoursView
 
 import javax.inject.{Inject, Named}
@@ -38,20 +39,21 @@ class IncomeUpdateWorkingHoursController @Inject()(
   workingHoursView: WorkingHoursView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants {
+    extends TaiBaseController(mcc) {
 
   def workingHoursPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    (IncomeSource.create(journeyCacheService), journeyCacheService.currentValue(UpdateIncome_WorkingHoursKey)).mapN {
-      case (Right(incomeSource), workingHours) =>
-        Ok(
-          workingHoursView(
-            HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
-            incomeSource.id,
-            incomeSource.name))
-      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-    }
+    (IncomeSource.create(journeyCacheService), journeyCacheService.currentValue(UpdateIncomeConstants.WorkingHoursKey))
+      .mapN {
+        case (Right(incomeSource), workingHours) =>
+          Ok(
+            workingHoursView(
+              HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
+              incomeSource.id,
+              incomeSource.name))
+        case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      }
   }
 
   def handleWorkingHours: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -70,8 +72,8 @@ class IncomeUpdateWorkingHoursController @Inject()(
         },
         (formData: HoursWorkedForm) => {
           for {
-            id <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey)
-            _  <- journeyCacheService.cache(UpdateIncome_WorkingHoursKey, formData.workingHours.getOrElse(""))
+            id <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncomeConstants.IdKey)
+            _  <- journeyCacheService.cache(UpdateIncomeConstants.WorkingHoursKey, formData.workingHours.getOrElse(""))
           } yield {
 
             id match {

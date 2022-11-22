@@ -28,14 +28,13 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class CompanyCarServiceSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
+class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
   override def beforeEach: Unit =
     Mockito.reset(carConnector)

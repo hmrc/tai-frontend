@@ -20,19 +20,20 @@ import cats.data.EitherT
 import cats.implicits._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 final case class IncomeSource(id: Int, name: String)
 
-object IncomeSource extends JourneyCacheConstants {
+object IncomeSource {
 
   def create(journeyCacheService: JourneyCacheService)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext): Future[Either[String, IncomeSource]] =
-    EitherT(journeyCacheService.mandatoryJourneyValues(UpdateIncome_IdKey, UpdateIncome_NameKey)).map { seq =>
-      val id :: name :: _ = seq.toList
-      IncomeSource(id.toInt, name)
+    EitherT(journeyCacheService.mandatoryJourneyValues(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey)).map {
+      seq =>
+        val id :: name :: _ = seq.toList
+        IncomeSource(id.toInt, name)
     }.value
 }

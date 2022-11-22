@@ -77,8 +77,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               aResponse.withBody(taxCodeIncomeJson.toString())
             ))
 
-        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe TaiSuccessResponseWithPayload(
-          Seq(taxCodeIncome))
+        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe Right(Seq(taxCodeIncome))
       }
     }
 
@@ -90,7 +89,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               aResponse.withBody(corruptJsonResponse.toString())
             ))
 
-        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[TaiTaxAccountFailureResponse]
+        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[Left[String, Seq[TaxCodeIncome]]]
       }
     }
 
@@ -102,7 +101,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             .willReturn(unauthorized())
         )
 
-        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[TaiUnauthorisedResponse]
+        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[Left[String, Seq[TaxCodeIncome]]]
       }
     }
   }

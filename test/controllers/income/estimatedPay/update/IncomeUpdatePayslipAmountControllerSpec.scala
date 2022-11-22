@@ -33,15 +33,14 @@ import uk.gov.hmrc.tai.forms.income.incomeCalculator.{PayslipForm, TaxablePaysli
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.PayPeriodConstants.Monthly
-import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
 import utils.BaseSpec
 import views.html.incomes.{PayslipAmountView, PayslipDeductionsView, TaxablePayslipAmountView}
 
 import scala.concurrent.Future
 
-class IncomeUpdatePayslipAmountControllerSpec
-    extends BaseSpec with ControllerViewTestHelper with JourneyCacheConstants {
+class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
@@ -153,8 +152,8 @@ class IncomeUpdatePayslipAmountControllerSpec
           .thenReturn(Future.successful(Seq(Some(Monthly), None)))
 
         when(
-          journeyCacheService.cache(Matchers.eq[Map[String, String]](Map(UpdateIncome_TotalSalaryKey -> salary)))(
-            any()))
+          journeyCacheService.cache(
+            Matchers.eq[Map[String, String]](Map(UpdateIncomeConstants.TotalSalaryKey -> salary)))(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         def handlePayslipAmount(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -201,8 +200,11 @@ class IncomeUpdatePayslipAmountControllerSpec
     object TaxablePayslipAmountPageHarness {
       sealed class TaxablePayslipAmountPageHarness(payPeriod: Option[String], cachedAmount: Option[String]) {
 
-        val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
-        val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey, UpdateIncome_TaxablePayKey)
+        val mandatoryKeys = Seq(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey)
+        val optionalKeys = Seq(
+          UpdateIncomeConstants.PayPeriodKey,
+          UpdateIncomeConstants.OtherInDaysKey,
+          UpdateIncomeConstants.TaxablePayKey)
 
         when(journeyCacheService.collectedJourneyValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any()))
           .thenReturn(Future.successful(
@@ -265,7 +267,9 @@ class IncomeUpdatePayslipAmountControllerSpec
         when(journeyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(Some(Monthly), None, Some("4000"))))
 
-        when(journeyCacheService.cache(eqTo[Map[String, String]](Map(UpdateIncome_TaxablePayKey -> "3000")))(any()))
+        when(
+          journeyCacheService
+            .cache(eqTo[Map[String, String]](Map(UpdateIncomeConstants.TaxablePayKey -> "3000")))(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(Future.successful(
@@ -326,7 +330,7 @@ class IncomeUpdatePayslipAmountControllerSpec
     object PayslipDeductionsPageHarness {
       sealed class PayslipDeductionsPageHarness() {
 
-        when(journeyCacheService.currentValue(eqTo(UpdateIncome_PayslipDeductionsKey))(any()))
+        when(journeyCacheService.currentValue(eqTo(UpdateIncomeConstants.PayslipDeductionsKey))(any()))
           .thenReturn(Future.successful(Some("Yes")))
 
         def payslipDeductionsPage(): Future[Result] =

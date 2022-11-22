@@ -37,6 +37,7 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import views.html.incomes._
@@ -66,7 +67,7 @@ class IncomeController @Inject()(
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with Logging {
+    extends TaiBaseController(mcc) with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>
@@ -102,9 +103,9 @@ class IncomeController @Inject()(
       (for {
         cachedData <- journeyCacheService
                        .mandatoryJourneyValues(
-                         UpdateIncome_NameKey,
-                         UpdateIncome_IdKey,
-                         s"$UpdateIncome_ConfirmedNewAmountKey-$empId")
+                         UpdateIncomeConstants.NameKey,
+                         UpdateIncomeConstants.IdKey,
+                         s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId")
                        .getOrFail
       } yield {
         val employerId = cachedData(1).toInt
@@ -121,9 +122,9 @@ class IncomeController @Inject()(
   }
 
   def sameAnnualEstimatedPay(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    val cachedDataFuture = journeyCacheService.mandatoryJourneyValues(UpdateIncome_NameKey).getOrFail
+    val cachedDataFuture = journeyCacheService.mandatoryJourneyValues(UpdateIncomeConstants.NameKey).getOrFail
 
-    val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey).getOrFail
+    val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncomeConstants.IdKey).getOrFail
     val nino = request.taiUser.nino
 
     for {
@@ -146,7 +147,9 @@ class IncomeController @Inject()(
       implicit val user: AuthedUser = request.taiUser
 
       journeyCacheService
-        .collectedJourneyValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_NameKey), Seq(UpdateIncome_DateKey))
+        .collectedJourneyValues(
+          Seq(UpdateIncomeConstants.PayToDateKey, UpdateIncomeConstants.NameKey),
+          Seq(UpdateIncomeConstants.DateKey))
         .flatMap {
           case Left(errorMessage) =>
             logger.warn(errorMessage)
@@ -175,7 +178,7 @@ class IncomeController @Inject()(
   }
 
   private def isCachedIncomeTheSame(currentCache: Map[String, String], newAmount: Option[String], empId: Int): Boolean =
-    FormHelper.areEqual(currentCache.get(s"$UpdateIncome_ConfirmedNewAmountKey-$empId"), newAmount)
+    FormHelper.areEqual(currentCache.get(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId"), newAmount)
 
   private def isIncomeTheSame(income: EditIncomeForm): Boolean =
     FormHelper.areEqual(Some(income.oldAmount.toString), income.newAmount)
@@ -186,7 +189,7 @@ class IncomeController @Inject()(
       val nino = user.nino
 
       journeyCacheService
-        .mandatoryJourneyValueAsInt(UpdateIncome_NewAmountKey)
+        .mandatoryJourneyValueAsInt(UpdateIncomeConstants.NewAmountKey)
         .flatMap {
           case Left(errorMessage) =>
             logger.warn(errorMessage)
@@ -195,7 +198,7 @@ class IncomeController @Inject()(
             (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
               .mapN {
                 case (
-                    TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+                    Right(taxCodeIncomes),
                     Some(employment)
                     ) =>
                   taxCodeIncomes.find(_.employmentId.contains(empId)) match {
@@ -220,7 +223,7 @@ class IncomeController @Inject()(
         .recoverWith {
           case NonFatal(e) =>
             journeyCacheService
-              .mandatoryJourneyValueAsInt(s"$UpdateIncome_ConfirmedNewAmountKey-$empId")
+              .mandatoryJourneyValueAsInt(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId")
               .flatMap {
                 case Right(_) =>
                   journeyCacheService.flush().map { _ =>
@@ -239,7 +242,7 @@ class IncomeController @Inject()(
         implicit user: AuthedUser,
         request: Request[AnyContent]
       ): Result = {
-        journeyCacheService.cache(s"$UpdateIncome_ConfirmedNewAmountKey-$employerId", newAmount)
+        journeyCacheService.cache(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employerId", newAmount)
         incomeType match {
           case TaiConstants.IncomeTypePension => Ok(editPensionSuccess(employerName, employerId))
           case _                              => Ok(editSuccess(employerName, employerId))
@@ -248,10 +251,10 @@ class IncomeController @Inject()(
 
       val collectedValues = journeyCacheService
         .mandatoryJourneyValues(
-          UpdateIncome_NameKey,
-          UpdateIncome_NewAmountKey,
-          UpdateIncome_IdKey,
-          UpdateIncome_IncomeTypeKey)
+          UpdateIncomeConstants.NameKey,
+          UpdateIncomeConstants.NewAmountKey,
+          UpdateIncomeConstants.IdKey,
+          UpdateIncomeConstants.IncomeTypeKey)
 
       collectedValues
         .flatMap {
@@ -330,11 +333,9 @@ class IncomeController @Inject()(
   private def cacheAndRedirect(income: EditIncomeForm, confirmationCallback: Call)(
     implicit hc: HeaderCarrier
   ): Future[Result] =
-    for {
-      _ <- journeyCacheService.cache(UpdateIncome_NewAmountKey, income.toEmploymentAmount().newAmount.toString)
-    } yield {
-      Redirect(confirmationCallback)
-    }
+    journeyCacheService
+      .cache(UpdateIncomeConstants.NewAmountKey, income.toEmploymentAmount().newAmount.toString)
+      .map(_ => Redirect(confirmationCallback))
 
   def editPensionIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -342,8 +343,8 @@ class IncomeController @Inject()(
 
       journeyCacheService
         .collectedJourneyValues(
-          Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey),
-          Seq(UpdateIncome_DateKey))
+          Seq(UpdateIncomeConstants.PayToDateKey, UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey),
+          Seq(UpdateIncomeConstants.DateKey))
         .flatMap {
           case Left(errorMessage) =>
             logger.warn(errorMessage)
@@ -374,15 +375,15 @@ class IncomeController @Inject()(
       val nino = user.nino
 
       journeyCacheService
-        .mandatoryJourneyValue(UpdateIncome_NewAmountKey)
+        .mandatoryJourneyValue(UpdateIncomeConstants.NewAmountKey)
         .flatMap {
-          case Left(errorMessage) =>
+          case Left(_) =>
             Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-          case Right(updateIncome_NewAmountKey) =>
+          case Right(newAmountKey) =>
             (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
               .mapN {
                 case (
-                    TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+                    Right(taxCodeIncomes),
                     Some(employment)
                     ) =>
                   taxCodeIncomes.find(_.employmentId.contains(empId)) match {
@@ -392,7 +393,7 @@ class IncomeController @Inject()(
                       val vm = ConfirmAmountEnteredViewModel(
                         employment.name,
                         employmentAmount.oldAmount,
-                        updateIncome_NewAmountKey.toInt,
+                        newAmountKey.toInt,
                         "javascript:history.go(-1)", //TODO this is temporary
                         empId
                       )
@@ -410,7 +411,7 @@ class IncomeController @Inject()(
 
   def viewIncomeForEdit: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     (for {
-      id               <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncome_IdKey))
+      id               <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncomeConstants.IdKey))
       employmentAmount <- EitherT.right[String](incomeService.employmentAmount(request.taiUser.nino, id))
     } yield {
       (employmentAmount.isLive, employmentAmount.isOccupationalPension) match {
