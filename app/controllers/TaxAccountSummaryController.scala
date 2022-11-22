@@ -71,10 +71,9 @@ class TaxAccountSummaryController @Inject()(
           Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
         case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
           for {
-            TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService
-                                                                                  .taxCodeIncomes(nino, year)
-            scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
-            vm                   <- taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary)
+            Right(taxCodeIncomes) <- taxAccountService.taxCodeIncomes(nino, year)
+            scottishTaxRateBands  <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
+            vm                    <- taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary)
           } yield {
             val taxCodeIncomesByTaxCode = taxCodeIncomes.groupBy(seq => (seq.taxCode, seq.employmentId)).map {
               case ((taxCode, maybeEmpId), seq) =>

@@ -73,7 +73,7 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
   def flushWithEmpId(journeyName: String, empId: Int)(implicit hc: HeaderCarrier): Future[Done] =
     httpHandler.deleteFromApi(cacheUrl(s"$journeyName/$empId")).map(_ => Done)
 
-  def testOnlyCacheUrl(journeyName: String) = s"$serviceUrl/tai/test-only/journey-cache/$journeyName"
+  def testOnlyCacheUrl(journeyName: String): String = s"$serviceUrl/tai/test-only/journey-cache/$journeyName"
 
   def delete(journeyName: String)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.deleteFromApi(testOnlyCacheUrl(journeyName)).map(_ => TaiSuccessResponse)

@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.TaxCodeIncomeComponentType
+import uk.gov.hmrc.tai.model.domain.{TaxCodeIncomeComponentType, TaxedIncome}
 import uk.gov.hmrc.tai.model.domain.income.{TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 
@@ -38,7 +38,7 @@ class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
     nino: Nino,
     year: TaxYear,
     incomeType: TaxCodeIncomeComponentType,
-    status: TaxCodeIncomeSourceStatus)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+    status: TaxCodeIncomeSourceStatus)(implicit hc: HeaderCarrier): Future[Seq[TaxedIncome]] =
     taxAccountConnector.incomeSources(nino, year, incomeType, status)
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(

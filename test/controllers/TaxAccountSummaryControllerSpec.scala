@@ -67,10 +67,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
           Map.empty[String, BigDecimal]
         ))
 
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-        Future.successful(
-          TaiSuccessResponseWithPayload(Nil)
-        ))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(Right(Nil)))
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK

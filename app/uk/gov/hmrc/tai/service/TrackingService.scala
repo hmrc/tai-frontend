@@ -49,13 +49,12 @@ class TrackingService @Inject()(
         val haveAnyLongProcesses = hasIncompleteTrackingForms(trackedForms, "TES[1|7]")
         val haveAnyShortProcesses = hasIncompleteTrackingForms(trackedForms, "TES[2-6]")
 
-
-      val filteredJournies = successfulJournies.keySet.filterNot(
-        key =>
-          key.contains(TrackSuccessfulJourneyConstants.EstimatedPayKey) || key.contains(
-            UpdateNextYearsIncomeConstants.Successful)
-            || key.contains(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey)
-      )
+        val filteredJournies = successfulJournies.keySet.filterNot(
+          key =>
+            key.contains(TrackSuccessfulJourneyConstants.EstimatedPayKey) || key.contains(
+              UpdateNextYearsIncomeConstants.Successful)
+              || key.contains(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey)
+        )
 
         (haveAnyShortProcesses, haveAnyLongProcesses, filteredJournies.isEmpty, isA3WeeksJourney(successfulJournies)) match {
           case (true, false, _, _) | (_, _, false, false) => SevenDays
