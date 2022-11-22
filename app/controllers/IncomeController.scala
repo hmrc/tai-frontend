@@ -198,7 +198,7 @@ class IncomeController @Inject()(
             (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
               .mapN {
                 case (
-                    TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+                    Right(taxCodeIncomes),
                     Some(employment)
                     ) =>
                   taxCodeIncomes.find(_.employmentId.contains(empId)) match {
@@ -383,7 +383,7 @@ class IncomeController @Inject()(
             (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
               .mapN {
                 case (
-                    TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+                    Right(taxCodeIncomes),
                     Some(employment)
                     ) =>
                   taxCodeIncomes.find(_.employmentId.contains(empId)) match {

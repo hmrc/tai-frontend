@@ -16,6 +16,7 @@
 
 package controllers.income.estimatedPay.update
 
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
@@ -59,41 +60,38 @@ class IncomeUpdateIrregularHoursController @Inject()(
 
   private val logger = Logger(this.getClass)
 
-  private val taxCodeIncomeInfoToCache = (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
-    val defaultCaching = Map[String, String](
-      UpdateIncomeConstants.NameKey      -> taxCodeIncome.name,
-      UpdateIncomeConstants.PayToDateKey -> taxCodeIncome.amount.toString
-    )
+  private val taxCodeIncomeInfoToCache: (TaxCodeIncome, Option[Payment]) => Map[String, String] =
+    (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
+      val defaultCaching = Map[String, String](
+        UpdateIncomeConstants.NameKey      -> taxCodeIncome.name,
+        UpdateIncomeConstants.PayToDateKey -> taxCodeIncome.amount.toString
+      )
 
-    payment.fold(defaultCaching)(
-      payment =>
-        defaultCaching + (UpdateIncomeConstants.DateKey -> payment.date.format(
-          DateTimeFormatter.ofPattern(MonthAndYear))))
-  }
+      payment.fold(defaultCaching)(
+        payment =>
+          defaultCaching + (UpdateIncomeConstants.DateKey -> payment.date.format(
+            DateTimeFormatter.ofPattern(MonthAndYear))))
+    }
 
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-
       val nino = user.nino
 
-      val paymentRequest: Future[Option[Payment]] = incomeService.latestPayment(nino, employmentId)
-      val taxCodeIncomeRequest = taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
-
-      paymentRequest flatMap { payment =>
-        taxCodeIncomeRequest flatMap {
-          case Right(Some(tci)) =>
-            (taxCodeIncomeInfoToCache.tupled andThen journeyCacheService.cache)(tci, payment) map { _ =>
-              val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
-
-              Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
-            }
-          case Left(TaiUnauthorisedResponse(_)) =>
-            Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
-          case _ =>
-            Future.successful(errorPagesHandler.internalServerError("Failed to find tax code income for employment"))
-        }
-      }
+      (
+        incomeService.latestPayment(nino, employmentId),
+        taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)).mapN {
+        case (_, Left(value)) =>
+          logger.error(value)
+          Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
+        case (maybePayment, Right(Some(tci))) =>
+          journeyCacheService.cache(taxCodeIncomeInfoToCache(tci, maybePayment)).map { _ =>
+            val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
+            Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
+          }
+        case _ =>
+          Future.successful(errorPagesHandler.internalServerError("Failed to find tax code income for employment"))
+      }.flatten
   }
 
   def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {

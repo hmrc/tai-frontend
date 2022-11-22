@@ -312,7 +312,7 @@ class UpdatePensionProviderController @Inject()(
     }
 
     (taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {
-      case TaiSuccessResponseWithPayload(incomes: Seq[TaxCodeIncome]) =>
+      case Right(incomes) =>
         incomes.find(
           income =>
             income.employmentId.contains(id) &&

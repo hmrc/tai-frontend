@@ -45,7 +45,7 @@ class IncomeService @Inject()(
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       employmentService.employment(nino, id)
     ) mapN {
-      case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+      case (Right(taxCodeIncomes), Some(employment)) =>
         taxCodeIncomes.find(_.employmentId.contains(id)) match {
           case Some(taxCodeIncome) => EmploymentAmount(taxCodeIncome, employment)
           case _                   => throw new RuntimeException(s"Not able to found employment with id $id")

@@ -76,7 +76,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           appConfig)
 
         doc(view) must haveLinkWithUrlWithClass(
-          "govuk-link",
+          "rtitaxcode",
           controllers.routes.YourTaxCodeController.prevTaxCodes(cyMinusOneTaxYear).url)
       }
     }

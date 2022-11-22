@@ -126,7 +126,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         val service = EditIncomeIrregularHoursHarness.setup(Option.empty[TaxCodeIncome])
 
         when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
-          .thenReturn(Future.successful(Left(TaiUnauthorisedResponse("error"))))
+          .thenReturn(Future.successful(Left("error")))
         val result = service.editIncomeIrregularHours(2, RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER

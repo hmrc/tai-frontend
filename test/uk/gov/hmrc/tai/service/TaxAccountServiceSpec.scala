@@ -35,10 +35,10 @@ class TaxAccountServiceSpec extends BaseSpec {
     "return seq of tax codes" in {
       val testService = createSut
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
+        .thenReturn(Future.successful(Right(taxCodeIncomes)))
 
       val result = testService.taxCodeIncomes(nino, TaxYear())
-      Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(taxCodeIncomes)
+      Await.result(result, 5 seconds) mustBe Right(taxCodeIncomes)
     }
   }
 
@@ -47,7 +47,7 @@ class TaxAccountServiceSpec extends BaseSpec {
       val testService = createSut
 
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
+        .thenReturn(Future.successful(Right(taxCodeIncomes)))
 
       val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 1)
 
@@ -60,7 +60,7 @@ class TaxAccountServiceSpec extends BaseSpec {
       val testService = createSut
 
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
+        .thenReturn(Future.successful(Right(taxCodeIncomes)))
 
       val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 99)
 
@@ -71,11 +71,11 @@ class TaxAccountServiceSpec extends BaseSpec {
       val testService = createSut
 
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error")))
+        .thenReturn(Future.successful(Left("error")))
 
       val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 99)
 
-      Await.result(result, 5 seconds) mustBe Left(TaiTaxAccountFailureResponse("error"))
+      Await.result(result, 5 seconds) mustBe Left("error")
     }
   }
 
