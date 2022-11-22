@@ -16,13 +16,12 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.Inject
 import play.api.Logging
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UnauthorizedException}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
+import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
@@ -30,8 +29,9 @@ import uk.gov.hmrc.tai.model.domain.income.{Incomes, TaxCodeIncome, TaxCodeIncom
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentType, TaxedIncome, UpdateTaxCodeIncomeRequest}
 
-import scala.util.control.NonFatal
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
   implicit ec: ExecutionContext)
@@ -63,27 +63,20 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
     nino: Nino,
     year: TaxYear,
     incomeType: TaxCodeIncomeComponentType,
-    status: TaxCodeIncomeSourceStatus)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+    status: TaxCodeIncomeSourceStatus)(implicit hc: HeaderCarrier): Future[Seq[TaxedIncome]] =
     httpHandler
       .getFromApiV2(
         incomeSourceUrl(nino = nino.nino, year = year, incomeType = incomeType.toString, status = status.toString))
-      .map(
-        json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxedIncome]])
-      ) recover {
-      case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
-      case NonFatal(e) =>
-        logger.warn(s"Couldn't retrieve $status $incomeType income sources for $nino with exception:${e.getMessage}", e)
-        TaiTaxAccountFailureResponse(e.getMessage)
-    }
+      .map(json => (json \ "data").as[Seq[TaxedIncome]])
 
-  def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def taxCodeIncomes(nino: Nino, year: TaxYear)(
+    implicit hc: HeaderCarrier): Future[Either[String, Seq[TaxCodeIncome]]] =
     httpHandler.getFromApiV2(taxAccountUrl(nino.nino, year)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads)))
+      json => Right((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads)))
     ) recover {
-      case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
       case e: Exception =>
         logger.warn(s"Couldn't retrieve tax code for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
+        Left(e.getMessage)
     }
 
   def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =

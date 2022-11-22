@@ -20,14 +20,13 @@ import javax.inject.{Inject, Named}
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCacheService)
-    extends JourneyCacheConstants with Logging {
+abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCacheService) extends Logging {
 
   protected def cache(key: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
     successfulJourneyCacheService.cache(key, "true") recover {
@@ -55,8 +54,8 @@ class EstimatedPayJourneyCompletionService @Inject()(
     extends JourneyCompletionService(successfulJourneyCacheService) {
 
   override def journeyCompleted(incomeId: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    cache(s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId")
+    cache(s"${TrackSuccessfulJourneyConstants.EstimatedPayKey}-$incomeId")
 
   override def hasJourneyCompleted(id: String)(implicit hc: HeaderCarrier): Future[Boolean] =
-    currentValue(s"$TrackSuccessfulJourney_EstimatedPayKey-$id")
+    currentValue(s"${TrackSuccessfulJourneyConstants.EstimatedPayKey}-$id")
 }

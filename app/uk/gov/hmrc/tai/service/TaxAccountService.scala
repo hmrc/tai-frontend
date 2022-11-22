@@ -16,13 +16,16 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
+import cats.implicits._
+
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.TaxCodeIncomeComponentType
+import uk.gov.hmrc.tai.model.domain.{TaxCodeIncomeComponentType, TaxedIncome}
 import uk.gov.hmrc.tai.model.domain.income.{TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 
@@ -35,32 +38,16 @@ class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
     nino: Nino,
     year: TaxYear,
     incomeType: TaxCodeIncomeComponentType,
-    status: TaxCodeIncomeSourceStatus)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+    status: TaxCodeIncomeSourceStatus)(implicit hc: HeaderCarrier): Future[Seq[TaxedIncome]] =
     taxAccountConnector.incomeSources(nino, year, incomeType, status)
 
-  def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def taxCodeIncomes(nino: Nino, year: TaxYear)(
+    implicit hc: HeaderCarrier): Future[Either[String, Seq[TaxCodeIncome]]] =
     taxAccountConnector.taxCodeIncomes(nino, year)
 
-  def taxCodeIncomesV2(nino: Nino, year: TaxYear)(
-    implicit hc: HeaderCarrier): Future[Either[TaiResponse, Seq[TaxCodeIncome]]] =
-    taxAccountConnector.taxCodeIncomes(nino, year).map {
-      case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) =>
-        Right(taxCodeIncomes)
-      case response: TaiResponse =>
-        Left(response)
-    }
-
   def taxCodeIncomeForEmployment(nino: Nino, year: TaxYear, employmentId: Int)(
-    implicit hc: HeaderCarrier): Future[Either[TaiResponse, Option[TaxCodeIncome]]] =
-    for {
-      taxCodeIncomesResponse <- taxAccountConnector.taxCodeIncomes(nino, year)
-    } yield {
-      taxCodeIncomesResponse match {
-        case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) =>
-          Right(taxCodeIncomes.find(_.employmentId.contains(employmentId)))
-        case response: TaiResponse => Left(response)
-      }
-    }
+    implicit hc: HeaderCarrier): Future[Either[String, Option[TaxCodeIncome]]] =
+    EitherT(taxAccountConnector.taxCodeIncomes(nino, year)).map(_.find(_.employmentId.contains(employmentId))).value
 
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     taxAccountConnector.taxAccountSummary(nino, year)

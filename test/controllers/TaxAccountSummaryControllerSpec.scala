@@ -67,10 +67,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
           Map.empty[String, BigDecimal]
         ))
 
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-        Future.successful(
-          TaiSuccessResponseWithPayload(Nil)
-        ))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(Right(Nil)))
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -170,7 +167,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
 
       "a downstream error has occurred in the tax code income service (which does not reply with TaiResponse type)" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+          .thenReturn(Future.successful(Left("Failed")))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
         )

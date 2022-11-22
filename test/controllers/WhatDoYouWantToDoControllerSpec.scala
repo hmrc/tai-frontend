@@ -28,10 +28,10 @@ import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
@@ -55,6 +55,20 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
   val taxCodeNotChanged: HasTaxCodeChanged =
     HasTaxCodeChanged(changed = false, Some(TaxCodeMismatchFactory.matchedTaxCode))
   val taxCodeChanged: HasTaxCodeChanged = HasTaxCodeChanged(changed = true, Some(TaxCodeMismatchFactory.matchedTaxCode))
+  val taxCodeIncomes = Seq(
+    TaxCodeIncome(
+      EmploymentIncome,
+      Some(1),
+      BigDecimal(39107),
+      "EmploymentIncome",
+      "277L",
+      "TestName",
+      OtherBasisOfOperation,
+      Live,
+      None,
+      Some(LocalDate.of(2015, 11, 26)),
+      Some(LocalDate.of(2015, 11, 26))
+    ))
 
   private val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
 
@@ -100,7 +114,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         val controller = createTestController()
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(Right(taxCodeNotChanged)))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
@@ -118,7 +132,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         val testController = createTestController()
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(Right(taxCodeNotChanged)))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
@@ -137,7 +151,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         val testController = createTestController()
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
@@ -157,7 +171,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         val testController = createTestController(isCyPlusOneEnabled = false)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
@@ -177,7 +191,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         val testController = createTestController()
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
 
         when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
           .thenReturn(Future.successful(true))
@@ -330,7 +344,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         val testController = createTestController()
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
 
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountCYDataAbsentMsg)))
@@ -396,7 +410,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         val testController = createTestController(isCyPlusOneEnabled = false)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
@@ -429,7 +443,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       val testController = createTestController()
 
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+        .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
       when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
       val result =
@@ -442,7 +456,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     "landed to the page and get TaiSuccessResponse" in {
       val testController = createTestController()
 
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(Right(taxCodeIncomes)))
       when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
       val result =
@@ -457,7 +471,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       val testController = createTestController()
 
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("I have failed")))
+        .thenReturn(Future.successful(Left("I have failed")))
       when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
       val result =

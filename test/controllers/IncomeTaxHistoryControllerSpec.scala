@@ -26,15 +26,13 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.Status.OK
 import play.api.i18n.Messages
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.http.Upstream5xxResponse
-import uk.gov.hmrc.tai.connectors.responses.TaiTaxAccountFailureResponse
-import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
-import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
@@ -43,9 +41,9 @@ import scala.concurrent.Future
 class IncomeTaxHistoryControllerSpec
     extends BaseSpec with TaxAccountSummaryTestData with BeforeAndAfterEach with JsoupMatchers with ScalaFutures {
 
-  val employmentService = mock[EmploymentService]
-  val taxAccountService = mock[TaxAccountService]
-  val personService = mock[PersonService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val personService: PersonService = mock[PersonService]
 
   override def beforeEach: Unit =
     Mockito.reset(taxAccountService, employmentService, personService)
@@ -63,8 +61,8 @@ class IncomeTaxHistoryControllerSpec
         inject[ErrorPagesHandler]
       )
 
-  implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-  val taxYears = (TaxYear().year to (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
+  implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+  val taxYears: List[TaxYear] = (TaxYear().year to (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
 
   "onPageLoad" must {
     "display the income tax history page" when {
@@ -72,7 +70,7 @@ class IncomeTaxHistoryControllerSpec
 
         for (taxYear <- taxYears) {
 
-          when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
+          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
             Right(Seq(taxCodeIncome)))
 
           when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
@@ -90,14 +88,14 @@ class IncomeTaxHistoryControllerSpec
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
         verify(employmentService, times(6)).employments(any(), any())(any())
-        verify(taxAccountService, times(6)).taxCodeIncomesV2(any(), any())(any())
+        verify(taxAccountService, times(6)).taxCodeIncomes(any(), any())(any())
 
       }
 
       "pension data is returned" in {
         for (taxYear <- taxYears) {
 
-          when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
+          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
             Right(Seq(taxCodeIncome)))
           when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
             Seq(pensionEmployment3, pensionEmployment4))
@@ -112,15 +110,14 @@ class IncomeTaxHistoryControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(taxAccountService, times(6)).taxCodeIncomesV2(Matchers.any(), any())(Matchers.any())
+        verify(taxAccountService, times(6)).taxCodeIncomes(Matchers.any(), any())(Matchers.any())
         verify(employmentService, times(6)).employments(Matchers.any(), any())(Matchers.any())
 
       }
 
       "tax code is empty if the tax account can't be found" in {
         for (_ <- taxYears) {
-          when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
-            Left(TaiNotFoundResponse("not found")))
+          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left("not found"))
           when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
             Seq(pensionEmployment3, pensionEmployment4))
           when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
@@ -136,7 +133,7 @@ class IncomeTaxHistoryControllerSpec
 
       "tax code is empty if the tax account throws an exception" in {
         for (_ <- taxYears) {
-          when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.failed(
+          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.failed(
             new Exception("exception"))
           when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
             Seq(pensionEmployment3, pensionEmployment4))
@@ -156,7 +153,7 @@ class IncomeTaxHistoryControllerSpec
   "getIncomeTaxYear" must {
 
     "return an empty tax code if there isn't one" in {
-      when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(Right(Seq()))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Right(Seq()))
       when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
       when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
@@ -167,7 +164,7 @@ class IncomeTaxHistoryControllerSpec
     }
 
     "return an empty tax code if the taxAccountService fails to retrieve" in {
-      when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.failed(new Exception("exception"))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.failed(new Exception("exception"))
       when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
       when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
@@ -182,8 +179,7 @@ class IncomeTaxHistoryControllerSpec
 
         for (taxYear <- taxYears) {
 
-          when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
-            Left(TaiTaxAccountFailureResponse("")))
+          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left(""))
           when(employmentService.employments(any(), any())(any())) thenReturn Future.failed(
             Upstream5xxResponse("", 500, 500, Map.empty))
           when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
@@ -198,14 +194,14 @@ class IncomeTaxHistoryControllerSpec
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
         doc must haveParagraphWithText(Messages("tai.incomeTax.history.noTaxHistory"))
 
-        verify(taxAccountService, times(6)).taxCodeIncomesV2(Matchers.any(), any())(Matchers.any())
+        verify(taxAccountService, times(6)).taxCodeIncomes(Matchers.any(), any())(Matchers.any())
         verify(employmentService, times(6)).employments(Matchers.any(), any())(Matchers.any())
 
       }
     }
 
     "return a tax code if it's returned by the taxAccountService" in {
-      when(taxAccountService.taxCodeIncomesV2(any(), any())(any())) thenReturn Future.successful(
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
         Right(Seq(taxCodeIncome)))
       when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
       when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))

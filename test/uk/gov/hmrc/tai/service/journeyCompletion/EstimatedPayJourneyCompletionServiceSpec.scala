@@ -22,13 +22,13 @@ import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class EstimatedPayJourneyCompletionServiceSpec extends BaseSpec with JourneyCacheConstants with BeforeAndAfterEach {
+class EstimatedPayJourneyCompletionServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
   private def createTestService = new EstimatedPayJourneyCompletionServiceTest
 
@@ -36,7 +36,7 @@ class EstimatedPayJourneyCompletionServiceSpec extends BaseSpec with JourneyCach
 
   val incomeId = "1"
   val trueValue = "true"
-  val idKey = s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId"
+  val idKey = s"${TrackSuccessfulJourneyConstants.EstimatedPayKey}-$incomeId"
   val failedCacheCall = Future.failed(new Exception)
 
   private class EstimatedPayJourneyCompletionServiceTest

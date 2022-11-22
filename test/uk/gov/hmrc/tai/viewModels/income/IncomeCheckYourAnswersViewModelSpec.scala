@@ -21,13 +21,12 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class IncomeCheckYourAnswersViewModelSpec extends BaseSpec with JourneyCacheConstants {
+class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
 
   "companion apply method" must {
     "generate four confirmation lines when telephone contact not approved" in {

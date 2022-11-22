@@ -31,7 +31,8 @@ import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.FutureOps._
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
@@ -62,7 +63,7 @@ class AddEmploymentController @Inject()(
   confirmationView: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with JourneyCacheConstants with EmptyCacheRedirect {
+    extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
   def cancel(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>
@@ -80,7 +81,7 @@ class AddEmploymentController @Inject()(
     )
 
   def addEmploymentName(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    journeyCacheService.currentValue(AddEmployment_NameKey) map { providedName =>
+    journeyCacheService.currentValue(AddEmploymentConstants.NameKey) map { providedName =>
       implicit val user: AuthedUser = request.taiUser
 
       Ok(addEmploymentNameForm(EmploymentNameForm.form.fill(providedName.getOrElse(""))))
@@ -96,48 +97,50 @@ class AddEmploymentController @Inject()(
       },
       employmentName => {
         journeyCacheService
-          .cache(Map(AddEmployment_NameKey -> employmentName))
+          .cache(Map(AddEmploymentConstants.NameKey -> employmentName))
           .map(_ => Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate()))
       }
     )
   }
 
   def addEmploymentStartDate(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    journeyCacheService.collectedJourneyValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_StartDateKey)).map {
-      case Right((mandatorySequence, optSeq)) =>
-        val form = optSeq.head match {
-          case Some(dateString) =>
-            EmploymentAddDateForm(mandatorySequence.head).form.fill(LocalDate.parse(dateString))
-          case _ => EmploymentAddDateForm(mandatorySequence.head).form
-        }
-        implicit val user: AuthedUser = request.taiUser
+    journeyCacheService
+      .collectedJourneyValues(Seq(AddEmploymentConstants.NameKey), Seq(AddEmploymentConstants.StartDateKey))
+      .map {
+        case Right((mandatorySequence, optSeq)) =>
+          val form = optSeq.head match {
+            case Some(dateString) =>
+              EmploymentAddDateForm(mandatorySequence.head).form.fill(LocalDate.parse(dateString))
+            case _ => EmploymentAddDateForm(mandatorySequence.head).form
+          }
+          implicit val user: AuthedUser = request.taiUser
 
-        Ok(addEmploymentStartDateForm(form, mandatorySequence.head))
-      case Left(_) =>
-        Redirect(taxAccountSummaryRedirect)
-    }
+          Ok(addEmploymentStartDateForm(form, mandatorySequence.head))
+        case Left(_) =>
+          Redirect(taxAccountSummaryRedirect)
+      }
   }
 
   def submitEmploymentStartDate(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       journeyCacheService.currentCache map { currentCache =>
-        EmploymentAddDateForm(currentCache(AddEmployment_NameKey)).form
+        EmploymentAddDateForm(currentCache(AddEmploymentConstants.NameKey)).form
           .bindFromRequest()
           .fold(
             formWithErrors => {
               implicit val user: AuthedUser = request.taiUser
 
-              BadRequest(addEmploymentStartDateForm(formWithErrors, currentCache(AddEmployment_NameKey)))
+              BadRequest(addEmploymentStartDateForm(formWithErrors, currentCache(AddEmploymentConstants.NameKey)))
             },
             date => {
               val startDateBoundary = LocalDate.now.minusWeeks(6)
-              val data = currentCache + (AddEmployment_StartDateKey -> date.toString)
+              val data = currentCache + (AddEmploymentConstants.StartDateKey -> date.toString)
               if (date.isAfter(startDateBoundary)) {
-                val firstPayChoiceCacheData = data + (AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
+                val firstPayChoiceCacheData = data + (AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
                 journeyCacheService.cache(firstPayChoiceCacheData)
                 Redirect(controllers.employments.routes.AddEmploymentController.receivedFirstPay())
               } else {
-                val firstPayChoiceCacheData = data + (AddEmployment_StartDateWithinSixWeeks -> FormValuesConstants.NoValue)
+                val firstPayChoiceCacheData = data + (AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.NoValue)
                 journeyCacheService.cache(firstPayChoiceCacheData)
                 Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
               }
@@ -148,7 +151,7 @@ class AddEmploymentController @Inject()(
 
   def receivedFirstPay(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService
-      .collectedJourneyValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_ReceivedFirstPayKey))
+      .collectedJourneyValues(Seq(AddEmploymentConstants.NameKey), Seq(AddEmploymentConstants.ReceivedFirstPayKey))
       .getOrFail
       .map {
         case (mandSeq, optSeq) =>
@@ -162,13 +165,13 @@ class AddEmploymentController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          journeyCacheService.mandatoryJourneyValue(AddEmployment_NameKey).getOrFail.map { employmentName =>
+          journeyCacheService.mandatoryJourneyValue(AddEmploymentConstants.NameKey).getOrFail.map { employmentName =>
             implicit val user: AuthedUser = request.taiUser
             BadRequest(addEmploymentFirstPayForm(formWithErrors, employmentName))
           }
         },
         firstPayYesNo => {
-          journeyCacheService.cache(AddEmployment_ReceivedFirstPayKey, firstPayYesNo.getOrElse("")) map { _ =>
+          journeyCacheService.cache(AddEmploymentConstants.ReceivedFirstPayKey, firstPayYesNo.getOrElse("")) map { _ =>
             firstPayYesNo match {
               case Some(FormValuesConstants.YesValue) =>
                 Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
@@ -180,7 +183,7 @@ class AddEmploymentController @Inject()(
   }
 
   def sixWeeksError(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    journeyCacheService.mandatoryJourneyValue(AddEmployment_NameKey).map {
+    journeyCacheService.mandatoryJourneyValue(AddEmploymentConstants.NameKey).map {
       case Right(employmentName) =>
         implicit val user: AuthedUser = request.taiUser
         auditService
@@ -195,9 +198,9 @@ class AddEmploymentController @Inject()(
     implicit request =>
       journeyCacheService.currentCache map { cache =>
         val viewModel = PayrollNumberViewModel(cache)
-        val payrollChoice = cache.get(AddEmployment_PayrollNumberQuestionKey)
+        val payrollChoice = cache.get(AddEmploymentConstants.PayrollNumberQuestionKey)
         val payroll = payrollChoice match {
-          case Some(FormValuesConstants.YesValue) => cache.get(AddEmployment_PayrollNumberKey)
+          case Some(FormValuesConstants.YesValue) => cache.get(AddEmploymentConstants.PayrollNumberKey)
           case _                                  => None
         }
         implicit val user: AuthedUser = request.taiUser
@@ -224,8 +227,8 @@ class AddEmploymentController @Inject()(
           },
           form => {
             val payrollNumberToCache = Map(
-              AddEmployment_PayrollNumberQuestionKey -> form.payrollNumberChoice.getOrElse(""),
-              AddEmployment_PayrollNumberKey -> form.payrollNumberEntry.getOrElse(
+              AddEmploymentConstants.PayrollNumberQuestionKey -> form.payrollNumberChoice.getOrElse(""),
+              AddEmploymentConstants.PayrollNumberKey -> form.payrollNumberEntry.getOrElse(
                 Messages("tai.addEmployment.employmentPayrollNumber.notKnown"))
             )
             journeyCacheService
@@ -236,7 +239,8 @@ class AddEmploymentController @Inject()(
   }
 
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    journeyCacheService.optionalValues(AddEmployment_TelephoneQuestionKey, AddEmployment_TelephoneNumberKey) map {
+    journeyCacheService
+      .optionalValues(AddEmploymentConstants.TelephoneQuestionKey, AddEmploymentConstants.TelephoneNumberKey) map {
       optSeq =>
         val telNoToDisplay = optSeq.head match {
           case Some(FormValuesConstants.YesValue) => optSeq(1)
@@ -268,12 +272,12 @@ class AddEmploymentController @Inject()(
         },
         form => {
           val mandatoryData = Map(
-            AddEmployment_TelephoneQuestionKey -> Messages(
+            AddEmploymentConstants.TelephoneQuestionKey -> Messages(
               s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"))
           val dataForCache = form.yesNoChoice match {
             case Some(yn) if yn == FormValuesConstants.YesValue =>
-              mandatoryData ++ Map(AddEmployment_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
-            case _ => mandatoryData ++ Map(AddEmployment_TelephoneNumberKey -> "")
+              mandatoryData ++ Map(AddEmploymentConstants.TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
+            case _ => mandatoryData ++ Map(AddEmploymentConstants.TelephoneNumberKey -> "")
           }
           journeyCacheService.cache(dataForCache) map { _ =>
             Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers())
@@ -287,11 +291,12 @@ class AddEmploymentController @Inject()(
       journeyCacheService
         .collectedJourneyValues(
           Seq(
-            AddEmployment_NameKey,
-            AddEmployment_StartDateKey,
-            AddEmployment_PayrollNumberKey,
-            AddEmployment_TelephoneQuestionKey),
-          Seq(AddEmployment_TelephoneNumberKey)
+            AddEmploymentConstants.NameKey,
+            AddEmploymentConstants.StartDateKey,
+            AddEmploymentConstants.PayrollNumberKey,
+            AddEmploymentConstants.TelephoneQuestionKey
+          ),
+          Seq(AddEmploymentConstants.TelephoneNumberKey)
         )
         .map {
           case Right((mandatoryJourneyValues, optionalVals)) =>
@@ -320,11 +325,12 @@ class AddEmploymentController @Inject()(
       (mandatoryVals, optionalVals) <- journeyCacheService
                                         .collectedJourneyValues(
                                           Seq(
-                                            AddEmployment_NameKey,
-                                            AddEmployment_StartDateKey,
-                                            AddEmployment_PayrollNumberKey,
-                                            AddEmployment_TelephoneQuestionKey),
-                                          Seq(AddEmployment_TelephoneNumberKey)
+                                            AddEmploymentConstants.NameKey,
+                                            AddEmploymentConstants.StartDateKey,
+                                            AddEmploymentConstants.PayrollNumberKey,
+                                            AddEmploymentConstants.TelephoneQuestionKey
+                                          ),
+                                          Seq(AddEmploymentConstants.TelephoneNumberKey)
                                         )
                                         .getOrFail
       model = AddEmployment(
@@ -334,7 +340,7 @@ class AddEmploymentController @Inject()(
         mandatoryVals(3),
         optionalVals.head)
       _ <- employmentService.addEmployment(user.nino, model)
-      _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourney_AddEmploymentKey, "true")
+      _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourneyConstants.AddEmploymentKey, "true")
       _ <- journeyCacheService.flush()
     } yield {
       Redirect(controllers.employments.routes.AddEmploymentController.confirmation())
