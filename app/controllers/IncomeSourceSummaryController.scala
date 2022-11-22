@@ -71,7 +71,7 @@ class IncomeSourceSummaryController @Inject()(
       estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString),
       cacheUpdatedIncomeAmountFuture).mapN {
       case (
-          TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+          Right(taxCodeIncomes),
           Some(employment),
           benefitsDetails,
           estimatedPayCompletion,

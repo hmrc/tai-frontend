@@ -68,8 +68,8 @@ class IncomeTaxComparisonController @Inject()(
         case (
             TaiSuccessResponseWithPayload(taxAccountSummaryCY: TaxAccountSummary),
             TaiSuccessResponseWithPayload(taxAccountSummaryCYPlusOne: TaxAccountSummary),
-            TaiSuccessResponseWithPayload(taxCodeIncomesCY: Seq[TaxCodeIncome]),
-            TaiSuccessResponseWithPayload(taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome]),
+            Right(taxCodeIncomesCY),
+            Right(taxCodeIncomesCYPlusOne),
             codingComponentsCY,
             codingComponentsCYPlusOne,
             employmentsCY,

@@ -23,7 +23,6 @@ import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HowToUpdateForm
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}
@@ -98,9 +97,11 @@ class IncomeUpdateHowToUpdateController @Inject()(
     id: Int,
     employmentName: String,
     incomeToEdit: EmploymentAmount,
-    taxCodeIncomeDetails: TaiResponse)(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] =
-    (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, taxCodeIncomeDetails) match {
-      case (true, false, TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
+    maybeTaxCodeIncomeDetails: Either[String, Seq[TaxCodeIncome]])(
+    implicit request: Request[AnyContent],
+    user: AuthedUser): Future[Result] =
+    (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, maybeTaxCodeIncomeDetails) match {
+      case (true, false, Right(taxCodeIncomes)) =>
         for {
           howToUpdate <- journeyCacheService.currentValue(UpdateIncomeConstants.HowToUpdateKey)
         } yield {

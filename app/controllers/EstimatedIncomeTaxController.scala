@@ -65,7 +65,7 @@ class EstimatedIncomeTaxController @Inject()(
           TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
           TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax),
           TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
-          TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+          Right(taxCodeIncomes),
           codingComponents,
           iFormLinks
           ) =>

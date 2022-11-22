@@ -76,14 +76,14 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
-  def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def taxCodeIncomes(nino: Nino, year: TaxYear)(
+    implicit hc: HeaderCarrier): Future[Either[String, Seq[TaxCodeIncome]]] =
     httpHandler.getFromApiV2(taxAccountUrl(nino.nino, year)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads)))
+      json => Right((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads)))
     ) recover {
-      case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
       case e: Exception =>
         logger.warn(s"Couldn't retrieve tax code for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
+        Left(e.getMessage)
     }
 
   def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =

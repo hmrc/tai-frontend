@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import javax.inject.{Inject, Named}
 import cats.implicits._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,7 +28,6 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
-import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateNextYearsIncomeService @Inject()(

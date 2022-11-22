@@ -470,7 +470,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
     def taxAccountServiceCall =
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
+        .thenReturn(Future.successful(Right(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
     def journeyCacheCall =
       when(journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
@@ -508,7 +508,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
       "tax code income sources are not available" in {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+          .thenReturn(Future.successful(Left("Failed")))
 
         val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -517,7 +517,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
       "an invalid id has been passed" in {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
+          .thenReturn(Future.successful(Right(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
         val result = createController.UpdatePension(4)(fakeGetRequest)
 
