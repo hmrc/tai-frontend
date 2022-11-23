@@ -50,7 +50,7 @@ class DetailedIncomeTaxEstimateController @Inject()(
     val nino = request.taiUser.nino
     val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
     val taxCodeIncomeFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
-    val taxSummaryFuture = taxAccountService.taxAccountSummaryOld(nino, TaxYear())
+    val taxSummaryFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
     val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
     val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
 
@@ -65,7 +65,7 @@ class DetailedIncomeTaxEstimateController @Inject()(
         case (
             TaiSuccessResponseWithPayload(totalTax: TotalTax),
             Right(taxCodeIncomes),
-            TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
+            taxAccountSummary,
             TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)
             ) =>
           implicit val user: AuthedUser = request.taiUser
