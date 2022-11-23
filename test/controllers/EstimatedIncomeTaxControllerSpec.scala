@@ -136,11 +136,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         )
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
-          Future.successful(
-            TaiSuccessResponseWithPayload(
-              taxAccountSummary
-            )))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(taxAccountSummary))
+
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             TaiSuccessResponseWithPayload(
@@ -234,11 +231,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         val expectedViewModel = ComplexEstimatedIncomeTaxViewModel(700, 16500, 11500, viewModelBandedGraph, UkTaxRegion)
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
-          Future.successful(
-            TaiSuccessResponseWithPayload(
-              taxAccountSummary
-            )))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(taxAccountSummary))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             TaiSuccessResponseWithPayload(
@@ -323,11 +316,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         val expectedViewModel = ZeroTaxEstimatedIncomeTaxViewModel(0, 9000, 11500, viewModelBandedGraph, UkTaxRegion)
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
-          Future.successful(
-            TaiSuccessResponseWithPayload(
-              taxAccountSummary
-            )))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(taxAccountSummary))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             TaiSuccessResponseWithPayload(
@@ -360,11 +349,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
       "loading the no income tax view" in {
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
-          Future.successful(
-            TaiSuccessResponseWithPayload(
-              TaxAccountSummary(0, 0, 0, 0, 0)
-            )))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future.successful(TaxAccountSummary(0, 0, 0, 0, 0)))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             TaiSuccessResponseWithPayload(
@@ -397,8 +383,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
     "return error" when {
       "failed to fetch details" in {
         val sut = createSUT
-        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("Failed")))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             TaiSuccessResponseWithPayload(
