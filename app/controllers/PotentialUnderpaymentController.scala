@@ -54,7 +54,7 @@ class PotentialUnderpaymentController @Inject()(
         implicit val user: AuthedUser = request.taiUser
         val nino = user.nino
         (
-          taxAccountService.taxAccountSummary(nino, TaxYear()),
+          taxAccountService.taxAccountSummaryOld(nino, TaxYear()),
           codingComponentService.taxFreeAmountComponents(nino, TaxYear())).mapN {
           case (TaiSuccessResponseWithPayload(tas: TaxAccountSummary), ccs) =>
             auditService.createAndSendAuditEvent(

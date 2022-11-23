@@ -64,7 +64,7 @@ class WhatDoYouWantToDoController @Inject()(
 
       val possibleRedirectFuture: Future[Option[Result]] =
         for {
-          taxAccountSummary   <- taxAccountService.taxAccountSummary(nino, TaxYear())
+          taxAccountSummary   <- taxAccountService.taxAccountSummaryOld(nino, TaxYear())
           _                   <- employmentService.employments(nino, TaxYear())
           prevYearEmployments <- previousYearEmployments(nino)
         } yield {
@@ -103,7 +103,7 @@ class WhatDoYouWantToDoController @Inject()(
       WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
 
     if (applicationConfig.cyPlusOneEnabled) {
-      taxAccountService.taxAccountSummary(nino, TaxYear().next).map {
+      taxAccountService.taxAccountSummaryOld(nino, TaxYear().next).map {
         case TaiSuccessResponseWithPayload(_) =>
           successfulResponseModel
         case _: TaiNotFoundResponse =>

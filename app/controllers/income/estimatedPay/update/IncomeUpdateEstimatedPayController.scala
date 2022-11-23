@@ -73,7 +73,7 @@ class IncomeUpdateEstimatedPayController @Inject()(
             logger.warn(errorMessage)
             Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
           case Right(journeyValues) =>
-            taxAccountService.taxAccountSummary(user.nino, TaxYear()).map {
+            taxAccountService.taxAccountSummaryOld(user.nino, TaxYear()).map {
               case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
                 val totalEstimatedIncome =
                   withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))

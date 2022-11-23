@@ -117,7 +117,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(Right(taxCodeNotChanged)))
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
         val result = controller.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -135,7 +135,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(Right(taxCodeNotChanged)))
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -153,7 +153,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -174,7 +174,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -196,7 +196,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
           .thenReturn(Future.successful(true))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -218,7 +218,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           .thenReturn(Future.successful(true))
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -270,7 +270,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       "nps tax account hod call has returned a not found exception ('no tax account information found'), indicating no current year data is present, " +
         "and no previous year employment data is present" in {
         val testController = createTestController()
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountCYDataAbsentMsg)))
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
@@ -289,7 +289,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       "nps tax account hod call has returned a bad request exception, indicating absence of any tax account data whatsoever, " +
         "and no previous year employment data is present" in {
         val testController = createTestController()
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg)))
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
@@ -304,7 +304,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
       "nps tax account hod call has returned a bad request exception, indicating no employments recorded" in {
         val testController = createTestController()
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentsRecorded)))
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
@@ -320,7 +320,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       "nps tax account hod call has returned a bad request exception, indicating no employments for current tax year," +
         "and no previous year employment data is present" in {
         val testController = createTestController()
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentForCurrentTaxYear)))
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
@@ -346,7 +346,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
 
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountCYDataAbsentMsg)))
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
@@ -355,7 +355,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -369,7 +369,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         "but previous year employment data IS present" in {
         val testController = createTestController()
 
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg)))
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
@@ -378,7 +378,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -391,7 +391,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       "cy plus one data is not available and cy plus one is enabled" in {
         val testController = createTestController()
 
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
           Future.successful(
             TaiNotFoundResponse("Not found")
           ))
@@ -525,7 +525,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any(), any()))
       .thenReturn(Future.successful(AuditResult.Success))
-    when(taxAccountService.taxAccountSummary(any(), any())(any()))
+    when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
       .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary)))
     when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
       .thenReturn(Future.successful(false))

@@ -54,7 +54,7 @@ class EstimatedIncomeTaxController @Inject()(
     val nino = request.taiUser.nino
 
     (
-      taxAccountService.taxAccountSummary(nino, TaxYear()),
+      taxAccountService.taxAccountSummaryOld(nino, TaxYear()),
       taxAccountService.totalTax(nino, TaxYear()),
       taxAccountService.nonTaxCodeIncomes(nino, TaxYear()),
       taxAccountService.taxCodeIncomes(nino, TaxYear()),

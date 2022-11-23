@@ -75,7 +75,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
       .thenReturn(Future.successful(Right(Seq(employer.name, employer.id.toString, TaiConstants.IncomeTypeEmployment))))
-    when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(
+    when(mockTaxAccountService.taxAccountSummaryOld(any(), any())(any())) thenReturn Future(
       TaiSuccessResponseWithPayload(taxAccountSummary))
 
     def estimatedPayLandingPage(): Future[Result] =
@@ -94,7 +94,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     "return INTERNAL_SERVER_ERROR when TaiNotFoundResponse is returned from the service" in {
 
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(TaiNotFoundResponse(""))
+      when(mockTaxAccountService.taxAccountSummaryOld(any(), any())(any())) thenReturn Future(TaiNotFoundResponse(""))
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -102,7 +102,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     }
     "return INTERNAL_SERVER_ERROR when TaiUnauthorisedResponse is returned from the service" in {
 
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(TaiUnauthorisedResponse(""))
+      when(mockTaxAccountService.taxAccountSummaryOld(any(), any())(any())) thenReturn Future(
+        TaiUnauthorisedResponse(""))
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -111,7 +112,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     "return INTERNAL_SERVER_ERROR when TaiTaxAccountFailureResponse is returned from the service" in {
 
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(
+      when(mockTaxAccountService.taxAccountSummaryOld(any(), any())(any())) thenReturn Future(
         TaiTaxAccountFailureResponse(""))
 
       val result = estimatedPayLandingPage()

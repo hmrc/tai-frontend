@@ -47,7 +47,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
   "onPageLoad" must {
 
     "display the income tax summary page" in {
-      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+      when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
 
@@ -73,7 +73,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
     }
 
     "raise an audit event" in {
-      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+      when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
 
@@ -115,7 +115,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
             ))
         )
 
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future(TaiTaxAccountFailureResponse("Data retrieval failure")))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -123,7 +123,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
       }
 
       "a downstream unauthenticated error has occurred in one of the TaiResponse responding service methods" in {
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future(TaiUnauthorisedResponse("unauthorised")))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -132,7 +132,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
       }
 
       "a downstream error has occurred in the tax account service (which does not reply with TaiResponse type)" in {
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
@@ -145,7 +145,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
       }
 
       "a downstream unauthorised exception has occurred in the tax account service" in {
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
@@ -164,7 +164,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
         )
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
@@ -178,7 +178,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
 
       "a downstream error has occurred in one of the TaiResponse responding service methods due to no found primary employment information" in {
 
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg.toLowerCase)))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -189,7 +189,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
 
       "a downstream error has occurred in one of the TaiResponse responding service methods due to no employments recorded for current tax year" in {
 
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentForCurrentTaxYear.toLowerCase)))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -199,7 +199,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
 
       "a downstream error has occurred in one of the TaiResponse responding service methods due to not being authorised" in {
 
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future(TaiUnauthorisedResponse("unauthorised user")))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -209,7 +209,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
 
       "there is a TaiNotFoundResponse because there is no tax account information found" in {
 
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
           .thenReturn(Future(TaiNotFoundResponse("No tax account information found")))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))

@@ -57,7 +57,7 @@ class TaxAccountSummaryController @Inject()(
       .createAndSendAuditEvent(AuditConstants.TaxAccountSummaryUserEntersSummaryPage, Map("nino" -> nino.toString()))
 
     taxAccountService
-      .taxAccountSummary(nino, TaxYear())
+      .taxAccountSummaryOld(nino, TaxYear())
       .flatMap {
         case TaiNotFoundResponse(_) =>
           Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))

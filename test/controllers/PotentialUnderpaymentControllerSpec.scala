@@ -52,7 +52,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
     "return the potentional underpayment page for current year only" when {
       "processing a TaxAccountSummary with no CY+1 amount" in {
         val sut = new SUT()
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
           Future.successful(
             TaiSuccessResponseWithPayload[TaxAccountSummary](
               TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
@@ -67,7 +67,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
     "return the general potentional underpayment page covering this and next year" when {
       "processing a TaxAccountSummary with a CY+1 amount" in {
         val sut = new SUT()
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
           Future.successful(
             TaiSuccessResponseWithPayload[TaxAccountSummary](
               TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
@@ -88,7 +88,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
     }
     "return the service unavailable error page in response to an internal error" in {
       val sut = new SUT()
-      when(taxAccountService.taxAccountSummary(any(), any())(any()))
+      when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
         .thenReturn(Future.failed(new ForbiddenException("")))
       val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
       status(res) mustBe INTERNAL_SERVER_ERROR
@@ -114,7 +114,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
         templateRenderer,
         inject[ErrorPagesHandler]
       ) {
-    when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+    when(taxAccountService.taxAccountSummaryOld(any(), any())(any())).thenReturn(
       Future.successful(
         TaiSuccessResponseWithPayload[TaxAccountSummary](
           TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
