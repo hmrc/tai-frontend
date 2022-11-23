@@ -245,7 +245,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               aResponse.withBody(taxAccountSummaryJson.toString())
             ))
 
-        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).futureValue
+        val result = taxAccountConnector.taxAccountSummaryOld(nino, currentTaxYear).futureValue
         result mustBe TaiSuccessResponseWithPayload(TaxAccountSummary(111, 222, 1111.11, 2222.23, 1111.12, 100, 200))
       }
     }
@@ -265,7 +265,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               aResponse.withBody(corruptTaxAccountSummaryJson.toString())
             ))
 
-        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).futureValue
+        val result = taxAccountConnector.taxAccountSummaryOld(nino, currentTaxYear).futureValue
         result mustBe a[TaiTaxAccountFailureResponse]
       }
     }
@@ -279,7 +279,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               unauthorized()
             ))
 
-        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).futureValue
+        val result = taxAccountConnector.taxAccountSummaryOld(nino, currentTaxYear).futureValue
         result mustBe a[TaiUnauthorisedResponse]
       }
     }
@@ -293,7 +293,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               notFound()
             ))
 
-        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).futureValue
+        val result = taxAccountConnector.taxAccountSummaryOld(nino, currentTaxYear).futureValue
         result mustBe a[TaiNotFoundResponse]
       }
     }

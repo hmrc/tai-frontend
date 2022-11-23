@@ -82,7 +82,7 @@ class TaxAccountServiceSpec extends BaseSpec {
   "taxAccountSummary" must {
     "return the tax account summary from the connector" in {
       val sut = createSut
-      when(taxAccountConnector.taxAccountSummary(any(), any())(any()))
+      when(taxAccountConnector.taxAccountSummaryOld(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary)))
 
       val result = sut.taxAccountSummary(nino, TaxYear())

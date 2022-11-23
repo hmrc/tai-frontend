@@ -102,7 +102,7 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
-  def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def taxAccountSummaryOld(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.getFromApiV2(taxAccountSummaryUrl(nino.nino, year)) map (
       json => TaiSuccessResponseWithPayload((json \ "data").as[TaxAccountSummary])
     ) recover {
