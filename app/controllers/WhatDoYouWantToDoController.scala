@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, AuthedUser}
 import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, T
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.domain.{Employment, HasTaxCodeChanged}
+import uk.gov.hmrc.tai.model.domain.{Employment, HasTaxCodeChanged, TaxAccountSummary}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import views.html.WhatDoYouWantToDoTileView
@@ -102,18 +102,14 @@ class WhatDoYouWantToDoController @Inject()(
     lazy val unsuccessfulResponseModel =
       WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
 
-    if (applicationConfig.cyPlusOneEnabled) {
-      taxAccountService.taxAccountSummary(nino, TaxYear().next).map {
-        case TaiSuccessResponseWithPayload(_) =>
-          successfulResponseModel
-        case _: TaiNotFoundResponse =>
-          logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
-          unsuccessfulResponseModel
-        case _ =>
-          unsuccessfulResponseModel
-      }
-    } else {
-      Future.successful(successfulResponseModel)
+    taxAccountService.taxAccountSummary(nino, TaxYear().next).map { _ =>
+      successfulResponseModel
+    }.recover {
+      case e: NotFoundException =>
+        logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
+        unsuccessfulResponseModel
+      case _ =>
+        unsuccessfulResponseModel
     }
   }
 

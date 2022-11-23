@@ -25,7 +25,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.{Employment, TaxAccountSummary}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import views.html.includes.link
@@ -34,6 +34,8 @@ import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 import play.twirl.api.HtmlFormat
+
+import scala.util.control.NonFatal
 
 class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, errorNoPrimary: ErrorNoPrimary)(
   implicit val templateRenderer: TemplateRenderer,

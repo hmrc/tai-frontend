@@ -65,7 +65,7 @@ class DetailedIncomeTaxEstimateController @Inject()(
         case (
             TaiSuccessResponseWithPayload(totalTax: TotalTax),
             Right(taxCodeIncomes),
-            TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
+            taxAccountSummary,
             TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)
             ) =>
           implicit val user: AuthedUser = request.taiUser

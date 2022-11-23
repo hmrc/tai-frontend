@@ -18,11 +18,9 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import javax.inject.{Inject, Singleton}
 import play.api.Logging
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.http.UnauthorizedException
-
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
@@ -32,23 +30,24 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
 import views.html.IncomeTaxSummaryView
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 @Singleton
 class TaxAccountSummaryController @Inject()(
-  employmentService: EmploymentService,
-  taxAccountService: TaxAccountService,
-  taxAccountSummaryService: TaxAccountSummaryService,
-  auditService: AuditService,
-  authenticate: AuthAction,
-  validatePerson: ValidatePerson,
-  appConfig: ApplicationConfig,
-  mcc: MessagesControllerComponents,
-  incomeTaxSummary: IncomeTaxSummaryView,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with Logging {
+                                             employmentService: EmploymentService,
+                                             taxAccountService: TaxAccountService,
+                                             taxAccountSummaryService: TaxAccountSummaryService,
+                                             auditService: AuditService,
+                                             authenticate: AuthAction,
+                                             validatePerson: ValidatePerson,
+                                             appConfig: ApplicationConfig,
+                                             mcc: MessagesControllerComponents,
+                                             incomeTaxSummary: IncomeTaxSummaryView,
+                                             implicit val templateRenderer: TemplateRenderer,
+                                             errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  extends TaiBaseController(mcc) with Logging {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
@@ -59,26 +58,22 @@ class TaxAccountSummaryController @Inject()(
     taxAccountService
       .taxAccountSummary(nino, TaxYear())
       .flatMap {
-        case TaiNotFoundResponse(_) =>
-          Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
-        case TaiTaxAccountFailureResponse(message)
-            if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
-              message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
-          Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
-        case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
+        taxAccountSummary =>
           taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
             Ok(incomeTaxSummary(vm, appConfig))
           }
-        case TaiTaxAccountFailureResponse(message) =>
-          throw new RuntimeException(s"Failed to fetch tax account summary details with exception: $message")
-        case TaiUnauthorisedResponse(_) =>
-          Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
-      }
-      .recover {
-        case e: UnauthorizedException =>
-          logger.warn("taxAccountSummary failed with: " + e.getMessage)
-          Redirect(controllers.routes.UnauthorisedController.onPageLoad())
-        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage, Some(e))
-      }
+      }.recover {
+      case e: NotFoundException =>
+        logger.warn(s"No tax account information found: ${e.getMessage}")
+        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
+      case NonFatal(e) if e.getMessage.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
+        e.getMessage.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
+        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
+      case NonFatal(e) =>
+        errorPagesHandler.internalServerError(e.getMessage, Some(e))
+      case e: UnauthorizedException =>
+        logger.warn("taxAccountSummary failed with: " + e.getMessage)
+        Redirect(controllers.routes.UnauthorisedController.onPageLoad())
+    }
   }
 }
