@@ -78,7 +78,9 @@ class IncomeUpdateIrregularHoursController @Inject()(
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
 
-      (incomeService.latestPayment(nino, employmentId), taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)).mapN {
+      (
+        incomeService.latestPayment(nino, employmentId),
+        taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)).mapN {
         case (_, Left(value)) =>
           logger.error(value)
           Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))

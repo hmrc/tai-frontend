@@ -36,18 +36,18 @@ import scala.util.control.NonFatal
 
 @Singleton
 class TaxAccountSummaryController @Inject()(
-                                             employmentService: EmploymentService,
-                                             taxAccountService: TaxAccountService,
-                                             taxAccountSummaryService: TaxAccountSummaryService,
-                                             auditService: AuditService,
-                                             authenticate: AuthAction,
-                                             validatePerson: ValidatePerson,
-                                             appConfig: ApplicationConfig,
-                                             mcc: MessagesControllerComponents,
-                                             incomeTaxSummary: IncomeTaxSummaryView,
-                                             implicit val templateRenderer: TemplateRenderer,
-                                             errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-  extends TaiBaseController(mcc) with Logging {
+  employmentService: EmploymentService,
+  taxAccountService: TaxAccountService,
+  taxAccountSummaryService: TaxAccountSummaryService,
+  auditService: AuditService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  appConfig: ApplicationConfig,
+  mcc: MessagesControllerComponents,
+  incomeTaxSummary: IncomeTaxSummaryView,
+  implicit val templateRenderer: TemplateRenderer,
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+    extends TaiBaseController(mcc) with Logging {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
@@ -57,23 +57,24 @@ class TaxAccountSummaryController @Inject()(
 
     taxAccountService
       .taxAccountSummary(nino, TaxYear())
-      .flatMap {
-        taxAccountSummary =>
-          taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
-            Ok(incomeTaxSummary(vm, appConfig))
-          }
-      }.recover {
-      case e: NotFoundException =>
-        logger.warn(s"No tax account information found: ${e.getMessage}")
-        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-      case NonFatal(e) if e.getMessage.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
-        e.getMessage.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
-        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-      case NonFatal(e) =>
-        errorPagesHandler.internalServerError(e.getMessage, Some(e))
-      case e: UnauthorizedException =>
-        logger.warn("taxAccountSummary failed with: " + e.getMessage)
-        Redirect(controllers.routes.UnauthorisedController.onPageLoad())
-    }
+      .flatMap { taxAccountSummary =>
+        taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
+          Ok(incomeTaxSummary(vm, appConfig))
+        }
+      }
+      .recover {
+        case e: NotFoundException =>
+          logger.warn(s"No tax account information found: ${e.getMessage}")
+          Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
+        case NonFatal(e)
+            if e.getMessage.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
+              e.getMessage.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
+          Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
+        case NonFatal(e) =>
+          errorPagesHandler.internalServerError(e.getMessage, Some(e))
+        case e: UnauthorizedException =>
+          logger.warn("taxAccountSummary failed with: " + e.getMessage)
+          Redirect(routes.UnauthorisedController.onPageLoad())
+      }
   }
 }

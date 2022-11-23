@@ -62,26 +62,28 @@ class WhatDoYouWantToDoController @Inject()(
       val nino = request.taiUser.nino
       val ninoString = request.taiUser.nino.toString()
 
-      val possibleRedirectFuture: Future[Option[Result]] =
-        for {
-          taxAccountSummary   <- taxAccountService.taxAccountSummary(nino, TaxYear())
-          _                   <- employmentService.employments(nino, TaxYear())
-          prevYearEmployments <- previousYearEmployments(nino)
-        } yield {
+//      val possibleRedirectFuture: Future[Option[Result]] =
+//        for {
+//          taxAccountSummary   <- taxAccountService.taxAccountSummary(nino, TaxYear())
+//          _                   <- employmentService.employments(nino, TaxYear())
+//          prevYearEmployments <- previousYearEmployments(nino)
+//        } yield {
 
-          val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
-            errorPagesHandler.npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-              errorPagesHandler.npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-              errorPagesHandler.npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-              errorPagesHandler.npsNoEmploymentResult(ninoString) orElse
-              errorPagesHandler.npsTaxAccountDeceasedResult(ninoString) orElse { case _ => None }
+//          val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
+//            errorPagesHandler.npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+//              errorPagesHandler.npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+//              errorPagesHandler.npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+//              errorPagesHandler.npsNoEmploymentResult(ninoString) orElse
+//              errorPagesHandler.npsTaxAccountDeceasedResult(ninoString) orElse { case _ => None }
+//
+//          npsFailureHandlingPf(taxAccountSummary)
+//        }
+//
+//      possibleRedirectFuture.flatMap(
+//        _.map(Future.successful).getOrElse(allowWhatDoYouWantToDo)
+//      )
 
-          npsFailureHandlingPf(taxAccountSummary)
-        }
-
-      possibleRedirectFuture.flatMap(
-        _.map(Future.successful).getOrElse(allowWhatDoYouWantToDo)
-      )
+      allowWhatDoYouWantToDo
 
     } recoverWith {
       val nino = request.taiUser.nino
@@ -102,15 +104,18 @@ class WhatDoYouWantToDoController @Inject()(
     lazy val unsuccessfulResponseModel =
       WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
 
-    taxAccountService.taxAccountSummary(nino, TaxYear().next).map { _ =>
-      successfulResponseModel
-    }.recover {
-      case e: NotFoundException =>
-        logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
-        unsuccessfulResponseModel
-      case _ =>
-        unsuccessfulResponseModel
-    }
+    taxAccountService
+      .taxAccountSummary(nino, TaxYear().next)
+      .map { _ =>
+        successfulResponseModel
+      }
+      .recover {
+        case e: NotFoundException =>
+          logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
+          unsuccessfulResponseModel
+        case _ =>
+          unsuccessfulResponseModel
+      }
   }
 
   private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser) = {

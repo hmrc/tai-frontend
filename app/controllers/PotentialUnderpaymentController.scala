@@ -55,13 +55,12 @@ class PotentialUnderpaymentController @Inject()(
         val nino = user.nino
         (
           taxAccountService.taxAccountSummary(nino, TaxYear()),
-          codingComponentService.taxFreeAmountComponents(nino, TaxYear())).mapN {
-           (tas, ccs) =>
-            auditService.createAndSendAuditEvent(
-              AuditConstants.PotentialUnderpaymentInYearAdjustment,
-              Map("nino" -> nino.toString()))
-            val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
-            Ok(potentialUnderpayment(vm))
+          codingComponentService.taxFreeAmountComponents(nino, TaxYear())).mapN { (tas, ccs) =>
+          auditService.createAndSendAuditEvent(
+            AuditConstants.PotentialUnderpaymentInYearAdjustment,
+            Map("nino" -> nino.toString()))
+          val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
+          Ok(potentialUnderpayment(vm))
         }
       } recover {
         case e: Exception => errorPagesHandler.internalServerError(e.getMessage, Some(e))
