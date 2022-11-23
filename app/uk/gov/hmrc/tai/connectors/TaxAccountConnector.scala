@@ -116,6 +116,9 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
+  def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaxAccountSummary] =
+    httpHandler.getFromApiV2(taxAccountSummaryUrl(nino.nino, year)) map (json => (json \ "data").as[TaxAccountSummary])
+
   def updateEstimatedIncome(nino: Nino, year: TaxYear, newAmount: Int, id: Int)(
     implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.putToApi(updateTaxCodeIncome(nino.nino, year, id), UpdateTaxCodeIncomeRequest(newAmount)) map (_ =>

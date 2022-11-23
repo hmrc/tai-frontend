@@ -52,6 +52,9 @@ class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
   def taxAccountSummaryOld(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     taxAccountConnector.taxAccountSummaryOld(nino, year)
 
+  def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+    taxAccountConnector.taxAccountSummaryOld(nino, year)
+
   def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     taxAccountConnector.nonTaxCodeIncomes(nino, year)
 
