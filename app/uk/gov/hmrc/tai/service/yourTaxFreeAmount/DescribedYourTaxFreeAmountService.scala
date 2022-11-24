@@ -20,7 +20,6 @@ import javax.inject.Inject
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.{CodingComponentPairModel, TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
@@ -56,7 +55,7 @@ class DescribedYourTaxFreeAmountService @Inject()(
       totalTax                <- totalTaxFuture
     } yield {
       totalTax match {
-        case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
+        case totalTax: TotalTax =>
           val describedPairs =
             describeIabdPairs(taxFreeAmountComparison.iabdPairs, companyCarBenefit, employmentNames, totalTax)
 

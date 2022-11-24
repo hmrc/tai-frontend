@@ -50,7 +50,7 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
     )
 
   when(taxAccountService.totalTax(any(), any())(any()))
-    .thenReturn(Future.successful(TaiSuccessResponseWithPayload(TotalTax(0, Seq.empty, None, None, None))))
+    .thenReturn(Future.successful(TotalTax(0, Seq.empty, None, None, None)))
   when(taxAccountService.taxCodeIncomes(any(), any())(any()))
     .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
   when(taxAccountService.taxAccountSummary(any(), any())(any()))
@@ -70,7 +70,7 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
     "return Internal server error" when {
       "fetch total tax details fails" in {
         when(taxAccountService.totalTax(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
+          .thenReturn(Future.failed(new RuntimeException("testFailure")))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }

@@ -23,10 +23,10 @@ import play.api.libs.json.OFormat
 
 case class TaxCodeChange(previous: List[TaxCodeRecord], current: List[TaxCodeRecord]) {
 
-  require(current.length > 0, "No current records for Tax Code Change. Current date cannot be determined.")
+  require(current.nonEmpty, "No current records for Tax Code Change. Current date cannot be determined.")
 
-  val currentPensionCount: Int = current.count(_.pensionIndicator == true)
-  val currentEmploymentCount: Int = current.count(_.pensionIndicator == false)
+  val currentPensionCount: Int = current.count(_.pensionIndicator)
+  val currentEmploymentCount: Int = current.count(!_.pensionIndicator)
   val mostRecentTaxCodeChangeDate: LocalDate = DateHelper.mostRecentDate(current.map(_.startDate))
   val mostRecentPreviousTaxCodeChangeDate: LocalDate = DateHelper.mostRecentDate(previous.map(_.startDate))
 

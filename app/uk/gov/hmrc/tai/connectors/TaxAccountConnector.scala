@@ -125,17 +125,8 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
-  def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TotalTax] =
     httpHandler.getFromApiV2(totalTaxUrl(nino.nino, year)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[TotalTax])
-    ) recover {
-      case e: NotFoundException =>
-        logger.warn(s"Total tax - No tax account information found: ${e.getMessage}")
-        TaiNotFoundResponse(e.getMessage)
-      case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
-      case e: Exception =>
-        logger.warn(s"Couldn't retrieve total tax for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
-    }
-
+      json => (json \ "data").as[TotalTax]
+    )
 }

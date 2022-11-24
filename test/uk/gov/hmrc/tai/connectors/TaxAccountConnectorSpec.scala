@@ -389,11 +389,11 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
         )
 
         val result = taxAccountConnector.totalTax(nino, currentTaxYear).futureValue
-        result mustBe TaiSuccessResponseWithPayload(expectedTotalTax)
+        result mustBe expectedTotalTax
       }
     }
 
-    "return TaiNotFoundResponse" when {
+    "throw NotFoundException" when {
       "the http response is NotFound" in {
         server.stubFor(
           get(totalTaxUrl)
@@ -401,12 +401,13 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               notFound()
             ))
 
-        val result = taxAccountConnector.totalTax(nino, currentTaxYear).futureValue
-        result mustBe a[TaiNotFoundResponse]
+        assertThrows[NotFoundException] {
+          Await.result(taxAccountConnector.totalTax(nino, currentTaxYear), 5.seconds)
+        }
       }
     }
 
-    "return failure" when {
+    "throw RuntimeException" when {
       "update tax code income returns 500" in {
 
         server.stubFor(
@@ -415,12 +416,13 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               aResponse.withBody(corruptJsonResponse.toString())
             ))
 
-        val result = taxAccountConnector.totalTax(nino, currentTaxYear).futureValue
-        result mustBe a[TaiTaxAccountFailureResponse]
+        assertThrows[RuntimeException] {
+          Await.result(taxAccountConnector.totalTax(nino, currentTaxYear), 5.seconds)
+        }
       }
     }
 
-    "return a TaiUnauthorisedResponse" when {
+    "throw UnauthorizedException" when {
       "the http response is Unauthorized" in {
 
         server.stubFor(
@@ -429,8 +431,9 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               unauthorized()
             ))
 
-        val result = taxAccountConnector.totalTax(nino, currentTaxYear).futureValue
-        result mustBe a[TaiUnauthorisedResponse]
+        assertThrows[UnauthorizedException] {
+          Await.result(taxAccountConnector.totalTax(nino, currentTaxYear), 5.seconds)
+        }
       }
     }
   }

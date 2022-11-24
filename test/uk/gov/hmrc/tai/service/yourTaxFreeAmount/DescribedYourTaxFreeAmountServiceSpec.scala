@@ -53,7 +53,7 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
       when(companyCarService.companyCars(Matchers.eq(nino))(any()))
         .thenReturn(Future.successful(Seq.empty))
       when(taxAccountService.totalTax(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
+        .thenReturn(Future.successful(totalTax))
 
       val expectedModel: YourTaxFreeAmountViewModel =
         YourTaxFreeAmountViewModel(
@@ -84,7 +84,7 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
       when(companyCarService.companyCars(Matchers.eq(nino))(any()))
         .thenReturn(Future.successful(Seq.empty))
       when(taxAccountService.totalTax(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
+        .thenReturn(Future.successful(totalTax))
 
       val expectedModel: YourTaxFreeAmountViewModel =
         YourTaxFreeAmountViewModel(
@@ -115,7 +115,7 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
       when(companyCarService.companyCars(Matchers.eq(nino))(any()))
         .thenReturn(Future.successful(Seq.empty))
       when(taxAccountService.totalTax(any(), any())(any()))
-        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error")))
+        .thenReturn(Future.failed(new RuntimeException("Failed to fetch total tax details")))
 
       val service = createTestService
       implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
