@@ -35,8 +35,6 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 import play.twirl.api.HtmlFormat
 
-import scala.util.control.NonFatal
-
 class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, errorNoPrimary: ErrorNoPrimary)(
   implicit val templateRenderer: TemplateRenderer,
   ec: ExecutionContext
@@ -132,16 +130,16 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
   def npsTaxAccountDeceasedResult(nino: String)(
     implicit request: Request[AnyContent],
     messages: Messages,
-    rl: RecoveryLocation): PartialFunction[String, Option[Result]] = {
-    case str if str.contains(TaiConstants.NpsTaxAccountDeceasedMsg) =>
+    rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
+    case TaiTaxAccountFailureResponse(msg) if msg.contains(TaiConstants.NpsTaxAccountDeceasedMsg) =>
       logger.warn(s"<Deceased response received from nps tax account> - for nino $nino @${rl.getName}")
       Some(Redirect(routes.DeceasedController.deceased()))
   }
   def npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(
     implicit request: Request[AnyContent],
     messages: Messages,
-    rl: RecoveryLocation): PartialFunction[String, Option[Result]] = {
-    case str if str.toLowerCase.contains(TaiConstants.NpsTaxAccountCYDataAbsentMsg) =>
+    rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
+    case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountCYDataAbsentMsg) =>
       prevYearEmployments match {
         case Nil =>
           logger.warn(
@@ -157,8 +155,8 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
   def npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(
     implicit request: Request[AnyContent],
     messages: Messages,
-    rl: RecoveryLocation): PartialFunction[String, Option[Result]] = {
-    case str if str.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) =>
+    rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
+    case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) =>
       prevYearEmployments match {
         case Nil =>
           logger.warn(
@@ -174,8 +172,8 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
   def npsNoEmploymentResult(nino: String)(
     implicit request: Request[AnyContent],
     messages: Messages,
-    rl: RecoveryLocation): PartialFunction[String, Option[Result]] = {
-    case str if str.toLowerCase.contains(TaiConstants.NpsNoEmploymentsRecorded) =>
+    rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
+    case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentsRecorded) =>
       logger.warn(s"<No data returned from nps employments> - for nino $nino @${rl.getName}")
       Some(BadRequest(errorNoPrimary()))
   }
@@ -183,8 +181,8 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
   def npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(
     implicit request: Request[AnyContent],
     messages: Messages,
-    rl: RecoveryLocation): PartialFunction[String, Option[Result]] = {
-    case str if str.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
+    rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
+    case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
       prevYearEmployments match {
         case Nil =>
           logger.warn(

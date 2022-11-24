@@ -75,19 +75,20 @@ class IncomeUpdateEstimatedPayController @Inject()(
           case Right(journeyValues) =>
             taxAccountService
               .taxAccountSummary(user.nino, TaxYear())
-              .map { taxAccountSummary =>
-                val totalEstimatedIncome =
-                  withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
-                val incomeName = journeyValues.head
-                val incomeType = journeyValues.last
-                Ok(
-                  estimatedPayLandingPage(
-                    incomeName,
-                    empId,
-                    totalEstimatedIncome,
-                    incomeType == TaiConstants.IncomeTypePension,
-                    appConfig
-                  ))
+              .map {
+                 taxAccountSummary =>
+                  val totalEstimatedIncome =
+                    withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
+                  val incomeName = journeyValues.head
+                  val incomeType = journeyValues.last
+                  Ok(
+                    estimatedPayLandingPage(
+                      incomeName,
+                      empId,
+                      totalEstimatedIncome,
+                      incomeType == TaiConstants.IncomeTypePension,
+                      appConfig
+                    ))
               }
               .recover {
                 case e: Exception => errorPagesHandler.internalServerError(e.getMessage)
