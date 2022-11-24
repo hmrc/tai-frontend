@@ -73,22 +73,26 @@ class IncomeUpdateEstimatedPayController @Inject()(
             logger.warn(errorMessage)
             Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
           case Right(journeyValues) =>
-            taxAccountService.taxAccountSummaryOld(user.nino, TaxYear()).map {
-              case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
-                val totalEstimatedIncome =
-                  withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
-                val incomeName = journeyValues.head
-                val incomeType = journeyValues.last
-                Ok(
-                  estimatedPayLandingPage(
-                    incomeName,
-                    empId,
-                    totalEstimatedIncome,
-                    incomeType == TaiConstants.IncomeTypePension,
-                    appConfig
-                  ))
-              case response: TaiFailureResponse => errorPagesHandler.internalServerError(response.message)
-            }
+            taxAccountService
+              .taxAccountSummary(user.nino, TaxYear())
+              .map {
+                 taxAccountSummary =>
+                  val totalEstimatedIncome =
+                    withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
+                  val incomeName = journeyValues.head
+                  val incomeType = journeyValues.last
+                  Ok(
+                    estimatedPayLandingPage(
+                      incomeName,
+                      empId,
+                      totalEstimatedIncome,
+                      incomeType == TaiConstants.IncomeTypePension,
+                      appConfig
+                    ))
+              }
+              .recover {
+                case e: Exception => errorPagesHandler.internalServerError(e.getMessage)
+              }
         }
   }
 
