@@ -52,6 +52,12 @@ class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
   def taxAccountSummaryOld(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     taxAccountConnector.taxAccountSummaryOld(nino, year)
 
+  def taxAccountSummaryTemp(nino: Nino, year: TaxYear)(
+    implicit hc: HeaderCarrier): Future[Either[String, TaxAccountSummary]] =
+    taxAccountConnector.taxAccountSummary(nino, year).map(tas => Right(tas)).recover {
+      case e: Exception => Left(e.getMessage)
+    }
+
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaxAccountSummary] =
     taxAccountConnector.taxAccountSummary(nino, year)
 

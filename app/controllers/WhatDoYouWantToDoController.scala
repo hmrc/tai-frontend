@@ -64,19 +64,23 @@ class WhatDoYouWantToDoController @Inject()(
 
       val possibleRedirectFuture: Future[Option[Result]] =
         for {
-          taxAccountSummary   <- taxAccountService.taxAccountSummaryOld(nino, TaxYear())
+          taxAccountSummary   <- taxAccountService.taxAccountSummaryTemp(nino, TaxYear())
           _                   <- employmentService.employments(nino, TaxYear())
           prevYearEmployments <- previousYearEmployments(nino)
         } yield {
 
-          val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
+          val npsFailureHandlingPf: PartialFunction[String, Option[Result]] =
             errorPagesHandler.npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
               errorPagesHandler.npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
               errorPagesHandler.npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
               errorPagesHandler.npsNoEmploymentResult(ninoString) orElse
               errorPagesHandler.npsTaxAccountDeceasedResult(ninoString) orElse { case _ => None }
 
-          npsFailureHandlingPf(taxAccountSummary)
+          taxAccountSummary match {
+            case Left(str) => npsFailureHandlingPf(str)
+            case Right(_)  => None
+          }
+
         }
 
       possibleRedirectFuture.flatMap(
@@ -103,12 +107,12 @@ class WhatDoYouWantToDoController @Inject()(
       WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
 
     if (applicationConfig.cyPlusOneEnabled) {
-      taxAccountService.taxAccountSummaryOld(nino, TaxYear().next).map {
-        case TaiSuccessResponseWithPayload(_) =>
+      taxAccountService.taxAccountSummaryTemp(nino, TaxYear().next).map {
+        case Right(_) =>
           successfulResponseModel
-        case _: TaiNotFoundResponse =>
-          logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
-          unsuccessfulResponseModel
+//        case _: TaiNotFoundResponse =>
+//          logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
+//          unsuccessfulResponseModel
         case _ =>
           unsuccessfulResponseModel
       }
