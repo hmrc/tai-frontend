@@ -56,8 +56,8 @@ class IncomeTaxComparisonController @Inject()(
     val nextTaxYear = currentTaxYear.next
 
     (
-      taxAccountService.taxAccountSummaryOld(nino, currentTaxYear),
-      taxAccountService.taxAccountSummaryOld(nino, nextTaxYear),
+      taxAccountService.taxAccountSummary(nino, currentTaxYear),
+      taxAccountService.taxAccountSummary(nino, nextTaxYear),
       taxAccountService.taxCodeIncomes(nino, currentTaxYear),
       taxAccountService.taxCodeIncomes(nino, nextTaxYear),
       codingComponentService.taxFreeAmountComponents(nino, currentTaxYear),
@@ -66,8 +66,8 @@ class IncomeTaxComparisonController @Inject()(
       updateNextYearsIncomeService.isEstimatedPayJourneyComplete
     ).mapN {
         case (
-            TaiSuccessResponseWithPayload(taxAccountSummaryCY: TaxAccountSummary),
-            TaiSuccessResponseWithPayload(taxAccountSummaryCYPlusOne: TaxAccountSummary),
+            taxAccountSummaryCY,
+            taxAccountSummaryCYPlusOne,
             Right(taxCodeIncomesCY),
             Right(taxCodeIncomesCYPlusOne),
             codingComponentsCY,

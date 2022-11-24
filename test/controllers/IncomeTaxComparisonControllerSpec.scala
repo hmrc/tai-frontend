@@ -210,8 +210,8 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
 
     when(taxAccountService.taxCodeIncomes(any(), any())(any()))
       .thenReturn(Future.successful(Right(taxCodeIncomes)))
-    when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
-      .thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
+    when(taxAccountService.taxAccountSummary(any(), any())(any()))
+      .thenReturn(Future.successful(taxAccountSummary))
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
       .thenReturn(Future.successful(Seq.empty[CodingComponent]))
     when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any()))
