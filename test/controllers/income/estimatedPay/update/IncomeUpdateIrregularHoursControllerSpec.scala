@@ -16,6 +16,7 @@
 
 package controllers.income.estimatedPay.update
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
@@ -344,7 +345,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         when(
           taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())
         ).thenReturn(
-          Future.successful(TaiSuccessResponse)
+          Future.successful(Done)
         )
         when(estimatedPayJourneyCompletionService.journeyCompleted(Matchers.eq(employer.id.toString))(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))

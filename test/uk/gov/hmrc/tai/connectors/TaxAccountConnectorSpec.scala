@@ -16,11 +16,8 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import akka.Done
 import com.github.tomakehurst.wiremock.client.WireMock._
-import java.time.LocalDate
-import org.mockito.Matchers
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
 import play.api.http.ContentTypes
@@ -28,8 +25,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json._
 import play.api.test.Helpers.CONTENT_TYPE
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException, UnauthorizedException}
+import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -40,8 +36,9 @@ import uk.gov.hmrc.webchat.client.WebChatClient
 import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
 import utils.{BaseSpec, WireMockHelper}
 
+import java.time.LocalDate
+import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
@@ -359,7 +356,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             ))
 
         val result = taxAccountConnector.updateEstimatedIncome(nino, TaxYear(), 100, id).futureValue
-        result mustBe TaiSuccessResponse
+        result mustBe Done
       }
     }
   }

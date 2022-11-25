@@ -25,10 +25,8 @@ import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
@@ -37,8 +35,9 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
-import views.html.incomes.nextYear._
 import views.html.incomes.SameEstimatedPayView
+import views.html.incomes.nextYear._
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -218,12 +217,12 @@ class UpdateIncomeNextYearController @Inject()(
       implicit val user: AuthedUser = request.taiUser
 
       if (applicationConfig.cyPlusOneEnabled) {
-        (updateNextYearsIncomeService.submit(employmentId, user.nino) map {
-          case TaiSuccessResponse => Redirect(routes.UpdateIncomeNextYearController.success(employmentId))
-          case _                  => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
-        }).recover {
-          case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-        }
+        updateNextYearsIncomeService
+          .submit(employmentId, user.nino)
+          .map(_ => Redirect(routes.UpdateIncomeNextYearController.success(employmentId)))
+          .recover {
+            case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+          }
       } else {
         Future.successful(
           NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
