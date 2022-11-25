@@ -63,22 +63,22 @@ class WhatDoYouWantToDoController @Inject()(
       val nino = request.taiUser.nino
       val ninoString = request.taiUser.nino.toString()
 
-      def asdf: PartialFunction[Throwable, Option[Result]] = {
-        case _ => None
-      }
-
       val employmentsFuture = employmentService.employments(nino, TaxYear())
-      val redirectFuture = OptionT(taxAccountService.taxAccountSummary(nino, TaxYear()).map(_ => None).recoverWith {
-        case ex =>
-          previousYearEmployments(nino).map {
-            prevYearEmployments =>
-              (errorPagesHandler.npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-                errorPagesHandler.npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-                errorPagesHandler.npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-                errorPagesHandler.npsNoEmploymentResult(ninoString) orElse
-                errorPagesHandler.npsTaxAccountDeceasedResult(ninoString) orElse asdf)(ex)
-          }
-      }).getOrElseF(allowWhatDoYouWantToDo)
+      val redirectFuture =
+        OptionT(taxAccountService.taxAccountSummary(nino, TaxYear()).map(_ => none[Result]).recoverWith {
+          case ex =>
+            previousYearEmployments(nino).map {
+              prevYearEmployments =>
+                val handler: PartialFunction[Throwable, Option[Result]] =
+                  errorPagesHandler.npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+                    errorPagesHandler
+                      .npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+                    errorPagesHandler.npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+                    errorPagesHandler.npsNoEmploymentResult(ninoString) orElse
+                    errorPagesHandler.npsTaxAccountDeceasedResult(ninoString) orElse { case _ => none }
+                handler(ex)
+            }
+        }).getOrElseF(allowWhatDoYouWantToDo)
 
       for {
         _        <- employmentsFuture

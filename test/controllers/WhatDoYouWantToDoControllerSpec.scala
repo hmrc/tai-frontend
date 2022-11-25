@@ -355,9 +355,6 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
-          .thenReturn(Future.successful(taxAccountSummary))
-
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         verify(employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
@@ -377,9 +374,6 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           .thenReturn(Future.successful(fakeEmploymentData))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(Right(taxCodeNotChanged)))
-
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
-          .thenReturn(Future.successful(taxAccountSummary))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
