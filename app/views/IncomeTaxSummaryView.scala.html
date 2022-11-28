@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
+@import uk.gov.hmrc.tai.viewModels.TaxCodeViewModel
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -25,7 +26,7 @@
 
 @this(main: MainTemplate)
 
-@(viewModel: TaxAccountSummaryViewModel, appConfig: ApplicationConfig
+@(viewModel: TaxAccountSummaryViewModel, taxCodeViewModel: Map[String, TaxCodeViewModel], appConfig: ApplicationConfig
 )(implicit request: AuthenticatedRequest[_],
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
@@ -66,6 +67,8 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
 
+
+
         <div class="inner-block">
             @if(viewModel.displayIyaBanner){
             <p id="inYearAdjustmentBanner" class="panel-indent panel-indent--info flush--top">
@@ -82,7 +85,7 @@
 
                 <h2 id="incomeFromEmploymentHeading" class="govuk-heading-m under-line">@Messages("tai.incomeTaxSummary.employment.section.heading")</h2>
 
-                @incomeTaxSummaryIncomeSourceDetail(viewModel.employments, "employment", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
+                @incomeTaxSummaryIncomeSourceDetail(viewModel.employments, "employment", Messages("tai.incomeTaxSummary.incomeAmount.prefix"), taxCodeViewModel)
 
             </div>
             }
@@ -92,7 +95,7 @@
 
                 <h2 id="incomeFromPensionHeading" class="govuk-heading-m heading-section">@Messages("tai.incomeTaxSummary.pension.section.heading")</h2>
 
-                @incomeTaxSummaryIncomeSourceDetail(viewModel.pensions, "pension", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
+                @incomeTaxSummaryIncomeSourceDetail(viewModel.pensions, "pension", Messages("tai.incomeTaxSummary.incomeAmount.prefix"), taxCodeViewModel)
 
             </div>
             }
@@ -102,7 +105,7 @@
 
                 <h2 id="otherIncomeSourcesHeading" class="govuk-heading-m heading-section">@Messages("tai.incomeTaxSummary.otherIncomeSources.heading")</h2>
 
-                @incomeTaxSummaryIncomeSourceDetail(viewModel.otherIncomeSources, "otherIncomeSources", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
+                @incomeTaxSummaryIncomeSourceDetail(viewModel.otherIncomeSources, "otherIncomeSources", Messages("tai.incomeTaxSummary.incomeAmount.prefix"), taxCodeViewModel)
 
             </div>
             }
@@ -113,7 +116,7 @@
                 <h2 id="endedIncomeHeading" class="govuk-heading-m heading-section">@Messages("tai.incomeTaxSummary.ceased.section.heading", viewModel.lastTaxYearEnd)</h2>
 
                 @if(viewModel.rtiAvailable) {
-                    @incomeTaxSummaryIncomeSourceDetail(viewModel.ceasedEmployments, "income", Messages("tai.incomeTaxSummary.ceasedIncomeAmount.prefix"))
+                    @incomeTaxSummaryIncomeSourceDetail(viewModel.ceasedEmployments, "income", Messages("tai.incomeTaxSummary.ceasedIncomeAmount.prefix"), taxCodeViewModel)
                 } else {
                     <p>@messages("tai.rti.down.ceasedEmployments")</p>
                 }

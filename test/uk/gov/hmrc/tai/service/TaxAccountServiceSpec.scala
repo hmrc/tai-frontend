@@ -16,15 +16,16 @@
 
 package uk.gov.hmrc.tai.service
 
+import akka.Done
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import uk.gov.hmrc.http.UnauthorizedException
+import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax._
-import uk.gov.hmrc.tai.model.domain.{income, _}
+import uk.gov.hmrc.tai.model.domain._
 import utils.BaseSpec
 
 import scala.concurrent.duration._
@@ -106,19 +107,19 @@ class TaxAccountServiceSpec extends BaseSpec {
     "return success update response" in {
       val sut = createSut
       when(taxAccountConnector.updateEstimatedIncome(any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponse))
+        .thenReturn(Future.successful(Done))
 
       val result = sut.updateEstimatedIncome(nino, 100, TaxYear(), 1)
-      Await.result(result, 5 seconds) mustBe TaiSuccessResponse
+      Await.result(result, 5 seconds) mustBe Done
     }
 
     "return failure update response" in {
       val sut = createSut
       when(taxAccountConnector.updateEstimatedIncome(any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        .thenReturn(Future.failed(new InternalServerException("Failed")))
 
       val result = sut.updateEstimatedIncome(nino, 100, TaxYear(), 1)
-      Await.result(result, 5 seconds) mustBe TaiTaxAccountFailureResponse("Failed")
+      assertThrows[InternalServerException](Await.result(result, 5 seconds))
     }
   }
 

@@ -374,7 +374,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
   private lazy val pensionDoc = Jsoup.parse(pensionView.toString())
 
-  private val template = inject[IncomeSourceSummaryView]
+  private val template: IncomeSourceSummaryView = inject[IncomeSourceSummaryView]
 
   override def view: Html = template(model)
 

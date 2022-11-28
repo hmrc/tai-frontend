@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import akka.Done
 import controllers.FakeTaiPlayApplication
 import org.mockito.Matchers.{any, eq => Meq}
 import org.mockito.Mockito.{times, verify, when}
@@ -26,7 +27,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiSuccessResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.income._
@@ -184,7 +184,7 @@ class UpdateNextYearsIncomeServiceSpec
       when(journeyCacheService.mandatoryJourneyValueAsInt(service.amountKey(employmentId)))
         .thenReturn(Future.successful(Right(employmentAmount)))
 
-      service.submit(employmentId, nino).futureValue mustBe TaiSuccessResponse
+      service.submit(employmentId, nino).futureValue mustBe Done
 
       verify(
         taxAccountService,
@@ -203,7 +203,7 @@ class UpdateNextYearsIncomeServiceSpec
       when(journeyCacheService.mandatoryJourneyValueAsInt(service.amountKey(employmentId)))
         .thenReturn(Future.successful(Right(employmentAmount)))
 
-      service.submit(employmentId, nino).futureValue mustBe TaiSuccessResponse
+      service.submit(employmentId, nino).futureValue mustBe Done
 
       verify(successfulJourneyCacheService, times(1)).cache(Map(UpdateNextYearsIncomeConstants.Successful -> "true"))
       verify(successfulJourneyCacheService, times(1))
@@ -218,7 +218,9 @@ class UpdateNextYearsIncomeServiceSpec
       when(journeyCacheService.mandatoryJourneyValueAsInt(service.amountKey(employmentId)))
         .thenReturn(Future.successful(Left(errorMessage)))
 
-      service.submit(employmentId, nino).futureValue mustBe TaiCacheError(errorMessage)
+      whenReady(service.submit(employmentId, nino).failed) { err =>
+        err.getMessage mustBe errorMessage
+      }
     }
   }
 
@@ -316,7 +318,7 @@ class UpdateNextYearsIncomeServiceSpec
         Meq(employmentId)
       )(any())
     ).thenReturn(
-      Future.successful(TaiSuccessResponse)
+      Future.successful(Done)
     )
   }
 }

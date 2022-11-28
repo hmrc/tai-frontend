@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import akka.Done
 import play.api.Logging
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
@@ -89,17 +90,13 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
-  def codingComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def codingComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] =
     httpHandler.getFromApiV2(codingComponentsUrl(nino.nino, year)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads)))
+      json => (json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads))
     ) recover {
       case e: NotFoundException =>
         logger.warn(s"Coding Components - No tax account information found: ${e.getMessage}")
-        TaiNotFoundResponse(e.getMessage)
-      case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
-      case e: Exception =>
-        logger.warn(s"Couldn't retrieve coding components for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
+        Seq.empty[CodingComponent]
     }
 
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
@@ -117,13 +114,10 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
     }
 
   def updateEstimatedIncome(nino: Nino, year: TaxYear, newAmount: Int, id: Int)(
-    implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.putToApi(updateTaxCodeIncome(nino.nino, year, id), UpdateTaxCodeIncomeRequest(newAmount)) map (_ =>
-      TaiSuccessResponse) recover {
-      case e: Exception =>
-        logger.warn(s"Error while updating estimated income for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
-    }
+    implicit hc: HeaderCarrier): Future[Done] =
+    httpHandler
+      .putToApi(updateTaxCodeIncome(nino.nino, year, id), UpdateTaxCodeIncomeRequest(newAmount))
+      .map(_ => Done)
 
   def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TotalTax] =
     httpHandler.getFromApiV2(totalTaxUrl(nino.nino, year)) map (
