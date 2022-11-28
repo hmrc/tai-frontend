@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 
 import javax.inject.Inject
 import play.api.i18n.Messages
+import cats.implicits._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.{CodingComponentPairModel, TaxFreeAmountDetails, TaxYear}
@@ -43,32 +44,22 @@ class DescribedYourTaxFreeAmountService @Inject()(
 
   private def taxFreeAmount(nino: Nino, getTaxFreeAmount: Nino => Future[YourTaxFreeAmountComparison])(
     implicit hc: HeaderCarrier,
-    messages: Messages): Future[YourTaxFreeAmountViewModel] = {
-    val taxFreeAmountComparisonFuture: Future[YourTaxFreeAmountComparison] = getTaxFreeAmount(nino)
-    val companyCarFuture = companyCarService.companyCars(nino)
-    val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
-    val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
-    for {
-      employmentNames         <- employmentNameFuture
-      taxFreeAmountComparison <- taxFreeAmountComparisonFuture
-      companyCarBenefit       <- companyCarFuture
-      totalTax                <- totalTaxFuture
-    } yield {
-      totalTax match {
-        case totalTax: TotalTax =>
-          val describedPairs =
-            describeIabdPairs(taxFreeAmountComparison.iabdPairs, companyCarBenefit, employmentNames, totalTax)
-
-          YourTaxFreeAmountViewModel(
-            taxFreeAmountComparison.previousTaxFreeInfo,
-            taxFreeAmountComparison.currentTaxFreeInfo,
-            describedPairs.allowances,
-            describedPairs.deductions
-          )
-        case _ => throw new RuntimeException("Failed to fetch total tax details")
-      }
+    messages: Messages): Future[YourTaxFreeAmountViewModel] =
+    (
+      employmentService.employmentNames(nino, TaxYear()),
+      getTaxFreeAmount(nino),
+      companyCarService.companyCars(nino),
+      taxAccountService.totalTax(nino, TaxYear())).mapN {
+      (employmentNames, taxFreeAmountComparison, companyCarBenefit, totalTax) =>
+        val describedPairs =
+          describeIabdPairs(taxFreeAmountComparison.iabdPairs, companyCarBenefit, employmentNames, totalTax)
+        YourTaxFreeAmountViewModel(
+          taxFreeAmountComparison.previousTaxFreeInfo,
+          taxFreeAmountComparison.currentTaxFreeInfo,
+          describedPairs.allowances,
+          describedPairs.deductions
+        )
     }
-  }
 
   case class describedIabdPairs(allowances: Seq[CodingComponentPairModel], deductions: Seq[CodingComponentPairModel])
 

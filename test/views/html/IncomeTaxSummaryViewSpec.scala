@@ -621,4 +621,3 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
   override def view: Html = template(vm, appConfig)
 }
-
