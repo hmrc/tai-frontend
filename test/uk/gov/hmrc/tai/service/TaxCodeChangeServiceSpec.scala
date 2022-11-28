@@ -38,7 +38,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
       val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
 
       when(taxCodeChangeConnector.taxCodeChange(any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeChange)))
+        .thenReturn(Future.successful(taxCodeChange))
 
       val result = testService.taxCodeChange(nino)
       Await.result(result, 5.seconds) mustBe taxCodeChange

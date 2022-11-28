@@ -90,11 +90,11 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(Matchers.eq(taxCodeChangeUrl))(any())).thenReturn(Future.successful(json))
 
         val result = Await.result(sut.taxCodeChange(nino), 5 seconds)
-        result mustEqual TaiSuccessResponseWithPayload(expectedResult)
+        result mustEqual expectedResult
       }
     }
 
-    "return failure" when {
+    "throw RuntimeException" when {
       "tax code change returns 500" in {
 
         val taxCodeChangeUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change"
@@ -104,9 +104,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(Matchers.eq(taxCodeChangeUrl))(any()))
           .thenReturn(Future.failed(new RuntimeException(expectedMessage)))
 
-        val result = Await.result(sut.taxCodeChange(nino), 5.seconds)
-
-        result mustBe TaiTaxAccountFailureResponse(expectedMessage)
+        val ex = the[RuntimeException] thrownBy Await.result(sut.taxCodeChange(nino), 5 seconds)
+        ex.getMessage must include(s"GET of '$taxCodeChangeUrl' returned 500. Response body: ''")
       }
     }
   }

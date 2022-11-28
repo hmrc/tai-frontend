@@ -37,13 +37,13 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
 
   def taxCodeChangeUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change"
 
-  def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] =
     httpHandler.getFromApiV2(taxCodeChangeUrl(nino.nino)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeChange])
+      json => (json \ "data").as[TaxCodeChange]
     ) recover {
       case e: Exception =>
-        logger.warn(s"Couldn't retrieve tax code change for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
+        logger.warn(s"${e.getMessage}")
+        throw new RuntimeException(e.getMessage)
     }
 
   def hasTaxCodeChangedUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change/exists"
