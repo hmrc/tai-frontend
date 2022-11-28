@@ -34,10 +34,7 @@ import scala.concurrent.Future
 class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnector) extends Logging {
 
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] =
-    taxCodeChangeConnector.taxCodeChange(nino) map {
-      case taxCodeChange: TaxCodeChange => taxCodeChange
-      case _                            => throw new RuntimeException(s"Could not fetch tax code change")
-    }
+    taxCodeChangeConnector.taxCodeChange(nino)
 
   def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Either[TaxCodeError, HasTaxCodeChanged]] = {
     val hasTaxCodeChangedFuture = taxCodeChanged(nino)

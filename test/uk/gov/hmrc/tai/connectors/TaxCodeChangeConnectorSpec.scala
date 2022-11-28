@@ -104,9 +104,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(Matchers.eq(taxCodeChangeUrl))(any()))
           .thenReturn(Future.failed(new RuntimeException(expectedMessage)))
 
-        assertThrows[RuntimeException] {
-          Await.result(sut.taxCodeChange(nino), 5.seconds)
-        }
+        val ex = the[RuntimeException] thrownBy Await.result(sut.taxCodeChange(nino), 5 seconds)
+        ex.getMessage must include(s"GET of '$taxCodeChangeUrl' returned 500. Response body: ''")
       }
     }
   }
