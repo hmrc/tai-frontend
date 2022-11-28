@@ -89,17 +89,13 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
         TaiTaxAccountFailureResponse(e.getMessage)
     }
 
-  def codingComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def codingComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] =
     httpHandler.getFromApiV2(codingComponentsUrl(nino.nino, year)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads)))
+      json => (json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads))
     ) recover {
       case e: NotFoundException =>
         logger.warn(s"Coding Components - No tax account information found: ${e.getMessage}")
-        TaiNotFoundResponse(e.getMessage)
-      case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
-      case e: Exception =>
-        logger.warn(s"Couldn't retrieve coding components for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
+        Seq.empty[CodingComponent]
     }
 
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =

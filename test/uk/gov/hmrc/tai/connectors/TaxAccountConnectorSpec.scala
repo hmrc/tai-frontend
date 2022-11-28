@@ -177,39 +177,37 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             ))
 
         val result = taxAccountConnector.codingComponents(nino, currentTaxYear).futureValue
-        result mustBe TaiSuccessResponseWithPayload(codingComponentSeq)
+        result mustBe codingComponentSeq
       }
     }
 
-    "return a TaiTaxAccountFailureResponse" when {
+    "return a JsResultException" when {
       "tai sends an invalid json" in {
-
         server.stubFor(
           get(codingComponentsUrl)
             .willReturn(
               aResponse.withBody(corruptJsonResponse.toString())
             ))
 
-        val result = taxAccountConnector.codingComponents(nino, currentTaxYear).futureValue
-        result mustBe a[TaiTaxAccountFailureResponse]
+        assertThrows[JsResultException] {
+          Await.result(taxAccountConnector.codingComponents(nino, currentTaxYear), Duration.Inf)
+        }
       }
-    }
 
-    "return a TaiUnauthorisedResponse" when {
       "the http response is Unauthorized" in {
-
         server.stubFor(
           get(codingComponentsUrl)
             .willReturn(
               unauthorized()
             ))
 
-        val result = taxAccountConnector.codingComponents(nino, currentTaxYear).futureValue
-        result mustBe a[TaiUnauthorisedResponse]
+        assertThrows[UnauthorizedException] {
+          Await.result(taxAccountConnector.codingComponents(nino, currentTaxYear), Duration.Inf)
+        }
       }
     }
 
-    "return a TaiNotFoundResponse" when {
+    "return an empty sequence" when {
       "the http response is NotFound" in {
         server.stubFor(
           get(codingComponentsUrl)
@@ -218,7 +216,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             ))
 
         val result = taxAccountConnector.codingComponents(nino, currentTaxYear).futureValue
-        result mustBe a[TaiNotFoundResponse]
+        result mustBe Seq.empty[CodingComponent]
       }
     }
   }
