@@ -478,7 +478,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
           .thenReturn(Future.successful(Right(Seq(employerName, "100,000", employerId.toString, employerType))))
 
         when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponse))
+          .thenReturn(Future.successful(Done))
 
         when(estimatedPayJourneyCompletionService.journeyCompleted(Matchers.eq(employerId.toString))(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
@@ -502,7 +502,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
           .thenReturn(Future.successful(Right(Seq(employerName, "100,000", employerId.toString, employerType))))
 
         when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponse))
+          .thenReturn(Future.successful(Done))
 
         when(estimatedPayJourneyCompletionService.journeyCompleted(Matchers.eq(employerId.toString))(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
@@ -521,7 +521,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
         when(journeyCacheService.mandatoryJourneyValues(any())(any()))
           .thenReturn(Future.successful(Right(Seq("200", "1", "TEST"))))
         when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+          .thenReturn(Future.failed(new Exception("Failed")))
 
         val result = testController.updateEstimatedIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -540,7 +540,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
         .thenReturn(Future.successful(Right(Seq(employerName, "100,000", employerId.toString, employerType))))
 
       when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponse))
+        .thenReturn(Future.successful(Done))
 
       when(estimatedPayJourneyCompletionService.journeyCompleted(Matchers.eq(employerId.toString))(any()))
         .thenReturn(Future.successful(Map.empty[String, String]))
