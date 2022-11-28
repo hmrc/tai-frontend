@@ -58,6 +58,14 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
         controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url,
         messages("tai.taxCode.check_employment"))
     }
+
+    "contain details element with tax code information" in {
+      val view = template(viewModel)
+      val doc = Jsoup.parse(view.toString())
+
+      doc must haveElementAtPathWithText("#taxCodeTerm_1_1", messages("tai.taxCode.part.announce", "K") + " K")
+      doc must haveElementWithId("taxCodeDescription_1_1")
+    }
   }
 
   val employerId = 9876543
