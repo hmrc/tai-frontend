@@ -57,20 +57,19 @@ class TaxAccountSummaryController @Inject()(
 
     taxAccountService
       .taxAccountSummary(nino, TaxYear())
-      .flatMap {
-        taxAccountSummary =>
-          for {
-            Right(taxCodeIncomes) <- taxAccountService.taxCodeIncomes(nino, year)
-            scottishTaxRateBands  <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
-            vm                    <- taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary)
-          } yield {
-            val taxCodeIncomesByTaxCode = taxCodeIncomes.groupBy(seq => (seq.taxCode, seq.employmentId)).map {
-              case ((taxCode, maybeEmpId), seq) =>
-                taxCode -> TaxCodeViewModel(seq, scottishTaxRateBands, maybeEmpId, appConfig)
-            }
-
-            Ok(incomeTaxSummary(vm, taxCodeIncomesByTaxCode, appConfig))
+      .flatMap { taxAccountSummary =>
+        for {
+          Right(taxCodeIncomes) <- taxAccountService.taxCodeIncomes(nino, year)
+          scottishTaxRateBands  <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
+          vm                    <- taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary)
+        } yield {
+          val taxCodeIncomesByTaxCode = taxCodeIncomes.groupBy(seq => (seq.taxCode, seq.employmentId)).map {
+            case ((taxCode, maybeEmpId), seq) =>
+              taxCode -> TaxCodeViewModel(seq, scottishTaxRateBands, maybeEmpId, appConfig)
           }
+
+          Ok(incomeTaxSummary(vm, taxCodeIncomesByTaxCode, appConfig))
+        }
       }
       .recover {
         case _: NotFoundException =>
@@ -79,8 +78,8 @@ class TaxAccountSummaryController @Inject()(
           logger.warn("taxAccountSummary failed with: " + e.getMessage)
           Redirect(controllers.routes.UnauthorisedController.onPageLoad())
         case NonFatal(e)
-          if e.getMessage.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
-            e.getMessage.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
+            if e.getMessage.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
+              e.getMessage.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
           Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
         case NonFatal(e) =>
           errorPagesHandler.internalServerError(e.getMessage, Some(e))

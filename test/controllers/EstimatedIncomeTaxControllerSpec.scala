@@ -233,9 +233,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(taxAccountSummary))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              totalTax
-            )))
+            totalTax
+          ))
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
@@ -318,9 +317,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(taxAccountSummary))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              totalTax
-            )))
+            totalTax
+          ))
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
@@ -352,9 +350,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(TaxAccountSummary(0, 0, 0, 0, 0)))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              TotalTax(0, List.empty[IncomeCategory], None, None, None, None, None)
-            )))
+            TotalTax(0, List.empty[IncomeCategory], None, None, None, None, None)
+          ))
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(Seq.empty[CodingComponent]))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(

@@ -63,7 +63,7 @@ class EstimatedIncomeTaxController @Inject()(
     ).mapN {
         case (
             taxAccountSummary,
-            TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax),
+            totalTaxDetails,
             TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
             Right(taxCodeIncomes),
             codingComponents,
