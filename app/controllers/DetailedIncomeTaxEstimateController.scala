@@ -20,6 +20,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import cats.implicits._
 
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -48,38 +49,29 @@ class DetailedIncomeTaxEstimateController @Inject()(
 
   def taxExplanationPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
-    val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
-    val taxCodeIncomeFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
-    val taxSummaryFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
-    val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-    val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
 
-    (for {
-      totalTax            <- totalTaxFuture
-      maybeTaxCodeIncomes <- taxCodeIncomeFuture
-      taxSummary          <- taxSummaryFuture
-      codingComponents    <- codingComponentFuture
-      nonTaxCode          <- nonTaxCodeIncomeFuture
-    } yield {
-      (totalTax, maybeTaxCodeIncomes, taxSummary, nonTaxCode) match {
-        case (
-            TaiSuccessResponseWithPayload(totalTax: TotalTax),
-            Right(taxCodeIncomes),
-            taxAccountSummary,
-            TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)
-            ) =>
-          implicit val user: AuthedUser = request.taiUser
-          val model = DetailedIncomeTaxEstimateViewModel(
-            totalTax,
-            taxCodeIncomes,
-            taxAccountSummary,
-            codingComponents,
-            nonTaxCodeIncome)
-          Ok(detailedIncomeTaxEstimate(model))
-        case _ =>
-          errorPagesHandler.internalServerError("Failed to fetch total tax details")
-      }
-    }).recover {
+    (
+      taxAccountService.totalTax(nino, TaxYear()),
+      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      taxAccountService.taxAccountSummary(nino, TaxYear()),
+      codingComponentService.taxFreeAmountComponents(nino, TaxYear()),
+      taxAccountService.nonTaxCodeIncomes(nino, TaxYear())).mapN {
+      case (
+          totalTax,
+          Right(taxCodeIncomes),
+          TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
+          codingComponents,
+          TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)
+          ) =>
+        implicit val user: AuthedUser = request.taiUser
+        val model = DetailedIncomeTaxEstimateViewModel(
+          totalTax,
+          taxCodeIncomes,
+          taxAccountSummary,
+          codingComponents,
+          nonTaxCodeIncome)
+        Ok(detailedIncomeTaxEstimate(model))
+    } recover {
       case NonFatal(e) => errorPagesHandler.internalServerError("Failed to fetch total tax details", Some(e))
     }
   }

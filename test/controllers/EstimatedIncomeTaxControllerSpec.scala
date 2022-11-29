@@ -140,9 +140,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
 
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              totalTax
-            )))
+            totalTax
+          ))
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
@@ -387,9 +386,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           .thenReturn(Future.failed(new RuntimeException("Failed")))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-            )))
+            TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
+          ))
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(Seq.empty[CodingComponent]))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(

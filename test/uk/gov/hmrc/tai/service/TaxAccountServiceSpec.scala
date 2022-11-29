@@ -19,9 +19,9 @@ package uk.gov.hmrc.tai.service
 import akka.Done
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import uk.gov.hmrc.http.InternalServerException
+import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax._
@@ -128,10 +128,10 @@ class TaxAccountServiceSpec extends BaseSpec {
       val sut = createSut
       val totalTax = TotalTax(1000, Nil, None, None, None)
       when(taxAccountConnector.totalTax(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
+        .thenReturn(Future.successful(totalTax))
 
       val result = sut.totalTax(nino, TaxYear())
-      Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(totalTax)
+      Await.result(result, 5 seconds) mustBe totalTax
     }
   }
 
@@ -156,7 +156,7 @@ class TaxAccountServiceSpec extends BaseSpec {
         )
 
         when(taxAccountConnector.totalTax(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
+          .thenReturn(Future.successful(totalTax))
 
         val result = sut.scottishBandRates(nino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map("D0" -> 20, "1150L" -> 10)
@@ -168,7 +168,7 @@ class TaxAccountServiceSpec extends BaseSpec {
         val sut = createSut
 
         when(taxAccountConnector.totalTax(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error Message")))
+          .thenReturn(Future.failed(new UnauthorizedException("Error message")))
         val result = sut.scottishBandRates(nino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map()
       }
@@ -186,7 +186,7 @@ class TaxAccountServiceSpec extends BaseSpec {
           TotalTax(1000, List(IncomeCategory(UkDividendsIncomeCategory, 10, 20, 30, Nil)), None, None, None)
 
         when(taxAccountConnector.totalTax(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
+          .thenReturn(Future.successful(totalTax))
         val result = sut.scottishBandRates(nino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map()
       }
@@ -196,7 +196,7 @@ class TaxAccountServiceSpec extends BaseSpec {
         val totalTax = TotalTax(1000, Nil, None, None, None)
 
         when(taxAccountConnector.totalTax(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
+          .thenReturn(Future.successful(totalTax))
         val result = sut.scottishBandRates(nino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map()
       }

@@ -27,7 +27,6 @@ import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
@@ -94,7 +93,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map[String, BigDecimal]()))
       when(taxAccountService.totalTax(Matchers.eq(FakeAuthAction.nino), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(TotalTax(0, Seq.empty, None, None, None))))
+        .thenReturn(Future.successful(TotalTax(0, Seq.empty, None, None, None)))
       when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
       when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any()))
         .thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))

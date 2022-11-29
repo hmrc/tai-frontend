@@ -22,6 +22,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.test.Helpers.{status, _}
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
@@ -48,7 +49,7 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
       when(companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
       when(employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
       when(taxAccountService.totalTax(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
+        .thenReturn(Future.successful(totalTax))
       val result = SUT.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
@@ -81,7 +82,7 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
         when(employmentService.employmentNames(any(), any())(any()))
           .thenReturn(Future.successful(Map.empty[Int, String]))
         when(taxAccountService.totalTax(any(), any())(any()))
-          .thenReturn(Future.successful(TaiNotFoundResponse("no tax account information found")))
+          .thenReturn(Future.failed(new NotFoundException("no tax account information found")))
 
         val result = SUT.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
