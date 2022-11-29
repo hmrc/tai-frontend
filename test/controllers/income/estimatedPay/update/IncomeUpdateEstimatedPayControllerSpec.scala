@@ -20,6 +20,7 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.MockTemplateRenderer
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -28,6 +29,7 @@ import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain._
@@ -75,8 +77,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
       .thenReturn(Future.successful(Right(Seq(employer.name, employer.id.toString, TaiConstants.IncomeTypeEmployment))))
-    when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(
-      TaiSuccessResponseWithPayload(taxAccountSummary))
+    when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(taxAccountSummary)
 
     def estimatedPayLandingPage(): Future[Result] =
       new TestIncomeUpdateEstimatedPayController()
@@ -94,7 +95,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     "return INTERNAL_SERVER_ERROR when TaiNotFoundResponse is returned from the service" in {
 
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(TaiNotFoundResponse(""))
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
+        new NotFoundException(""))
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -102,7 +104,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     }
     "return INTERNAL_SERVER_ERROR when TaiUnauthorisedResponse is returned from the service" in {
 
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(TaiUnauthorisedResponse(""))
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
+        new NotFoundException(""))
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -111,8 +114,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     "return INTERNAL_SERVER_ERROR when TaiTaxAccountFailureResponse is returned from the service" in {
 
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(
-        TaiTaxAccountFailureResponse(""))
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
+        new RuntimeException(""))
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR

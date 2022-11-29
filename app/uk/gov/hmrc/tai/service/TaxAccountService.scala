@@ -24,6 +24,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentType, TaxedIncome}
 import uk.gov.hmrc.tai.model.domain.income.{TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{TaxCodeIncomeComponentType, TaxedIncome}
@@ -49,7 +50,7 @@ class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
     implicit hc: HeaderCarrier): Future[Either[String, Option[TaxCodeIncome]]] =
     EitherT(taxAccountConnector.taxCodeIncomes(nino, year)).map(_.find(_.employmentId.contains(employmentId))).value
 
-  def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaxAccountSummary] =
     taxAccountConnector.taxAccountSummary(nino, year)
 
   def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
@@ -68,10 +69,9 @@ class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
 
     if (taxCodes.exists(isScottishStandAloneTaxcode)) {
       taxAccountConnector.totalTax(nino, year).map {
-        case totalTax: TotalTax =>
-          totalTax.incomeCategories.flatMap(_.taxBands.map(band => band.bandType -> band.rate)).toMap
+        _.incomeCategories.flatMap(_.taxBands.map(band => band.bandType -> band.rate)).toMap
       } recover {
-        case e: Exception => Map.empty[String, BigDecimal]
+        case _: Exception => Map.empty[String, BigDecimal]
       }
     } else {
       Future.successful(Map.empty[String, BigDecimal])

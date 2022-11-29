@@ -56,7 +56,7 @@ class PotentialUnderpaymentController @Inject()(
         (
           taxAccountService.taxAccountSummary(nino, TaxYear()),
           codingComponentService.taxFreeAmountComponents(nino, TaxYear())).mapN {
-          case (TaiSuccessResponseWithPayload(tas: TaxAccountSummary), ccs) =>
+          case (tas, ccs) =>
             auditService.createAndSendAuditEvent(
               AuditConstants.PotentialUnderpaymentInYearAdjustment,
               Map("nino" -> nino.toString()))

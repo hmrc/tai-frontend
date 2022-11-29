@@ -66,8 +66,8 @@ class IncomeTaxComparisonController @Inject()(
       updateNextYearsIncomeService.isEstimatedPayJourneyComplete
     ).mapN {
         case (
-            TaiSuccessResponseWithPayload(taxAccountSummaryCY: TaxAccountSummary),
-            TaiSuccessResponseWithPayload(taxAccountSummaryCYPlusOne: TaxAccountSummary),
+            taxAccountSummaryCY,
+            taxAccountSummaryCYPlusOne,
             Right(taxCodeIncomesCY),
             Right(taxCodeIncomesCYPlusOne),
             codingComponentsCY,

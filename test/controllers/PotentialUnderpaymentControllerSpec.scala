@@ -52,12 +52,8 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
     "return the potentional underpayment page for current year only" when {
       "processing a TaxAccountSummary with no CY+1 amount" in {
         val sut = new SUT()
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-          Future.successful(
-            TaiSuccessResponseWithPayload[TaxAccountSummary](
-              TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
-            ))
-        )
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future.successful(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)))
         val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         val doc = Jsoup.parse(contentAsString(res))
         doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
@@ -67,12 +63,8 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
     "return the general potentional underpayment page covering this and next year" when {
       "processing a TaxAccountSummary with a CY+1 amount" in {
         val sut = new SUT()
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-          Future.successful(
-            TaiSuccessResponseWithPayload[TaxAccountSummary](
-              TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
-            ))
-        )
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future.successful(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)))
         val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         val doc = Jsoup.parse(contentAsString(res))
         doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
@@ -114,12 +106,8 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
         templateRenderer,
         inject[ErrorPagesHandler]
       ) {
-    when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-      Future.successful(
-        TaiSuccessResponseWithPayload[TaxAccountSummary](
-          TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
-        ))
-    )
+    when(taxAccountService.taxAccountSummary(any(), any())(any()))
+      .thenReturn(Future.successful(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)))
 
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
       Future.successful(

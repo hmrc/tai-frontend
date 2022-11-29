@@ -136,11 +136,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         )
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-          Future.successful(
-            TaiSuccessResponseWithPayload(
-              taxAccountSummary
-            )))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(taxAccountSummary))
+
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             totalTax
@@ -233,12 +230,11 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         val expectedViewModel = ComplexEstimatedIncomeTaxViewModel(700, 16500, 11500, viewModelBandedGraph, UkTaxRegion)
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(taxAccountSummary))
+        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              taxAccountSummary
-            )))
-        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future.successful(totalTax))
+            totalTax
+          ))
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
@@ -318,12 +314,11 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         val expectedViewModel = ZeroTaxEstimatedIncomeTaxViewModel(0, 9000, 11500, viewModelBandedGraph, UkTaxRegion)
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(taxAccountSummary))
+        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              taxAccountSummary
-            )))
-        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future.successful(totalTax))
+            totalTax
+          ))
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
@@ -351,13 +346,12 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
       "loading the no income tax view" in {
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future.successful(TaxAccountSummary(0, 0, 0, 0, 0)))
+        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              TaxAccountSummary(0, 0, 0, 0, 0)
-            )))
-        when(taxAccountService.totalTax(any(), any())(any()))
-          .thenReturn(Future.successful(TotalTax(0, List.empty[IncomeCategory], None, None, None, None, None)))
+            TotalTax(0, List.empty[IncomeCategory], None, None, None, None, None)
+          ))
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(Seq.empty[CodingComponent]))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
@@ -386,7 +380,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
       "failed to fetch details" in {
         val sut = createSUT
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+          .thenReturn(Future.failed(new RuntimeException("Failed")))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
