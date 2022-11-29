@@ -69,10 +69,9 @@ class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
 
     if (taxCodes.exists(isScottishStandAloneTaxcode)) {
       taxAccountConnector.totalTax(nino, year).map {
-        case totalTax: TotalTax =>
-          totalTax.incomeCategories.flatMap(_.taxBands.map(band => band.bandType -> band.rate)).toMap
+        _.incomeCategories.flatMap(_.taxBands.map(band => band.bandType -> band.rate)).toMap
       } recover {
-        case e: Exception => Map.empty[String, BigDecimal]
+        case _: Exception => Map.empty[String, BigDecimal]
       }
     } else {
       Future.successful(Map.empty[String, BigDecimal])

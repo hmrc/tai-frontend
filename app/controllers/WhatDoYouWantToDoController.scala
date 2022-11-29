@@ -104,10 +104,7 @@ class WhatDoYouWantToDoController @Inject()(
       WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
 
     if (applicationConfig.cyPlusOneEnabled) {
-      taxAccountService.taxAccountSummary(nino, TaxYear().next).map {
-        case _ =>
-          successfulResponseModel
-      } recover {
+      taxAccountService.taxAccountSummary(nino, TaxYear().next).map(_ => successfulResponseModel) recover {
         case _: NotFoundException =>
           logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
           unsuccessfulResponseModel
