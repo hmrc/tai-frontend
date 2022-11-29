@@ -18,13 +18,15 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
+import play.api.Logging
+
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService}
@@ -46,7 +48,7 @@ class TaxFreeAmountController @Inject()(
   taxFreeAmount: TaxFreeAmountView,
   implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) {
+    extends TaiBaseController(mcc) with Logging {
 
   def taxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
@@ -57,19 +59,17 @@ class TaxFreeAmountController @Inject()(
       companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
       totalTax           <- taxAccountService.totalTax(nino, TaxYear())
     } yield {
-      totalTax match {
-        case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
-          val viewModel = TaxFreeAmountViewModel(
-            codingComponents,
-            TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax),
-            applicationConfig
-          )
-          implicit val user: AuthedUser = request.taiUser
-          Ok(taxFreeAmount(viewModel, applicationConfig, request.fullName))
-        case TaiNotFoundResponse(_) => Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-        case _                      => throw new RuntimeException("Failed to fetch total tax details")
-      }
+      val viewModel = TaxFreeAmountViewModel(
+        codingComponents,
+        TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax),
+        applicationConfig
+      )
+      implicit val user: AuthedUser = request.taiUser
+      Ok(taxFreeAmount(viewModel, applicationConfig, request.fullName))
     }) recover {
+      case e: NotFoundException =>
+        logger.warn(s"Total tax - No tax account information found: ${e.getMessage}")
+        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
       case NonFatal(e) => errorPagesHandler.internalServerError(s"Could not get tax free amount", Some(e))
     }
   }
