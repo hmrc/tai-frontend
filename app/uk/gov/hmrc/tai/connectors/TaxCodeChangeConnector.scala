@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.Inject
 import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -25,6 +24,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWith
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch, TaxCodeRecord}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
@@ -48,14 +48,15 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
 
   def hasTaxCodeChangedUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change/exists"
 
-  def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.getFromApiV2(hasTaxCodeChangedUrl(nino.nino)) map (
-      json => TaiSuccessResponseWithPayload(json.as[Boolean])
-    ) recover {
-      case e: Exception =>
-        logger.warn(s"Couldn't retrieve tax code changed for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
-    }
+  def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] =
+    httpHandler
+      .getFromApiV2(hasTaxCodeChangedUrl(nino.nino))
+      .map(_.as[Boolean])
+      .recover {
+        case e =>
+          logger.warn(s"Couldn't retrieve tax code changed for $nino with exception:${e.getMessage}")
+          throw e
+      }
 
   def taxCodeMismatchUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-mismatch"
 

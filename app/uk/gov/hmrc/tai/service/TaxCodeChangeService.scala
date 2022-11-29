@@ -79,10 +79,12 @@ class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnec
     taxCodeChangeConnector.taxCodeMismatch(nino)
 
   private def taxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Either[TaxCodeError, Boolean]] =
-    taxCodeChangeConnector.hasTaxCodeChanged(nino) map {
-      case TaiSuccessResponseWithPayload(hasTaxCodeChanged: Boolean) => Right(hasTaxCodeChanged)
-      case _ =>
-        logger.error("Could not fetch the changed tax code")
-        Left(TaxCodeError(nino, Some("Could not fetch tax code change")))
-    }
+    taxCodeChangeConnector
+      .hasTaxCodeChanged(nino)
+      .map(_.asRight)
+      .recover {
+        case _ =>
+          logger.error("Could not fetch the changed tax code")
+          TaxCodeError(nino, Some("Could not fetch tax code change")).asLeft
+      }
 }

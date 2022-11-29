@@ -206,7 +206,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(Matchers.eq(hasTaxCodeChangedUrl))(any())).thenReturn(json)
 
         val result = Await.result(sut.hasTaxCodeChanged(nino), 5 seconds)
-        result mustEqual TaiSuccessResponseWithPayload(true)
+        result mustEqual true
       }
     }
   }
