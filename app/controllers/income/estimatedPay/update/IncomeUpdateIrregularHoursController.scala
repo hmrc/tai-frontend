@@ -23,7 +23,6 @@ import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Payment
@@ -33,8 +32,8 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.FutureOps.FutureEitherStringOps
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MonthAndYear
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
 import views.html.incomes.{ConfirmAmountEnteredView, EditIncomeIrregularHoursView, EditSuccessView}
 
@@ -179,26 +178,21 @@ class IncomeUpdateIrregularHoursController @Inject()(
         }
       }
 
-      journeyCacheService
-        .mandatoryJourneyValues(
-          UpdateIncomeConstants.NameKey,
-          UpdateIncomeConstants.IrregularAnnualPayKey,
-          UpdateIncomeConstants.IdKey)
-        .getOrFail
-        .flatMap { cache =>
-          val incomeName :: newPay :: incomeId :: Nil = cache.toList
-          taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId) flatMap {
-            case TaiSuccessResponse =>
-              updateJourneyCompletion(incomeId) flatMap { _ =>
-                cacheAndRespond(incomeName, incomeId, newPay)
-              }
-            case _ =>
-              Future.failed(new RuntimeException(s"Not able to update estimated pay for $employmentId"))
-          }
-        }
-        .recover {
-          case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
-        }
+      (for {
+        cache <- journeyCacheService
+                  .mandatoryJourneyValues(
+                    UpdateIncomeConstants.NameKey,
+                    UpdateIncomeConstants.IrregularAnnualPayKey,
+                    UpdateIncomeConstants.IdKey)
+                  .getOrFail
+        incomeName :: newPay :: incomeId :: Nil = cache.toList
+        _      <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
+        _      <- updateJourneyCompletion(incomeId)
+        result <- cacheAndRespond(incomeName, incomeId, newPay)
+      } yield result).recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      }
+
   }
 
 }

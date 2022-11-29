@@ -16,6 +16,7 @@
 
 package controllers.income
 
+import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
@@ -32,7 +33,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, _}
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.forms.pensions.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
@@ -493,7 +493,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         when(
           updateNextYearsIncomeService.submit(meq(employmentID), meq(nino))(any())
         ).thenReturn(
-          Future.successful(TaiSuccessResponse)
+          Future.successful(Done)
         )
 
         val result = controller.handleConfirm(employmentID)(request)
@@ -509,7 +509,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         when(
           updateNextYearsIncomeService.submit(meq(employmentID), meq(nino))(any())
         ).thenReturn(
-          Future.successful(TaiTaxAccountFailureResponse("Error"))
+          Future.failed(new Exception("Error"))
         )
 
         val result = controller.handleConfirm(employmentID)(request)

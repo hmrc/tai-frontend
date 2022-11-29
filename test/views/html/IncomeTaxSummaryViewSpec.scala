@@ -16,10 +16,14 @@
 
 package views.html
 
+import org.jsoup.Jsoup
+import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.service.{NoTimeToProcess, ThreeWeeks}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.{IncomeSourceViewModel, TaxAccountSummaryViewModel}
+import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, IncomeSourceViewModel, TaxAccountSummaryViewModel, TaxCodeViewModel}
+
+import scala.collection.immutable.ListMap
 
 class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
@@ -31,6 +35,14 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       preHeaderAnnouncementText = Some("This section is the income tax summary for"),
       preHeaderText = "Firstname Surname",
       mainHeaderText = "main heading")
+
+    "contain details element with tax code information" in {
+      val view = template(vm, viewModel, appConfig)
+      val doc = Jsoup.parse(view.toString())
+
+      doc must haveElementAtPathWithText("#taxCodeTerm_1_1", messages("tai.taxCode.part.announce", "K") + " K")
+      doc must haveElementWithId("taxCodeDescription_1_1")
+    }
 
     "display iForms status message when an iForm has not been fully processed" in {
       doc must haveElementWithId("isAnyFormInProgressBanner")
@@ -56,7 +68,9 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         rtiAvailable = true,
         "0"
       )
-      def view: Html = template(vm, appConfig)
+
+      def view: Html = template(vm, viewModel, appConfig)
+
       doc(view) must not(haveElementWithId("isAnyFormInProgressBanner"))
     }
 
@@ -81,7 +95,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "hide each of the three outline sections: 'income from employment', 'employments that have ended', and 'income from private pensions'" when {
 
       "the associated collections within the view model are empty" in {
-        val docWithoutIncomeSections = doc(template(noSectionsVm, appConfig))
+        val docWithoutIncomeSections = doc(template(noSectionsVm, viewModel, appConfig))
         docWithoutIncomeSections must not(haveDivWithId("incomeFromEmploymentSection"))
         docWithoutIncomeSections must not(haveDivWithId("incomeFromPensionSection"))
         docWithoutIncomeSections must not(haveDivWithId("endedIncomeSection"))
@@ -126,7 +140,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           rtiAvailable = true,
           "0")
 
-        val docWithIyaBanner = doc(template(vm, appConfig))
+        val docWithIyaBanner = doc(template(vm, viewModel, appConfig))
         docWithIyaBanner must haveElementAtPathWithText(
           "#inYearAdjustmentBanner",
           s"${messages("tai.notifications.iya.banner.text")} ${messages("tai.notifications.iya.linkText")}")
@@ -170,7 +184,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           rtiAvailable = true,
           "0"
         )
-        val docWithMultipleEmployments = doc(template(vm, appConfig))
+        val docWithMultipleEmployments = doc(template(vm, viewModel, appConfig))
         docWithMultipleEmployments.select("#incomeFromEmploymentSection h3").size mustBe 3
 
         docWithMultipleEmployments must haveElementAtPathWithId("div", "employment1")
@@ -218,7 +232,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           rtiAvailable = true,
           "0"
         )
-        val docWithMultiplePensionIncomes = doc(template(vm, appConfig))
+        val docWithMultiplePensionIncomes = doc(template(vm, viewModel, appConfig))
         docWithMultiplePensionIncomes.select("#incomeFromPensionSection h3").size mustBe 4
 
         docWithMultiplePensionIncomes must haveElementAtPathWithId("div", "pension1")
@@ -237,7 +251,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   "employments that have ended section" must {
 
     "display the rti is down message when rti is not available" in {
-      val view = template(vm.copy(rtiAvailable = false), appConfig)
+      val view = template(vm.copy(rtiAvailable = false), viewModel, appConfig)
       doc(view) must haveParagraphWithText(messages("tai.rti.down.ceasedEmployments"))
     }
 
@@ -267,7 +281,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           rtiAvailable = true,
           "0"
         )
-        val docWithMultipleEndedIncomes = doc(template(vm, appConfig))
+        val docWithMultipleEndedIncomes = doc(template(vm, viewModel, appConfig))
         docWithMultipleEndedIncomes.select("#endedIncomeSection h3").size mustBe 4
 
         docWithMultipleEndedIncomes must haveElementAtPathWithId("div", "income1")
@@ -283,6 +297,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     }
   }
 
+  private val url: Call = controllers.routes.YourTaxCodeController.taxCode(1)
   "individual income detail sections" must {
 
     "display a title derived from the income source name" in {
@@ -300,10 +315,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         "#employment1TaxCodeLink",
         messages("tai.incomeTaxSummary.taxCode.prefix", activeEmployment.taxCode))
 
-      doc must haveElementAtPathWithAttribute(
-        "#employment1TaxCodeLink",
-        "href",
-        controllers.routes.YourTaxCodeController.taxCode(1).url)
+      doc must haveElementAtPathWithAttribute("#employment1TaxCodeLink", "href", url.url)
     }
 
     "omit a tax code when instructed" in {
@@ -323,7 +335,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         "0"
       )
 
-      val document = doc(template(vm, appConfig))
+      val document = doc(template(vm, viewModel, appConfig))
 
       document must not(haveElementWithId("employment1TaxCodeLink"))
     }
@@ -355,7 +367,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         "0"
       )
 
-      val document = doc(template(vm, appConfig))
+      val document = doc(template(vm, viewModel, appConfig))
 
       document must not(haveElementWithId("employment1PayrollNumber"))
     }
@@ -377,7 +389,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         rtiAvailable = true,
         "0")
 
-      val document = doc(template(vm, appConfig))
+      val document = doc(template(vm, viewModel, appConfig))
       document must haveElementAtPathWithText(
         "#employment1EndDate",
         messages("tai.incomeTaxSummary.endDate.prefix", inactiveEmployment.endDate))
@@ -411,7 +423,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         "0"
       )
 
-      val document = doc(template(vm, appConfig))
+      val document = doc(template(vm, viewModel, appConfig))
       document must not(haveElementWithId("employment1DetailsLink"))
     }
   }
@@ -505,6 +517,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         messages("tai.incomeTaxSummary.addMissingIncome.section.otherLink"))
       doc must haveElementAtPathWithAttribute("#addMissingIncomeSourceSection a", "href", appConfig.otherIncomeLinkUrl)
     }
+
   }
 
   val activeEmployment =
@@ -521,7 +534,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       displayEndDate = false,
       "view employment details",
       "fake/active/url",
-      Some(controllers.routes.YourTaxCodeController.taxCode(1))
+      Some(url)
     )
   val endedEmployment =
     IncomeSourceViewModel(
@@ -619,5 +632,20 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
   private val template = inject[IncomeTaxSummaryView]
 
-  override def view: Html = template(vm, appConfig)
+  val employerId = 9876543
+  val taxCode = "1150L"
+  val taxCodeDescription1 =
+    DescriptionListViewModel("Your tax code for employer1: BR", ListMap("K" -> messages("tai.taxCode.BR")))
+
+  val viewModel: Map[String, TaxCodeViewModel] = Map(
+    taxCode -> TaxCodeViewModel(
+      "main heading",
+      "lede message",
+      Seq(taxCodeDescription1),
+      messages("tai.taxCode.preHeader"),
+      messages("tai.taxCode.check_employment"),
+      Some(employerId)
+    ))
+
+  override def view: Html = template(vm, viewModel, appConfig)
 }

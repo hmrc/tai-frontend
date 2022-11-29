@@ -17,7 +17,6 @@
 package controllers
 
 import cats.data.EitherT
-import cats._
 import cats.implicits._
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
@@ -27,9 +26,7 @@ import play.api.data.Form
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.forms.EditIncomeForm
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -264,20 +261,15 @@ class IncomeController @Inject()(
           case Right(cache) =>
             val incomeName :: newAmount :: incomeId :: incomeType :: Nil = cache.toList
 
-            journeyCacheService.flush().flatMap { _ =>
-              taxAccountService.updateEstimatedIncome(
-                user.nino,
-                FormHelper.stripNumber(newAmount).toInt,
-                TaxYear(),
-                incomeId.toInt) flatMap {
-                case TaiSuccessResponse =>
-                  estimatedPayJourneyCompletionService.journeyCompleted(incomeId).map { _ =>
-                    respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
-                  }
-                case failure: TaiFailureResponse =>
-                  throw new RuntimeException(s"Failed to update estimated income with exception: ${failure.message}")
-              }
-            }
+            for {
+              _ <- journeyCacheService.flush()
+              _ <- taxAccountService.updateEstimatedIncome(
+                    user.nino,
+                    FormHelper.stripNumber(newAmount).toInt,
+                    TaxYear(),
+                    incomeId.toInt)
+              _ <- estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
+            } yield respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
         }
         .recover {
           case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage, Some(e))

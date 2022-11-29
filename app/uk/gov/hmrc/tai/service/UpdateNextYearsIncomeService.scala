@@ -16,18 +16,19 @@
 
 package uk.gov.hmrc.tai.service
 
-import javax.inject.{Inject, Named}
+import akka.Done
 import cats.implicits._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
+import uk.gov.hmrc.tai.util.FutureOps.FutureEitherStringOps
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
+import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateNextYearsIncomeService @Inject()(
@@ -72,19 +73,14 @@ class UpdateNextYearsIncomeService @Inject()(
   def getNewAmount(employmentId: Int)(implicit hc: HeaderCarrier): Future[Either[String, Int]] =
     journeyCacheService.mandatoryJourneyValueAsInt(amountKey(employmentId))
 
-  def submit(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    get(employmentId, nino) flatMap { _ =>
-      getNewAmount(employmentId).flatMap {
-        case Right(newAmount) =>
-          successfulJourneyCacheService
+  def submit(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[Done] =
+    for {
+      _         <- get(employmentId, nino)
+      newAmount <- getNewAmount(employmentId).getOrFail
+      _ <- successfulJourneyCacheService
             .cache(Map(UpdateNextYearsIncomeConstants.Successful -> "true"))
-            .flatMap { _ =>
-              val successfulEmploymentKey = s"${UpdateNextYearsIncomeConstants.Successful}-$employmentId"
-              successfulJourneyCacheService
-                .cache(Map(successfulEmploymentKey -> "true"))
-                .flatMap(_ => taxAccountService.updateEstimatedIncome(nino, newAmount, TaxYear().next, employmentId))
-            }
-        case Left(error) => Future.successful(TaiCacheError(error))
-      }
-    }
+      _ <- successfulJourneyCacheService
+            .cache(Map(s"${UpdateNextYearsIncomeConstants.Successful}-$employmentId" -> "true"))
+      _ <- taxAccountService.updateEstimatedIncome(nino, newAmount, TaxYear().next, employmentId)
+    } yield Done
 }
