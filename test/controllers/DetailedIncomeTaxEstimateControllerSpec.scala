@@ -83,8 +83,8 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
       }
 
       "fetch tax account summary fails" in {
-        when(taxAccountService.taxAccountSummaryOld(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("testFailure")))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }

@@ -99,20 +99,6 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
         Seq.empty[CodingComponent]
     }
 
-  def taxAccountSummaryOld(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.getFromApiV2(taxAccountSummaryUrl(nino.nino, year)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[TaxAccountSummary])
-    ) recover {
-      case e: NotFoundException =>
-        logger.warn(s"No tax account information found: ${e.getMessage}")
-        TaiNotFoundResponse(e.getMessage)
-      case e: UnauthorizedException =>
-        TaiUnauthorisedResponse(e.getMessage)
-      case NonFatal(e) =>
-        logger.warn(s"Couldn't retrieve tax summary for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
-    }
-
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaxAccountSummary] =
     httpHandler.getFromApiV2(taxAccountSummaryUrl(nino.nino, year)) map (json => (json \ "data").as[TaxAccountSummary])
 

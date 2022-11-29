@@ -50,9 +50,6 @@ class TaxAccountService @Inject()(taxAccountConnector: TaxAccountConnector) {
     implicit hc: HeaderCarrier): Future[Either[String, Option[TaxCodeIncome]]] =
     EitherT(taxAccountConnector.taxCodeIncomes(nino, year)).map(_.find(_.employmentId.contains(employmentId))).value
 
-  def taxAccountSummaryOld(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    taxAccountConnector.taxAccountSummaryOld(nino, year)
-
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaxAccountSummary] =
     taxAccountConnector.taxAccountSummary(nino, year)
 
