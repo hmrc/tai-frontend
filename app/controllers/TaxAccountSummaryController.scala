@@ -18,20 +18,15 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import uk.gov.hmrc.tai.model.TaxYear
-
-import javax.inject.{Inject, Singleton}
 import play.api.Logging
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.viewModels.{TaxAccountSummaryViewModel, TaxCodeViewModel, TaxCodeViewModelPreviousYears}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}
-import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
+import uk.gov.hmrc.tai.viewModels.TaxCodeViewModel
 import views.html.IncomeTaxSummaryView
 
 import javax.inject.{Inject, Singleton}
