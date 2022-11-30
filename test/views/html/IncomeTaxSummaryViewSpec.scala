@@ -40,8 +40,10 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       val view = template(vm, viewModel, appConfig)
       val doc = Jsoup.parse(view.toString())
 
-      doc must haveElementAtPathWithText("#taxCodeTerm_1_1", messages("tai.taxCode.part.announce", "K") + " K")
-      doc must haveElementWithId("taxCodeDescription_1_1")
+      doc must haveElementAtPathWithText(
+        "#employmentTaxCodeTerm_1_1",
+        messages("tai.taxCode.part.announce", "K") + " K")
+      doc must haveElementWithId("employmentTaxCodeDescription_1_1")
     }
 
     "display iForms status message when an iForm has not been fully processed" in {

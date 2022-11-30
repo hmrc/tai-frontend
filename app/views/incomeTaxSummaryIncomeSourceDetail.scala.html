@@ -54,7 +54,7 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
                         @for((taxCodeList, listIdx) <-
                         taxCodeViewModel.get(incomeSource.taxCode).map(_.taxCodeDetails).getOrElse(Seq.empty[DescriptionListViewModel])
                         zip (Stream from 1)) {
-            <div  style="display: none;" id="taxCodeList@{listIdx.toString}">
+            <div  style="display: block;" id="@{typeLabel}TaxCodeList@{pidx.toString}">
                 <details class="govuk-details" data-module="govuk-details">
                     <summary class="govuk-details__summary">
                         <span class="govuk-details__summary-text">
@@ -65,12 +65,12 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
                         <div class="govuk-!-padding-bottom-3">
                             @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
                             <div class="govuk-grid-row under-line custom-align">
-                                <div class="govuk-grid-column-one-quarter" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
+                                <div class="govuk-grid-column-one-quarter" id="@{typeLabel}TaxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
                                     <span class="govuk-visually-hidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
-                                    <p aria-hidden="true" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@taxCodeTerm</p>
+                                    <p aria-hidden="true" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-right-9">@taxCodeTerm</p>
                                 </div>
                                 <div class="govuk-grid-column-three-quarters  fixed-small"
-                                 id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
+                                 id="@{typeLabel}TaxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
                                 <p class="govuk-body-s print">@Html(taxCodeList.descriptionItems(taxCodeTerm))</p>
                                 </div>
                             </div>
