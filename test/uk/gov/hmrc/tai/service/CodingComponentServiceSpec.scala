@@ -21,13 +21,11 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.JsResultException
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.{TaxAccountConnector, TaxFreeAmountComparisonConnector}
-import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
 import scala.concurrent.duration._
@@ -82,7 +80,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       val taxFreeAmountComparison = TaxFreeAmountComparison(Seq(codingComponent1), Seq(codingComponent2))
 
       when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxFreeAmountComparison)))
+        .thenReturn(Future.successful(taxFreeAmountComparison))
 
       val result = service.taxFreeAmountComparison(generateNino)
 
@@ -98,35 +96,11 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       val taxFreeAmountComparison = TaxFreeAmountComparison(Seq(codingComponent1), Seq(codingComponent2))
 
       when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxFreeAmountComparison)))
+        .thenReturn(Future.successful(taxFreeAmountComparison))
 
       val result = service.taxFreeAmountComparison(generateNino)
 
       Await.result(result, 5.seconds) mustBe TaxFreeAmountComparison(Seq.empty, Seq.empty)
-    }
-
-    "throw a runtime exception" when {
-      "a TaiTaxAccountFailureResponse is received" in {
-        val service = createSut
-
-        when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Help")))
-
-        val exceptionThrown = the[RuntimeException] thrownBy Await
-          .result(service.taxFreeAmountComparison(generateNino), 5.seconds)
-        exceptionThrown.getMessage must include("Help")
-      }
-
-      "a unknown exception is received" in {
-        val service = createSut
-
-        when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
-          .thenReturn(Future.successful(null))
-
-        val exceptionThrown = the[RuntimeException] thrownBy Await
-          .result(service.taxFreeAmountComparison(generateNino), 5.seconds)
-        exceptionThrown.getMessage must include("Could not fetch tax free amount comparison")
-      }
     }
   }
 

@@ -21,13 +21,13 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.BadRequestException
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, TaxComponentType, TaxFreeAmountComparison}
 import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
 
@@ -71,7 +71,7 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
 
         val codingComponents = Seq(CodingComponent(CarBenefit, Some(1), 1, "Car Benefit", Some(1)))
 
-        val expected = TaiSuccessResponseWithPayload(TaxFreeAmountComparison(codingComponents, codingComponents))
+        val expected = TaxFreeAmountComparison(codingComponents, codingComponents)
 
         val result = sut.taxFreeAmountComparison(nino)
 
@@ -79,17 +79,15 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
       }
     }
 
-    "return a TaiTaxAccountFailureResponse" when {
+    "return a BadRequestException" when {
       "the api responds with invalid json" in {
-        val exceptionMessage = "bad request"
+        val exceptionMessage = s"Couldn't retrieve taxFreeAmountComparison for ${nino.nino} with exception: bad request"
         when(httpHandler.getFromApiV2(any())(any()))
           .thenReturn(Future.failed(new BadRequestException(exceptionMessage)))
 
-        val expected = TaiTaxAccountFailureResponse(exceptionMessage)
+        val ex = the[BadRequestException] thrownBy Await.result(sut.taxFreeAmountComparison(nino), 5 seconds)
 
-        val result = sut.taxFreeAmountComparison(nino)
-
-        Await.result(result, 5.seconds) mustBe expected
+        ex.getMessage must include(exceptionMessage)
       }
     }
   }
