@@ -230,7 +230,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(Matchers.eq(url))(any())).thenReturn(json)
 
         val result = Await.result(sut.taxCodeMismatch(nino), 5 seconds)
-        result mustEqual TaiSuccessResponseWithPayload(expectedResult)
+        result mustEqual expectedResult
       }
     }
 
@@ -244,7 +244,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(Matchers.eq(url))(any())).thenReturn(json)
 
         val result = Await.result(sut.taxCodeMismatch(nino), 5 seconds)
-        result mustEqual TaiSuccessResponseWithPayload(expectedResult)
+        result mustEqual expectedResult
       }
     }
   }

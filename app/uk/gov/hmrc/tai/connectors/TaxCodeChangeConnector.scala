@@ -59,14 +59,10 @@ class TaxCodeChangeConnector @Inject()(httpHandler: HttpHandler, servicesConfig:
 
   def taxCodeMismatchUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-mismatch"
 
-  def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeMismatch] =
     httpHandler.getFromApiV2(taxCodeMismatchUrl(nino.nino)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeMismatch])
-    ) recover {
-      case e: Exception =>
-        logger.warn(s"Couldn't retrieve tax code mismatch for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
-    }
+      json => (json \ "data").as[TaxCodeMismatch]
+    )
 
   def lastTaxCodeRecordsUrl(nino: String, year: Int): String = baseTaxAccountUrl(nino) + s"$year/tax-code/latest"
 
