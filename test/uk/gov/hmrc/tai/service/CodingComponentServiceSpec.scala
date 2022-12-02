@@ -22,7 +22,7 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.tai.connectors.{TaxAccountConnector, TaxFreeAmountComparisonConnector}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -101,6 +101,30 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       val result = service.taxFreeAmountComparison(generateNino)
 
       Await.result(result, 5.seconds) mustBe TaxFreeAmountComparison(Seq.empty, Seq.empty)
+    }
+
+    "return exception" when {
+      "an exception is received" in {
+        val service = createSut
+
+        when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
+          .thenReturn(Future.failed(new BadRequestException("Bad request")))
+
+        val exceptionThrown = the[BadRequestException] thrownBy Await
+          .result(service.taxFreeAmountComparison(generateNino), 5.seconds)
+        exceptionThrown.getMessage must include("Bad request")
+      }
+
+      "an unknown exception is received" in {
+        val service = createSut
+
+        when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
+          .thenReturn(Future.successful(null))
+
+        assertThrows[NullPointerException] {
+          Await.result(service.taxFreeAmountComparison(generateNino), 5.seconds)
+        }
+      }
     }
   }
 
