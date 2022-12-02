@@ -62,12 +62,7 @@ class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnec
     taxCodeChangeConnector.lastTaxCodeRecords(nino, year)
 
   def hasTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Boolean] =
-    taxCodeChangeConnector.lastTaxCodeRecords(nino, year).map {
-      case taxCodeRecords: List[TaxCodeRecord] if taxCodeRecords.nonEmpty => true
-      case _                                                              => false
-    } recover {
-      case e => false
-    }
+    taxCodeChangeConnector.lastTaxCodeRecords(nino, year).attemptT.map(_.nonEmpty).getOrElse(false)
 
   def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] =
     taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
