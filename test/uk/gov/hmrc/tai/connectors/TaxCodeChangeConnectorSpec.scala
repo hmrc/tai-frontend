@@ -20,7 +20,8 @@ import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsArray, Json}
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.http.BadRequestException
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
@@ -167,7 +168,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
       when(httpHandler.getFromApiV2(Matchers.eq(latestTaxCodeRecordUrl))(any())).thenReturn(Future.successful(json))
 
       val result = Await.result(sut.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
-      result mustEqual TaiSuccessResponseWithPayload(expectedResult)
+      result mustEqual expectedResult
     }
 
     "return a empty List when the api returns no records" in {
@@ -183,7 +184,21 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
       when(httpHandler.getFromApiV2(Matchers.eq(latestTaxCodeRecordUrl))(any())).thenReturn(Future.successful(json))
 
       val result = Await.result(sut.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
-      result mustEqual TaiSuccessResponseWithPayload(List.empty)
+      result mustEqual List.empty
+    }
+
+    "throw Exception" when {
+      "tax code change returns 500" in {
+        val year = TaxYear().prev.year
+        val latestTaxCodeRecordUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/$year/tax-code/latest"
+        val expectedMessage = s"Couldn't retrieve tax code records for $nino for year $year with exception: bad request"
+        when(httpHandler.getFromApiV2(Matchers.eq(latestTaxCodeRecordUrl))(any()))
+          .thenReturn(Future.failed(new BadRequestException(expectedMessage)))
+
+        val expected = the[BadRequestException] thrownBy Await
+          .result(sut.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
+        expected.getMessage must include(expectedMessage)
+      }
     }
   }
 

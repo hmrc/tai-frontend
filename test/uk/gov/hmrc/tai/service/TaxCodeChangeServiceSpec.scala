@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -99,25 +100,13 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
   "lastTaxCodeRecordsInYearPerEmployment" must {
     "return a sequence of TaxCodeRecords when given a valid nino and year" in {
       val testService = createTestService
-
-      val taxCodeRecords = Seq(taxCodeRecord1)
+      val taxCodeRecords = List(taxCodeRecord1)
 
       when(taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeRecords)))
+        .thenReturn(Future.successful(taxCodeRecords))
 
       val result = testService.lastTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev)
       Await.result(result, 5.seconds) mustBe taxCodeRecords
-    }
-
-    "throw an exception if could not get last tax codes for given year" in {
-      val testService = createTestService
-
-      when(taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
-        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
-
-      val ex = the[RuntimeException] thrownBy Await
-        .result(testService.lastTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev), 5 seconds)
-      ex.getMessage must include(s"Could not fetch last tax code records for year ${TaxYear().prev}")
     }
   }
 
@@ -125,32 +114,32 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
     "return true when a nonEmpty sequence of tax code records is returned" in {
       val testService = createTestService
 
-      val taxCodeRecords = Seq(taxCodeRecord1)
+      val taxCodeRecords = List(taxCodeRecord1)
 
       when(taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeRecords)))
+        .thenReturn(Future.successful(taxCodeRecords))
 
       val result = testService.hasTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev)
       Await.result(result, 5.seconds) mustBe true
     }
 
-    "return false when a empty sequence of tax code records is returned" in {
+    "return false when an empty sequence of tax code records is returned" in {
       val testService = createTestService
 
-      val taxCodeRecords = Seq()
+      val taxCodeRecords = List()
 
       when(taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeRecords)))
+        .thenReturn(Future.successful(taxCodeRecords))
 
       val result = testService.hasTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev)
       Await.result(result, 5.seconds) mustBe false
     }
 
-    "return false when a TaiTaxAccountFailureResponse is returned" in {
+    "return false when a BadRequestException is returned" in {
       val testService = createTestService
 
       when(taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
-        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
+        .thenReturn(Future.failed(new BadRequestException("Bad Request")))
 
       val result = testService.hasTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev)
       Await.result(result, 5.seconds) mustBe false
