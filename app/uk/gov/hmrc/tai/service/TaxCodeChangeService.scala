@@ -30,6 +30,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnector) extends Logging {
 
@@ -37,24 +38,24 @@ class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnec
     taxCodeChangeConnector.taxCodeChange(nino)
 
   def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Either[TaxCodeError, HasTaxCodeChanged]] = {
-    val hasTaxCodeChangedFuture = taxCodeChanged(nino)
-    val taxCodeMismatchFuture = taxCodeMismatch(nino)
 
-    val hasTaxChanged = for {
-      hasTaxCodeChanged <- EitherT(hasTaxCodeChangedFuture)
-      taxCodeMismatch   <- EitherT.right[TaxCodeError](taxCodeMismatchFuture)
-    } yield
-      taxCodeMismatch match {
-        case TaiSuccessResponseWithPayload(taxCodeMismatch: TaxCodeMismatch) =>
-          logger.debug(s"TCMismatch $taxCodeMismatch")
-          HasTaxCodeChanged(hasTaxCodeChanged, Some(taxCodeMismatch))
-        case _: TaiTaxAccountFailureResponse =>
-          HasTaxCodeChanged(changed = false, None)
-      }
-    hasTaxChanged.leftMap { _ =>
-      logger.error("Could not fetch the changed tax code")
-      TaxCodeError(nino, Some("Could not fetch the changed tax code"))
-    }.value
+    val hasTaxCodeChangedFuture: EitherT[Future, TaxCodeError, Boolean] = EitherT(taxCodeChanged(nino))
+    val taxCodeMismatchFuture: EitherT[Future, TaxCodeError, TaxCodeMismatch] =
+      EitherT.right[TaxCodeError](taxCodeMismatch(nino))
+
+    (for {
+      hasTaxCodeChanged <- hasTaxCodeChangedFuture
+      taxCodeMismatch   <- taxCodeMismatchFuture
+    } yield {
+      logger.debug(s"TCMismatch $taxCodeMismatch")
+      HasTaxCodeChanged(hasTaxCodeChanged, Some(taxCodeMismatch))
+
+    }).value
+
+  }.recover {
+    case NonFatal(e) =>
+      logger.warn(s"Couldn't retrieve tax code mismatch for $nino with exception:${e.getMessage}")
+      Right(HasTaxCodeChanged(changed = false, None))
   }
 
   def lastTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(
@@ -74,12 +75,14 @@ class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnec
   def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] =
     taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
 
-  private def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
+  private def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeMismatch] =
     taxCodeChangeConnector.taxCodeMismatch(nino)
 
   private def taxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Either[TaxCodeError, Boolean]] =
     taxCodeChangeConnector.hasTaxCodeChanged(nino) map {
       case TaiSuccessResponseWithPayload(hasTaxCodeChanged: Boolean) => Right(hasTaxCodeChanged)
-      case _                                                         => Left(TaxCodeError(nino, Some("Could not fetch tax code change")))
+      case _ =>
+        logger.error("Could not fetch the changed tax code")
+        Left(TaxCodeError(nino, Some("Could not fetch tax code change")))
     }
 }

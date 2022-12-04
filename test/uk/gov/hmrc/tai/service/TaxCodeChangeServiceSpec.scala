@@ -56,7 +56,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
         when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
+          .thenReturn(Future.successful(taxCodeMismatch))
 
         val result = testService.hasTaxCodeChanged(nino)
         Await.result(result, 5.seconds) mustBe hasTaxCodeChanged
@@ -64,7 +64,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
     }
 
     "returns hasTaxCodeChanged = false" when {
-      "invalid response is returned fromm taxCodeChangeConnector.taxCodeMismatch" in {
+      "invalid response is returned from taxCodeChangeConnector.taxCodeMismatch" in {
         val testService = createTestService
 
         val hasTaxCodeChanged = Right(HasTaxCodeChanged(changed = false, None))
@@ -72,7 +72,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
         when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
+          .thenReturn(Future.failed(new RuntimeException("ERROR")))
 
         val result = testService.hasTaxCodeChanged(nino)
         Await.result(result, 5.seconds) mustBe hasTaxCodeChanged
@@ -84,12 +84,12 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
         val testService = createTestService
 
         val taxCodeMismatch = TaxCodeMismatchFactory.matchedTaxCode
-        val taxCodeError = Left(TaxCodeError(nino, Some("Could not fetch the changed tax code")))
+        val taxCodeError = Left(TaxCodeError(nino, Some("Could not fetch tax code change")))
 
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
         when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
+          .thenReturn(Future.successful(taxCodeMismatch))
 
         Await.result(testService.hasTaxCodeChanged(nino), 5 seconds) mustBe taxCodeError
       }
