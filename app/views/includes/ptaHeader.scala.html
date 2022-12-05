@@ -20,7 +20,6 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @(formForErrorSummary: Option[Form[_]] = None,
-  displayBackLink: Boolean = false,
   mainHeadingText: String,
   preHeadingText: String,
   maybeUserName: Option[String] = None,
@@ -40,25 +39,7 @@
     printBanner(preHeadingText = preHeadingText, maybeUserName = maybeUserName)
 }
 
-
-@if(displayBackLink) {
-
-    <div class="grid-row">
-        <div class="column-two-thirds">
-            @customBackLinkContent.map(identity).getOrElse(backLink())
-        </div>
-
-        @if(additionalTopLinkContent.isDefined){
-        <div class="column-one-third text--right">
-            @additionalTopLinkContent.get
-        </div>
-        }
-
-    </div>
-}
-
 @printHeader
-
 
 @if(showGdsVersion) {
     @if(formForErrorSummary.exists(_.errors.nonEmpty) && govukErrorSummary.isDefined) {

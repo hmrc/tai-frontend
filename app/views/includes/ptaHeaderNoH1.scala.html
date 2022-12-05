@@ -17,7 +17,6 @@
 @import includes.forms.errorSummary
 
 @(formForErrorSummary: Option[Form[_]] = None,
-displayBackLink: Boolean = false,
 mainHeadingText: String,
 preHeadingText: String,
 headerWidthClasses: Option[String] = Some("column-two-thirds"),
@@ -30,21 +29,6 @@ additionalTopLinkContent: Option[Html] = None
 if(preHeadingAccessibleAnnouncement=="") Messages("tai.ptaHeader.accessible.preHeading") else preHeadingAccessibleAnnouncement
 }
 
-@if(displayBackLink) {
-
-<div class="grid-row">
-    <div class="column-two-thirds">
-        @customBackLinkContent.getOrElse(backLink())
-    </div>
-
-    @if(additionalTopLinkContent.isDefined){
-    <div class="column-one-third text--right">
-        @additionalTopLinkContent.get
-    </div>
-    }
-
-</div>
-}
 <div class="grid-row">
     <div class="@headerWidthClasses.getOrElse("")">
 
