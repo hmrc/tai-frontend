@@ -54,7 +54,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
         val hasTaxCodeChanged = Right(HasTaxCodeChanged(changed = true, Some(taxCodeMismatch)))
 
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
+          .thenReturn(Future.successful(true))
         when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
           .thenReturn(Future.successful(taxCodeMismatch))
 
@@ -70,7 +70,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
         val hasTaxCodeChanged = Right(HasTaxCodeChanged(changed = false, None))
 
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
+          .thenReturn(Future.successful(true))
         when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
           .thenReturn(Future.failed(new RuntimeException("ERROR")))
 
@@ -87,7 +87,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
         val taxCodeError = Left(TaxCodeError(nino, Some("Could not fetch tax code change")))
 
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
+          .thenReturn(Future.failed(new Exception("ERROR")))
         when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
           .thenReturn(Future.successful(taxCodeMismatch))
 
