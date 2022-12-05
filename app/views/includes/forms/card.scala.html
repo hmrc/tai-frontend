@@ -21,6 +21,8 @@
   heading: String,
   headingTag: String = "h3",
   bodyContent: Option[String] = None,
+  bodyContentList:  Seq[String] = Seq.empty,
+  isBodyContentList: Boolean = false,
   cardActionUrl: Option[String] = None,
   cardActionText: Option[String] = None
 )
@@ -37,7 +39,16 @@
         @heading
       }
     </@headingTag>
-    <p> @bodyContent</p>
+    @if(isBodyContentList){
+    <ul class="govuk-list govuk-list--bullet">
+    @bodyContentList.map { item =>
+        <li>@item</li>
+    }
+    </ul>
+    }else{
+    <p>@bodyContent</p>
+    }
+
   </div>
 
   @if(cardActionUrl && cardActionText) {

@@ -121,7 +121,8 @@
                         url = Some(s"/check-income-tax/income-tax-history"),
                         id = "incomeTaxHistory",
                         heading = messages("income.tax.history"),
-                        bodyContent = Some(messages("income.tax.history.content")),
+                        bodyContentList =  Seq(messages("income.tax.history.content"),messages("income.tax.history.content2")),
+                        isBodyContentList = true,
                         headingTag = "h2"
                     )
                 }
