@@ -81,7 +81,7 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
 
     "return a BadRequestException" when {
       "the api responds with invalid json" in {
-        val exceptionMessage = s"Couldn't retrieve taxFreeAmountComparison for ${nino.nino} with exception: bad request"
+        val exceptionMessage = "exception message"
         when(httpHandler.getFromApiV2(any())(any()))
           .thenReturn(Future.failed(new BadRequestException(exceptionMessage)))
 

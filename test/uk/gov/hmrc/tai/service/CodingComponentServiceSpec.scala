@@ -103,8 +103,8 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       Await.result(result, 5.seconds) mustBe TaxFreeAmountComparison(Seq.empty, Seq.empty)
     }
 
-    "return exception" when {
-      "an exception is received" in {
+    "return BadRequestException" when {
+      "a BadRequestException is received" in {
         val service = createSut
 
         when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))

@@ -35,7 +35,7 @@ class CodingComponentService @Inject()(
     taxAccountConnector.codingComponents(nino, year).map(filterOutZeroAmountsComponents)
 
   def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] =
-    taxFreeAmountComparisonConnector.taxFreeAmountComparison(nino).map(filterOutZeroAmountsComponents(_))
+    taxFreeAmountComparisonConnector.taxFreeAmountComparison(nino).map(filterOutZeroAmountsComponents)
 
   private def filterOutZeroAmountsComponents(
     taxFreeAmountComparison: TaxFreeAmountComparison): TaxFreeAmountComparison =
