@@ -16,15 +16,14 @@
 
 package uk.gov.hmrc.tai.service
 
-import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.connectors.{TaxAccountConnector, TaxFreeAmountComparisonConnector}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -36,12 +35,7 @@ class CodingComponentService @Inject()(
     taxAccountConnector.codingComponents(nino, year).map(filterOutZeroAmountsComponents)
 
   def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] =
-    taxFreeAmountComparisonConnector.taxFreeAmountComparison(nino) map {
-      case TaiSuccessResponseWithPayload(taxFreeAmountComparison: TaxFreeAmountComparison) =>
-        filterOutZeroAmountsComponents(taxFreeAmountComparison)
-      case TaiTaxAccountFailureResponse(e) => throw new RuntimeException(e)
-      case _                               => throw new RuntimeException("Could not fetch tax free amount comparison")
-    }
+    taxFreeAmountComparisonConnector.taxFreeAmountComparison(nino).map(filterOutZeroAmountsComponents)
 
   private def filterOutZeroAmountsComponents(
     taxFreeAmountComparison: TaxFreeAmountComparison): TaxFreeAmountComparison =

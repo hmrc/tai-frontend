@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -36,12 +35,12 @@ class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler, s
 
   def taxFreeAmountComparisonUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/tax-free-amount-comparison"
 
-  def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.getFromApiV2(taxFreeAmountComparisonUrl(nino.nino)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[TaxFreeAmountComparison])
-    ) recover {
+  def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] =
+    httpHandler.getFromApiV2(taxFreeAmountComparisonUrl(nino.nino)).map { json =>
+      (json \ "data").as[TaxFreeAmountComparison]
+    } recover {
       case NonFatal(e) =>
-        logger.warn(s"Couldn't retrieve taxFreeAmountComparison for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
+        logger.warn(s"Couldn't retrieve taxFreeAmountComparison for $nino with exception: ${e.getMessage}")
+        throw e
     }
 }
