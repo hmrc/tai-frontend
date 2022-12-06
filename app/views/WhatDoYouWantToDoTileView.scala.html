@@ -1,19 +1,18 @@
 @*
- * Copyright 2021 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *@
-
+* Copyright 2021 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
 @import includes.forms.card
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -25,20 +24,20 @@
 @this(mainTemplate: MainTemplate)
 
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
-  model: WhatDoYouWantToDoViewModel,
-    appConfig: ApplicationConfig
+        model: WhatDoYouWantToDoViewModel,
+        appConfig: ApplicationConfig
 )(implicit request: Request[_],
-  messages: Messages,
-  user: controllers.auth.AuthedUser,
-  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-  ec: ExecutionContext)
+        messages: Messages,
+        user: controllers.auth.AuthedUser,
+        templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+        ec: ExecutionContext)
 
 @optimizelyAudience = @{
-  if (model.showTaxCodeChangeTile()) {
-    Some("TaxCodeChangeUser")
-  } else {
-    None
-  }
+    if(model.showTaxCodeChangeTile()) {
+        Some("TaxCodeChangeUser")
+    } else {
+        None
+    }
 }
 
 
@@ -50,80 +49,94 @@
     pagePrintable = true
 ) {
 
+    @if(model.showTaxCodeChangeTile()) {
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                    <div class="govuk-notification-banner__header">
+                        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                        @messages("checkProgress.important")
+                        </h2>
+                    </div>
+                    <div class="govuk-notification-banner__content">
+                        <h3 class="govuk-notification-banner__heading">
+                        @messages("tai.WhatDoYouWantToDo.ChangedTaxCode")
+                        </h3>
+                        <a href="@controllers.routes.TaxCodeChangeController.taxCodeComparison()" class="govuk-body">
+                        @messages("tai.WhatDoYouWantToDo.ViewChangedTaxCode")
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
     <header class="page-header">
         <h1 class="govuk-heading-xl" id="whatDoYouWantToDoTitle">@messages("your.paye.income.tax.overview")</h1>
     </header>
 
     <div class="govuk-grid-row">
 
-            <div class="inner-block">
-                <div class="flex-container govuk-grid-row">
-                @if(model.showTaxCodeChangeTile()){
-                  @card(
-                    url = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
-                    id = "hasTaxCodeChanged",
-                    heading = messages("check.tax.hasChanged.header"),
-                    bodyContent = Some(messages("check.tax.hasChanged.action"))
-                      )
-                    }
-                </div>
+        <div class="inner-block govuk-grid-column-full">
 
-                <div class="flex-container govuk-grid-row">
+            <div class="flex-container govuk-grid-row">
+                @card(
+                    url = Some(s"/check-income-tax/historic-paye/${TaxYear().prev.year.toString}"),
+                    id = "earlierTaxYear",
+                    heading = messages("earlier"),
+                    bodyContent = Some(messages("check.tax.previous.years")),
+                    headingTag = "h2"
+                )
+
+                @card(
+                    url = Some("/check-income-tax/income-summary"),
+                    id = "currentTaxYear",
+                    heading = messages("current.tax.year"),
+                    bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange)),
+                    headingTag = "h2"
+                )
+
+                @if(model.isCyPlusOneEnabled) {
                     @card(
-                        url = Some(s"/check-income-tax/historic-paye/${TaxYear().prev.year.toString}"),
-                        id = "earlierTaxYear",
-                        heading = messages("earlier"),
-                        bodyContent = Some(messages("check.tax.previous.years")),
+                        url = Some("/check-income-tax/income-tax-comparison"),
+                        id = "nextTaxYear",
+                        heading = messages("next.year"),
+                        bodyContent = Some(messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1))),
                         headingTag = "h2"
                     )
+                }
 
+                @card(
+                    url = Some(appConfig.taxReliefExpenseClaimLink),
+                    id = "claimRelief",
+                    heading = messages("claim.tax.relief.wfh"),
+                    bodyContent = None,
+                    headingTag = "h2"
+                )
+
+                @if(appConfig.incomeTaxHistoryEnabled) {
                     @card(
-                        url = Some("/check-income-tax/income-summary"),
-                        id = "currentTaxYear",
-                        heading = messages("current.tax.year"),
-                        bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange)),
+                        url = Some(s"/check-income-tax/income-tax-history"),
+                        id = "incomeTaxHistory",
+                        heading = messages("income.tax.history"),
+                        bodyContent = Some(messages("income.tax.history.content")),
                         headingTag = "h2"
                     )
+                }
 
-                    @if(model.isCyPlusOneEnabled) {
-                        @card(
-                            url = Some("/check-income-tax/income-tax-comparison"),
-                            id = "nextTaxYear",
-                            heading = messages("next.year"),
-                            bodyContent = Some(messages("check.estimated.income",TaxYearRangeUtil.futureTaxYearRange(yearsFromNow=1))),
-                            headingTag = "h2"
-                        )
-                    }
-
+                @if(model.showJrsTile) {
                     @card(
-                        url = Some(appConfig.taxReliefExpenseClaimLink),
-                        id = "claimRelief",
-                        heading = messages("claim.tax.relief.wfh"),
-                        bodyContent = None,
+                        url = Some("/check-income-tax/jrs-claims"),
+                        id = "jrsClaims",
+                        heading = messages("check.jrs.claims"),
                         headingTag = "h2"
                     )
+                }
 
-                   @if(appConfig.incomeTaxHistoryEnabled) {
-                        @card(
-                            url = Some(s"/check-income-tax/income-tax-history"),
-                            id = "incomeTaxHistory",
-                            heading = messages("income.tax.history"),
-                            bodyContent = Some(messages("income.tax.history.content")),
-                            headingTag = "h2"
-                        )
-                    }
-
-                    @if(model.showJrsTile){
-                        @card(
-                            url = Some("/check-income-tax/jrs-claims"),
-                            id = "jrsClaims",
-                            heading = messages("check.jrs.claims"),
-                            headingTag = "h2"
-                        )
-                    }
-
-                </div>
             </div>
+        </div>
 
     </div>
 }

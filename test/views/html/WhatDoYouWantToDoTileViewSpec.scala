@@ -78,20 +78,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.toString must include(Messages("claim.tax.relief.wfh"))
       }
 
-      "Tax Code Change is enabled" in {
-
-        val taxCodeMatched = TaxCodeMismatchFactory.matchedTaxCode
-        val modeWithCyPlus1TaxCodeChange = createViewModel(true, true, taxCodeMismatch = Some(taxCodeMatched))
-
-        val nextYearView: Html = whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange, appConfig)
-        val cards = doc(nextYearView).getElementsByClass("card")
-
-        cards.size mustBe 6
-        cards.toString must include("Check your latest tax code change")
-        cards.toString must include("Find out what has changed and what happens next")
-        cards.toString must include(Messages("claim.tax.relief.wfh"))
-      }
-
       "Tax Code Change is disabled" in {
 
         val modelNoiFormWithCyPlus1 = createViewModel(true)
@@ -102,6 +88,22 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.size mustBe 5
         cards.toString mustNot include("Check your latest tax code change")
         cards.toString mustNot include("Find out what has changed and what happens next")
+        cards.toString must include(Messages("claim.tax.relief.wfh"))
+      }
+    }
+
+    "display tax code change banner correctly" when {
+      "Tax Code Change is enabled" in {
+
+        val taxCodeMatched = TaxCodeMismatchFactory.matchedTaxCode
+        val modeWithCyPlus1TaxCodeChange = createViewModel(true, true, taxCodeMismatch = Some(taxCodeMatched))
+
+        val nextYearView: Html = whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange, appConfig)
+        val cards = doc(nextYearView).getElementsByClass("card")
+
+        cards.size mustBe 5
+        doc(nextYearView).toString must include(Messages("tai.WhatDoYouWantToDo.ViewChangedTaxCode"))
+        doc(nextYearView).toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode"))
         cards.toString must include(Messages("claim.tax.relief.wfh"))
       }
     }
