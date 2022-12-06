@@ -51,8 +51,8 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       }
     }
 
-    "display print button" should {
-      behave like pageWithPrintThisPageButton("Print this page")
+    "display print button link with javascript print function" in {
+      doc must haveLinkWithUrlWithClass("print-this__link", "javascript:window.print()")
     }
 
     "display ERN or pension" should {
