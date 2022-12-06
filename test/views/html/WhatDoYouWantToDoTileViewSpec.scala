@@ -101,7 +101,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         val nextYearView: Html = whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
 
-        cards.size mustBe 5
+        cards.size mustBe 6
         doc(nextYearView).toString must include(Messages("tai.WhatDoYouWantToDo.ViewChangedTaxCode"))
         doc(nextYearView).toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode"))
         cards.toString must include(Messages("claim.tax.relief.wfh"))
