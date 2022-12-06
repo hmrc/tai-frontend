@@ -82,6 +82,15 @@
         <div class="inner-block govuk-grid-column-full">
 
             <div class="flex-container govuk-grid-row">
+
+                @if(model.showTaxCodeChangeTile()){
+                    @card(
+                        url = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
+                        id = "hasTaxCodeChanged",
+                        heading = messages("check.tax.hasChanged.header"),
+                        bodyContentList = Seq(messages("check.tax.hasChanged.p1"), messages("check.tax.hasChanged.p2"))
+                    )
+                }
                 @card(
                     url = Some(s"/check-income-tax/historic-paye/${TaxYear().prev.year.toString}"),
                     id = "earlierTaxYear",
