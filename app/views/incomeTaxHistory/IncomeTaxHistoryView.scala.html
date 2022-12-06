@@ -70,57 +70,62 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     pagePrintable = true
 ){
 
-  @printHeader
+    @printHeader
 
     <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl heading-mobile-responsive break-word hide-for-print">@Messages("tai.incomeTax.history.title")</h1>
+        <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+            <h1 class="govuk-heading-xl govuk-!-margin-bottom-3 heading-mobile-responsive break-word hide-for-print">@Messages("tai.incomeTax.history.title")</h1>
 
-        @govukDetails(Details(
-            summary = Text(messages("tai.incomeTax.history.details.summary", person.name)),
-            content = HtmlContent(detailsContent),
-            classes = "hide-for-print",
-        ))
+            <div class="print-this govuk-!-margin-bottom-6">
+                <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
+            </div>
 
-        @govukDetails(Details(
-            summary = Text(messages("tai.incomeTax.history.details.summary", person.name)),
-            content = HtmlContent(detailsContent),
-            classes = "only-visible-on-print",
-            attributes = Map("aria-hidden" -> "true"),
-            open = true,
-        ))
+        </div>
+        <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+            @govukDetails(Details(
+                summary = Text(messages("tai.incomeTax.history.details.summary", person.name)),
+                content = HtmlContent(detailsContent),
+                classes = "hide-for-print",
+            ))
 
+            @govukDetails(Details(
+                summary = Text(messages("tai.incomeTax.history.details.summary", person.name)),
+                content = HtmlContent(detailsContent),
+                classes = "only-visible-on-print",
+                attributes = Map("aria-hidden" -> "true"),
+                open = true,
+            ))
+
+        </div>
     </div>
-</div>
 
-@for(incomeTaxYear <- incomeTaxYears) {
-    <h2 class="govuk-heading-m govuk-!-margin-top-0" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
+    @for(incomeTaxYear <- incomeTaxYears) {
+        <h2 class="govuk-heading-m govuk-!-margin-top-0" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
 
-@{
-    if (incomeTaxYear.incomeTaxHistory.isEmpty){
-<div class="govuk-inset-text">
-    <p>{messages("tai.incomeTax.history.noTaxHistory")}</p>
-</div>
-
+        @{
+            if (incomeTaxYear.incomeTaxHistory.isEmpty){
+                <div class="govuk-inset-text">
+                    <p>{messages("tai.incomeTax.history.noTaxHistory")}</p>
+                </div>
+            }
         }
-    }
 
-@for(summary <- incomeTaxYear.incomeTaxHistory) {
-        <div class="employment-card-single-u">
-            <div class="employer-name govuk-body carry-over">@summary.employerName</div>
-            <ul class="govuk-list govuk-!-font-size-16 .ul-incomeTaxHistory">
-                @if(summary.isPension && summary.payrollNumber.isDefined) {
-                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.pensionNumber")</span>@summary.payrollNumber</li>
-                } else {
-                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.employerReference")</span>@summary.ern</li>
-                }
-                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.startDate")</span> @TaxYearRangeUtil.formatDate(summary.startDate)	</li>
-                <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.endDate")</span>
-                    @{if(summary.maybeEndDate.isDefined)
-                        TaxYearRangeUtil.formatDate(summary.maybeEndDate.get)
-                    else
-                        Messages("tai.incomeTax.history.endDate.notApplicable")
+        @for(summary <- incomeTaxYear.incomeTaxHistory) {
+            <div class="employment-card-single-u">
+                <div class="employer-name govuk-body carry-over">@summary.employerName</div>
+                <ul class="govuk-list govuk-!-font-size-16 .ul-incomeTaxHistory">
+                    @if(summary.isPension && summary.payrollNumber.isDefined) {
+                        <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.pensionNumber")</span>@summary.payrollNumber</li>
+                    } else {
+                        <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.employerReference")</span>@summary.ern</li>
                     }
+                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.startDate")</span> @TaxYearRangeUtil.formatDate(summary.startDate)	</li>
+                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.endDate")</span>
+                        @{if(summary.maybeEndDate.isDefined)
+                            TaxYearRangeUtil.formatDate(summary.maybeEndDate.get)
+                        else
+                            Messages("tai.incomeTax.history.endDate.notApplicable")
+                        }
                 </li>
                 @if(summary.maybeTaxableIncome.isDefined) {
                     <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.taxableIncome") </span>@summary.maybeTaxableIncome</li>
@@ -146,11 +151,5 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     </p>
 
     }
-
-
-    <div class="print-link-container hide-for-print">
-        <a id="print-link-btn" href="javascript:window.print()" class="govuk-link govuk-body-s gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
-    </div>
-
 
 }
