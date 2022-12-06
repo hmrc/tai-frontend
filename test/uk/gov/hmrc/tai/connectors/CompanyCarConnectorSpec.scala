@@ -16,17 +16,15 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import java.time.LocalDate
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsResultException, Json}
-import uk.gov.hmrc.http.{HttpException, HttpResponse}
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
-import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit, WithdrawCarAndFuel}
+import uk.gov.hmrc.http.HttpException
+import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
 import utils.BaseSpec
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
@@ -57,25 +55,6 @@ class CompanyCarConnectorSpec extends BaseSpec {
           .result(sut.companyCarBenefitForEmployment(nino, employmentId), 5 seconds)
         ex.getMessage must include("List(JsonValidationError(List(error.path.missing)")
       }
-    }
-  }
-
-  "withdrawCompanyCar" must {
-    "return TaiSuccessResponse" in {
-      val carWithdrawDate = LocalDate.of(2017, 4, 24)
-      val fuelWithdrawDate = Some(LocalDate.of(2017, 4, 24))
-      val carSeqNum = 10
-      val employmentSeqNum = 11
-      val withdrawCarAndFuel = WithdrawCarAndFuel(10, carWithdrawDate, fuelWithdrawDate)
-      val url = s"${sut.companyCarEmploymentUrl(nino, employmentSeqNum)}/$carSeqNum/withdrawn"
-
-      when(httpHandler.putToApi(Matchers.eq(url), Matchers.eq(withdrawCarAndFuel))(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson("123456")))))
-
-      val result =
-        Await.result(sut.withdrawCompanyCarAndFuel(nino, employmentSeqNum, carSeqNum, withdrawCarAndFuel), 5 seconds)
-
-      result mustBe TaiSuccessResponse
     }
   }
 
