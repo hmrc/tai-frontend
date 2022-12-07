@@ -33,7 +33,6 @@ ec: scala.concurrent.ExecutionContext)
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(income),
-        displayBackLink = false,
         mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = messages("tai.howToUpdate.preHeading", income("name").value.getOrElse("")),
         showGdsVersion = true,
