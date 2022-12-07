@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.Inject
 import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
-import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCarBenefit, WithdrawCarAndFuel}
+import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -46,15 +45,6 @@ class CompanyCarConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
         logger.warn(s"Couldn't retrieve company car benefits for nino: $nino employmentId:$empId")
         None
     }
-
-  def withdrawCompanyCarAndFuel(
-    nino: Nino,
-    employmentSeqNum: Int,
-    carSeqNum: Int,
-    withdrawCarAndFuel: WithdrawCarAndFuel)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-    val withdrawUrl = s"${companyCarEmploymentUrl(nino, employmentSeqNum)}/$carSeqNum/withdrawn"
-    httpHandler.putToApi(withdrawUrl, withdrawCarAndFuel) map (_ => TaiSuccessResponse)
-  }
 
   def companyCarsForCurrentYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] =
     httpHandler.getFromApiV2(companyCarUrl(nino)) map (
