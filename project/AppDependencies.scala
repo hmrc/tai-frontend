@@ -19,7 +19,7 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "play-language"                    % s"5.3.0-$playVersion",
     "uk.gov.hmrc"       %% "local-template-renderer"          % s"2.17.0-$playVersion",
     "uk.gov.hmrc"       %% "play-ui"                          % s"9.11.0-$playVersion",
-    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.30.0-$playVersion",
+    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.25.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-hmrc"               % s"3.34.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-pta"                % "0.3.0"
   )
