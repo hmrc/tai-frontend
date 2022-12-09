@@ -27,7 +27,6 @@ import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome

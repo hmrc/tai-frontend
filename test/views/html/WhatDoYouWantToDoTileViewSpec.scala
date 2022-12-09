@@ -17,7 +17,6 @@
 package views.html
 
 import mocks.MockTemplateRenderer
-import org.mockito.Matchers.contains
 import org.mockito.Mockito.when
 import play.api.data.Form
 import play.api.i18n.Messages
