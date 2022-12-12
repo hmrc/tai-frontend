@@ -123,9 +123,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       cards.toString must include(Messages("earlier"))
       cards.toString must include(Messages("check.tax.previous.years"))
 
-      doc(jrsClaimView) must haveLinkWithUrlWithID(
-        "jrs-link",
-        s"${controllers.routes.JrsClaimsController.onPageLoad()}")
+      doc(jrsClaimView) must haveLinkWithUrlWithID("jrs-link", "/check-income-tax/jrs-claims")
       assertThrows[NullPointerException](
         doc(view) must haveLinkWithUrlWithID("jrs-link", s"${controllers.routes.JrsClaimsController.onPageLoad()}"))
     }
