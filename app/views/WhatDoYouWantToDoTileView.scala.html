@@ -127,7 +127,7 @@
             </div>
             @if(model.showJrsLink) {
                 <div class="govuk-!-margin-bottom-3">
-                    <a href="/check-income-tax/jrs-claims" class="govuk-body-m link-style" id="jrs-link">
+                    <a href=@{controllers.routes.JrsClaimsController.onPageLoad()} class="govuk-body-m link-style" id="jrs-link">
                         @messages("check.jrs.claims")
                     </a>
                 </div>
