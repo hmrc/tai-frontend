@@ -169,7 +169,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
+          Future.successful(nonTaxCodeIncome)
         )
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           Future.successful(taxAccountSummary)

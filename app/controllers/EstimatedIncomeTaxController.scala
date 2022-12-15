@@ -59,12 +59,12 @@ class EstimatedIncomeTaxController @Inject()(
       taxAccountService.nonTaxCodeIncomes(nino, TaxYear()),
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       codingComponentService.taxFreeAmountComponents(nino, TaxYear()),
-      partialService.getIncomeTaxPartial
-    ).mapN {
+      partialService.getIncomeTaxPartial)
+      .mapN {
         case (
             taxAccountSummary,
             totalTaxDetails,
-            TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
+            nonTaxCodeIncome,
             Right(taxCodeIncomes),
             codingComponents,
             iFormLinks

@@ -27,7 +27,6 @@ import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.play.views.formatting.Money.pounds
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
@@ -146,9 +145,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              nonTaxCodeIncome
-            )))
+            nonTaxCodeIncome
+          ))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
@@ -239,9 +237,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              nonTaxCodeIncome
-            )))
+            nonTaxCodeIncome
+          ))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
@@ -323,9 +320,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              nonTaxCodeIncome
-            )))
+            nonTaxCodeIncome
+          ))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
@@ -356,9 +352,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(Seq.empty[CodingComponent]))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-            )))
+            NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          ))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
@@ -389,9 +384,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(Seq.empty[CodingComponent]))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
-            TaiSuccessResponseWithPayload(
-              NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-            )))
+            NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          ))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(

@@ -26,7 +26,6 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json._
 import play.api.test.Helpers.CONTENT_TYPE
 import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}
-import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -311,11 +310,11 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             ))
 
         val result = taxAccountConnector.nonTaxCodeIncomes(nino, currentTaxYear).futureValue
-        result mustBe TaiSuccessResponseWithPayload(income.nonTaxCodeIncomes)
+        result mustBe income.nonTaxCodeIncomes
       }
     }
 
-    "thrown exception" when {
+    "throw a JsResultException" when {
       "tai sends an invalid json" in {
 
         server.stubFor(
@@ -324,12 +323,13 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               aResponse.withBody(corruptJsonResponse.toString())
             ))
 
-        val result = taxAccountConnector.nonTaxCodeIncomes(nino, currentTaxYear).futureValue
-        result mustBe a[TaiTaxAccountFailureResponse]
+        assertThrows[JsResultException] {
+          Await.result(taxAccountConnector.nonTaxCodeIncomes(nino, currentTaxYear), 5.seconds)
+        }
       }
     }
 
-    "return a TaiUnauthorisedResponse" when {
+    "throw an UnauthorisedException" when {
       "the http response is Unauthorized" in {
 
         server.stubFor(
@@ -338,8 +338,9 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               unauthorized()
             ))
 
-        val result = taxAccountConnector.nonTaxCodeIncomes(nino, currentTaxYear).futureValue
-        result mustBe a[TaiUnauthorisedResponse]
+        assertThrows[UnauthorizedException] {
+          Await.result(taxAccountConnector.nonTaxCodeIncomes(nino, currentTaxYear), 5.seconds)
+        }
       }
     }
   }
