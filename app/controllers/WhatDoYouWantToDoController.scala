@@ -27,7 +27,6 @@ import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -92,16 +91,16 @@ class WhatDoYouWantToDoController @Inject()(
     }
   }
 
-  private def whatToDoView(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged, showJrsTile: Boolean)(
+  private def whatToDoView(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged, showJrsLink: Boolean)(
     implicit request: Request[AnyContent]): Future[WhatDoYouWantToDoViewModel] = {
     lazy val successfulResponseModel = WhatDoYouWantToDoViewModel(
       applicationConfig.cyPlusOneEnabled,
       hasTaxCodeChanged.changed,
-      showJrsTile,
+      showJrsLink,
       hasTaxCodeChanged.mismatch)
 
     lazy val unsuccessfulResponseModel =
-      WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsTile = showJrsTile)
+      WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsLink = showJrsLink)
 
     if (applicationConfig.cyPlusOneEnabled) {
       taxAccountService.taxAccountSummary(nino, TaxYear().next).map(_ => successfulResponseModel) recover {
@@ -122,10 +121,10 @@ class WhatDoYouWantToDoController @Inject()(
     taxCodeChangeService.hasTaxCodeChanged(nino) flatMap {
       case Right(taxCodeChanged) =>
         for {
-          showJrsTile <- jrsService.checkIfJrsClaimsDataExist(nino)
+          showJrsLink <- jrsService.checkIfJrsClaimsDataExist(nino)
           (model, _) <- (
-                         whatToDoView(nino, taxCodeChanged, showJrsTile),
-                         auditNumberOfTaxCodesReturned(nino, showJrsTile)).tupled
+                         whatToDoView(nino, taxCodeChanged, showJrsLink),
+                         auditNumberOfTaxCodesReturned(nino, showJrsLink)).tupled
         } yield Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
       case Left(taxCodeError) =>
         Future.successful(
