@@ -32,13 +32,14 @@ sealed trait TimeToProcess
 
 case object ThreeWeeks extends TimeToProcess
 
-case object SevenDays extends TimeToProcess
+case object FifteenDays extends TimeToProcess
 
 case object NoTimeToProcess extends TimeToProcess
 
 class TrackingService @Inject()(
   trackingConnector: TrackingConnector,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService) {
+  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
+) {
 
   def isAnyIFormInProgress(nino: String)(implicit hc: HeaderCarrier): Future[TimeToProcess] =
     (
@@ -57,17 +58,20 @@ class TrackingService @Inject()(
         )
 
         (haveAnyShortProcesses, haveAnyLongProcesses, filteredJournies.isEmpty, isA3WeeksJourney(successfulJournies)) match {
-          case (true, false, _, _) | (_, _, false, false) => SevenDays
+          case (true, false, _, _) | (_, _, false, false) => FifteenDays
           case (_, true, _, _) | (_, _, false, true)      => ThreeWeeks
           case _                                          => NoTimeToProcess
         }
     }
 
   private def isA3WeeksJourney(journies: Map[String, String]): Boolean =
-    journies exists { _ == TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true" }
+    journies exists {
+      _ == TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true"
+    }
 
   private def hasIncompleteTrackingForms(trackedForms: Seq[TrackedForm], regex: String)(
-    implicit hc: HeaderCarrier): Boolean =
+    implicit hc: HeaderCarrier
+  ): Boolean =
     trackedForms
       .filter(_.id.matches(regex))
       .filter(form => form.status != TrackedFormDone)
