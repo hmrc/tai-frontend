@@ -16,49 +16,9 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
-import uk.gov.hmrc.tai.util.MapForGoogleAnalytics
-import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
-
-import scala.collection.immutable.ListMap
+import java.time.LocalDate
 
 case class WhatDoYouWantToDoViewModel(
   isCyPlusOneEnabled: Boolean,
-  hasTaxCodeChanged: Boolean = false,
   showJrsTile: Boolean,
-  taxCodeMismatch: Option[TaxCodeMismatch] = None) {
-
-  def showTaxCodeChangeTile(): Boolean =
-    (hasTaxCodeChanged, taxCodeMismatch) match {
-      case (_, Some(mismatch)) if mismatch.confirmedTaxCodes.isEmpty => false
-      case (true, Some(TaxCodeMismatch(false, _, _)))                => true
-      case _                                                         => false
-    }
-
-  def gaDimensions(): Map[String, String] = {
-
-    val enabledMap = taxCodeChangeDimensions ++ ListMap(
-      GoogleAnalyticsConstants.TaiLandingPageCYKey  -> "true",
-      GoogleAnalyticsConstants.TaiLandingPagePYKey  -> "true",
-      GoogleAnalyticsConstants.TaiLandingPageCY1Key -> isCyPlusOneEnabled.toString
-    )
-
-    Map(GoogleAnalyticsConstants.TaiLandingPageInformation -> MapForGoogleAnalytics.format(enabledMap))
-  }
-
-  private def taxCodeChangeDimensions: ListMap[String, String] =
-    taxCodeMismatch match {
-      case Some(mismatch) =>
-        ListMap(
-          GoogleAnalyticsConstants.TaiLandingPageTCCKey         -> hasTaxCodeChanged.toString,
-          GoogleAnalyticsConstants.TaiLandingPageTCMKey         -> mismatch.mismatch.toString,
-          GoogleAnalyticsConstants.TaiLandingPageConfirmedKey   -> formatSeqToString(mismatch.confirmedTaxCodes),
-          GoogleAnalyticsConstants.TaiLandingPageUnconfirmedKey -> formatSeqToString(mismatch.unconfirmedTaxCodes)
-        )
-      case _ => ListMap(GoogleAnalyticsConstants.TaiLandingPageTCCKey -> hasTaxCodeChanged.toString)
-    }
-
-  private def formatSeqToString(seq: Seq[String]): String =
-    seq.mkString("[", ",", "]")
-
-}
+  maybeMostRecentTaxCodeChangeDate: Option[LocalDate])

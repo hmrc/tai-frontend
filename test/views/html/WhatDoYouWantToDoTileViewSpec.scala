@@ -24,11 +24,11 @@ import play.twirl.api.Html
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
-import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
-import utils.factories.TaxCodeMismatchFactory
+
+import java.time.LocalDate
 
 class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
@@ -94,16 +94,21 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
     "display tax code change banner correctly" when {
       "Tax Code Change is enabled" in {
+        val localDate = LocalDate.now()
 
-        val taxCodeMatched = TaxCodeMismatchFactory.matchedTaxCode
-        val modeWithCyPlus1TaxCodeChange = createViewModel(true, true, taxCodeMismatch = Some(taxCodeMatched))
+        val modeWithCyPlus1TaxCodeChange =
+          createViewModel(isCyPlusOneEnabled = true, maybeMostRecentTaxCodeChangeDate = Some(localDate))
 
         val nextYearView: Html = whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange, appConfig)
+
         val cards = doc(nextYearView).getElementsByClass("card")
 
         cards.size mustBe 5
         doc(nextYearView).toString must include(Messages("tai.WhatDoYouWantToDo.ViewChangedTaxCode"))
-        doc(nextYearView).toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode"))
+        doc(nextYearView).toString must include(
+          Messages(
+            "tai.WhatDoYouWantToDo.ChangedTaxCode",
+            TaxYearRangeUtil.formatDate(localDate).replace(" ", "&nbsp;")))
         cards.toString must include(Messages("claim.tax.relief.wfh"))
       }
     }
@@ -156,10 +161,9 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
   def createViewModel(
     isCyPlusOneEnabled: Boolean,
-    hasTaxCodeChanged: Boolean = false,
     showJrsTile: Boolean = false,
-    taxCodeMismatch: Option[TaxCodeMismatch] = None): WhatDoYouWantToDoViewModel =
-    WhatDoYouWantToDoViewModel(isCyPlusOneEnabled, hasTaxCodeChanged, showJrsTile, taxCodeMismatch)
+    maybeMostRecentTaxCodeChangeDate: Option[LocalDate] = None): WhatDoYouWantToDoViewModel =
+    WhatDoYouWantToDoViewModel(isCyPlusOneEnabled, showJrsTile, maybeMostRecentTaxCodeChangeDate)
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 
