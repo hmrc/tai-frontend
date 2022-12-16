@@ -28,11 +28,11 @@ import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
@@ -69,6 +69,21 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       Some(LocalDate.of(2015, 11, 26)),
       Some(LocalDate.of(2015, 11, 26))
     ))
+
+  val startDate = LocalDate.now()
+  val taxCodeRecord1 = TaxCodeRecord(
+    "D0",
+    startDate,
+    startDate.plusDays(1),
+    OtherBasisOfOperation,
+    "Employer 1",
+    false,
+    Some("1234"),
+    true)
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
+  val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
+  val mostRecentTaxCodeChangeDate =
+    TaxYearRangeUtil.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate).replace(" ", "&nbsp;")
 
   private val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
 
@@ -153,6 +168,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
+        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(taxAccountSummary))
 
@@ -162,7 +178,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode"))
+        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
 
         doc.select(".card").size mustBe 5
       }
@@ -174,6 +190,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
+        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(taxAccountSummary))
 
@@ -183,7 +200,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode"))
+        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
         doc.select(".card").size mustBe 4
       }
 
@@ -196,6 +213,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
           .thenReturn(Future.successful(true))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
+        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(taxAccountSummary))
 
@@ -205,7 +223,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode"))
+        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
         doc.body().toString must include(Messages("check.jrs.claims"))
 
         doc.select(".card").size mustBe 6
@@ -218,6 +236,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           .thenReturn(Future.successful(true))
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(Right(taxCodeChanged)))
+        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(taxAccountSummary))
 
@@ -227,7 +246,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode"))
+        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
         doc.body().toString must include(Messages("check.jrs.claims"))
 
         doc.select(".card").size mustBe 5
