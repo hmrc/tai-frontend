@@ -17,9 +17,11 @@
 package controllers
 
 import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
+import org.joda.time.DateTime
 import play.api.mvc._
 import play.api.test.Helpers.stubControllerComponents
 import uk.gov.hmrc.auth.core.ConfidenceLevel
+import uk.gov.hmrc.auth.core.retrieve.LoginTimes
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
@@ -28,7 +30,14 @@ import scala.util.Random
 
 object FakeAuthAction extends AuthAction {
   val nino = new Generator(new Random).nextNino
-  val user = AuthedUser(nino.toString(), Some("saUtr"), Some(TaiConstants.AuthProviderGG), ConfidenceLevel.L200, None)
+  val user = AuthedUser(
+    nino.toString(),
+    Some("saUtr"),
+    Some(TaiConstants.AuthProviderGG),
+    ConfidenceLevel.L200,
+    None,
+    LoginTimes(DateTime.now(), Some(DateTime.now().minusDays(7)))
+  )
   val cc: ControllerComponents = stubControllerComponents()
 
   override def invokeBlock[A](

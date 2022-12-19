@@ -138,5 +138,9 @@
             </div>
         </div>
 
+        @user.loginTimes.previousLogin.map{ maybePreviousLogin =>
+            <p class="govuk-body">@messages("tai.WhatDoYouWantToDo.lastSignedIn", maybePreviousLogin)</p>
+        }
+
     </div>
 }

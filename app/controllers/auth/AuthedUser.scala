@@ -17,6 +17,7 @@
 package controllers.auth
 
 import uk.gov.hmrc.auth.core.ConfidenceLevel
+import uk.gov.hmrc.auth.core.retrieve.LoginTimes
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.domain.Nino
 
@@ -25,7 +26,8 @@ case class AuthedUser(
   utr: Option[String],
   providerType: Option[String],
   confidenceLevel: ConfidenceLevel,
-  trustedHelper: Option[TrustedHelper]) {
+  trustedHelper: Option[TrustedHelper],
+  loginTimes: LoginTimes) {
   def nino: Nino = Nino(validNino)
 }
 
@@ -34,21 +36,24 @@ object AuthedUser {
     nino: Option[String],
     saUtr: Option[String],
     providerType: Option[String],
-    confidenceLevel: ConfidenceLevel): AuthedUser = {
+    confidenceLevel: ConfidenceLevel,
+    loginTimes: LoginTimes): AuthedUser = {
     val validNino = nino.getOrElse("")
-    AuthedUser(validNino, saUtr, providerType, confidenceLevel, None)
+    AuthedUser(validNino, saUtr, providerType, confidenceLevel, None, loginTimes)
   }
 
   def apply(
     trustedHelper: TrustedHelper,
     saUtr: Option[String],
     providerType: Option[String],
-    confidenceLevel: ConfidenceLevel): AuthedUser =
+    confidenceLevel: ConfidenceLevel,
+    loginTimes: LoginTimes): AuthedUser =
     AuthedUser(
       trustedHelper.principalNino,
       saUtr,
       providerType,
       confidenceLevel,
-      Some(trustedHelper)
+      Some(trustedHelper),
+      loginTimes
     )
 }

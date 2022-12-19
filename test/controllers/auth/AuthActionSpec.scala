@@ -17,6 +17,7 @@
 package controllers.auth
 
 import controllers.routes
+import org.joda.time.DateTime
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import play.api.mvc.AbstractController
@@ -24,7 +25,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, LoginTimes, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{Nino => _, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
@@ -105,15 +106,16 @@ class AuthActionSpec extends BaseSpec {
       val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
       val saUtr = Some("000111222")
       val nino = new Generator().nextNino.nino
+      val loginTimes = LoginTimes(DateTime.now(), Some(DateTime.now().minusDays(7)))
       val baseRetrieval =
-        creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L200
+        creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L200 ~ loginTimes
 
       "no trusted helper data is returned" in {
 
         val controller = Harness.successful(baseRetrieval ~ None)
         val result = controller.onPageLoad()(fakeRequest)
 
-        val expectedTaiUser = AuthedUser(nino, saUtr, authProviderGG, ConfidenceLevel.L200, None)
+        val expectedTaiUser = AuthedUser(nino, saUtr, authProviderGG, ConfidenceLevel.L200, None, loginTimes)
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }
@@ -126,7 +128,13 @@ class AuthActionSpec extends BaseSpec {
         val result = controller.onPageLoad()(fakeRequest)
 
         val expectedTaiUser =
-          AuthedUser(nino.nino, Some("000111222"), authProviderGG, ConfidenceLevel.L200, Some(trustedHelper))
+          AuthedUser(
+            nino.nino,
+            Some("000111222"),
+            authProviderGG,
+            ConfidenceLevel.L200,
+            Some(trustedHelper),
+            loginTimes)
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }
@@ -137,7 +145,7 @@ class AuthActionSpec extends BaseSpec {
         val saUtr = Some("000111222")
         val nino = new Generator().nextNino.nino
         val baseRetrieval =
-          creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L50
+          creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L50 ~ loginTimes
 
         val controller = Harness.successful(baseRetrieval ~ None)
         val result = controller.onPageLoad()(fakeRequest)

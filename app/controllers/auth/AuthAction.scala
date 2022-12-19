@@ -48,15 +48,16 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
       HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised().retrieve(
-      Retrievals.credentials and Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper) {
-      case credentials ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) =>
+      Retrievals.credentials and Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.loginTimes and Retrievals.trustedHelper) {
+
+      case credentials ~ _ ~ saUtr ~ confidenceLevel ~ loginTimes ~ Some(helper) =>
         val providerType = credentials.map(_.providerType)
-        val user = AuthedUser(helper, saUtr, providerType, confidenceLevel)
+        val user = AuthedUser(helper, saUtr, providerType, confidenceLevel, loginTimes)
 
         authWithCredentials(request, block, credentials, user)
-      case credentials ~ nino ~ saUtr ~ confidenceLevel ~ _ =>
+      case credentials ~ nino ~ saUtr ~ confidenceLevel ~ loginTimes ~ _ =>
         val providerType = credentials.map(_.providerType)
-        val user = AuthedUser(nino, saUtr, providerType, confidenceLevel)
+        val user = AuthedUser(nino, saUtr, providerType, confidenceLevel, loginTimes)
 
         authWithCredentials(request, block, credentials, user)
       case _ => throw new RuntimeException("Can't find credentials for user")
