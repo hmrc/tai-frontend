@@ -29,6 +29,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
 import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
+import uk.gov.hmrc.tai.util.DateHelper.dateTimeFormat
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -160,8 +161,9 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
     "display last logged in message when we retrieve a last log in from auth" in {
 
+      val dt = DateTime.now.minusDays(7)
       implicit val thisAuthedUser: AuthedUser =
-        UserBuilder("utr", TaiConstants.AuthProviderGG, "test", Some(DateTime.now.minusDays(7)))
+        UserBuilder("utr", TaiConstants.AuthProviderGG, "test", Some(dt))
 
       val view: Html = whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1, appConfig)(
         authRequest,
@@ -173,7 +175,27 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       val cards = doc(view).getElementsByClass("card")
 
       cards.size mustBe 4
-      doc(view).toString must include(Messages("tai.WhatDoYouWantToDo.lastSignedIn", "hello"))
+      doc(view).toString must include(Messages("tai.WhatDoYouWantToDo.lastSignedIn", dateTimeFormat(dt)))
+
+    }
+
+    "not display last logged in message when we retrieve a last log in from auth" in {
+
+      val dt = DateTime.now.minusDays(7)
+      implicit val thisAuthedUser: AuthedUser =
+        UserBuilder("utr", TaiConstants.AuthProviderGG, "test", None)
+
+      val view: Html = whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1, appConfig)(
+        authRequest,
+        messages,
+        thisAuthedUser,
+        templateRenderer,
+        ec)
+
+      val cards = doc(view).getElementsByClass("card")
+
+      cards.size mustBe 4
+      doc(view).toString mustNot include(Messages("tai.WhatDoYouWantToDo.lastSignedIn", dateTimeFormat(dt)))
 
     }
   }

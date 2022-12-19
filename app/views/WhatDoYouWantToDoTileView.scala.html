@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, WhatDoYouWantToDoViewModel}
 @import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.tai.util.DateHelper._
 
 @import scala.concurrent.ExecutionContext
 
@@ -138,9 +139,11 @@
             </div>
         </div>
 
-        @user.loginTimes.previousLogin.map{ maybePreviousLogin =>
-            <p class="govuk-body">@messages("tai.WhatDoYouWantToDo.lastSignedIn", "hello")</p>
+           <p class="govuk-body"> @{
+            user.loginTimes.previousLogin.map{maybePreviousLogin => messages("tai.WhatDoYouWantToDo.lastSignedIn", dateTimeFormat(maybePreviousLogin))
+            }
         }
+           </p>
 
     </div>
 }

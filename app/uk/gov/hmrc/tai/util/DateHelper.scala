@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.tai.util
 
+import org.joda.time.DateTime
+
 import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
@@ -41,6 +43,14 @@ object DateHelper {
   def getMonthAndYear(date: String): String = {
     val monthAndYearRegex = "[A-Za-z].*".r
     monthAndYearRegex.findFirstIn(date).getOrElse("")
+  }
+
+  def dateTimeFormat(dt: DateTime): String = {
+    val month = dt.monthOfYear.getAsText
+    val day = dt.getDayOfMonth
+    val year = dt.getYear
+    val time = dt.toLocalTime.toString("HH:mm")
+    s"$day $month $year at $time"
   }
 
 }
