@@ -18,18 +18,14 @@ package controllers.employments
 
 import cats.data.EitherT
 import cats.implicits._
-import uk.gov.hmrc.tai.util.FutureOps._
 import com.google.inject.name.Named
 import controllers._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import javax.inject.Inject
-import java.time.LocalDate
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
@@ -37,8 +33,9 @@ import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, Employ
 import uk.gov.hmrc.tai.model.domain.EndEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
+import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
@@ -47,6 +44,8 @@ import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EndEmploymentController @Inject()(
@@ -56,6 +55,7 @@ class EndEmploymentController @Inject()(
   validatePerson: ValidatePerson,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
+  errorPagesHandler: ErrorPagesHandler,
   updateRemoveEmploymentDecision: UpdateRemoveEmploymentDecisionView,
   endEmploymentWithinSixWeeksError: EndEmploymentWithinSixWeeksErrorView,
   endEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentErrorView,
@@ -293,8 +293,8 @@ class EndEmploymentController @Inject()(
               }
             }
           )
-        case _ =>
-          throw new RuntimeException("No employment found")
+      } recover {
+        case _ => NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
       }
 
   }
