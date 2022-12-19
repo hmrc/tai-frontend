@@ -18,7 +18,7 @@ package controllers.employments
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.FakeAuthAction
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
@@ -836,6 +836,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         FakeValidatePerson,
         mock[AuditConnector],
         mcc,
+        inject[ErrorPagesHandler],
         inject[UpdateRemoveEmploymentDecisionView],
         inject[EndEmploymentWithinSixWeeksErrorView],
         inject[EndEmploymentIrregularPaymentErrorView],

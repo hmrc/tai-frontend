@@ -56,6 +56,7 @@ class EndEmploymentController @Inject()(
   validatePerson: ValidatePerson,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
+  errorPagesHandler: ErrorPagesHandler,
   updateRemoveEmploymentDecision: UpdateRemoveEmploymentDecisionView,
   endEmploymentWithinSixWeeksError: EndEmploymentWithinSixWeeksErrorView,
   endEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentErrorView,
@@ -186,7 +187,8 @@ class EndEmploymentController @Inject()(
                       } else {
                         Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
                       }
-                    case _ => throw new RuntimeException("No employment found")
+                  } recover {
+                    case _ => NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
                   }
               }
             )
