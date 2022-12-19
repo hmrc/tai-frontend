@@ -16,16 +16,21 @@
 
 package views.html
 
+import builders.UserBuilder
+import controllers.auth.AuthedUser
 import mocks.MockTemplateRenderer
+import org.joda.time.DateTime
 import org.mockito.Mockito.when
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
+import uk.gov.hmrc.auth.core.retrieve.LoginTimes
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
 import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import utils.factories.TaxCodeMismatchFactory
@@ -151,6 +156,25 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       cards.size mustBe 3
       cards.toString mustNot include(Messages("income.tax.history"))
       cards.toString mustNot include(Messages("income.tax.history.content"))
+    }
+
+    "display last logged in message when we retrieve a last log in from auth" in {
+
+      implicit val thisAuthedUser: AuthedUser =
+        UserBuilder("utr", TaiConstants.AuthProviderGG, "test", Some(DateTime.now.minusDays(7)))
+
+      val view: Html = whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1, appConfig)(
+        authRequest,
+        messages,
+        thisAuthedUser,
+        templateRenderer,
+        ec)
+
+      val cards = doc(view).getElementsByClass("card")
+
+      cards.size mustBe 4
+      doc(view).toString must include(Messages("tai.WhatDoYouWantToDo.lastSignedIn", "hello"))
+
     }
   }
 

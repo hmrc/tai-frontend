@@ -91,7 +91,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
       "Failed response is received from service" in {
 
         implicit val authedTrustedUser: AuthedUser =
-          UserBuilder("utr", TaiConstants.AuthProviderGG, "principalName")
+          UserBuilder("utr", TaiConstants.AuthProviderGG, "principalName", None)
 
         implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedTrustedUser, "name")
 

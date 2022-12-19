@@ -36,13 +36,13 @@ object UserBuilder {
       None,
       LoginTimes(DateTime.now(), Some(DateTime.now().minusDays(7))))
 
-  def apply(utr: String, providerType: String, principalName: String) =
+  def apply(utr: String, providerType: String, principalName: String, previousLogin: Option[DateTime]) =
     AuthedUser(
       nino.toString(),
       Some(utr),
       Some(providerType),
       ConfidenceLevel.L200,
       Some(TrustedHelper(principalName, "attorneyName", "returnLinkUrl", nino.toString())),
-      LoginTimes(DateTime.now(), Some(DateTime.now().minusDays(7)))
+      LoginTimes(DateTime.now(), previousLogin)
     )
 }

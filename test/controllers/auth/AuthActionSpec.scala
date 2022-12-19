@@ -107,8 +107,9 @@ class AuthActionSpec extends BaseSpec {
       val saUtr = Some("000111222")
       val nino = new Generator().nextNino.nino
       val loginTimes = LoginTimes(DateTime.now(), Some(DateTime.now().minusDays(7)))
-      val baseRetrieval =
-        creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L200 ~ loginTimes
+      val loginTimesNoPrevious = LoginTimes(DateTime.now(), None)
+      val baseRetrievalNoPreviousLoginTime = creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L200 ~ loginTimesNoPrevious
+      val baseRetrieval = creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L200 ~ loginTimes
 
       "no trusted helper data is returned" in {
 
@@ -152,6 +153,17 @@ class AuthActionSpec extends BaseSpec {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.UnauthorisedController.upliftFailedUrl.url
+      }
+
+      "user does not have a previous login time" in {
+
+        val controller = Harness.successful(baseRetrievalNoPreviousLoginTime ~ None)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        val expectedTaiUser = AuthedUser(nino, saUtr, authProviderGG, ConfidenceLevel.L200, None, loginTimesNoPrevious)
+
+        contentAsString(result) mustBe expectedTaiUser.toString
+
       }
     }
   }
