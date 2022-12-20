@@ -128,5 +128,5 @@ class ApplicationConfig @Inject()(
   lazy val trackFrontendHost: String = decorateUrlForLocalDev("tracking-frontend.host")
   lazy val jrsClaimsServiceUrl: String = servicesConfig.baseUrl("coronavirus-jrs-published-employees")
 
-  val nuanceUrl: String = servicesConfig.getString("nuance.url")
+  lazy val nuanceUrl: String = servicesConfig.getString("nuance.url")
 }

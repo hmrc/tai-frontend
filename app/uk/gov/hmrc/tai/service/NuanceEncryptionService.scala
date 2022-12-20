@@ -40,11 +40,11 @@ case class NuanceEncryptionService @Inject()(configuration: Configuration) {
   protected lazy val hasher: Sha512Crypto = new Sha512Crypto(hashingKey)
   def encryptField(rawValue: String): String =
     FIELD_PREFIX + crypto.encrypt(prefixWithHash(rawValue)).value
-  private[services] def prefixWithHash(rawValue: String): PlainText =
+  private[service] def prefixWithHash(rawValue: String): PlainText =
     PlainText(saltedHashValue(rawValue).value + VALUE_SEPARATOR + rawValue)
   private def hashValue(rawValue: String): Scrambled = hasher.hash(PlainText(rawValue))
-  private[services] def saltedHashValue(rawValue: String): Scrambled = hasher.hash(PlainText(salt + rawValue))
-  private[services] def hashField(rawValue: String): String = hashValue(rawValue).value
+  private[service] def saltedHashValue(rawValue: String): Scrambled = hasher.hash(PlainText(salt + rawValue))
+  private[service] def hashField(rawValue: String): String = hashValue(rawValue).value
 
   /**
     * Make a Nuance safe hash value from a raw value by hashing and then

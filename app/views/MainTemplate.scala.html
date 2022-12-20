@@ -67,11 +67,11 @@
         hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
         hmrcReportTechnicalIssue: HmrcReportTechnicalIssue,
         banner: attorneyBanner,
-        webChatClient: WebChatClient,
-        nuanceEncryptionService: NuanceEncryptionService,
+        webChatClient: WebChatClient
+
 )(implicit accountMenuConfig: AccountMenuConfig)
 
-
+@*        nuanceEncryptionService: NuanceEncryptionService,*@
 @(
         title: String,
         authedUser: Option[controllers.auth.AuthedUser] = None,
@@ -98,7 +98,9 @@
 
 @isUserResearchBannerHidden = @{request.cookies.exists((x: Cookie) => x.name == "mdtpurr")}
 
+    @*
 @nuanceHashedSessionId = @{ EncryptedNuanceData.create(nuanceEncryptionService, webchatSessionId.getOrElse("")) }
+    *@
 @webchatSessionId = @{ request.session.get("sessionId") }
 
 @isGG = @{
@@ -266,22 +268,16 @@
 }
 
 @additionalScriptsBlock = {
+
     <script src='@controllers.routes.AssetsController.versioned("javascripts/newcard.js")'></script>
 
-
-
-    <div id="HMRC_Anchored_1"></div>
-    <script type="text/javascript">
-            var nuanceData =
-                    {
-                        'sessionID': '@nuanceHashedSessionId.head',
-                        'mdtpSessionID' : '@nuanceHashedSessionId.tail'
-                    }
-    </script>
-    <script id="webchat-tag" type="text/javascript" src=@appConfig.nuanceUrl></script>
-
-
+@{webChatClient.loadWebChatContainer("HMRC_Fixed_1")}
+@{webChatClient.loadRequiredElements()}
 }
+
+
+
+
 
 
 
