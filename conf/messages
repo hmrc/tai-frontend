@@ -1466,7 +1466,7 @@ global.error.InternalServerError500.tai.message.contact.hmrc = contact HMRC
 global.error.InternalServerError500.tai.message.by.phone.post = online, by phone or by post.
 
 
-claim.tax.relief.claimOtherExpense = Check if you can claim Employee expenses
+claim.tax.relief.wfh = Claim tax relief on expenses for working from home
 
 check.jrs.claims=Check Coronavirus Job Retention Scheme claims
 check.jrs.claims.title=Coronavirus Job Retention Scheme
