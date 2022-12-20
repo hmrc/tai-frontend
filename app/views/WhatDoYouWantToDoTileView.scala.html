@@ -41,13 +41,19 @@
     }
 }
 
+@maybeLoggedInMessage = @{
+    user.loginTimes.previousLogin.map{maybePreviousLogin => messages("tai.WhatDoYouWantToDo.lastSignedIn", dateTimeFormat(maybePreviousLogin))
+        }
+    }
+
 
 @mainTemplate(
     title = messages("your.paye.income.tax.overview"),
     authedUser = Some(user),
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkContent = None,
-    pagePrintable = true
+    pagePrintable = true,
+    loggedInMessage = maybeLoggedInMessage
 ) {
 
     @if(model.showTaxCodeChangeTile()) {
@@ -138,12 +144,5 @@
 
             </div>
         </div>
-
-           <p class="govuk-body"> @{
-            user.loginTimes.previousLogin.map{maybePreviousLogin => messages("tai.WhatDoYouWantToDo.lastSignedIn", dateTimeFormat(maybePreviousLogin))
-            }
-        }
-           </p>
-
     </div>
 }

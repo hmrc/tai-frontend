@@ -84,7 +84,7 @@
         pagePrintName: Option[String] = None,
         showPtaAccountNav: Boolean = true,
         formForErrorSummary: Option[Form[_]] = None,
-        nonce: Option[String] = None,
+        loggedInMessage: Option[String] = None,
         showUrBannerOverride: Boolean = false
 )(content: Html)(implicit request: Request[_],
         messages: Messages)
@@ -199,7 +199,8 @@
 @content
     <div class="govuk-grid-row govuk-!-margin-top-9">
         <div class="govuk-grid-column-one-half govuk-!-margin-bottom-5">
-        @hmrcReportTechnicalIssueHelper()
+            <p class="govuk-body">@loggedInMessage.getOrElse("")</p>
+            @hmrcReportTechnicalIssueHelper()
         </div>
     </div>
 
