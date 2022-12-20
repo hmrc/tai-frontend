@@ -18,8 +18,8 @@ package controllers.employments
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.{ErrorPagesHandler, FakeAuthAction}
 import controllers.actions.FakeValidatePerson
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
