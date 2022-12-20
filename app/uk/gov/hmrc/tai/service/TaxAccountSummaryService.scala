@@ -24,9 +24,8 @@ import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, NotLive}
+import uk.gov.hmrc.tai.model.domain.income.{Live, NotLive}
 import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 
@@ -56,7 +55,7 @@ class TaxAccountSummaryService @Inject()(
           liveEmploymentIncomeSources,
           ceasedEmploymentIncomeSources,
           nonMatchingCeasedEmployments,
-          TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
+          nonTaxCodeIncome,
           isAnyFormInProgress) =>
         TaxAccountSummaryViewModel(
           taxAccountSummary,
@@ -65,8 +64,8 @@ class TaxAccountSummaryService @Inject()(
           IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
           nonMatchingCeasedEmployments
         )
-      case (_, _, _, _, TaiUnauthorisedResponse(message), _) => throw new UnauthorizedException(message)
-      case _                                                 => throw new RuntimeException("Failed to fetch income details")
+    } recover {
+      case e: UnauthorizedException => throw e
+      case _                        => throw new RuntimeException("Failed to fetch income details")
     }
-
 }
