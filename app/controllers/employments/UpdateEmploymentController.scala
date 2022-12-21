@@ -94,7 +94,9 @@ class UpdateEmploymentController @Inject()(
                                    whatDoYouWantToTellUs(
                                      EmploymentViewModel(emp.name, empId),
                                      UpdateEmploymentDetailsForm.form.fill(userSuppliedDetails.getOrElse("")))))
-                         case _ => throw new RuntimeException("Error during employment details retrieval")
+                         case _ =>
+                           Future.successful(
+                             errorPagesHandler.internalServerError("Error during employment details retrieval"))
                        }
       } yield futureResult).recover {
         case NonFatal(exception) => errorPagesHandler.internalServerError(exception.getMessage)
