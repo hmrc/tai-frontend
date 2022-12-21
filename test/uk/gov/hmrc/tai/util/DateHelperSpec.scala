@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.util
 
+import org.joda.time.DateTime
 import org.scalatestplus.play.PlaySpec
 
 class DateHelperSpec extends PlaySpec {
@@ -30,6 +31,15 @@ class DateHelperSpec extends PlaySpec {
     "return empty string" when {
       "provided with numerical date" in {
         DateHelper.monthOfYear("28/2/2018") must be("")
+      }
+    }
+  }
+
+  "dateTimeFormat" must {
+    "return dd MMM yyyy 'at' HH:mm" when {
+      "given valid DateTime" in {
+        val dt = DateTime.parse("2022-12-21T13:04:55.942Z")
+        DateHelper.dateTimeFormat(dt) must be("21 December 2022 at 13:04")
       }
     }
   }
