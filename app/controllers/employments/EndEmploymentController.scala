@@ -222,7 +222,7 @@ class EndEmploymentController @Inject()(
             EmploymentViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1).toInt)))
       }
       .getOrElse {
-        NotFound(errorPagesHandler.error5xx("Could not retrieve mandatory journey values"))
+        InternalServerError(errorPagesHandler.error5xx("Could not retrieve mandatory journey values"))
       }
   }
 
