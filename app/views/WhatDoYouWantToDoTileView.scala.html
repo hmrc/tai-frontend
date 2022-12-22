@@ -18,6 +18,8 @@
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.viewModels.{GoogleAnalyticsSettings, WhatDoYouWantToDoViewModel}
 @import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.tai.util.HtmlFormatter
+@import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 @import uk.gov.hmrc.tai.util.DateHelper._
 
 @import scala.concurrent.ExecutionContext
@@ -33,19 +35,10 @@
         templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
         ec: ExecutionContext)
 
-@optimizelyAudience = @{
-    if(model.showTaxCodeChangeTile()) {
-        Some("TaxCodeChangeUser")
-    } else {
-        None
+@maybeLoggedInMessage = @{
+user.loginTimes.previousLogin.map{maybePreviousLogin => messages("tai.WhatDoYouWantToDo.lastSignedIn", dateTimeFormat(maybePreviousLogin))
     }
 }
-
-@maybeLoggedInMessage = @{
-    user.loginTimes.previousLogin.map{maybePreviousLogin => messages("tai.WhatDoYouWantToDo.lastSignedIn", dateTimeFormat(maybePreviousLogin))
-        }
-    }
-
 
 @mainTemplate(
     title = messages("your.paye.income.tax.overview"),
@@ -56,8 +49,7 @@
     loggedInMessage = maybeLoggedInMessage
 ) {
 
-    @if(model.showTaxCodeChangeTile()) {
-
+    @model.maybeMostRecentTaxCodeChangeDate.map { mostRecentTaxCodeChangeDate =>
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
                 <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
@@ -68,7 +60,7 @@
                     </div>
                     <div class="govuk-notification-banner__content">
                         <h3 class="govuk-notification-banner__heading">
-                        @messages("tai.WhatDoYouWantToDo.ChangedTaxCode")
+                        @messages("tai.WhatDoYouWantToDo.ChangedTaxCode", HtmlFormatter.htmlNonBroken(Dates.formatDate(mostRecentTaxCodeChangeDate)))
                         </h3>
                         <a href="@controllers.routes.TaxCodeChangeController.taxCodeComparison()" class="govuk-body">
                         @messages("tai.WhatDoYouWantToDo.ViewChangedTaxCode")
@@ -78,7 +70,6 @@
             </div>
         </div>
     }
-
 
     <header class="page-header">
         <h1 class="govuk-heading-xl" id="whatDoYouWantToDoTitle">@messages("your.paye.income.tax.overview")</h1>
