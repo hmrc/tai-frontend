@@ -20,19 +20,17 @@ import akka.Done
 import play.api.Logging
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UnauthorizedException}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
-import uk.gov.hmrc.tai.model.domain.income.{Incomes, TaxCodeIncome, TaxCodeIncomeSourceStatus}
+import uk.gov.hmrc.tai.model.domain.income.{Incomes, NonTaxCodeIncome, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentType, TaxedIncome, UpdateTaxCodeIncomeRequest}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
   implicit ec: ExecutionContext)
@@ -80,14 +78,13 @@ class TaxAccountConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Se
         Left(e.getMessage)
     }
 
-  def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.getFromApiV2(nonTaxCodeIncomeUrl(nino.nino, year)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[Incomes].nonTaxCodeIncomes)
-    ) recover {
-      case e: UnauthorizedException => TaiUnauthorisedResponse(e.getMessage)
+  def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[NonTaxCodeIncome] =
+    httpHandler.getFromApiV2(nonTaxCodeIncomeUrl(nino.nino, year)).map { json =>
+      (json \ "data").as[Incomes].nonTaxCodeIncomes
+    } recover {
       case e: Exception =>
         logger.warn(s"Couldn't retrieve non tax code incomes for $nino with exception:${e.getMessage}")
-        TaiTaxAccountFailureResponse(e.getMessage)
+        throw e
     }
 
   def codingComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] =

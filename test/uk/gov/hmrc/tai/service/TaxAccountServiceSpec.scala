@@ -21,11 +21,10 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax._
-import uk.gov.hmrc.tai.model.domain._
 import utils.BaseSpec
 
 import scala.concurrent.duration._
@@ -96,10 +95,10 @@ class TaxAccountServiceSpec extends BaseSpec {
     "return Non tax code income" in {
       val sut = createSut
       when(taxAccountConnector.nonTaxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(nonTaxCodeIncome)))
+        .thenReturn(Future.successful(nonTaxCodeIncome))
 
       val result = sut.nonTaxCodeIncomes(nino, TaxYear())
-      Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(nonTaxCodeIncome)
+      Await.result(result, 5 seconds) mustBe nonTaxCodeIncome
     }
   }
 

@@ -21,7 +21,7 @@ import controllers.actions.FakeValidatePerson
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
@@ -56,7 +56,7 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
   when(taxAccountService.taxAccountSummary(any(), any())(any()))
     .thenReturn(Future.successful(TaxAccountSummary(0, 0, 0, 0, 0)))
   when(taxAccountService.nonTaxCodeIncomes(any(), any())(any()))
-    .thenReturn(Future.successful(TaiSuccessResponseWithPayload(NonTaxCodeIncome(None, Seq.empty))))
+    .thenReturn(Future.successful(NonTaxCodeIncome(None, Seq.empty)))
   when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
 
   "Detailed Income Tax Estimate Controller" must {
@@ -91,7 +91,7 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
 
       "fetch of non-tax code incomes fails" in {
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
+          .thenReturn(Future.failed(new BadRequestException("testFailure")))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }

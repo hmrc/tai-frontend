@@ -23,11 +23,9 @@ import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
-import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 
@@ -42,72 +40,72 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
   }
 
   "TaxAccountSummaryServiceSpec" should {
-    "return a BadRequestException if ceasedEmployments fails" in {
+    "return a RuntimeException if ceasedEmployments fails" in {
       val sut = createSUT
 
       when(employmentService.ceasedEmployments(any[Nino], any[TaxYear])(any[HeaderCarrier])).thenReturn(
-        Future.failed(new BadRequestException("Failed Call"))
+        Future.failed(new BadRequestException("Failed to fetch income details"))
       )
 
-      val caught = the[BadRequestException] thrownBy Await
+      val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "Failed Call"
+      caught.getMessage mustBe "Failed to fetch income details"
     }
 
-    "return a BadRequestException if incomeSources Live PensionsIncome fails" in {
+    "return a RuntimeException if incomeSources Live PensionsIncome fails" in {
       val sut = createSUT
 
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
           any[HeaderCarrier])).thenReturn(
-        Future.failed(new BadRequestException("Failed Call"))
+        Future.failed(new BadRequestException("Failed to fetch income details"))
       )
 
-      val caught = the[BadRequestException] thrownBy Await
+      val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "Failed Call"
+      caught.getMessage mustBe "Failed to fetch income details"
     }
 
-    "return a BadRequestException if incomeSources Live EmploymentIncome fails" in {
+    "return a RuntimeException if incomeSources Live EmploymentIncome fails" in {
       val sut = createSUT
 
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Live))(
           any[HeaderCarrier])).thenReturn(
-        Future.failed(new BadRequestException("Failed Call"))
+        Future.failed(new BadRequestException("Failed to fetch income details"))
       )
 
-      val caught = the[BadRequestException] thrownBy Await
+      val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "Failed Call"
+      caught.getMessage mustBe "Failed to fetch income details"
     }
 
-    "return a BadRequestException if incomeSources NotLive EmploymentIncome fails" in {
+    "return a RuntimeException if incomeSources NotLive EmploymentIncome fails" in {
       val sut = createSUT
 
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
           any[HeaderCarrier])).thenReturn(
-        Future.failed(new BadRequestException("Failed Call"))
+        Future.failed(new BadRequestException("Failed to fetch income details"))
       )
 
-      val caught = the[BadRequestException] thrownBy Await
+      val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "Failed Call"
+      caught.getMessage mustBe "Failed to fetch income details"
     }
 
-    "return a BadRequestException if NonTaxCodeIncome fails" in {
+    "return a RuntimeException if NonTaxCodeIncome fails" in {
       val sut = createSUT
 
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
           any[HeaderCarrier])).thenReturn(
-        Future.failed(new BadRequestException("Failed Call"))
+        Future.failed(new BadRequestException("Failed to fetch income details"))
       )
 
-      val caught = the[BadRequestException] thrownBy Await
+      val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "Failed Call"
+      caught.getMessage mustBe "Failed to fetch income details"
     }
 
     "return a RuntimeException if incomeSources (PensionIncome) returned failed payload" in {
@@ -116,12 +114,12 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
           any[HeaderCarrier])).thenReturn(
-        Future.failed(new RuntimeException("FAILURE!"))
+        Future.failed(new RuntimeException("Failed to fetch income details"))
       )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "FAILURE!"
+      caught.getMessage mustBe "Failed to fetch income details"
     }
 
     "return a RuntimeException if incomeSources (EmploymentIncome) returned failed payload" in {
@@ -130,12 +128,12 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Live))(
           any[HeaderCarrier])).thenReturn(
-        Future.failed(new RuntimeException("FAILURE!"))
+        Future.failed(new RuntimeException("Failed to fetch income details"))
       )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "FAILURE!"
+      caught.getMessage mustBe "Failed to fetch income details"
     }
 
     "return a RuntimeException if incomeSources (EmploymentIncome - NotLive) returned failed payload" in {
@@ -144,19 +142,19 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
           any[HeaderCarrier])).thenReturn(
-        Future.failed(new RuntimeException("FAILURE!"))
+        Future.failed(new RuntimeException("Failed to fetch income details"))
       )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "FAILURE!"
+      caught.getMessage mustBe "Failed to fetch income details"
     }
 
     "return a RuntimeException if nonTaxCodeIncomes returned failed payload" in {
       val sut = createSUT
 
       when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
-        Future.successful(TaiTaxAccountFailureResponse("FAILURE"))
+        Future.failed(new RuntimeException("Failed to fetch income details"))
       )
 
       val caught = the[RuntimeException] thrownBy Await
@@ -170,12 +168,12 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
           any[HeaderCarrier])).thenReturn(
-        Future.failed(new RuntimeException("FAILURE!"))
+        Future.failed(new RuntimeException("Failed to fetch income details"))
       )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
-      caught.getMessage mustBe "FAILURE!"
+      caught.getMessage mustBe "Failed to fetch income details"
     }
 
     "return a ViewModel" in {
@@ -232,7 +230,7 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
     )
 
     when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
-      Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
+      Future.successful(nonTaxCodeIncome)
     )
 
     when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(ThreeWeeks))
