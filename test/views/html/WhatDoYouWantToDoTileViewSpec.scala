@@ -28,6 +28,7 @@ import uk.gov.hmrc.auth.core.retrieve.LoginTimes
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
+import uk.gov.hmrc.tai.util.DateHelper.dateTimeFormat
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
