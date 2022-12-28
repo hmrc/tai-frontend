@@ -260,6 +260,7 @@ class IncomeController @Inject()(
             Future(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
           case Right(cache) =>
             val incomeName :: newAmount :: incomeId :: incomeType :: Nil = cache.toList
+            val newAmountInt = FormHelper.stripNumber(newAmount).toInt
 
             for {
               _ <- journeyCacheService.flush()
@@ -269,7 +270,7 @@ class IncomeController @Inject()(
                     TaxYear(),
                     incomeId.toInt)
               _ <- estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
-            } yield respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
+            } yield respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmountInt.toString)
         }
         .recover {
           case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage, Some(e))
