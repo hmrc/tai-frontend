@@ -16,8 +16,10 @@
 
 package uk.gov.hmrc.tai.util
 
+import cats.data.{EitherT, NonEmptyList}
 import play.api.mvc.{Call, Result}
 import play.api.mvc.Results.Redirect
+import cats.implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -32,7 +34,12 @@ object FutureOps {
 
     def getOrRedirect(call: Call)(implicit ec: ExecutionContext): Future[Either[Result, A]] = f.map {
       case Right(a)  => Right(a)
-      case Left(err) => Left(Redirect(call))
+      case Left(_) => Left(Redirect(call))
     }
+  }
+
+  implicit class AttemptTNel[A](f: Future[A]) {
+    def attemptTNel(implicit ec: ExecutionContext): EitherT[Future, NonEmptyList[Throwable], A] =
+      f.attemptT.leftMap(NonEmptyList.one)
   }
 }
