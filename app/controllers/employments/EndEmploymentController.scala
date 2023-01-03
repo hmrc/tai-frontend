@@ -281,7 +281,7 @@ class EndEmploymentController @Inject()(
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
-      employmentService.employment(nino, employmentId) flatMap {
+      employmentService.employment(nino, employmentId).flatMap {
         case Some(employment) =>
           EmploymentEndDateForm(employment.name).form.bindFromRequest.fold(
             formWithErrors => {
@@ -295,10 +295,8 @@ class EndEmploymentController @Inject()(
               }
             }
           )
-        case _ =>
-          throw new RuntimeException("No employment found")
+        case _ => Future.successful(NotFound(errorPagesHandler.error4xxPageWithLink("No employment found")))
       }
-
   }
 
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
