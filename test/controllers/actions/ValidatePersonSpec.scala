@@ -37,7 +37,7 @@ import org.mockito.Matchers._
 import org.mockito.Mockito.when
 import play.api.mvc.AbstractController
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.model.domain.{Address, Person}
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 import utils.BaseSpec
 

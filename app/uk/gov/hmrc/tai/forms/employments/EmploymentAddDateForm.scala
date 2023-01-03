@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.tai.forms.employments
 
-import java.time.LocalDate
 import play.api.data.Forms.of
 import play.api.data.format.Formatter
 import play.api.data.{FieldMapping, Form, FormError}
 import play.api.i18n.Messages
 
+import java.time.LocalDate
 import scala.util.Try
 
 case class EmploymentAddDateForm(employerName: String) {

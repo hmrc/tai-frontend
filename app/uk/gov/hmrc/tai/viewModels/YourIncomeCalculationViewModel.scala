@@ -16,16 +16,17 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-import uk.gov.hmrc.tai.model.TaxYear
-import CeasedIncomeMessages._
-import ManualUpdateIncomeMessages._
-import PaymentFrequencyIncomeMessages._
+import uk.gov.hmrc.tai.viewModels.CeasedIncomeMessages._
+import uk.gov.hmrc.tai.viewModels.ManualUpdateIncomeMessages._
+import uk.gov.hmrc.tai.viewModels.PaymentFrequencyIncomeMessages._
+
+import java.time.LocalDate
 
 case class LatestPayment(
   date: LocalDate,

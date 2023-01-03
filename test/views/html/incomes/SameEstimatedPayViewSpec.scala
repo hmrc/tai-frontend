@@ -16,11 +16,12 @@
 
 package views.html.incomes
 
-import java.time.LocalDate
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
+
+import java.time.LocalDate
 
 class SameEstimatedPayViewSpec extends TaiViewSpec {
 

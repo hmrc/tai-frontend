@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 
 class NoMatchPossibleException extends Exception

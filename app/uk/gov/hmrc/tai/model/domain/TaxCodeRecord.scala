@@ -16,12 +16,10 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import java.time.LocalDate
-import play.api.libs.json.Json
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.tai.model.domain.income.BasisOfOperation
-import play.api.libs.json.OFormat
+
+import java.time.LocalDate
 
 case class TaxCodeRecord(
   taxCode: String,

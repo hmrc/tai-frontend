@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.forms.benefit
 
 import play.api.data.FormError
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.benefits.CompanyBenefitTotalValueForm
 import utils.BaseSpec

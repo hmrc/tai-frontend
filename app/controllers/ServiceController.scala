@@ -18,15 +18,12 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
-import uk.gov.hmrc.domain.Nino
-
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.util.constants.TaiConstants
 import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ServiceController @Inject()(

@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.tai.service.journeyCache
 
-import javax.inject.Inject
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
+
+import javax.inject.Inject
 
 class AddEmploymentJourneyCacheService @Inject()(journeyCacheConnector: JourneyCacheConnector)
     extends JourneyCacheService(AddEmploymentConstants.JourneyKey, journeyCacheConnector)

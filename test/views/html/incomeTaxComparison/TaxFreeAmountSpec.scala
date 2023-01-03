@@ -17,11 +17,10 @@
 package views.html.incomeTaxComparison
 
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil, ViewModelHelper, TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels._
 
 class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {

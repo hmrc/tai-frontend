@@ -21,7 +21,6 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.http.BadRequestException
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}

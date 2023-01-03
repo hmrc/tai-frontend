@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.model
 
-import java.time.YearMonth
 import org.scalatest.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsResultException, Json}

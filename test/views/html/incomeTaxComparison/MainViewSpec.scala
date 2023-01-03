@@ -19,9 +19,8 @@ package views.html.incomeTaxComparison
 import play.api.i18n.{Lang, Messages}
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.util.{ViewModelHelper, TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
 

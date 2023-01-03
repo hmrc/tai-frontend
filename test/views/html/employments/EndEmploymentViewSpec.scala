@@ -16,13 +16,14 @@
 
 package views.html.employments
 
-import java.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
+
+import java.time.LocalDate
 
 class EndEmploymentViewSpec extends TaiViewSpec {
 

@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.tai.forms.formValidator
 
-import play.api.data.Forms._
 import play.api.data.Mapping
-import play.api.i18n.Messages
+
 import java.time.LocalDate
 
 /**

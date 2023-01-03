@@ -17,11 +17,8 @@
 package views.html.taxCodeChange
 
 import controllers.routes
-import java.time.LocalDate
 import play.api.i18n.Messages
-import play.twirl.api.{Html, HtmlFormat}
-import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel

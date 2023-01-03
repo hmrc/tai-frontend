@@ -18,8 +18,8 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.CodingComponentPair
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
 class AllowancesAndDeductionPairsSpec extends PlaySpec {
 

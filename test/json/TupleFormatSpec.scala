@@ -16,7 +16,6 @@
 
 package json
 
-import com.kenshoo.play.metrics.PlayModule
 import org.scalatest.concurrent.ScalaFutures
 import play.api.libs.json.Json
 import utils.BaseSpec

@@ -16,7 +16,7 @@
 
 package views.html.benefits
 
-import play.twirl.api.{Html, HtmlFormat}
+import play.twirl.api.Html
 import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.benefit.RemoveCompanyBenefitsCheckYourAnswersViewModel

@@ -17,16 +17,16 @@
 package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import java.time.LocalDate
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.{MustMatchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, _}
+import play.api.http.Status._
 import play.api.libs.json.{Format, Json}
 import play.api.test.Injecting
 import uk.gov.hmrc.http._
 import utils.WireMockHelper
 
+import java.time.LocalDate
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
@@ -46,8 +46,6 @@ class HttpHandlerSpec
   case class DateRequest(date: LocalDate)
 
   object DateRequest {
-    import play.api.libs.json.JodaWrites._
-    import play.api.libs.json.JodaReads._
     implicit val formatDateRequest: Format[DateRequest] = Json.format[DateRequest]
   }
 

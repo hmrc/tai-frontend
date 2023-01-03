@@ -16,12 +16,12 @@
 
 package controllers.i18n
 
-import javax.inject.Inject
 import play.api.i18n.{Lang, MessagesApi}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
-
 import uk.gov.hmrc.renderer.TemplateRenderer
+
+import javax.inject.Inject
 
 class TaiLanguageController @Inject()(
   languageUtils: LanguageUtils,

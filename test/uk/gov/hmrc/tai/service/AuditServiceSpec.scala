@@ -16,14 +16,11 @@
 
 package uk.gov.hmrc.tai.service
 
-import java.time._
-
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.{Authorization, ForwardedFor, RequestId, SessionId}
+import uk.gov.hmrc.http.{Authorization, ForwardedFor, HeaderCarrier, RequestId, SessionId}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
@@ -31,6 +28,7 @@ import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import utils.BaseSpec
 
+import java.time._
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 

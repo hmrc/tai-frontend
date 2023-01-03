@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import java.time.LocalDate
 import uk.gov.hmrc.tai.model.domain.Payment
+
+import java.time.LocalDate
 
 case class PaymentDetailsViewModel(
   date: LocalDate,

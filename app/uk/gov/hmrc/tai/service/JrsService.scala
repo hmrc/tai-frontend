@@ -18,13 +18,13 @@ package uk.gov.hmrc.tai.service
 
 import cats.data.OptionT
 import cats.implicits.catsStdInstancesForFuture
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.JrsConnector
 import uk.gov.hmrc.tai.model.JrsClaims
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

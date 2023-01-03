@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.Inject
 import play.api.libs.json.Reads
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.http.HttpReads.Implicits._
+
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaiConnector @Inject()(http: DefaultHttpClient, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext) {

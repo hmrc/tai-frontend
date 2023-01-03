@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import java.time.LocalDateTime
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -26,6 +25,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import utils.BaseSpec
 
+import java.time.LocalDateTime
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 

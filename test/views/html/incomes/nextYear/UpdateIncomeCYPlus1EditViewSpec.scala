@@ -20,9 +20,9 @@ import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
-import uk.gov.hmrc.tai.util.ViewModelHelper.{currentTaxYearRangeHtmlNonBreak, withPoundPrefix}
-import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil.futureTaxYearRange
+import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefix
+import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
 

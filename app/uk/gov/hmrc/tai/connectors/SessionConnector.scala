@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.Inject
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SessionConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(

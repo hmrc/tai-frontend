@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.tai.forms
 
-import uk.gov.hmrc.tai.forms.formValidator.FormValidator
-import java.time.LocalDate
 import cats.implicits._
 import play.api.data.Forms.of
 import play.api.data.format.Formatter
 import play.api.data.{FieldMapping, Form, FormError}
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.forms.formValidator.FormValidator
 
+import java.time.LocalDate
 import scala.util.Try
 
 case class DateForm(validations: Seq[(LocalDate => Boolean, String)], blankDateMessage: String) extends FormValidator {

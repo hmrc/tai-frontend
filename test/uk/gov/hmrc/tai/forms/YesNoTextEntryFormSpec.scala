@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.forms
 
 import play.api.data.validation.{Constraint, Invalid}
-import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import utils.BaseSpec

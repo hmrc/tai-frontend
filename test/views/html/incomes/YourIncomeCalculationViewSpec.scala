@@ -16,7 +16,6 @@
 
 package views.html.incomes
 
-import java.time.LocalDate
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -26,6 +25,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{LatestPayment, PaymentDetailsViewModel, YourIncomeCalculationViewModel}
 import views.html.includes.link
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class YourIncomeCalculationViewSpec extends TaiViewSpec {

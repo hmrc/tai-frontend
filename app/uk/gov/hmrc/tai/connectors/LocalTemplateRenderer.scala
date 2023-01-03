@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.renderer.TemplateRenderer
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.Inject
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
 
 class LocalTemplateRenderer @Inject()(http: DefaultHttpClient, servicesConfig: ServicesConfig)(
   implicit ec: ExecutionContext)

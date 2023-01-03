@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.tai.forms.employments
 
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.data.FormError
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import utils.BaseSpec
 

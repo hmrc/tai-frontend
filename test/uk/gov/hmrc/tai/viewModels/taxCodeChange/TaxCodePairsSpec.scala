@@ -20,8 +20,8 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 
 import scala.util.Random
 

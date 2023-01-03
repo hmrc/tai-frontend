@@ -18,7 +18,6 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -26,7 +25,6 @@ import org.mockito.Mockito.{verify, when}
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -35,6 +33,7 @@ import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAc
 import utils.BaseSpec
 import views.html.incomeTaxComparison.MainView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class IncomeTaxComparisonControllerSpec extends BaseSpec {

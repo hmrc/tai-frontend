@@ -17,12 +17,11 @@
 package controllers
 
 import controllers.auth.AuthAction
-
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.renderer.TemplateRenderer
 import views.html.DeceasedHelplineView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DeceasedController @Inject()(

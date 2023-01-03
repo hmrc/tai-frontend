@@ -16,18 +16,17 @@
 
 package uk.gov.hmrc.tai.config
 
-import javax.inject.Inject
 import play.api.Configuration
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
-
 import uk.gov.hmrc.renderer.TemplateRenderer
-import views.html.InternalServerErrorView
-import views.html.ErrorTemplateNoauth
-import scala.concurrent.ExecutionContext
+import views.html.{ErrorTemplateNoauth, InternalServerErrorView}
 import views.html.includes.link
+
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 class ErrorHandler @Inject()(
   applicationConfig: ApplicationConfig,

@@ -20,7 +20,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
-import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import utils.BaseSpec
 

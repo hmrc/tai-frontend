@@ -22,7 +22,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.mvc._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.service._

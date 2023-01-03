@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
+import controllers.auth.{AuthAction, AuthedUser, InternalAuthenticatedRequest}
 import play.api.mvc._
 import play.api.test.Helpers.stubControllerComponents
 import uk.gov.hmrc.auth.core.ConfidenceLevel

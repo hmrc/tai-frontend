@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.forms.constaints
 
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
+
 import scala.util.matching.Regex
 
 object TelephoneNumberConstraint {

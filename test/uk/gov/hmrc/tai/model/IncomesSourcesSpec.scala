@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.tai.model
 
-import java.time.LocalDate
 import org.scalacheck.Gen
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
-import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain._
+
+import java.time.LocalDate
 
 class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
 

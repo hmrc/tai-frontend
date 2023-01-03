@@ -23,7 +23,6 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity}

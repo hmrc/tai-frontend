@@ -17,12 +17,11 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil, ViewModelHelper, TaxYearRangeUtil => Dates}
 
 case class TaxFreeAmountComparisonViewModel(
   personalAllowance: PersonalAllowance,

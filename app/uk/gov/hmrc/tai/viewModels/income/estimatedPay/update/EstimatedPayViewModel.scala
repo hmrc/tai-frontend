@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
-import java.time.LocalDate
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+
+import java.time.LocalDate
 
 case class EstimatedPayViewModel(
   grossAnnualPay: Option[BigDecimal],

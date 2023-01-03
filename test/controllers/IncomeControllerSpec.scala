@@ -19,8 +19,6 @@ package controllers
 import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => meq}
 import org.mockito.Mockito._
@@ -31,7 +29,6 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
 import uk.gov.hmrc.tai.model.domain._
@@ -46,6 +43,7 @@ import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.incomes._
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 

@@ -19,8 +19,7 @@ package views.html.employments
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.AddEmploymentFirstPayForm
-import uk.gov.hmrc.tai.util.constants.FormValuesConstants
-import uk.gov.hmrc.tai.util.constants.AddEmploymentFirstPayChoiceConstants
+import uk.gov.hmrc.tai.util.constants.{AddEmploymentFirstPayChoiceConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec {

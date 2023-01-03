@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.service
 
-import javax.inject.Inject
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HttpGet
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
@@ -24,6 +23,7 @@ import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.EnhancedPartialRetriever
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasFormPartialService @Inject()(httpClient: DefaultHttpClient, applicationConfig: ApplicationConfig)(

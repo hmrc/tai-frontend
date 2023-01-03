@@ -34,10 +34,9 @@ import uk.gov.hmrc.tai.forms.pensions.PensionAddDateForm
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{AddPensionFirstPayChoiceConstants, AuditConstants, FormValuesConstants}
-import uk.gov.hmrc.tai.util.constants.AddPensionFirstPayChoiceConstants._
 import uk.gov.hmrc.tai.util.constants.AddPensionNumberConstants._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.{AddPensionFirstPayChoiceConstants, AuditConstants, FormValuesConstants}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.pensions._

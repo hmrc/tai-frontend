@@ -16,15 +16,14 @@
 
 package uk.gov.hmrc.tai.util
 
-import java.time.LocalDate
-import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.TaxYear
 import com.ibm.icu.text.SimpleDateFormat
 import com.ibm.icu.util.{TimeZone, ULocale}
+import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.TaiConstants.LondonEuropeTimezone
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Date
 object TaxYearRangeUtil {
 
   private def toDate(date: LocalDate): java.util.Date = java.sql.Date.valueOf(date)

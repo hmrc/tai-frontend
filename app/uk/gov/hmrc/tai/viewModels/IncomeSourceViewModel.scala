@@ -18,12 +18,11 @@ package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
 import play.api.mvc.Call
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, TaxCodeIncome}
-import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
+import uk.gov.hmrc.tai.util.{ViewModelHelper, TaxYearRangeUtil => Dates}
 
 case class IncomeSourceViewModel(
   name: String,

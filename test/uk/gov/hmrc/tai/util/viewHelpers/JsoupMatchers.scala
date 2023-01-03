@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.util.viewHelpers
 import org.jsoup.nodes.{Attributes, Document, Element}
 import org.jsoup.select.Elements
 import org.scalatest.matchers.{MatchResult, Matcher}
-import play.api.i18n.Messages
 
 trait JsoupMatchers {
 

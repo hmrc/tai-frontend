@@ -17,14 +17,13 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.domain.{CarFuelBenefit, _}
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.util.{ViewModelHelper, TaxYearRangeUtil => Dates}
 
 case class IncomeSourceSummaryViewModel(
   empId: Int,

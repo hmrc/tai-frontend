@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.tai.filters
 
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome}
-import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 
 trait TaxAccountFilter {
 

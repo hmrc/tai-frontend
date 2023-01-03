@@ -16,12 +16,12 @@
 
 package controllers
 
-import javax.inject.Inject
-import play.api.mvc.MessagesControllerComponents
+import play.api.mvc
+import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-import play.api.mvc
-import play.api.mvc.AnyContent
+
+import javax.inject.Inject
 
 class AuthProviderController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 

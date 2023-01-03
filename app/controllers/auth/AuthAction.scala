@@ -16,7 +16,6 @@
 
 package controllers.auth
 
-import javax.inject.{Inject, Singleton}
 import com.google.inject.ImplementedBy
 import controllers.routes
 import play.api.Logging
@@ -29,6 +28,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[AuthActionImpl])

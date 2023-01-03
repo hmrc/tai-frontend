@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.tai.viewModels.employments
 
-import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 case class UpdateEmploymentCheckYourAnswersViewModel(
   id: Int,

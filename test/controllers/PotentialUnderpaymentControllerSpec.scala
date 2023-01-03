@@ -26,7 +26,6 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.ForbiddenException
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import uk.gov.hmrc.tai.service._

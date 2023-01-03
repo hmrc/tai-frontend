@@ -20,7 +20,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
-import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import utils.BaseSpec
 
 import scala.collection.immutable.Seq

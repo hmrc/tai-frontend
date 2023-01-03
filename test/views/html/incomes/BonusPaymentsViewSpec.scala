@@ -22,9 +22,9 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.YesNoForm
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.BonusPaymentsForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 class BonusPaymentsViewSpec extends TaiViewSpec {
 

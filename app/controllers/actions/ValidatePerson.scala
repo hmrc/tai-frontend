@@ -17,15 +17,15 @@
 package controllers.actions
 
 import com.google.inject.ImplementedBy
-import javax.inject.{Inject, Singleton}
 import controllers.auth.{AuthenticatedRequest, InternalAuthenticatedRequest}
 import controllers.routes
-import play.api.mvc.{ActionFilter, ActionRefiner, Result}
-import uk.gov.hmrc.tai.service.PersonService
 import play.api.mvc.Results.Redirect
+import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.tai.service.PersonService
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[ValidatePersonImpl])

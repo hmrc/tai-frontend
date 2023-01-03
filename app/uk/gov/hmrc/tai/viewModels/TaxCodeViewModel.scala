@@ -17,12 +17,11 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{Employment, PensionIncome, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.model.domain.income.{BasisOfOperation, TaxCodeIncome}
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.{ViewModelHelper, TaxYearRangeUtil => Dates}
 
 case class TaxCodeViewModel(
   title: String,

@@ -16,24 +16,19 @@
 
 package uk.gov.hmrc.tai.forms
 
-import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
-
-import java.time.LocalDate
-import play.api.data.{Form, Forms}
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.data.Forms._
-import play.api.data.JodaForms._
 import play.api.data.format.Formats.localDateFormat
+import play.api.data.{Form, Forms}
 import play.api.i18n.Messages
-import play.api.libs.json.Json
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
+import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Request
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 import uk.gov.hmrc.tai.model.EmploymentAmount
-import uk.gov.hmrc.tai.util.{DateHelper, FormHelper}
-import play.api.libs.json.OFormat
+import uk.gov.hmrc.tai.util.{DateHelper, FormHelper, TaxYearRangeUtil => Dates}
+
+import java.time.LocalDate
 
 case class EditIncomeForm(
   name: String,

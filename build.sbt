@@ -1,15 +1,13 @@
+import com.typesafe.sbt.uglify.Import._
+import com.typesafe.sbt.web.Import._
 import com.typesafe.sbt.web.SbtWeb
-import com.typesafe.sbt.web.SbtWeb.autoImport._
+import net.ground5hark.sbt.concat.Import._
 import play.sbt.routes.RoutesKeys._
 import sbt.GlobFilter
 import sbt.Keys._
 import scoverage.ScoverageKeys
 import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSettings}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
-import com.typesafe.sbt.web.Import._
-import com.typesafe.sbt.web.Import.WebKeys._
-import net.ground5hark.sbt.concat.Import._
-import com.typesafe.sbt.uglify.Import._
 
 val appName = "tai-frontend"
 lazy val appDependencies: Seq[ModuleID] = AppDependencies()

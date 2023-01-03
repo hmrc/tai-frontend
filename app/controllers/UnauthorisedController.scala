@@ -16,19 +16,16 @@
 
 package controllers
 
-import javax.inject.Inject
 import play.api.i18n.Messages
 import play.api.mvc._
-import uk.gov.hmrc.http.SessionKeys
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import views.html.ErrorTemplateNoauth
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class UnauthorisedController @Inject()(
   mcc: MessagesControllerComponents,

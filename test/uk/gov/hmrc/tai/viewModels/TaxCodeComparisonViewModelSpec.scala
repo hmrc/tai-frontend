@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import utils.BaseSpec
+
+import java.time.LocalDate
 
 class TaxCodeComparisonViewModelSpec extends BaseSpec {
 
