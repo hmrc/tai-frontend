@@ -214,7 +214,8 @@ class IncomeController @Inject()(
 
                     case _ => throw new RuntimeException(s"Not able to found employment with id $empId")
                   }
-                case _ => throw new RuntimeException("Exception while reading employment and tax code details")
+                case _ =>
+                  errorPagesHandler.internalServerError("Exception while reading employment and tax code details")
               }
         }
         .recoverWith {
@@ -394,7 +395,8 @@ class IncomeController @Inject()(
                       Ok(confirmAmountEntered(vm))
                     case _ => throw new RuntimeException(s"Not able to found employment with id $empId")
                   }
-                case _ => throw new RuntimeException("Exception while reading employment and tax code details")
+                case _ =>
+                  errorPagesHandler.internalServerError("Exception while reading employment and tax code details")
               }
         }
         .recover {
