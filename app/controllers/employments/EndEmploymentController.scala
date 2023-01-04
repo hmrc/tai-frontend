@@ -222,7 +222,9 @@ class EndEmploymentController @Inject()(
             IrregularPayForm.createForm,
             EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)))
       }
-      .getOrElse(throw new RuntimeException("Could not retrieve mandatory journey values"))
+      .getOrElse {
+        InternalServerError(errorPagesHandler.error5xx("Could not retrieve mandatory journey values"))
+      }
   }
 
   def handleIrregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async {
