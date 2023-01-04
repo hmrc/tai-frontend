@@ -83,7 +83,7 @@
                     hint = Some(Hint(
                       content = Text(Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.text", UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit))
                     )),
-            errorMessage = updateEmploymentDetailsForm.errors.asTextErrorMessages.headOption
+                    errorMessage = updateEmploymentDetailsForm.errors.asTextErrorMessages.headOption
                     ))
 
                 @govukButton(Button(content = Text(messages("tai.continue"))))
