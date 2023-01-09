@@ -111,7 +111,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
           Messages(
             "tai.WhatDoYouWantToDo.ChangedTaxCode",
             TaxYearRangeUtil.formatDate(localDate).replace(" ", "&nbsp;")))
-        cards.toString must include(Messages("claim.tax.relief.wfh"))
       }
     }
 

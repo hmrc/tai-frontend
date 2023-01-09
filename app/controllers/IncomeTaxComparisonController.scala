@@ -68,7 +68,8 @@ class IncomeTaxComparisonController @Inject()(
       updateNextYearsIncomeService.isEstimatedPayJourneyComplete.attemptTNel
     ).parMapN(computeModel(currentTaxYear, nextTaxYear))
       .fold(
-        errorPagesHandler.internalServerError("Not able to fetch income tax comparison details in IncomeTaxComparisonController", _),
+        errorPagesHandler
+          .internalServerError("Not able to fetch income tax comparison details in IncomeTaxComparisonController", _),
         model => Ok(mainView(model, applicationConfig))
       )
   }
