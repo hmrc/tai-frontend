@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,12 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.domain.{Employment, HasTaxCodeChanged}
+import uk.gov.hmrc.tai.model.domain.{Employment, HasTaxCodeChanged, TaxCodeMismatch}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import views.html.WhatDoYouWantToDoTileView
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -91,29 +92,47 @@ class WhatDoYouWantToDoController @Inject()(
     }
   }
 
-  private def whatToDoView(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged, showJrsLink: Boolean)(
-    implicit request: Request[AnyContent]): Future[WhatDoYouWantToDoViewModel] = {
-    lazy val successfulResponseModel = WhatDoYouWantToDoViewModel(
-      applicationConfig.cyPlusOneEnabled,
-      hasTaxCodeChanged.changed,
-      showJrsLink,
-      hasTaxCodeChanged.mismatch)
-
-    lazy val unsuccessfulResponseModel =
-      WhatDoYouWantToDoViewModel(isCyPlusOneEnabled = false, showJrsLink = showJrsLink)
-
-    if (applicationConfig.cyPlusOneEnabled) {
-      taxAccountService.taxAccountSummary(nino, TaxYear().next).map(_ => successfulResponseModel) recover {
-        case _: NotFoundException =>
-          logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
-          unsuccessfulResponseModel
-        case _ =>
-          unsuccessfulResponseModel
-      }
-    } else {
-      Future.successful(successfulResponseModel)
+  private[controllers] def retrieveTaxCodeChange(hasTaxCodeChanged: HasTaxCodeChanged): Boolean =
+    (hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch) match {
+      case (_, Some(mismatch)) if mismatch.confirmedTaxCodes.isEmpty => false
+      case (true, Some(TaxCodeMismatch(false, _, _)))                => true
+      case _                                                         => false
     }
-  }
+
+  private def mostRecentTaxCodeChangeDate(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged)(
+    implicit request: Request[AnyContent]): Future[Option[LocalDate]] =
+    if (retrieveTaxCodeChange(hasTaxCodeChanged)) {
+      taxCodeChangeService.taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate.some)
+    } else {
+      Future.successful(none)
+    }
+
+  private def whatToDoView(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged, showJrsLink: Boolean)(
+    implicit request: Request[AnyContent]): Future[WhatDoYouWantToDoViewModel] =
+    mostRecentTaxCodeChangeDate(nino, hasTaxCodeChanged).flatMap { maybeMostRecentTaxCodeChangeDate =>
+      lazy val successfulResponseModel = WhatDoYouWantToDoViewModel(
+        isCyPlusOneEnabled = applicationConfig.cyPlusOneEnabled,
+        showJrsLink = showJrsLink,
+        maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate)
+
+      lazy val unsuccessfulResponseModel =
+        WhatDoYouWantToDoViewModel(
+          isCyPlusOneEnabled = false,
+          showJrsLink = showJrsLink,
+          maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate)
+
+      if (applicationConfig.cyPlusOneEnabled) {
+        taxAccountService.taxAccountSummary(nino, TaxYear().next).map(_ => successfulResponseModel) recover {
+          case _: NotFoundException =>
+            logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
+            unsuccessfulResponseModel
+          case _ =>
+            unsuccessfulResponseModel
+        }
+      } else {
+        Future.successful(successfulResponseModel)
+      }
+    }
 
   private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser) = {
     val nino = user.nino

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,22 @@
 
 package controllers
 
-import javax.inject.Inject
+import cats.data.NonEmptyList
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
-import uk.gov.hmrc.domain.Nino
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import views.html.includes.link
 import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
-import play.twirl.api.HtmlFormat
-
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, errorNoPrimary: ErrorNoPrimary)(
@@ -201,7 +198,15 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     implicit request: Request[_],
     messages: Messages): Result = {
     logger.warn(logMessage)
-    ex.map(x => logger.error(x.getMessage(), x))
+    ex.foreach(x => logger.error(x.getMessage, x))
+    InternalServerError(error5xx(messages("tai.technical.error.message")))
+  }
+
+  def internalServerError(logMessage: String, ex: NonEmptyList[Throwable])(
+    implicit request: Request[_],
+    messages: Messages): Result = {
+    logger.warn(logMessage)
+    ex.map(x => logger.error(x.getMessage, x))
     InternalServerError(error5xx(messages("tai.technical.error.message")))
   }
 }

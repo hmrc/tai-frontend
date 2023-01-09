@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,14 @@ package controllers.employments
 
 import cats.data.EitherT
 import cats.implicits._
-import uk.gov.hmrc.tai.util.FutureOps._
 import com.google.inject.name.Named
 import controllers._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import javax.inject.Inject
-import java.time.LocalDate
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
@@ -37,8 +33,9 @@ import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, Employ
 import uk.gov.hmrc.tai.model.domain.EndEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
+import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
@@ -47,6 +44,8 @@ import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EndEmploymentController @Inject()(
@@ -56,6 +55,7 @@ class EndEmploymentController @Inject()(
   validatePerson: ValidatePerson,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
+  errorPagesHandler: ErrorPagesHandler,
   updateRemoveEmploymentDecision: UpdateRemoveEmploymentDecisionView,
   endEmploymentWithinSixWeeksError: EndEmploymentWithinSixWeeksErrorView,
   endEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentErrorView,
@@ -92,8 +92,8 @@ class EndEmploymentController @Inject()(
         case Right(mandatoryValues) =>
           Ok(
             updateRemoveEmploymentDecision(
-              UpdateRemoveEmploymentForm.form(mandatoryValues(0)),
-              mandatoryValues(0),
+              UpdateRemoveEmploymentForm.form(mandatoryValues.head),
+              mandatoryValues.head,
               mandatoryValues(1).toInt))
         case Left(_) => Redirect(taxAccountSummaryRedirect)
       }
@@ -101,10 +101,10 @@ class EndEmploymentController @Inject()(
 
   private def redirectToWarningOrDecisionPage(
     journeyCacheFuture: Future[Map[String, String]],
-    successfullJourneyCacheFuture: Future[Option[String]])(implicit hc: HeaderCarrier): Future[Result] =
+    successfulJourneyCacheFuture: Future[Option[String]])(implicit hc: HeaderCarrier): Future[Result] =
     for {
       _                      <- journeyCacheFuture
-      successfulJourneyCache <- successfullJourneyCacheFuture
+      successfulJourneyCache <- successfulJourneyCacheFuture
     } yield {
       successfulJourneyCache match {
         case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning())
@@ -129,7 +129,8 @@ class EndEmploymentController @Inject()(
             s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId")
 
         redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
-      case _ => throw new RuntimeException("No employment found")
+    } recover {
+      case _ => NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
     }
   }
 
@@ -141,7 +142,7 @@ class EndEmploymentController @Inject()(
         .getOrFail
         .flatMap { mandatoryJourneyValues =>
           UpdateRemoveEmploymentForm
-            .form(mandatoryJourneyValues(0))
+            .form(mandatoryJourneyValues.head)
             .bindFromRequest
             .fold(
               formWithErrors => {
@@ -149,7 +150,7 @@ class EndEmploymentController @Inject()(
                   BadRequest(
                     updateRemoveEmploymentDecision(
                       formWithErrors,
-                      mandatoryJourneyValues(0),
+                      mandatoryJourneyValues.head,
                       mandatoryJourneyValues(1).toInt)))
               }, {
                 case Some(FormValuesConstants.YesValue) =>
@@ -186,7 +187,8 @@ class EndEmploymentController @Inject()(
                       } else {
                         Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
                       }
-                    case _ => throw new RuntimeException("No employment found")
+                  } recover {
+                    case _ => NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
                   }
               }
             )
@@ -218,9 +220,11 @@ class EndEmploymentController @Inject()(
         Ok(
           endEmploymentIrregularPaymentError(
             IrregularPayForm.createForm,
-            EmploymentViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1).toInt)))
+            EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)))
       }
-      .getOrElse(throw new RuntimeException("Could not retrieve mandatory journey values"))
+      .getOrElse {
+        InternalServerError(errorPagesHandler.error5xx("Could not retrieve mandatory journey values"))
+      }
   }
 
   def handleIrregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -235,7 +239,7 @@ class EndEmploymentController @Inject()(
               BadRequest(
                 endEmploymentIrregularPaymentError(
                   formWithErrors,
-                  EmploymentViewModel(mandatoryJourneyValues(0), mandatoryJourneyValues(1).toInt)))
+                  EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)))
             },
             formData => {
               formData.irregularPayDecision match {
@@ -279,7 +283,7 @@ class EndEmploymentController @Inject()(
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
-      employmentService.employment(nino, employmentId) flatMap {
+      employmentService.employment(nino, employmentId).flatMap {
         case Some(employment) =>
           EmploymentEndDateForm(employment.name).form.bindFromRequest.fold(
             formWithErrors => {
@@ -293,10 +297,8 @@ class EndEmploymentController @Inject()(
               }
             }
           )
-        case _ =>
-          throw new RuntimeException("No employment found")
+        case _ => Future.successful(NotFound(errorPagesHandler.error4xxPageWithLink("No employment found")))
       }
-
   }
 
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -408,7 +410,7 @@ class EndEmploymentController @Inject()(
         Ok(
           duplicateSubmissionWarning(
             DuplicateSubmissionWarningForm.createForm,
-            mandatoryValues(0),
+            mandatoryValues.head,
             mandatoryValues(1).toInt))
       case Left(_) => Redirect(taxAccountSummaryRedirect)
     }
@@ -425,7 +427,7 @@ class EndEmploymentController @Inject()(
 
           DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
             formWithErrors => {
-              Future.successful(BadRequest(duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), empId)))
+              Future.successful(BadRequest(duplicateSubmissionWarning(formWithErrors, mandatoryValues.head, empId)))
             },
             success => {
               success.yesNoChoice match {

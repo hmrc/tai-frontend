@@ -33,9 +33,9 @@
     @if(isButton){
         role="button"
         @if(isSecondary){
-            class="button--secondary @linkClasses.mkString(" ")"
+            class="govuk-button govuk-button--secondary @linkClasses.mkString(" ")"
         }else{
-            class="button @linkClasses.mkString(" ")"
+            class="govuk-button @linkClasses.mkString(" ")"
         }
     } else {
         @if(linkClasses){

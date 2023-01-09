@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class UpdateIncomeCYPlus1StartViewSpec extends TaiViewSpec {
       doc(view) must haveLinkWithUrlWithID(
         "CYPlus1StartButton",
         controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url)
-      doc(view).getElementsByClass("button").text must include(messages("tai.updateIncome.CYPlus1.start.button"))
+      doc(view).getElementsByClass("govuk-button").text must include(messages("tai.updateIncome.CYPlus1.start.button"))
     }
 
     "contain the correct content when income is from pension" in {
@@ -57,7 +57,7 @@ class UpdateIncomeCYPlus1StartViewSpec extends TaiViewSpec {
       doc(pensionView) must haveLinkWithUrlWithID(
         "CYPlus1StartButton",
         controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url)
-      doc(pensionView).getElementsByClass("button").text must include(
+      doc(pensionView).getElementsByClass("govuk-button").text must include(
         messages("tai.income.details.updateTaxableIncome.update"))
     }
 

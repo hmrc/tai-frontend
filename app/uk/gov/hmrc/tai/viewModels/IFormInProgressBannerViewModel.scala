@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.service.{SevenDays, ThreeWeeks, TimeToProcess}
+import uk.gov.hmrc.tai.service.{FifteenDays, ThreeWeeks, TimeToProcess}
 
 case class IFormInProgressBannerViewModel(isAnyIFormInProgress: TimeToProcess) {
   def durationMessage()(implicit messages: Messages): Option[String] =
     isAnyIFormInProgress match {
-      case ThreeWeeks => Some(messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2"))
-      case SevenDays  => Some(messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2"))
-      case _          => None
+      case ThreeWeeks  => Some(messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2"))
+      case FifteenDays => Some(messages("tai.whatDoYouWantToDo.iformPanel.fifteenDays.p2"))
+      case _           => None
     }
 }

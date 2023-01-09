@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,8 @@ class EstimatedPayLandingPageViewSpec extends TaiViewSpec {
     doc(view) must haveLinkWithUrlWithID(
       "updateEmployer",
       controllers.employments.routes.EndEmploymentController.onPageLoad(empId).url)
-    doc(view).getElementsByClass("button").text must include(messages("tai.income.details.updateTaxableIncome.update"))
+    doc(view).getElementsByClass("govuk-button").text must include(
+      messages("tai.income.details.updateTaxableIncome.update"))
   }
 
   "contain the correct content when income is from pension" in {
@@ -49,7 +50,7 @@ class EstimatedPayLandingPageViewSpec extends TaiViewSpec {
     doc(testView).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))
     doc(testView) must haveLinkWithText(messages("tai.incomes.landing.pension.ended.link"))
     doc(testView) must haveLinkWithUrlWithID("updatePension", appConfig.incomeFromEmploymentPensionLinkUrl)
-    doc(testView).getElementsByClass("button").text must include(
+    doc(testView).getElementsByClass("govuk-button").text must include(
       messages("tai.income.details.updateTaxableIncome.update"))
   }
 

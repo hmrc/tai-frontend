@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package controllers.employments
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
@@ -836,6 +836,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         FakeValidatePerson,
         mock[AuditConnector],
         mcc,
+        inject[ErrorPagesHandler],
         inject[UpdateRemoveEmploymentDecisionView],
         inject[EndEmploymentWithinSixWeeksErrorView],
         inject[EndEmploymentIrregularPaymentErrorView],
