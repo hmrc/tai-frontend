@@ -54,7 +54,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     }
 
     "throw an error page" when {
-      "not able to fetch comparision details" in {
+      "not able to fetch comparison details" in {
         val controller = new TestController
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Not Found")))
