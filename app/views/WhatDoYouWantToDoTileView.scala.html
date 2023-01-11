@@ -85,8 +85,8 @@
                     url = Some("/check-income-tax/income-summary"),
                     id = "currentTaxYear",
                     heading = messages("current.tax.year"),
-                    bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange)),
-                    headingTag = "h2"
+                    bodyContentList = Seq(messages("check.current.income.p1"), messages("check.current.income.p2")),
+                headingTag = "h2"
                 )
 
                 @if(model.isCyPlusOneEnabled) {
@@ -112,7 +112,7 @@
                         url = Some(s"/check-income-tax/income-tax-history"),
                         id = "incomeTaxHistory",
                         heading = messages("income.tax.history"),
-                        bodyContent = Some(messages("income.tax.history.content")),
+                        bodyContentList =  Seq(messages("income.tax.history.content"),messages("income.tax.history.content2")),
                         headingTag = "h2"
                     )
                 }
@@ -125,7 +125,6 @@
                         headingTag = "h2"
                     )
                 }
-
             </div>
         </div>
 
