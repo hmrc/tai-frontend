@@ -10,14 +10,21 @@ if (
     typeof window.history.replaceState === 'function'
 ) {
 
-    var urlSegment =    window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
+    const filter = (value, x) => {
+        let segments = value.split('/');
+        return segments[ segments.length -x];
+    }
+
+    var url = window.location.href;
+    var  urlSegment = filter(url,2) +'/' + filter(url,1)
+
 
     switch(urlSegment) {
-        case 'decision':
+        case 'update-remove-employment/decision':
             window.history.replaceState(null, null, docReferrer);
             break;
 
-        case 'how-to-update-income':
+        case 'update-income/how-to-update-income':
             window.history.replaceState(null, null, docReferrer);
             break;
 
