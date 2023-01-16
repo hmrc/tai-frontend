@@ -33,8 +33,8 @@ object FutureOps {
     }
 
     def getOrRedirect(call: Call)(implicit ec: ExecutionContext): Future[Either[Result, A]] = f.map {
-      case Right(a)  => Right(a)
-      case Left(_) => Left(Redirect(call))
+      case Right(a) => Right(a)
+      case Left(_)  => Left(Redirect(call))
     }
   }
 

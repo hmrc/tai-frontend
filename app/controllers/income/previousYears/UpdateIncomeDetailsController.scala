@@ -21,6 +21,7 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.Logger
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
@@ -52,8 +53,10 @@ class UpdateIncomeDetailsController @Inject()(
   UpdateIncomeDetailsConfirmation: UpdateIncomeDetailsConfirmationView,
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
-  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val templateRenderer: TemplateRenderer
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
+  private val logger = Logger(this.getClass)
 
   def telephoneNumberViewModel(taxYear: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel =
     CanWeContactByPhoneViewModel(
@@ -87,19 +90,24 @@ class UpdateIncomeDetailsController @Inject()(
 
   def details(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    journeyCacheService.currentCache map { currentCache =>
-      Ok(
-        UpdateIncomeDetails(
-          UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncomeConstants.TaxYearKey).toInt),
-          UpdateIncomeDetailsForm.form))
-    }
+    (for {
+      userSuppliedDetails <- journeyCacheService.currentValue(UpdatePreviousYearsIncomeConstants.IncomeDetailsKey)
+      futureResult <- journeyCacheService.currentCache map { currentCache =>
+                       Ok(
+                         UpdateIncomeDetails(
+                           UpdateHistoricIncomeDetailsViewModel(
+                             currentCache(UpdatePreviousYearsIncomeConstants.TaxYearKey).toInt),
+                           UpdateIncomeDetailsForm.form.fill(userSuppliedDetails.getOrElse(""))
+                         ))
+                     }
+    } yield futureResult)
   }
 
   def submitDetails(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
     UpdateIncomeDetailsForm.form.bindFromRequest.fold(
       formWithErrors => {
         journeyCacheService.currentCache map { currentCache =>
+          implicit val user: AuthedUser = request.taiUser
           BadRequest(
             UpdateIncomeDetails(
               UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncomeConstants.TaxYearKey).toInt),

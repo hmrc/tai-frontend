@@ -93,7 +93,7 @@ class UpdateEmploymentController @Inject()(
                                  Ok(
                                    whatDoYouWantToTellUs(
                                      EmploymentViewModel(emp.name, empId),
-                                     UpdateEmploymentDetailsForm.form.fill(userSuppliedDetails.getOrElse("")))))
+                                     UpdateEmploymentDetailsForm.form.fill(userSuppliedDetails.getOrElse("toast")))))
                          case _ =>
                            Future.successful(
                              errorPagesHandler.internalServerError("Error during employment details retrieval"))
