@@ -84,7 +84,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.Ex
                             govukInput(Input(
                                 id = "otherInDays",
                                 name = "otherInDays",
-                                value = payPeriodForm.data.get(PayPeriodConstants.Other),
+                                value = payPeriodForm.data.get(PayPeriodConstants.OtherInDaysKey),
                                 label = Label(
                                     classes = "govuk-label--s",
                                     content = Text(messages("tai.payPeriod.howOften")),
