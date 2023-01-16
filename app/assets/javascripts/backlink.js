@@ -18,7 +18,7 @@ if (
     var url = window.location.href;
     var  urlSegment = filter(url,2) +'/' + filter(url,1)
 
-
+console.warn('urlSegment', urlSegment)
     switch(urlSegment) {
         case 'update-remove-employment/decision':
             window.history.replaceState(null, null, docReferrer);
@@ -26,6 +26,11 @@ if (
 
         case 'update-income/how-to-update-income':
             window.history.replaceState(null, null, docReferrer);
+            break;
+
+        case 'update-income-details/decision':
+            console.warn('replace with:  ', docReferrer)
+           window.history.replaceState(null, null, docReferrer);
             break;
 
         default:
