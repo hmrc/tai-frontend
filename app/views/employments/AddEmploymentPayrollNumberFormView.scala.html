@@ -87,7 +87,6 @@
                                     name = "payrollNumberEntry",
                                     value = payrollNumberForm.data.get(AddEmploymentPayrollNumberConstants.PayrollNumberEntry),
                                     label = Label(
-                                        classes = "govuk-label--s",
                                         content = Text(messages("tai.addEmployment.employmentPayrollNumber.label")),
                                     ),
                                     errorMessage = payrollNumberForm.errors.filter(_.key == "payrollNumberEntry").asTextErrorMessages.headOption
