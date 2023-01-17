@@ -152,7 +152,7 @@ tai.addEmployment.employmentPayrollNumber.pagetitle=Do you know your payroll num
 tai.addEmployment.startDateForm.customGaTitle=When did you start working for this employer?
 tai.addEmployment.startDateForm.label=Enter the date you started at {0}. The date cannot be in the future.
 tai.addEmployment.startDateForm.title=When did you start working for {0}?
-tai.addEmployment.startDateForm.subHeading=Enter the date you started working at {0}. This date cannot be in the future.
+tai.addEmployment.startDateForm.subHeading=This date cannot be in the future.
 tai.addEmployment.startDateForm.pagetitle=When did you start working for this employer?
 tai.addPensionProvider.addNameForm.title=What is the name of the pension provider you want to add?
 tai.addPensionProvider.cya.q1=Provider name
@@ -177,7 +177,7 @@ tai.addPensionProvider.pensionNumber.para1=Your pension number is a unique numbe
 tai.addPensionProvider.pensionNumber.para2=If you cannot find your pension number, contact your pension provider for help.
 tai.addPensionProvider.pensionNumber.pagetitle=Do you know your pension number from your this employer?
 tai.addPensionProvider.startDateForm.customGaTitle=When did you get first payment from this pension provider?
-tai.addPensionProvider.startDateForm.label=Enter the date you got your first pension payment from {0}. The date cannot be in the future.
+tai.addPensionProvider.startDateForm.label=The date cannot be in the future.
 tai.addPensionProvider.startDateForm.title=When did you get your first pension payment from {0}?
 tai.addPensionProvider.startDateForm.pagetitle=When did you get your first pension payment from this employer?
 tai.amount=Amount
@@ -810,7 +810,7 @@ tai.iya.tax.free.amount.return.link=Return to your tax-free amount
 tai.iya.detailed.paye.return.link=Return to your detailed PAYE Income Tax estimate
 tai.key=Key
 tai.label.back=Back
-tai.label.date.example=For example, 31 3 1980
+tai.label.date.example=For example, 30 3 2021
 tai.label.day=Day
 tai.label.month=Month
 tai.label.no=No
@@ -1466,7 +1466,7 @@ global.error.InternalServerError500.tai.message.contact.hmrc = contact HMRC
 global.error.InternalServerError500.tai.message.by.phone.post = online, by phone or by post.
 
 
-claim.tax.relief.wfh = Claim tax relief on expenses for working from home
+claim.tax.relief.claimOtherExpense = Check if you can claim Employee expenses
 
 check.jrs.claims=Check Coronavirus Job Retention Scheme claims
 check.jrs.claims.title=Coronavirus Job Retention Scheme

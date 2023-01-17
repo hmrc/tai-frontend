@@ -107,18 +107,18 @@ class WhatDoYouWantToDoController @Inject()(
       Future.successful(none)
     }
 
-  private def whatToDoView(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged, showJrsTile: Boolean)(
+  private def whatToDoView(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged, showJrsLink: Boolean)(
     implicit request: Request[AnyContent]): Future[WhatDoYouWantToDoViewModel] =
     mostRecentTaxCodeChangeDate(nino, hasTaxCodeChanged).flatMap { maybeMostRecentTaxCodeChangeDate =>
       lazy val successfulResponseModel = WhatDoYouWantToDoViewModel(
         isCyPlusOneEnabled = applicationConfig.cyPlusOneEnabled,
-        showJrsTile = showJrsTile,
+        showJrsLink = showJrsLink,
         maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate)
 
       lazy val unsuccessfulResponseModel =
         WhatDoYouWantToDoViewModel(
           isCyPlusOneEnabled = false,
-          showJrsTile = showJrsTile,
+          showJrsLink = showJrsLink,
           maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate)
 
       if (applicationConfig.cyPlusOneEnabled) {
@@ -140,10 +140,10 @@ class WhatDoYouWantToDoController @Inject()(
     taxCodeChangeService.hasTaxCodeChanged(nino) flatMap {
       case Right(taxCodeChanged) =>
         for {
-          showJrsTile <- jrsService.checkIfJrsClaimsDataExist(nino)
+          showJrsLink <- jrsService.checkIfJrsClaimsDataExist(nino)
           (model, _) <- (
-                         whatToDoView(nino, taxCodeChanged, showJrsTile),
-                         auditNumberOfTaxCodesReturned(nino, showJrsTile)).tupled
+                         whatToDoView(nino, taxCodeChanged, showJrsLink),
+                         auditNumberOfTaxCodesReturned(nino, showJrsLink)).tupled
         } yield Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
       case Left(taxCodeError) =>
         Future.successful(

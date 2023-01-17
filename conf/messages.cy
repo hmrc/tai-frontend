@@ -152,7 +152,7 @@ tai.addEmployment.employmentPayrollNumber.pagetitle=A ydych yn gwybod beth yw’
 tai.addEmployment.startDateForm.customGaTitle=Pryd wnaethoch ddechrau gweithio i’r cyflogwr hwn?
 tai.addEmployment.startDateForm.label=Nodwch y dyddiad y dechreuoch yn {0}. Ni all y dyddiad fod yn y dyfodol.
 tai.addEmployment.startDateForm.title=Pryd wnaethoch ddechrau gweithio i {0}?
-tai.addEmployment.startDateForm.subHeading= Nodwch y dyddiad y gwnaethoch ddechrau gweithio i {0}. Ni all y dyddiad hwn fod yn y dyfodol.
+tai.addEmployment.startDateForm.subHeading=Ni all y dyddiad hwn fod yn y dyfodol.
 tai.addEmployment.startDateForm.pagetitle=Pryd gwnaethoch ddechrau gweithio i’r cyflogwr hwn?
 tai.addPensionProvider.addNameForm.title=Beth yw enw’r darparwr pensiwn yr hoffech ei ychwanegu?
 tai.addPensionProvider.cya.q1=Enw’r darparwr
@@ -177,7 +177,7 @@ tai.addPensionProvider.pensionNumber.para1=Mae’ch rhif pensiwn yn rhif unigryw
 tai.addPensionProvider.pensionNumber.para2=Os na allwch ddod o hyd i’ch rhif pensiwn, cysylltwch â’ch darparwr pensiwn am help.
 tai.addPensionProvider.pensionNumber.pagetitle=A ydych yn gwybod beth yw’ch rhif pensiwn gan y cyflogwr hwn?
 tai.addPensionProvider.startDateForm.customGaTitle=Pryd gawsoch chi’r taliad cyntaf gan y darparwr pensiwn hwn?
-tai.addPensionProvider.startDateForm.label=Nodwch y dyddiad y cawsoch eich taliad pensiwn cyntaf oddi wrth {0}. Ni all y dyddiad fod yn y dyfodol.
+tai.addPensionProvider.startDateForm.label=Ni all y dyddiad fod yn y dyfodol.
 tai.addPensionProvider.startDateForm.title=Pryd gawsoch chi’ch taliad pensiwn cyntaf gan {0}?
 tai.addPensionProvider.startDateForm.pagetitle=Pryd cawsoch eich taliad pensiwn cyntaf gan y cyflogwr hwn?
 tai.amount=Swm
@@ -811,7 +811,7 @@ tai.iya.tax.free.amount.return.link=Dychwelyd i’ch swm rhydd o dreth
 tai.iya.detailed.paye.return.link=Dychwelyd i’ch amcangyfrif manwl o’ch Treth Incwm TWE
 tai.key=Allwedd
 tai.label.back=Yn ôl
-tai.label.date.example=Er enghraifft, 31 3 1980
+tai.label.date.example=Er enghraifft, 30 3 2021
 tai.label.day=Diwrnod
 tai.label.month=Mis
 tai.label.no=Na
@@ -1470,7 +1470,7 @@ global.error.InternalServerError500.tai.message.contact.hmrc = gysylltu â CThEM
 global.error.InternalServerError500.tai.message.by.phone.post = ar-lein, dros y ffôn neu drwy’r post.
 
 
-claim.tax.relief.wfh = Hawlio rhyddhad treth ar dreuliau ar gyfer gweithio gartref
+claim.tax.relief.claimOtherExpense = Gwirio a allwch hawlio Treuliau Cyflogeion
 
 check.jrs.claims=Gwirio hawliadau’r Cynllun Cadw Swyddi yn sgil Coronafeirws
 check.jrs.claims.title=Cynllun Cadw Swyddi yn sgil Coronafeirws

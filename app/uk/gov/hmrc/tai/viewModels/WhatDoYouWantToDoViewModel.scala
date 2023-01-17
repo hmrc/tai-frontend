@@ -20,5 +20,5 @@ import java.time.LocalDate
 
 case class WhatDoYouWantToDoViewModel(
   isCyPlusOneEnabled: Boolean,
-  showJrsTile: Boolean,
+  showJrsLink: Boolean,
   maybeMostRecentTaxCodeChangeDate: Option[LocalDate])

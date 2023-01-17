@@ -99,14 +99,6 @@
                     )
                 }
 
-                @card(
-                    url = Some(appConfig.taxReliefExpenseClaimLink),
-                    id = "claimRelief",
-                    heading = messages("claim.tax.relief.wfh"),
-                    bodyContent = None,
-                    headingTag = "h2"
-                )
-
                 @if(appConfig.incomeTaxHistoryEnabled) {
                     @card(
                         url = Some(s"/check-income-tax/income-tax-history"),
@@ -116,17 +108,21 @@
                         headingTag = "h2"
                     )
                 }
-
-                @if(model.showJrsTile) {
-                    @card(
-                        url = Some("/check-income-tax/jrs-claims"),
-                        id = "jrsClaims",
-                        heading = messages("check.jrs.claims"),
-                        headingTag = "h2"
-                    )
-                }
-
             </div>
+
+            <div class="govuk-!-margin-bottom-3">
+                <a href=@{appConfig.taxReliefExpenseClaimLink} class="govuk-body-m link-style" id="other-expense-link">
+                    @messages("claim.tax.relief.claimOtherExpense")
+                </a>
+            </div>
+            @if(model.showJrsLink) {
+                <div class="govuk-!-margin-bottom-3">
+                    <a href=@{controllers.routes.JrsClaimsController.onPageLoad()} class="govuk-body-m link-style" id="jrs-link">
+                        @messages("check.jrs.claims")
+                    </a>
+                </div>
+            }
+
         </div>
 
     </div>
