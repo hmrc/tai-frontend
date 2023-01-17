@@ -86,9 +86,9 @@
                                 govukInput(Input(
                                     id = "payrollNumberEntry",
                                     name = "payrollNumberEntry",
+                                    classes = "govuk-input govuk-date-input__input govuk-input--width-12",
                                     value = payrollNumberForm.data.get(AddPensionNumberConstants.PayrollNumberEntry),
                                     label = Label(
-                                        classes = "govuk-label--s",
                                         content = Text(Messages("tai.addPensionProvider.pensionNumber.label")),
                                     ),
                                     errorMessage = payrollNumberForm.errors.filter(_.key == "payrollNumberEntry").asTextErrorMessages.headOption
