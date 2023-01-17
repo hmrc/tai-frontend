@@ -46,7 +46,7 @@
         @govukErrorSummary.get(ErrorSummary(errorList = formForErrorSummary.get.errors.asTextErrorLinks, title = Text(Messages("tai.income.error.form.summary"))))
     }
     <span class="govuk-caption-xl carry-over"><span class="govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)</span>
-    <h1 class="govuk-heading-xl heading-mobile-responsive break-word">@Html(mainHeadingText)</h1>
+    <h1 class="govuk-heading-xl heading-mobile-responsive carry-over">@Html(mainHeadingText)</h1>
 }else {
     <div class="grid-row">
         <div class="@headerWidthClasses.getOrElse("")">
