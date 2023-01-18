@@ -52,13 +52,11 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
         val cards = doc.getElementsByClass("card")
 
-        cards.size mustBe 3
+        cards.size mustBe 2
         cards.toString must include(Messages("current.tax.year"))
         doc(view) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
         cards.toString mustNot include(Messages("next.year"))
         cards.toString mustNot include(Messages("check.estimated.income"))
-        cards.toString must include(Messages("earlier"))
-        cards.toString must include(Messages("check.tax.previous.years"))
         cards.toString must include(Messages("income.tax.history"))
         cards.toString must include(Messages("income.tax.history.content"))
       }
@@ -70,15 +68,13 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         val nextYearView: Html = whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
 
-        cards.size mustBe 4
+        cards.size mustBe 3
         cards.toString must include(Messages("current.tax.year"))
         doc(nextYearView) must haveParagraphWithText(
           Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
         cards.toString must include(Messages("next.year"))
         doc(nextYearView) must haveParagraphWithText(
           Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1)))
-        cards.toString must include(Messages("earlier"))
-        cards.toString must include(Messages("check.tax.previous.years"))
       }
 
       "Tax Code Change is disabled" in {
@@ -88,7 +84,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         val nextYearView: Html = whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
 
-        cards.size mustBe 4
+        cards.size mustBe 3
         cards.toString mustNot include("Check your latest tax code change")
         cards.toString mustNot include("Find out what has changed and what happens next")
       }
@@ -105,7 +101,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
         val cards = doc(nextYearView).getElementsByClass("card")
 
-        cards.size mustBe 4
+        cards.size mustBe 3
         doc(nextYearView).toString must include(Messages("tai.WhatDoYouWantToDo.ViewChangedTaxCode"))
         doc(nextYearView).toString must include(
           Messages(
@@ -121,14 +117,12 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       val jrsClaimView: Html = whatDoYouWantToDoTileView(form, modelJrsTileEnabled, appConfig)
       val cards = doc(jrsClaimView).getElementsByClass("card")
 
-      cards.size mustBe 3
+      cards.size mustBe 2
 
       cards.toString must include(Messages("current.tax.year"))
       doc(view) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
       cards.toString mustNot include(Messages("next.year"))
       cards.toString mustNot include(Messages("check.estimated.income"))
-      cards.toString must include(Messages("earlier"))
-      cards.toString must include(Messages("check.tax.previous.years"))
 
       doc(jrsClaimView) must haveLinkWithUrlWithID(
         "jrs-link",
@@ -145,7 +139,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       val cards = doc(view).getElementsByClass("card")
 
-      cards.size mustBe 3
+      cards.size mustBe 2
       cards.toString must include(Messages("income.tax.history"))
       cards.toString must include(Messages("income.tax.history.content"))
     }
@@ -158,7 +152,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       val cards = doc(view).getElementsByClass("card")
 
-      cards.size mustBe 2
+      cards.size mustBe 1
       cards.toString mustNot include(Messages("income.tax.history"))
       cards.toString mustNot include(Messages("income.tax.history.content"))
     }
