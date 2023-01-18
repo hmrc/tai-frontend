@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompa
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
+import uk.gov.hmrc.tai.service.{FifteenDays, NoTimeToProcess, ThreeWeeks, TrackingService}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
@@ -48,6 +49,7 @@ class RemoveCompanyBenefitController @Inject()(
   @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   benefitsService: BenefitsService,
+  trackingService: TrackingService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
@@ -282,7 +284,13 @@ class RemoveCompanyBenefitController @Inject()(
 
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    Future.successful(Ok(removeCompanyBenefitConfirmation()))
+    trackingService.isAnyIFormInProgress(user.nino.nino).map { timeToProcess =>
+      val (title, summary) = timeToProcess match {
+        case ThreeWeeks => ("tai.confirmation.threeWeeks", "tai.confirmation.threeWeeks.paraTwo")
+        case _          => ("tai.confirmation.subheading", "tai.confirmation.paraTwo")
+      }
+      Ok(removeCompanyBenefitConfirmation(title, summary))
+    }
   }
 
   private def extractViewModelFromCache(cache: Map[String, String])(implicit messages: Messages) = {

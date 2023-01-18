@@ -34,6 +34,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.model.domain.income.Live
+import uk.gov.hmrc.tai.service.{ThreeWeeks, TrackingService}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, RemoveCompanyBenefitStopDateConstants}
@@ -680,6 +681,9 @@ class RemoveCompanyBenefitControllerSpec
       "the request has an authorised session" in {
         val sut = createSUT
 
+        when(trackingService.isAnyIFormInProgress(any())(any()))
+          .thenReturn(Future.successful(ThreeWeeks))
+
         val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
@@ -717,11 +721,14 @@ class RemoveCompanyBenefitControllerSpec
 
   private val removeCompanyBenefitStopDateView = inject[RemoveCompanyBenefitStopDateView]
 
+  private val trackingService = mock[TrackingService]
+
   class SUT
       extends RemoveCompanyBenefitController(
         removeCompanyBenefitJourneyCacheService,
         trackSuccessJourneyCacheService,
         benefitsService,
+        trackingService,
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
