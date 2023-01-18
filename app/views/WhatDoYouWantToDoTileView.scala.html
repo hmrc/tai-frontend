@@ -74,14 +74,6 @@
 
             <div class="flex-container govuk-grid-row">
                 @card(
-                    url = Some(s"/check-income-tax/historic-paye/${TaxYear().prev.year.toString}"),
-                    id = "earlierTaxYear",
-                    heading = messages("earlier"),
-                    bodyContent = Some(messages("check.tax.previous.years")),
-                    headingTag = "h2"
-                )
-
-                @card(
                     url = Some("/check-income-tax/income-summary"),
                     id = "currentTaxYear",
                     heading = messages("current.tax.year"),
