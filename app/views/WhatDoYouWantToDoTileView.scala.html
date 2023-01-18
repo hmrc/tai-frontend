@@ -73,6 +73,17 @@
         <div class="inner-block govuk-grid-column-full">
 
             <div class="flex-container govuk-grid-row">
+
+                @if(appConfig.incomeTaxHistoryEnabled) {
+                    @card(
+                        url = Some(s"/check-income-tax/income-tax-history"),
+                        id = "incomeTaxHistory",
+                        heading = messages("income.tax.history"),
+                        bodyContent = Some(messages("income.tax.history.content")),
+                        headingTag = "h2"
+                    )
+                }
+
                 @card(
                     url = Some("/check-income-tax/income-summary"),
                     id = "currentTaxYear",
@@ -91,15 +102,6 @@
                     )
                 }
 
-                @if(appConfig.incomeTaxHistoryEnabled) {
-                    @card(
-                        url = Some(s"/check-income-tax/income-tax-history"),
-                        id = "incomeTaxHistory",
-                        heading = messages("income.tax.history"),
-                        bodyContent = Some(messages("income.tax.history.content")),
-                        headingTag = "h2"
-                    )
-                }
             </div>
 
             <div class="govuk-!-margin-bottom-3">
