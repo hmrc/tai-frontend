@@ -33,8 +33,8 @@ class EditSuccessViewSpec extends TaiViewSpec {
     }
     "contain the success body" in {
       doc(view) must havePanelWithBodyText(
-        s"${htmlNonBroken(messages("tai.incomes.updated.check.heading.pt2"))} " +
-          s"${htmlNonBroken(messages("tai.incomes.updated.check.heading.pt3"))}"
+        s"${messages("tai.incomes.updated.check.heading.pt2")} " +
+          s"${messages("tai.incomes.updated.check.heading.pt3")}"
       )
     }
 
