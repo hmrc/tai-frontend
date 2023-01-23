@@ -28,9 +28,9 @@ class EditPensionSuccessSpec extends TaiViewSpec {
   "Edit Success Pension view" should {
     "contain the success heading" in {
       doc(view) must haveHeadingWithText(
-        s"${htmlNonBroken(messages("tai.incomes.updated.check.heading"))} " +
-          s"${htmlNonBroken(messages("tai.incomes.updated.check.heading.pt2"))} " +
-          s"${htmlNonBroken(messages("tai.incomes.updated.check.heading.pt3"))}"
+        s"${messages("tai.incomes.updated.check.heading")} " +
+          s"${messages("tai.incomes.updated.check.heading.pt2")} " +
+          s"${messages("tai.incomes.updated.check.heading.pt3")}"
       )
     }
 
