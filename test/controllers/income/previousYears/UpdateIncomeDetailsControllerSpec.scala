@@ -181,9 +181,10 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
       "valid details have been passed" in {
         val sut = createSUT
 
-        when(journeyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> "2016")))
-
+        val taxYear = TaxYear().prev.year.toString
+        val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> taxYear)
+        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
         val result = sut.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
