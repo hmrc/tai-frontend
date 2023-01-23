@@ -128,12 +128,18 @@ class UpdateIncomeDetailsController @Inject()(
   def telephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService.currentCache map { currentCache =>
+    (for {
+      isTelephone     <- journeyCacheService.currentValue(UpdatePreviousYearsIncomeConstants.TelephoneQuestionKey)
+      telephoneNumber <- journeyCacheService.currentValue(UpdatePreviousYearsIncomeConstants.TelephoneNumberKey)
+      currentCache    <- journeyCacheService.currentCache
+    } yield
       Ok(
         canWeContactByPhone(
           Some(user),
           telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncomeConstants.TaxYearKey).toInt),
-          YesNoTextEntryForm.form()))
+          YesNoTextEntryForm.form().fill(YesNoTextEntryForm(isTelephone, telephoneNumber))
+        ))).recover {
+      case NonFatal(exception) => errorPagesHandler.internalServerError(exception.getMessage)
     }
   }
 
