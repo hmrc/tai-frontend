@@ -18,7 +18,7 @@ package controllers.income.previousYears
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.FakeAuthAction
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
@@ -111,13 +111,11 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         val taxYear = TaxYear().prev.year.toString
         val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> taxYear)
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
         val result = SUT.details()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(
-          Messages(
-            "tai.income.previousYears.details.title",
-            TaxPeriodLabelService.taxPeriodLabel(previousTaxYear.year)))
+        doc.title() must include(Messages("tai.income.previousYears.details.title"))
       }
     }
   }
@@ -183,9 +181,10 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
       "valid details have been passed" in {
         val sut = createSUT
 
-        when(journeyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> "2016")))
-
+        val taxYear = TaxYear().prev.year.toString
+        val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> taxYear)
+        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
         val result = sut.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
@@ -410,6 +409,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         inject[UpdateIncomeDetailsConfirmationView],
         trackingjourneyCacheService,
         journeyCacheService,
-        MockTemplateRenderer
+        MockTemplateRenderer,
+        inject[ErrorPagesHandler]
       )
 }
