@@ -66,13 +66,14 @@
     pagePrintName = Some("future-pay-as-you-earn-summary")) {
 
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
+        <div class="govuk-grid-column-two-thirds">
             @header
         </div>
     </div>
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
+
             @if(incomeTaxComparisonViewModel.isEstimatedCYPlusOneJourneyCompleted){
 
                 <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
